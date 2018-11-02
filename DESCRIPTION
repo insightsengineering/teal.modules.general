@@ -1,0 +1,15 @@
+Package: teal.general
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Authors@R: c(
+  person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre"))
+  )
+Description: General Purpose Teal Modules
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Depends: teal (>= 0.0.4)
+Imports: ggplot2, tern
+Suggests: random.cdisc.data
+RoxygenNote: 6.1.0
