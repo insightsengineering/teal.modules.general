@@ -9,7 +9,7 @@ Description: General Purpose Teal Modules
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: teal (>= 0.0.4)
-Imports: ggplot2, tern
+Depends: teal (>= 0.0.4), tern
+Imports: ggplot2
 Suggests: random.cdisc.data
 RoxygenNote: 6.1.0
