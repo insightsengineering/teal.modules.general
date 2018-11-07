@@ -2,9 +2,9 @@
 % Please edit documentation in R/tm_g_bivariate.R
 \name{tm_g_bivariate}
 \alias{tm_g_bivariate}
-\title{Cross table based on rtables}
+\title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Bivariate Plots", dataname, x_var,
+tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
   x_var_choices = x_var, y_var, y_var_choices = y_var)
 }
 \arguments{
@@ -17,7 +17,7 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var,
 \item{y_var_choices}{vector with variable names available as choices}
 }
 \description{
-Cross table based on rtables
+Univariate and bivariate visualizations.
 }
 \examples{
 
@@ -25,7 +25,7 @@ Cross table based on rtables
 
 N <- 100
 ASL <- data.frame(
-  USUBJID = paste("id", seq_len(N), sep ="-"),
+  USUBJID = paste("id", seq_len(N), sep = "-"),
   STUDYID = "study1",
   cont = rnorm(N),
   disc = factor(sample(letters[1:5], N, TRUE)),
@@ -33,20 +33,19 @@ ASL <- data.frame(
   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 )
 
-x <- teal::init(
-  data = list(ASL = ASL),
-  modules = root_modules(
-    tm_g_bivariate(
-      dataname = "ASL",
-      x_var = "cont",
-      x_var_choices = names(ASL),
-      y_var = "cont2",
-      y_var_choices = names(ASL)
-    )
-  )
-)
+x <- teal::init(data = list(ASL = ASL),
+                modules = root_modules(
+                  tm_g_bivariate(
+                    dataname = "ASL",
+                    x_var = "cont",
+                    x_var_choices = c("", names(ASL)),
+                    y_var = "cont2",
+                    y_var_choices = c("", names(ASL))
+                  )
+                ))
 
 shinyApp(x$ui, x$server)
+
 }
 
 }

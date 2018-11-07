@@ -10,7 +10,6 @@ Description: General Purpose Teal Modules
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: teal (>= 0.0.4), tern, data.table, gClinBiomarker, rBiomarker, cli
-Imports: ggplot2
+Depends: teal, rtables, tern, ggplot2, ggmosaic
 Suggests: random.cdisc.data
 RoxygenNote: 6.1.0

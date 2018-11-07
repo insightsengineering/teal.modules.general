@@ -1,33 +1,71 @@
-tm_bep_t_summarize_variables <- function(label,
-                                         dataname,
-                                         arm_var,
-                                         arm_var_choices = arm_var,
-                                         summarize_vars,
-                                         summarize_vars_choices = summarize_vars,
-                                         bep_var,
-                                         bep_var_choices = bep_var,
-                                         pop_id_var,
-                                         pop_id_var_choices = pop_id_var,
-                                         pre_output = NULL,
-                                         post_output = NULL,
-                                         code_data_processing = NULL) {
 
-  print("tm_bep_t_summarize_variables 1")
+#' Summary Table for analysis
+#'
+#'
+#' TODO: descrioption (one paragraph what is this  module doing)
+#'
+#' @inheritParams teal.tern::tm_t_summarize_variables
+#' @param bep_var TODO
+#' @param bep_var_choices TODO
+#'
+#'
+#' @export
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#' library(random.cdisc.data)
+#' library(dplyr)
+#'
+#' ASL <- radsl(N = 100) %>% mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE))
+#'
+#'
+#' x <- teal::init(
+#'    data = list(ASL = ASL),
+#'    modules = root_modules(
+#'      tm_bep_t_summary(
+#'         label = "Demographic",
+#'         dataname = "ASL",
+#'         arm_var = "ARM",
+#'         arm_var_choices = c("ARM", "SEX"),
+#'         summarize_vars = "AGE",
+#'         summarize_vars_choices = names(ASL),
+#'         bep_var = "BEP"
+#'      )
+#'   )
+#' )
+#'
+#' shinyApp(x$ui, x$server)
+#' }
+tm_bep_t_summary <- function(label,
+                             dataname,
+                             arm_var,
+                             arm_var_choices = arm_var,
+                             summarize_vars,
+                             summarize_vars_choices = summarize_vars,
+                             bep_var,
+                             bep_var_choices = bep_var,
+                             pre_output = NULL,
+                             post_output = NULL,
+                             code_data_processing = NULL) {
+
+
 
   args <- as.list(environment())
 
   module(label = label,
-         server = srv_bep_t_summarize_variables,
-         ui = ui_bep_t_summarize_variables,
+         server = srv_bep_t_summary,
+         ui = ui_bep_t_summary,
          ui_args = args,
          server_args = list(dataname = dataname,
                             code_data_processing = code_data_processing),
          filters = dataname)
 }
 
-ui_bep_t_summarize_variables <- function(id, ...) {
+ui_bep_t_summary <- function(id, ...) {
 
-  print("ui_bep_t_summarize_variables 1")
+  print("ui_bep_t_summary 1")
 
   ns <- NS(id)
   a <- list(...)
@@ -38,7 +76,7 @@ ui_bep_t_summarize_variables <- function(id, ...) {
       tags$label("Encodings", class="text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
       optionalSelectInput(ns("bep_var"),
-                          "Biomarker Population",
+                          "Biomarker Population Variable",
                           a$bep_var_choices,
                           a$bep_var,
                           multiple = FALSE),
@@ -49,7 +87,7 @@ ui_bep_t_summarize_variables <- function(id, ...) {
       #               value = FALSE),
       optionalSelectInput(ns("arm_var"),
                           "Arm Variable",
-                          a$arm_var_choices,
+                          unique(c("-- no arm -- ", a$arm_var_choices)),
                           a$arm_var,
                           multiple = FALSE),
       # TODO: Check if this is indeed not needed.
@@ -76,219 +114,86 @@ ui_bep_t_summarize_variables <- function(id, ...) {
   )
 }
 
-srv_bep_t_summarize_variables <- function(input,
+srv_bep_t_summary <- function(input,
                                           output,
                                           session,
                                           datasets,
                                           dataname,
                                           code_data_processing) {
 
-  print("srv_bep_t_summarize_variables 1")
-
-  chunks <- list(analysis = "# Not Calculated")
 
   output$table <- renderUI({
 
-    print("srv_bep_t_summarize_variables 2")
-
     ANL_f <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
-    ANLLLL <- ANL_f
-
-    as.global(ANLLLL)
-
-    print("srv_bep_t_summarize_variables 3")
-
-    arm_var <- input$arm_var
-    if (is.null(arm_var) || arm_var == "")
-      arm_var <- NULL
-    summarize_vars <- input$summarize_vars
     bep_var <- input$bep_var
-    reference_population_all <- FALSE
-    reference_population_nonbep <- FALSE
-    if (input$all_non_bep_radio_buttons == "ALL")
-      reference_population_all <- TRUE
-    if (input$all_non_bep_radio_buttons == "NON-BEP")
-      reference_population_nonbep <- TRUE
+    arm_var <- input$arm_var
+    summarize_vars <- input$summarize_vars
+    is_non_bep <- input$all_non_bep_radio_buttons == "NON-BEP"
 
-    #test_p_value <- input$test_p_value
-    #combined_treatment_arm <- input$combined_treatment_arm
+    as.global(ANL_f, bep_var, arm_var, summarize_vars, is_non_bep)
 
-    print("srv_bep_t_summarize_variables 4")
-
-    chunks$analysis <<- "# Not Calculated"
-
-    #validate_has_data(ANL_f, min_nrow = 3)
+    teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
     validate(need(!is.null(summarize_vars), "Please select a summarize variable"))
     validate(need(all(summarize_vars %in% names(ANL_f)), "Not all variables available"))
     #validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
     #validate(need(!("" %in% ANL_f[[arm_var]]), "Arm values cannot contain empty strings"))
 
-    print("srv_bep_t_summarize_variables 5")
 
-    data_name <- paste0(dataname, "_FILTERED")
-
-    print("srv_bep_t_summarize_variables 6")
-
-    # Pre-processing here:
-    ASL_mod = ANL_f[,c(bep_var,summarize_vars)]
-    ASL_mod[bep_var] = as.integer(as.logical(ASL_mod[[bep_var]]))
-    ASL_mod = as.data.frame(ASL_mod)
-
-    print("srv_bep_t_summarize_variables 7")
-
-    if (!is.null(arm_var)) {
-
-      print("srv_bep_t_summarize_variables 7 A 1")
-
-      tbl <- NULL
-      if (reference_population_all) {
-
-        print("srv_bep_t_summarize_variables 7 A 1: reference_population_all")
-
-        ANL_f <- get_subset_in_long_format(ANL_f,
-                                           arm_var,
-                                           bep_var,
-                                           summarize_vars)
-
-        print("srv_bep_t_summarize_variables 7 A 2")
-
-        print("srv_bep_t_summarize_variables 7 A 3")
-
-        # TODO: For now we simply filter out records with NAs.
-        # However NAs should be reported and displayed in the UI to not obfuscate the
-        # data.
-
-        if (any(is.na(ANL_f$col_by))) {
-          # Only remove those rows where ANL_f$col_by has NAs.
-          ANL_f <- na.omit(as.data.table(ANL_f), cols="col_by")
-          ANL_f <- as.data.frame(ANL_f)
-        }
-
-        as.global(ANL_f)
-
-        assign(data_name, ANL_f)
-
-        print("srv_bep_t_summarize_variables 7 A 4")
-
-        chunks$analysis <<- call(
-          "t_summary",
-          x = bquote(.(as.name(data_name))[, .(summarize_vars), drop=FALSE]),
-          #x = ANL_f,
-          #col_by = bquote(as.factor(.(as.name(data_name))[[.(arm_var)]])),
-          col_by = ANL_f$col_by,
-          total = "Total population",
-          #total = "ALL-2",
-          useNA = "ifany"
-        )
-        tbl <- try(eval(chunks$analysis))
-
-        print("srv_bep_t_summarize_variables 7 A 5")
-
-        if (is(tbl, "try-error")) {
-          print("tbl error!!!!!!!!!")
-          validate(need(FALSE, paste0("could not calculate the table:\n\n", tbl)))
-        }
-
-        print("srv_bep_t_summarize_variables 7 A 6")
+    #  all vs non-bep
+    #  arm vs no-arm
+    #
+    #  1. all & arm
+    #  2. all & no-arm
+    #
+    #   no stacking required
+    #  3. non-bep & arm
+    #  4. non-bep & no-arm
+    #
+    #  want run t_summary in the end
 
 
-      }
-      if (reference_population_nonbep) {
 
-        print("srv_bep_t_summarize_variables 7 A 6: reference_population_nonbep")
 
-        #bep_var <- "ITTFL"
+    bep <- ANL_f[[bep_var]]
+    ANL_select <- ANL_f[, summarize_vars, drop = FALSE]
+    arm <- if (arm_var == "-- no arm --") NULL else ANL_f[[arm_var]]
 
-        ASL_mod = ANL_f[,c(bep_var,summarize_vars,"ACTARMCD")]
 
-        #ASL_mod[bep_var][ASL_mod[bep_var] == "Y"] <- TRUE
-        #ASL_mod[bep_var][ASL_mod[bep_var] == "N"] <- TRUE
+    x <- if (is_non_bep) {
+      ## no stacking required
 
-        ASL_mod[bep_var] = as.integer(as.logical(ASL_mod[[bep_var]]))
-        ASL_mod = as.data.frame(ASL_mod)
+      cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
 
-        ANLffff <- ASL_mod
+      list(
+        data = ANL_select,
+        col_by = if (is.null(arm)) cb else interaction(arm, cb, sep = "\n", lex.order = TRUE),
+        total = "All Patients"
+      )
 
-        as.global(ANLffff)
-
-        ASL_mod <- na.omit(ASL_mod)
-
-        tbl <- rBiomarker::SummaryVars(ASL_mod,
-                                       var = summarize_vars,
-                                       trt = "ACTARMCD",
-                                       bep = bep_var,
-                                       bep.name = bep_var,
-                                       #itt.name = "ALL",
-                                       bep.vs.nonbep = TRUE,
-                                       perform.test = FALSE)
-
-      }
-      as_html(tbl)
     } else {
+      ## stacking is required
 
-      print("srv_bep_t_summarize_variables 7 B 1")
+      ANL_stacked <- rbind(
+        ANL_select,
+        ANL_select[bep, ]
+      )
 
-      as.global(ASL_mod)
+      cb2 <- factor(c(rep("ALL", nrow(ANL_f)), rep("BEP", sum(bep))), levels = c("ALL", "BEP"))
 
-      tbl <- NULL
-      if (reference_population_nonbep) {
-        print("srv_bep_t_summarize_variables 7 B 1: reference_population_nonbep")
-        test_p_value <- TRUE
-        tbl <- rBiomarker::SummaryVars(ASL_mod,
-                                       var = summarize_vars,
-                                       bep = bep_var,
-                                       bep.name = bep_var,
-                                       itt.name = "Safety population",
-                                       perform.test = test_p_value)
+      list(
+        data = ANL_stacked,
+        col_by = if (is.null(arm)) cb2 else interaction( arm, cb2, sep = "\n", lex.order = TRUE),
+        total = NULL
+      )
 
-      }
-
-      if (reference_population_all) {
-        print("srv_bep_t_summarize_variables 7 B 1: reference_population_all")
-        #test_p_value <- TRUE
-        tbl <- rBiomarker::SummaryVars(ASL_mod,
-                                       var = summarize_vars,
-                                       #trt = "ACTARMCD",
-                                       bep = bep_var,
-                                       bep.name = bep_var,
-                                       itt.name = "ALL",
-                                       bep.vs.nonbep = FALSE,
-                                       perform.test = FALSE)
-
-      }
-
-      as_html(tbl)
     }
-  })
 
+    tbl <- try(t_summary(x$data, x$col_by, total = x$total), silent = TRUE)
 
+    if (is(tbl, "try-error")) tags$p(tbl) else as_html(tbl)
 
-  observeEvent(input$show_rcode, {
-
-    header <- get_rcode_header2(title = "Summarize Variables",
-                                datanames = dataname,
-                                datasets = datasets,
-                                code_data_processing)
-
-    str_rcode <- paste(c(
-      "",
-      header,
-      "",
-      remove_enclosing_curly_braces(deparse(chunks$analysis,width.cutoff=60))
-    ), collapse = "\n")
-
-    # TODO: Dummy result for now, implement properly!
-    str_rcode = "Only a dummy place holder for now!"
-
-    # .log("show R code")
-    showModal(modalDialog(
-      title = "R Code for the Current Demographic Table",
-      tags$pre(tags$code(class="R", str_rcode)),
-      easyClose = TRUE,
-      size = "l"
-    ))
   })
 
 }

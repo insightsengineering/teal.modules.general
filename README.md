@@ -13,7 +13,7 @@ For general reusable modules see:
 
 
 ```r
-install.packages(c("data.table", "cli"))
+install.packages(c("data.table", "ggmosaic"))
 
 devtools::install_github(
   repo = "Rpackages/random.cdisc.data",

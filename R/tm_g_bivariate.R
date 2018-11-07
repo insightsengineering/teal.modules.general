@@ -9,7 +9,6 @@
 #' @import ggmosaic
 #' @export
 #'
-#' @template
 #'
 #' @examples
 #'
