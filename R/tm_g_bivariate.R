@@ -1,6 +1,4 @@
-
-
-#' Cross table based on rtables
+#' Univariate and bivariate visualizations.
 #'
 #' @param x_var variable name selected variable when shiny app starts
 #' @param x_var_choices vector with variable names available as choices
@@ -8,8 +6,10 @@
 #' @param y_var_choices vector with variable names available as choices
 #'
 #' @import ggplot2
-#' @import tern
+#' @import ggmosaic
 #' @export
+#'
+#' @template
 #'
 #' @examples
 #'
@@ -17,7 +17,7 @@
 #'
 #' N <- 100
 #' ASL <- data.frame(
-#'   USUBJID = paste("id", seq_len(N), sep ="-"),
+#'   USUBJID = paste("id", seq_len(N), sep = "-"),
 #'   STUDYID = "study1",
 #'   cont = rnorm(N),
 #'   disc = factor(sample(letters[1:5], N, TRUE)),
@@ -25,41 +25,36 @@
 #'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 #' )
 #'
-#' x <- teal::init(
-#'   data = list(ASL = ASL),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       dataname = "ASL",
-#'       x_var = "cont",
-#'       x_var_choices = names(ASL),
-#'       y_var = "cont2",
-#'       y_var_choices = names(ASL)
-#'     )
-#'   )
-#' )
+#' x <- teal::init(data = list(ASL = ASL),
+#'                 modules = root_modules(
+#'                   tm_g_bivariate(
+#'                     dataname = "ASL",
+#'                     x_var = "cont",
+#'                     x_var_choices = c("", names(ASL)),
+#'                     y_var = "cont2",
+#'                     y_var_choices = c("", names(ASL))
+#'                   )
+#'                 ))
 #'
 #' shinyApp(x$ui, x$server)
+#'
 #' }
 #'
-tm_g_bivariate <- function(
-  label = "Bivariate Plots",
-  dataname,
-  x_var,
-  x_var_choices = x_var,
-  y_var,
-  y_var_choices = y_var
-) {
+tm_g_bivariate <- function(label = "Uni- and Bivariate Plots",
+                           dataname,
+                           x_var,
+                           x_var_choices = x_var,
+                           y_var,
+                           y_var_choices = y_var) {
 
   args <- as.list(environment())
 
-  module(
-    label = label,
-    server = srv_g_bivariate,
-    ui = ui_g_bivariate,
-    ui_args = args,
-    server_args = list(dataname = dataname),
-    filters = dataname
-  )
+  module(label = label,
+         server = srv_g_bivariate,
+         ui = ui_g_bivariate,
+         ui_args = args,
+         server_args = list(dataname = dataname),
+         filters = dataname)
 
 }
 
@@ -80,84 +75,89 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-srv_g_bivariate <- function(input, output, session, datasets, dataname) {
-
+srv_g_bivariate <- function(input,
+                            output,
+                            session,
+                            datasets,
+                            dataname) {
 
   output$plot <- renderPlot({
 
-    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    ANL_filtered <- datasets$get_data(dataname,
+                                      filtered = TRUE,
+                                      reactive = TRUE)
+
     x_var <- input$x_var
     y_var <- input$y_var
 
-
-    as.global(ANL_filtered, x_var, y_var)
+    if (x_var == '')
+      x_var <- NULL
+    if (y_var == '')
+      y_var <- NULL
 
     validate(need(ANL_filtered, "data missing"))
     validate(need(nrow(ANL_filtered) > 10, "need at least 10 patients"))
+    validate(need(!is.null(x_var) || !is.null(y_var),
+                  "At least one variable needs to be provided"))
 
     x <- if (!is.null(x_var)) {
-      validate(need(x_var %in% names(ANL_filtered), "selected x_var does not exist"))
+      #validate(need(x_var %in% names(ANL_filtered), "selected x_var does not exist"))
       x <- ANL_filtered[[x_var]]
-      validate(need(is.numeric(x) || is.factor(x), "currently only works if x is of type factor or numeric"))
+      validate(need(is.numeric(x) || is.factor(x),
+                    "currently only works if x is of type factor or numeric"))
       x
     } else {
       NULL
     }
     y <- if (!is.null(y_var)) {
-      validate(need(y_var %in% names(ANL_filtered), "selected y_var does not exist"))
+      #validate(need(y_var %in% names(ANL_filtered), "selected y_var does not exist"))
       y <- ANL_filtered[[y_var]]
-      validate(need(is.numeric(y) || is.factor(y), "currently only works if y is of type factor or numeric"))
+      validate(need(is.numeric(y) || is.factor(y),
+                    "currently only works if y is of type factor or numeric"))
       y
     } else {
       NULL
     }
 
-
-    lab <- if(!is.null(label(var))) {
+    lab <- if (!is.null(label(var))) {
       label(var)
     } else {
       if (is.null(x)) y_var else x_var
     }
-    plot
-    var <- factor(sample(letters[1:4], 100, TRUE))
-
-
 
     p <- if (is.null(x) && is.null(y)) {
-
       validate(need(FALSE, "need to select a variable"))
-
-    } else if (xor(is.null(x), is.null(y))) { # 1d
-      #
+    } else if (xor(is.null(x), is.null(y))) {
+      # 1d (univariate) case.
       var <- if (is.null(x)) y else x
-
       if (is.factor(var)) {
+        # Visualization of conditional distribution of an univariate
+        # categorical variable via stacked barplot.
+        # Here only one variable is available.
         ggplot() + aes(x = var) + geom_bar()
       } else if (is.numeric(var)) {
+        # Visualization of distribution of an univariate continuous
+        # variable via histogram and/or density plot.
         ggplot() + aes(x = var) + geom_histogram() + geom_density()
       } else {
         validate(need(FALSE, "module inconsistency"))
       }
-
-    } else { # bivariate
-
+    } else {
+      # 2d (bivariate) case.
       if (is.numeric(x) && is.numeric(y)) {
-
+        # Visualization of bivariate continuous variables via scatterplot.
         ggplot() + aes(x = x, y = y) + geom_point()
-
-      } else if (is.numeric(x) && is.factor(y) || is.numeric(y) && is.factor(x)) {
-
+      } else if (is.numeric(x) && is.factor(y) ||
+                 is.factor(x) && is.numeric(y)) {
+        # Visualization of bivariate categorical and continuous
+        # variables via boxplot.
         ggplot() + aes(x = x, y = y) + geom_boxplot()
-
-      } else if (is.factor(y) && is.factor(y)) {
-        validate(need(FALSE, "need to implement mosaic plot"))
-        #ggplot() + aes(x = x, y = y) + geom_mosaic()
+      } else if (is.factor(x) && is.factor(y)) {
+        # Visualization of bivariate categorical variables via mosaic plot.
+        ggplot(data = data.frame(x, y)) +
+          geom_mosaic(aes(x = product(x), fill = y), na.rm = TRUE)
       }
-
     }
     p
-
-
   })
-
 }
