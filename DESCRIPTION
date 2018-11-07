@@ -3,13 +3,14 @@ Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
 Authors@R: c(
-  person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre"))
+  person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre")),
+  person("Vincent", "Wolowski", email = "vincent.wolowski@roche.com", role = "aut")
   )
 Description: General Purpose Teal Modules
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: teal (>= 0.0.4), tern
+Depends: teal (>= 0.0.4), tern, data.table, gClinBiomarker, rBiomarker, cli
 Imports: ggplot2
 Suggests: random.cdisc.data
 RoxygenNote: 6.1.0
