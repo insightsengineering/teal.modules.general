@@ -17,7 +17,7 @@ install.packages(c("data.table", "ggmosaic"))
 
 devtools::install_github(
   repo = "Rpackages/random.cdisc.data",
-  ref = "v0.1.0", 
+  ref = "new-simple", 
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
 )

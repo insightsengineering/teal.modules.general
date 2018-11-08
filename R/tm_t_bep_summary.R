@@ -18,27 +18,30 @@
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
-#' ASL <- radsl(N = 100) %>% mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE))
+#' ASL <- radsl(N = 100) %>%
+#'  mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE),
+#'         BEP2 = sample(c(TRUE, FALSE), n(), TRUE))
 #'
 #'
 #' x <- teal::init(
 #'    data = list(ASL = ASL),
 #'    modules = root_modules(
-#'      tm_bep_t_summary(
+#'      tm_t_bep_summary(
 #'         label = "Demographic",
 #'         dataname = "ASL",
 #'         arm_var = "ARM",
 #'         arm_var_choices = c("ARM", "SEX"),
 #'         summarize_vars = "AGE",
 #'         summarize_vars_choices = names(ASL),
-#'         bep_var = "BEP"
+#'         bep_var = "BEP",
+#'         bep_var_choices = c("BEP", "BEP2")
 #'      )
 #'   )
 #' )
 #'
 #' shinyApp(x$ui, x$server)
 #' }
-tm_bep_t_summary <- function(label,
+tm_t_bep_summary <- function(label,
                              dataname,
                              arm_var,
                              arm_var_choices = arm_var,
@@ -55,17 +58,15 @@ tm_bep_t_summary <- function(label,
   args <- as.list(environment())
 
   module(label = label,
-         server = srv_bep_t_summary,
-         ui = ui_bep_t_summary,
+         server = srv_t_bep_summary,
+         ui = ui_t_bep_summary,
          ui_args = args,
          server_args = list(dataname = dataname,
                             code_data_processing = code_data_processing),
          filters = dataname)
 }
 
-ui_bep_t_summary <- function(id, ...) {
-
-  print("ui_bep_t_summary 1")
+ui_t_bep_summary <- function(id, ...) {
 
   ns <- NS(id)
   a <- list(...)
@@ -82,29 +83,17 @@ ui_bep_t_summary <- function(id, ...) {
                           multiple = FALSE),
       radioButtons(ns("all_non_bep_radio_buttons"),
                    NULL,c("ALL","NON-BEP")),
-      # checkboxInput(ns("all_non_bep_checkbox"),
-      #               "ALL or NON-BEP",
-      #               value = FALSE),
       optionalSelectInput(ns("arm_var"),
                           "Arm Variable",
                           unique(c("-- no arm -- ", a$arm_var_choices)),
                           a$arm_var,
                           multiple = FALSE),
-      # TODO: Check if this is indeed not needed.
-      # optionalSelectInput(ns("pop_id_var"),
-      #                     "Population Identifier",
-      #                     a$pop_id_var_choices,
-      #                     a$pop_id_var,
-      #                     multiple = TRUE),
       optionalSelectInput(ns("summarize_vars"),
                           "Summarize Variables",
                           a$summarize_vars_choices,
                           a$summarize_vars, multiple = TRUE)
       # checkboxInput(ns("test_p_value"),
       #               "Test for p-value",
-      #               value = FALSE),
-      # checkboxInput(ns("combined_treatment_arm"),
-      #               "Combined treatment arm",
       #               value = FALSE)
     ),
     # Vincent: Commented out the "Show R Code" button for now.
@@ -114,12 +103,12 @@ ui_bep_t_summary <- function(id, ...) {
   )
 }
 
-srv_bep_t_summary <- function(input,
-                                          output,
-                                          session,
-                                          datasets,
-                                          dataname,
-                                          code_data_processing) {
+srv_t_bep_summary <- function(input,
+                              output,
+                              session,
+                              datasets,
+                              dataname,
+                              code_data_processing) {
 
 
   output$table <- renderUI({
@@ -132,6 +121,7 @@ srv_bep_t_summary <- function(input,
     is_non_bep <- input$all_non_bep_radio_buttons == "NON-BEP"
 
     as.global(ANL_f, bep_var, arm_var, summarize_vars, is_non_bep)
+    stop("fdsfds")
 
     teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
