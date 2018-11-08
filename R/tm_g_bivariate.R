@@ -7,6 +7,33 @@
 #'
 #' @import ggplot2
 #' @import ggmosaic
+#'
+#'
+#' @details
+#' This is a general module to visualize 1 & 2 dimensional data.
+#'
+#'
+#'  1d
+#'
+#'  cont  abs  hist
+#'  cat.  abs  barplot
+#'
+#'
+#'  2d
+#'  x         y     interest    plot
+#'  cont.   cont.   abs       scatterplot
+#'  cont.   cat.    abs       boxplot
+#'  cat.    cat.    abs       mosaic plot
+#'  cont.   cont.   density
+#'  cont.   cat.    density
+#'  cat.    cat.    density
+#'
+#'
+#'  color_by
+#'  facet_by
+#'
+#'
+#'
 #' @export
 #'
 #'
@@ -108,6 +135,7 @@ srv_g_bivariate <- function(input,
     } else {
       NULL
     }
+
     y <- if (!is.null(y_var)) {
       #validate(need(y_var %in% names(ANL_filtered), "selected y_var does not exist"))
       y <- ANL_filtered[[y_var]]
