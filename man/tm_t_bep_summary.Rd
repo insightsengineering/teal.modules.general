@@ -53,7 +53,9 @@ TODO: descrioption (one paragraph what is this  module doing)
 library(random.cdisc.data)
 library(dplyr)
 
-ASL <- radsl(N = 100) \%>\% mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE))
+ASL <- radsl(N = 100) \%>\%
+ mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE),
+        BEP2 = sample(c(TRUE, FALSE), n(), TRUE))
 
 
 x <- teal::init(
@@ -66,7 +68,8 @@ x <- teal::init(
         arm_var_choices = c("ARM", "SEX"),
         summarize_vars = "AGE",
         summarize_vars_choices = names(ASL),
-        bep_var = "BEP"
+        bep_var = "BEP",
+        bep_var_choices = c("BEP", "BEP2")
      )
   )
 )

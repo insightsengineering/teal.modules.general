@@ -5,21 +5,43 @@
 \title{Univariate and bivariate visualizations.}
 \usage{
 tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
-  x_var_choices = x_var, y_var, y_var_choices = y_var)
+  x_var_choices = x_var, y_var, y_var_choices = y_var,
+  use_density = FALSE, xfacet_var, xfacet_var_choices, yfacet_var,
+  yfacet_var_choices, plot_height = c(600, 200, 2000))
 }
 \arguments{
-\item{x_var}{variable name selected variable when shiny app starts}
+\item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
 
-\item{x_var_choices}{vector with variable names available as choices}
+\item{x_var_choices}{character vector with variable names available as choices to plot along x-axis}
 
-\item{y_var}{variable name selected variable when shiny app starts}
+\item{y_var}{variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
 
-\item{y_var_choices}{vector with variable names available as choices}
+\item{y_var_choices}{character vector with variable names available as choices to plot along y-axis}
+
+\item{use_density}{boolean value for whether density is plotted}
+
+\item{xfacet_var}{variable for x facets}
+
+\item{xfacet_var_choices}{vector with \code{xfacet_var} choices}
+
+\item{yfacet_var}{variable for y facets}
+
+\item{yfacet_var_choices}{vector with \code{yfacet_var} choices}
+
+\item{plot_height}{range of plot height}
 }
 \description{
 Univariate and bivariate visualizations.
 }
+\details{
+This is a general module to visualize 1 & 2 dimensional data.
+}
 \examples{
+
+## TODO:
+ 1) Review bivariate plots -- output is not correct when 2 discrete vars are selected, aslo need to add density
+ 2) add line_colorby_var and line_colorby_var_choices
+ 3) Add x- y- faceting for 1D and 2D plots
 
 \dontrun{
 
@@ -38,9 +60,15 @@ x <- teal::init(data = list(ASL = ASL),
                   tm_g_bivariate(
                     dataname = "ASL",
                     x_var = "cont",
-                    x_var_choices = c("", names(ASL)),
+                    x_var_choices = names(ASL),
                     y_var = "cont2",
-                    y_var_choices = c("", names(ASL))
+                    y_var_choices = names(ASL),
+                    use_density = FALSE,
+                    xfacet_var = "SEX",
+                    xfacet_var_choices = c("SEX", "ARM"),
+                    yfacet_var = "ARM",
+                    yfacet_var_choices = c("ARM", "SEX"),
+                    plot_height = c(600, 200, 2000)
                   )
                 ))
 
