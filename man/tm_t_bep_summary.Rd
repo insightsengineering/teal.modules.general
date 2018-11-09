@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_t_bep_summary.R
 \name{tm_t_bep_summary}
 \alias{tm_t_bep_summary}
-\title{Summary Table for analysis}
+\title{Summary Table Comparing Analysis Populations}
 \usage{
 tm_t_bep_summary(label, dataname, arm_var, arm_var_choices = arm_var,
   summarize_vars, summarize_vars_choices = summarize_vars, bep_var,
@@ -29,9 +29,11 @@ by default}
 \item{summarize_vars_choices}{character vector with variable names that can
 be selected (for summary)}
 
-\item{bep_var}{TODO}
+\item{bep_var}{character string containing name of boolean vector for the biomarker evaluable population (BEP)
+to compare in the table}
 
-\item{bep_var_choices}{TODO}
+\item{bep_var_choices}{character vector with names of additional variables that can
+be selected as thebiomarker evaluable population (BEP)}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -45,7 +47,7 @@ output to put the output into context. For example the
 app is initialized}
 }
 \description{
-TODO: descrioption (one paragraph what is this  module doing)
+Display a summary table comparing analysis populations as a shiny module
 }
 \examples{
 
@@ -53,7 +55,9 @@ TODO: descrioption (one paragraph what is this  module doing)
 library(random.cdisc.data)
 library(dplyr)
 
-ASL <- radsl(N = 100) \%>\% mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE))
+ASL <- radsl(N = 100) \%>\%
+ mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE),
+        BEP2 = sample(c(TRUE, FALSE), n(), TRUE))
 
 
 x <- teal::init(
@@ -63,10 +67,11 @@ x <- teal::init(
         label = "Demographic",
         dataname = "ASL",
         arm_var = "ARM",
-        arm_var_choices = c("ARM", "SEX"),
+        arm_var_choices = c("ARM", "ARMCD"),
         summarize_vars = "AGE",
         summarize_vars_choices = names(ASL),
-        bep_var = "BEP"
+        bep_var = "BEP",
+        bep_var_choices = c("BEP", "BEP2")
      )
   )
 )

@@ -1,13 +1,13 @@
 
-#' Summary Table for analysis
+#' Summary Table Comparing Analysis Populations
 #'
-#'
-#' TODO: descrioption (one paragraph what is this  module doing)
+#' Display a summary table comparing analysis populations as a shiny module
 #'
 #' @inheritParams teal.tern::tm_t_summarize_variables
-#' @param bep_var TODO
-#' @param bep_var_choices TODO
-#'
+#' @param bep_var character string containing name of boolean vector for the biomarker evaluable population (BEP)
+#'   to compare in the table
+#' @param bep_var_choices  character vector with names of additional variables that can
+#'   be selected as thebiomarker evaluable population (BEP)
 #'
 #' @export
 #'
@@ -30,7 +30,7 @@
 #'         label = "Demographic",
 #'         dataname = "ASL",
 #'         arm_var = "ARM",
-#'         arm_var_choices = c("ARM", "SEX"),
+#'         arm_var_choices = c("ARM", "ARMCD"),
 #'         summarize_vars = "AGE",
 #'         summarize_vars_choices = names(ASL),
 #'         bep_var = "BEP",
@@ -53,7 +53,7 @@ tm_t_bep_summary <- function(label,
                              post_output = NULL,
                              code_data_processing = NULL) {
 
-
+  arm_var_choices <- unique(c("-- no arm --", arm_var_choices))
 
   args <- as.list(environment())
 
@@ -77,27 +77,22 @@ ui_t_bep_summary <- function(id, ...) {
       tags$label("Encodings", class="text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
       optionalSelectInput(ns("bep_var"),
-                          "Biomarker Population Variable",
+                          "Biomarker-Evaluable Population (BEP) Variable",
                           a$bep_var_choices,
                           a$bep_var,
                           multiple = FALSE),
       radioButtons(ns("all_non_bep_radio_buttons"),
-                   NULL,c("ALL","NON-BEP")),
+                   "Table Comparison",c("ALL vs BEP","BEP vs Non-BEP")),
       optionalSelectInput(ns("arm_var"),
                           "Arm Variable",
-                          unique(c("-- no arm -- ", a$arm_var_choices)),
+                          a$arm_var_choices,
                           a$arm_var,
                           multiple = FALSE),
       optionalSelectInput(ns("summarize_vars"),
                           "Summarize Variables",
                           a$summarize_vars_choices,
                           a$summarize_vars, multiple = TRUE)
-      # checkboxInput(ns("test_p_value"),
-      #               "Test for p-value",
-      #               value = FALSE)
     ),
-    # Vincent: Commented out the "Show R Code" button for now.
-    #forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
     pre_output = a$pre_output,
     post_output = a$post_output
   )
@@ -118,43 +113,31 @@ srv_t_bep_summary <- function(input,
     bep_var <- input$bep_var
     arm_var <- input$arm_var
     summarize_vars <- input$summarize_vars
-    is_non_bep <- input$all_non_bep_radio_buttons == "NON-BEP"
+    is_bep_vs_non_bep <- input$all_non_bep_radio_buttons == "BEP vs Non-BEP"
 
-    as.global(ANL_f, bep_var, arm_var, summarize_vars, is_non_bep)
-    stop("fdsfds")
+    as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
     teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
+
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
+    validate(need(ANL_f[[bep_var]], "BEP variable does not exist"))
+    validate(need(!any(is.na(ANL_f[[bep_var]])), "Please recode NA levels in BEP variable"))
+    validate(need(!("" %in% ANL_f[[bep_var]]), "BEP values cannot contain empty strings"))
+
     validate(need(!is.null(summarize_vars), "Please select a summarize variable"))
     validate(need(all(summarize_vars %in% names(ANL_f)), "Not all variables available"))
-    #validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
-    #validate(need(!("" %in% ANL_f[[arm_var]]), "Arm values cannot contain empty strings"))
 
-
-    #  all vs non-bep
-    #  arm vs no-arm
-    #
-    #  1. all & arm
-    #  2. all & no-arm
-    #
-    #   no stacking required
-    #  3. non-bep & arm
-    #  4. non-bep & no-arm
-    #
-    #  want run t_summary in the end
-
-
-
+    if (arm_var!="-- no arm --") validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
+    validate(need(!("" %in% ANL_f[[arm_var]]), "Arm values cannot contain empty strings"))
 
     bep <- ANL_f[[bep_var]]
     ANL_select <- ANL_f[, summarize_vars, drop = FALSE]
     arm <- if (arm_var == "-- no arm --") NULL else ANL_f[[arm_var]]
 
+    x <- if (is_bep_vs_non_bep) {
+      ## population in table columns does not overlap --  no stacking required
 
-    x <- if (is_non_bep) {
-      ## no stacking required
-
-      cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
+      cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("BEP", "Non-BEP"))
 
       list(
         data = ANL_select,
@@ -163,7 +146,7 @@ srv_t_bep_summary <- function(input,
       )
 
     } else {
-      ## stacking is required
+      ## population in table columns does overlap --  stacking required
 
       ANL_stacked <- rbind(
         ANL_select,
@@ -171,10 +154,11 @@ srv_t_bep_summary <- function(input,
       )
 
       cb2 <- factor(c(rep("ALL", nrow(ANL_f)), rep("BEP", sum(bep))), levels = c("ALL", "BEP"))
+      if (!is.null(arm)) arm2 <- factor(c(as.character(arm), as.character(arm[bep])), levels(arm))
 
       list(
         data = ANL_stacked,
-        col_by = if (is.null(arm)) cb2 else interaction( arm, cb2, sep = "\n", lex.order = TRUE),
+        col_by = if (is.null(arm)) cb2 else interaction( arm2, cb2, sep = "\n", lex.order = TRUE),
         total = NULL
       )
 

@@ -19,6 +19,29 @@ tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
 \description{
 Univariate and bivariate visualizations.
 }
+\details{
+This is a general module to visualize 1 & 2 dimensional data.
+
+
+ 1d
+
+ cont  abs  hist
+ cat.  abs  barplot
+
+
+ 2d
+ x         y     interest    plot
+ cont.   cont.   abs       scatterplot
+ cont.   cat.    abs       boxplot
+ cat.    cat.    abs       mosaic plot
+ cont.   cont.   density
+ cont.   cat.    density
+ cat.    cat.    density
+
+
+ color_by
+ facet_by
+}
 \examples{
 
 \dontrun{
