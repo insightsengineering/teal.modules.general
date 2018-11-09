@@ -1,9 +1,9 @@
 #' Univariate and bivariate visualizations.
 #'
-#' @param x_var variable name selected variable when shiny app starts
-#' @param x_var_choices vector with variable names available as choices
-#' @param y_var variable name selected variable when shiny app starts
-#' @param y_var_choices vector with variable names available as choices
+#' @param x_var variable name selected to plot along the x-axis by default
+#' @param x_var_choices character vector with variable names available as choices to plot along x-axis
+#' @param y_var variable name selected to plot along the y-axis by default
+#' @param y_var_choices character vector with variable names available as choices to plot along y-axis
 #'
 #' @import ggplot2
 #' @import ggmosaic
