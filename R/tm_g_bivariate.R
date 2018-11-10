@@ -5,10 +5,10 @@
 #' @param y_var variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.
 #' @param use_density boolean value for whether density is plotted
 #' @param y_var_choices character vector with variable names available as choices to plot along y-axis
-#' @param x_facet_var variable for x facets
-#' @param x_facet_var_choices vector with \code{x_facet_var} choices
-#' @param y_facet_var variable for y facets
-#' @param y_facet_var_choices vector with \code{y_facet_var} choices
+#' @param row_facet_var variable for x facets
+#' @param row_facet_var_choices vector with \code{row_facet_var} choices
+#' @param col_facet_var variable for y facets
+#' @param col_facet_var_choices vector with \code{col_facet_var} choices
 #' @param plot_height range of plot height
 #'
 #'
@@ -35,6 +35,8 @@
 #' ASL <- data.frame(
 #'   USUBJID = paste("id", seq_len(N), sep = "-"),
 #'   STUDYID = "study1",
+#'   F1 = factor(sample(paste0("facet_1_", c("A", "B")), N, TRUE)),
+#'   F2 = factor(sample(paste0("facet_2_", c("a", "b", "c")), N, TRUE)),
 #'   cont = rnorm(N),
 #'   disc = factor(sample(letters[1:5], N, TRUE)),
 #'   cont2 = runif(N),
@@ -51,10 +53,12 @@
 #'       y_var = "cont2",
 #'       y_var_choices = names(ASL),
 #'       use_density = FALSE,
-#'       x_facet_var = "SEX",
-#'       x_facet_var_choices = c("SEX", "ARM"),
-#'       y_facet_var = "ARM",
-#'       y_facet_var_choices = c("ARM", "SEX"),
+#'       color_by_var = "STUDYID",
+#'       color_by_var_choices = "STUDYID",
+#'       row_facet_var = "F1",
+#'       row_facet_var_choices = c("F1", "F2"),
+#'       col_facet_var = "F2",
+#'       col_facet_var_choices = c("F1", "F2"),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   ))
@@ -63,7 +67,7 @@
 #'
 #' }
 #'
-tm_g_bivariate <- function(label = "Uni- and Bivariate Plots",
+tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x_var,
                            x_var_choices = x_var,
@@ -72,21 +76,22 @@ tm_g_bivariate <- function(label = "Uni- and Bivariate Plots",
                            use_density = FALSE,
                            color_by_var,
                            color_by_var_choices,
-                           x_facet_var ,
-                           x_facet_var_choices,
-                           y_facet_var,
-                           y_facet_var_choices,
+                           row_facet_var,
+                           row_facet_var_choices,
+                           col_facet_var,
+                           col_facet_var_choices,
+                           free_x_scales = FALSE,
+                           free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000) ) {
 
+  args <- as.list(environment())
 
   !("-- no x --" %in% x_var_choices) || stop("'-- no x --' is a keyword and cannot be in x_var_choices")
   !("-- no y --" %in% y_var_choices) || stop("'-- no y --' is a keyword and cannot be in y_var_choices")
   is.logical(use_density) || stop("use_density needs to be boolean")
 
-  x_var_choices <- unique(c("-- no x --", x_var_choices))
-  y_var_choices <- unique(c("-- no y --", y_var_choices))
-
-  args <- as.list(environment())
+  args$x_var_choices <- unique(c("-- no x --", x_var_choices))
+  args$y_var_choices <- unique(c("-- no y --", y_var_choices))
 
   module(label = label,
          server = srv_g_bivariate,
@@ -111,8 +116,10 @@ ui_g_bivariate <- function(id, ...) {
       optionalSelectInput(ns("x_var"), "x var", a$x_var_choices, a$x_var),
       optionalSelectInput(ns("y_var"), "y var", a$y_var_choices, a$y_var),
       checkboxInput(ns("use_density"), "Show Density", value = a$use_density),
-      optionalSelectInput(ns("x_facet_var"), "X-facet By Variable", a$x_facet_var_choices, a$x_facet_var, multiple = TRUE),
-      optionalSelectInput(ns("y_facet_var"), "Y-facet By Variable", a$y_facet_var_choices, a$y_facet_var, multiple = TRUE),
+      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var_choices, a$row_facet_var, multiple = TRUE),
+      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var_choices, a$col_facet_var, multiple = TRUE),
+      checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
+      checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_x_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     )
   )
@@ -140,100 +147,89 @@ srv_g_bivariate <- function(input,
     x_var <- input$x_var
     y_var <- input$y_var
     use_density <- input$use_density
+    row_facet_var <- input$row_facet_var
+    col_facet_var <- input$col_facet_var
+    free_x_scales <- input$free_x_scales
+    free_y_scales <- input$free_y_scales
 
     if (x_var == "-- no x --")  x_var <- NULL
     if (y_var == "-- no y --")  y_var <- NULL
 
+    x <- if(!is.null(x_var)) ANL_filtered[[x_var]] else NULL
+    y <- if(!is.null(y_var)) ANL_filtered[[y_var]] else NULL
+
     validate(need(ANL_filtered, "data missing"))
-    validate(need(nrow(ANL_filtered) > 10, "need at least 10 records"))
-    validate(need(!is.null(x_var) || !is.null(y_var),
+    validate(need(nrow(ANL_filtered) > 3, "need at least 10 records"))
+    validate(need(!is.null(x) || !is.null(y),
                   "At least one variable needs to be provided"))
-
-    x <- if (!is.null(x_var)) {
-      validate(need(x_var %in% names(ANL_filtered), "selected x_var does not exist"))
-      x <- ANL_filtered[[x_var]]
-
-      if (is.character(x)) x <- as.factor(x)
-      validate(need(is.numeric(x) || is.factor(x),
-                    "currently only works if x is of type factor, numeric or character"))
-      x
-    } else {
-      NULL
+    if (!is.null(row_facet_var)) {
+      validate(need(all(row_facet_var %in% names(ANL_filtered)), "not all x facet variables are in data"))
+    }
+    if (!is.null(col_facet_var)) {
+      validate(need(all(col_facet_var %in% names(ANL_filtered)), "not all y facet variables are in data"))
+    }
+    if (!is.null(col_facet_var) && !is.null(col_facet_var)) {
+      validate(need(length(intersect(row_facet_var, col_facet_var)) == 0, "x and y facet variables cannot overlap"))
     }
 
-    y <- if (!is.null(y_var)) {
 
-      validate(need(y_var %in% names(ANL_filtered), "selected y_var does not exist"))
-      y <- ANL_filtered[[y_var]]
+    cl <- g_bp_cl("ANL_filtered", x_var, y_var, class(x), class(y), freq = !use_density)
 
-      if (is.character(y)) y <- as.factor(y)
-      validate(need(is.numeric(y) || is.factor(y),
-                    "currently only works if y is of type factor, numeric or character"))
-      y
-    } else {
-      NULL
-    }
+    facet_cl <- g_facet_cl(row_facet_var, col_facet_var, free_x_scales, free_y_scales)
 
-    x_lab <- if (!is.null(attributes(x)[["label"]])) {
-      attributes(x)[["label"]]
-    } else {
-      x_var
-    }
+    if (!is.null(facet_cl)) cl <- call("+", cl, facet_cl)
 
-    y_lab <- if (!is.null(attributes(y)[["label"]])) {
-      attributes(y)[["label"]]
-    } else {
-      y_var
-    }
 
-    ### Create Plot ###
-    p <- if (xor(is.null(x), is.null(y))) {
 
-      # 1d (univariate) case.
-      var <- if (is.null(x)) y else x
-      lab <- if (is.null(x)) y_lab else x_lab
+    as.global(cl, ANL_filtered)
 
-      if (is.factor(var)) {
+    eval(cl, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv())))
 
-        if(use_density){
-          ggplot() + aes(x = var) + geom_bar(aes(y = (..count..)/sum(..count..))) + xlab(lab) + ylab("Density")
-        } else {
-          ggplot() + aes(x = var) + geom_bar() + xlab(lab) + ylab("Frequency")
-        }
-
-      } else if (is.numeric(var)) {
-
-        if(use_density){
-          ggplot() + aes(x = var) + geom_histogram(aes(y=..density..)) + xlab(lab) + ylab("Density")
-        } else {
-          ggplot() + aes(x = var) + geom_histogram() + xlab(lab) + ylab("Frequency")
-        }
-      }
-
-      #### TO DO#####
-      ## Review code below
-
-    } else {
-      # 2d (bivariate) case.
-      if (is.numeric(x) && is.numeric(y)) {
-        # Visualization of bivariate continuous variables via scatterplot.
-        ggplot() + aes(x = x, y = y) + geom_point()
-      } else if (is.numeric(x) && is.factor(y) ||
-                 is.factor(x) && is.numeric(y)) {
-        # Visualization of bivariate categorical and continuous
-        # variables via boxplot.
-        ggplot() + aes(x = x, y = y) + geom_boxplot()
-      } else if (is.factor(x) && is.factor(y)) {
-        # Visualization of bivariate categorical variables via mosaic plot.
-        ggplot(data = data.frame(x, y)) +
-          geom_mosaic(aes(x = product(x), fill = y), na.rm = TRUE)
-      }
-    }
-    p
   })
 }
 
 
+#' Create facet call
+#'
+#' @noRd
+#'
+#' @examples
+#'
+#' g_facet_cl(LETTERS[1:3])
+#' g_facet_cl(NULL, LETTERS[23:26])
+#' g_facet_cl(LETTERS[1:3], LETTERS[23:26])
+#'
+g_facet_cl <- function(row_facet_var = NULL, col_facet_var = NULL, free_x_scales = FALSE, free_y_scales=FALSE) {
+
+  scales <- if (free_x_scales && free_y_scales) {
+    "free"
+  } else if (free_x_scales) {
+    "free_x"
+  } else if(free_y_scales) {
+    "free_y"
+  } else {
+    "fixed"
+  }
+
+  if (is.null(row_facet_var) && is.null(col_facet_var)) {
+    NULL
+  } else if (!is.null(row_facet_var) && is.null(col_facet_var)) {
+    call("facet_grid", rows = do.call("call", c(list("vars"), lapply(row_facet_var, as.name)), quote = TRUE), scales=scales)
+  } else if (is.null(row_facet_var) && !is.null(col_facet_var)) {
+    call("facet_grid", cols = do.call("call", c(list("vars"), lapply(col_facet_var, as.name)), quote = TRUE), scales=scales)
+  } else {
+    call("facet_grid",
+         rows = do.call("call", c(list("vars"), lapply(row_facet_var, as.name)), quote = TRUE),
+         cols = do.call("call", c(list("vars"), lapply(col_facet_var, as.name)), quote = TRUE), scales=scales)
+  }
+}
+
+
+
+f <- function(...) {
+  call("vars", alist(...))
+}
+f(a, b , c)
 
 #' Bivariate Plot
 #'
@@ -316,9 +312,8 @@ g_bp_cl <- function(data_name, x_var, y_var, x_class, y_class,
   cl_plot
 }
 
-subsitute_q <- function (x, env) {
+substitute_q <- function (x, env) {
   stopifnot(is.language(x))
-  env <- to_env(env)
   call <- substitute(substitute(x, env), list(x = x))
   eval(call)
 }
