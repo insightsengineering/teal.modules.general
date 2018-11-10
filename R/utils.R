@@ -21,7 +21,7 @@ as.global <- function(...) {
 
 
 ## from teal.tern
-get_rcode_header <- function(title, datanames, datasets, code_data_processing = NULL) {
+get_rcode_header <- function(title, datanames, datasets, code_data_processing = NULL, packages = NULL) {
 
   datanames <- c("ASL", setdiff(datanames, "ASL"))
 
@@ -50,12 +50,6 @@ get_rcode_header <- function(title, datanames, datasets, code_data_processing = 
       getwd()
     }
 
-
-
-
-
-
-
     txt_data <- paste(
       unlist(Map(function(x, name) {
         txt <- paste(name, "<-", attr(x, "source"))
@@ -75,10 +69,11 @@ get_rcode_header <- function(title, datanames, datasets, code_data_processing = 
 
 
     ## header
-    txt_inst_pkgs <- c(
-      paste0('devtools::install_github("tidyverse/ggplot2", ref="v',
-             packageDescription("ggplot2")$Version,'")')
-    )
+    txt_inst_pkgs <- if (is.null(packages)) {
+      NULL
+    } else {
+      vapply(packages, function(pkg) paste0("package: ", pkg, " - ", packageDescription(pkg)$Version), character(1))
+    }
 
     needs_rcd <- any(grepl("radam\\(", txt_data))
     if (needs_rcd) {
@@ -102,10 +97,10 @@ get_rcode_header <- function(title, datanames, datasets, code_data_processing = 
     ), collapse = "\n")
 
 
-    paste(
+    paste(c(
       comment(txt_comment),
       "",
-      "library(ggplot2)",
+      vapply(packages, function(pkg)paste0("library(", pkg,")"), character(1)),
       if (needs_rcd) "library(random.cdisc.data)" else NULL,
       "",
       txt_data,
@@ -114,7 +109,7 @@ get_rcode_header <- function(title, datanames, datasets, code_data_processing = 
       txt_filter,
       "",
       sep = "\n"
-    )
+    ))
   }
 
 

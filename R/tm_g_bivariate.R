@@ -24,11 +24,6 @@
 #'
 #' @examples
 #'
-#' ## TODO:
-#' # 1) Review bivariate plots -- output is not correct when 2 discrete vars are selected, also need to add density
-#' # 2) add line_colorby_var and line_colorby_var_choices
-#' # 3) Add x- y- faceting for 1D and 2D plots
-#'
 #' \dontrun{
 #'
 #' N <- 100
@@ -57,9 +52,9 @@
 #'       use_density = FALSE,
 #'       color_by_var = "STUDYID",
 #'       color_by_var_choices = "STUDYID",
-#'       row_facet_var = "F1",
+#'       row_facet_var = NULL,
 #'       row_facet_var_choices = c("F1", "F2"),
-#'       col_facet_var = "F2",
+#'       col_facet_var = NULL,
 #'       col_facet_var_choices = c("F1", "F2"),
 #'       plot_height = c(600, 200, 2000)
 #'     )
@@ -122,7 +117,7 @@ ui_g_bivariate <- function(id, ...) {
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("x_var"), "x var", a$x_var_choices, a$x_var),
       optionalSelectInput(ns("y_var"), "y var", a$y_var_choices, a$y_var),
-      checkboxInput(ns("use_density"), "Show Density", value = a$use_density),
+      radioButtons(ns("use_density"), NULL, choices = c("frequency", "density"), selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE),
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var_choices, a$row_facet_var, multiple = TRUE),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var_choices, a$col_facet_var, multiple = TRUE),
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
@@ -141,6 +136,7 @@ srv_g_bivariate <- function(input,
                             datasets,
                             dataname,
                             code_data_processing) {
+  ANL_filtered <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -153,7 +149,7 @@ srv_g_bivariate <- function(input,
 
     x_var <- input$x_var
     y_var <- input$y_var
-    use_density <- input$use_density
+    use_density <- input$use_density == "density"
     row_facet_var <- input$row_facet_var
     col_facet_var <- input$col_facet_var
     free_x_scales <- input$free_x_scales
@@ -192,12 +188,10 @@ srv_g_bivariate <- function(input,
   output$plot <- renderPlot({
 
 
-    ANL_filtered <- datasets$get_data(dataname,
-                                      filtered = TRUE,
-                                      reactive = TRUE)
+    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
     plot_call <- plot_call()
-    as.global(plot_call, ANL_filtered)
+    #as.global(plot_call, ANL_filtered)
 
     p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
 
@@ -216,7 +210,8 @@ srv_g_bivariate <- function(input,
       title = "Bivariate and Univariate Plot",
       datanames = dataname,
       datasets = datasets,
-      code_data_processing
+      code_data_processing,
+      packages = c("ggplot2", "ggmosaic")
     )
 
     str_rcode <- paste(c(
@@ -280,7 +275,7 @@ g_facet_cl <- function(row_facet_var = NULL, col_facet_var = NULL, free_x_scales
 #' @noRd
 #'
 #' @examples
-#'
+#' # need to temporary export in order to test
 #' c1 <- rnorm(100)
 #' c2 <- rnorm(100)
 #' d1 <- factor(sample(letters[1:5], 100, TRUE), levels = letters[1:5])
