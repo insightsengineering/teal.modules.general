@@ -344,8 +344,8 @@ g_bp_cl <- function(data_name, x_var, y_var, x_class, y_class,
 
   cl_plot <- substitute_q(cl, list(
     .gg = bquote(ggplot(.(as.name(data_name)))),
-    .x_var = as.name(x_var),
-    .y_var = as.name(y_var)
+    .x_var = if(is.call(x_var)) x_var else as.name(x_var),
+    .y_var = if(is.call(y_var)) y_var else as.name(y_var)
   ))
 
   cl_plot

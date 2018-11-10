@@ -4,11 +4,13 @@
 \alias{tm_g_bivariate}
 \title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
+tm_g_bivariate(label = "Bivariate Plots", dataname, x_var,
   x_var_choices = x_var, y_var, y_var_choices = y_var,
-  use_density = FALSE, color_by_var, color_by_var_choices, x_facet_var,
-  x_facet_var_choices, y_facet_var, y_facet_var_choices,
-  plot_height = c(600, 200, 2000))
+  use_density = FALSE, color_by_var, color_by_var_choices, row_facet_var,
+  row_facet_var_choices, col_facet_var, col_facet_var_choices,
+  free_x_scales = FALSE, free_y_scales = FALSE, plot_height = c(600,
+  200, 2000), pre_output = NULL, post_output = NULL,
+  code_data_processing = NULL)
 }
 \arguments{
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
@@ -21,13 +23,13 @@ tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
 
 \item{use_density}{boolean value for whether density is plotted}
 
-\item{x_facet_var}{variable for x facets}
+\item{row_facet_var}{variable for x facets}
 
-\item{x_facet_var_choices}{vector with \code{x_facet_var} choices}
+\item{row_facet_var_choices}{vector with \code{row_facet_var} choices}
 
-\item{y_facet_var}{variable for y facets}
+\item{col_facet_var}{variable for y facets}
 
-\item{y_facet_var_choices}{vector with \code{y_facet_var} choices}
+\item{col_facet_var_choices}{vector with \code{col_facet_var} choices}
 
 \item{plot_height}{range of plot height}
 }
@@ -36,36 +38,8 @@ Univariate and bivariate visualizations.
 }
 \details{
 This is a general module to visualize 1 & 2 dimensional data.
-<<<<<<< HEAD
-
-
- 1d
-
- cont  abs  hist
- cat.  abs  barplot
-
-
- 2d
- x         y     interest    plot
- cont.   cont.   abs       scatterplot
- cont.   cat.    abs       boxplot
- cat.    cat.    abs       mosaic plot
- cont.   cont.   density
- cont.   cat.    density
- cat.    cat.    density
-
-
- color_by
- facet_by
-=======
->>>>>>> devel-tm_g_bivariate
 }
 \examples{
-
-## TODO:
-# 1) Review bivariate plots -- output is not correct when 2 discrete vars are selected, also need to add density
-# 2) add line_colorby_var and line_colorby_var_choices
-# 3) Add x- y- faceting for 1D and 2D plots
 
 \dontrun{
 
@@ -73,11 +47,15 @@ N <- 100
 ASL <- data.frame(
   USUBJID = paste("id", seq_len(N), sep = "-"),
   STUDYID = "study1",
+  F1 = factor(sample(paste0("facet_1_", c("A", "B")), N, TRUE)),
+  F2 = factor(sample(paste0("facet_2_", c("a", "b", "c")), N, TRUE)),
   cont = rnorm(N),
   disc = factor(sample(letters[1:5], N, TRUE)),
   cont2 = runif(N),
   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 )
+
+attr(ASL, "source") <- "# ASL is random data"
 
 x <- teal::init(
   data = list(ASL = ASL),
@@ -89,10 +67,12 @@ x <- teal::init(
       y_var = "cont2",
       y_var_choices = names(ASL),
       use_density = FALSE,
-      x_facet_var = "SEX",
-      x_facet_var_choices = c("SEX", "ARM"),
-      y_facet_var = "ARM",
-      y_facet_var_choices = c("ARM", "SEX"),
+      color_by_var = "STUDYID",
+      color_by_var_choices = "STUDYID",
+      row_facet_var = NULL,
+      row_facet_var_choices = c("F1", "F2"),
+      col_facet_var = NULL,
+      col_facet_var_choices = c("F1", "F2"),
       plot_height = c(600, 200, 2000)
     )
   ))

@@ -137,7 +137,7 @@ srv_t_bep_summary <- function(input,
     x <- if (is_bep_vs_non_bep) {
       ## population in table columns does not overlap --  no stacking required
 
-      cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("BEP", "Non-BEP"))
+      cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
 
       list(
         data = ANL_select,
@@ -148,14 +148,17 @@ srv_t_bep_summary <- function(input,
     } else {
       ## population in table columns does overlap --  stacking required
 
+      N <- nrow(ANL_select)
+      N_bep <- sum(bep)
+
       ANL_stacked <- rbind(
         ANL_select,        # all x bep
-        ANL_select[bep, ], # all x bep
+        ANL_select[bep, , drop = FALSE], # all x bep
         ANL_select         # all patients
       )
 
       # new
-      cb_all_bep <- factor(c(rep("ALL", nrow(ANL_f)), rep("BEP", sum(bep))), levels = c("ALL", "BEP"))
+      cb_all_bep <- factor(c(rep("ALL", N), rep("BEP", N_bep)), levels = c("ALL", "BEP"))
 
 
       cb_all_bep_arm <- if (is.null(arm)) {
@@ -168,7 +171,7 @@ srv_t_bep_summary <- function(input,
 
       list(
         data = ANL_stacked,
-        col_by = unlist(list(cb_all_bep_arm, factor(rep("All Patients", nrow(ANL_select)))), use.names=FALSE),
+        col_by = droplevels(unlist(list(cb_all_bep_arm, factor(rep("All Patients", N))), use.names=FALSE)),
         total = NULL
       )
 
