@@ -149,18 +149,29 @@ srv_t_bep_summary <- function(input,
       ## population in table columns does overlap --  stacking required
 
       ANL_stacked <- rbind(
-        ANL_select,
-        ANL_select[bep, ]
+        ANL_select,        # all x bep
+        ANL_select[bep, ], # all x bep
+        ANL_select         # all patients
       )
 
-      cb2 <- factor(c(rep("ALL", nrow(ANL_f)), rep("BEP", sum(bep))), levels = c("ALL", "BEP"))
-      if (!is.null(arm)) arm2 <- factor(c(as.character(arm), as.character(arm[bep])), levels(arm))
+      # new
+      cb_all_bep <- factor(c(rep("ALL", nrow(ANL_f)), rep("BEP", sum(bep))), levels = c("ALL", "BEP"))
+
+
+      cb_all_bep_arm <- if (is.null(arm)) {
+        cb_all_bep
+      } else {
+        arm2 <-  unlist(list(arm, arm[bep]), use.names = FALSE) # concatenate factors
+        interaction(arm2, cb_all_bep, sep = "\n", lex.order = TRUE)
+      }
+
 
       list(
         data = ANL_stacked,
-        col_by = if (is.null(arm)) cb2 else interaction( arm2, cb2, sep = "\n", lex.order = TRUE),
+        col_by = unlist(list(cb_all_bep_arm, factor(rep("All Patients", nrow(ANL_select)))), use.names=FALSE),
         total = NULL
       )
+
 
     }
 
