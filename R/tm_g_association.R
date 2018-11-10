@@ -125,10 +125,7 @@ srv_tm_g_association <- function(input,
     ref_var <- var[1]
     ref_var_class <- class(ANL_head[[ref_var]])
 
-    if (ref_var_class == "logical") {
-      ref_var <- call("factor", as.name(ref_var), levels = c(TRUE, FALSE))
-      ref_var_class <- "factor"
-    } else if (ref_var_class == "numeric" && log_transformation) {
+    if (ref_var_class == "numeric" && log_transformation) {
       ref_var <- call('log', as.name(ref_var))
     }
 
@@ -141,12 +138,10 @@ srv_tm_g_association <- function(input,
     var_cls <- lapply(var[-1], function(var_i) {
 
       class_i <- class(ANL_head[[var_i]])
-      if (class_i == "logical") {
-        var_i <- call("factor", as.name(var_i), levels = c(TRUE, FALSE))
-        class_i <- "factor"
-      } else if (class_i == "numeric" && log_transformation) {
+      if (class_i == "numeric" && log_transformation) {
         var_i <- call("log", as.name(var_i))
       }
+
       g_bp_cl("ANL_filtered", var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
 
     })
@@ -182,7 +177,7 @@ srv_tm_g_association <- function(input,
       datanames = dataname,
       datasets = datasets,
       code_data_processing,
-      packages = "ggplot2"
+      packages = c("ggplot2", "ggmosaic")
     )
 
     str_rcode <- paste(c(

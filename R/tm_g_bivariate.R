@@ -381,12 +381,15 @@ substitute_q <- function (x, env) {
 #' aes_geom_call("factor", "numeric")
 #' aes_geom_call("factor", "factor")
 #'
-aes_geom_call <- function(x_class = c("NULL", "numeric", "factor"),
-                          y_class  = c("NULL", "numeric", "factor"),
+aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", "logical"),
+                          y_class  = c("NULL", "numeric", "factor", "character", "logical"),
                           freq = TRUE) {
 
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
+
+  if (x_class %in% c("character", "logical")) x_class <- "factor"
+  if (y_class %in% c("character", "logical")) y_class <- "factor"
 
   all(c(x_class, y_class) == "NULL") && stop("either x or y is required")
 

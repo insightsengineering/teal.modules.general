@@ -4,9 +4,10 @@
 \alias{tm_g_association}
 \title{Stack Plots of variables and show association with reference variable}
 \usage{
-tm_g_association(label = "Association", var, var_choices = var,
-  show_association = TRUE, plot_height = c(1200, 400, 5000),
-  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
+tm_g_association(label = "Association", dataname, var,
+  var_choices = var, show_association = TRUE, plot_height = c(600,
+  400, 5000), pre_output = NULL, post_output = NULL,
+  code_data_processing = NULL)
 }
 \description{
 Stack Plots of variables and show association with reference variable
@@ -17,18 +18,21 @@ Stack Plots of variables and show association with reference variable
 
 library(random.cdisc.data)
 ASL <- radsl()
+ASL$BOOLEAN <- sample(c(TRUE, FALSE), nrow(ASL), TRUE)
 
-
+attr(ASL, "source") <- "# asl import"
 x <- teal::init(
   data = list(ASL = ASL),
   modules = root_modules(
     tm_g_association(
+      dataname = "ASL",
       var = "AGE",
       var_choices = names(ASL)
     )
   )
 )
 
+shinyApp(x$ui, x$server)
 }
 
 }
