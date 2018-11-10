@@ -6,8 +6,9 @@
 \usage{
 tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
   x_var_choices = x_var, y_var, y_var_choices = y_var,
-  use_density = FALSE, xfacet_var, xfacet_var_choices, yfacet_var,
-  yfacet_var_choices, plot_height = c(600, 200, 2000))
+  use_density = FALSE, color_by_var, color_by_var_choices, x_facet_var,
+  x_facet_var_choices, y_facet_var, y_facet_var_choices,
+  plot_height = c(600, 200, 2000))
 }
 \arguments{
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
@@ -20,13 +21,13 @@ tm_g_bivariate(label = "Uni- and Bivariate Plots", dataname, x_var,
 
 \item{use_density}{boolean value for whether density is plotted}
 
-\item{xfacet_var}{variable for x facets}
+\item{x_facet_var}{variable for x facets}
 
-\item{xfacet_var_choices}{vector with \code{xfacet_var} choices}
+\item{x_facet_var_choices}{vector with \code{x_facet_var} choices}
 
-\item{yfacet_var}{variable for y facets}
+\item{y_facet_var}{variable for y facets}
 
-\item{yfacet_var_choices}{vector with \code{yfacet_var} choices}
+\item{y_facet_var_choices}{vector with \code{y_facet_var} choices}
 
 \item{plot_height}{range of plot height}
 }
@@ -39,9 +40,9 @@ This is a general module to visualize 1 & 2 dimensional data.
 \examples{
 
 ## TODO:
- 1) Review bivariate plots -- output is not correct when 2 discrete vars are selected, aslo need to add density
- 2) add line_colorby_var and line_colorby_var_choices
- 3) Add x- y- faceting for 1D and 2D plots
+# 1) Review bivariate plots -- output is not correct when 2 discrete vars are selected, also need to add density
+# 2) add line_colorby_var and line_colorby_var_choices
+# 3) Add x- y- faceting for 1D and 2D plots
 
 \dontrun{
 
@@ -55,22 +56,23 @@ ASL <- data.frame(
   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 )
 
-x <- teal::init(data = list(ASL = ASL),
-                modules = root_modules(
-                  tm_g_bivariate(
-                    dataname = "ASL",
-                    x_var = "cont",
-                    x_var_choices = names(ASL),
-                    y_var = "cont2",
-                    y_var_choices = names(ASL),
-                    use_density = FALSE,
-                    xfacet_var = "SEX",
-                    xfacet_var_choices = c("SEX", "ARM"),
-                    yfacet_var = "ARM",
-                    yfacet_var_choices = c("ARM", "SEX"),
-                    plot_height = c(600, 200, 2000)
-                  )
-                ))
+x <- teal::init(
+  data = list(ASL = ASL),
+  modules = root_modules(
+    tm_g_bivariate(
+      dataname = "ASL",
+      x_var = "cont",
+      x_var_choices = names(ASL),
+      y_var = "cont2",
+      y_var_choices = names(ASL),
+      use_density = FALSE,
+      x_facet_var = "SEX",
+      x_facet_var_choices = c("SEX", "ARM"),
+      y_facet_var = "ARM",
+      y_facet_var_choices = c("ARM", "SEX"),
+      plot_height = c(600, 200, 2000)
+    )
+  ))
 
 shinyApp(x$ui, x$server)
 
