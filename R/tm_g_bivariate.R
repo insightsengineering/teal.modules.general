@@ -43,6 +43,8 @@
 #'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 #' )
 #'
+#' attr(ASL, "source") <- "# ASL is random data"
+#'
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   modules = root_modules(
@@ -82,7 +84,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            col_facet_var_choices,
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
-                           plot_height = c(600, 200, 2000) ) {
+                           plot_height = c(600, 200, 2000),
+                           pre_output = NULL,
+                           post_output = NULL,
+                           code_data_processing = NULL) {
 
   args <- as.list(environment())
 
@@ -93,12 +98,14 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   args$x_var_choices <- unique(c("-- no x --", x_var_choices))
   args$y_var_choices <- unique(c("-- no y --", y_var_choices))
 
-  module(label = label,
-         server = srv_g_bivariate,
-         ui = ui_g_bivariate,
-         ui_args = args,
-         server_args = list(dataname = dataname),
-         filters = dataname)
+  module(
+    label = label,
+    server = srv_g_bivariate,
+    ui = ui_g_bivariate,
+    ui_args = args,
+    server_args = list(dataname = dataname, code_data_processing = code_data_processing),
+    filters = dataname
+  )
 
 }
 
@@ -121,7 +128,10 @@ ui_g_bivariate <- function(id, ...) {
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
       checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_x_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
-    )
+    ),
+    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    pre_output = a$pre_output,
+    post_output = a$post_output
   )
 }
 
@@ -129,7 +139,8 @@ srv_g_bivariate <- function(input,
                             output,
                             session,
                             datasets,
-                            dataname) {
+                            dataname,
+                            code_data_processing) {
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -138,11 +149,7 @@ srv_g_bivariate <- function(input,
     plotOutput(session$ns("plot"), height=plot_height)
   })
 
-  output$plot <- renderPlot({
-
-    ANL_filtered <- datasets$get_data(dataname,
-                                      filtered = TRUE,
-                                      reactive = TRUE)
+  plot_call <- reactive({
 
     x_var <- input$x_var
     y_var <- input$y_var
@@ -179,12 +186,47 @@ srv_g_bivariate <- function(input,
 
     if (!is.null(facet_cl)) cl <- call("+", cl, facet_cl)
 
+    cl
+  })
+
+  output$plot <- renderPlot({
 
 
-    as.global(cl, ANL_filtered)
+    ANL_filtered <- datasets$get_data(dataname,
+                                      filtered = TRUE,
+                                      reactive = TRUE)
 
-    eval(cl, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv())))
+    plot_call <- plot_call()
+    as.global(plot_call, ANL_filtered)
 
+    eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv())))
+
+  })
+
+
+  observeEvent(input$show_rcode, {
+
+    header <- teal.tern:::get_rcode_header(
+      title = "Bivariate and Univariate Plot",
+      datanames = dataname,
+      datasets = datasets,
+      code_data_processing
+    )
+
+    str_rcode <- paste(c(
+      "",
+      header,
+      "",
+      deparse(plot_call(), width.cutoff = 60)
+    ), collapse = "\n")
+
+    # .log("show R code")
+    showModal(modalDialog(
+      title = "R Code for the Current Plot",
+      tags$pre(tags$code(class="R", str_rcode)),
+      easyClose = TRUE,
+      size = "l"
+    ))
   })
 }
 
