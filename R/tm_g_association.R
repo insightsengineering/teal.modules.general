@@ -10,7 +10,9 @@
 #'
 #' library(random.cdisc.data)
 #' ASL <- radsl()
+#' ASL$BOOLEAN <- sample(c(TRUE, FALSE), nrow(ASL), TRUE)
 #'
+#' attr(ASL, "source") <- "# asl import"
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   modules = root_modules(
@@ -101,64 +103,102 @@ srv_tm_g_association <- function(input,
     plotOutput(ns("plot"), height=plot_height)
   })
 
-  output$plot <- renderPlot({
 
+  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
 
-
-    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+  plot_call <- reactive({
 
     var <- input$var
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
 
-    as.global(ANL_filtered, var, association, show_dist, log_transformation)
+    # as.global(ANL_head, var, association, show_dist, log_transformation)
 
     validate(
-      need(nrow(ANL_filtered) > 3, "need at least three rows"),
+      need(nrow(ANL_head) > 3, "need at least three rows"),
       need(length(var) > 0, "need at least one variable selected"),
-      need(all(var %in% names(ANL_filtered)), paste("not all selected variables are in ", dataname))
+      need(all(var %in% names(ANL_head)), paste("not all selected variables are in ", dataname))
     )
 
 
-    rev_var <- var[1]
-    rev_var_class <- class(ANL_filtered[[rev_var]])
+    ref_var <- var[1]
+    ref_var_class <- class(ANL_head[[ref_var]])
 
-    if (rev_var_class == "numeric" && log_transformation) {
-      rev_var <- call('log', as.name(rev_var))
+    if (ref_var_class == "logical") {
+      ref_var <- call("factor", as.name(ref_var), levels = c(TRUE, FALSE))
+      ref_var_class <- "factor"
+    } else if (ref_var_class == "numeric" && log_transformation) {
+      ref_var <- call('log', as.name(ref_var))
     }
+
     ref_cl <- call("+",
-                   g_bp_cl("ANL_filtered", rev_var, NULL, rev_var_class, "NULL", freq = !show_dist),
+                   g_bp_cl("ANL_filtered", ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
                    quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip"))))
 
-    ref_var_class_cov <- if (association) rev_var_class else "NULL"
+    ref_var_class_cov <- if (association) ref_var_class else "NULL"
 
     var_cls <- lapply(var[-1], function(var_i) {
 
-      class_i <- class(ANL_filtered[[var_i]])
-      if (class_i == "numeric" && log_transformation) {
+      class_i <- class(ANL_head[[var_i]])
+      if (class_i == "logical") {
+        var_i <- call("factor", as.name(var_i), levels = c(TRUE, FALSE))
+        class_i <- "factor"
+      } else if (class_i == "numeric" && log_transformation) {
         var_i <- call("log", as.name(var_i))
       }
-      g_bp_cl("ANL_filtered", var_i, rev_var, class_i, ref_var_class_cov, freq = !show_dist)
+      g_bp_cl("ANL_filtered", var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
 
     })
 
 
     cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
 
-    cl2 <- call("stack_grobs", grobs = quote(lapply(plots, ggplotGrob)))
+    cl2 <- call("<-", quote(p), call("stack_grobs", grobs = quote(lapply(plots, ggplotGrob))))
 
-    plot_call <- call("{", cl1, cl2)
+    call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
+  })
+
+
+  output$plot <- renderPlot({
+
+    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    plot_call <- plot_call()
+    # as.global(plot_call, ANL_filtered)
 
     p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
     } else {
-      grid.newpage()
-      grid.draw(p)
+      p
     }
+  })
 
+  observeEvent(input$show_rcode, {
+
+    header <- get_rcode_header(
+      title = "Association Plot",
+      datanames = dataname,
+      datasets = datasets,
+      code_data_processing,
+      packages = "ggplot2"
+    )
+
+    str_rcode <- paste(c(
+      "",
+      header,
+      "",
+      deparse(plot_call(), width.cutoff = 60)
+    ), collapse = "\n")
+
+    # .log("show R code")
+    showModal(modalDialog(
+      title = "R Code for the Current Plot",
+      tags$pre(tags$code(class="R", str_rcode)),
+      easyClose = TRUE,
+      size = "l"
+    ))
   })
 
 }

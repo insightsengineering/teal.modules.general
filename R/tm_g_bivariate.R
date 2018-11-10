@@ -136,7 +136,7 @@ srv_g_bivariate <- function(input,
                             datasets,
                             dataname,
                             code_data_processing) {
-  ANL_filtered <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -144,6 +144,8 @@ srv_g_bivariate <- function(input,
     validate(need(plot_height, "need valid plot height"))
     plotOutput(session$ns("plot"), height=plot_height)
   })
+
+  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
 
   plot_call <- reactive({
 
@@ -158,18 +160,18 @@ srv_g_bivariate <- function(input,
     if (x_var == "-- no x --")  x_var <- NULL
     if (y_var == "-- no y --")  y_var <- NULL
 
-    x <- if(!is.null(x_var)) ANL_filtered[[x_var]] else NULL
-    y <- if(!is.null(y_var)) ANL_filtered[[y_var]] else NULL
+    x <- if(!is.null(x_var)) ANL_head[[x_var]] else NULL
+    y <- if(!is.null(y_var)) ANL_head[[y_var]] else NULL
 
-    validate(need(ANL_filtered, "data missing"))
-    validate(need(nrow(ANL_filtered) > 3, "need at least 10 records"))
+    validate(need(ANL_head, "data missing"))
+    validate(need(nrow(ANL_head) > 3, "need at least 10 records"))
     validate(need(!is.null(x) || !is.null(y),
                   "At least one variable needs to be provided"))
     if (!is.null(row_facet_var)) {
-      validate(need(all(row_facet_var %in% names(ANL_filtered)), "not all x facet variables are in data"))
+      validate(need(all(row_facet_var %in% names(ANL_head)), "not all x facet variables are in data"))
     }
     if (!is.null(col_facet_var)) {
-      validate(need(all(col_facet_var %in% names(ANL_filtered)), "not all y facet variables are in data"))
+      validate(need(all(col_facet_var %in% names(ANL_head)), "not all y facet variables are in data"))
     }
     if (!is.null(col_facet_var) && !is.null(col_facet_var)) {
       validate(need(length(intersect(row_facet_var, col_facet_var)) == 0, "x and y facet variables cannot overlap"))
@@ -191,7 +193,7 @@ srv_g_bivariate <- function(input,
     ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
     plot_call <- plot_call()
-    #as.global(plot_call, ANL_filtered)
+    # as.global(plot_call, ANL_filtered)
 
     p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
 
