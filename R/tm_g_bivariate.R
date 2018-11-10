@@ -199,14 +199,20 @@ srv_g_bivariate <- function(input,
     plot_call <- plot_call()
     as.global(plot_call, ANL_filtered)
 
-    eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv())))
+    p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
+
+    if (is(p, "try-error")) {
+      validate(need(FALSE, p))
+    } else {
+      p
+    }
 
   })
 
 
   observeEvent(input$show_rcode, {
 
-    header <- teal.tern:::get_rcode_header(
+    header <- get_rcode_header(
       title = "Bivariate and Univariate Plot",
       datanames = dataname,
       datasets = datasets,
@@ -268,14 +274,10 @@ g_facet_cl <- function(row_facet_var = NULL, col_facet_var = NULL, free_x_scales
 
 
 
-f <- function(...) {
-  call("vars", alist(...))
-}
-f(a, b , c)
-
 #' Bivariate Plot
 #'
-#' @export
+#'
+#' @noRd
 #'
 #' @examples
 #'
