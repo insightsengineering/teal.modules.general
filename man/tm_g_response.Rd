@@ -5,10 +5,9 @@
 \title{Response Plots}
 \usage{
 tm_g_response(label = "Association", dataname, endpoint, resp_var,
-  x_var = NULL, facet_var = NULL, row_facet_var = NULL,
-  col_facet_var = NULL, coord_flip = TRUE, freq = FALSE,
-  plot_height = c(600, 400, 5000), pre_output = NULL,
-  post_output = NULL, code_data_processing = NULL)
+  x_var = NULL, row_facet_var = NULL, col_facet_var = NULL,
+  coord_flip = TRUE, freq = FALSE, plot_height = c(600, 400, 5000),
+  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
 }
 \description{
 Response Plots
@@ -32,9 +31,8 @@ x <- teal::init(
       endpoint = choices_selected(ARS$PARAMCD),
       resp_var = choices_selected("AVALC"),
       x_var = choices_selected(names(ASL), "SEX"),
-      facet_var = NULL,
-      row_facet_var = NULL,
-      col_facet_var = NULL
+      row_facet_var = choices_selected(names(ASL), NULL),
+      col_facet_var = choices_selected(names(ASL), NULL)
     )
   )
 )
@@ -47,7 +45,7 @@ library(ggplot2)
 library(dplyr)
 library(forcats)
 
-ANL <- inner_join(ASL, ARS)
+ANL <- inner_join(ARS, ASL)
 
 ANL_filtered <- ANL \%>\% filter(PARAMCD == "BESRSPI") \%>\%
    mutate(ALL = factor(rep("Response", n())))
@@ -79,14 +77,14 @@ ANL_filtered \%>\% ggplot() +
   aes(x = SEX) +
   geom_bar(aes(fill = AVALC), position =  "fill") +
   geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill") +
-  #scale_y_continuous(limits = c(0, 1.2)) +
+  expand_limits(y = c(0, 1.2)) +
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution")
 
 ANL_filtered \%>\% ggplot() +
   aes(x = fct_rev(SEX)) +
   geom_bar(aes(fill = AVALC), position =  "fill") +
-  geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill") +
+  geom_text(stat='count', aes(label=paste(" ", ..count..), hjust = 0), position =  "fill") +
   scale_y_continuous(limits = c(0, 1.4)) +
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution") +

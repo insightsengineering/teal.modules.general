@@ -4,10 +4,8 @@
 \alias{tm_t_bep_summary}
 \title{Summary Table Comparing Analysis Populations}
 \usage{
-tm_t_bep_summary(label, dataname, arm_var, arm_var_choices = arm_var,
-  summarize_vars, summarize_vars_choices = summarize_vars, bep_var,
-  bep_var_choices = bep_var, pre_output = NULL, post_output = NULL,
-  code_data_processing = NULL)
+tm_t_bep_summary(label, dataname, arm_var, summarize_vars, bep_var,
+  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
 }
 \arguments{
 \item{label}{menue item label of the module in the teal app}
@@ -20,20 +18,11 @@ Note that the data is expected to be in vertical form with the
 \item{arm_var}{single name of variable in analysis data that is used as
 \code{col_by} argument for the respective \code{tern} function.}
 
-\item{arm_var_choices}{vector with variable names that can be used as
-\code{arm_var}}
-
 \item{summarize_vars}{character vector with variable names that are selected
 by default}
 
-\item{summarize_vars_choices}{character vector with variable names that can
-be selected (for summary)}
-
 \item{bep_var}{character string containing name of boolean vector for the biomarker evaluable population (BEP)
 to compare in the table}
-
-\item{bep_var_choices}{character vector with names of additional variables that can
-be selected as thebiomarker evaluable population (BEP)}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -45,6 +34,9 @@ output to put the output into context. For example the
 
 \item{code_data_processing}{string with data preprocessing before the teal
 app is initialized}
+
+\item{bep_var_choices}{character vector with names of additional variables that can
+be selected as thebiomarker evaluable population (BEP)}
 }
 \description{
 Display a summary table comparing analysis populations as a shiny module
@@ -66,12 +58,9 @@ x <- teal::init(
      tm_t_bep_summary(
         label = "Demographic",
         dataname = "ASL",
-        arm_var = "ARM",
-        arm_var_choices = c("ARM", "ARMCD"),
-        summarize_vars = "AGE",
-        summarize_vars_choices = names(ASL),
-        bep_var = "BEP",
-        bep_var_choices = c("BEP", "BEP2")
+        arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
+        summarize_vars = choices_selected(names(ASL), "AGE"),
+        bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
      )
   )
 )

@@ -29,12 +29,9 @@
 #'      tm_t_bep_summary(
 #'         label = "Demographic",
 #'         dataname = "ASL",
-#'         arm_var = "ARM",
-#'         arm_var_choices = c("ARM", "ARMCD"),
-#'         summarize_vars = "AGE",
-#'         summarize_vars_choices = names(ASL),
-#'         bep_var = "BEP",
-#'         bep_var_choices = c("BEP", "BEP2")
+#'         arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
+#'         summarize_vars = choices_selected(names(ASL), "AGE"),
+#'         bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
 #'      )
 #'   )
 #' )
@@ -44,16 +41,17 @@
 tm_t_bep_summary <- function(label,
                              dataname,
                              arm_var,
-                             arm_var_choices = arm_var,
                              summarize_vars,
-                             summarize_vars_choices = summarize_vars,
                              bep_var,
-                             bep_var_choices = bep_var,
                              pre_output = NULL,
                              post_output = NULL,
                              code_data_processing = NULL) {
 
-  arm_var_choices <- unique(c("-- no arm --", arm_var_choices))
+  stopifnot(is.choices_selected(arm_var))
+  stopifnot(is.choices_selected(summarize_vars))
+  stopifnot(is.choices_selected(bep_var))
+
+  arm_var <- add_no_selected_choices(arm_var)
 
   args <- as.list(environment())
 
@@ -78,20 +76,20 @@ ui_t_bep_summary <- function(id, ...) {
       helpText("Analysis data:", tags$code(a$dataname)),
       optionalSelectInput(ns("bep_var"),
                           "Biomarker-Evaluable Population (BEP) Variable",
-                          a$bep_var_choices,
-                          a$bep_var,
+                          a$bep_var$choices,
+                          a$bep_var$selected,
                           multiple = FALSE),
       radioButtons(ns("all_non_bep_radio_buttons"),
                    "Table Comparison",c("ALL vs BEP","BEP vs Non-BEP")),
       optionalSelectInput(ns("arm_var"),
                           "Arm Variable",
-                          a$arm_var_choices,
-                          a$arm_var,
+                          a$arm_var$choices,
+                          a$arm_var$selected,
                           multiple = FALSE),
       optionalSelectInput(ns("summarize_vars"),
                           "Summarize Variables",
-                          a$summarize_vars_choices,
-                          a$summarize_vars, multiple = TRUE)
+                          a$summarize_vars$choices,
+                          a$summarize_vars$selected, multiple = TRUE)
     ),
     pre_output = a$pre_output,
     post_output = a$post_output
@@ -115,7 +113,7 @@ srv_t_bep_summary <- function(input,
     summarize_vars <- input$summarize_vars
     is_bep_vs_non_bep <- input$all_non_bep_radio_buttons == "BEP vs Non-BEP"
 
-    as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
+    # as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
     teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
 
@@ -127,12 +125,12 @@ srv_t_bep_summary <- function(input,
     validate(need(!is.null(summarize_vars), "Please select a summarize variable"))
     validate(need(all(summarize_vars %in% names(ANL_f)), "Not all variables available"))
 
-    if (arm_var!="-- no arm --") validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
-    validate(need(!("" %in% ANL_f[[arm_var]]), "Arm values cannot contain empty strings"))
+    arm_var <- no_selected_as_NULL(arm_var)
+    if (!is.null(arm_var)) validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
 
     bep <- ANL_f[[bep_var]]
     ANL_select <- ANL_f[, summarize_vars, drop = FALSE]
-    arm <- if (arm_var == "-- no arm --") NULL else ANL_f[[arm_var]]
+    arm <- if (is.null(arm_var)) NULL else ANL_f[[arm_var]]
 
     x <- if (is_bep_vs_non_bep) {
       ## population in table columns does not overlap --  no stacking required
