@@ -17,10 +17,17 @@
 #' attr(ARS, "source") <- "# ars import"
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL, ATE = ATE),
+#'   data = list(ASL = ASL, ARS = ARS),
 #'   modules = root_modules(
-#'
-#'
+#'     tm_g_response(
+#'       dataname = "ARS",
+#'       endpoint = select_choices(ARS$PARAMCD),
+#'       resp_var = select_choices("AVAL"),
+#'       x_var = NULL,
+#'       facet_var = NULL,
+#'       row_facet_var = NULL,
+#'       col_facet_var = NULL
+#'     )
 #'   )
 #' )
 #'
@@ -84,17 +91,11 @@ tm_g_response <- function(
   label = "Association",
   dataname,
   endpoint,
-  endpoint_choices = endpoint,
   resp_var,
-  resp_var_choices = resp_var,
   x_var = NULL,
-  x_var_choices = x_var,
   facet_var = NULL,
-  facet_var_choices = facet_var,
   row_facet_var = NULL,
-  row_facet_var_choices = row_facet_var,
   col_facet_var = NULL,
-  col_facet_var_choices = col_facet_var,
   coord_flip = TRUE,
   freq = FALSE,
   plot_height = c(600, 400, 5000),
@@ -104,6 +105,19 @@ tm_g_response <- function(
 ) {
 
   args <- as.list(environment())
+
+  if (is.null(x_var)) x_var <- select_choices(NULL)
+  if (is.null(facet_var)) facet_var <- select_choices(NULL)
+  if (is.null(row_facet_var)) row_facet_var <- select_choices(NULL)
+  if (is.null(col_facet_var)) col_facet_var <- select_choices(NULL)
+
+  stopifnot(is.select_choices(endpoint))
+  stopifnot(is.select_choices(resp_var))
+  stopifnot(is.select_choices(x_var))
+  stopifnot(is.select_choices(facet_var))
+  stopifnot(is.select_choices(row_facet_var))
+  stopifnot(is.select_choices(col_facet_var))
+
 
   module(
     label = label,
@@ -130,12 +144,13 @@ ui_g_response <- function(id, ...) {
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
 
-      optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var_choices, a$resp_var),
-      optionalSelectInput(ns("x_var"), "X Variable", a$x_var_choices, a$x_var),
+      optionalSelectInput(ns("endpoint"), "Endpoint (PARAMCD)", a$endpoint$choices, a$endpoint$selected),
+      optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var$choices, a$resp_var$selected),
+      optionalSelectInput(ns("x_var"), "X Variable", a$x_var$choices, a$x_var$selected),
 
 
-      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var_choices, a$row_facet_var, multiple = TRUE),
-      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var_choices, a$col_facet_var, multiple = TRUE),
+      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
+      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
 
       radioButtons(ns("freq"), NULL, choices = c("frequency", "density"), selected = ifelse(a$freq, "frequency", "density"), inline = TRUE),
       checkboxInput(ns("coord_flip"), "swap axes", value = TRUE),
