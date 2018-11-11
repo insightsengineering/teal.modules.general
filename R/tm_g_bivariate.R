@@ -80,7 +80,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.choices_selected(col_facet_var))
 
   x_var <- add_no_selected_choices(x_var)
-  y_var <- add_no_selected_choices(x_var)
+  y_var <- add_no_selected_choices(y_var)
 
   stopifnot(is.logical(free_x_scales))
   stopifnot(is.logical(free_y_scales))
