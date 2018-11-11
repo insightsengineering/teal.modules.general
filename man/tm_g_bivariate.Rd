@@ -4,10 +4,8 @@
 \alias{tm_g_bivariate}
 \title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Bivariate Plots", dataname, x_var,
-  x_var_choices = x_var, y_var, y_var_choices = y_var,
-  use_density = FALSE, color_by_var, color_by_var_choices, row_facet_var,
-  row_facet_var_choices, col_facet_var, col_facet_var_choices,
+tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
+  use_density = FALSE, color_by_var, row_facet_var, col_facet_var,
   free_x_scales = FALSE, free_y_scales = FALSE, plot_height = c(600,
   200, 2000), pre_output = NULL, post_output = NULL,
   code_data_processing = NULL)
@@ -15,23 +13,23 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var,
 \arguments{
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
 
-\item{x_var_choices}{character vector with variable names available as choices to plot along x-axis}
-
 \item{y_var}{variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
-
-\item{y_var_choices}{character vector with variable names available as choices to plot along y-axis}
 
 \item{use_density}{boolean value for whether density is plotted}
 
 \item{row_facet_var}{variable for x facets}
 
-\item{row_facet_var_choices}{vector with \code{row_facet_var} choices}
-
 \item{col_facet_var}{variable for y facets}
 
-\item{col_facet_var_choices}{vector with \code{col_facet_var} choices}
-
 \item{plot_height}{range of plot height}
+
+\item{x_var_choices}{character vector with variable names available as choices to plot along x-axis}
+
+\item{y_var_choices}{character vector with variable names available as choices to plot along y-axis}
+
+\item{row_facet_var_choices}{vector with \code{row_facet_var} choices}
+
+\item{col_facet_var_choices}{vector with \code{col_facet_var} choices}
 }
 \description{
 Univariate and bivariate visualizations.
@@ -62,17 +60,12 @@ x <- teal::init(
   modules = root_modules(
     tm_g_bivariate(
       dataname = "ASL",
-      x_var = "cont",
-      x_var_choices = names(ASL),
-      y_var = "cont2",
-      y_var_choices = names(ASL),
+      x_var = select_choices(names(ASL), "cont"),
+      y_var = select_choices(names(ASL), "cont")
       use_density = FALSE,
-      color_by_var = "STUDYID",
-      color_by_var_choices = "STUDYID",
-      row_facet_var = NULL,
-      row_facet_var_choices = c("F1", "F2"),
-      col_facet_var = NULL,
-      col_facet_var_choices = c("F1", "F2"),
+      color_by_var = select_choices("STUDYID"),
+      row_facet_var = select_choices(c("F1", "F2"), NULL),
+      col_facet_var = select_choices(c("F1", "F2"), NULL),
       plot_height = c(600, 200, 2000)
     )
   ))

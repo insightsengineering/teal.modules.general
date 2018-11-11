@@ -45,17 +45,12 @@
 #'   modules = root_modules(
 #'     tm_g_bivariate(
 #'       dataname = "ASL",
-#'       x_var = "cont",
-#'       x_var_choices = names(ASL),
-#'       y_var = "cont2",
-#'       y_var_choices = names(ASL),
+#'       x_var = select_choices(names(ASL), "cont"),
+#'       y_var = select_choices(names(ASL), "cont"),
 #'       use_density = FALSE,
-#'       color_by_var = "STUDYID",
-#'       color_by_var_choices = "STUDYID",
-#'       row_facet_var = NULL,
-#'       row_facet_var_choices = c("F1", "F2"),
-#'       col_facet_var = NULL,
-#'       col_facet_var_choices = c("F1", "F2"),
+#'       color_by_var = select_choices("STUDYID"),
+#'       row_facet_var = select_choices(c("F1", "F2"), NULL),
+#'       col_facet_var = select_choices(c("F1", "F2"), NULL),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   ))
@@ -67,16 +62,11 @@
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x_var,
-                           x_var_choices = x_var,
                            y_var,
-                           y_var_choices = y_var,
                            use_density = FALSE,
                            color_by_var,
-                           color_by_var_choices,
                            row_facet_var,
-                           row_facet_var_choices,
                            col_facet_var,
-                           col_facet_var_choices,
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
@@ -86,12 +76,17 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   args <- as.list(environment())
 
-  !("-- no x --" %in% x_var_choices) || stop("'-- no x --' is a keyword and cannot be in x_var_choices")
-  !("-- no y --" %in% y_var_choices) || stop("'-- no y --' is a keyword and cannot be in y_var_choices")
-  is.logical(use_density) || stop("use_density needs to be boolean")
+  stopifnot(is.select_choices(x_var))
+  stopifnot(is.select_choices(y_var))
+  stopifnot(is.select_choices(row_facet_var))
+  stopifnot(is.select_choices(col_facet_var))
 
-  args$x_var_choices <- unique(c("-- no x --", x_var_choices))
-  args$y_var_choices <- unique(c("-- no y --", y_var_choices))
+  x_var <- add_no_selected_choices(x_var)
+  y_var <- add_no_selected_choices(x_var)
+
+  stopifnot(is.logical(free_x_scales))
+  stopifnot(is.logical(free_y_scales))
+  stopifnot(is.logical(use_density))
 
   module(
     label = label,
@@ -115,11 +110,11 @@ ui_g_bivariate <- function(id, ...) {
     output = whiteSmallWell(uiOutput(ns("plot_ui"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
-      optionalSelectInput(ns("x_var"), "x var", a$x_var_choices, a$x_var),
-      optionalSelectInput(ns("y_var"), "y var", a$y_var_choices, a$y_var),
+      optionalSelectInput(ns("x_var"), "x var", a$x_var$choices, a$x_var$selected),
+      optionalSelectInput(ns("y_var"), "y var", a$y_var$choices, a$y_var$selected),
       radioButtons(ns("use_density"), NULL, choices = c("frequency", "density"), selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE),
-      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var_choices, a$row_facet_var, multiple = TRUE),
-      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var_choices, a$col_facet_var, multiple = TRUE),
+      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
+      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
       checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_x_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
