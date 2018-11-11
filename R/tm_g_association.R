@@ -18,8 +18,7 @@
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",
-#'       var = "AGE",
-#'       var_choices = names(ASL)
+#'       var = select_choices(names(ASL), "AGE")
 #'     )
 #'   )
 #' )
@@ -31,7 +30,6 @@ tm_g_association <- function(
   label = "Association",
   dataname,
   var,
-  var_choices = var,
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
   pre_output = NULL,
@@ -40,6 +38,8 @@ tm_g_association <- function(
 ) {
 
   args <- as.list(environment())
+
+  stopifnot(is.select_choices(var))
 
   module(
     label = label,
@@ -66,8 +66,8 @@ ui_tm_g_association <- function(id, ...) {
       helpText("Analysis data:", tags$code(a$dataname)),
       optionalSelectInput(ns("var"),
                           "Variables",
-                          a$var_choices,
-                          a$var, multiple = TRUE),
+                          a$var$choices,
+                          a$var$selected, multiple = TRUE),
       checkboxInput(ns("association"),
                     "Association with First Variable",
                     value = a$show_association),
