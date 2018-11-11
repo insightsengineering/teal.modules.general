@@ -34,12 +34,28 @@ choices_selected <- function(choices, selected = choices[1]) {
 is.choices_selected <- function(x) is(x, "choices_selected")
 
 
-add_no_selected_choices <- function(x) {
-  stopifnot(is.choices_selected(x))
+add_no_selected_choices <- function(x, multiple = FALSE) {
 
-  x$choices <- c(no_select_keyword, x$choices)
-  if (is.null(x$selected)) x$selected <- no_select_keyword
+  if (is.null(x)) {
+    choices_selected(NULL)
+  } else {
+    stopifnot(is.choices_selected(x))
 
-  x
+    if (!multiple) {
+      x$choices <- c(no_select_keyword, x$choices)
+      if (is.null(x$selected)) x$selected <- no_select_keyword
+    }
+
+    x
+  }
+
+}
+
+no_selected_as_NULL <- function(x) {
+  if(is.null(x) || identical(x, no_select_keyword) || x == "") {
+    NULL
+  } else {
+    x
+  }
 }
 

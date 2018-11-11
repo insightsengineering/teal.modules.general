@@ -23,10 +23,9 @@
 #'       dataname = "ARS",
 #'       endpoint = choices_selected(ARS$PARAMCD),
 #'       resp_var = choices_selected("AVALC"),
-#'       x_var = NULL, #choices_selected(names(ASL), "SEX"),
-#'       facet_var = NULL,
-#'       row_facet_var = NULL,
-#'       col_facet_var = NULL
+#'       x_var = choices_selected(names(ASL), "SEX"),
+#'       row_facet_var = choices_selected(names(ASL), NULL),
+#'       col_facet_var = choices_selected(names(ASL), NULL)
 #'     )
 #'   )
 #' )
@@ -39,7 +38,7 @@
 #' library(dplyr)
 #' library(forcats)
 #'
-#' ANL <- inner_join(ASL, ARS)
+#' ANL <- inner_join(ARS, ASL)
 #'
 #' ANL_filtered <- ANL %>% filter(PARAMCD == "BESRSPI") %>%
 #'    mutate(ALL = factor(rep("Response", n())))
@@ -71,14 +70,14 @@
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC), position =  "fill") +
 #'   geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill") +
-#'   #scale_y_continuous(limits = c(0, 1.2)) +
+#'   expand_limits(y = c(0, 1.2)) +
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution")
 #'
 #' ANL_filtered %>% ggplot() +
 #'   aes(x = fct_rev(SEX)) +
 #'   geom_bar(aes(fill = AVALC), position =  "fill") +
-#'   geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill") +
+#'   geom_text(stat='count', aes(label=paste(" ", ..count..), hjust = 0), position =  "fill") +
 #'   scale_y_continuous(limits = c(0, 1.4)) +
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
@@ -93,7 +92,6 @@ tm_g_response <- function(
   endpoint,
   resp_var,
   x_var = NULL,
-  facet_var = NULL,
   row_facet_var = NULL,
   col_facet_var = NULL,
   coord_flip = TRUE,
@@ -104,20 +102,20 @@ tm_g_response <- function(
   code_data_processing = NULL
 ) {
 
-  args <- as.list(environment())
 
-  if (is.null(x_var)) x_var <- choices_selected(NULL)
-  if (is.null(facet_var)) facet_var <- choices_selected(NULL)
-  if (is.null(row_facet_var)) row_facet_var <- choices_selected(NULL)
-  if (is.null(col_facet_var)) col_facet_var <- choices_selected(NULL)
+  x_var <- add_no_selected_choices(x_var, TRUE)
+  row_facet_var <- add_no_selected_choices(row_facet_var, TRUE)
+  col_facet_var <- add_no_selected_choices(col_facet_var, TRUE)
 
   stopifnot(is.choices_selected(endpoint))
   stopifnot(is.choices_selected(resp_var))
   stopifnot(is.choices_selected(x_var))
-  stopifnot(is.choices_selected(facet_var))
   stopifnot(is.choices_selected(row_facet_var))
   stopifnot(is.choices_selected(col_facet_var))
+  dataname != "ASL" || stop("currently does not work with ASL data")
 
+
+  args <- as.list(environment())
 
   module(
     label = label,
@@ -146,8 +144,7 @@ ui_g_response <- function(id, ...) {
 
       optionalSelectInput(ns("endpoint"), "Endpoint (PARAMCD)", a$endpoint$choices, a$endpoint$selected),
       optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var$choices, a$resp_var$selected),
-      optionalSelectInput(ns("x_var"), "X Variable", a$x_var$choices, a$x_var$selected),
-
+      optionalSelectInput(ns("x_var"), "X Variable", a$x_var$choices, a$x_var$selected, multiple = TRUE, label_help = helpText("from ASL")),
 
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
@@ -181,13 +178,11 @@ srv_g_response <- function(input,
   })
 
   ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE)
 
-  output$plot <- renderPlot({
+  plot_call <- reactive({
 
-    ASL_filtered <- datasets$get_data("ASL", filtered = TRUE, reactive = TRUE)
-    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-
-
+    endpoint <- input$endpoint
     resp_var <- input$resp_var
     x_var <- input$x_var
     freq <- input$freq == "frequency"
@@ -195,74 +190,81 @@ srv_g_response <- function(input,
     col_facet_var <- input$col_facet_var
     swap_axes <- input$coord_flip
 
+    #as.global(ANL_head, ASL, resp_var, x_var, freq, row_facet_var, col_facet_var, swap_axes, endpoint)
 
-    x_var <- empty_string_as_NULL(x_var) # for multiple = FALSE select boxes
-    as.global(ANL_filtered, resp_var, x_var, freq, row_facet_var, col_facet_var, swap_axes)
+    x_var <- no_selected_as_NULL(x_var)
+    row_facet_var <- no_selected_as_NULL(row_facet_var)
+    col_facet_var <- no_selected_as_NULL(col_facet_var)
 
+    cl_ANL <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>% filter( PARAMCD %in% .(endpoint)))
+
+    asl_vars <- c(x_var, row_facet_var, col_facet_var)
+    if (!is.null(asl_vars)) {
+      asl_vars <- unique(c("USUBJID", "STUDYID", asl_vars))
+      cl_ANL <- call("%>%", cl_ANL,
+                     call("left_join", bquote(ASL[, .(asl_vars), drop = FALSE])))
+    }
 
     arg_position <- if (freq) "stack" else "fill"
-    cl_arg_x <- if (is.null(x_var)) "ALL" else call_fun_dots("interaction", x_var)
+    cl_arg_x <- if (is.null(x_var)) {
+      1
+    } else {
 
+      tmp.cl <- if (length(x_var) == 1) {
+        as.name(x_var)
+      } else {
+        tmp <- call_fun_dots("interaction", x_var)
+        tmp[["sep"]] <- " x "
+        tmp
+      }
+
+      if (swap_axes) {
+        call("fct_rev", tmp.cl)
+      } else {
+        tmp.cl
+      }
+    }
 
     plot_call <- bquote(
-      ANL_filtered %>% ggplot() +
+      .(cl_ANL) %>% ggplot() +
         aes(x = .(cl_arg_x)) +
         geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
     )
 
     if (!freq) {
-      plot_call <- call("+", plot_call,
-                        if(swap_axes)
-                          quote(geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill"))
-                        else
-                          quote(geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill"))
-                        )
+
+      if(swap_axes) {
+        tmp.cl1 <- quote(geom_text(stat='count', aes(label=paste(" ", ..count..), hjust = 0), position =  "fill"))
+        tmp.cl2 <- quote(expand_limits(y = c(0, 1.4)))
+      } else {
+        tmp.cl1 <- quote(geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill"))
+        tmp.cl2 <- quote(expand_limits(y = c(0, 1.2)))
+      }
+
+      plot_call <- call("+", call("+", plot_call, tmp.cl1), tmp.cl2)
     }
 
-    if (swap_axes && !freq) {
-      plot_call <- call("+", plot_call, quote(scale_y_continuous(limits = c(0, 1.4))))
-    }
     if (swap_axes) {
       plot_call <- call("+", plot_call, quote(coord_flip()))
     }
 
+    facet_cl <- g_facet_cl(row_facet_var, col_facet_var)
 
-#    ANL_filtered %>% ggplot() +
-#      aes(x = "ALL") +
-#      geom_bar(aes(fill = AVALC))
+    if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
 
-#   ANL_filtered %>% ggplot() +
-#     aes(x = SEX) +
-#     geom_bar(aes(fill = AVALC))
-#
-#   ANL_filtered %>% ggplot() +
-#     aes(x = SEX) +
-#     geom_bar(aes(fill = AVALC)) +
-#     facet_grid(cols = vars(ARM))
+    plot_call
 
 
-    #' ANL_filtered %>% ggplot() +
-    #'   aes(x = SEX) +
-    #'   geom_bar(aes(fill = AVALC), position =  "fill") +
-    #'   geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill") +
-    #'   #scale_y_continuous(limits = c(0, 1.2)) +
-    #'   facet_grid(cols = vars(ARM)) +
-    #'   ylab("Distribution")
-    #'
-    #' ANL_filtered %>% ggplot() +
-    #'   aes(x = fct_rev(SEX)) +
-    #'   geom_bar(aes(fill = AVALC), position =  "fill") +
-    #'   geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill") +
-    #'   scale_y_continuous(limits = c(0, 1.4)) +
-    #'   facet_grid(cols = vars(ARM)) +
-    #'   ylab("Distribution") +
-    #'   coord_flip()
+  })
+
+  output$plot <- renderPlot({
 
 
+    ANL_FILTERED <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
+    plot_call <- plot_call()
 
-
-    p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
+    p <- try(eval(plot_call, list2env(setNames(list(ANL_FILTERED, emptyenv()), c(paste0(dataname, "_FILTERED"), "parent")))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
@@ -271,5 +273,32 @@ srv_g_response <- function(input,
     }
 
   })
+
+  observeEvent(input$show_rcode, {
+
+    header <- get_rcode_header(
+      title = "Bivariate and Univariate Plot",
+      datanames = dataname,
+      datasets = datasets,
+      code_data_processing,
+      packages = c("ggplot2", "forcats", "dplyr")
+    )
+
+    str_rcode <- paste(c(
+      "",
+      header,
+      "",
+      deparse(plot_call(), width.cutoff = 60)
+    ), collapse = "\n")
+
+    # .log("show R code")
+    showModal(modalDialog(
+      title = "R Code for the Current Plot",
+      tags$pre(tags$code(class="R", str_rcode)),
+      easyClose = TRUE,
+      size = "l"
+    ))
+  })
+
 
 }

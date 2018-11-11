@@ -74,8 +74,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            post_output = NULL,
                            code_data_processing = NULL) {
 
-  args <- as.list(environment())
-
   stopifnot(is.choices_selected(x_var))
   stopifnot(is.choices_selected(y_var))
   stopifnot(is.choices_selected(row_facet_var))
@@ -87,6 +85,9 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.logical(free_x_scales))
   stopifnot(is.logical(free_y_scales))
   stopifnot(is.logical(use_density))
+
+  args <- as.list(environment())
+
 
   module(
     label = label,

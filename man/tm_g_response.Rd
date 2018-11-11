@@ -31,7 +31,7 @@ x <- teal::init(
       dataname = "ARS",
       endpoint = choices_selected(ARS$PARAMCD),
       resp_var = choices_selected("AVALC"),
-      x_var = NULL, #choices_selected(names(ASL), "SEX"),
+      x_var = choices_selected(names(ASL), "SEX"),
       facet_var = NULL,
       row_facet_var = NULL,
       col_facet_var = NULL

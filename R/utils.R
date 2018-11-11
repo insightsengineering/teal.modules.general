@@ -19,14 +19,11 @@ as.global <- function(...) {
 
 }
 
-#' @export
-empty_string_as_NULL <- function(x) {
-  if (identical(x, "")) NULL else x
-}
 
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
+
 
 
 
