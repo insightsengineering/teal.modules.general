@@ -45,12 +45,12 @@
 #'   modules = root_modules(
 #'     tm_g_bivariate(
 #'       dataname = "ASL",
-#'       x_var = select_choices(names(ASL), "cont"),
-#'       y_var = select_choices(names(ASL), "cont"),
+#'       x_var = choices_selected(names(ASL), "cont"),
+#'       y_var = choices_selected(names(ASL), "cont"),
 #'       use_density = FALSE,
-#'       color_by_var = select_choices("STUDYID"),
-#'       row_facet_var = select_choices(c("F1", "F2"), NULL),
-#'       col_facet_var = select_choices(c("F1", "F2"), NULL),
+#'       color_by_var = choices_selected("STUDYID"),
+#'       row_facet_var = choices_selected(c("F1", "F2"), NULL),
+#'       col_facet_var = choices_selected(c("F1", "F2"), NULL),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   ))
@@ -76,10 +76,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   args <- as.list(environment())
 
-  stopifnot(is.select_choices(x_var))
-  stopifnot(is.select_choices(y_var))
-  stopifnot(is.select_choices(row_facet_var))
-  stopifnot(is.select_choices(col_facet_var))
+  stopifnot(is.choices_selected(x_var))
+  stopifnot(is.choices_selected(y_var))
+  stopifnot(is.choices_selected(row_facet_var))
+  stopifnot(is.choices_selected(col_facet_var))
 
   x_var <- add_no_selected_choices(x_var)
   y_var <- add_no_selected_choices(x_var)
@@ -254,13 +254,14 @@ g_facet_cl <- function(row_facet_var = NULL, col_facet_var = NULL, free_x_scales
   if (is.null(row_facet_var) && is.null(col_facet_var)) {
     NULL
   } else if (!is.null(row_facet_var) && is.null(col_facet_var)) {
-    call("facet_grid", rows = do.call("call", c(list("vars"), lapply(row_facet_var, as.name)), quote = TRUE), scales=scales)
+    call("facet_grid", rows = call_fun_dots("vars", row_facet_var), scales=scales)
   } else if (is.null(row_facet_var) && !is.null(col_facet_var)) {
-    call("facet_grid", cols = do.call("call", c(list("vars"), lapply(col_facet_var, as.name)), quote = TRUE), scales=scales)
+    call("facet_grid", cols = call_fun_dots("vars", col_facet_var), scales=scales)
   } else {
     call("facet_grid",
-         rows = do.call("call", c(list("vars"), lapply(row_facet_var, as.name)), quote = TRUE),
-         cols = do.call("call", c(list("vars"), lapply(col_facet_var, as.name)), quote = TRUE), scales=scales)
+         rows = call_fun_dots("vars", row_facet_var),
+         cols = call_fun_dots("vars", col_facet_var),
+         scales=scales)
   }
 }
 

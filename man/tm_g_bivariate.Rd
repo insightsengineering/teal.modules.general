@@ -60,12 +60,12 @@ x <- teal::init(
   modules = root_modules(
     tm_g_bivariate(
       dataname = "ASL",
-      x_var = select_choices(names(ASL), "cont"),
-      y_var = select_choices(names(ASL), "cont")
+      x_var = choices_selected(names(ASL), "cont"),
+      y_var = choices_selected(names(ASL), "cont"),
       use_density = FALSE,
-      color_by_var = select_choices("STUDYID"),
-      row_facet_var = select_choices(c("F1", "F2"), NULL),
-      col_facet_var = select_choices(c("F1", "F2"), NULL),
+      color_by_var = choices_selected("STUDYID"),
+      row_facet_var = choices_selected(c("F1", "F2"), NULL),
+      col_facet_var = choices_selected(c("F1", "F2"), NULL),
       plot_height = c(600, 200, 2000)
     )
   ))

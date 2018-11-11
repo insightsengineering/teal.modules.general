@@ -4,13 +4,10 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Association", dataname, endpoint,
-  endpoint_choices = endpoint, resp_var, resp_var_choices = resp_var,
-  x_var = NULL, x_var_choices = x_var, facet_var = NULL,
-  facet_var_choices = facet_var, row_facet_var = NULL,
-  row_facet_var_choices = row_facet_var, col_facet_var = NULL,
-  col_facet_var_choices = col_facet_var, coord_flip = TRUE,
-  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
+tm_g_response(label = "Association", dataname, endpoint, resp_var,
+  x_var = NULL, facet_var = NULL, row_facet_var = NULL,
+  col_facet_var = NULL, coord_flip = TRUE, freq = FALSE,
+  plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL, code_data_processing = NULL)
 }
 \description{
@@ -28,10 +25,17 @@ attr(ASL, "source") <- "# asl import"
 attr(ARS, "source") <- "# ars import"
 
 x <- teal::init(
-  data = list(ASL = ASL, ATE = ATE),
+  data = list(ASL = ASL, ARS = ARS),
   modules = root_modules(
-
-
+    tm_g_response(
+      dataname = "ARS",
+      endpoint = choices_selected(ARS$PARAMCD),
+      resp_var = choices_selected("AVALC"),
+      x_var = NULL, #choices_selected(names(ASL), "SEX"),
+      facet_var = NULL,
+      row_facet_var = NULL,
+      col_facet_var = NULL
+    )
   )
 )
 

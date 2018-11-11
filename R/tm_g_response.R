@@ -21,9 +21,9 @@
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
-#'       endpoint = select_choices(ARS$PARAMCD),
-#'       resp_var = select_choices("AVAL"),
-#'       x_var = NULL,
+#'       endpoint = choices_selected(ARS$PARAMCD),
+#'       resp_var = choices_selected("AVALC"),
+#'       x_var = NULL, #choices_selected(names(ASL), "SEX"),
 #'       facet_var = NULL,
 #'       row_facet_var = NULL,
 #'       col_facet_var = NULL
@@ -106,17 +106,17 @@ tm_g_response <- function(
 
   args <- as.list(environment())
 
-  if (is.null(x_var)) x_var <- select_choices(NULL)
-  if (is.null(facet_var)) facet_var <- select_choices(NULL)
-  if (is.null(row_facet_var)) row_facet_var <- select_choices(NULL)
-  if (is.null(col_facet_var)) col_facet_var <- select_choices(NULL)
+  if (is.null(x_var)) x_var <- choices_selected(NULL)
+  if (is.null(facet_var)) facet_var <- choices_selected(NULL)
+  if (is.null(row_facet_var)) row_facet_var <- choices_selected(NULL)
+  if (is.null(col_facet_var)) col_facet_var <- choices_selected(NULL)
 
-  stopifnot(is.select_choices(endpoint))
-  stopifnot(is.select_choices(resp_var))
-  stopifnot(is.select_choices(x_var))
-  stopifnot(is.select_choices(facet_var))
-  stopifnot(is.select_choices(row_facet_var))
-  stopifnot(is.select_choices(col_facet_var))
+  stopifnot(is.choices_selected(endpoint))
+  stopifnot(is.choices_selected(resp_var))
+  stopifnot(is.choices_selected(x_var))
+  stopifnot(is.choices_selected(facet_var))
+  stopifnot(is.choices_selected(row_facet_var))
+  stopifnot(is.choices_selected(col_facet_var))
 
 
   module(
@@ -184,7 +184,9 @@ srv_g_response <- function(input,
 
   output$plot <- renderPlot({
 
+    ASL_filtered <- datasets$get_data("ASL", filtered = TRUE, reactive = TRUE)
     ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+
 
     resp_var <- input$resp_var
     x_var <- input$x_var
@@ -194,9 +196,80 @@ srv_g_response <- function(input,
     swap_axes <- input$coord_flip
 
 
+    x_var <- empty_string_as_NULL(x_var) # for multiple = FALSE select boxes
     as.global(ANL_filtered, resp_var, x_var, freq, row_facet_var, col_facet_var, swap_axes)
 
-    plot(1,1)
+
+    arg_position <- if (freq) "stack" else "fill"
+    cl_arg_x <- if (is.null(x_var)) "ALL" else call_fun_dots("interaction", x_var)
+
+
+    plot_call <- bquote(
+      ANL_filtered %>% ggplot() +
+        aes(x = .(cl_arg_x)) +
+        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
+    )
+
+    if (!freq) {
+      plot_call <- call("+", plot_call,
+                        if(swap_axes)
+                          quote(geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill"))
+                        else
+                          quote(geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill"))
+                        )
+    }
+
+    if (swap_axes && !freq) {
+      plot_call <- call("+", plot_call, quote(scale_y_continuous(limits = c(0, 1.4))))
+    }
+    if (swap_axes) {
+      plot_call <- call("+", plot_call, quote(coord_flip()))
+    }
+
+
+#    ANL_filtered %>% ggplot() +
+#      aes(x = "ALL") +
+#      geom_bar(aes(fill = AVALC))
+
+#   ANL_filtered %>% ggplot() +
+#     aes(x = SEX) +
+#     geom_bar(aes(fill = AVALC))
+#
+#   ANL_filtered %>% ggplot() +
+#     aes(x = SEX) +
+#     geom_bar(aes(fill = AVALC)) +
+#     facet_grid(cols = vars(ARM))
+
+
+    #' ANL_filtered %>% ggplot() +
+    #'   aes(x = SEX) +
+    #'   geom_bar(aes(fill = AVALC), position =  "fill") +
+    #'   geom_text(stat='count', aes(label=..count.., vjust = -1), position =  "fill") +
+    #'   #scale_y_continuous(limits = c(0, 1.2)) +
+    #'   facet_grid(cols = vars(ARM)) +
+    #'   ylab("Distribution")
+    #'
+    #' ANL_filtered %>% ggplot() +
+    #'   aes(x = fct_rev(SEX)) +
+    #'   geom_bar(aes(fill = AVALC), position =  "fill") +
+    #'   geom_text(stat='count', aes(label=..count.., hjust = -0.3), position =  "fill") +
+    #'   scale_y_continuous(limits = c(0, 1.4)) +
+    #'   facet_grid(cols = vars(ARM)) +
+    #'   ylab("Distribution") +
+    #'   coord_flip()
+
+
+
+
+
+    p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
+
+    if (is(p, "try-error")) {
+      validate(need(FALSE, p))
+    } else {
+      p
+    }
+
   })
 
 }

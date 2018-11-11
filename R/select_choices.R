@@ -8,10 +8,10 @@ no_select_keyword <- "-- no selection --"
 #'
 #' @examples
 #'
-#' select_choices(LETTERS[1:5])
+#' choices_selected(LETTERS[1:5])
 #'
 #'
-select_choices <- function(choices, selected = choices[1]) {
+choices_selected <- function(choices, selected = choices[1]) {
 
   stopifnot(is.atomic(choices))
 
@@ -26,16 +26,16 @@ select_choices <- function(choices, selected = choices[1]) {
       choices = unique(choices),
       selected = unique(selected)
     ),
-    class = "select_choices"
+    class = "choices_selected"
   )
 }
 
 #' @export
-is.select_choices <- function(x) is(x, "select_choices")
+is.choices_selected <- function(x) is(x, "choices_selected")
 
 
 add_no_selected_choices <- function(x) {
-  stopifnot(is.select_choices(x))
+  stopifnot(is.choices_selected(x))
 
   x$choices <- c(no_select_keyword, x$choices)
   if (is.null(x$selected)) x$selected <- no_select_keyword
@@ -43,8 +43,3 @@ add_no_selected_choices <- function(x) {
   x
 }
 
-
-
-stopifnot_select_choices <- function() {
-
-}

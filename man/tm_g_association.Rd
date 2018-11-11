@@ -5,9 +5,8 @@
 \title{Stack Plots of variables and show association with reference variable}
 \usage{
 tm_g_association(label = "Association", dataname, var,
-  var_choices = var, show_association = TRUE, plot_height = c(600,
-  400, 5000), pre_output = NULL, post_output = NULL,
-  code_data_processing = NULL)
+  show_association = TRUE, plot_height = c(600, 400, 5000),
+  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
 }
 \description{
 Stack Plots of variables and show association with reference variable
@@ -26,8 +25,7 @@ x <- teal::init(
   modules = root_modules(
     tm_g_association(
       dataname = "ASL",
-      var = "AGE",
-      var_choices = names(ASL)
+      var = choices_selected(names(ASL), "AGE")
     )
   )
 )

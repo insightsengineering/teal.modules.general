@@ -18,7 +18,7 @@
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",
-#'       var = select_choices(names(ASL), "AGE")
+#'       var = choices_selected(names(ASL), "AGE")
 #'     )
 #'   )
 #' )
@@ -39,7 +39,7 @@ tm_g_association <- function(
 
   args <- as.list(environment())
 
-  stopifnot(is.select_choices(var))
+  stopifnot(is.choices_selected(var))
 
   module(
     label = label,
