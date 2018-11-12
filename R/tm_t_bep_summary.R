@@ -118,7 +118,7 @@ srv_t_bep_summary <- function(input,
     teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
 
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
-    validate(need(ANL_f[[bep_var]], "BEP variable does not exist"))
+    validate(need(is.logical(ANL_f[[bep_var]]), "BEP variable does not exist"))
     validate(need(!any(is.na(ANL_f[[bep_var]])), "Please recode NA levels in BEP variable"))
     validate(need(!("" %in% ANL_f[[bep_var]]), "BEP values cannot contain empty strings"))
 
@@ -132,7 +132,29 @@ srv_t_bep_summary <- function(input,
     ANL_select <- ANL_f[, summarize_vars, drop = FALSE]
     arm <- if (is.null(arm_var)) NULL else ANL_f[[arm_var]]
 
-    x <- if (is_bep_vs_non_bep) {
+
+    all_bep <- all(bep)
+
+    x <- if (all_bep || all(!bep)) {
+
+      cb <-  if (is.null(arm_var)) {
+        factor(rep("All Patients", nrow(ANL_select)))
+      } else if (all_bep) {
+        tmp <- ANL_f[[arm_var]]
+        levels(tmp) <- paste(levels(tmp), "BEP", sep = "\n")
+        tmp
+      } else {
+        ANL_f[[arm_var]]
+      }
+
+      list(
+        data = ANL_select,
+        col_by = cb,
+        total = if (is.null(arm_var)) NULL else "All Patients",
+        pop = if(all_bep) "bep" else "non-bep"
+      )
+
+    } else if (is_bep_vs_non_bep) {
       ## population in table columns does not overlap --  no stacking required
 
       cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
@@ -140,7 +162,8 @@ srv_t_bep_summary <- function(input,
       list(
         data = ANL_select,
         col_by = if (is.null(arm)) cb else interaction(arm, cb, sep = "\n", lex.order = TRUE),
-        total = "All Patients"
+        total = "All Patients",
+        pop = "mixed"
       )
 
     } else {
@@ -150,9 +173,9 @@ srv_t_bep_summary <- function(input,
       N_bep <- sum(bep)
 
       ANL_stacked <- rbind(
-        ANL_select,        # all x bep
-        ANL_select[bep, , drop = FALSE], # all x bep
-        ANL_select         # all patients
+        ANL_select,                        # all x bep
+        ANL_select[bep, , drop = FALSE],   # all x bep
+        ANL_select                         # all patients
       )
 
       # new
@@ -170,15 +193,36 @@ srv_t_bep_summary <- function(input,
       list(
         data = ANL_stacked,
         col_by = droplevels(unlist(list(cb_all_bep_arm, factor(rep("All Patients", N))), use.names=FALSE)),
-        total = NULL
+        total = NULL,
+        pop = "mixed"
       )
-
 
     }
 
+
+
     tbl <- try(t_summary(x$data, x$col_by, total = x$total), silent = TRUE)
 
-    if (is(tbl, "try-error")) tags$p(tbl) else as_html(tbl)
+    if (is(tbl, "try-error")) {
+      tags$p(tbl)
+    } else {
+      tbl_html <- as_html(tbl)
+
+      if (x$pop == "bep") {
+        tagList(
+          tags$h1("Biomarker Only Population"),
+          tbl_html
+        )
+      } else if (x$pop == "non-bep") {
+         tagList(
+          tags$h1("Only Non-Biomaker Population left"),
+          tbl_html
+        )
+      } else {
+        tbl_html
+      }
+
+    }
 
   })
 
