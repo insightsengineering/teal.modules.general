@@ -22,14 +22,6 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
 \item{col_facet_var}{variable for y facets}
 
 \item{plot_height}{range of plot height}
-
-\item{x_var_choices}{character vector with variable names available as choices to plot along x-axis}
-
-\item{y_var_choices}{character vector with variable names available as choices to plot along y-axis}
-
-\item{row_facet_var_choices}{vector with \code{row_facet_var} choices}
-
-\item{col_facet_var_choices}{vector with \code{col_facet_var} choices}
 }
 \description{
 Univariate and bivariate visualizations.

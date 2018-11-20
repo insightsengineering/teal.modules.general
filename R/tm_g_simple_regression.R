@@ -23,15 +23,17 @@
 #'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 #' )
 #'
+#' ASL$cont3 <- ASL$cont *3 +2 +rnorm(nrow(ASL), sd = .3)
+#'
 #' attr(ASL, "source") <- "# ASL is random data"
 #'
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   modules = root_modules(
-#'     tm_g_regression(
+#'     tm_g_simple_regression(
 #'       dataname = "ASL",
 #'       response_var = choices_selected(c("cont", "cont2"), "cont"),
-#'       regressor_var = choices_selected(names(ASL), "cont2"),
+#'       regressor_var = choices_selected(names(ASL), "cont3"),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   ))
@@ -42,19 +44,14 @@
 #'
 #' fit <- lm(cont ~ cont2, data = ASL)
 #'
-#'
-#' plot(fit$model[, 2:1])
-#' abline(fit)
-#'
-#'
 #' plot(fit)
 #'
 #' }
 #'
 #'
 #'
-tm_g_regression <- function(
-  label = "Regression Analysis",
+tm_g_simple_regression <- function(
+  label = "Simple Regression Analysis",
   dataname,
   response_var,
   regressor_var,
@@ -67,8 +64,8 @@ tm_g_regression <- function(
 
   module(
     label = label,
-    server = srv_g_regression,
-    ui = ui_g_regression,
+    server = srv_g_simple_regression,
+    ui = ui_g_simple_regression,
     ui_args = args,
     server_args = list(dataname = dataname),
     filters = dataname
@@ -77,7 +74,7 @@ tm_g_regression <- function(
 }
 
 
-ui_g_regression <- function(id, ...) {
+ui_g_simple_regression <- function(id, ...) {
 
   a <- list(...)
 
@@ -93,26 +90,24 @@ ui_g_regression <- function(id, ...) {
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("response_var"), "Response Variable", a$response_var$choices, a$response_var$selected),
-      optionalSelectInput(ns("regressor_var"), "Regressor Variables", a$regressor_var$choices, a$regressor_var$selected, multiple = TRUE),
+      optionalSelectInput(ns("regressor_var"), "Regressor Variables", a$regressor_var$choices, a$regressor_var$selected),
       radioButtons(ns("plot_type"), label = "Plot Type",
-                   choices = c("Residuals vs Fitted",
+                   choices = c("Response vs Regressor", "Residuals vs Fitted",
                                "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
                                "Cook's dist vs Leverage h[ii]/(1 - h[ii]"),
-                   selected = "Residuals vs Fitted"),
+                   selected = "Response vs Regressor"),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     )
   )
 }
 
-srv_g_regression <- function(input, output, session, datasets, dataname) {
+srv_g_simple_regression <- function(input, output, session, datasets, dataname) {
 
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
     validate(need(plot_height, "need valid plot height"))
     plotOutput(session$ns("plot"), height=plot_height)
   })
-
-
 
   ANL_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
 
@@ -123,12 +118,12 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
 
     validate(
       need(length(intersect(response_var, regressor_var)) == 0, "response and regressor variables cannot intersect"),
-      need(length(regressor_var)>0, "please select regressor variable"),
+      need(length(regressor_var) == 1, "please select a regressor variable"),
       need(is.numeric(ANL_head[[response_var]]), "response variable needs to be numeric")
     )
 
 
-    call("lm", as.formula(paste0(response_var, "~", paste(regressor_var, collapse = " + "))), data = as.name("ANL_FILTERED"))
+    call("lm", as.formula(paste0(response_var, "~", regressor_var)), data = as.name("ANL_FILTERED"))
 
   })
 
@@ -153,13 +148,18 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
     fit <- fit()
     plot_type <-  input$plot_type
 
-    i <- which(plot_type == c("Residuals vs Fitted",
-      "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-      "Cook's dist vs Leverage h[ii]/(1 - h[ii]"))
+    if (plot_type == "Response vs Regressor") {
 
-    plot(fit, which = i, id.n = NULL)
+      plot(fit$model[, 2:1])
+      abline(fit)
 
+    } else {
+      i <- which(plot_type == c("Residuals vs Fitted",
+                                "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+                                "Cook's dist vs Leverage h[ii]/(1 - h[ii]"))
 
+      plot(fit, which = i)
+    }
   })
 
 

@@ -11,6 +11,8 @@ For general reusable modules see:
 * teal.goshawk
 
 
+For this visit [https://github.roche.com/settings/tokens](https://github.roche.com/settings/tokens) there Generate New Token with name "read" that has all repo options activated. Copy the token into `~/.github_token` on bee.
+
 
 ```r
 install.packages(c("data.table", "ggmosaic"))
@@ -45,9 +47,10 @@ devtools::install_github(
 )
 
 devtools::install_github(
-  repo = "Rpackages/gClinBiomarker",
+  repo = "Rpackages/teal.general",
   host = "https://github.roche.com/api/v3",
-  upgrade_dependencies = FALSE, build_vignettes = FALSE
+  upgrade_dependencies = FALSE, build_vignettes = FALSE,
+  auth_token = readLines("~/.github_token")
 )
 
 ```

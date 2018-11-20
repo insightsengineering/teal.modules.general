@@ -1,14 +1,10 @@
 #' Univariate and bivariate visualizations.
 #'
 #' @param x_var variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
-#' @param x_var_choices character vector with variable names available as choices to plot along x-axis
 #' @param y_var variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.
 #' @param use_density boolean value for whether density is plotted
-#' @param y_var_choices character vector with variable names available as choices to plot along y-axis
 #' @param row_facet_var variable for x facets
-#' @param row_facet_var_choices vector with \code{row_facet_var} choices
 #' @param col_facet_var variable for y facets
-#' @param col_facet_var_choices vector with \code{col_facet_var} choices
 #' @param plot_height range of plot height
 #'
 #'
