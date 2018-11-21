@@ -8,7 +8,10 @@ no_select_keyword <- "-- no selection --"
 #'
 #' @examples
 #'
-#' choices_selected(LETTERS[1:5])
+#' choices_selected(
+#'    choices = setNames(LETTERS[1:5], paste("Letter", LETTERS[1:5])),
+#'    selected = "X"
+#' )
 #'
 #'
 choices_selected <- function(choices, selected = choices[1]) {
@@ -21,9 +24,10 @@ choices_selected <- function(choices, selected = choices[1]) {
   if (length(setdiff(selected, choices)) > 0)
     choices <- c(setdiff(selected, choices), choices)
 
+
   structure(
     list(
-      choices = unique(choices),
+      choices = choices[!duplicated(choices)],
       selected = unique(selected)
     ),
     class = "choices_selected"

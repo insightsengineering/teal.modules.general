@@ -11,7 +11,10 @@ Choices function
 }
 \examples{
 
-choices_selected(LETTERS[1:5])
+choices_selected(
+   choices = setNames(LETTERS[1:5], paste("Letter", LETTERS[1:5])),
+   selected = "X"
+)
 
 
 }
