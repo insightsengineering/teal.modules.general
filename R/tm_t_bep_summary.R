@@ -201,27 +201,42 @@ srv_t_bep_summary <- function(input,
 
 
 
-    tbl <- try(t_summary(x$data, x$col_by, total = x$total), silent = TRUE)
 
-    if (is(tbl, "try-error")) {
-      tags$p(tbl)
+
+    N <- table(x$col_by)
+    if (any(N == 0)) {
+
+      # this is a special case that will be removed as soon t_summary allows for 0-count columns
+      tagList(
+        tags$p("Note that the columns ", tags$b(paste(names(N)[N == 0], collapse = ", ")),
+               "were removed as they have 0 count"),
+        as_html(t_summary(x$data, droplevels(x$col_by), total = x$total))
+      )
+
     } else {
-      tbl_html <- as_html(tbl)
 
-      if (x$pop == "bep") {
-        tagList(
-          tags$h1("Biomarker Only Population"),
-          tbl_html
-        )
-      } else if (x$pop == "non-bep") {
-         tagList(
-          tags$h1("Only Non-Biomaker Population left"),
-          tbl_html
-        )
+      tbl <- try(t_summary(x$data, x$col_by, total = x$total), silent = TRUE)
+
+      if (is(tbl, "try-error")) {
+        tags$p(tbl)
       } else {
-        tbl_html
-      }
+        tbl_html <- as_html(tbl)
 
+        if (x$pop == "bep") {
+          tagList(
+            tags$h1("Biomarker Only Population"),
+            tbl_html
+          )
+        } else if (x$pop == "non-bep") {
+          tagList(
+            tags$h1("Only Non-Biomaker Population left"),
+            tbl_html
+          )
+        } else {
+          tbl_html
+        }
+
+      }
     }
 
   })
