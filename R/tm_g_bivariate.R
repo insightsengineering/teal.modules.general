@@ -68,12 +68,14 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            plot_height = c(600, 200, 2000),
                            pre_output = NULL,
                            post_output = NULL,
+                           with_show_r_code = TRUE,
                            code_data_processing = NULL) {
 
   stopifnot(is.choices_selected(x_var))
   stopifnot(is.choices_selected(y_var))
   stopifnot(is.choices_selected(row_facet_var))
   stopifnot(is.choices_selected(col_facet_var))
+  stopifnot(is.logical(with_show_r_code))
 
   x_var <- add_no_selected_choices(x_var)
   y_var <- add_no_selected_choices(y_var)
@@ -83,7 +85,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.logical(use_density))
 
   args <- as.list(environment())
-
 
   module(
     label = label,
@@ -116,7 +117,7 @@ ui_g_bivariate <- function(id, ...) {
       checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_x_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
     pre_output = a$pre_output,
     post_output = a$post_output
   )
@@ -138,6 +139,8 @@ srv_g_bivariate <- function(input,
   })
 
   ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+
+  ANL_name <- paste0(dataname, "_FILTERED")
 
   plot_call <- reactive({
 
@@ -170,7 +173,7 @@ srv_g_bivariate <- function(input,
     }
 
 
-    cl <- g_bp_cl("ANL_filtered", x_var, y_var, class(x), class(y), freq = !use_density)
+    cl <- g_bp_cl(ANL_name, x_var, y_var, class(x), class(y), freq = !use_density)
 
     facet_cl <- g_facet_cl(row_facet_var, col_facet_var, free_x_scales, free_y_scales)
 
@@ -187,7 +190,7 @@ srv_g_bivariate <- function(input,
     plot_call <- plot_call()
     # as.global(plot_call, ANL_filtered)
 
-    p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
+    p <- try(eval(plot_call, list2env(setNames(list(ANL_filtered, emptyenv()), c(ANL_name, "parent")))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
