@@ -45,11 +45,14 @@ tm_t_bep_summary <- function(label,
                              bep_var,
                              pre_output = NULL,
                              post_output = NULL,
+                             with_show_r_code = FALSE,
                              code_data_processing = NULL) {
 
   stopifnot(is.choices_selected(arm_var))
   stopifnot(is.choices_selected(summarize_vars))
   stopifnot(is.choices_selected(bep_var))
+
+  if (with_show_r_code) stop("currently show R code feature is not implemented in tm_t_bep_summary")
 
   arm_var <- add_no_selected_choices(arm_var)
 
@@ -80,7 +83,7 @@ ui_t_bep_summary <- function(id, ...) {
                           a$bep_var$selected,
                           multiple = FALSE),
       radioButtons(ns("all_non_bep_radio_buttons"),
-                   "Table Comparison",c("ALL vs BEP","BEP vs Non-BEP")),
+                   "Table Comparison", c("ALL vs BEP", "BEP vs Non-BEP", "ALL")),
       optionalSelectInput(ns("arm_var"),
                           "Arm Variable",
                           a$arm_var$choices,
@@ -111,7 +114,7 @@ srv_t_bep_summary <- function(input,
     bep_var <- input$bep_var
     arm_var <- input$arm_var
     summarize_vars <- input$summarize_vars
-    is_bep_vs_non_bep <- input$all_non_bep_radio_buttons == "BEP vs Non-BEP"
+    summary_type <- input$all_non_bep_radio_buttons
 
     # as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
@@ -135,26 +138,33 @@ srv_t_bep_summary <- function(input,
 
     all_bep <- all(bep)
 
-    x <- if (all_bep || all(!bep)) {
+    x <- if (summary_type == "ALL" || all_bep || all(!bep)) {
+      # normal t_summary without stacking
 
-      cb <-  if (is.null(arm_var)) {
+      cb <-  if (is.null(arm)) {
         factor(rep("All Patients", nrow(ANL_select)))
-      } else if (all_bep) {
-        tmp <- ANL_f[[arm_var]]
+      } else if (summary_type != "ALL" && all_bep) {
+        tmp <- arm
         levels(tmp) <- paste(levels(tmp), "BEP", sep = "\n")
         tmp
       } else {
-        ANL_f[[arm_var]]
+        arm
       }
 
       list(
         data = ANL_select,
         col_by = cb,
         total = if (is.null(arm_var)) NULL else "All Patients",
-        pop = if(all_bep) "bep" else "non-bep"
+        pop = if (summary_type == "ALL") {
+          "ALL"
+        } else if (all_bep) {
+          "bep"
+        } else {
+          "non-bep"
+        }
       )
 
-    } else if (is_bep_vs_non_bep) {
+    } else if (summary_type ==  "BEP vs Non-BEP") {
       ## population in table columns does not overlap --  no stacking required
 
       cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
