@@ -210,7 +210,7 @@ srv_t_bep_summary <- function(input,
     }
 
 
-
+    if (!is.factor(x$col_by)) x$col_by <- as.factor(x$col_by)
 
 
     N <- table(x$col_by)
