@@ -34,12 +34,15 @@ tm_g_association <- function(
   plot_height = c(600, 400, 5000),
   pre_output = NULL,
   post_output = NULL,
+  with_show_r_code = TRUE,
   code_data_processing = NULL
 ) {
 
   args <- as.list(environment())
 
   stopifnot(is.choices_selected(var))
+  stopifnot(is.logical(with_show_r_code))
+
 
   module(
     label = label,
@@ -82,7 +85,7 @@ ui_tm_g_association <- function(id, ...) {
                                    a$plot_height,
                                    ticks = FALSE)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
     pre_output = a$pre_output,
     post_output = a$post_output
   )
@@ -105,6 +108,8 @@ srv_tm_g_association <- function(input,
 
 
   ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+
+  ANL_name <- paste0(dataname, "_FILTERED")
 
   plot_call <- reactive({
 
@@ -130,7 +135,7 @@ srv_tm_g_association <- function(input,
     }
 
     ref_cl <- call("+",
-                   g_bp_cl("ANL_filtered", ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
+                   g_bp_cl(ANL_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
                    quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip"))))
 
     ref_var_class_cov <- if (association) ref_var_class else "NULL"
@@ -161,7 +166,7 @@ srv_tm_g_association <- function(input,
     plot_call <- plot_call()
     # as.global(plot_call, ANL_filtered)
 
-    p <- try(eval(plot_call, list2env(list(ANL_filtered = ANL_filtered, parent = emptyenv()))))
+    p <- try(eval(plot_call, list2env(setNames(list(ANL_filtered, emptyenv()), c(ANL_name, "parent")))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
