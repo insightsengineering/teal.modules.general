@@ -147,7 +147,7 @@ srv_tm_g_association <- function(input,
         var_i <- call("log", as.name(var_i))
       }
 
-      g_bp_cl("ANL_filtered", var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
+      g_bp_cl(ANL_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
 
     })
 
