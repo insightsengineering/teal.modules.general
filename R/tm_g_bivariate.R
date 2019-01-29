@@ -114,7 +114,7 @@ ui_g_bivariate <- function(id, ...) {
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables", a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables", a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
-      checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_x_scales),
+      checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_y_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     ),
     forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
