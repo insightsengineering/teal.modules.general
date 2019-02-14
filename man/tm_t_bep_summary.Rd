@@ -5,7 +5,8 @@
 \title{Summary Table Comparing Analysis Populations}
 \usage{
 tm_t_bep_summary(label, dataname, arm_var, summarize_vars, bep_var,
-  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
+  pre_output = NULL, post_output = NULL, with_show_r_code = FALSE,
+  code_data_processing = NULL)
 }
 \arguments{
 \item{label}{menue item label of the module in the teal app}

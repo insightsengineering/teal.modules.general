@@ -20,64 +20,75 @@ tm_bep_safety0 <- function(label,
                            pre_output = NULL,
                            post_output = NULL,
                            code_data_processing = NULL) {
-
   args <- as.list(environment())
-  module(label = label,
-         server = srv_tm_bep_safety0,
-         ui = ui_tm_bep_safety0,
-         ui_args = args,
-         server_args = list(dataname = dataname,
-                            code_data_processing = code_data_processing),
-         filters = dataname)
+  module(
+    label = label,
+    server = srv_tm_bep_safety0,
+    ui = ui_tm_bep_safety0,
+    ui_args = args,
+    server_args = list(
+      dataname = dataname,
+      code_data_processing = code_data_processing
+    ),
+    filters = dataname
+  )
 }
 
 ui_tm_bep_safety0 <- function(id, ...) {
-
   ns <- NS(id)
   a <- list(...)
 
   standard_layout(
-
     output = uiOutput(ns("plot_ui")),
-    encoding =  div(
-      tags$label("Encodings", class="text-primary"),
+    encoding = div(
+      tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
       optionalSelectInput(ns("arm_var"),
-                          "Facetting by",
-                          a$arm_var_choices,
-                          a$arm_var,
-                          multiple = TRUE),
+        "Facetting by",
+        a$arm_var_choices,
+        a$arm_var,
+        multiple = TRUE
+      ),
       optionalSelectInput(ns("cov_var"),
-                          "Color by",
-                          #"Biomarker/Covariate Variable",
-                          a$cov_var_choices,
-                          a$cov_var,
-                          multiple = FALSE),
-      conditionalPanel(condition = ns("output.is_numeric"),
-                       uiOutput(ns("partition_slider"))),
+        "Color by",
+        # "Biomarker/Covariate Variable",
+        a$cov_var_choices,
+        a$cov_var,
+        multiple = FALSE
+      ),
+      conditionalPanel(
+        condition = ns("output.is_numeric"),
+        uiOutput(ns("partition_slider"))
+      ),
       optionalSelectInput(ns("bep_var"),
-                          "Biomarker Population",
-                          a$bep_var_choices,
-                          a$bep_var,
-                          multiple = FALSE),
+        "Biomarker Population",
+        a$bep_var_choices,
+        a$bep_var,
+        multiple = FALSE
+      ),
       optionalSelectInput(ns("response_var"),
-                          "Variable (Endpoint)",
-                          a$response_var_choices,
-                          a$response_var,
-                          multiple = FALSE),
+        "Variable (Endpoint)",
+        a$response_var_choices,
+        a$response_var,
+        multiple = FALSE
+      ),
       checkboxInput(ns("stacked_check_box"),
-                    "Stacked bars",
-                    value = FALSE),
+        "Stacked bars",
+        value = FALSE
+      ),
       checkboxInput(ns("order_check_box"),
-                    "Descending order",
-                    value = FALSE),
+        "Descending order",
+        value = FALSE
+      ),
       checkboxInput(ns("table_check_box"),
-                    "As table",
-                    value = FALSE),
+        "As table",
+        value = FALSE
+      ),
       optionalSliderInputValMinMax(ns("plot_height"),
-                                   "plot height",
-                                   a$plot_height,
-                                   ticks = FALSE)
+        "plot height",
+        a$plot_height,
+        ticks = FALSE
+      )
     ),
     pre_output = a$pre_output,
     post_output = a$post_output
@@ -91,28 +102,33 @@ srv_tm_bep_safety0 <- function(input,
                                dataname,
                                code_data_processing) {
 
-  #global_merged_data <- reactiveVal(NULL)
-  #global_partition_slider_flag <- FALSE
-  global_cov_var_selection <- reactiveValues(selection = "",
-                                             is_numeric = FALSE,
-                                             min_val = 0,
-                                             max_val = 0,
-                                             mid_val = 0)
+  # not USED, think of removing: global_merged_data <- reactiveVal(NULL)
+  # not USED, think of removing: global_partition_slider_flag <- FALSE
+  global_cov_var_selection <- reactiveValues(
+    selection = "",
+    is_numeric = FALSE,
+    min_val = 0,
+    max_val = 0,
+    mid_val = 0
+  )
 
-  output$is_numeric <- reactive ({
+  output$is_numeric <- reactive({
     if (global_cov_var_selection$is_numeric) {
       output$partition_slider <- renderUI({
         sliderInput(session$ns("partition_slider"),
-                    paste0("Low and high range for ",global_cov_var_selection$selection),
-                    min = floor(global_cov_var_selection$min_val),
-                    max = ceiling(global_cov_var_selection$max_val),
-                    value = global_cov_var_selection$mid_val,
-                    step = 0.1)
+          paste0("Low and high range for ", global_cov_var_selection$selection),
+          min = floor(global_cov_var_selection$min_val),
+          max = ceiling(global_cov_var_selection$max_val),
+          value = global_cov_var_selection$mid_val,
+          step = 0.1
+        )
       })
       return(TRUE)
     } else {
       # TODO: This should not be needed!
-      output$partition_slider <- renderUI({NULL})
+      output$partition_slider <- renderUI({
+        NULL
+      })
       return(FALSE)
     }
   })
@@ -123,50 +139,56 @@ srv_tm_bep_safety0 <- function(input,
     plot_height <- input$plot_height
     validate(need(plot_height, "need valid plot height"))
     ns <- session$ns
-    plotOutput(ns("plot"), height=plot_height)
+    plotOutput(ns("plot"), height = plot_height)
   })
 
   output$plot <- renderPlot({
 
     # Get filtered ASL dataset.
-    ASL_FILTERED <- datasets$get_data("ASL",reactive = TRUE,filtered = TRUE)
+    ASL_FILTERED <- datasets$get_data("ASL", reactive = TRUE, filtered = TRUE)
 
     # Get filtered ARS dataset.
-    ANL_FILTERED <- datasets$get_data(dataname,reactive = TRUE,filtered = TRUE)
+    ANL_FILTERED <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
     # Get user input:
     arm_var <- input$arm_var
-    if (is.null(arm_var) || arm_var == "")
+    if (is.null(arm_var) || arm_var == "") {
       arm_var <- NULL
+    }
     bep_var <- input$bep_var
-    if (is.null(bep_var) || bep_var == "")
+    if (is.null(bep_var) || bep_var == "") {
       bep_var <- NULL
+    }
     cov_var <- input$cov_var
-    if (is.null(cov_var) || cov_var == "")
+    if (is.null(cov_var) || cov_var == "") {
       cov_var <- NULL
+    }
     response_var <- input$response_var
-    if (is.null(response_var) || response_var == "")
+    if (is.null(response_var) || response_var == "") {
       response_var <- NULL
+    }
     frequency_check_box <- input$frequency_check_box
     order_check_box <- input$order_check_box
     stacked_check_box <- input$stacked_check_box
 
-    partition_val = input$partition_slider
-    if (is.null(partition_val) || partition_val == "")
+    partition_val <- input$partition_slider
+    if (is.null(partition_val) || partition_val == "") {
       partition_val <- NULL
+    }
 
     validate(need(!is.null(arm_var), "Please provide a facet variable."))
     validate(need(is.element(arm_var, "STUDYID"), "Please provide STUDYID."))
 
-    asl_vars <- unique(c("USUBJID",cov_var,bep_var))
-    asl_vars <- as.vector(rbind(unlist(arm_var),asl_vars))
+    asl_vars <- unique(c("USUBJID", cov_var, bep_var))
+    asl_vars <- as.vector(rbind(unlist(arm_var), asl_vars))
     asl_vars <- asl_vars[asl_vars != ""]
-    anl_vars <- c("USUBJID","STUDYID","AVAL","AVALU","PARAMCD","EVNTDESC")
+    anl_vars <- c("USUBJID", "STUDYID", "AVAL", "AVALU", "PARAMCD", "EVNTDESC")
 
     ANL_endpoint <- subset(ANL_FILTERED, ANL_FILTERED$PARAMCD == response_var)
 
-    if (any(duplicated(ANL_endpoint[,c("USUBJID", "STUDYID")])))
+    if (any(duplicated(ANL_endpoint[, c("USUBJID", "STUDYID")]))) {
       stop("only one row per patient expected")
+    }
 
     asl_p <- ASL_FILTERED[, asl_vars, drop = FALSE]
     anl_p <- ANL_endpoint[, anl_vars, drop = FALSE]
@@ -194,9 +216,9 @@ srv_tm_bep_safety0 <- function(input,
       cov_var_values <- merged_data[[cov_var]]
       if (is.numeric(cov_var_values)) {
         cov_var_numeric_flag <- TRUE
-        min_cov_val <- as.numeric(min(cov_var_values, na.rm=TRUE))
-        mid_cov_val <- as.numeric(median(cov_var_values, na.rm=TRUE))
-        max_cov_val <- as.numeric(max(cov_var_values, na.rm=TRUE))
+        min_cov_val <- as.numeric(min(cov_var_values, na.rm = TRUE))
+        mid_cov_val <- as.numeric(median(cov_var_values, na.rm = TRUE))
+        max_cov_val <- as.numeric(max(cov_var_values, na.rm = TRUE))
         global_cov_var_selection$is_numeric <- TRUE
         global_cov_var_selection$min_val <- min_cov_val
         global_cov_var_selection$mid_val <- mid_cov_val
@@ -209,8 +231,8 @@ srv_tm_bep_safety0 <- function(input,
     }
 
     # Add factor variable for partitioned continuous covariate.
-    if (!is.null(cov_var) && !is.null(partition_val) && cov_var_numeric_flag)  {
-      new_cov_var <- paste0(cov_var,"_PARTITIONED")
+    if (!is.null(cov_var) && !is.null(partition_val) && cov_var_numeric_flag) {
+      new_cov_var <- paste0(cov_var, "_PARTITIONED")
       merged_data[[new_cov_var]] <- ifelse(merged_data[[cov_var]] >= partition_val, "high", "low")
       cov_var <- new_cov_var
     }
@@ -251,41 +273,51 @@ srv_tm_bep_safety0 <- function(input,
     }
 
     if (order_check_box) {
-      merged_data <- within(merged_data,
-                            EVNTDESC <- factor(EVNTDESC,
-                                               levels=names(sort(table(EVNTDESC),
-                                                                 decreasing=TRUE))))
+      merged_data <- within(
+        merged_data,
+        EVNTDESC <- factor(EVNTDESC,
+          levels = names(sort(table(EVNTDESC),
+            decreasing = TRUE
+          ))
+        )
+      )
     }
 
     plot_list <- list()
     if (!cov_var_numeric_flag || (cov_var_numeric_flag && !is.null(partition_val))) {
-      p <- ggplot(data=merged_data, aes(x=EVNTDESC, y=..count..)) +
-        geom_bar(aes_string(fill=cov_var), stat="count", position=eval(parse(text=bar_type))) +
-        labs(x="Event description", y="Counts") +
-        scale_x_discrete(label=function(x) abbreviate(x, minlength=13), position=x_axis_label_position) +
-        theme(axis.text.x=element_text(angle=40, hjust=hjust_var, vjust=vjust_var),
-              legend.title=element_text(size=13),
-              legend.text=element_text(size=12)) +
-        geom_text(stat='count',
-                  aes_string(label=count_var, group=group_var),
-                  position=eval(parse(text=text_position)),
-                  vjust=-0.1) +
+      p <- ggplot(data = merged_data, aes(x = EVNTDESC, y = ..count..)) +
+        geom_bar(aes_string(fill = cov_var), stat = "count", position = eval(parse(text = bar_type))) +
+        labs(x = "Event description", y = "Counts") +
+        scale_x_discrete(label = function(x) abbreviate(x, minlength = 13), position = x_axis_label_position) +
+        theme(
+          axis.text.x = element_text(angle = 40, hjust = hjust_var, vjust = vjust_var),
+          legend.title = element_text(size = 13),
+          legend.text = element_text(size = 12)
+        ) +
+        geom_text(
+          stat = "count",
+          aes_string(label = count_var, group = group_var),
+          position = eval(parse(text = text_position)),
+          vjust = -0.1
+        ) +
         ggtitle("Safety events without censoring")
-      if (!is.null(facet_var))
+      if (!is.null(facet_var)) {
         p <- p + facet_grid(as.formula(paste(facet_var, "~ .")))
+      }
       if (!is.null(cov_var) && cov_var_numeric_flag) {
-        high_label <- paste0("high [", partition_val,",",max_cov_val,"]")
-        low_label <- paste0("low [", min_cov_val,",",partition_val,"[")
-        cols <- c("#F8766D","#00BFC4")
-        p <- p + scale_fill_manual(labels=c(high_label,low_label), values=cols,
-                                   na.value = "#808080")
+        high_label <- paste0("high [", partition_val, ",", max_cov_val, "]")
+        low_label <- paste0("low [", min_cov_val, ",", partition_val, "[")
+        cols <- c("#F8766D", "#00BFC4")
+        p <- p + scale_fill_manual(
+          labels = c(high_label, low_label), values = cols,
+          na.value = "#808080"
+        )
       }
       plot_list[[1]] <- p
     }
 
-    if (length(plot_list) > 0)
-      do.call("grid.arrange", c(plot_list, ncol=1))
-
+    if (length(plot_list) > 0) {
+      do.call("grid.arrange", c(plot_list, ncol = 1))
+    }
   })
 }
-

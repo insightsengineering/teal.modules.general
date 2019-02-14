@@ -12,4 +12,4 @@ Encoding: UTF-8
 LazyData: true
 Depends: teal, rtables, tern, dplyr, forcats, ggplot2, ggmosaic
 Suggests: random.cdisc.data
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

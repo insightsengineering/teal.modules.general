@@ -8,7 +8,7 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
   use_density = FALSE, color_by_var, row_facet_var, col_facet_var,
   free_x_scales = FALSE, free_y_scales = FALSE, plot_height = c(600,
   200, 2000), pre_output = NULL, post_output = NULL,
-  code_data_processing = NULL)
+  with_show_r_code = TRUE, code_data_processing = NULL)
 }
 \arguments{
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
