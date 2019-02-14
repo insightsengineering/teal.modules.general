@@ -379,25 +379,26 @@ aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", 
     if (freq) {
       quote(.gg + aes(x = .x_var) + geom_histogram() + ylab("Frequency"))
     } else {
-      quote(.gg + aes(x = .x_var) + geom_histogram(aes(y = ..density..)) + ylab("Density"))
+      quote(.gg + aes(x = .x_var) + geom_histogram(aes(y = ..density..)) + ylab("Density")) # nolint
     }
   } else if (x_class == "NULL" && y_class == "numeric") {
     if (freq) {
       quote(.gg + aes(x = .y_var) + geom_histogram() + ylab("Frequency") + coord_flip())
     } else {
-      quote(.gg + aes(x = .y_var) + geom_histogram(aes(y = ..density..)) + ylab("Density") + coord_flip())
+      quote(.gg + aes(x = .y_var) + geom_histogram(aes(y = ..density..)) + ylab("Density") + coord_flip()) # nolint
     }
   } else if (x_class == "factor" && y_class == "NULL") {
     if (freq) {
       quote(.gg + aes(x = .x_var) + geom_bar() + ylab("Frequency"))
     } else {
-      quote(.gg + aes(x = .x_var) + geom_bar(aes(y = ..prop.., group = 1)) + ylab("Proportion"))
+      quote(.gg + aes(x = .x_var) + geom_bar(aes(y = ..prop.., group = 1)) + ylab("Proportion")) # nolint
     }
   } else if (x_class == "NULL" && y_class == "factor") {
     if (freq) {
-      quote(.gg + aes(x = .y_var) + geom_bar() + ylab("Frequency") + coord_flip())
+      quote(.gg + aes(x = .y_var) + geom_bar() + ylab("Frequency") + coord_flip()) # nolint
     } else {
-      quote(.gg + aes(x = .y_var) + geom_bar(aes(y = ..prop.., group = 1)) + ylab("Proportion") + coord_flip())
+      quote(.gg + aes(x = .y_var) + geom_bar(aes(y = ..prop.., group = 1)) + # nolint
+              ylab("Proportion") + coord_flip())
     }
   } else if (x_class == "numeric" && y_class == "numeric") {
     quote(.gg + aes(x = .x_var, y = .y_var) + geom_point())

@@ -125,7 +125,7 @@ srv_t_bep_summary <- function(input,
     summarize_vars <- input$summarize_vars
     summary_type <- input$all_non_bep_radio_buttons
 
-    # as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
+    # leftover code: as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
     teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
 
@@ -190,7 +190,8 @@ srv_t_bep_summary <- function(input,
 
       ANL_stacked <- rbind(
         ANL_select, # all x bep
-        ANL_select[bep, , drop = FALSE], # all x bep
+        # all x bep
+        ANL_select[bep, , drop = FALSE], # nolint
         ANL_select # all patients
       )
 

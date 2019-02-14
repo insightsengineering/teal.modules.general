@@ -183,12 +183,12 @@ srv_g_response <- function(input,
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
-  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE)
+  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))  # nolint
+  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE)  # nolint
 
   plot_call <- reactive({
-    endpoint <- input$endpoint
-    resp_var <- input$resp_var
+    endpoint <- input$endpoint # nolint
+    resp_var <- input$resp_var # nolint
     x_var <- input$x_var
     freq <- input$freq == "frequency"
     row_facet_var <- input$row_facet_var
@@ -212,7 +212,7 @@ srv_g_response <- function(input,
       )
     }
 
-    arg_position <- if (freq) "stack" else "fill"
+    arg_position <- if (freq) "stack" else "fill"  # nolint
     cl_arg_x <- if (is.null(x_var)) {
       1
     } else {
@@ -240,10 +240,11 @@ srv_g_response <- function(input,
 
     if (!freq) {
       if (swap_axes) {
-        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill"))
+        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), # nolint
+                position = "fill"))
         tmp.cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
-        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill"))
+        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
         tmp.cl2 <- quote(expand_limits(y = c(0, 1.2)))
       }
 
@@ -268,7 +269,7 @@ srv_g_response <- function(input,
 
     p <- try(eval(plot_call,
             list2env(setNames(list(ANL_FILTERED, emptyenv()), c(paste0(dataname, "_FILTERED"), "parent")))
-    ))# try + eval
+    ))# try and eval
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))

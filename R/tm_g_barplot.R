@@ -167,7 +167,7 @@ srv_tm_bep_safety0 <- function(input,
     if (is.null(response_var) || response_var == "") {
       response_var <- NULL
     }
-    frequency_check_box <- input$frequency_check_box
+    frequency_check_box <- input$frequency_check_box # nolint
     order_check_box <- input$order_check_box
     stacked_check_box <- input$stacked_check_box
 
@@ -285,7 +285,7 @@ srv_tm_bep_safety0 <- function(input,
 
     plot_list <- list()
     if (!cov_var_numeric_flag || (cov_var_numeric_flag && !is.null(partition_val))) {
-      p <- ggplot(data = merged_data, aes(x = EVNTDESC, y = ..count..)) +
+      p <- ggplot(data = merged_data, aes(x = EVNTDESC, y = ..count..)) + # nolint
         geom_bar(aes_string(fill = cov_var), stat = "count", position = eval(parse(text = bar_type))) +
         labs(x = "Event description", y = "Counts") +
         scale_x_discrete(label = function(x) abbreviate(x, minlength = 13), position = x_axis_label_position) +
