@@ -40,29 +40,29 @@
 #'
 #' ANL <- inner_join(ARS, ASL)
 #'
-#' ANL_filtered <- ANL %>%
+#' anl_filtered <- ANL %>%
 #'   filter(PARAMCD == "BESRSPI") %>%
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = ALL) +
 #'   geom_bar(aes(fill = AVALC))
 #'
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC))
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC)) +
 #'   facet_grid(cols = vars(ARM))
 #'
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
@@ -71,7 +71,7 @@
 #'   coord_flip()
 #'
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
@@ -80,7 +80,7 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution")
 #'
-#' ANL_filtered %>%
+#' anl_filtered %>%
 #'   ggplot() +
 #'   aes(x = fct_rev(SEX)) +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
@@ -120,7 +120,7 @@ tm_g_response <- function(
 
   args <- as.list(environment())
 
-  module(
+  teal::module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
@@ -135,28 +135,37 @@ tm_g_response <- function(
 
 
 
+#' @import teal
 ui_g_response <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = whiteSmallWell(uiOutput(ns("plot_ui"))),
+    output = white_small_well(uiOutput(ns("plot_ui"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
 
       optionalSelectInput(ns("endpoint"), "Endpoint (PARAMCD)", a$endpoint$choices, a$endpoint$selected),
       optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var$choices, a$resp_var$selected),
       optionalSelectInput(ns("x_var"), "X Variable",
-          a$x_var$choices, a$x_var$selected, multiple = TRUE, label_help = helpText("from ASL")),
+        a$x_var$choices, a$x_var$selected,
+        multiple = TRUE, label_help = helpText("from ASL")
+      ),
 
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables",
-          a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
+        a$row_facet_var$choices, a$row_facet_var$selected,
+        multiple = TRUE
+      ),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables",
-          a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
+        a$col_facet_var$choices, a$col_facet_var$selected,
+        multiple = TRUE
+      ),
 
-      radioButtons(ns("freq"), NULL, choices = c("frequency", "density"),
-          selected = ifelse(a$freq, "frequency", "density"), inline = TRUE),
+      radioButtons(ns("freq"), NULL,
+        choices = c("frequency", "density"),
+        selected = ifelse(a$freq, "frequency", "density"), inline = TRUE
+      ),
       checkboxInput(ns("coord_flip"), "swap axes", value = TRUE),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     ),
@@ -183,8 +192,8 @@ srv_g_response <- function(input,
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))  # nolint
-  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE)  # nolint
+  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE)) # nolint
+  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE) # nolint
 
   plot_call <- reactive({
     endpoint <- input$endpoint # nolint
@@ -201,22 +210,22 @@ srv_g_response <- function(input,
     row_facet_var <- teal::no_selected_as_NULL(row_facet_var)
     col_facet_var <- teal::no_selected_as_NULL(col_facet_var)
 
-    cl_ANL <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>% filter(PARAMCD %in% .(endpoint)))
+    cl_anl <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>% filter(PARAMCD %in% .(endpoint)))
 
     asl_vars <- c(x_var, row_facet_var, col_facet_var)
     if (!is.null(asl_vars)) {
       asl_vars <- unique(c("USUBJID", "STUDYID", asl_vars))
-      cl_ANL <- call(
-        "%>%", cl_ANL,
+      cl_anl <- call(
+        "%>%", cl_anl,
         call("left_join", bquote(ASL[, .(asl_vars), drop = FALSE]))
       )
     }
 
-    arg_position <- if (freq) "stack" else "fill"  # nolint
+    arg_position <- if (freq) "stack" else "fill" # nolint
     cl_arg_x <- if (is.null(x_var)) {
       1
     } else {
-      tmp.cl <- if (length(x_var) == 1) {
+      tmp_cl <- if (length(x_var) == 1) {
         as.name(x_var)
       } else {
         tmp <- call_fun_dots("interaction", x_var)
@@ -225,14 +234,14 @@ srv_g_response <- function(input,
       }
 
       if (swap_axes) {
-        call("fct_rev", tmp.cl)
+        call("fct_rev", tmp_cl)
       } else {
-        tmp.cl
+        tmp_cl
       }
     }
 
     plot_call <- bquote(
-      .(cl_ANL) %>%
+      .(cl_anl) %>%
         ggplot() +
         aes(x = .(cl_arg_x)) +
         geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
@@ -240,15 +249,17 @@ srv_g_response <- function(input,
 
     if (!freq) {
       if (swap_axes) {
-        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), # nolint
-                position = "fill"))
-        tmp.cl2 <- quote(expand_limits(y = c(0, 1.4)))
+        tmp_cl1 <- quote(geom_text(
+          stat = "count", aes(label = paste(" ", ..count..), hjust = 0), # nolint
+          position = "fill"
+        ))
+        tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
-        tmp.cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
-        tmp.cl2 <- quote(expand_limits(y = c(0, 1.2)))
+        tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
+        tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
       }
 
-      plot_call <- call("+", call("+", plot_call, tmp.cl1), tmp.cl2)
+      plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
     }
 
     if (swap_axes) {
@@ -263,13 +274,14 @@ srv_g_response <- function(input,
   })
 
   output$plot <- renderPlot({
-    ANL_FILTERED <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
     plot_call <- plot_call()
 
-    p <- try(eval(plot_call,
-            list2env(setNames(list(ANL_FILTERED, emptyenv()), c(paste0(dataname, "_FILTERED"), "parent")))
-    ))# try and eval
+    p <- try(eval(
+      plot_call,
+      list2env(setNames(list(anl_filtered, emptyenv()), c(paste0(dataname, "_FILTERED"), "parent")))
+    )) # try and eval
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))

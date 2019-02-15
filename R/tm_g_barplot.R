@@ -21,7 +21,7 @@ tm_bep_safety0 <- function(label,
                            post_output = NULL,
                            code_data_processing = NULL) {
   args <- as.list(environment())
-  module(
+  teal::module(
     label = label,
     server = srv_tm_bep_safety0,
     ui = ui_tm_bep_safety0,
@@ -33,7 +33,7 @@ tm_bep_safety0 <- function(label,
     filters = dataname
   )
 }
-
+#' @import teal
 ui_tm_bep_safety0 <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -145,10 +145,10 @@ srv_tm_bep_safety0 <- function(input,
   output$plot <- renderPlot({
 
     # Get filtered ASL dataset.
-    ASL_FILTERED <- datasets$get_data("ASL", reactive = TRUE, filtered = TRUE)
+    asl_filtered <- datasets$get_data("ASL", reactive = TRUE, filtered = TRUE)
 
     # Get filtered ARS dataset.
-    ANL_FILTERED <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    anl_filtered <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
     # Get user input:
     arm_var <- input$arm_var
@@ -184,14 +184,14 @@ srv_tm_bep_safety0 <- function(input,
     asl_vars <- asl_vars[asl_vars != ""]
     anl_vars <- c("USUBJID", "STUDYID", "AVAL", "AVALU", "PARAMCD", "EVNTDESC")
 
-    ANL_endpoint <- subset(ANL_FILTERED, ANL_FILTERED$PARAMCD == response_var)
+    anl_endpoint <- subset(anl_filtered, anl_filtered$PARAMCD == response_var)
 
-    if (any(duplicated(ANL_endpoint[, c("USUBJID", "STUDYID")]))) {
+    if (any(duplicated(anl_endpoint[, c("USUBJID", "STUDYID")]))) {
       stop("only one row per patient expected")
     }
 
-    asl_p <- ASL_FILTERED[, asl_vars, drop = FALSE]
-    anl_p <- ANL_endpoint[, anl_vars, drop = FALSE]
+    asl_p <- asl_filtered[, asl_vars, drop = FALSE]
+    anl_p <- anl_endpoint[, anl_vars, drop = FALSE]
 
     merged_data <- merge(
       x = asl_p,
@@ -275,7 +275,7 @@ srv_tm_bep_safety0 <- function(input,
     if (order_check_box) {
       merged_data <- within(
         merged_data,
-        EVNTDESC <- factor(EVNTDESC,
+        EVNTDESC <- factor(EVNTDESC, # nolint
           levels = names(sort(table(EVNTDESC),
             decreasing = TRUE
           ))

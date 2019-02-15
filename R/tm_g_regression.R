@@ -66,7 +66,7 @@ tm_g_regression <- function(
 
   args <- as.list(environment())
 
-  module(
+  teal::module(
     label = label,
     server = srv_g_regression,
     ui = ui_g_regression,
@@ -77,15 +77,16 @@ tm_g_regression <- function(
 }
 
 
+#' @import teal
 ui_g_regression <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = whiteSmallWell(
+    output = white_small_well(
       tags$div(
-        tags$div(whiteSmallWell(uiOutput(ns("plot_ui")))),
+        tags$div(white_small_well(uiOutput(ns("plot_ui")))),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
@@ -93,7 +94,9 @@ ui_g_regression <- function(id, ...) {
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("response_var"), "Response Variable", a$response_var$choices, a$response_var$selected),
       optionalSelectInput(ns("regressor_var"), "Regressor Variables",
-          a$regressor_var$choices, a$regressor_var$selected, multiple = TRUE),
+        a$regressor_var$choices, a$regressor_var$selected,
+        multiple = TRUE
+      ),
       radioButtons(ns("plot_type"),
         label = "Plot Type",
         choices = c(
@@ -117,7 +120,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
 
 
 
-  ANL_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
+  anl_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
 
   fit_cl <- reactive({
     response_var <- input$response_var
@@ -126,20 +129,21 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
     validate(
       need(length(intersect(response_var, regressor_var)) == 0, "response and regressor variables cannot intersect"),
       need(length(regressor_var) > 0, "please select regressor variable"),
-      need(is.numeric(ANL_head[[response_var]]), "response variable needs to be numeric")
+      need(is.numeric(anl_head[[response_var]]), "response variable needs to be numeric")
     )
 
 
     call("lm", as.formula(paste0(response_var, "~", paste(regressor_var, collapse = " + "))),
-        data = as.name("ANL_FILTERED"))
+      data = as.name("anl_filtered")
+    )
   })
 
   fit <- reactive({
-    ANL_FILTERED <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    anl_filtered <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     fit_cl <- fit_cl()
 
     validate(
-      need(nrow(ANL_FILTERED) >= 10, paste("need at lease 10 observations, currenty have only", nrow(ANL_FILTERED)))
+      need(nrow(anl_filtered) >= 10, paste("need at lease 10 observations, currenty have only", nrow(anl_filtered)))
     )
 
     attr(fit_cl[[2]], ".Environment") <- environment()

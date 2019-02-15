@@ -1,5 +1,6 @@
-Package: teal.general
+Package: teal.modules.general
 Type: Package
+Date: 2019-02-15
 Title: What the Package Does (Title Case)
 Version: 0.0.2
 Authors@R: c(
@@ -10,6 +11,7 @@ Description: General Purpose Teal Modules
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: teal, rtables, tern, dplyr, forcats, ggplot2, ggmosaic
+Depends: teal, rtables, tern, dplyr, forcats, ggplot2, ggmosaic, xtable
+Imports: teal.devel
 Suggests: random.cdisc.data
 RoxygenNote: 6.1.1

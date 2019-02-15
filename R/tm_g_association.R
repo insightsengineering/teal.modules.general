@@ -25,7 +25,6 @@
 #'
 #' shinyApp(x$ui, x$server)
 #' }
-#'
 tm_g_association <- function(
                              label = "Association",
                              dataname,
@@ -42,7 +41,7 @@ tm_g_association <- function(
   stopifnot(is.logical(with_show_r_code))
 
 
-  module(
+  teal::module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
@@ -55,6 +54,7 @@ tm_g_association <- function(
   )
 }
 
+#' @import teal
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -110,9 +110,9 @@ srv_tm_g_association <- function(input,
   })
 
 
-  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+  anl_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
 
-  ANL_name <- paste0(dataname, "_FILTERED")
+  anl_name <- paste0(dataname, "_FILTERED")
 
   plot_call <- reactive({
     var <- input$var
@@ -120,17 +120,17 @@ srv_tm_g_association <- function(input,
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
 
-    # annotate globals as.global(ANL_head, var, association, show_dist, log_transformation)
+    # annotate globals as.global(anl_head, var, association, show_dist, log_transformation)
 
     validate(
-      need(nrow(ANL_head) > 3, "need at least three rows"),
+      need(nrow(anl_head) > 3, "need at least three rows"),
       need(length(var) > 0, "need at least one variable selected"),
-      need(all(var %in% names(ANL_head)), paste("not all selected variables are in ", dataname))
+      need(all(var %in% names(anl_head)), paste("not all selected variables are in ", dataname))
     )
 
 
     ref_var <- var[1]
-    ref_var_class <- class(ANL_head[[ref_var]])
+    ref_var_class <- class(anl_head[[ref_var]])
 
     if (ref_var_class == "numeric" && log_transformation) {
       ref_var <- call("log", as.name(ref_var))
@@ -138,19 +138,19 @@ srv_tm_g_association <- function(input,
 
     ref_cl <- call(
       "+",
-      g_bp_cl(ANL_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
+      g_bp_cl(anl_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
       quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
     )
 
     ref_var_class_cov <- if (association) ref_var_class else "NULL"
 
     var_cls <- lapply(var[-1], function(var_i) {
-      class_i <- class(ANL_head[[var_i]])
+      class_i <- class(anl_head[[var_i]])
       if (class_i == "numeric" && log_transformation) {
         var_i <- call("log", as.name(var_i))
       }
 
-      g_bp_cl(ANL_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
+      g_bp_cl(anl_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
     })
 
 
@@ -163,11 +163,11 @@ srv_tm_g_association <- function(input,
 
 
   output$plot <- renderPlot({
-    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
     plot_call <- plot_call()
-    # annotate globals as.global(plot_call, ANL_filtered)
+    # annotate globals as.global(plot_call, anl_filtered)
 
-    p <- try(eval(plot_call, list2env(setNames(list(ANL_filtered, emptyenv()), c(ANL_name, "parent")))))
+    p <- try(eval(plot_call, list2env(setNames(list(anl_filtered, emptyenv()), c(anl_name, "parent")))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))

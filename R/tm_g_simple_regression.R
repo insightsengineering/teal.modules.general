@@ -58,7 +58,7 @@ tm_g_simple_regression <- function(
                                    post_output = NULL) {
   args <- as.list(environment())
 
-  module(
+  teal::module(
     label = label,
     server = srv_g_simple_regression,
     ui = ui_g_simple_regression,
@@ -69,24 +69,29 @@ tm_g_simple_regression <- function(
 }
 
 
+#' @import teal
 ui_g_simple_regression <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = whiteSmallWell(
+    output = white_small_well(
       tags$div(
-        tags$div(whiteSmallWell(uiOutput(ns("plot_ui")))),
+        tags$div(white_small_well(uiOutput(ns("plot_ui")))),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
-      optionalSelectInput(ns("response_var"), "Response Variable",
-          a$response_var$choices, a$response_var$selected),
-      optionalSelectInput(ns("regressor_var"), "Regressor Variables",
-          a$regressor_var$choices, a$regressor_var$selected),
+      optionalSelectInput(
+        ns("response_var"), "Response Variable",
+        a$response_var$choices, a$response_var$selected
+      ),
+      optionalSelectInput(
+        ns("regressor_var"), "Regressor Variables",
+        a$regressor_var$choices, a$regressor_var$selected
+      ),
       radioButtons(ns("plot_type"),
         label = "Plot Type",
         choices = c(
@@ -108,7 +113,7 @@ srv_g_simple_regression <- function(input, output, session, datasets, dataname) 
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  ANL_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
+  anl_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
 
   fit_cl <- reactive({
     response_var <- input$response_var
@@ -117,19 +122,19 @@ srv_g_simple_regression <- function(input, output, session, datasets, dataname) 
     validate(
       need(length(intersect(response_var, regressor_var)) == 0, "response and regressor variables cannot intersect"),
       need(length(regressor_var) == 1, "please select a regressor variable"),
-      need(is.numeric(ANL_head[[response_var]]), "response variable needs to be numeric")
+      need(is.numeric(anl_head[[response_var]]), "response variable needs to be numeric")
     )
 
 
-    call("lm", as.formula(paste0(response_var, "~", regressor_var)), data = as.name("ANL_FILTERED"))
+    call("lm", as.formula(paste0(response_var, "~", regressor_var)), data = as.name("anl_filtered"))
   })
 
   fit <- reactive({
-    ANL_FILTERED <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    anl_filtered <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     fit_cl <- fit_cl()
 
     validate(
-      need(nrow(ANL_FILTERED) >= 10, paste("need at lease 10 observations, currenty have only", nrow(ANL_FILTERED)))
+      need(nrow(anl_filtered) >= 10, paste("need at lease 10 observations, currenty have only", nrow(anl_filtered)))
     )
 
     attr(fit_cl[[2]], ".Environment") <- environment()
@@ -138,7 +143,17 @@ srv_g_simple_regression <- function(input, output, session, datasets, dataname) 
     fit <- eval(fit_cl)
     fit
   })
-
+###########################
+###########################
+###########################
+###########################
+######## 13:38 #############
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
   output$plot <- renderPlot({
     fit <- fit()
     plot_type <- input$plot_type

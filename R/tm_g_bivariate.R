@@ -1,7 +1,9 @@
 #' Univariate and bivariate visualizations.
 #'
-#' @param x_var variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
-#' @param y_var variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.
+#' @param x_var variable name selected to plot along the x-axis by default. Variable can be numeric,
+#'  factor or character.
+#' @param y_var variable name selected to plot along the y-axis by default. Variable can be numeric,
+#'  factor or character.
 #' @param use_density boolean value for whether density is plotted
 #' @param row_facet_var variable for x facets
 #' @param col_facet_var variable for y facets
@@ -54,7 +56,7 @@
 #'
 #' shinyApp(x$ui, x$server)
 #' }
-#'@importFrom teal add_no_selected_choices
+#' @importFrom teal add_no_selected_choices
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x_var,
@@ -85,7 +87,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   args <- as.list(environment())
 
-  module(
+  teal::module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
@@ -96,23 +98,30 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 
+#' @import teal
 ui_g_bivariate <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = whiteSmallWell(uiOutput(ns("plot_ui"))),
+    output = white_small_well(uiOutput(ns("plot_ui"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("x_var"), "x var", a$x_var$choices, a$x_var$selected),
       optionalSelectInput(ns("y_var"), "y var", a$y_var$choices, a$y_var$selected),
-      radioButtons(ns("use_density"), NULL, choices = c("frequency", "density"),
-          selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE),
+      radioButtons(ns("use_density"), NULL,
+        choices = c("frequency", "density"),
+        selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
+      ),
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables",
-          a$row_facet_var$choices, a$row_facet_var$selected, multiple = TRUE),
+        a$row_facet_var$choices, a$row_facet_var$selected,
+        multiple = TRUE
+      ),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables",
-          a$col_facet_var$choices, a$col_facet_var$selected, multiple = TRUE),
+        a$col_facet_var$choices, a$col_facet_var$selected,
+        multiple = TRUE
+      ),
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
       checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_y_scales),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
@@ -138,9 +147,9 @@ srv_g_bivariate <- function(input,
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
+  anl_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
 
-  ANL_name <- paste0(dataname, "_FILTERED")
+  anl_name <- paste0(dataname, "_FILTERED")
 
   plot_call <- reactive({
     x_var <- input$x_var
@@ -154,27 +163,27 @@ srv_g_bivariate <- function(input,
     if (x_var == "-- no x --") x_var <- NULL
     if (y_var == "-- no y --") y_var <- NULL
 
-    x <- if (!is.null(x_var)) ANL_head[[x_var]] else NULL
-    y <- if (!is.null(y_var)) ANL_head[[y_var]] else NULL
+    x <- if (!is.null(x_var)) anl_head[[x_var]] else NULL
+    y <- if (!is.null(y_var)) anl_head[[y_var]] else NULL
 
-    validate(need(ANL_head, "data missing"))
-    validate(need(nrow(ANL_head) > 3, "need at least 10 records"))
+    validate(need(anl_head, "data missing"))
+    validate(need(nrow(anl_head) > 3, "need at least 10 records"))
     validate(need(
       !is.null(x) || !is.null(y),
       "At least one variable needs to be provided"
     ))
     if (!is.null(row_facet_var)) {
-      validate(need(all(row_facet_var %in% names(ANL_head)), "not all x facet variables are in data"))
+      validate(need(all(row_facet_var %in% names(anl_head)), "not all x facet variables are in data"))
     }
     if (!is.null(col_facet_var)) {
-      validate(need(all(col_facet_var %in% names(ANL_head)), "not all y facet variables are in data"))
+      validate(need(all(col_facet_var %in% names(anl_head)), "not all y facet variables are in data"))
     }
     if (!is.null(col_facet_var) && !is.null(col_facet_var)) {
       validate(need(length(intersect(row_facet_var, col_facet_var)) == 0, "x and y facet variables cannot overlap"))
     }
 
 
-    cl <- g_bp_cl(ANL_name, x_var, y_var, class(x), class(y), freq = !use_density)
+    cl <- g_bp_cl(anl_name, x_var, y_var, class(x), class(y), freq = !use_density)
 
     facet_cl <- g_facet_cl(row_facet_var, col_facet_var, free_x_scales, free_y_scales)
 
@@ -184,12 +193,12 @@ srv_g_bivariate <- function(input,
   })
 
   output$plot <- renderPlot({
-    ANL_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
     plot_call <- plot_call()
-    # call global like as.global(plot_call, ANL_filtered)
+    # call global like as.global(plot_call, anl_filtered)
 
-    p <- try(eval(plot_call, list2env(setNames(list(ANL_filtered, emptyenv()), c(ANL_name, "parent")))))
+    p <- try(eval(plot_call, list2env(setNames(list(anl_filtered, emptyenv()), c(anl_name, "parent")))))
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
@@ -398,7 +407,7 @@ aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", 
       quote(.gg + aes(x = .y_var) + geom_bar() + ylab("Frequency") + coord_flip()) # nolint
     } else {
       quote(.gg + aes(x = .y_var) + geom_bar(aes(y = ..prop.., group = 1)) + # nolint
-              ylab("Proportion") + coord_flip())
+        ylab("Proportion") + coord_flip())
     }
   } else if (x_class == "numeric" && y_class == "numeric") {
     quote(.gg + aes(x = .x_var, y = .y_var) + geom_point())

@@ -11,9 +11,11 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
   with_show_r_code = TRUE, code_data_processing = NULL)
 }
 \arguments{
-\item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.}
+\item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric,
+factor or character.}
 
-\item{y_var}{variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
+\item{y_var}{variable name selected to plot along the y-axis by default. Variable can be numeric,
+factor or character.}
 
 \item{use_density}{boolean value for whether density is plotted}
 
@@ -60,10 +62,9 @@ x <- teal::init(
       col_facet_var = choices_selected(c("F1", "F2"), NULL),
       plot_height = c(600, 200, 2000)
     )
-  ))
+  )
+)
 
 shinyApp(x$ui, x$server)
-
 }
-
 }

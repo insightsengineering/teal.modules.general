@@ -3,7 +3,7 @@
 #'
 #' Display a summary table comparing analysis populations as a shiny module
 #'
-#' @inheritParams teal.tern::tm_t_summarize_variables
+#' @inheritParams teal.modules.clinical::tm_t_summary
 #' @param bep_var character string containing name of boolean vector for the biomarker evaluable population (BEP)
 #'   to compare in the table
 #' @param bep_var_choices  character vector with names of additional variables that can
@@ -60,7 +60,7 @@ tm_t_bep_summary <- function(label,
 
   args <- as.list(environment())
 
-  module(
+  teal::module(
     label = label,
     server = srv_t_bep_summary,
     ui = ui_t_bep_summary,
@@ -73,12 +73,13 @@ tm_t_bep_summary <- function(label,
   )
 }
 
+#' @import teal
 ui_t_bep_summary <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
 
   standard_layout(
-    output = whiteSmallWell(uiOutput(ns("table"))),
+    output = white_small_well(uiOutput(ns("table"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
@@ -118,31 +119,31 @@ srv_t_bep_summary <- function(input,
                               dataname,
                               code_data_processing) {
   output$table <- renderUI({
-    ANL_f <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    anl_f <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
     bep_var <- input$bep_var
     arm_var <- input$arm_var
     summarize_vars <- input$summarize_vars
     summary_type <- input$all_non_bep_radio_buttons
 
-    # leftover code: as.global(ANL_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
+    # leftover code: as.global(anl_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
-    teal.tern:::validate_has_data(ANL_f, min_nrow = 3)
+    teal.tern:::validate_has_data(anl_f, min_nrow = 3)
 
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
-    validate(need(is.logical(ANL_f[[bep_var]]), "BEP variable does not exist"))
-    validate(need(!any(is.na(ANL_f[[bep_var]])), "Please recode NA levels in BEP variable"))
-    validate(need(!("" %in% ANL_f[[bep_var]]), "BEP values cannot contain empty strings"))
+    validate(need(is.logical(anl_f[[bep_var]]), "BEP variable does not exist"))
+    validate(need(!any(is.na(anl_f[[bep_var]])), "Please recode NA levels in BEP variable"))
+    validate(need(!("" %in% anl_f[[bep_var]]), "BEP values cannot contain empty strings"))
 
     validate(need(!is.null(summarize_vars), "Please select a summarize variable"))
-    validate(need(all(summarize_vars %in% names(ANL_f)), "Not all variables available"))
+    validate(need(all(summarize_vars %in% names(anl_f)), "Not all variables available"))
 
     arm_var <- teal::no_selected_as_NULL(arm_var)
-    if (!is.null(arm_var)) validate(need(ANL_f[[arm_var]], "Arm variable does not exist"))
+    if (!is.null(arm_var)) validate(need(anl_f[[arm_var]], "Arm variable does not exist"))
 
-    bep <- ANL_f[[bep_var]]
-    ANL_select <- ANL_f[, summarize_vars, drop = FALSE]
-    arm <- if (is.null(arm_var)) NULL else ANL_f[[arm_var]]
+    bep <- anl_f[[bep_var]]
+    anl_select <- anl_f[, summarize_vars, drop = FALSE]
+    arm <- if (is.null(arm_var)) NULL else anl_f[[arm_var]]
 
 
     all_bep <- all(bep)
@@ -151,7 +152,7 @@ srv_t_bep_summary <- function(input,
       # normal t_summary without stacking
 
       cb <- if (is.null(arm)) {
-        factor(rep("All Patients", nrow(ANL_select)))
+        factor(rep("All Patients", nrow(anl_select)))
       } else if (summary_type != "ALL" && all_bep) {
         tmp <- arm
         levels(tmp) <- paste(levels(tmp), "BEP", sep = "\n")
@@ -161,7 +162,7 @@ srv_t_bep_summary <- function(input,
       }
 
       list(
-        data = ANL_select,
+        data = anl_select,
         col_by = cb,
         total = if (is.null(arm_var)) NULL else "All Patients",
         pop = if (summary_type == "ALL") {
@@ -172,31 +173,28 @@ srv_t_bep_summary <- function(input,
           "non-bep"
         }
       ) # NEXT if() population in tablecolumns does not overlap --  no stacking required
-    } else if (summary_type == "BEP vs Non-BEP"){
-
-
-
+    } else if (summary_type == "BEP vs Non-BEP") {
       cb <- factor(ifelse(bep, "BEP", "Non-BEP"), levels = c("Non-BEP", "BEP"))
 
       list(
-        data = ANL_select,
+        data = anl_select,
         col_by = if (is.null(arm)) cb else interaction(arm, cb, sep = "\n", lex.order = TRUE),
         total = "All Patients",
         pop = "mixed"
       )
     } else {
-      N <- nrow(ANL_select) # population in table columns does overlap --  stacking required
-      N_bep <- sum(bep)
+      n <- nrow(anl_select) # population in table columns does overlap --  stacking required
+      n_bep <- sum(bep)
 
-      ANL_stacked <- rbind(
-        ANL_select, # all x bep
+      anl_stacked <- rbind(
+        anl_select, # all x bep
         # all x bep
-        ANL_select[bep, , drop = FALSE], # nolint
-        ANL_select # all patients
+        anl_select[bep, , drop = FALSE], # nolint
+        anl_select # all patients
       )
 
       # new
-      cb_all_bep <- factor(c(rep("ALL", N), rep("BEP", N_bep)), levels = c("ALL", "BEP"))
+      cb_all_bep <- factor(c(rep("ALL", n), rep("BEP", n_bep)), levels = c("ALL", "BEP"))
 
 
       cb_all_bep_arm <- if (is.null(arm)) {
@@ -208,7 +206,7 @@ srv_t_bep_summary <- function(input,
 
 
       list(
-        data = ANL_stacked,
+        data = anl_stacked,
         col_by = droplevels(unlist(list(cb_all_bep_arm, factor(rep("All Patients", N))), use.names = FALSE)),
         total = NULL,
         pop = "mixed"
@@ -219,13 +217,13 @@ srv_t_bep_summary <- function(input,
     if (!is.factor(x$col_by)) x$col_by <- as.factor(x$col_by)
 
 
-    N <- table(x$col_by)
-    if (any(N == 0)) {
+    n <- table(x$col_by)
+    if (any(n == 0)) {
 
       # this is a special case that will be removed as soon t_summary allows for 0-count columns
       tagList(
         tags$p(
-          "Note that the columns ", tags$b(paste(names(N)[N == 0], collapse = ", ")),
+          "Note that the columns ", tags$b(paste(names(n)[n == 0], collapse = ", ")),
           "were removed as they have 0 count"
         ),
         as_html(t_summary(x$data, droplevels(x$col_by), total = x$total))

@@ -37,7 +37,8 @@ x <- teal::init(
       regressor_var = choices_selected(names(ASL), "cont2"),
       plot_height = c(600, 200, 2000)
     )
-  ))
+  )
+)
 
 shinyApp(x$ui, x$server)
 
@@ -51,9 +52,6 @@ abline(fit)
 
 
 plot(fit)
-
 }
-
-
 
 }
