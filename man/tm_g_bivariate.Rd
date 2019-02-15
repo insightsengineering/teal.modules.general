@@ -11,6 +11,8 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
   with_show_r_code = TRUE, code_data_processing = NULL)
 }
 \arguments{
+\item{label}{(\code{character}) Label of the module}
+
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric,
 factor or character.}
 

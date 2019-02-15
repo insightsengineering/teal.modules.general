@@ -6,7 +6,7 @@ The modules in this package are generic modules that should work with any data s
 For general reusable modules see:
 
 * teal base package modules
-* teal.tern modules
+* teal.modules.clinical modules
 * teal.osprey 
 * teal.goshawk
 
@@ -41,7 +41,7 @@ devtools::install_github(
 )
 
 devtools::install_github(
-  repo = "Rpackages/teal.tern",
+  repo = "Rpackages/teal.modules.clinical",
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
 )

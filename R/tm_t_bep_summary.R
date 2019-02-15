@@ -2,7 +2,8 @@
 #' Summary Table Comparing Analysis Populations
 #'
 #' Display a summary table comparing analysis populations as a shiny module
-#'
+#' @importFrom teal.devel validate_has_data
+#' @import teal.modules.clinical
 #' @inheritParams teal.modules.clinical::tm_t_summary
 #' @param bep_var character string containing name of boolean vector for the biomarker evaluable population (BEP)
 #'   to compare in the table
@@ -12,6 +13,8 @@
 #' @export
 #'
 #' @importFrom teal add_no_selected_choices
+#' @importFrom rtables as_html
+#' @importFrom tern t_summary
 #'
 #' @examples
 #'
@@ -74,12 +77,13 @@ tm_t_bep_summary <- function(label,
 }
 
 #' @import teal
+#' @importFrom teal.devel white_small_well
 ui_t_bep_summary <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
 
   standard_layout(
-    output = white_small_well(uiOutput(ns("table"))),
+    output = teal.devel::white_small_well(uiOutput(ns("table"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
@@ -128,7 +132,7 @@ srv_t_bep_summary <- function(input,
 
     # leftover code: as.global(anl_f, bep_var, arm_var, summarize_vars, is_bep_vs_non_bep)
 
-    teal.tern:::validate_has_data(anl_f, min_nrow = 3)
+    teal.devel::validate_has_data(anl_f, min_nrow = 3)
 
     validate(need(!is.null(bep_var), "Please provide a BEP variable"))
     validate(need(is.logical(anl_f[[bep_var]]), "BEP variable does not exist"))
@@ -207,7 +211,7 @@ srv_t_bep_summary <- function(input,
 
       list(
         data = anl_stacked,
-        col_by = droplevels(unlist(list(cb_all_bep_arm, factor(rep("All Patients", N))), use.names = FALSE)),
+        col_by = droplevels(unlist(list(cb_all_bep_arm, factor(rep("All Patients", n))), use.names = FALSE)),
         total = NULL,
         pop = "mixed"
       )
@@ -226,7 +230,7 @@ srv_t_bep_summary <- function(input,
           "Note that the columns ", tags$b(paste(names(n)[n == 0], collapse = ", ")),
           "were removed as they have 0 count"
         ),
-        as_html(t_summary(x$data, droplevels(x$col_by), total = x$total))
+        rtables::as_html(tern::t_summary(x$data, droplevels(x$col_by), total = x$total))
       )
     } else {
       tbl <- try(t_summary(x$data, x$col_by, total = x$total), silent = TRUE)
@@ -234,7 +238,7 @@ srv_t_bep_summary <- function(input,
       if (is(tbl, "try-error")) {
         tags$p(tbl)
       } else {
-        tbl_html <- as_html(tbl)
+        tbl_html <- rtables::as_html(tbl)
 
         if (x$pop == "bep") {
           tagList(

@@ -166,7 +166,7 @@ srv_table <- function(input, output, session, datasets, dataname) {
     )
 
 
-    showRCodeModal(
+    teal.devel::show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = code
     )

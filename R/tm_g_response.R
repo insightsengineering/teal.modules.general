@@ -136,13 +136,14 @@ tm_g_response <- function(
 
 
 #' @import teal
+#' @importFrom teal.devel white_small_well
 ui_g_response <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = white_small_well(uiOutput(ns("plot_ui"))),
+    output = teal.devel::white_small_well(uiOutput(ns("plot_ui"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
 
@@ -177,6 +178,7 @@ ui_g_response <- function(id, ...) {
 
 
 #' @importFrom teal no_selected_as_NULL
+#' @importFrom teal.devel get_rcode_header
 srv_g_response <- function(input,
                            output,
                            session,
@@ -291,7 +293,7 @@ srv_g_response <- function(input,
   })
 
   observeEvent(input$show_rcode, {
-    header <- get_rcode_header(
+    header <- teal.devel::get_rcode_header(
       title = "Bivariate and Univariate Plot",
       datanames = dataname,
       datasets = datasets,

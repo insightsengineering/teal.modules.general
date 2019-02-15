@@ -70,15 +70,16 @@ tm_g_simple_regression <- function(
 
 
 #' @import teal
+#' @importFrom teal.devel white_small_well
 ui_g_simple_regression <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = white_small_well(
+    output = teal.devel::white_small_well(
       tags$div(
-        tags$div(white_small_well(uiOutput(ns("plot_ui")))),
+        tags$div(teal.devel::white_small_well(uiOutput(ns("plot_ui")))),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
@@ -107,6 +108,7 @@ ui_g_simple_regression <- function(id, ...) {
 }
 
 #' @importFrom teal.devel as.global
+#' @importFrom graphics plot abline
 srv_g_simple_regression <- function(input, output, session, datasets, dataname) {
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
@@ -161,7 +163,7 @@ srv_g_simple_regression <- function(input, output, session, datasets, dataname) 
 
     if (plot_type == "Response vs Regressor") {
       plot(fit$model[, 2:1])
-      abline(fit)
+      graphics::abline(fit)
     } else {
       i <- which(plot_type == c(
         "Residuals vs Fitted",

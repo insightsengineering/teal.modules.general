@@ -1,5 +1,6 @@
 #' Univariate and bivariate visualizations.
 #'
+#' @param label (\code{character}) Label of the module
 #' @param x_var variable name selected to plot along the x-axis by default. Variable can be numeric,
 #'  factor or character.
 #' @param y_var variable name selected to plot along the y-axis by default. Variable can be numeric,
@@ -99,13 +100,14 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
 
 #' @import teal
+#' @importFrom teal.devel white_small_well
 ui_g_bivariate <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = white_small_well(uiOutput(ns("plot_ui"))),
+    output = teal.devel::white_small_well(uiOutput(ns("plot_ui"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("x_var"), "x var", a$x_var$choices, a$x_var$selected),
@@ -132,6 +134,8 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
+#' @importFrom methods is
+#' @importFrom teal.devel get_rcode_header
 srv_g_bivariate <- function(input,
                             output,
                             session,
@@ -209,7 +213,7 @@ srv_g_bivariate <- function(input,
 
 
   observeEvent(input$show_rcode, {
-    header <- get_rcode_header(
+    header <- teal.devel::get_rcode_header(
       title = "Bivariate and Univariate Plot",
       datanames = dataname,
       datasets = datasets,
@@ -423,5 +427,5 @@ aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", 
 }
 
 label_over_name <- function(x, name) {
-  if (is.null(label)) name else label
+  if (is.null(x)) name else x
 }

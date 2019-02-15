@@ -95,7 +95,7 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
-
+#' @importFrom teal.devel get_rcode_header
 srv_tm_g_association <- function(input,
                                  output,
                                  session,
@@ -177,12 +177,12 @@ srv_tm_g_association <- function(input,
   })
 
   observeEvent(input$show_rcode, {
-    header <- get_rcode_header(
+    header <- teal.devel::get_rcode_header(
       title = "Association Plot",
       datanames = dataname,
       datasets = datasets,
       code_data_processing,
-      packages = c("ggplot2", "ggmosaic")
+      libraries = c("ggplot2", "ggmosaic")
     )
 
     str_rcode <- paste(c(

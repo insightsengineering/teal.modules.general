@@ -243,7 +243,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       collapse = "\n"
     )
 
-    showRCodeModal(
+    teal.devel::show_rcode_modal(
       title = "R Code for the Current Scatterplot",
       rcode = code
     )

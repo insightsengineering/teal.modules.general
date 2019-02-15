@@ -78,15 +78,16 @@ tm_g_regression <- function(
 
 
 #' @import teal
+#' @importFrom teal.devel white_small_well
 ui_g_regression <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = white_small_well(
+    output = teal.devel::white_small_well(
       tags$div(
-        tags$div(white_small_well(uiOutput(ns("plot_ui")))),
+        tags$div(teal.devel::white_small_well(uiOutput(ns("plot_ui")))),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
@@ -112,6 +113,8 @@ ui_g_regression <- function(id, ...) {
 }
 
 #' @importFrom teal.devel as.global
+#' @importFrom graphics plot
+#' @importFrom methods is
 srv_g_regression <- function(input, output, session, datasets, dataname) {
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
@@ -164,14 +167,14 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
       "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
     ))
 
-    plot(fit, which = i, id.n = NULL)
+    graphics::plot(fit, which = i, id.n = NULL)
   })
 
 
   output$text <- renderPrint({
     fit <- fit()
 
-    validate(need(is(fit, "lm"), "there seem to problems fitting the model"))
+    validate(need(methods::is(fit, "lm"), "there seem to problems fitting the model"))
 
     summary(fit)
   })

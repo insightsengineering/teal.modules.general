@@ -1,3 +1,31 @@
+#' Bar plot for safety events
+#'
+#'
+#'
+#' @examples
+#' \dontrun{
+#' library(random.cdisc.data)
+#'
+#' ASL <- radsl(N = 600)
+#' ADTE <- radaette(ASL)
+#'
+#' app <- teal::init(
+#'  data = list(ASL = ASL, ADTE = ADTE),
+#'  modules = root_modules(
+#'    teal.modules.general::tm_bep_safety0(label = "My label", dataname = "ADTE",
+#'        arm_var=c("STUDYID"), bep_var = "", cov_var = "", response_var = c("AETTE1"),responder_var_choices = c(
+#'            "AETTE2","AETTE1"
+#'            ),
+#'        responder_var = "", non_responder_var = "", exclude_var = "",
+#'        color_coding_var = ""
+#'        )
+#'  )
+#' )
+#'
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#' @export
 tm_bep_safety0 <- function(label,
                            dataname,
                            arm_var,
@@ -95,6 +123,7 @@ ui_tm_bep_safety0 <- function(id, ...) {
   )
 }
 
+#' @importFrom gridExtra grid.arrange
 srv_tm_bep_safety0 <- function(input,
                                output,
                                session,
@@ -285,7 +314,7 @@ srv_tm_bep_safety0 <- function(input,
 
     plot_list <- list()
     if (!cov_var_numeric_flag || (cov_var_numeric_flag && !is.null(partition_val))) {
-      p <- ggplot(data = merged_data, aes(x = EVNTDESC, y = ..count..)) + # nolint
+      p <- ggplot(data = merged_data, aes_string(x = "EVNTDESC", y = "..count..")) + # nolint
         geom_bar(aes_string(fill = cov_var), stat = "count", position = eval(parse(text = bar_type))) +
         labs(x = "Event description", y = "Counts") +
         scale_x_discrete(label = function(x) abbreviate(x, minlength = 13), position = x_axis_label_position) +
