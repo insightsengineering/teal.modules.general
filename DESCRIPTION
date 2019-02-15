@@ -1,7 +1,7 @@
 Package: teal.modules.general
 Type: Package
 Date: 2019-02-15
-Title: What the Package Does (Title Case)
+Title: General modules to add to a teal application.
 Version: 0.0.2
 Authors@R: c(
   person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre")),
@@ -11,7 +11,7 @@ Description: General Purpose Teal Modules
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: teal, rtables, tern, dplyr, forcats, ggplot2, ggmosaic, xtable
+Depends: teal, rtables, tern, dplyr, forcats, ggplot2, ggmosaic, xtable, random.cdisc.data, shiny, testthat
 Imports: teal.devel
-Suggests: random.cdisc.data
+Suggests:
 RoxygenNote: 6.1.1

@@ -111,6 +111,7 @@ ui_g_regression <- function(id, ...) {
   )
 }
 
+#' @importFrom teal.devel as.global
 srv_g_regression <- function(input, output, session, datasets, dataname) {
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
@@ -148,7 +149,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
 
     attr(fit_cl[[2]], ".Environment") <- environment()
 
-    as.global(fit_cl)
+    teal.devel::as.global(fit_cl)
     fit <- eval(fit_cl)
     fit
   })

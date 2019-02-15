@@ -132,6 +132,7 @@ ui_scatterplot <- function(id, label,
 }
 
 #' @import stats utils
+#' @importFrom teal.devel get_filter_txt
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
 
 
@@ -205,7 +206,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       git_repo = "http://github.roche.com/Rpackages/teal/R/tm_scatterplot.R"
     )
 
-    str_filter <- get_filter_txt(dataname, datasets)
+    str_filter <- teal.devel::get_filter_txt(dataname, datasets)
 
     chunks <- parse_code_chunks(txt = capture.output(srv_scatterplot))
 

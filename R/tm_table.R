@@ -103,6 +103,7 @@ ui_table <- function(id, label, dataname, xvar, yvar,
 
 
 #' @import stats
+#' @importFrom teal.devel get_filter_txt
 srv_table <- function(input, output, session, datasets, dataname) {
   output$table <- renderTable({
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
@@ -147,7 +148,7 @@ srv_table <- function(input, output, session, datasets, dataname) {
       git_repo = "http://github.roche.com/Rpackages/teal/R/tm_table.R"
     )
 
-    str_filter <- get_filter_txt(dataname, datasets)
+    str_filter <- teal.devel::get_filter_txt(dataname, datasets)
 
     code <- paste(
       c(
