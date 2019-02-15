@@ -1,6 +1,16 @@
-
 #' Stack Plots of variables and show association with reference variable
 #'
+#' @importFrom teal choices_selected
+#'
+#' @inheritParams teal::standard_layout
+#' @inheritParams teal::module
+#' @param dataname (\code{character}) data set name to analyze
+#' @param var (\code{choices_selected}) TODO
+#' @param show_association (\code{logical}) TODO
+#' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
+#' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
+#' @param code_data_processing (\code{character}) Code for data pre-processing to be shown in the
+#'   "Show R Code" window.
 #'
 #' @export
 #'

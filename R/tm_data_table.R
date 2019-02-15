@@ -36,9 +36,13 @@ tm_data_table <- function(label = "data table", variables_selected = NULL) {
 }
 
 
+#' ui function of Data Table Viewer
+#'
+#' @param id (\code{character}) UI id
+#' @param datasets (\code{FilteredData}) object
+#'
 #' @import stats
 #' @importFrom DT dataTableOutput
-# ui function
 ui_page_data_table <- function(id, datasets) {
   ns <- NS(id)
 
