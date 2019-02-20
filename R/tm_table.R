@@ -4,7 +4,7 @@
 #'
 #' @param label menu label
 #' @param dataname name of dataset used to generate table
-#' @param xvar variable name of x varbiable
+#' @param xvar variable name of x variable
 #' @param yvar variable name of y variable
 #' @param xvar_choices vector with variable names of possible x variables. If
 #'   missing or identincal to \code{xvar} then the table will be fixed to the
@@ -55,7 +55,6 @@
 tm_table <- function(label,
                      dataname,
                      xvar, yvar,
-                     xvar_choices = xvar, yvar_choices = yvar,
                      useNA = c("ifany", "no", "always"), # nolint
                      pre_output = NULL, post_output = NULL) {
   args <- as.list(environment())
@@ -76,7 +75,6 @@ tm_table <- function(label,
 
 #' @import teal
 ui_table <- function(id, label, dataname, xvar, yvar,
-                     xvar_choices, yvar_choices,
                      useNA, # nolint
                      pre_output, post_output) {
   ns <- NS(id)
@@ -87,8 +85,8 @@ ui_table <- function(id, label, dataname, xvar, yvar,
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(dataname)),
-      optionalSelectInput(ns("xvar"), "x variable (row)", xvar_choices, xvar, multiple = FALSE),
-      optionalSelectInput(ns("yvar"), "y variable (column)", yvar_choices, yvar, multiple = FALSE),
+      optionalSelectInput(ns("xvar"), "x variable (row)", xvar$choices, xvar$selected, multiple = FALSE),
+      optionalSelectInput(ns("yvar"), "y variable (column)", yvar$choices, yvar$selected, multiple = FALSE),
       radioButtons(ns("useNA"),
         label = "Display Missing Values",
         choices = c("no", "ifany", "always"), selected = useNA
@@ -105,13 +103,17 @@ ui_table <- function(id, label, dataname, xvar, yvar,
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
 srv_table <- function(input, output, session, datasets, dataname) {
+
+  code_chunks <- list()
+  as.global(code_chunks)
+
   output$table <- renderTable({
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     xvar <- input$xvar
     yvar <- input$yvar
     useNA <- # nolint
         input$useNA # nolint
-    add_margins <- input$margins
+    use_margin <- input$margins
 
     validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
     validate(need(nrow(anl) > 0, "no observations left"))
@@ -126,10 +128,19 @@ srv_table <- function(input, output, session, datasets, dataname) {
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
+    if(use_margin){
+      expression_to_use <- expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA)))
+    }else{
+      expression_to_use <- expr(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA))
+    }
 
-    tbl <- table(anl[[xvar]], anl[[yvar]], useNA = useNA)
+    set_chunk(
+        id = "tbl",
+        expression = expression_to_use,
+        vars = list(dataset = anl, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
+    )
 
-    if (add_margins) tbl <- addmargins(tbl)
+    tbl <- eval_chunk("tbl")
 
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
@@ -155,11 +166,7 @@ srv_table <- function(input, output, session, datasets, dataname) {
         "\n",
         str_header, "\n\n",
         str_filter, "\n\n",
-        if (add_margins) {
-          paste0("with(", dataname, "_FILTERED, addmargins(table(", xvar, ", ", yvar, ", useNA = '", useNA, "')))")
-        } else {
-          paste0("with(", dataname, "_FILTERED, table(", xvar, ", ", yvar, ", useNA = '", useNA, "'))")
-        },
+        get_code_chunk("tbl"),
         "\n"
       ),
       collapse = ""

@@ -6,6 +6,11 @@
 \usage{
 ui_page_data_table(id, datasets)
 }
+\arguments{
+\item{id}{(\code{character}) UI id}
+
+\item{datasets}{(\code{FilteredData}) object}
+}
 \description{
 ui function of Data Table Viewer
 }
