@@ -42,7 +42,6 @@ tm_data_table <- function(label = "data table", variables_selected = NULL) {
 #' @param datasets (\code{FilteredData}) object
 #'
 #' @import stats
-#' @importFrom DT dataTableOutput
 ui_page_data_table <- function(id, datasets) {
   ns <- NS(id)
 
@@ -81,7 +80,6 @@ ui_page_data_table <- function(id, datasets) {
 ## data table
 #' @import utils
 #' @importFrom dplyr count_
-#' @importFrom DT renderDataTable datatable
 srv_page_data_table <- function(input, output, session, datasets, cache_selected = list()) {
 
 

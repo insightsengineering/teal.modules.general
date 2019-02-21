@@ -29,7 +29,8 @@ app <- teal::init(
  data = list(ASL = ASL, ADTE = ADTE),
  modules = root_modules(
    teal.modules.general::tm_bep_safety0(label = "My label", dataname = "ADTE",
-       arm_var=c("STUDYID"), bep_var = "", cov_var = "", response_var = c("AETTE1"),responder_var_choices = c(
+       arm_var=c("STUDYID"), bep_var = "", cov_var = "", response_var = c("AETTE1"),
+           responder_var_choices = c(
            "AETTE2","AETTE1"
            ),
        responder_var = "", non_responder_var = "", exclude_var = "",
