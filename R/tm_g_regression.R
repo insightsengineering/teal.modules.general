@@ -6,7 +6,7 @@
 #' @import ggplot2
 #'
 #' @export
-#'
+#' @inheritParams teal::standard_layout
 #'
 #' @examples
 #'
@@ -87,15 +87,17 @@ ui_g_regression <- function(id, ...) {
   standard_layout(
     output = teal.devel::white_small_well(
       tags$div(
-        tags$div(teal.devel::white_small_well(uiOutput(ns("plot_ui")))),
+          # This shall be wrapped in a teal::plot
+        ui_plot_with_height(ns("plot_ui")),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
-      optionalSelectInput(ns("response_var"), "Response Variable", a$response_var$choices, a$response_var$selected),
-      optionalSelectInput(ns("regressor_var"), "Regressor Variables",
-        a$regressor_var$choices, a$regressor_var$selected,
+      optionalSelectInput(inputId = ns("response_var"), label = "Response Variable", choices = a$response_var$choices,
+          selected = a$response_var$selected),
+      optionalSelectInput(inputId = ns("regressor_var"), label = "Regressor Variables",
+        choices = a$regressor_var$choices, selected = a$regressor_var$selected,
         multiple = TRUE
       ),
       radioButtons(ns("plot_type"),
@@ -107,7 +109,8 @@ ui_g_regression <- function(id, ...) {
         ),
         selected = "Residuals vs Fitted"
       ),
-      optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
+      # This shall be wrapped in a teal::plot
+      ui_plot_height(inputId = ns("plot_height"))
     )
   )
 }
@@ -116,13 +119,8 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom graphics plot
 #' @importFrom methods is
 srv_g_regression <- function(input, output, session, datasets, dataname) {
-  output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("plot"), height = plot_height)
-  })
 
-
+  output$plot_ui <- srv_plot_with_height(input, output, session, plot_id = "plot")
 
   anl_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
 
@@ -147,7 +145,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
     fit_cl <- fit_cl()
 
     validate(
-      need(nrow(anl_filtered) >= 10, paste("need at lease 10 observations, currenty have only", nrow(anl_filtered)))
+      need(nrow(anl_filtered) >= 10, paste("need at lease 10 observations, currently have only", nrow(anl_filtered)))
     )
 
     attr(fit_cl[[2]], ".Environment") <- environment()
