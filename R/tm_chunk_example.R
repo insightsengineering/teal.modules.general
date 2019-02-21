@@ -52,7 +52,7 @@
 #'
 #' shinyApp(x$ui, x$server)
 #' }
-tm_table <- function(label,
+tm_table_with_chunks <- function(label,
                      dataname,
                      xvar, yvar,
                      useNA = c("ifany", "no", "always"), # nolint
@@ -64,8 +64,8 @@ tm_table <- function(label,
 
   teal::module(
     label = label,
-    server = srv_table,
-    ui = ui_table,
+    server = srv_table_with_chunks,
+    ui = ui_table_with_chunks,
     server_args = list(dataname = dataname),
     ui_args = args,
     filters = dataname
@@ -74,14 +74,21 @@ tm_table <- function(label,
 
 
 #' @import teal
-ui_table <- function(id, label, dataname, xvar, yvar,
+ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
                      useNA, # nolint
                      pre_output, post_output) {
   ns <- NS(id)
 
 
   standard_layout(
-    output = tableOutput(ns("table")),
+    output =
+        teal.devel::white_small_well(
+            tags$div(
+                verbatimTextOutput(ns("text")),
+                tableOutput(ns("table"))
+            )
+        ),
+
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(dataname)),
@@ -102,7 +109,7 @@ ui_table <- function(id, label, dataname, xvar, yvar,
 
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
-srv_table <- function(input, output, session, datasets, dataname) {
+srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
 
   use_chunks()
 
@@ -142,6 +149,16 @@ srv_table <- function(input, output, session, datasets, dataname) {
 
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
+
+  output$text <- renderText({
+
+        set_chunk("textid",
+            expr(call("as.character",x = 2))
+            )
+
+        eval_chunk("textid")
+
+      })
 
   observeEvent(input$show_rcode, {
 
