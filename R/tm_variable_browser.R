@@ -76,7 +76,6 @@ ui_page_variable_browser <- function(id, datasets) {
 #' @import utils
 #' @importFrom shiny validate need div reactiveValues
 #' @importFrom teal .log
-#' @importFrom DT renderDataTable
 srv_page_variable_browser <- function(input, output, session, datasets) {
 
 
