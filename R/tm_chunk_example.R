@@ -4,14 +4,8 @@
 #'
 #' @param label menu label
 #' @param dataname name of dataset used to generate table
-#' @param xvar variable name of x variable
-#' @param yvar variable name of y variable
-#' @param xvar_choices vector with variable names of possible x variables. If
-#'   missing or identincal to \code{xvar} then the table will be fixed to the
-#'   \code{xvar}.
-#' @param yvar_choices vector with variable names of possible y variables. If
-#'   missing or identincal to \code{xvar} then the table will be fixed to the
-#'   \code{yvar}.
+#' @param xvar (\code{choices_selected}) variable name of x variable
+#' @param yvar (\code{choices_selected}) variable name of y variable
 #' @param useNA optional pre-selected option indicating how to utilize NA in
 #'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 #'   missing then \code{'ifany'} will be used. If vector then only the first

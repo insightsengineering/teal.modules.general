@@ -8,6 +8,15 @@ tm_g_regression(label = "Regression Analysis", dataname, response_var,
   regressor_var, plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
+\arguments{
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+}
 \description{
 This module is designed for horizontal data
 }
