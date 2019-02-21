@@ -7,7 +7,6 @@
 #'
 #' @export
 #' @importFrom teal module
-#' @importFrom DT dataTableOutput
 tm_variable_browser <- function(label = "variable browser") {
   teal::module(
     label,
