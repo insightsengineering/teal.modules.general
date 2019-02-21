@@ -109,6 +109,7 @@ ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
 
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
+#' @importFrom rlang expr
 srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
 
   use_chunks()
@@ -135,9 +136,9 @@ srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
     ))
 
     if(use_margin){
-      expression_to_use <- expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA)))
+      expression_to_use <- rlang::expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA)))
     }else{
-      expression_to_use <- expr(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA))
+      expression_to_use <- rlang::expr(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA))
     }
 
     set_chunk(
@@ -153,7 +154,7 @@ srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
   output$text <- renderText({
 
         set_chunk("textid",
-            expr(call("as.character",x = 2))
+            rlang::expr(call("as.character",x = 2))
             )
 
         eval_chunk("textid")
