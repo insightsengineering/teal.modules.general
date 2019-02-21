@@ -2,7 +2,7 @@ Package: teal.modules.general
 Type: Package
 Date: 2019-02-15
 Title: General modules to add to a teal application
-Version: 0.0.2
+Version: 0.6.0
 Authors@R: c(
   person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre")),
   person("Vincent", "Wolowski", email = "vincent.wolowski@roche.com", role = "aut")
@@ -11,7 +11,13 @@ Description: General Purpose Teal Modules.
 Encoding: UTF-8
 License: file LICENSE
 LazyData: true
-Depends: teal, ggplot2, ggmosaic, xtable, shiny, graphics
+Depends:
+  ggplot2,
+  ggmosaic,
+  graphics,
+  shiny,
+  teal,
+  xtable
 Imports: teal.devel,
   tern,
   rtables,

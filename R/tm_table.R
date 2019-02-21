@@ -145,7 +145,7 @@ srv_table <- function(input, output, session, datasets, dataname) {
 
   observeEvent(input$show_rcode, {
 
-    teal.devel::show_rcode_modal(
+   teal.devel::show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = get_rcode(
           datasets = datasets,
