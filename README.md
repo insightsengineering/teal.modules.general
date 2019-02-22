@@ -6,7 +6,7 @@ The modules in this package are generic modules that should work with any data s
 For general reusable modules see:
 
 * teal base package modules
-* teal.tern modules
+* teal.modules.clinical modules
 * teal.osprey 
 * teal.goshawk
 
@@ -18,7 +18,7 @@ For this visit [https://github.roche.com/settings/tokens](https://github.roche.c
 install.packages(c("data.table", "ggmosaic"))
 
 devtools::install_github(
-  repo = "Rpackages/random.cdisc.data",
+  repo = "NEST/random.cdisc.data",
   ref = "new-simple", 
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
@@ -28,26 +28,26 @@ devtools::install_github("Roche/rtables",
   upgrade_dependencies = FALSE, build_vignettes = FALSE)
 
 devtools::install_github(
-  repo = "Rpackages/tern",
+  repo = "NEST/tern",
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
 )
 
 devtools::install_github(
-  repo = "Rpackages/teal",
+  repo = "NEST/teal",
   ref = "v0.0.5", 
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
 )
 
 devtools::install_github(
-  repo = "Rpackages/teal.tern",
+  repo = "NEST/teal.modules.clinical",
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE
 )
 
 devtools::install_github(
-  repo = "Rpackages/teal.general",
+  repo = "NEST/teal.general",
   host = "https://github.roche.com/api/v3",
   upgrade_dependencies = FALSE, build_vignettes = FALSE,
   auth_token = readLines("~/.github_token")

@@ -5,7 +5,8 @@
 \title{Summary Table Comparing Analysis Populations}
 \usage{
 tm_t_bep_summary(label, dataname, arm_var, summarize_vars, bep_var,
-  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
+  pre_output = NULL, post_output = NULL, with_show_r_code = FALSE,
+  code_data_processing = NULL)
 }
 \arguments{
 \item{label}{menue item label of the module in the teal app}
@@ -15,11 +16,10 @@ the list passed to the \code{data} argument of \code{\link[teal]{init}}.
 Note that the data is expected to be in vertical form with the
 \code{PARAMCD} variable filtering to one observation per patient.}
 
-\item{arm_var}{single name of variable in analysis data that is used as
-\code{col_by} argument for the respective \code{tern} function.}
+\item{arm_var}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option for variable names that can be used as \code{arm_var}}
 
-\item{summarize_vars}{character vector with variable names that are selected
-by default}
+\item{summarize_vars}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
+for variable names that can be used for summary}
 
 \item{bep_var}{character string containing name of boolean vector for the biomarker evaluable population (BEP)
 to compare in the table}
@@ -48,20 +48,22 @@ library(random.cdisc.data)
 library(dplyr)
 
 ASL <- radsl(N = 100) \%>\%
- mutate(BEP = sample(c(TRUE, FALSE), n(), TRUE),
-        BEP2 = sample(c(TRUE, FALSE), n(), TRUE))
+  mutate(
+    BEP = sample(c(TRUE, FALSE), n(), TRUE),
+    BEP2 = sample(c(TRUE, FALSE), n(), TRUE)
+  )
 
 
 x <- teal::init(
-   data = list(ASL = ASL),
-   modules = root_modules(
-     tm_t_bep_summary(
-        label = "Demographic",
-        dataname = "ASL",
-        arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
-        summarize_vars = choices_selected(names(ASL), "AGE"),
-        bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
-     )
+  data = list(ASL = ASL),
+  modules = root_modules(
+    tm_t_bep_summary(
+      label = "Demographic",
+      dataname = "ASL",
+      arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
+      summarize_vars = choices_selected(names(ASL), "AGE"),
+      bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
+    )
   )
 )
 

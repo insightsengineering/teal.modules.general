@@ -26,7 +26,7 @@ ASL <- data.frame(
   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
 )
 
-ASL$cont3 <- ASL$cont *3 +2 +rnorm(nrow(ASL), sd = .3)
+ASL$cont3 <- ASL$cont * 3 + 2 + rnorm(nrow(ASL), sd = .3)
 
 attr(ASL, "source") <- "# ASL is random data"
 
@@ -39,7 +39,8 @@ x <- teal::init(
       regressor_var = choices_selected(names(ASL), "cont3"),
       plot_height = c(600, 200, 2000)
     )
-  ))
+  )
+)
 
 shinyApp(x$ui, x$server)
 
@@ -48,9 +49,6 @@ shinyApp(x$ui, x$server)
 fit <- lm(cont ~ cont2, data = ASL)
 
 plot(fit)
-
 }
-
-
 
 }
