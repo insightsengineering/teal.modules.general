@@ -93,7 +93,7 @@ ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
 #' @importFrom teal.devel get_filter_txt
 #' @importFrom rlang expr
 srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
-  use_chunks()
+  use_chunks(session)
 
   output$table <- renderTable({
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
