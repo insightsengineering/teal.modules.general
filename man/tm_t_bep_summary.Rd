@@ -21,8 +21,8 @@ Note that the data is expected to be in vertical form with the
 \item{summarize_vars}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
 for variable names that can be used for summary}
 
-\item{bep_var}{character string containing name of boolean vector for the biomarker evaluable population (BEP)
-to compare in the table}
+\item{bep_var}{(\code{choices_selected}) containing name of boolean vector for the biomarker evaluable population
+(BEP) to compare in the table}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -32,11 +32,10 @@ output to put the output into context. For example the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
+\item{with_show_r_code}{(\code{logical}) Whether to include "Show R Code" Button}
+
 \item{code_data_processing}{string with data preprocessing before the teal
 app is initialized}
-
-\item{bep_var_choices}{character vector with names of additional variables that can
-be selected as thebiomarker evaluable population (BEP)}
 }
 \description{
 Display a summary table comparing analysis populations as a shiny module

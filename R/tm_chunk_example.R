@@ -6,10 +6,6 @@
 #' @param dataname name of dataset used to generate table
 #' @param xvar (\code{choices_selected}) variable name of x variable
 #' @param yvar (\code{choices_selected}) variable name of y variable
-#' @param useNA optional pre-selected option indicating how to utilize NA in
-#'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
-#'   missing then \code{'ifany'} will be used. If vector then only the first
-#'   one will be used.
 #' @param pre_output html tags appended below the output
 #' @param post_output html tags appended after the output
 #'
@@ -17,7 +13,8 @@
 #'
 #' @importFrom xtable xtable
 #' @importFrom xtable print.xtable
-#'
+#' @import teal.devel
+#' 
 #' @examples
 #' 
 #' \dontrun{
@@ -96,22 +93,23 @@ srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
   use_chunks(session)
 
   output$table <- renderTable({
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    dataset <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     xvar <- input$xvar
     yvar <- input$yvar
     use_margin <- input$margins
-    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
-    validate(need(nrow(anl) > 0, "no observations left"))
+    validate(need(!is.null(dataset) && is.data.frame(dataset), "no data left"))
+    validate(need(nrow(dataset) > 0, "no observations left"))
     validate(need(xvar, "no valid x variable selected"))
     validate(need(yvar, "no valid y variable selected"))
     validate(need(
-      xvar %in% names(anl),
+      xvar %in% names(dataset),
       paste("variable", xvar, " is not available in data", dataname)
     ))
     validate(need(
-      yvar %in% names(anl),
+      yvar %in% names(dataset),
       paste("variable", yvar, " is not available in data", dataname)
     ))
+
     if (use_margin) {
       expression_to_use <- rlang::expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]])))
     } else {
@@ -119,7 +117,7 @@ srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
     }
     set_chunk(
       expression = expression_to_use,
-      vars = list(dataset = anl, dataname = dataname, xvar = xvar, yvar = yvar)
+      vars = list(dataset = dataset, dataname = dataname, xvar = xvar, yvar = yvar)
     )
     tbl <- eval_chunk()
     as.data.frame.matrix(tbl, row.names = rownames(tbl))

@@ -17,8 +17,9 @@ Depends:
   graphics,
   shiny,
   teal,
+  teal.devel,
   xtable
-Imports: teal.devel,
+Imports:
   tern,
   rlang,
   rtables,

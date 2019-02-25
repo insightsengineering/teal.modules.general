@@ -4,12 +4,12 @@
 #'
 #' @param label menu label
 #' @param dataname name of dataset used to generate table
-#' @param xvar variable name of x variable
-#' @param yvar variable name of y variable
-#' @param xvar_choices vector with variable names of possible x variables. If
+#' @param xvar (\code{choices_selected}) variable name of x variable. vector with variable names of possible x 
+#' variables. If
 #'   missing or identincal to \code{xvar} then the table will be fixed to the
 #'   \code{xvar}.
-#' @param yvar_choices vector with variable names of possible y variables. If
+#' @param yvar  (\code{choices_selected}) variable name of y variable. vector with variable names of possible y 
+#' variables. If
 #'   missing or identincal to \code{xvar} then the table will be fixed to the
 #'   \code{yvar}.
 #' @param useNA optional pre-selected option indicating how to utilize NA in
@@ -107,23 +107,23 @@ srv_table <- function(input, output, session, datasets, dataname) {
   use_chunks()
 
   output$table <- renderTable({
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+        dataset <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     xvar <- input$xvar
     yvar <- input$yvar
     useNA <- # nolint
         input$useNA # nolint
     use_margin <- input$margins
 
-    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
-    validate(need(nrow(anl) > 0, "no observations left"))
+    validate(need(!is.null(dataset) && is.data.frame(dataset), "no data left"))
+    validate(need(nrow(dataset) > 0, "no observations left"))
     validate(need(xvar, "no valid x variable selected"))
     validate(need(yvar, "no valid y variable selected"))
     validate(need(
-      xvar %in% names(anl),
+      xvar %in% names(dataset),
       paste("variable", xvar, " is not available in data", dataname)
     ))
     validate(need(
-      yvar %in% names(anl),
+      yvar %in% names(dataset),
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
@@ -135,7 +135,7 @@ srv_table <- function(input, output, session, datasets, dataname) {
 
     set_chunk(
         expression = expression_to_use,
-        vars = list(dataset = anl, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
+        vars = list(dataset = dataset, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
     )
 
     tbl <- eval_chunk()

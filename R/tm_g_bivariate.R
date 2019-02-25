@@ -1,5 +1,9 @@
 #' Univariate and bivariate visualizations.
-#'
+#' 
+#' 
+#' @inheritParams teal::module
+#' @inheritParams teal::standard_layout
+#' @param dataname name of dataset used to generate table
 #' @param label (\code{character}) Label of the module
 #' @param x_var variable name selected to plot along the x-axis by default. Variable can be numeric,
 #'  factor or character.
@@ -8,8 +12,16 @@
 #' @param use_density boolean value for whether density is plotted
 #' @param row_facet_var variable for x facets
 #' @param col_facet_var variable for y facets
-#' @param plot_height range of plot height
+#' @param plot_height if scalar then the plot will have a fixed height. If a
+#'   slider should be presented to adjust the plot height dynamically then it
+#'   can be a vector of length three with \code{c(value, min and max)}
 #'
+#' @param color_by_var (\code{character}) Which variable to color by
+#' @param free_x_scales (\code{logical}) If X scaling shall be changeable
+#' @param free_y_scales (\code{logical}) If Y scaling shall be changeable
+#' @param with_show_r_code (\code{logical}) Whether show R code button shall be show
+#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
+
 #'
 #' @import ggplot2
 #' @import ggmosaic

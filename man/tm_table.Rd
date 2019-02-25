@@ -12,9 +12,15 @@ tm_table(label, dataname, xvar, yvar, useNA = c("ifany", "no", "always"),
 
 \item{dataname}{name of dataset used to generate table}
 
-\item{xvar}{variable name of x variable}
+\item{xvar}{(\code{choices_selected}) variable name of x variable. vector with variable names of possible x 
+variables. If
+  missing or identincal to \code{xvar} then the table will be fixed to the
+  \code{xvar}.}
 
-\item{yvar}{variable name of y variable}
+\item{yvar}{(\code{choices_selected}) variable name of y variable. vector with variable names of possible y 
+variables. If
+  missing or identincal to \code{xvar} then the table will be fixed to the
+  \code{yvar}.}
 
 \item{useNA}{optional pre-selected option indicating how to utilize NA in
 table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
@@ -24,14 +30,6 @@ one will be used.}
 \item{pre_output}{html tags appended below the output}
 
 \item{post_output}{html tags appended after the output}
-
-\item{xvar_choices}{vector with variable names of possible x variables. If
-missing or identincal to \code{xvar} then the table will be fixed to the
-\code{xvar}.}
-
-\item{yvar_choices}{vector with variable names of possible y variables. If
-missing or identincal to \code{xvar} then the table will be fixed to the
-\code{yvar}.}
 }
 \description{
 Create a table with the \code{\link{table}[base]} function

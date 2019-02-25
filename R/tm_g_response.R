@@ -2,9 +2,23 @@
 
 #' Response Plots
 #'
-#'
+#' @inheritParams teal::module
+#' @inheritParams teal::standard_layout
 #' @export
 #'
+#' @param dataname name of dataset used to generate table
+#' @param endpoint (\code{choices_selected}) Which variable to use as EndPoint
+#' @param resp_var (\code{choices_selected}) Which variable to use as Response
+#' @param x_var (\code{choices_selected}) Which variable to use as X
+#' @param row_facet_var (\code{choices_selected}) Which variable to use for faceting rows
+#' @param col_facet_var (\code{choices_selected}) Which variable to use for faceting columns
+#' @param coord_flip (\code{logical}) Whether to flip coordinates
+#' @param freq (\code{logical}) Display frequency
+#' @param plot_height if scalar then the plot will have a fixed height. If a
+#'   slider should be presented to adjust the plot height dynamically then it
+#'   can be a vector of length three with \code{c(value, min and max)}.
+#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
+
 #' @examples
 #'
 #' \dontrun{

@@ -22,7 +22,7 @@
 #'   variable.
 #' @param plot_height if scalar then the plot will have a fixed height. If a
 #'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with vlaue, min and max.
+#'   can be a vector of length three with \code{c(value, min and max)}.
 #' @param alpha if scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically
 #'   then it can be a vector of length three with vlaue, min and max.
