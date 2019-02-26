@@ -103,7 +103,7 @@ ui_table <- function(id, label, dataname, xvar, yvar,
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
 srv_table <- function(input, output, session, datasets, dataname) {
-  use_chunks()
+  use_chunks(session)
 
   output$table <- renderTable({
     dataset <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
