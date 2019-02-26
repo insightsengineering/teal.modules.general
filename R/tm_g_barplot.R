@@ -1,7 +1,5 @@
 #' Bar plot for safety events
 #'
-#' PLEASE NOTE THIS MODULE HAS TO BE REFACTORED:
-#' https://github.roche.com/NEST/teal.modules.general/issues/10
 #' 
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout

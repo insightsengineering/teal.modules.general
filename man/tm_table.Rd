@@ -12,12 +12,12 @@ tm_table(label, dataname, xvar, yvar, useNA = c("ifany", "no", "always"),
 
 \item{dataname}{name of dataset used to generate table}
 
-\item{xvar}{(\code{choices_selected}) variable name of x variable. vector with variable names of possible x 
+\item{xvar}{(\code{choices_selected}) variable name of x variable. vector with variable names of possible x
 variables. If
   missing or identincal to \code{xvar} then the table will be fixed to the
   \code{xvar}.}
 
-\item{yvar}{(\code{choices_selected}) variable name of y variable. vector with variable names of possible y 
+\item{yvar}{(\code{choices_selected}) variable name of y variable. vector with variable names of possible y
 variables. If
   missing or identincal to \code{xvar} then the table will be fixed to the
   \code{yvar}.}

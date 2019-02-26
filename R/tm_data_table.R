@@ -88,13 +88,17 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
   # This function uses session$userData to store the choices made by the user for select variables.
   #
-
+  
+  
   # select first 6 variables for each dataset if not otherwise specified
   for (name in setdiff(datasets$datanames(), names(cache_selected))) {
-    session$userData$cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>% names() %>% head(6)
+    cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>% names() %>% head(6)
   }
 
+  cache_selected_reactive <-  reactiveVal(cache_selected)
+  
   observe({
+        
     dataname <- input$dataset
 
     validate(
@@ -104,7 +108,8 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
     choices <- datasets$get_data(dataname, filtered = FALSE, reactive = FALSE) %>% names()
 
-    variables_cached <- session$userData$cache_selected[[dataname]]
+    variables_cached_all <- cache_selected_reactive()
+    variables_cached <- variables_cached_all[[dataname]]
 
     selected <- if (is.null(variables_cached)) head(choices, 6) else intersect(variables_cached, choices)
 
@@ -114,12 +119,14 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
       choices = c(selected, setdiff(choices, selected)),
       selected = selected
     )
-
-    session$userData$cache_selected[[dataname]] <- selected
+    variables_cached_all[[dataname]] <- selected
+    cache_selected_reactive(variables_cached_all)
   })
 
-  observe({
-        session$userData$cache_selected[[input$dataset]] <- input$variables
+  observeEvent(input$variables,{
+        variables_cached <- cache_selected_reactive()
+        variables_cached[[input$dataset]] <- input$variables
+        cache_selected_reactive(variables_cached)
   })
 
   output$tbl <- DT::renderDataTable({

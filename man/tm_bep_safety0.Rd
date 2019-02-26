@@ -67,8 +67,7 @@ output to put the output into context. For example the
 \item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
 }
 \description{
-PLEASE NOTE THIS MODULE HAS TO BE REFACTORED:
-https://github.roche.com/NEST/teal.modules.general/issues/10
+Bar plot for safety events
 }
 \examples{
 \dontrun{
