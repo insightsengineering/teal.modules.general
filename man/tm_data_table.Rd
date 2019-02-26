@@ -4,12 +4,12 @@
 \alias{tm_data_table}
 \title{Data Table Viewer Teal Module}
 \usage{
-tm_data_table(label = "data table", variables_selected = NULL)
+tm_data_table(label = "Data table", variables_selected = NULL)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character})}
 
-\item{variables_selected}{a named list that says which variables should be
+\item{variables_selected}{(\code{list}) a named list that says which variables should be
 initially  shown for which dataset}
 }
 \description{
@@ -17,10 +17,12 @@ A data table viewer shows the data using a paginated table.
 }
 \examples{
 
-\dontrun{
+
 library(random.cdisc.data)
 
 ASL <- radsl()
+ADTE <- radaette(ASL)
+attr(ASL, "source") <- "radsl(N = 600)"
 
 x <- teal::init(
   data = list(ASL = ASL),
@@ -28,7 +30,7 @@ x <- teal::init(
     tm_data_table()
   )
 )
-
-shinyApp(x$ui, x$server)
+\dontrun{
+  shinyApp(x$ui, x$server)
 }
 }

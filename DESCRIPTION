@@ -17,9 +17,11 @@ Depends:
   graphics,
   shiny,
   teal,
+  teal.devel,
   xtable
-Imports: teal.devel,
+Imports:
   tern,
+  rlang,
   rtables,
   random.cdisc.data (>= 0.1.2.1),
   testthat,

@@ -9,6 +9,39 @@ tm_g_response(label = "Association", dataname, endpoint, resp_var,
   coord_flip = TRUE, freq = FALSE, plot_height = c(600, 400, 5000),
   pre_output = NULL, post_output = NULL, code_data_processing = NULL)
 }
+\arguments{
+\item{label}{label shown in the navigation for the item}
+
+\item{dataname}{name of dataset used to generate table}
+
+\item{endpoint}{(\code{choices_selected}) Which variable to use as EndPoint}
+
+\item{resp_var}{(\code{choices_selected}) Which variable to use as Response}
+
+\item{x_var}{(\code{choices_selected}) Which variable to use as X}
+
+\item{row_facet_var}{(\code{choices_selected}) Which variable to use for faceting rows}
+
+\item{col_facet_var}{(\code{choices_selected}) Which variable to use for faceting columns}
+
+\item{coord_flip}{(\code{logical}) Whether to flip coordinates}
+
+\item{freq}{(\code{logical}) Display frequency}
+
+\item{plot_height}{if scalar then the plot will have a fixed height. If a
+slider should be presented to adjust the plot height dynamically then it
+can be a vector of length three with \code{c(value, min and max)}.}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
+}
 \description{
 Response Plots
 }

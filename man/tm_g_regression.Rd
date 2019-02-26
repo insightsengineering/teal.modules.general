@@ -8,6 +8,29 @@ tm_g_regression(label = "Regression Analysis", dataname, response_var,
   regressor_var, plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
+\arguments{
+\item{label}{label shown in the navigation for the item}
+
+\item{dataname}{name of dataset used to generate table}
+
+\item{response_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+response variable}
+
+\item{regressor_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+regressor variable}
+
+\item{plot_height}{if scalar then the plot will have a fixed height. If a
+slider should be presented to adjust the plot height dynamically then it
+can be a vector of length three with \code{c(value, min and max)}.}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+}
 \description{
 This module is designed for horizontal data
 }

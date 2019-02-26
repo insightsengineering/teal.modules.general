@@ -5,11 +5,10 @@
 #' @importFrom teal.devel validate_has_data
 #' @import teal.modules.clinical
 #' @inheritParams teal.modules.clinical::tm_t_summary
-#' @param bep_var character string containing name of boolean vector for the biomarker evaluable population (BEP)
-#'   to compare in the table
-#' @param bep_var_choices  character vector with names of additional variables that can
-#'   be selected as thebiomarker evaluable population (BEP)
-#'
+#' @param bep_var (\code{choices_selected}) containing name of boolean vector for the biomarker evaluable population
+#'   (BEP) to compare in the table
+#' @param with_show_r_code (\code{logical}) Whether to include "Show R Code" Button
+#' 
 #' @export
 #'
 #' @importFrom teal add_no_selected_choices

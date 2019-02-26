@@ -2,29 +2,31 @@
 #'
 #' A data table viewer shows the data using a paginated table.
 #'
-#' @inheritParams teal::module
-#' @param variables_selected a named list that says which variables should be
+#' @param label (\code{character})
+#' @param variables_selected (\code{list}) a named list that says which variables should be
 #'   initially  shown for which dataset
 #'
 #' @export
 #'
 #' @examples
-#'
-#' \dontrun{
+#' 
+#' 
 #' library(random.cdisc.data)
-#'
+#' 
 #' ASL <- radsl()
-#'
+#' ADTE <- radaette(ASL)
+#' attr(ASL, "source") <- "radsl(N = 600)"
+#' 
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   modules = root_modules(
 #'     tm_data_table()
 #'   )
 #' )
-#'
-#' shinyApp(x$ui, x$server)
+#' \dontrun{
+#'   shinyApp(x$ui, x$server)
 #' }
-tm_data_table <- function(label = "data table", variables_selected = NULL) {
+tm_data_table <- function(label = "Data table", variables_selected = NULL) {
   teal::module(
     label,
     server = srv_page_data_table,
@@ -46,18 +48,16 @@ ui_page_data_table <- function(id, datasets) {
   ns <- NS(id)
 
   datanames <- datasets$datanames()
-  sel_data <- datanames[1]
-  sel_varnames <- names(datasets$get_data(sel_data))
+  sel_varnames <- names(datasets$get_data(datanames[1]))
+
+  # Create a tab list for each dataset
+  datatset_tabs <- lapply(datanames, function(x) tabPanel(title = x, value = x))
 
   tagList(
     fluidRow(
       div(
         class = "col-md-3",
-        radioButtons(ns("dataset"), "data",
-          choices = datanames,
-          selected = sel_data, inline = TRUE
-        ),
-        radioButtons(ns("dataraworfiltered"), NULL,
+        radioButtons(ns("data_raw_or_filtered"), NULL,
           choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
           selected = "filtered", inline = TRUE
         ),
@@ -70,6 +70,10 @@ ui_page_data_table <- function(id, datasets) {
     ),
     tags$hr(),
     fluidRow(
+      div(style = "margin-left:15px", do.call(tabsetPanel, append(datatset_tabs, list(id = ns("dataset")))))
+    ),
+    fluidRow(
+      div(style = "height:10px;"),
       div(class = "col-md-12", DT::dataTableOutput(ns("tbl"), width = "100%"))
     ),
     div(style = "height:30px;")
@@ -82,46 +86,51 @@ ui_page_data_table <- function(id, datasets) {
 #' @importFrom dplyr count_
 srv_page_data_table <- function(input, output, session, datasets, cache_selected = list()) {
 
-
+  # This function uses session$userData to store the choices made by the user for select variables.
+  #
+  
+  
   # select first 6 variables for each dataset if not otherwise specified
   for (name in setdiff(datasets$datanames(), names(cache_selected))) {
-    cache_selected[[name]] <- head(names(datasets$get_data(name, filtered = FALSE, reactive = FALSE)), 6)
+    cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>% names() %>% head(6)
   }
 
-
+  cache_selected_reactive <-  reactiveVal(cache_selected)
+  
   observe({
+        
     dataname <- input$dataset
-
 
     validate(
       need(dataname, "need valid dataset name"),
       need(dataname %in% datasets$datanames(), paste("data", dataname, "was not specified"))
     )
 
-    df <- datasets$get_data(dataname, filtered = FALSE, reactive = FALSE)
-    choices <- names(df)
+    choices <- datasets$get_data(dataname, filtered = FALSE, reactive = FALSE) %>% names()
 
-    vo <- cache_selected[[dataname]]
+    variables_cached_all <- cache_selected_reactive()
+    variables_cached <- variables_cached_all[[dataname]]
 
-    selected <- if (is.null(vo)) head(choices, 6) else intersect(vo, choices)
-    choices <- c(selected, setdiff(choices, selected))
+    selected <- if (is.null(variables_cached)) head(choices, 6) else intersect(variables_cached, choices)
 
     .log("data table, update variables for", dataname)
 
     updateSelectInput(session, "variables",
-      choices = choices,
+      choices = c(selected, setdiff(choices, selected)),
       selected = selected
     )
-
-    cache_selected[[dataname]] <- selected
+    variables_cached_all[[dataname]] <- selected
+    cache_selected_reactive(variables_cached_all)
   })
 
+  observeEvent(input$variables,{
+        variables_cached <- cache_selected_reactive()
+        variables_cached[[input$dataset]] <- input$variables
+        cache_selected_reactive(variables_cached)
+  })
 
   output$tbl <- DT::renderDataTable({
     dataname <- input$dataset
-    is.filtered <- input$dataraworfiltered == "filtered"
-    distinct <- input$distinct
-
 
     validate(need(dataname, "need valid dataname"))
 
@@ -131,16 +140,21 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
     .log("data table update", dataname)
 
-    df <- datasets$get_data(dataname, filtered = is.filtered, reactive = TRUE)
+    df <- datasets$get_data(
+      dataname,
+      filtered = input$data_raw_or_filtered == "filtered",
+      reactive = TRUE
+    )
 
     validate(need(df, paste("data", dataname, "is empty")))
+
     validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
-    df_s <- if (distinct) dplyr::count_(df, variables) else df[variables]
+    dataframe_selected <- if (input$distinct) dplyr::count_(df, variables) else df[variables]
 
-    # please remove this old piece: filter = 'top'
+    # Return a DT data.frame
     DT::datatable(
-      df_s,
+      dataframe_selected,
       options = list(
         searching = FALSE,
         pageLength = 30,
