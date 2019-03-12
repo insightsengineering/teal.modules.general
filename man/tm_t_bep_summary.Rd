@@ -16,7 +16,8 @@ the list passed to the \code{data} argument of \code{\link[teal]{init}}.
 Note that the data is expected to be in vertical form with the
 \code{PARAMCD} variable filtering to one observation per patient.}
 
-\item{arm_var}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option for variable names that can be used as \code{arm_var}}
+\item{arm_var}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
+for variable names that can be used as \code{arm_var}}
 
 \item{summarize_vars}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
 for variable names that can be used for summary}

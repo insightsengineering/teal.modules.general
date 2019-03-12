@@ -4,23 +4,38 @@
 #'
 #' @param label (\code{character})
 #' @param variables_selected (\code{list}) a named list that says which variables should be
-#'   initially  shown for which dataset
+#'   initially shown for particular dataset. Names in list should correspond with names provided in list `data()`.
+#'   If not specified for any dataset - first six variables from dataset will be shown.
 #'
 #' @export
 #'
 #' @examples
-#' 
-#' 
+#'
 #' library(random.cdisc.data)
-#' 
-#' ASL <- radsl()
-#' ADTE <- radaette(ASL)
-#' attr(ASL, "source") <- "radsl(N = 600)"
-#' 
+#'
+#' asl <- radsl()
+#'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_data_table()
+#'   )
+#' )
+#' \dontrun{
+#'   shinyApp(x$ui, x$server)
+#' }
+#'
+#' # two-datasets example
+#' library(random.cdisc.data)
+#' asl <- radsl()
+#' adte <- radaette(asl)
+#'
+#' x <- teal::init(
+#'   data = list(ASL = asl, ADTE = adte),
+#'   modules = root_modules(
+#'     tm_data_table(
+#'       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
+#'                                 ADTE = c("STUDYID","AGE")))
 #'   )
 #' )
 #' \dontrun{
@@ -88,17 +103,17 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
   # This function uses session$userData to store the choices made by the user for select variables.
   #
-  
-  
+
+
   # select first 6 variables for each dataset if not otherwise specified
   for (name in setdiff(datasets$datanames(), names(cache_selected))) {
     cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>% names() %>% head(6)
   }
 
   cache_selected_reactive <-  reactiveVal(cache_selected)
-  
-  observe({
-        
+
+  observeEvent(input$dataset, {
+
     dataname <- input$dataset
 
     validate(
