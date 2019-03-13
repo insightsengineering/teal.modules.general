@@ -25,38 +25,42 @@
 #' @importFrom xtable print.xtable
 #'
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' library(random.cdisc.data)
-#' 
+#'
 #' ASL <- radsl(seed = 1)
-#' 
+#'
 #' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' 
+#'
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   root_modules(
 #'     tm_data_table(),
 #'     tm_variable_browser(),
 #'     tm_table("Table Choices", "ASL",
-#'       xvar = "SEX", yvar = "RACE",
-#'       xvar_choices = c("SEX", "RACE", "STUDYID"),
-#'       yvar_choices = c("RACE", "SAFFL")
+#'       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
+#'       yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
 #'     ),
-#'     tm_table("Table No Choices", "ASL", "SEX", "RACE",
+#'     tm_table("Table No Choices", "ASL",
+#'       xvar = choices_selected("SEX"),
+#'       yvar = choices_selected("RACE"),
 #'       pre_output = helpText("Titles"),
 #'       post_output = helpText("Footnotes")
 #'     )
 #'   )
 #' )
-#' 
+#'
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table <- function(label,
                      dataname,
-                     xvar, yvar,
+                     xvar,
+                     yvar,
                      useNA = c("ifany", "no", "always"), # nolint
-                     pre_output = NULL, post_output = NULL) {
+                     pre_output = NULL,
+                     post_output = NULL) {
+
   args <- as.list(environment())
 
   args$useNA <- match.arg(useNA) # nolint
@@ -74,9 +78,14 @@ tm_table <- function(label,
 
 
 #' @import teal
-ui_table <- function(id, label, dataname, xvar, yvar,
+ui_table <- function(id,
+                     label,
+                     dataname,
+                     xvar,
+                     yvar,
                      useNA, # nolint
-                     pre_output, post_output) {
+                     pre_output,
+                     post_output) {
   ns <- NS(id)
 
 
