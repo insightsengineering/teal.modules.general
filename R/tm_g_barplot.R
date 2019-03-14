@@ -1,7 +1,30 @@
 #' Bar plot for safety events
 #'
-#'
-#'
+#' 
+#' @inheritParams teal::module
+#' @inheritParams teal::standard_layout
+#' @param dataname (\code{character}) Dataset to be selected inside the app
+#' @param arm_var (\code{character}) Name of the ARM var inside the dataset
+#' @param arm_var_choices (\code{character}) Which variables can be used as the ARM var
+#' @param bep_var (\code{character}) Which variables can be used as the BEP var
+#' @param bep_var_choices (\code{character}) Which variables can be used as the BEP var
+#' @param cov_var (\code{character}) Which variables can be used as the Covariance var
+#' @param cov_var_choices (\code{character}) Which variables can be used as the Covariance var
+#' @param response_var (\code{character}) Which variables can be used as the response var
+#' @param response_var_choices (\code{character}) Which variables can be used as the response var
+#' @param responder_var (\code{character}) Which variables can be used as the Responder var
+#' @param responder_var_choices (\code{character}) Which variables can be used as the Responder var
+#' @param non_responder_var (\code{character}) Which variables can be used as the non-Responder var
+#' @param non_responder_var_choices (\code{character}) Which variables can be used as the non-Responder var
+#' @param exclude_var (\code{character}) Which variables can be used as the Exclude var
+#' @param exclude_var_choices (\code{character}) Which variables can be used as the Exclude var
+#' @param color_coding_var (\code{character}) Which variables can be used as the Color Coding var
+#' @param color_coding_var_choices (\code{character}) Which variables can be used as the Color Coding var
+#' @param plot_height if scalar then the plot will have a fixed height. If a
+#'   slider should be presented to adjust the plot height dynamically then it
+#'   can be a vector of length three with vlaue, min and max.
+#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
+#' 
 #' @examples
 #' \dontrun{
 #' library(random.cdisc.data)

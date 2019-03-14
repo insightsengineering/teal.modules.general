@@ -15,6 +15,57 @@ tm_bep_safety0(label, dataname, arm_var, arm_var_choices = arm_var,
   400, 5000), pre_output = NULL, post_output = NULL,
   code_data_processing = NULL)
 }
+\arguments{
+\item{label}{label shown in the navigation for the item}
+
+\item{dataname}{(\code{character}) Dataset to be selected inside the app}
+
+\item{arm_var}{(\code{character}) Name of the ARM var inside the dataset}
+
+\item{arm_var_choices}{(\code{character}) Which variables can be used as the ARM var}
+
+\item{bep_var}{(\code{character}) Which variables can be used as the BEP var}
+
+\item{bep_var_choices}{(\code{character}) Which variables can be used as the BEP var}
+
+\item{cov_var}{(\code{character}) Which variables can be used as the Covariance var}
+
+\item{cov_var_choices}{(\code{character}) Which variables can be used as the Covariance var}
+
+\item{response_var}{(\code{character}) Which variables can be used as the response var}
+
+\item{response_var_choices}{(\code{character}) Which variables can be used as the response var}
+
+\item{responder_var}{(\code{character}) Which variables can be used as the Responder var}
+
+\item{responder_var_choices}{(\code{character}) Which variables can be used as the Responder var}
+
+\item{non_responder_var}{(\code{character}) Which variables can be used as the non-Responder var}
+
+\item{non_responder_var_choices}{(\code{character}) Which variables can be used as the non-Responder var}
+
+\item{exclude_var}{(\code{character}) Which variables can be used as the Exclude var}
+
+\item{exclude_var_choices}{(\code{character}) Which variables can be used as the Exclude var}
+
+\item{color_coding_var}{(\code{character}) Which variables can be used as the Color Coding var}
+
+\item{color_coding_var_choices}{(\code{character}) Which variables can be used as the Color Coding var}
+
+\item{plot_height}{if scalar then the plot will have a fixed height. If a
+slider should be presented to adjust the plot height dynamically then it
+can be a vector of length three with vlaue, min and max.}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
+}
 \description{
 Bar plot for safety events
 }

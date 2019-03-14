@@ -4,12 +4,12 @@
 #'
 #' @param label menu label
 #' @param dataname name of dataset used to generate table
-#' @param xvar variable name of x variable
-#' @param yvar variable name of y variable
-#' @param xvar_choices vector with variable names of possible x variables. If
+#' @param xvar (\code{choices_selected}) variable name of x variable. vector with variable names of possible x
+#' variables. If
 #'   missing or identincal to \code{xvar} then the table will be fixed to the
 #'   \code{xvar}.
-#' @param yvar_choices vector with variable names of possible y variables. If
+#' @param yvar  (\code{choices_selected}) variable name of y variable. vector with variable names of possible y
+#' variables. If
 #'   missing or identincal to \code{xvar} then the table will be fixed to the
 #'   \code{yvar}.
 #' @param useNA optional pre-selected option indicating how to utilize NA in
@@ -25,14 +25,14 @@
 #' @importFrom xtable print.xtable
 #'
 #' @examples
-#'
+#' 
 #' \dontrun{
 #' library(random.cdisc.data)
-#'
+#' 
 #' ASL <- radsl(seed = 1)
-#'
+#' 
 #' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#'
+#' 
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   root_modules(
@@ -49,7 +49,7 @@
 #'     )
 #'   )
 #' )
-#'
+#' 
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table <- function(label,
@@ -103,39 +103,38 @@ ui_table <- function(id, label, dataname, xvar, yvar,
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
 srv_table <- function(input, output, session, datasets, dataname) {
-
-  use_chunks()
+  use_chunks(session)
 
   output$table <- renderTable({
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    dataset <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     xvar <- input$xvar
     yvar <- input$yvar
     useNA <- # nolint
-        input$useNA # nolint
+      input$useNA # nolint
     use_margin <- input$margins
 
-    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
-    validate(need(nrow(anl) > 0, "no observations left"))
+    validate(need(!is.null(dataset) && is.data.frame(dataset), "no data left"))
+    validate(need(nrow(dataset) > 0, "no observations left"))
     validate(need(xvar, "no valid x variable selected"))
     validate(need(yvar, "no valid y variable selected"))
     validate(need(
-      xvar %in% names(anl),
+      xvar %in% names(dataset),
       paste("variable", xvar, " is not available in data", dataname)
     ))
     validate(need(
-      yvar %in% names(anl),
+      yvar %in% names(dataset),
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-    if(use_margin){
+    if (use_margin) {
       expression_to_use <- expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA)))
-    }else{
+    } else {
       expression_to_use <- expr(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA))
     }
 
     set_chunk(
-        expression = expression_to_use,
-        vars = list(dataset = anl, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
+      expression = expression_to_use,
+      vars = list(dataset = dataset, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
     )
 
     tbl <- eval_chunk()
@@ -144,16 +143,15 @@ srv_table <- function(input, output, session, datasets, dataname) {
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
 
   observeEvent(input$show_rcode, {
-
-   teal.devel::show_rcode_modal(
+    teal.devel::show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = get_rcode(
-          datasets = datasets,
-          dataname = dataname,
-          title = paste("Cross-Table of", input$xvar, "vs.", input$yvar),
-          description = "",
-          libraries = c(),
-          git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general"))
+        datasets = datasets,
+        dataname = dataname,
+        title = paste("Cross-Table of", input$xvar, "vs.", input$yvar),
+        description = "",
+        libraries = c(),
+        git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general"))
       )
     )
   })

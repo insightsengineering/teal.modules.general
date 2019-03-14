@@ -5,7 +5,17 @@
 #'
 #' @import ggplot2
 #'
+#' @param dataname name of dataset used to generate table
+#' @param response_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+#' 	response variable
+#' @param regressor_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+#' 	regressor variable
+#' @param plot_height if scalar then the plot will have a fixed height. If a
+#'   slider should be presented to adjust the plot height dynamically then it
+#'   can be a vector of length three with \code{c(value, min and max)}.
+#' 
 #' @export
+#' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #'
 #' @examples

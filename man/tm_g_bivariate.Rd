@@ -13,6 +13,8 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, x_var, y_var,
 \arguments{
 \item{label}{(\code{character}) Label of the module}
 
+\item{dataname}{name of dataset used to generate table}
+
 \item{x_var}{variable name selected to plot along the x-axis by default. Variable can be numeric,
 factor or character.}
 
@@ -21,11 +23,31 @@ factor or character.}
 
 \item{use_density}{boolean value for whether density is plotted}
 
+\item{color_by_var}{(\code{character}) Which variable to color by}
+
 \item{row_facet_var}{variable for x facets}
 
 \item{col_facet_var}{variable for y facets}
 
-\item{plot_height}{range of plot height}
+\item{free_x_scales}{(\code{logical}) If X scaling shall be changeable}
+
+\item{free_y_scales}{(\code{logical}) If Y scaling shall be changeable}
+
+\item{plot_height}{if scalar then the plot will have a fixed height. If a
+slider should be presented to adjust the plot height dynamically then it
+can be a vector of length three with \code{c(value, min and max)}}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{with_show_r_code}{(\code{logical}) Whether show R code button shall be show}
+
+\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
 }
 \description{
 Univariate and bivariate visualizations.

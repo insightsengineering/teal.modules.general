@@ -4,31 +4,48 @@
 \alias{tm_data_table}
 \title{Data Table Viewer Teal Module}
 \usage{
-tm_data_table(label = "data table", variables_selected = NULL)
+tm_data_table(label = "Data table", variables_selected = NULL)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character})}
 
-\item{variables_selected}{a named list that says which variables should be
-initially  shown for which dataset}
+\item{variables_selected}{(\code{list}) a named list that says which variables should be
+initially shown for particular dataset. Names in list should correspond with names provided in list `data()`.
+If not specified for any dataset - first six variables from dataset will be shown.}
 }
 \description{
 A data table viewer shows the data using a paginated table.
 }
 \examples{
 
-\dontrun{
 library(random.cdisc.data)
 
-ASL <- radsl()
+asl <- radsl()
 
 x <- teal::init(
-  data = list(ASL = ASL),
+  data = list(ASL = asl),
   modules = root_modules(
     tm_data_table()
   )
 )
+\dontrun{
+  shinyApp(x$ui, x$server)
+}
 
-shinyApp(x$ui, x$server)
+# two-datasets example
+library(random.cdisc.data)
+asl <- radsl()
+adte <- radaette(asl)
+
+x <- teal::init(
+  data = list(ASL = asl, ADTE = adte),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
+                                ADTE = c("STUDYID","AGE")))
+  )
+)
+\dontrun{
+  shinyApp(x$ui, x$server)
 }
 }

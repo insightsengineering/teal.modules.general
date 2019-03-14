@@ -4,18 +4,8 @@
 #'
 #' @param label menu label
 #' @param dataname name of dataset used to generate table
-#' @param xvar variable name of x variable
-#' @param yvar variable name of y variable
-#' @param xvar_choices vector with variable names of possible x variables. If
-#'   missing or identincal to \code{xvar} then the table will be fixed to the
-#'   \code{xvar}.
-#' @param yvar_choices vector with variable names of possible y variables. If
-#'   missing or identincal to \code{xvar} then the table will be fixed to the
-#'   \code{yvar}.
-#' @param useNA optional pre-selected option indicating how to utilize NA in
-#'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
-#'   missing then \code{'ifany'} will be used. If vector then only the first
-#'   one will be used.
+#' @param xvar (\code{choices_selected}) variable name of x variable
+#' @param yvar (\code{choices_selected}) variable name of y variable
 #' @param pre_output html tags appended below the output
 #' @param post_output html tags appended after the output
 #'
@@ -23,16 +13,17 @@
 #'
 #' @importFrom xtable xtable
 #' @importFrom xtable print.xtable
-#'
+#' @import teal.devel
+#' 
 #' @examples
-#'
+#' 
 #' \dontrun{
 #' library(random.cdisc.data)
-#'
+#' 
 #' ASL <- radsl(seed = 1)
-#'
+#' 
 #' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#'
+#' 
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   root_modules(
@@ -49,18 +40,14 @@
 #'     )
 #'   )
 #' )
-#'
+#' 
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table_with_chunks <- function(label,
-                     dataname,
-                     xvar, yvar,
-                     useNA = c("ifany", "no", "always"), # nolint
-                     pre_output = NULL, post_output = NULL) {
+                                 dataname,
+                                 xvar, yvar,
+                                 pre_output = NULL, post_output = NULL) {
   args <- as.list(environment())
-
-  args$useNA <- match.arg(useNA) # nolint
-
 
   teal::module(
     label = label,
@@ -75,29 +62,21 @@ tm_table_with_chunks <- function(label,
 
 #' @import teal
 ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
-                     useNA, # nolint
-                     pre_output, post_output) {
+                                 pre_output, post_output) {
   ns <- NS(id)
-
 
   standard_layout(
     output =
-        teal.devel::white_small_well(
-            tags$div(
-                verbatimTextOutput(ns("text")),
-                tableOutput(ns("table"))
-            )
-        ),
-
+      teal.devel::white_small_well(
+        tags$div(
+          verbatimTextOutput(ns("text")),
+          tableOutput(ns("table"))
+        )
+      ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(dataname)),
       optionalSelectInput(ns("xvar"), "x variable (row)", xvar$choices, xvar$selected, multiple = FALSE),
       optionalSelectInput(ns("yvar"), "y variable (column)", yvar$choices, yvar$selected, multiple = FALSE),
-      radioButtons(ns("useNA"),
-        label = "Display Missing Values",
-        choices = c("no", "ifany", "always"), selected = useNA
-      ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),
     forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
@@ -109,68 +88,59 @@ ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
 
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
+#' @importFrom rlang expr
 srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
-
-  use_chunks()
+  use_chunks(session)
 
   output$table <- renderTable({
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    dataset <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
     xvar <- input$xvar
     yvar <- input$yvar
-    useNA <- # nolint
-        input$useNA # nolint
     use_margin <- input$margins
-
-    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
-    validate(need(nrow(anl) > 0, "no observations left"))
+    validate(need(!is.null(dataset) && is.data.frame(dataset), "no data left"))
+    validate(need(nrow(dataset) > 0, "no observations left"))
     validate(need(xvar, "no valid x variable selected"))
     validate(need(yvar, "no valid y variable selected"))
     validate(need(
-      xvar %in% names(anl),
+      xvar %in% names(dataset),
       paste("variable", xvar, " is not available in data", dataname)
     ))
     validate(need(
-      yvar %in% names(anl),
+      yvar %in% names(dataset),
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-    if(use_margin){
-      expression_to_use <- expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA)))
-    }else{
-      expression_to_use <- expr(table(dataset[[xvar]], dataset[[yvar]], useNA = useNA))
+    if (use_margin) {
+      expression_to_use <- rlang::expr(stats::addmargins(table(dataset[[xvar]], dataset[[yvar]])))
+    } else {
+      expression_to_use <- rlang::expr(table(dataset[[xvar]], dataset[[yvar]]))
     }
-
     set_chunk(
-        expression = expression_to_use,
-        vars = list(dataset = anl, dataname = dataname, xvar = xvar, yvar = yvar, useNA = useNA)
+      expression = expression_to_use,
+      vars = list(dataset = dataset, dataname = dataname, xvar = xvar, yvar = yvar)
     )
-
     tbl <- eval_chunk()
-
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
 
   output$text <- renderText({
-
-        set_chunk("textid",
-            expr(call("as.character",x = 2))
-            )
-
-        eval_chunk("textid")
-
-      })
+    set_chunk("textid",
+      expression = rlang::expr(as.character(dim(dataset))),
+      vars = list(dataset = datasets$get_data(dataname, reactive = TRUE, filtered = TRUE), dataname = dataname)
+    )
+    eval_chunk("textid")
+  })
 
   observeEvent(input$show_rcode, {
-
     teal.devel::show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = get_rcode(
-          datasets = datasets,
-          dataname = dataname,
-          title = paste("Cross-Table of", input$xvar, "vs.", input$yvar),
-          description = "",
-          libraries = c(),
-          git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general"))
+        datasets = datasets,
+        dataname = dataname,
+        title = paste("Cross-Table of", input$xvar, "vs.", input$yvar),
+        description = "",
+        libraries = c(),
+        git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general"))
       )
     )
   })
