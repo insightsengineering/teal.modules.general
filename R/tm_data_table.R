@@ -41,13 +41,24 @@
 #' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
-tm_data_table <- function(label = "Data table", variables_selected = NULL) {
+tm_data_table <- function(label = "Data table",
+                          variables_selected = NULL) {
+  stopifnot(
+    is.character(label),
+    length(label) == 1,
+    is.null(variables_selected) || is.list(variables_selected)
+  )
+
+  if (is.null(variables_selected)) {
+    variables_selected <- list()
+  }
+
   teal::module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
     filters = "all",
-    server_args = list(cache_selected = if (is.null(variables_selected)) list() else variables_selected),
+    server_args = list(cache_selected = variables_selected),
     ui_args = list(datasets = "teal_datasets")
   )
 }
@@ -70,26 +81,49 @@ ui_page_data_table <- function(id, datasets) {
 
   tagList(
     fluidRow(
-      div(
-        class = "col-md-3",
-        radioButtons(ns("data_raw_or_filtered"), NULL,
-          choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
-          selected = "filtered", inline = TRUE
-        ),
-        checkboxInput(ns("distinct"), "show only distinct rows", value = FALSE)
+      column(
+        width = 9,
+        div(do.call(tabsetPanel, append(datatset_tabs, list(id = ns("dataset")))))
       ),
-      div(class = "col-md-9", selectInput(ns("variables"), "select variables",
-        choices = sel_varnames, selected = head(sel_varnames),
-        multiple = TRUE, width = "100%"
-      ))
+      column(
+        width = 3,
+        fluidRow(
+          radioButtons(
+            ns("data_raw_or_filtered"),
+            NULL,
+            choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
+            selected = "filtered",
+            inline = TRUE
+          )
+        ),
+        fluidRow(
+          checkboxInput(
+            ns("distinct"),
+            "show only distinct rows",
+            value = FALSE
+          )
+        )
+      )
     ),
-    tags$hr(),
     fluidRow(
-      div(style = "margin-left:15px", do.call(tabsetPanel, append(datatset_tabs, list(id = ns("dataset")))))
+      column(
+        width = 12,
+        selectInput(
+          ns("variables"),
+          "select variables",
+          choices = sel_varnames,
+          selected = head(sel_varnames),
+          multiple = TRUE,
+          width = "100%"
+        )
+      )
     ),
     fluidRow(
       div(style = "height:10px;"),
-      div(class = "col-md-12", DT::dataTableOutput(ns("tbl"), width = "100%"))
+      column(
+        width = 12,
+        DT::dataTableOutput(ns("tbl"), width = "100%")
+      )
     ),
     div(style = "height:30px;")
   )

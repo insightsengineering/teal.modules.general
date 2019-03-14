@@ -107,7 +107,8 @@ ui_table <- function(id,
       optionalSelectInput(ns("yvar"), "y variable (column)", yvar$choices, yvar$selected, multiple = FALSE),
       radioButtons(ns("useNA"),
         label = "Display Missing Values",
-        choices = c("no", "ifany", "always"), selected = useNA
+        choices = c("no", "ifany", "always"),
+        selected = useNA
       ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),
