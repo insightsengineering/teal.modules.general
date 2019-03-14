@@ -29,7 +29,7 @@ x <- teal::init(
   )
 )
 \dontrun{
-  shinyApp(x$ui, x$server)
+shinyApp(x$ui, x$server)
 }
 
 # two-datasets example
@@ -46,6 +46,6 @@ x <- teal::init(
   )
 )
 \dontrun{
-  shinyApp(x$ui, x$server)
+shinyApp(x$ui, x$server)
 }
 }

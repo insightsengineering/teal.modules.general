@@ -70,7 +70,6 @@ output to put the output into context. For example the
 Bar plot for safety events
 }
 \examples{
-\dontrun{
 library(random.cdisc.data)
 
 ASL <- radsl(N = 600)
@@ -90,7 +89,7 @@ app <- teal::init(
  )
 )
 
+\dontrun{
 shinyApp(app$ui, app$server)
 }
-
 }

@@ -60,8 +60,8 @@ ui_page_variable_browser <- function(id, datasets) {
           div(
             class = "pull-left",
             radioButtons(ns("raw_or_filtered"), NULL,
-                choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
-                selected = "filtered", inline = TRUE)
+                         choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
+                         selected = "filtered", inline = TRUE)
           ),
           actionLink(ns("add_filter_variable"), "add as filter variable", class = "pull-right")
         ),
@@ -161,7 +161,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
         groups <- unique(as.character(var))
         if (length(groups) > 30) {
           grid::textGrob(paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "),
-                  "\n   ..."),
+                                "\n   ..."),
             x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"),
             just = c("left", "top")
           )
@@ -176,7 +176,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       } else {
         grid::textGrob(
           paste(strwrap(capture.output(str(var)), width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)),
-              collapse = "\n"),
+                collapse = "\n"),
           x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
         )
       }
@@ -185,33 +185,32 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     }
   })
 
+  warning_messages <- reactiveValues(varinfo = "", i = 0)
 
+  observeEvent(input$add_filter_variable, {
+    dataname <- plot_var$data
+    varname <- plot_var$variable
+    active <- plot_var$active
 
-warning_messages <- reactiveValues(varinfo = "", i = 0)
-observeEvent(input$add_filter_variable, {
-      dataname <- plot_var$data
-      varname <- plot_var$variable
-      active <- plot_var$active
+    .log("add filter variable", dataname, "and", varname, "and active:", active)
 
-      .log("add filter variable", dataname, "and", varname, "and active:", active)
-
-      if (!is.null(dataname) && identical(dataname, active)) {
-        if (!is.null(varname)) {
-          if (dataname != "ASL" && varname %in% asl_vars) {
-            warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
-                    Switch to the ASL data and add the variable from there.")
-          } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
-            warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."), "can currently not be
-                    used as a filter variable.")
-          } else {
-            datasets$set_default_filter_state(dataname, varname)
-            warning_messages$varinfo <- ""
-            .log("filter added:", varname)
-          }
-          warning_messages$i <- warning_messages$i + 1
+    if (!is.null(dataname) && identical(dataname, active)) {
+      if (!is.null(varname)) {
+        if (dataname != "ASL" && varname %in% asl_vars) {
+          warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
+                                            Switch to the ASL data and add the variable from there.")
+        } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
+          warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
+                                            "can currently not be used as a filter variable.")
+        } else {
+          datasets$set_default_filter_state(dataname, varname)
+          warning_messages$varinfo <- ""
+          .log("filter added:", varname)
         }
+        warning_messages$i <- warning_messages$i + 1
       }
-    })
+    }
+  })
 
 
   output$warning <- renderUI({

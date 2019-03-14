@@ -1,4 +1,3 @@
-
 #' Summary Table Comparing Analysis Populations
 #'
 #' Display a summary table comparing analysis populations as a shiny module
@@ -8,7 +7,7 @@
 #' @param bep_var (\code{choices_selected}) containing name of boolean vector for the biomarker evaluable population
 #'   (BEP) to compare in the table
 #' @param with_show_r_code (\code{logical}) Whether to include "Show R Code" Button
-#' 
+#'
 #' @export
 #'
 #' @importFrom teal add_no_selected_choices
@@ -17,7 +16,6 @@
 #'
 #' @examples
 #'
-#' \dontrun{
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
@@ -41,6 +39,7 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 tm_t_bep_summary <- function(label,
@@ -56,7 +55,9 @@ tm_t_bep_summary <- function(label,
   stopifnot(is.choices_selected(summarize_vars))
   stopifnot(is.choices_selected(bep_var))
 
-  if (with_show_r_code) stop("currently show R code feature is not implemented in tm_t_bep_summary")
+  if (with_show_r_code) {
+    stop("currently show R code feature is not implemented in tm_t_bep_summary")
+  }
 
   arm_var <- teal::add_no_selected_choices(arm_var)
 
@@ -142,11 +143,17 @@ srv_t_bep_summary <- function(input,
     validate(need(all(summarize_vars %in% names(anl_f)), "Not all variables available"))
 
     arm_var <- teal::no_selected_as_NULL(arm_var)
-    if (!is.null(arm_var)) validate(need(anl_f[[arm_var]], "Arm variable does not exist"))
+    if (!is.null(arm_var)) {
+      validate(need(anl_f[[arm_var]], "Arm variable does not exist"))
+    }
 
     bep <- anl_f[[bep_var]]
     anl_select <- anl_f[, summarize_vars, drop = FALSE]
-    arm <- if (is.null(arm_var)) NULL else anl_f[[arm_var]]
+    arm <- if (is.null(arm_var)) {
+      NULL
+    } else {
+      anl_f[[arm_var]]
+    }
 
 
     all_bep <- all(bep)

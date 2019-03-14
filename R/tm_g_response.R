@@ -21,8 +21,6 @@
 
 #' @examples
 #'
-#' \dontrun{
-#'
 #' library(random.cdisc.data)
 #'
 #' ASL <- radsl()
@@ -44,8 +42,8 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
-#'
 #'
 #' ## as ggplot only
 #' library(ggplot2)
@@ -237,7 +235,11 @@ srv_g_response <- function(input,
       )
     }
 
-    arg_position <- if (freq) "stack" else "fill" # nolint
+    arg_position <- if (freq) {
+      "stack"
+    } else {
+      "fill"
+    }
     cl_arg_x <- if (is.null(x_var)) {
       1
     } else {
@@ -284,7 +286,9 @@ srv_g_response <- function(input,
 
     facet_cl <- g_facet_cl(row_facet_var, col_facet_var)
 
-    if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
+    if (!is.null(facet_cl)) {
+      plot_call <- call("+", plot_call, facet_cl)
+    }
 
     plot_call
   })

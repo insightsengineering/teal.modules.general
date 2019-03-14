@@ -16,8 +16,6 @@
 #'
 #' @examples
 #'
-#' \dontrun{
-#'
 #' library(random.cdisc.data)
 #' ASL <- radsl()
 #' ASL$BOOLEAN <- sample(c(TRUE, FALSE), nrow(ASL), TRUE)
@@ -33,10 +31,10 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
-tm_g_association <- function(
-                             label = "Association",
+tm_g_association <- function(label = "Association",
                              dataname,
                              var,
                              show_association = TRUE,
@@ -152,7 +150,11 @@ srv_tm_g_association <- function(input,
       quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
     )
 
-    ref_var_class_cov <- if (association) ref_var_class else "NULL"
+    ref_var_class_cov <- if (association) {
+      ref_var_class
+    } else {
+      "NULL"
+    }
 
     var_cls <- lapply(var[-1], function(var_i) {
       class_i <- class(anl_head[[var_i]])

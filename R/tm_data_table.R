@@ -22,7 +22,7 @@
 #'   )
 #' )
 #' \dontrun{
-#'   shinyApp(x$ui, x$server)
+#' shinyApp(x$ui, x$server)
 #' }
 #'
 #' # two-datasets example
@@ -39,7 +39,7 @@
 #'   )
 #' )
 #' \dontrun{
-#'   shinyApp(x$ui, x$server)
+#' shinyApp(x$ui, x$server)
 #' }
 tm_data_table <- function(label = "Data table", variables_selected = NULL) {
   teal::module(
@@ -99,7 +99,11 @@ ui_page_data_table <- function(id, datasets) {
 ## data table
 #' @import utils
 #' @importFrom dplyr count_
-srv_page_data_table <- function(input, output, session, datasets, cache_selected = list()) {
+srv_page_data_table <- function(input,
+                                output,
+                                session,
+                                datasets,
+                                cache_selected = list()) {
 
   # This function uses session$userData to store the choices made by the user for select variables.
   #
@@ -107,7 +111,9 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
   # select first 6 variables for each dataset if not otherwise specified
   for (name in setdiff(datasets$datanames(), names(cache_selected))) {
-    cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>% names() %>% head(6)
+    cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>%
+      names() %>%
+      head(6)
   }
 
   cache_selected_reactive <-  reactiveVal(cache_selected)
@@ -126,7 +132,11 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
     variables_cached_all <- cache_selected_reactive()
     variables_cached <- variables_cached_all[[dataname]]
 
-    selected <- if (is.null(variables_cached)) head(choices, 6) else intersect(variables_cached, choices)
+    selected <- if (is.null(variables_cached)) {
+      head(choices, 6)
+    } else {
+      intersect(variables_cached, choices)
+    }
 
     .log("data table, update variables for", dataname)
 
@@ -138,10 +148,10 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
     cache_selected_reactive(variables_cached_all)
   })
 
-  observeEvent(input$variables,{
-        variables_cached <- cache_selected_reactive()
-        variables_cached[[input$dataset]] <- input$variables
-        cache_selected_reactive(variables_cached)
+  observeEvent(input$variables, {
+    variables_cached <- cache_selected_reactive()
+    variables_cached[[input$dataset]] <- input$variables
+    cache_selected_reactive(variables_cached)
   })
 
   output$tbl <- DT::renderDataTable({
@@ -165,7 +175,11 @@ srv_page_data_table <- function(input, output, session, datasets, cache_selected
 
     validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
-    dataframe_selected <- if (input$distinct) dplyr::count_(df, variables) else df[variables]
+    dataframe_selected <- if (input$distinct) {
+      dplyr::count_(df, variables)
+    } else {
+      df[variables]
+    }
 
     # Return a DT data.frame
     DT::datatable(

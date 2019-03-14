@@ -1,6 +1,6 @@
 #' Univariate and bivariate visualizations.
-#' 
-#' 
+#'
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #' @param dataname name of dataset used to generate table
@@ -26,16 +26,12 @@
 #' @import ggplot2
 #' @import ggmosaic
 #'
-#'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
 #' @export
 #'
-#'
 #' @examples
-#'
-#' \dontrun{
 #'
 #' N <- 100
 #' ASL <- data.frame(
@@ -67,6 +63,7 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 #' @importFrom teal add_no_selected_choices
@@ -176,11 +173,23 @@ srv_g_bivariate <- function(input,
     free_x_scales <- input$free_x_scales
     free_y_scales <- input$free_y_scales
 
-    if (x_var == "-- no x --") x_var <- NULL
-    if (y_var == "-- no y --") y_var <- NULL
+    if (x_var == "-- no x --") {
+      x_var <- NULL
+    }
+    if (y_var == "-- no y --") {
+      y_var <- NULL
+    }
 
-    x <- if (!is.null(x_var)) anl_head[[x_var]] else NULL
-    y <- if (!is.null(y_var)) anl_head[[y_var]] else NULL
+    x <- if (!is.null(x_var)) {
+      anl_head[[x_var]]
+    } else {
+      NULL
+    }
+    y <- if (!is.null(y_var)) {
+      anl_head[[y_var]]
+    } else {
+      NULL
+    }
 
     validate(need(anl_head, "data missing"))
     validate(need(nrow(anl_head) > 3, "need at least 10 records"))
@@ -203,7 +212,9 @@ srv_g_bivariate <- function(input,
 
     facet_cl <- g_facet_cl(row_facet_var, col_facet_var, free_x_scales, free_y_scales)
 
-    if (!is.null(facet_cl)) cl <- call("+", cl, facet_cl)
+    if (!is.null(facet_cl)) {
+      cl <- call("+", cl, facet_cl)
+    }
 
     cl
   })
@@ -260,7 +271,10 @@ srv_g_bivariate <- function(input,
 #' g_facet_cl(LETTERS[1:3])
 #' g_facet_cl(NULL, LETTERS[23:26])
 #' g_facet_cl(LETTERS[1:3], LETTERS[23:26])
-g_facet_cl <- function(row_facet_var = NULL, col_facet_var = NULL, free_x_scales = FALSE, free_y_scales = FALSE) {
+g_facet_cl <- function(row_facet_var = NULL,
+                       col_facet_var = NULL,
+                       free_x_scales = FALSE,
+                       free_y_scales = FALSE) {
   scales <- if (free_x_scales && free_y_scales) {
     "free"
   } else if (free_x_scales) {
@@ -344,14 +358,23 @@ g_bp <- function(x = NULL, y = NULL, freq = TRUE) {
 #'
 #' g_bp_cl("ANL", "BAGE", "RACE", "numeric", "factor")
 #' g_bp_cl("ANL", "BAGE", NULL, "numeric", "NULL")
-g_bp_cl <- function(data_name, x_var, y_var, x_class, y_class,
+g_bp_cl <- function(data_name,
+                    x_var,
+                    y_var,
+                    x_class,
+                    y_class,
                     freq = TRUE,
                     col_var = NULL,
-                    x_facet = NULL, y_facet = NULL) {
+                    x_facet = NULL,
+                    y_facet = NULL) {
   cl <- aes_geom_call(x_class, y_class, freq = freq)
 
-  if (is.null(x_var)) x_var <- "-"
-  if (is.null(y_var)) y_var <- "-"
+  if (is.null(x_var)) {
+    x_var <- "-"
+  }
+  if (is.null(y_var)) {
+    y_var <- "-"
+  }
 
   cl_plot <- substitute_q(cl, list(
     .gg = bquote(ggplot(.(as.name(data_name)))),
@@ -395,10 +418,16 @@ aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", 
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
 
-  if (x_class %in% c("character", "logical")) x_class <- "factor"
-  if (y_class %in% c("character", "logical")) y_class <- "factor"
+  if (x_class %in% c("character", "logical")) {
+    x_class <- "factor"
+  }
+  if (y_class %in% c("character", "logical")) {
+    y_class <- "factor"
+  }
 
-  all(c(x_class, y_class) == "NULL") && stop("either x or y is required")
+  if (all(c(x_class, y_class) == "NULL")) {
+    stop("either x or y is required")
+  }
 
   if (x_class == "numeric" && y_class == "NULL") {
     if (freq) {
@@ -439,5 +468,9 @@ aes_geom_call <- function(x_class = c("NULL", "numeric", "factor", "character", 
 }
 
 label_over_name <- function(x, name) {
-  if (is.null(x)) name else x
+  if (is.null(x)) {
+    name
+  } else {
+    x
+  }
 }

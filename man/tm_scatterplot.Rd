@@ -60,7 +60,6 @@ Create a table with the \code{\link{table}[base]} function
 }
 \examples{
 
-\dontrun{
 library(random.cdisc.data)
 
 ASL <- radsl(seed = 1)
@@ -90,6 +89,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
 }
 }

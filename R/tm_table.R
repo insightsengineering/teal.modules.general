@@ -26,7 +26,6 @@
 #'
 #' @examples
 #'
-#' \dontrun{
 #' library(random.cdisc.data)
 #'
 #' ASL <- radsl(seed = 1)
@@ -38,7 +37,8 @@
 #'   root_modules(
 #'     tm_data_table(),
 #'     tm_variable_browser(),
-#'     tm_table("Table Choices", "ASL",
+#'     tm_table("Table Choices",
+#'       "ASL",
 #'       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
 #'       yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
 #'     ),
@@ -51,6 +51,7 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table <- function(label,
@@ -60,11 +61,19 @@ tm_table <- function(label,
                      useNA = c("ifany", "no", "always"), # nolint
                      pre_output = NULL,
                      post_output = NULL) {
+  stopifnot(
+    is.character(label),
+    length(label) == 1,
+    is.character(dataname),
+    is.choices_selected(xvar),
+    is.choices_selected(yvar),
+    is.character(useNA),
+    all(useNA %in% c("ifany", "no", "always"))
+  )
 
   args <- as.list(environment())
 
   args$useNA <- match.arg(useNA) # nolint
-
 
   teal::module(
     label = label,

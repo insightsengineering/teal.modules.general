@@ -43,7 +43,6 @@ Display a summary table comparing analysis populations as a shiny module
 }
 \examples{
 
-\dontrun{
 library(random.cdisc.data)
 library(dplyr)
 
@@ -67,6 +66,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
 }
 }

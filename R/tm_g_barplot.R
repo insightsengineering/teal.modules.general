@@ -1,6 +1,6 @@
 #' Bar plot for safety events
 #'
-#' 
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #' @param dataname (\code{character}) Dataset to be selected inside the app
@@ -24,9 +24,10 @@
 #'   slider should be presented to adjust the plot height dynamically then it
 #'   can be a vector of length three with vlaue, min and max.
 #' @param code_data_processing (\code{character}) Code that was used to pre-process the data
-#' 
+#'
+#' @export
+#'
 #' @examples
-#' \dontrun{
 #' library(random.cdisc.data)
 #'
 #' ASL <- radsl(N = 600)
@@ -46,10 +47,9 @@
 #'  )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
-#' @export
 tm_bep_safety0 <- function(label,
                            dataname,
                            arm_var,

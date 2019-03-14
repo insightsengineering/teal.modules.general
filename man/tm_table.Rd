@@ -36,7 +36,6 @@ Create a table with the \code{\link{table}[base]} function
 }
 \examples{
 
-\dontrun{
 library(random.cdisc.data)
 
 ASL <- radsl(seed = 1)
@@ -48,7 +47,8 @@ x <- teal::init(
   root_modules(
     tm_data_table(),
     tm_variable_browser(),
-    tm_table("Table Choices", "ASL",
+    tm_table("Table Choices",
+      "ASL",
       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
       yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
     ),
@@ -61,6 +61,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
 }
 }
