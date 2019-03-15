@@ -117,6 +117,7 @@ ui_page_data_table <- function(id,
                 title = x,
                 column(
                   width = 12,
+                  div(style = "height:10px;"),
                   ui_data_table(
                     id = ns(x),
                     choices = choices,
