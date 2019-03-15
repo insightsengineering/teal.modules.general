@@ -10,12 +10,12 @@
 #' @export
 #'
 #' @examples
-#'
+#' library(teal)
 #' library(random.cdisc.data)
 #'
 #' asl <- radsl()
 #'
-#' x <- teal::init(
+#' x <- init(
 #'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_data_table()
@@ -26,11 +26,12 @@
 #' }
 #'
 #' # two-datasets example
+#' library(teal)
 #' library(random.cdisc.data)
 #' asl <- radsl()
 #' adte <- radaette(asl)
 #'
-#' x <- teal::init(
+#' x <- init(
 #'   data = list(ASL = asl, ADTE = adte),
 #'   modules = root_modules(
 #'     tm_data_table(
@@ -42,87 +43,90 @@
 #' shinyApp(x$ui, x$server)
 #' }
 tm_data_table <- function(label = "Data table",
-                          variables_selected = NULL) {
+                          variables_selected = list()) {
   stopifnot(
     is.character(label),
     length(label) == 1,
-    is.null(variables_selected) || is.list(variables_selected)
+    is.list(variables_selected),
+    `if`(length(variables_selected) > 0,
+         !is.null(names(variables_selected)), TRUE),
+    `if`(length(variables_selected) > 0,
+         all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))), TRUE),
+    `if`(length(variables_selected) > 0,
+         all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0), TRUE),
+    `if`(length(variables_selected) > 0,
+         all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))), TRUE),
+    `if`(length(variables_selected) > 0,
+         all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0), TRUE)
   )
 
-  if (is.null(variables_selected)) {
-    variables_selected <- list()
-  }
-
-  teal::module(
+  module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
     filters = "all",
-    server_args = list(cache_selected = variables_selected),
-    ui_args = list(datasets = "teal_datasets")
+    ui_args = list(datasets = "teal_datasets", selected = variables_selected)
   )
 }
 
 
-#' ui function of Data Table Viewer
-#'
-#' @param id (\code{character}) UI id
-#' @param datasets (\code{FilteredData}) object
-#'
-#' @import stats
-ui_page_data_table <- function(id, datasets) {
+# ui page module
+ui_page_data_table <- function(id,
+                               datasets,
+                               selected) {
   ns <- NS(id)
 
   datanames <- datasets$datanames()
-  sel_varnames <- names(datasets$get_data(datanames[1]))
-
-  # Create a tab list for each dataset
-  datatset_tabs <- lapply(datanames, function(x) tabPanel(title = x, value = x))
 
   tagList(
     fluidRow(
       column(
-        width = 9,
-        div(do.call(tabsetPanel, append(datatset_tabs, list(id = ns("dataset")))))
+        width = 6,
+        radioButtons(
+          ns("if_filtered"),
+          NULL,
+          choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
+          selected = TRUE,
+          inline = TRUE
+        )
       ),
       column(
-        width = 3,
-        fluidRow(
-          radioButtons(
-            ns("data_raw_or_filtered"),
-            NULL,
-            choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
-            selected = "filtered",
-            inline = TRUE
-          )
-        ),
-        fluidRow(
-          checkboxInput(
-            ns("distinct"),
-            "show only distinct rows",
-            value = FALSE
-          )
+        width = 6,
+        checkboxInput(
+          ns("if_distinct"),
+          "show only distinct rows",
+          value = FALSE
         )
       )
     ),
     fluidRow(
       column(
         width = 12,
-        selectInput(
-          ns("variables"),
-          "select variables",
-          choices = sel_varnames,
-          selected = head(sel_varnames),
-          multiple = TRUE,
-          width = "100%"
+        do.call(
+          tabsetPanel,
+          lapply(
+            datanames,
+            function(x) {
+              choices <- names(datasets$get_data(x, filtered = FALSE, reactive = FALSE))
+              selected <- if (!is.null(selected[[x]])) {
+                selected[[x]]
+              } else {
+                head(choices)
+              }
+              tabPanel(
+                title = x,
+                column(
+                  width = 12,
+                  ui_data_table(
+                    id = ns(x),
+                    choices = choices,
+                    selected = selected
+                  )
+                )
+              )
+            }
+          )
         )
-      )
-    ),
-    fluidRow(
-      div(style = "height:10px;"),
-      column(
-        width = 12,
-        DT::dataTableOutput(ns("tbl"), width = "100%")
       )
     ),
     div(style = "height:30px;")
@@ -130,69 +134,66 @@ ui_page_data_table <- function(id, datasets) {
 }
 
 
-## data table
-#' @import utils
-#' @importFrom dplyr count_
+# server page module
 srv_page_data_table <- function(input,
                                 output,
                                 session,
-                                datasets,
-                                cache_selected = list()) {
+                                datasets) {
 
-  # This function uses session$userData to store the choices made by the user for select variables.
-  #
+  if_filtered <- reactive(input$if_filtered)
+  if_distinct <- reactive(input$if_distinct)
 
-
-  # select first 6 variables for each dataset if not otherwise specified
-  for (name in setdiff(datasets$datanames(), names(cache_selected))) {
-    cache_selected[[name]] <- datasets$get_data(name, filtered = FALSE, reactive = FALSE) %>%
-      names() %>%
-      head(6)
-  }
-
-  cache_selected_reactive <-  reactiveVal(cache_selected)
-
-  observeEvent(input$dataset, {
-
-    dataname <- input$dataset
-
-    validate(
-      need(dataname, "need valid dataset name"),
-      need(dataname %in% datasets$datanames(), paste("data", dataname, "was not specified"))
-    )
-
-    choices <- datasets$get_data(dataname, filtered = FALSE, reactive = FALSE) %>% names()
-
-    variables_cached_all <- cache_selected_reactive()
-    variables_cached <- variables_cached_all[[dataname]]
-
-    selected <- if (is.null(variables_cached)) {
-      head(choices, 6)
-    } else {
-      intersect(variables_cached, choices)
+  lapply(
+    datasets$datanames(),
+    function(x) {
+      callModule(
+        module = srv_data_table,
+        id = x,
+        datasets = datasets,
+        dataname = x,
+        if_filtered = if_filtered,
+        if_distinct = if_distinct
+      )
     }
+  )
+}
 
-    .log("data table, update variables for", dataname)
 
-    updateSelectInput(session, "variables",
-      choices = c(selected, setdiff(choices, selected)),
-      selected = selected
+# ui tab module
+ui_data_table <- function(id,
+                          choices,
+                          selected) {
+  ns <- NS(id)
+
+  tagList(
+    fluidRow(
+      selectInput(
+        ns("variables"),
+        "select variables",
+        choices = choices,
+        selected = selected,
+        multiple = TRUE,
+        width = "100%"
+      )
+    ),
+    fluidRow(
+      DT::dataTableOutput(ns("data_table"), width = "100%")
     )
-    variables_cached_all[[dataname]] <- selected
-    cache_selected_reactive(variables_cached_all)
-  })
+  )
+}
 
-  observeEvent(input$variables, {
-    variables_cached <- cache_selected_reactive()
-    variables_cached[[input$dataset]] <- input$variables
-    cache_selected_reactive(variables_cached)
-  })
 
-  output$tbl <- DT::renderDataTable({
-    dataname <- input$dataset
+# server tab module
+#' @importFrom dplyr count_
+srv_data_table <- function(input,
+                           output,
+                           session,
+                           datasets,
+                           dataname,
+                           if_filtered,
+                           if_distinct) {
 
-    validate(need(dataname, "need valid dataname"))
-
+  output$data_table <- DT::renderDataTable({
     variables <- input$variables
 
     validate(need(variables, "need valid variable names"))
@@ -201,7 +202,7 @@ srv_page_data_table <- function(input,
 
     df <- datasets$get_data(
       dataname,
-      filtered = input$data_raw_or_filtered == "filtered",
+      filtered = if_filtered(),
       reactive = TRUE
     )
 
@@ -209,13 +210,12 @@ srv_page_data_table <- function(input,
 
     validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
-    dataframe_selected <- if (input$distinct) {
-      dplyr::count_(df, variables)
+    dataframe_selected <- if (if_distinct()) {
+      count_(df, variables)
     } else {
       df[variables]
     }
 
-    # Return a DT data.frame
     DT::datatable(
       dataframe_selected,
       options = list(

@@ -4,7 +4,7 @@
 \alias{tm_data_table}
 \title{Data Table Viewer Teal Module}
 \usage{
-tm_data_table(label = "Data table", variables_selected = NULL)
+tm_data_table(label = "Data table", variables_selected = list())
 }
 \arguments{
 \item{label}{(\code{character})}
@@ -17,12 +17,12 @@ If not specified for any dataset - first six variables from dataset will be show
 A data table viewer shows the data using a paginated table.
 }
 \examples{
-
+library(teal)
 library(random.cdisc.data)
 
 asl <- radsl()
 
-x <- teal::init(
+x <- init(
   data = list(ASL = asl),
   modules = root_modules(
     tm_data_table()
@@ -33,11 +33,12 @@ shinyApp(x$ui, x$server)
 }
 
 # two-datasets example
+library(teal)
 library(random.cdisc.data)
 asl <- radsl()
 adte <- radaette(asl)
 
-x <- teal::init(
+x <- init(
   data = list(ASL = asl, ADTE = adte),
   modules = root_modules(
     tm_data_table(
