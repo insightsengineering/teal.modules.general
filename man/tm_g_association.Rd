@@ -38,8 +38,6 @@ Stack Plots of variables and show association with reference variable
 }
 \examples{
 
-\dontrun{
-
 library(random.cdisc.data)
 ASL <- radsl()
 ASL$BOOLEAN <- sample(c(TRUE, FALSE), nrow(ASL), TRUE)
@@ -55,6 +53,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
 }
 }

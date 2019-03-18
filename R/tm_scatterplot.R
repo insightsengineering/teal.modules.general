@@ -36,7 +36,6 @@
 #'
 #' @examples
 #'
-#' \dontrun{
 #' library(random.cdisc.data)
 #'
 #' ASL <- radsl(seed = 1)
@@ -66,12 +65,15 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 tm_scatterplot <- function(label,
                            dataname,
-                           xvar, yvar,
-                           xvar_choices = xvar, yvar_choices = yvar,
+                           xvar,
+                           yvar,
+                           xvar_choices = xvar,
+                           yvar_choices = yvar,
                            color_by = NULL,
                            color_by_choices = color_by,
                            plot_height = c(600, 200, 2000),
@@ -92,13 +94,23 @@ tm_scatterplot <- function(label,
 
 
 #' @import teal
-ui_scatterplot <- function(id, label,
-                           dataname, xvar, yvar,
-                           xvar_choices, yvar_choices,
-                           color_by, color_by_choices,
-                           plot_height, alpha, size,
-                           pre_output, post_output) {
-  if (plot_height < 200 || plot_height > 2000) stop("plot_height must be between 200 and 2000")
+ui_scatterplot <- function(id,
+                           label,
+                           dataname,
+                           xvar,
+                           yvar,
+                           xvar_choices,
+                           yvar_choices,
+                           color_by,
+                           color_by_choices,
+                           plot_height,
+                           alpha,
+                           size,
+                           pre_output,
+                           post_output) {
+  if (plot_height < 200 || plot_height > 2000) {
+    stop("plot_height must be between 200 and 2000")
+  }
 
 
   ns <- NS(id)
@@ -151,7 +163,9 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     color_by <- input$color_by
     size <- input$size
 
-    if (color_by %in% c("", "_none_")) color_by <- NULL
+    if (color_by %in% c("", "_none_")) {
+      color_by <- NULL
+    }
 
 
     validate(need(alpha, "need alpha"))
@@ -196,7 +210,9 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     size <- input$size
     color_by <- input$color_by
 
-    if (color_by %in% c("", "_none_")) color_by <- NULL
+    if (color_by %in% c("", "_none_")) {
+      color_by <- NULL
+    }
 
     str_header <- get_rcode_header(
       title = paste("Scatterplot of", yvar, "vs.", xvar),
@@ -227,7 +243,9 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     )
 
     f_sub <- Map(function(pattern, repl) {
-      function(txt) sub(pattern, repl, txt, fixed = TRUE)
+      function(txt) {
+        sub(pattern, repl, txt, fixed = TRUE)
+      }
     }, names(subst_pairs), subst_pairs)
 
     plot_code_subst <- Reduce(function(txt, f) f(txt), f_sub, init = plot_code)

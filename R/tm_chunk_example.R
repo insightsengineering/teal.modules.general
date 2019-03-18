@@ -14,39 +14,44 @@
 #' @importFrom xtable xtable
 #' @importFrom xtable print.xtable
 #' @import teal.devel
-#' 
+#'
 #' @examples
-#' 
-#' \dontrun{
+#'
 #' library(random.cdisc.data)
-#' 
+#'
 #' ASL <- radsl(seed = 1)
-#' 
+#'
 #' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' 
+#'
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   root_modules(
 #'     tm_data_table(),
 #'     tm_variable_browser(),
-#'     tm_table("Table Choices", "ASL",
-#'       xvar = "SEX", yvar = "RACE",
-#'       xvar_choices = c("SEX", "RACE", "STUDYID"),
-#'       yvar_choices = c("RACE", "SAFFL")
+#'     tm_table("Table Choices",
+#'       "ASL",
+#'       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
+#'       yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
 #'     ),
-#'     tm_table("Table No Choices", "ASL", "SEX", "RACE",
+#'     tm_table("Table No Choices",
+#'       "ASL",
+#'       xvar = choices_selected("SEX"),
+#'       yvar = choices_selected("RACE"),
 #'       pre_output = helpText("Titles"),
 #'       post_output = helpText("Footnotes")
 #'     )
 #'   )
 #' )
-#' 
+#'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table_with_chunks <- function(label,
                                  dataname,
-                                 xvar, yvar,
-                                 pre_output = NULL, post_output = NULL) {
+                                 xvar,
+                                 yvar,
+                                 pre_output = NULL,
+                                 post_output = NULL) {
   args <- as.list(environment())
 
   teal::module(
@@ -61,8 +66,13 @@ tm_table_with_chunks <- function(label,
 
 
 #' @import teal
-ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
-                                 pre_output, post_output) {
+ui_table_with_chunks <- function(id,
+                                 label,
+                                 dataname,
+                                 xvar,
+                                 yvar,
+                                 pre_output,
+                                 post_output) {
   ns <- NS(id)
 
   standard_layout(
@@ -89,7 +99,11 @@ ui_table_with_chunks <- function(id, label, dataname, xvar, yvar,
 #' @import stats
 #' @importFrom teal.devel get_filter_txt
 #' @importFrom rlang expr
-srv_table_with_chunks <- function(input, output, session, datasets, dataname) {
+srv_table_with_chunks <- function(input,
+                                  output,
+                                  session,
+                                  datasets,
+                                  dataname) {
   use_chunks(session)
 
   output$table <- renderTable({

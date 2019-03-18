@@ -57,8 +57,6 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 
-\dontrun{
-
 N <- 100
 ASL <- data.frame(
   USUBJID = paste("id", seq_len(N), sep = "-"),
@@ -89,6 +87,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
 }
 }

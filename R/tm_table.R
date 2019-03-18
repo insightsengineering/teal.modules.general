@@ -25,42 +25,55 @@
 #' @importFrom xtable print.xtable
 #'
 #' @examples
-#' 
-#' \dontrun{
+#'
 #' library(random.cdisc.data)
-#' 
+#'
 #' ASL <- radsl(seed = 1)
-#' 
+#'
 #' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' 
+#'
 #' x <- teal::init(
 #'   data = list(ASL = ASL),
 #'   root_modules(
 #'     tm_data_table(),
 #'     tm_variable_browser(),
-#'     tm_table("Table Choices", "ASL",
-#'       xvar = "SEX", yvar = "RACE",
-#'       xvar_choices = c("SEX", "RACE", "STUDYID"),
-#'       yvar_choices = c("RACE", "SAFFL")
+#'     tm_table("Table Choices",
+#'       "ASL",
+#'       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
+#'       yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
 #'     ),
-#'     tm_table("Table No Choices", "ASL", "SEX", "RACE",
+#'     tm_table("Table No Choices", "ASL",
+#'       xvar = choices_selected("SEX"),
+#'       yvar = choices_selected("RACE"),
 #'       pre_output = helpText("Titles"),
 #'       post_output = helpText("Footnotes")
 #'     )
 #'   )
 #' )
-#' 
+#'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
 tm_table <- function(label,
                      dataname,
-                     xvar, yvar,
+                     xvar,
+                     yvar,
                      useNA = c("ifany", "no", "always"), # nolint
-                     pre_output = NULL, post_output = NULL) {
+                     pre_output = NULL,
+                     post_output = NULL) {
+  stopifnot(
+    is.character(label),
+    length(label) == 1,
+    is.character(dataname),
+    is.choices_selected(xvar),
+    is.choices_selected(yvar),
+    is.character(useNA),
+    all(useNA %in% c("ifany", "no", "always"))
+  )
+
   args <- as.list(environment())
 
   args$useNA <- match.arg(useNA) # nolint
-
 
   teal::module(
     label = label,
@@ -74,9 +87,14 @@ tm_table <- function(label,
 
 
 #' @import teal
-ui_table <- function(id, label, dataname, xvar, yvar,
+ui_table <- function(id,
+                     label,
+                     dataname,
+                     xvar,
+                     yvar,
                      useNA, # nolint
-                     pre_output, post_output) {
+                     pre_output,
+                     post_output) {
   ns <- NS(id)
 
 
@@ -89,7 +107,8 @@ ui_table <- function(id, label, dataname, xvar, yvar,
       optionalSelectInput(ns("yvar"), "y variable (column)", yvar$choices, yvar$selected, multiple = FALSE),
       radioButtons(ns("useNA"),
         label = "Display Missing Values",
-        choices = c("no", "ifany", "always"), selected = useNA
+        choices = c("no", "ifany", "always"),
+        selected = useNA
       ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),

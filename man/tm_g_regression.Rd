@@ -13,10 +13,10 @@ tm_g_regression(label = "Regression Analysis", dataname, response_var,
 
 \item{dataname}{name of dataset used to generate table}
 
-\item{response_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+\item{response_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the
 response variable}
 
-\item{regressor_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+\item{regressor_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the
 regressor variable}
 
 \item{plot_height}{if scalar then the plot will have a fixed height. If a
@@ -36,7 +36,6 @@ This module is designed for horizontal data
 }
 \examples{
 
-\dontrun{
 N <- 100
 ASL <- data.frame(
   USUBJID = paste("id", seq_len(N), sep = "-"),
@@ -63,18 +62,7 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
-
-
-
-fit <- lm(cont ~ cont2, data = ASL)
-
-
-plot(fit$model[, 2:1])
-abline(fit)
-
-
-plot(fit)
 }
-
 }

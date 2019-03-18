@@ -47,8 +47,6 @@ Response Plots
 }
 \examples{
 
-\dontrun{
-
 library(random.cdisc.data)
 
 ASL <- radsl()
@@ -70,8 +68,8 @@ x <- teal::init(
   )
 )
 
+\dontrun{
 shinyApp(x$ui, x$server)
-
 
 ## as ggplot only
 library(ggplot2)

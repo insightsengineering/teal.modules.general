@@ -1,4 +1,3 @@
-
 #' Scatterplot and Regression Model
 #'
 #' This module is designed for horizontal data
@@ -6,21 +5,20 @@
 #' @import ggplot2
 #'
 #' @param dataname name of dataset used to generate table
-#' @param response_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+#' @param response_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the
 #' 	response variable
-#' @param regressor_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the 
+#' @param regressor_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the
 #' 	regressor variable
 #' @param plot_height if scalar then the plot will have a fixed height. If a
 #'   slider should be presented to adjust the plot height dynamically then it
 #'   can be a vector of length three with \code{c(value, min and max)}.
-#' 
+#'
 #' @export
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #'
 #' @examples
 #'
-#' \dontrun{
 #' N <- 100
 #' ASL <- data.frame(
 #'   USUBJID = paste("id", seq_len(N), sep = "-"),
@@ -47,22 +45,10 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' shinyApp(x$ui, x$server)
-#'
-#'
-#'
-#' fit <- lm(cont ~ cont2, data = ASL)
-#'
-#'
-#' plot(fit$model[, 2:1])
-#' abline(fit)
-#'
-#'
-#' plot(fit)
 #' }
-#'
-tm_g_regression <- function(
-                            label = "Regression Analysis",
+tm_g_regression <- function(label = "Regression Analysis",
                             dataname,
                             response_var,
                             regressor_var,
