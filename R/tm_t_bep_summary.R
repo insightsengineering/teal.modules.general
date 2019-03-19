@@ -2,11 +2,21 @@
 #'
 #' Display a summary table comparing analysis populations as a shiny module
 #' @importFrom teal.devel validate_has_data
-#' @import teal.modules.clinical
-#' @inheritParams teal.modules.clinical::tm_t_summary
+#' @inheritParams teal::module
+#' @inheritParams teal::standard_layout
+#' @param label menue item label of the module in the teal app
+#' @param dataname analysis data used in teal module, needs to be available in
+#'   the list passed to the \code{data} argument of \code{\link[teal]{init}}.
+#'   Note that the data is expected to be in vertical form with the
+#'   \code{PARAMCD} variable filtering to one observation per patient.
+#' @param arm_var \code{\link[teal]{choices_selected}} object with all available choices and preselected option for
+#'   variable names that can be used as \code{arm_var}
+#' @param summarize_vars \code{\link[teal]{choices_selected}} object with all available choices and preselected option
+#'   for variable names that can be used for summary
 #' @param bep_var (\code{choices_selected}) containing name of boolean vector for the biomarker evaluable population
 #'   (BEP) to compare in the table
 #' @param with_show_r_code (\code{logical}) Whether to include "Show R Code" Button
+#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
 #'
 #' @export
 #'
@@ -19,7 +29,7 @@
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
-#' ASL <- radsl(N = 100) %>%
+#' asl <- radsl(N = 100) %>%
 #'   mutate(
 #'     BEP = sample(c(TRUE, FALSE), n(), TRUE),
 #'     BEP2 = sample(c(TRUE, FALSE), n(), TRUE)
@@ -27,13 +37,13 @@
 #'
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_t_bep_summary(
 #'       label = "Demographic",
 #'       dataname = "ASL",
 #'       arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
-#'       summarize_vars = choices_selected(names(ASL), "AGE"),
+#'       summarize_vars = choices_selected(names(asl), "AGE"),
 #'       bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
 #'     )
 #'   )

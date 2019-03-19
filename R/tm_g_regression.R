@@ -19,27 +19,21 @@
 #'
 #' @examples
 #'
-#' N <- 100
-#' ASL <- data.frame(
-#'   USUBJID = paste("id", seq_len(N), sep = "-"),
-#'   STUDYID = "study1",
-#'   F1 = factor(sample(paste0("facet_1_", c("A", "B")), N, TRUE)),
-#'   F2 = factor(sample(paste0("facet_2_", c("a", "b", "c")), N, TRUE)),
-#'   cont = rnorm(N),
-#'   disc = factor(sample(letters[1:5], N, TRUE)),
-#'   cont2 = runif(N),
-#'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
-#' )
+#' library(random.cdisc.data)
+#' asl  <- radsl(seed = 1)
 #'
-#' attr(ASL, "source") <- "# ASL is random data"
+#' asl$cont  <- rnorm(nrow(asl))
+#' asl$cont2 <- rnorm(nrow(asl))
+#'
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       dataname = "ASL",
 #'       response_var = choices_selected(c("cont", "cont2"), "cont"),
-#'       regressor_var = choices_selected(names(ASL), "cont2"),
+#'       regressor_var = choices_selected(names(asl), c("cont2", "ARM")),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   )
@@ -48,13 +42,14 @@
 #' \dontrun{
 #' shinyApp(x$ui, x$server)
 #' }
-tm_g_regression <- function(label = "Regression Analysis",
-                            dataname,
-                            response_var,
-                            regressor_var,
-                            plot_height = c(600, 200, 2000),
-                            pre_output = NULL,
-                            post_output = NULL) {
+tm_g_regression <- function(
+  label = "Regression Analysis",
+  dataname,
+  response_var,
+  regressor_var,
+  plot_height = c(600, 200, 2000),
+  pre_output = NULL,
+  post_output = NULL) {
 
   # Error prevention
   stopifnot(!is.null(dataname))
@@ -73,8 +68,9 @@ tm_g_regression <- function(label = "Regression Analysis",
 }
 
 
+
 #' @import teal
-#' @importFrom teal.devel white_small_well
+#' @importFrom teal.devel white_small_well plot_height_input plot_height_output
 ui_g_regression <- function(id, ...) {
   a <- list(...)
 
@@ -83,30 +79,30 @@ ui_g_regression <- function(id, ...) {
   standard_layout(
     output = teal.devel::white_small_well(
       tags$div(
-          # This shall be wrapped in a teal::plot
-        ui_plot_with_height(ns("plot_ui")),
+        # This shall be wrapped in a teal::plot
+        plot_height_output(id = ns("myplot")),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(inputId = ns("response_var"), label = "Response Variable", choices = a$response_var$choices,
-          selected = a$response_var$selected),
+                          selected = a$response_var$selected),
       optionalSelectInput(inputId = ns("regressor_var"), label = "Regressor Variables",
-        choices = a$regressor_var$choices, selected = a$regressor_var$selected,
-        multiple = TRUE
+                          choices = a$regressor_var$choices, selected = a$regressor_var$selected,
+                          multiple = TRUE
       ),
       radioButtons(ns("plot_type"),
-        label = "Plot Type",
-        choices = c(
-          "Residuals vs Fitted",
-          "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-          "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-        ),
-        selected = "Residuals vs Fitted"
+                   label = "Plot Type",
+                   choices = c(
+                     "Residuals vs Fitted",
+                     "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+                     "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
+                   ),
+                   selected = "Residuals vs Fitted"
       ),
       # This shall be wrapped in a teal::plot
-      ui_plot_height(inputId = ns("plot_height"))
+      plot_height_input(id = ns("myplot"))
     )
   )
 }
@@ -115,9 +111,6 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom graphics plot
 #' @importFrom methods is
 srv_g_regression <- function(input, output, session, datasets, dataname) {
-
-  output$plot_ui <- srv_plot_with_height(input, output, session, plot_id = "plot")
-
   anl_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
 
   fit_cl <- reactive({
@@ -132,7 +125,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
 
 
     call("lm", as.formula(paste0(response_var, "~", paste(regressor_var, collapse = " + "))),
-      data = as.name("anl_filtered")
+         data = as.name("anl_filtered")
     )
   })
 
@@ -146,24 +139,26 @@ srv_g_regression <- function(input, output, session, datasets, dataname) {
 
     attr(fit_cl[[2]], ".Environment") <- environment()
 
-    teal.devel::as.global(fit_cl)
     fit <- eval(fit_cl)
     fit
   })
 
   output$plot <- renderPlot({
-    fit <- fit()
-    plot_type <- input$plot_type
+      fit <- fit()
+      plot_type <- input$plot_type
+      message(input$plot_type)
+      message(is.null(input$plot_type))
+      i <- which(plot_type == c(
+        "Residuals vs Fitted",
+        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+        "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
+      ))
+      graphics::plot(fit, which = i, id.n = NULL)
+    }
+  )
 
-    i <- which(plot_type == c(
-      "Residuals vs Fitted",
-      "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-      "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-    ))
 
-    graphics::plot(fit, which = i, id.n = NULL)
-  })
-
+  callModule(plot_with_height, id = "myplot", plot_height = reactive(input$myplot), plot_id = session$ns("plot"))
 
   output$text <- renderPrint({
     fit <- fit()

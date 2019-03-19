@@ -69,7 +69,6 @@ tm_data_table <- function(label = "Data table",
   )
 }
 
-
 # ui page module
 ui_page_data_table <- function(id,
                                datasets,

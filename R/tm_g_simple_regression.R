@@ -22,29 +22,22 @@
 #'
 #' @examples
 #'
-#' N <- 100
-#' ASL <- data.frame(
-#'   USUBJID = paste("id", seq_len(N), sep = "-"),
-#'   STUDYID = "study1",
-#'   F1 = factor(sample(paste0("facet_1_", c("A", "B")), N, TRUE)),
-#'   F2 = factor(sample(paste0("facet_2_", c("a", "b", "c")), N, TRUE)),
-#'   cont = rnorm(N),
-#'   disc = factor(sample(letters[1:5], N, TRUE)),
-#'   cont2 = runif(N),
-#'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
-#' )
+#' library(random.cdisc.data)
+#' asl  <- radsl(seed = 1)
 #'
-#' ASL$cont3 <- ASL$cont * 3 + 2 + rnorm(nrow(ASL), sd = .3)
+#' asl$cont  <- rnorm(nrow(asl))
+#' asl$cont2 <- rnorm(nrow(asl))
+#' asl$cont3 <- asl$cont * 3 + 2 + rnorm(nrow(asl), sd = .3)
 #'
-#' attr(ASL, "source") <- "# ASL is random data"
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_g_simple_regression(
 #'       dataname = "ASL",
 #'       response_var = choices_selected(c("cont", "cont2"), "cont"),
-#'       regressor_var = choices_selected(names(ASL), "cont3"),
+#'       regressor_var = choices_selected(names(asl), "cont3"),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   )

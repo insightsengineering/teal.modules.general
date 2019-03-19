@@ -72,21 +72,29 @@ Bar plot for safety events
 \examples{
 library(random.cdisc.data)
 
-ASL <- radsl(N = 600)
-ADTE <- radaette(ASL)
+asl <- radsl(N = 600)
+adte <- radaette(asl)
+
+attr(asl, "source")  <- "random.cdisc.data::radsl(seed = 1)"
+attr(adte, "source") <- "random.cdisc.data::radaette(asl, seed = 1)"
 
 app <- teal::init(
- data = list(ASL = ASL, ADTE = ADTE),
- modules = root_modules(
-   teal.modules.general::tm_bep_safety0(label = "My label", dataname = "ADTE",
-       arm_var=c("STUDYID"), bep_var = "", cov_var = "", response_var = c("AETTE1"),
-           responder_var_choices = c(
-           "AETTE2","AETTE1"
-           ),
-       responder_var = "", non_responder_var = "", exclude_var = "",
-       color_coding_var = ""
-       )
- )
+  data = list(ASL = asl, ADTE = adte),
+  modules = root_modules(
+    tm_bep_safety0(
+      label = "My label",
+      dataname = "ADTE",
+      arm_var=c("STUDYID"),
+      bep_var = "",
+      cov_var = "",
+      response_var = c("AETTE1"),
+      responder_var_choices = c("AETTE2","AETTE1"),
+      responder_var = "",
+      non_responder_var = "",
+      exclude_var = "",
+      color_coding_var = ""
+    )
+  )
 )
 
 \dontrun{

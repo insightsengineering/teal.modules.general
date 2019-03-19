@@ -28,15 +28,13 @@
 #'
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
+#' asl <- radsl(seed = 1)
 #'
-#' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   root_modules(
-#'     tm_data_table(),
-#'     tm_variable_browser(),
 #'     tm_table("Table Choices",
 #'       "ASL",
 #'       xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),

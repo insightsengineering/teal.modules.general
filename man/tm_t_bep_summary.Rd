@@ -16,8 +16,8 @@ the list passed to the \code{data} argument of \code{\link[teal]{init}}.
 Note that the data is expected to be in vertical form with the
 \code{PARAMCD} variable filtering to one observation per patient.}
 
-\item{arm_var}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
-for variable names that can be used as \code{arm_var}}
+\item{arm_var}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option for
+variable names that can be used as \code{arm_var}}
 
 \item{summarize_vars}{\code{\link[teal]{choices_selected}} object with all available choices and preselected option
 for variable names that can be used for summary}
@@ -35,8 +35,7 @@ output to put the output into context. For example the
 
 \item{with_show_r_code}{(\code{logical}) Whether to include "Show R Code" Button}
 
-\item{code_data_processing}{string with data preprocessing before the teal
-app is initialized}
+\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
 }
 \description{
 Display a summary table comparing analysis populations as a shiny module
@@ -46,7 +45,7 @@ Display a summary table comparing analysis populations as a shiny module
 library(random.cdisc.data)
 library(dplyr)
 
-ASL <- radsl(N = 100) \%>\%
+asl <- radsl(N = 100) \%>\%
   mutate(
     BEP = sample(c(TRUE, FALSE), n(), TRUE),
     BEP2 = sample(c(TRUE, FALSE), n(), TRUE)
@@ -54,13 +53,13 @@ ASL <- radsl(N = 100) \%>\%
 
 
 x <- teal::init(
-  data = list(ASL = ASL),
+  data = list(ASL = asl),
   modules = root_modules(
     tm_t_bep_summary(
       label = "Demographic",
       dataname = "ASL",
       arm_var = choices_selected(c("ARM", "ARMCD"), "ARM"),
-      summarize_vars = choices_selected(names(ASL), "AGE"),
+      summarize_vars = choices_selected(names(asl), "AGE"),
       bep_var = choices_selected(c("BEP", "BEP2"), "BEP")
     )
   )

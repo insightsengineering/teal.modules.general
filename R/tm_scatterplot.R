@@ -38,21 +38,16 @@
 #'
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
-#' AAE <- radae(ASL, seed = 99)
+#' asl <- radsl(seed = 1)
+#' aae <- radae(asl, seed = 99)
 #'
 #' # for reproducibility
-#' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' attr(AAE, "source") <- "random.cdisc.data::radae(ASL, seed = 99)"
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+#' attr(aae, "source") <- "random.cdisc.data::radae(asl, seed = 99)"
 #'
 #' x <- teal::init(
-#'   data = list(
-#'     ASL = ASL,
-#'     AAE = AAE
-#'   ),
+#'   data = list(ASL = asl, AAE = aae),
 #'   root_modules(
-#'     tm_data_table(),
-#'     tm_variable_browser(),
 #'     tm_scatterplot("Scatterplot Choices",
 #'       dataname = "AAE",
 #'       xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),

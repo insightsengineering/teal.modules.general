@@ -4,7 +4,7 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Association", dataname, endpoint, resp_var,
+tm_g_response(label = "Response Plot", dataname, endpoint, resp_var,
   x_var = NULL, row_facet_var = NULL, col_facet_var = NULL,
   coord_flip = TRUE, freq = FALSE, plot_height = c(600, 400, 5000),
   pre_output = NULL, post_output = NULL, code_data_processing = NULL)
@@ -49,21 +49,21 @@ Response Plots
 
 library(random.cdisc.data)
 
-ASL <- radsl()
-ARS <- radrs(ASL)
-attr(ASL, "source") <- "# asl import"
-attr(ARS, "source") <- "# ars import"
+asl <- radsl()
+ars <- radrs(asl)
+attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+attr(ars, "source") <- 'subset(random.cdisc.data::radrs(asl, seed = 1), AVISIT == "Follow Up")'
 
 x <- teal::init(
-  data = list(ASL = ASL, ARS = ARS),
+  data = list(ASL = asl, ARS = ars),
   modules = root_modules(
     tm_g_response(
       dataname = "ARS",
-      endpoint = choices_selected(ARS$PARAMCD),
+      endpoint = choices_selected(ars$PARAMCD),
       resp_var = choices_selected("AVALC"),
-      x_var = choices_selected(names(ASL), "SEX"),
-      row_facet_var = choices_selected(names(ASL), NULL),
-      col_facet_var = choices_selected(names(ASL), NULL)
+      x_var = choices_selected(names(asl), "SEX"),
+      row_facet_var = choices_selected(names(asl), NULL),
+      col_facet_var = choices_selected(names(asl), NULL)
     )
   )
 )
@@ -76,9 +76,9 @@ library(ggplot2)
 library(dplyr)
 library(forcats)
 
-ANL <- inner_join(ARS, ASL)
+anl <- inner_join(ars, asl)
 
-anl_filtered <- ANL \%>\%
+anl_filtered <- anl \%>\%
   filter(PARAMCD == "BESRSPI") \%>\%
   mutate(ALL = factor(rep("Response", n())))
 

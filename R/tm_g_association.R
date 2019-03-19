@@ -17,16 +17,15 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' ASL <- radsl()
-#' ASL$BOOLEAN <- sample(c(TRUE, FALSE), nrow(ASL), TRUE)
+#' asl <- radsl()
 #'
-#' attr(ASL, "source") <- "# asl import"
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",
-#'       var = choices_selected(names(ASL), "AGE")
+#'       var = choices_selected(names(asl), "AGE")
 #'     )
 #'   )
 #' )
@@ -104,6 +103,7 @@ ui_tm_g_association <- function(id, ...) {
 }
 
 #' @importFrom teal.devel get_rcode_header
+#' @importFrom tern stack_grobs
 srv_tm_g_association <- function(input,
                                  output,
                                  session,

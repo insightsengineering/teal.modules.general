@@ -23,21 +23,21 @@
 #'
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl()
-#' ARS <- radrs(ASL)
-#' attr(ASL, "source") <- "# asl import"
-#' attr(ARS, "source") <- "# ars import"
+#' asl <- radsl()
+#' ars <- radrs(asl)
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+#' attr(ars, "source") <- 'subset(random.cdisc.data::radrs(asl, seed = 1), AVISIT == "Follow Up")'
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL, ARS = ARS),
+#'   data = list(ASL = asl, ARS = ars),
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
-#'       endpoint = choices_selected(ARS$PARAMCD),
+#'       endpoint = choices_selected(ars$PARAMCD),
 #'       resp_var = choices_selected("AVALC"),
-#'       x_var = choices_selected(names(ASL), "SEX"),
-#'       row_facet_var = choices_selected(names(ASL), NULL),
-#'       col_facet_var = choices_selected(names(ASL), NULL)
+#'       x_var = choices_selected(names(asl), "SEX"),
+#'       row_facet_var = choices_selected(names(asl), NULL),
+#'       col_facet_var = choices_selected(names(asl), NULL)
 #'     )
 #'   )
 #' )
@@ -50,9 +50,9 @@
 #' library(dplyr)
 #' library(forcats)
 #'
-#' ANL <- inner_join(ARS, ASL)
+#' anl <- inner_join(ars, asl)
 #'
-#' anl_filtered <- ANL %>%
+#' anl_filtered <- anl %>%
 #'   filter(PARAMCD == "BESRSPI") %>%
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
@@ -105,19 +105,19 @@
 #'
 #' @importFrom teal add_no_selected_choices
 tm_g_response <- function(
-                          label = "Association",
-                          dataname,
-                          endpoint,
-                          resp_var,
-                          x_var = NULL,
-                          row_facet_var = NULL,
-                          col_facet_var = NULL,
-                          coord_flip = TRUE,
-                          freq = FALSE,
-                          plot_height = c(600, 400, 5000),
-                          pre_output = NULL,
-                          post_output = NULL,
-                          code_data_processing = NULL) {
+  label = "Response Plot",
+  dataname,
+  endpoint,
+  resp_var,
+  x_var = NULL,
+  row_facet_var = NULL,
+  col_facet_var = NULL,
+  coord_flip = TRUE,
+  freq = FALSE,
+  plot_height = c(600, 400, 5000),
+  pre_output = NULL,
+  post_output = NULL,
+  code_data_processing = NULL) {
   x_var <- teal::add_no_selected_choices(x_var, TRUE)
   row_facet_var <- teal::add_no_selected_choices(row_facet_var, TRUE)
   col_facet_var <- teal::add_no_selected_choices(col_facet_var, TRUE)
@@ -127,7 +127,7 @@ tm_g_response <- function(
   stopifnot(is.choices_selected(x_var))
   stopifnot(is.choices_selected(row_facet_var))
   stopifnot(is.choices_selected(col_facet_var))
-  dataname != "ASL" || stop("currently does not work with ASL data")
+  dataname != "asl" || stop("currently does not work with ASL data")
 
 
   args <- as.list(environment())
@@ -145,8 +145,6 @@ tm_g_response <- function(
   )
 }
 
-
-
 #' @import teal
 #' @importFrom teal.devel white_small_well
 ui_g_response <- function(id, ...) {
@@ -162,22 +160,22 @@ ui_g_response <- function(id, ...) {
       optionalSelectInput(ns("endpoint"), "Endpoint (PARAMCD)", a$endpoint$choices, a$endpoint$selected),
       optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var$choices, a$resp_var$selected),
       optionalSelectInput(ns("x_var"), "X Variable",
-        a$x_var$choices, a$x_var$selected,
-        multiple = TRUE, label_help = helpText("from ASL")
+                          a$x_var$choices, a$x_var$selected,
+                          multiple = TRUE, label_help = helpText("from ASL")
       ),
 
       optionalSelectInput(ns("row_facet_var"), "Row facetting Variables",
-        a$row_facet_var$choices, a$row_facet_var$selected,
-        multiple = TRUE
+                          a$row_facet_var$choices, a$row_facet_var$selected,
+                          multiple = TRUE
       ),
       optionalSelectInput(ns("col_facet_var"), "Column facetting Variables",
-        a$col_facet_var$choices, a$col_facet_var$selected,
-        multiple = TRUE
+                          a$col_facet_var$choices, a$col_facet_var$selected,
+                          multiple = TRUE
       ),
 
       radioButtons(ns("freq"), NULL,
-        choices = c("frequency", "density"),
-        selected = ifelse(a$freq, "frequency", "density"), inline = TRUE
+                   choices = c("frequency", "density"),
+                   selected = ifelse(a$freq, "frequency", "density"), inline = TRUE
       ),
       checkboxInput(ns("coord_flip"), "swap axes", value = TRUE),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
@@ -191,13 +189,14 @@ ui_g_response <- function(id, ...) {
 
 #' @importFrom teal no_selected_as_NULL
 #' @importFrom teal.devel get_rcode_header
-srv_g_response <- function(input,
-                           output,
-                           session,
-                           datasets,
-                           dataname,
-                           code_data_processing) {
-
+#' @importFrom forcats fct_rev
+srv_g_response <- function(
+  input,
+  output,
+  session,
+  datasets,
+  dataname,
+  code_data_processing) {
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -224,7 +223,8 @@ srv_g_response <- function(input,
     row_facet_var <- teal::no_selected_as_NULL(row_facet_var)
     col_facet_var <- teal::no_selected_as_NULL(col_facet_var)
 
-    cl_anl <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>% filter(PARAMCD %in% .(endpoint)))
+    cl_anl <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>%
+                dplyr::filter(PARAMCD %in% .(endpoint)))
 
     asl_vars <- c(x_var, row_facet_var, col_facet_var)
     if (!is.null(asl_vars)) {
@@ -235,11 +235,7 @@ srv_g_response <- function(input,
       )
     }
 
-    arg_position <- if (freq) {
-      "stack"
-    } else {
-      "fill"
-    }
+    arg_position <- if (freq) "stack" else "fill" # nolint
     cl_arg_x <- if (is.null(x_var)) {
       1
     } else {
@@ -252,7 +248,7 @@ srv_g_response <- function(input,
       }
 
       if (swap_axes) {
-        call("fct_rev", tmp_cl)
+        bquote(fct_rev(.(tmp_cl)))
       } else {
         tmp_cl
       }
@@ -286,9 +282,7 @@ srv_g_response <- function(input,
 
     facet_cl <- g_facet_cl(row_facet_var, col_facet_var)
 
-    if (!is.null(facet_cl)) {
-      plot_call <- call("+", plot_call, facet_cl)
-    }
+    if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
 
     plot_call
   })

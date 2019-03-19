@@ -33,31 +33,22 @@
 #'
 #' @examples
 #'
-#' N <- 100
-#' ASL <- data.frame(
-#'   USUBJID = paste("id", seq_len(N), sep = "-"),
-#'   STUDYID = "study1",
-#'   F1 = factor(sample(paste0("facet_1_", c("A", "B")), N, TRUE)),
-#'   F2 = factor(sample(paste0("facet_2_", c("a", "b", "c")), N, TRUE)),
-#'   cont = rnorm(N),
-#'   disc = factor(sample(letters[1:5], N, TRUE)),
-#'   cont2 = runif(N),
-#'   disc2 = factor(sample(LETTERS[1:5], N, TRUE))
-#' )
+#' library(random.cdisc.data)
+#' asl  <- radsl(seed = 1)
 #'
-#' attr(ASL, "source") <- "# ASL is random data"
+#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #'
 #' x <- teal::init(
-#'   data = list(ASL = ASL),
+#'   data = list(ASL = asl),
 #'   modules = root_modules(
 #'     tm_g_bivariate(
 #'       dataname = "ASL",
-#'       x_var = choices_selected(names(ASL), "cont"),
-#'       y_var = choices_selected(names(ASL), "cont"),
+#'       x_var = choices_selected(names(asl), "BMRKR1"),
+#'       y_var = choices_selected(names(asl), "AGE"),
 #'       use_density = FALSE,
 #'       color_by_var = choices_selected("STUDYID"),
-#'       row_facet_var = choices_selected(c("F1", "F2"), NULL),
-#'       col_facet_var = choices_selected(c("F1", "F2"), NULL),
+#'       row_facet_var = choices_selected(c("SEX", "RACE"), NULL),
+#'       col_facet_var = choices_selected(c("SEX", "RACE"), NULL),
 #'       plot_height = c(600, 200, 2000)
 #'     )
 #'   )

@@ -17,20 +17,20 @@ Depends:
   graphics,
   shiny,
   teal,
-  teal.devel,
-  xtable
+  teal.devel
 Imports:
-  tern,
+  grid,
+  gridExtra,
+  dplyr,
+  DT,
+  forcats,
+  methods,
+  random.cdisc.data (>= 0.1.2.1),
   rlang,
   rtables,
-  random.cdisc.data (>= 0.1.2.1),
+  tern,
   testthat,
-  methods,
-  DT,
-  dplyr,
-  teal.modules.clinical,
-  gridExtra,
-  grid
+  xtable
 Suggests:
   test.nest
 RoxygenNote: 6.1.1
