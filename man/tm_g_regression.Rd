@@ -4,24 +4,23 @@
 \alias{tm_g_regression}
 \title{Scatterplot and Regression Model}
 \usage{
-tm_g_regression(label = "Regression Analysis", dataname, response_var,
-  regressor_var, plot_height = c(600, 200, 2000), pre_output = NULL,
+tm_g_regression(label = "Regression Analysis", dataname, regressor,
+  response, plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
-\item{dataname}{name of dataset used to generate table}
+\item{dataname}{name of datasets used to generate the regression plot (just used for labeling)}
 
-\item{response_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the
-response variable}
+\item{regressor}{(\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+to define the regressor variable from an incoming dataset with filtering and selecting.}
 
-\item{regressor_var}{(\code{choices_selected}) Output of \code{teal::choices_selected} to define the
-regressor variable}
+\item{response}{(\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+to define the response variable from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{if scalar then the plot will have a fixed height. If a
-slider should be presented to adjust the plot height dynamically then it
-can be a vector of length three with \code{c(value, min and max)}.}
+\item{plot_height}{(\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
+encoding the plot height.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -32,31 +31,85 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-This module is designed for horizontal data
+Scatterplot and Regression Model
 }
 \examples{
 
 library(random.cdisc.data)
-asl  <- radsl(seed = 1)
+asl <- radsl(N = 600)
 
-asl$cont  <- rnorm(nrow(asl))
-asl$cont2 <- rnorm(nrow(asl))
+adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+adte_filters <- filter_spec(
+  vars = c("PARAMCD"), #'  only key variables are allowed
+  sep = " - ",
+  choices = c("OS", "PFS", "EFS"),
+  selected = "OS",
+  multiple = TRUE, #'  if multiple, then a spread is needed
+  label = "Choose endpoint"
+)
 
-x <- teal::init(
-  data = list(ASL = asl),
-  modules = root_modules(
-    tm_g_regression(
-      dataname = "ASL",
-      response_var = choices_selected(c("cont", "cont2"), "cont"),
-      regressor_var = choices_selected(names(asl), c("cont2", "ARM")),
-      plot_height = c(600, 200, 2000)
-    )
+
+adte_extracted_regressor <- data_extract_spec(
+  dataname = "ADTE",
+  filter = adte_filters,
+  columns = columns_spec(
+    choices = c("AVAL", "BMRKR1", "SITEID"),
+    selected = c("AVAL"),
+    multiple = TRUE,
+    fixed = FALSE, #'  Whether the user can select the item (optional)
+    label = "Column" #'  Label the column select dropdown (optional)
   )
 )
 
+adte_extracted_response <- data_extract_spec(
+  dataname = "ADTE",
+  filter = adte_filters,
+  columns = columns_spec(
+    choices = c("AVAL", "BMRKR1"),
+    selected = c("AVAL"),
+    multiple = FALSE,
+    fixed = FALSE, #'  Whether the user can select the item
+    label = "" #'  Label the column select dropdown (optional)
+  )
+)
+
+asl_extracted <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("SEX", "AGE"),
+    selected = c("AGE"),
+    multiple = TRUE,
+    fixed = FALSE
+  )
+)
+
+app <- teal::init(
+  data = cdisc_data(
+    ASL = data_for_teal(
+      asl,
+      keys = c("USUBJID", "STUDYID"),
+      source = "radsl(N = 600)"
+    ),
+    ADTE = data_for_teal(
+      adte,
+      keys = c("USUBJID", "STUDYID", "PARAMCD"),
+      source = "radaette(radsl(N = 600))"
+    )
+  ),
+  modules = root_modules(
+    teal.modules.general::tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL", "ADTE"),
+      response = list(adte_extracted_response),
+      regressor = list(
+        adte_extracted_regressor,
+        asl_extracted
+      )
+    )
+  )
+)
 \dontrun{
-shinyApp(x$ui, x$server)
+shinyApp(app$ui, app$server)
 }
 }
