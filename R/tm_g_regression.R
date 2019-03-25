@@ -79,7 +79,7 @@
 #'     )
 #'   ),
 #'   modules = root_modules(
-#'     teal.modules.general::tm_g_regression(
+#'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL", "ADTE"),
 #'       response = list(adte_extracted_response),
@@ -217,7 +217,7 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
     if (plot_type == "Response vs Regressor") {
       if (ncol(fit$model) > 1) {
         plot(fit$model[, 2:1])
-      } else {        
+      }else{
         # Relabel the data for X vs X plot
         plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
         names(plot_data) <- rep(names(fit$model), 2)
