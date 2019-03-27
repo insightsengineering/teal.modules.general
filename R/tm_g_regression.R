@@ -15,12 +15,12 @@
 #' @inheritParams teal::standard_layout
 #'
 #' @examples
-#' 
+#'
 #' library(random.cdisc.data)
 #' asl <- radsl(N = 600)
-#' 
+#'
 #' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' 
+#'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
 #'   sep = " - ",
@@ -29,8 +29,8 @@
 #'   multiple = TRUE, #'  if multiple, then a spread is needed
 #'   label = "Choose endpoint"
 #' )
-#' 
-#' 
+#'
+#'
 #' adte_extracted_regressor <- data_extract_spec(
 #'   dataname = "ADTE",
 #'   filter = adte_filters,
@@ -42,7 +42,7 @@
 #'     label = "Column" #'  Label the column select dropdown (optional)
 #'   )
 #' )
-#' 
+#'
 #' adte_extracted_response <- data_extract_spec(
 #'   dataname = "ADTE",
 #'   filter = adte_filters,
@@ -54,7 +54,7 @@
 #'     label = "" #'  Label the column select dropdown (optional)
 #'   )
 #' )
-#' 
+#'
 #' asl_extracted <- data_extract_spec(
 #'   dataname = "ASL",
 #'   columns = columns_spec(
@@ -64,7 +64,7 @@
 #'     fixed = FALSE
 #'   )
 #' )
-#' 
+#'
 #' app <- teal::init(
 #'   data = cdisc_data(
 #'     ASL = data_for_teal(
@@ -273,7 +273,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         description = "",
         libraries = c(),
         git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general")),
-        selected_chunk_ids = c("lm", "summary", "plot")
+        selected_chunk_ids = c("TEST","lm", "summary", "plot")
       )
     )
   })
