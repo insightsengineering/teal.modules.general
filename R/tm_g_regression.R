@@ -187,7 +187,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     data_extract_spec = response
   )
 
-  merged_dataset <- reactive({
+  set_chunks <- reactive({
+
     set_chunk("formula", rlang::expr(
       paste(response_var,
         paste(regressor_var,
@@ -200,41 +201,47 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       response_var = get_dataset_prefixed_col_names(response_data()),
       regressor_var = get_dataset_prefixed_col_names(regressor_data())
     ))
-    merge_datasets(regressor_data(), response_data())
-  })
 
-  set_lm <- reactive({
-    validate_has_data(merged_dataset(), 10)
+    merged_dataset <- merge_datasets(regressor_data(), response_data())
+
+    validate_has_data(merged_dataset, 10)
 
     set_chunk("lm",
       # Please note rlang::expr ignores the left hand side of the "<-"
-      rlang::expr(
-        fit <- lm(as.formula(form), data = dataset)
-      ),
+      rlang::expr(fit <- lm(as.formula(form), data = dataset)),
       vars = list(
-        dataset = merged_dataset(),
+        dataset = merged_dataset,
         dataname = "merged_dataset",
         form = eval_chunk("formula")
       )
     )
+
+    set_chunk("summary",
+        my_expr <- rlang::expr(
+            summary(dataset)
+        ),
+        vars = list(
+            dataset = eval_chunk("lm"),
+            dataname = get_lhs_chunk("lm")
+        )
+    )
+
+    set_chunk("plot",
+        plot_expression(eval_chunk("lm"), input$plot_type),
+        vars = list(
+            dataset = eval_chunk("lm"),
+            dataname = get_lhs_chunk("lm"),
+            i = which(input$plot_type == c(
+                    "Residuals vs Fitted",
+                    "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+                    "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
+                ))
+        )
+    )
   })
 
   output$plot <- renderPlot({
-    set_lm() # Re-act to changes in linear model
-
-    set_chunk("plot",
-      plot_expression(eval_chunk("lm"), input$plot_type),
-      vars = list(
-        dataset = eval_chunk("lm"),
-        dataname = get_lhs_chunk("lm"),
-        i = which(input$plot_type == c(
-          "Residuals vs Fitted",
-          "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-          "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-        ))
-      )
-    )
-
+    set_chunks() # Re-act to changes in linear model
     eval_chunk("plot")
   })
 
@@ -242,25 +249,16 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
   callModule(plot_with_height, id = "myplot", plot_height = reactive(input$myplot), plot_id = session$ns("plot"))
 
   output$text <- renderPrint({
-    set_lm()
-    set_chunk("summary",
-      my_expr <- rlang::expr(
-        summary(dataset)
-      ),
-      vars = list(
-        dataset = eval_chunk("lm"),
-        dataname = get_lhs_chunk("lm")
-      )
-    )
-
+    set_chunks()
     summary <- eval_chunk("summary")
     summary$call <- paste0("summary(lm(as.formula(", eval_chunk("formula"), "), data = dataset))")
     return(summary)
   })
 
   observeEvent(input$show_rcode, {
-    # Just show R Code with valid data
-    validate_has_data(merged_dataset(), 10)
+
+    title <- paste("RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
+        get_dataset_prefixed_col_names(regressor_data()))
 
     teal.devel::show_rcode_modal(
       title = "R Code for a Regression Plot",
@@ -269,11 +267,11 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         dataname = dataname,
         merged_dataname = "merged_dataset",
         merged_datasets = list(response_data(), regressor_data()),
-        title = paste("RegressionPlot of ", eval_chunk("formula")),
+        title = title,
         description = "",
         libraries = c(),
         git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general")),
-        selected_chunk_ids = c("TEST","lm", "summary", "plot")
+        selected_chunk_ids = c("lm", "summary", "plot")
       )
     )
   })
