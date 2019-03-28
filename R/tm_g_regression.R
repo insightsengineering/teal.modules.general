@@ -187,6 +187,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     data_extract_spec = response
   )
 
+  data_to_merge <- reactive(list(response_data(), regressor_data()))
+
   set_chunks <- reactive({
 
     set_chunk("formula", rlang::expr(
@@ -202,7 +204,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       regressor_var = get_dataset_prefixed_col_names(regressor_data())
     ))
 
-    merged_dataset <- merge_datasets(regressor_data(), response_data())
+    merged_dataset <- merge_datasets(data_to_merge())
 
     validate_has_data(merged_dataset, 10)
 
@@ -266,7 +268,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         datasets = datasets,
         dataname = dataname,
         merged_dataname = "merged_dataset",
-        merged_datasets = list(response_data(), regressor_data()),
+        merged_datasets = data_to_merge(),
         title = title,
         description = "",
         libraries = c(),
