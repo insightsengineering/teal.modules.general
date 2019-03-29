@@ -187,59 +187,52 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     data_extract_spec = response
   )
 
-  data_to_merge <- reactive(list(response_data(), regressor_data()))
-
   set_chunks <- reactive({
 
-    set_chunk("formula", rlang::expr(
-      paste(response_var,
-        paste(regressor_var,
-          collapse = " + "
-        ),
-        sep = " ~ "
-      )
-    ), vars = list(
-      dataname = "",
-      response_var = get_dataset_prefixed_col_names(response_data()),
-      regressor_var = get_dataset_prefixed_col_names(regressor_data())
-    ))
-
-    merged_dataset <- merge_datasets(data_to_merge())
+    response_var = get_dataset_prefixed_col_names(response_data())
+    regressor_var = get_dataset_prefixed_col_names(regressor_data())
+    merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
 
     validate_has_data(merged_dataset, 10)
 
-    set_chunk("lm",
-      # Please note rlang::expr ignores the left hand side of the "<-"
-      rlang::expr(fit <- lm(as.formula(form), data = dataset)),
-      vars = list(
-        dataset = merged_dataset,
-        dataname = "merged_dataset",
-        form = eval_chunk("formula")
-      )
-    )
-
-    set_chunk("summary",
-        my_expr <- rlang::expr(
-            summary(dataset)
-        ),
-        vars = list(
-            dataset = eval_chunk("lm"),
-            dataname = get_lhs_chunk("lm")
+    form %<chunk>%
+        paste(response_var,
+            paste(regressor_var,
+                collapse = " + "
+            ),
+            sep = " ~ "
         )
-    )
 
-    set_chunk("plot",
-        plot_expression(eval_chunk("lm"), input$plot_type),
-        vars = list(
-            dataset = eval_chunk("lm"),
-            dataname = get_lhs_chunk("lm"),
-            i = which(input$plot_type == c(
-                    "Residuals vs Fitted",
-                    "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-                    "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-                ))
-        )
-    )
+    fit %<chunk>%
+        lm(as.formula(form), data = merged_dataset)
+
+    summary %chunk>%
+        summary(fit)
+
+    i <- which(input$plot_type == c(
+            "Residuals vs Fitted",
+            "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+            "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
+        ))
+
+    if (input$plot_type == "Response vs Regressor") {
+      if (ncol(fit$model) > 1) {
+        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
+        plot %chunk>%
+            plot(fit$model[, 2:1])
+      } else {
+        plot %chunk>% {
+          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
+          names(plot_data) <- rep(names(fit$model), 2)
+          plot(plot_data)
+          abline(merged_dataset)
+        }
+      }
+    } else {
+      plot %chunk>%
+          plot(merged_dataset, which = i, id.n = NULL)
+    }
+
   })
 
   output$plot <- renderPlot({
@@ -253,7 +246,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
   output$text <- renderPrint({
     set_chunks()
     summary <- eval_chunk("summary")
-    summary$call <- paste0("summary(lm(as.formula(", eval_chunk("formula"), "), data = dataset))")
+    summary$call <- paste0("summary(lm(as.formula(", eval_chunk("form"), "), data = dataset))")
     return(summary)
   })
 
@@ -268,32 +261,13 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         datasets = datasets,
         dataname = dataname,
         merged_dataname = "merged_dataset",
-        merged_datasets = data_to_merge(),
+        merged_datasets = list(response_data(), regressor_data()),
         title = title,
         description = "",
-        libraries = c(),
-        git_pkgs = list(roche = c("NEST/teal", "NEST/teal.devel", "NEST/teal.modules.general")),
-        selected_chunk_ids = c("lm", "summary", "plot")
+        libraries = c("random.cdisc.data"),
+        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general")),
+        selected_chunk_ids = c("form", "fit", "summary", "plot")
       )
     )
   })
-}
-
-plot_expression <- function(fit, plot_type) {
-  if (plot_type == "Response vs Regressor") {
-    if (ncol(fit$model) > 1) {
-      validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
-      rlang::expr(plot(dataset$model[, 2:1]))
-    } else {
-      rlang::expr({
-        plot_data <- data.frame(dataset$model[, 1], dataset$model[, 1])
-        # Relabel the data for X vs X plot
-        names(plot_data) <- rep(names(dataset$model), 2)
-        plot(plot_data)
-        abline(dataset)
-      })
-    }
-  } else {
-    rlang::expr(plot(dataset, which = i, id.n = NULL))
-  }
 }
