@@ -154,7 +154,7 @@ ui_g_regression <- function(id, ...) {
           "Response vs Regressor",
           "Residuals vs Fitted",
           "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-          "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
+          "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
         ),
         selected = "Response vs Regressor"
       ),
@@ -187,67 +187,75 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     data_extract_spec = response
   )
 
-  set_chunks <- reactive({
+  fit <- reactive({
 
     response_var = get_dataset_prefixed_col_names(response_data())
     regressor_var = get_dataset_prefixed_col_names(regressor_data())
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
-
     validate_has_data(merged_dataset, 10)
 
-    form %<chunk>%
-        paste(response_var,
+    renew_chunk_environment(envir = environment())
+    session$userData$chunks$refresh()
+
+    form %<chunk_env%
+        as.formula(
+            paste(response_var,
             paste(regressor_var,
                 collapse = " + "
             ),
             sep = " ~ "
-        )
-
-    fit %<chunk>%
-        lm(as.formula(form), data = merged_dataset)
-
-    summary %chunk>%
-        summary(fit)
-
-    i <- which(input$plot_type == c(
-            "Residuals vs Fitted",
-            "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-            "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
         ))
 
-    if (input$plot_type == "Response vs Regressor") {
-      if (ncol(fit$model) > 1) {
-        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
-        plot %chunk>%
-            plot(fit$model[, 2:1])
-      } else {
-        plot %chunk>% {
-          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
-          names(plot_data) <- rep(names(fit$model), 2)
-          plot(plot_data)
-          abline(merged_dataset)
-        }
-      }
-    } else {
-      plot %chunk>%
-          plot(merged_dataset, which = i, id.n = NULL)
-    }
+    set_chunk(
+        expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
+    )
+    summary %<chunk%
+        quote(summary <- summary(fit))
+
+    eval_remaining()
 
   })
 
   output$plot <- renderPlot({
-    set_chunks() # Re-act to changes in linear model
-    eval_chunk("plot")
+    fit()
+    if (input$plot_type == "Response vs Regressor") {
+
+      fit <- get_envir_chunks()$fit
+
+      if (ncol(fit$model) > 1) {
+        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
+        plot %<chunk%
+            plot(fit$model[, 2:1])
+      } else {
+        plot %<chunk% {
+          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
+          names(plot_data) <- rep(names(fit$model), 2)
+          plot <- plot(plot_data)
+          abline(merged_dataset)
+         }
+      }
+    } else {
+      i <-
+          which(input$plot_type == c(
+                  "Residuals vs Fitted",
+                  "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+                  "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+              ))
+      plot %<chunk%
+          plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+    }
+    eval_remaining()
   })
 
   # Insert the plot into a plot_height module from teal.devel
-  callModule(plot_with_height, id = "myplot", plot_height = reactive(input$myplot), plot_id = session$ns("plot"))
+  callModule(plot_with_height,
+      id = "myplot",
+      plot_height = reactive(input$myplot),
+      plot_id = session$ns("plot"))
 
   output$text <- renderPrint({
-    set_chunks()
-    summary <- eval_chunk("summary")
-    summary$call <- paste0("summary(lm(as.formula(", eval_chunk("form"), "), data = dataset))")
-    return(summary)
+    fit()
+    return(get_envir_chunks()$summary)
   })
 
   observeEvent(input$show_rcode, {
@@ -265,8 +273,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         title = title,
         description = "",
         libraries = c("random.cdisc.data"),
-        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general")),
-        selected_chunk_ids = c("form", "fit", "summary", "plot")
+        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general"))
       )
     )
   })
