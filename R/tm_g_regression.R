@@ -195,7 +195,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     validate_has_data(merged_dataset, 10)
 
     renew_chunk_environment(envir = environment())
-    session$userData$chunks$refresh()
+    renew_chunks()
 
     form %<chunk_env%
         as.formula(
@@ -209,6 +209,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     set_chunk(
         expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
+
     summary %<chunk%
         quote(summary <- summary(fit))
 
