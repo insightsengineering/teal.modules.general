@@ -3,9 +3,9 @@
 #' @import teal.devel
 #'
 #' @param dataname name of datasets used to generate the regression plot (just used for labeling)
-#' @param regressor (\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+#' @param regressor (\code{list}) Output of \code{teal.devel::data_extract_spec}
 #'  to define the regressor variable from an incoming dataset with filtering and selecting.
-#' @param response (\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+#' @param response (\code{list}) Output of \code{teal.devel::data_extract_spec}
 #'  to define the response variable from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
@@ -215,12 +215,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
     eval_remaining()
 
-  })
-
-  output$plot <- renderPlot({
-    fit()
     if (input$plot_type == "Response vs Regressor") {
-
       fit <- get_envir_chunks()$fit
 
       if (ncol(fit$model) > 1) {
@@ -233,7 +228,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
           names(plot_data) <- rep(names(fit$model), 2)
           plot <- plot(plot_data)
           abline(merged_dataset)
-         }
+        }
       }
     } else {
       i <-
@@ -245,6 +240,10 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       plot %<chunk%
           plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
     }
+  })
+
+  output$plot <- renderPlot({
+    fit()
     eval_remaining()
   })
 
@@ -261,7 +260,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   observeEvent(input$show_rcode, {
 
-    title <- paste("RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
+    title <- paste0("RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
         get_dataset_prefixed_col_names(regressor_data()))
 
     teal.devel::show_rcode_modal(
