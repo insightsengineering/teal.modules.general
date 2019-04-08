@@ -103,8 +103,8 @@ app <- teal::init(
       dataname = c("ASL", "ADTE"),
       response = list(adte_extracted_response),
       regressor = list(
-        adte_extracted_regressor,
-        asl_extracted
+        asl_extracted,
+        adte_extracted_regressor
       )
     )
   )
