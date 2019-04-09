@@ -1,17 +1,14 @@
 #' Scatterplot and Regression Model
 #'
-#' This module is designed for horizontal data
+#' @import teal.devel
 #'
-#' @import ggplot2
-#'
-#' @param dataname name of dataset used to generate table
-#' @param response_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the
-#' 	response variable
-#' @param regressor_var (\code{choices_selected}) Output of \code{teal::choices_selected} to define the
-#' 	regressor variable
-#' @param plot_height if scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min and max)}.
+#' @param dataname name of datasets used to generate the regression plot (just used for labeling)
+#' @param regressor (\code{list}) Output of \code{teal.devel::data_extract_spec}
+#'  to define the regressor variable from an incoming dataset with filtering and selecting.
+#' @param response (\code{list}) Output of \code{teal.devel::data_extract_spec}
+#'  to define the response variable from an incoming dataset with filtering and selecting.
+#' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
+#'  encoding the plot height.
 #'
 #' @export
 #' @inheritParams teal::module
@@ -20,41 +17,98 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' asl  <- radsl(seed = 1)
+#' asl <- radsl(N = 600)
 #'
-#' asl$cont  <- rnorm(nrow(asl))
-#' asl$cont2 <- rnorm(nrow(asl))
+#' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #'
-#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+#' adte_filters <- filter_spec(
+#'   vars = c("PARAMCD"), #'  only key variables are allowed
+#'   sep = " - ",
+#'   choices = c("OS", "PFS", "EFS"),
+#'   selected = "OS",
+#'   multiple = TRUE, #'  if multiple, then a spread is needed
+#'   label = "Choose endpoint"
+#' )
 #'
-#' x <- teal::init(
-#'   data = list(ASL = asl),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       dataname = "ASL",
-#'       response_var = choices_selected(c("cont", "cont2"), "cont"),
-#'       regressor_var = choices_selected(names(asl), c("cont2", "ARM")),
-#'       plot_height = c(600, 200, 2000)
-#'     )
+#'
+#' adte_extracted_regressor <- data_extract_spec(
+#'   dataname = "ADTE",
+#'   filter = adte_filters,
+#'   columns = columns_spec(
+#'     choices = c("AVAL", "BMRKR1", "SITEID"),
+#'     selected = c("AVAL"),
+#'     multiple = TRUE,
+#'     fixed = FALSE, #'  Whether the user can select the item (optional)
+#'     label = "Column" #'  Label the column select dropdown (optional)
 #'   )
 #' )
 #'
+#' adte_extracted_response <- data_extract_spec(
+#'   dataname = "ADTE",
+#'   filter = adte_filters,
+#'   columns = columns_spec(
+#'     choices = c("AVAL", "BMRKR1"),
+#'     selected = c("AVAL"),
+#'     multiple = FALSE,
+#'     fixed = FALSE, #'  Whether the user can select the item
+#'     label = "" #'  Label the column select dropdown (optional)
+#'   )
+#' )
+#'
+#' asl_extracted <- data_extract_spec(
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("SEX", "AGE"),
+#'     selected = c("AGE"),
+#'     multiple = TRUE,
+#'     fixed = FALSE
+#'   )
+#' )
+#'
+#' app <- teal::init(
+#'   data = cdisc_data(
+#'     ASL = data_for_teal(
+#'       asl,
+#'       keys = c("USUBJID", "STUDYID"),
+#'       source = "radsl(N = 600)"
+#'     ),
+#'     ADTE = data_for_teal(
+#'       adte,
+#'       keys = c("USUBJID", "STUDYID", "PARAMCD"),
+#'       source = "radaette(radsl(N = 600))"
+#'     )
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_regression(
+#'       label = "Regression",
+#'       dataname = c("ASL", "ADTE"),
+#'       response = list(adte_extracted_response),
+#'       regressor = list(
+#'         asl_extracted,
+#'         adte_extracted_regressor
+#'       )
+#'     )
+#'   )
+#' )
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_g_regression <- function(
-  label = "Regression Analysis",
-  dataname,
-  response_var,
-  regressor_var,
-  plot_height = c(600, 200, 2000),
-  pre_output = NULL,
-  post_output = NULL) {
+                            label = "Regression Analysis",
+                            dataname,
+                            regressor,
+                            response,
+                            plot_height = c(600, 200, 2000),
+                            pre_output = NULL,
+                            post_output = NULL) {
 
   # Error prevention
   stopifnot(!is.null(dataname))
   stopifnot(dataname != "")
 
+  # No check necessary for regressor and response, as checked in data_extract_input
+
+  # Send ui args
   args <- as.list(environment())
 
   teal::module(
@@ -62,20 +116,18 @@ tm_g_regression <- function(
     server = srv_g_regression,
     ui = ui_g_regression,
     ui_args = args,
-    server_args = list(dataname = dataname),
-    filters = dataname
+    server_args = list(regressor = regressor, response = response, dataname = dataname),
+    filters = "all"
   )
 }
 
 
 
 #' @import teal
-#' @importFrom teal.devel white_small_well plot_height_input plot_height_output
 ui_g_regression <- function(id, ...) {
-  a <- list(...)
+  arguments <- list(...)
 
   ns <- NS(id)
-
   standard_layout(
     output = teal.devel::white_small_well(
       tags$div(
@@ -85,86 +137,144 @@ ui_g_regression <- function(id, ...) {
       )
     ),
     encoding = div(
-      helpText("Dataset:", tags$code(a$dataname)),
-      optionalSelectInput(inputId = ns("response_var"), label = "Response Variable", choices = a$response_var$choices,
-                          selected = a$response_var$selected),
-      optionalSelectInput(inputId = ns("regressor_var"), label = "Regressor Variables",
-                          choices = a$regressor_var$choices, selected = a$regressor_var$selected,
-                          multiple = TRUE
+      helpText("Datasets: ", arguments$dataname %>% lapply(., tags$code)),
+      data_extract_input(
+        id = ns("regressor"),
+        label = "Regressor Variable",
+        data_extract_spec = arguments$regressor
+      ),
+      data_extract_input(
+        id = ns("response"),
+        label = "Response Variable",
+        data_extract_spec = arguments$response
       ),
       radioButtons(ns("plot_type"),
-                   label = "Plot Type",
-                   choices = c(
-                     "Residuals vs Fitted",
-                     "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-                     "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-                   ),
-                   selected = "Residuals vs Fitted"
+        label = "Plot Type",
+        choices = c(
+          "Response vs Regressor",
+          "Residuals vs Fitted",
+          "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+          "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+        ),
+        selected = "Response vs Regressor"
       ),
       # This shall be wrapped in a teal::plot
-      plot_height_input(id = ns("myplot"))
-    )
+      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
+    ),
+    pre_output = arguments$pre_output,
+    post_output = arguments$post_output,
+    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%")
   )
 }
 
-#' @importFrom teal.devel as.global
-#' @importFrom graphics plot
+#' @importFrom graphics plot abline
 #' @importFrom methods is
-srv_g_regression <- function(input, output, session, datasets, dataname) {
-  anl_head <- head(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE))
+srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
+  stopifnot(is.list(response))
+  stopifnot(is.list(regressor))
 
-  fit_cl <- reactive({
-    response_var <- input$response_var
-    regressor_var <- input$regressor_var
+  use_chunks(session)
 
-    validate(
-      need(length(intersect(response_var, regressor_var)) == 0, "response and regressor variables cannot intersect"),
-      need(length(regressor_var) > 0, "please select regressor variable"),
-      need(is.numeric(anl_head[[response_var]]), "response variable needs to be numeric")
-    )
-
-
-    call("lm", as.formula(paste0(response_var, "~", paste(regressor_var, collapse = " + "))),
-         data = as.name("anl_filtered")
-    )
-  })
+  # Data Extraction
+  regressor_data <- callModule(data_extract_module,
+    id = "regressor",
+    datasets = datasets,
+    data_extract_spec = regressor
+  )
+  response_data <- callModule(data_extract_module,
+    id = "response",
+    datasets = datasets,
+    data_extract_spec = response
+  )
 
   fit <- reactive({
-    anl_filtered <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-    fit_cl <- fit_cl()
 
-    validate(
-      need(nrow(anl_filtered) >= 10, paste("need at lease 10 observations, currently have only", nrow(anl_filtered)))
+    response_var = get_dataset_prefixed_col_names(response_data())
+    regressor_var = get_dataset_prefixed_col_names(regressor_data())
+    merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
+    validate_has_data(merged_dataset, 10)
+
+    renew_chunk_environment(envir = environment())
+    renew_chunks()
+
+    form %<chunk_env%
+        as.formula(
+            paste(response_var,
+            paste(regressor_var,
+                collapse = " + "
+            ),
+            sep = " ~ "
+        ))
+
+    set_chunk(
+        expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
 
-    attr(fit_cl[[2]], ".Environment") <- environment()
+    summary %<chunk%
+        quote(summary <- summary(fit))
 
-    fit <- eval(fit_cl)
-    fit
+    eval_remaining()
+
+    if (input$plot_type == "Response vs Regressor") {
+      fit <- get_envir_chunks()$fit
+
+      if (ncol(fit$model) > 1) {
+        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
+        plot %<chunk%
+            plot(fit$model[, 2:1])
+      } else {
+        plot %<chunk% {
+          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
+          names(plot_data) <- rep(names(fit$model), 2)
+          plot <- plot(plot_data)
+          abline(merged_dataset)
+        }
+      }
+    } else {
+      i <-
+          which(input$plot_type == c(
+                  "Residuals vs Fitted",
+                  "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+                  "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+              ))
+      plot %<chunk%
+          plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+    }
   })
 
   output$plot <- renderPlot({
-      fit <- fit()
-      plot_type <- input$plot_type
-      message(input$plot_type)
-      message(is.null(input$plot_type))
-      i <- which(plot_type == c(
-        "Residuals vs Fitted",
-        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii]"
-      ))
-      graphics::plot(fit, which = i, id.n = NULL)
-    }
-  )
+    fit()
+    eval_remaining()
+  })
 
-
-  callModule(plot_with_height, id = "myplot", plot_height = reactive(input$myplot), plot_id = session$ns("plot"))
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(plot_with_height,
+      id = "myplot",
+      plot_height = reactive(input$myplot),
+      plot_id = session$ns("plot"))
 
   output$text <- renderPrint({
-    fit <- fit()
+    fit()
+    return(get_envir_chunks()$summary)
+  })
 
-    validate(need(methods::is(fit, "lm"), "there seem to problems fitting the model"))
+  observeEvent(input$show_rcode, {
 
-    summary(fit)
+    title <- paste0("RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
+        get_dataset_prefixed_col_names(regressor_data()))
+
+    teal.devel::show_rcode_modal(
+      title = "R Code for a Regression Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        dataname = dataname,
+        merged_dataname = "merged_dataset",
+        merged_datasets = list(response_data(), regressor_data()),
+        title = title,
+        description = "",
+        libraries = c("random.cdisc.data"),
+        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general"))
+      )
+    )
   })
 }

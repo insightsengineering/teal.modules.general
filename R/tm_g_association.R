@@ -1,7 +1,7 @@
 #' Stack Plots of variables and show association with reference variable
 #'
 #' @importFrom teal choices_selected
-#'
+#' @import ggplot2
 #' @inheritParams teal::standard_layout
 #' @inheritParams teal::module
 #' @param dataname (\code{character}) data set name to analyze
