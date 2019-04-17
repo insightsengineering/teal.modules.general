@@ -20,6 +20,8 @@
 #' asl <- radsl(N = 600)
 #'
 #' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' keys(asl) <- c("STUDYID", "USUBJID")
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -65,31 +67,24 @@
 #'   )
 #' )
 #'
-#' app <- teal::init(
-#'   data = cdisc_data(
-#'     ASL = data_for_teal(
-#'       asl,
-#'       keys = c("USUBJID", "STUDYID"),
-#'       source = "radsl(N = 600)"
-#'     ),
-#'     ADTE = data_for_teal(
-#'       adte,
-#'       keys = c("USUBJID", "STUDYID", "PARAMCD"),
-#'       source = "radaette(radsl(N = 600))"
-#'     )
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       dataname = c("ASL", "ADTE"),
-#'       response = list(adte_extracted_response),
-#'       regressor = list(
-#'         asl_extracted,
-#'         adte_extracted_regressor
-#'       )
-#'     )
-#'   )
-#' )
+#'app <- teal::init(
+#'    data = cdisc_data(
+#'        ASL = asl,
+#'        ADTE = adte,
+#'        code = "",
+#'        check = FALSE),
+#'    modules = teal::root_modules(
+#'        tm_g_regression(
+#'            label = "Regression",
+#'           dataname = c("ASL","ADTE"),
+#'           response = list(adte_extracted_response),
+#'            regressor = list(
+#'                adte_extracted_regressor,
+#'                asl_extracted
+#'            )
+#'        )
+#'    )
+#')
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
