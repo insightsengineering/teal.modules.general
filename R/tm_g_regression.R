@@ -71,7 +71,7 @@
 #'        ADTE = adte,
 #'        code = "",
 #'        check = FALSE),
-#'    modules = root_modules(
+#'    modules = teal::root_modules(
 #'        tm_g_regression(
 #'            label = "Regression",
 #'           dataname = c("ASL","ADTE"),
