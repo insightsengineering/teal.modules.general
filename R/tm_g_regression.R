@@ -20,6 +20,8 @@
 #' asl <- radsl(N = 600)
 #'
 #' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' keys(asl) <- c("STUDYID", "USUBJID")
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
