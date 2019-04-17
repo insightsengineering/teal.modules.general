@@ -4,25 +4,23 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Response Plot", dataname, endpoint, resp_var,
-  x_var = NULL, row_facet_var = NULL, col_facet_var = NULL,
-  coord_flip = TRUE, freq = FALSE, plot_height = c(600, 400, 5000),
-  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
+tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
+  row_facet_var = NULL, col_facet_var = NULL, coord_flip = TRUE,
+  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
+  post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
 \item{dataname}{name of dataset used to generate table}
 
-\item{endpoint}{(\code{choices_selected}) Which variable to use as EndPoint}
+\item{response}{(\code{list} of \code{data_extract_spec}) Which variable to use as Response}
 
-\item{resp_var}{(\code{choices_selected}) Which variable to use as Response}
+\item{xvar}{(\code{list} of \code{data_extract_spec}) Which variable to use as X}
 
-\item{x_var}{(\code{choices_selected}) Which variable to use as X}
+\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) Which variable to use for faceting rows}
 
-\item{row_facet_var}{(\code{choices_selected}) Which variable to use for faceting rows}
-
-\item{col_facet_var}{(\code{choices_selected}) Which variable to use for faceting columns}
+\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) Which variable to use for faceting columns}
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
@@ -48,29 +46,81 @@ Response Plots
 \examples{
 
 library(random.cdisc.data)
+library(magrittr)
 
 asl <- radsl()
+keys(asl) <- c("USUBJID", "STUDYID")
 ars <- radrs(asl)
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-attr(ars, "source") <- 'subset(random.cdisc.data::radrs(asl, seed = 1), AVISIT == "Follow Up")'
+keys(ars) <- c("USUBJID", "STUDYID")
 
-x <- teal::init(
-  data = list(ASL = asl, ARS = ars),
+ars_filters <- filter_spec(
+    vars = c("PARAMCD"),
+    sep = " - ",
+    choices = unique(ars$PARAMCD),
+    selected = unique(ars$PARAMCD)[1],
+    multiple = FALSE,
+    label = "Choose endpoint and Censor"
+)
+ars_extracted_response <- data_extract_spec(
+    dataname = "ARS",
+    filter = ars_filters,
+    columns = columns_spec(
+        choices = c("AVALC"),
+        selected = c("AVALC"),
+        multiple = FALSE,
+        fixed = TRUE,
+        label = "variable"
+    )
+)
+
+asl_extracted <- data_extract_spec(
+    dataname = "ASL",
+    columns = columns_spec(
+        choices = names(asl),
+        selected = c("RACE"),
+        multiple = FALSE,
+        fixed = FALSE
+    )
+)
+asl_extracted_row <- data_extract_spec(
+    dataname = "ASL",
+    columns = columns_spec(
+        choices = c("","SEX", "AGE"),
+        selected = "",
+        multiple = FALSE,
+        fixed = FALSE
+    )
+)
+asl_extracted_col <- data_extract_spec(
+    dataname = "ASL",
+    columns = columns_spec(
+        choices = c("", "SEX", "AGE"),
+        selected = "",
+        multiple = FALSE,
+        fixed = FALSE
+    )
+)
+
+
+app <- teal::init(
+  data = cdisc_data(
+      ASL = asl,
+      ARS = ars,
+      code = "",
+      check = FALSE),
   modules = root_modules(
     tm_g_response(
       dataname = "ARS",
-      endpoint = choices_selected(ars$PARAMCD),
-      resp_var = choices_selected("AVALC"),
-      x_var = choices_selected(names(asl), "SEX"),
-      row_facet_var = choices_selected(names(asl), NULL),
-      col_facet_var = choices_selected(names(asl), NULL)
+      response = list(ars_extracted_response),
+      xvar = list(asl_extracted),
+      row_facet_var = list(asl_extracted_row),
+      col_facet_var = list(asl_extracted_col)
     )
   )
 )
-
 \dontrun{
-shinyApp(x$ui, x$server)
-
+shinyApp(app$ui, app$server)
+}
 ## as ggplot only
 library(ggplot2)
 library(dplyr)
@@ -127,6 +177,5 @@ anl_filtered \%>\%
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution") +
   coord_flip()
-}
 
 }
