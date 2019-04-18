@@ -13,10 +13,10 @@ tm_g_regression(label = "Regression Analysis", dataname, regressor,
 
 \item{dataname}{name of datasets used to generate the regression plot (just used for labeling)}
 
-\item{regressor}{(\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+\item{regressor}{(\code{list}) Output of \code{teal.devel::data_extract_spec}
 to define the regressor variable from an incoming dataset with filtering and selecting.}
 
-\item{response}{(\code{\link{teal.devel}{DataExtractSpec}}) Output of \code{teal.devel::data_extract_spec}
+\item{response}{(\code{list}) Output of \code{teal.devel::data_extract_spec}
 to define the response variable from an incoming dataset with filtering and selecting.}
 
 \item{plot_height}{(\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
@@ -39,6 +39,8 @@ library(random.cdisc.data)
 asl <- radsl(N = 600)
 
 adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+keys(asl) <- c("STUDYID", "USUBJID")
 
 adte_filters <- filter_spec(
   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -85,29 +87,22 @@ asl_extracted <- data_extract_spec(
 )
 
 app <- teal::init(
-  data = cdisc_data(
-    ASL = data_for_teal(
-      asl,
-      keys = c("USUBJID", "STUDYID"),
-      source = "radsl(N = 600)"
-    ),
-    ADTE = data_for_teal(
-      adte,
-      keys = c("USUBJID", "STUDYID", "PARAMCD"),
-      source = "radaette(radsl(N = 600))"
-    )
-  ),
-  modules = root_modules(
-    tm_g_regression(
-      label = "Regression",
-      dataname = c("ASL", "ADTE"),
-      response = list(adte_extracted_response),
-      regressor = list(
-        asl_extracted,
-        adte_extracted_regressor
-      )
-    )
-  )
+   data = cdisc_data(
+       ASL = asl,
+       ADTE = adte,
+       code = "",
+       check = FALSE),
+   modules = teal::root_modules(
+       tm_g_regression(
+           label = "Regression",
+          dataname = c("ASL","ADTE"),
+          response = list(adte_extracted_response),
+           regressor = list(
+               adte_extracted_regressor,
+               asl_extracted
+           )
+       )
+   )
 )
 \dontrun{
 shinyApp(app$ui, app$server)

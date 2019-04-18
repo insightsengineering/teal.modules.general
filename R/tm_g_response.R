@@ -99,7 +99,7 @@
 #' library(dplyr)
 #' library(forcats)
 #'
-#' anl <- inner_join(ars, asl)
+#' anl_filtered <- inner_join(ars, asl)
 #'
 #' anl_filtered <- anl %>%
 #'   filter(PARAMCD == "BESRSPI") %>%
@@ -143,7 +143,8 @@
 #'
 #' anl_filtered %>%
 #'   ggplot() +
-#'   aes(x = fct_rev(SEX)) +
+#'   aes(x = forcats::fct_rev(SEX)) +
+#'   xlab("SEX") +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
 #'   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
 #'   scale_y_continuous(limits = c(0, 1.4)) +
@@ -152,6 +153,7 @@
 #'   coord_flip()
 #'
 #' @import teal.devel
+#' @importFrom forcats fct_rev
 tm_g_response <- function(
                           label = "Response Plot",
                           dataname,
@@ -159,7 +161,7 @@ tm_g_response <- function(
                           xvar = NULL,
                           row_facet_var = NULL,
                           col_facet_var = NULL,
-                          coord_flip = TRUE,
+                          coord_flip = FALSE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
@@ -223,7 +225,7 @@ ui_g_response <- function(id, ...) {
         choices = c("frequency", "density"),
         selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "swap axes", value = TRUE),
+      checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
       # This shall be wrapped in a teal::plot
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
@@ -236,7 +238,6 @@ ui_g_response <- function(id, ...) {
 
 #' @importFrom teal no_selected_as_NULL
 #' @import teal.devel
-#' @importFrom forcats fct_rev
 srv_g_response <- function(
                            input,
                            output,
@@ -324,13 +325,18 @@ srv_g_response <- function(
       }
 
       if (swap_axes) {
-        bquote(fct_rev(.(tmp_cl)))
+        bquote(forcats::fct_rev(.(tmp_cl)))
       } else {
         tmp_cl
       }
     }
 
     anl <- data_reactive()
+
+    validate_has_data(anl, 10)
+
+    validate(
+        need(is.factor(anl[[resp_var]]),"Please select a factor variable as the name."))
 
     plot_call <- bquote(
       anl %>%
@@ -341,10 +347,7 @@ srv_g_response <- function(
 
     if (!freq) {
       if (swap_axes) {
-        tmp_cl1 <- quote(geom_text(
-          stat = "count", aes(label = paste(" ", ..count..), hjust = 0), # nolint
-          position = "fill"
-        ))
+        tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse))
         tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
         tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
@@ -352,6 +355,11 @@ srv_g_response <- function(
       }
 
       plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
+    }else{
+      # Change Y-Axis Label in case of Swap
+      tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse))
+      plot_call <- call("+", plot_call, tmp_cl1)
+
     }
 
     if (swap_axes) {
