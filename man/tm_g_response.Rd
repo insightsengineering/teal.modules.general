@@ -5,30 +5,34 @@
 \title{Response Plots}
 \usage{
 tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
-  row_facet_var = NULL, col_facet_var = NULL, coord_flip = TRUE,
+  row_facet_var = NULL, col_facet_var = NULL, coord_flip = FALSE,
   freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
-\item{dataname}{name of dataset used to generate table}
+\item{dataname}{(\code{character}) Name of dataset used to generate the response plot}
 
-\item{response}{(\code{list} of \code{data_extract_spec}) Which variable to use as Response}
+\item{response}{(\code{list} of \code{data_extract_spec}) Which variable to use as the
+response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
+the \code{column_spec}.}
 
-\item{xvar}{(\code{list} of \code{data_extract_spec}) Which variable to use as X}
+\item{xvar}{(\code{list} of \code{data_extract_spec}) Which variable to use on the
+X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
+in teal. Just allow single columns by \code{multiple = FALSE}.}
 
-\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) Which variable to use for faceting rows}
+\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) Which data columns
+to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.}
 
-\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) Which variable to use for faceting columns}
+\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
+Just allow single columns by \code{multiple = FALSE}.}
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
-\item{freq}{(\code{logical}) Display frequency}
+\item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
 
-\item{plot_height}{if scalar then the plot will have a fixed height. If a
-slider should be presented to adjust the plot height dynamically then it
-can be a vector of length three with \code{c(value, min and max)}.}
+\item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -49,63 +53,64 @@ library(magrittr)
 asl <- radsl()
 keys(asl) <- c("USUBJID", "STUDYID")
 ars <- radrs(asl)
-keys(ars) <- c("USUBJID", "STUDYID")
+keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 
 ars_filters <- filter_spec(
-    vars = c("PARAMCD"),
-    sep = " - ",
-    choices = unique(ars$PARAMCD),
-    selected = unique(ars$PARAMCD)[1],
-    multiple = FALSE,
-    label = "Choose endpoint and Censor"
+  vars = c("PARAMCD"),
+  sep = " - ",
+  choices = unique(ars$PARAMCD),
+  selected = unique(ars$PARAMCD)[1],
+  multiple = FALSE,
+  label = "Choose endpoint and Censor"
 )
+
 ars_extracted_response <- data_extract_spec(
-    dataname = "ARS",
-    filter = ars_filters,
-    columns = columns_spec(
-        choices = c("AVALC"),
-        selected = c("AVALC"),
-        multiple = FALSE,
-        fixed = TRUE,
-        label = "variable"
-    )
+  dataname = "ARS",
+  filter = ars_filters,
+  columns = columns_spec(
+    choices = c("AVALC"),
+    selected = c("AVALC"),
+    multiple = FALSE,
+    fixed = TRUE,
+    label = "variable"
+  )
 )
 
 asl_extracted <- data_extract_spec(
-    dataname = "ASL",
-    columns = columns_spec(
-        choices = names(asl),
-        selected = c("RACE"),
-        multiple = FALSE,
-        fixed = FALSE
-    )
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = names(asl),
+    selected = c("RACE"),
+    multiple = FALSE,
+    fixed = FALSE
+  )
 )
 asl_extracted_row <- data_extract_spec(
-    dataname = "ASL",
-    columns = columns_spec(
-        choices = c("","SEX", "AGE"),
-        selected = "",
-        multiple = FALSE,
-        fixed = FALSE
-    )
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("", "SEX", "AGE"),
+    selected = "",
+    multiple = FALSE,
+    fixed = FALSE
+  )
 )
 asl_extracted_col <- data_extract_spec(
-    dataname = "ASL",
-    columns = columns_spec(
-        choices = c("", "SEX", "AGE"),
-        selected = "",
-        multiple = FALSE,
-        fixed = FALSE
-    )
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("", "SEX", "AGE"),
+    selected = "",
+    multiple = FALSE,
+    fixed = FALSE
+  )
 )
-
 
 app <- teal::init(
   data = cdisc_data(
-      ASL = asl,
-      ARS = ars,
-      code = "",
-      check = FALSE),
+    ASL = asl,
+    ARS = ars,
+    code = "",
+    check = FALSE
+  ),
   modules = root_modules(
     tm_g_response(
       dataname = "ARS",
@@ -124,7 +129,7 @@ library(ggplot2)
 library(dplyr)
 library(forcats)
 
-anl <- inner_join(ars, asl)
+anl_filtered <- inner_join(ars, asl)
 
 anl_filtered <- anl \%>\%
   filter(PARAMCD == "BESRSPI") \%>\%
@@ -168,12 +173,12 @@ anl_filtered \%>\%
 
 anl_filtered \%>\%
   ggplot() +
-  aes(x = fct_rev(SEX)) +
+  aes(x = forcats::fct_rev(SEX)) +
+  xlab("SEX") +
   geom_bar(aes(fill = AVALC), position = "fill") +
   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
   scale_y_continuous(limits = c(0, 1.4)) +
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution") +
   coord_flip()
-
 }

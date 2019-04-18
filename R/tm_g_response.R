@@ -1,21 +1,23 @@
-
-
 #' Response Plots
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #' @export
 #'
-#' @param dataname name of dataset used to generate table
-#' @param response (\code{list} of \code{data_extract_spec}) Which variable to use as Response
-#' @param xvar (\code{list} of \code{data_extract_spec}) Which variable to use as X
-#' @param row_facet_var (\code{list} of \code{data_extract_spec}) Which variable to use for faceting rows
-#' @param col_facet_var (\code{list} of \code{data_extract_spec}) Which variable to use for faceting columns
+#' @param dataname (\code{character}) Name of dataset used to generate the response plot
+#' @param response (\code{list} of \code{data_extract_spec}) Which variable to use as the
+#'   response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
+#'   the \code{column_spec}.
+#' @param xvar (\code{list} of \code{data_extract_spec}) Which variable to use on the
+#'   X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
+#'   in teal. Just allow single columns by \code{multiple = FALSE}.
+#' @param row_facet_var (\code{list} of \code{data_extract_spec}) Which data columns
+#'   to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.
+#' @param col_facet_var (\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
+#'   Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
-#' @param freq (\code{logical}) Display frequency
-#' @param plot_height if scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min and max)}.
+#' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
+#' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @examples
 #'
 #' library(random.cdisc.data)
@@ -24,63 +26,64 @@
 #' asl <- radsl()
 #' keys(asl) <- c("USUBJID", "STUDYID")
 #' ars <- radrs(asl)
-#' keys(ars) <- c("USUBJID", "STUDYID")
+#' keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
 #' ars_filters <- filter_spec(
-#'     vars = c("PARAMCD"),
-#'     sep = " - ",
-#'     choices = unique(ars$PARAMCD),
-#'     selected = unique(ars$PARAMCD)[1],
-#'     multiple = FALSE,
-#'     label = "Choose endpoint and Censor"
+#'   vars = c("PARAMCD"),
+#'   sep = " - ",
+#'   choices = unique(ars$PARAMCD),
+#'   selected = unique(ars$PARAMCD)[1],
+#'   multiple = FALSE,
+#'   label = "Choose endpoint and Censor"
 #' )
+#'
 #' ars_extracted_response <- data_extract_spec(
-#'     dataname = "ARS",
-#'     filter = ars_filters,
-#'     columns = columns_spec(
-#'         choices = c("AVALC"),
-#'         selected = c("AVALC"),
-#'         multiple = FALSE,
-#'         fixed = TRUE,
-#'         label = "variable"
-#'     )
+#'   dataname = "ARS",
+#'   filter = ars_filters,
+#'   columns = columns_spec(
+#'     choices = c("AVALC"),
+#'     selected = c("AVALC"),
+#'     multiple = FALSE,
+#'     fixed = TRUE,
+#'     label = "variable"
+#'   )
 #' )
 #'
 #' asl_extracted <- data_extract_spec(
-#'     dataname = "ASL",
-#'     columns = columns_spec(
-#'         choices = names(asl),
-#'         selected = c("RACE"),
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'     )
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = names(asl),
+#'     selected = c("RACE"),
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
 #' )
 #' asl_extracted_row <- data_extract_spec(
-#'     dataname = "ASL",
-#'     columns = columns_spec(
-#'         choices = c("","SEX", "AGE"),
-#'         selected = "",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'     )
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("", "SEX", "AGE"),
+#'     selected = "",
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
 #' )
 #' asl_extracted_col <- data_extract_spec(
-#'     dataname = "ASL",
-#'     columns = columns_spec(
-#'         choices = c("", "SEX", "AGE"),
-#'         selected = "",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'     )
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("", "SEX", "AGE"),
+#'     selected = "",
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
 #' )
-#'
 #'
 #' app <- teal::init(
 #'   data = cdisc_data(
-#'       ASL = asl,
-#'       ARS = ars,
-#'       code = "",
-#'       check = FALSE),
+#'     ASL = asl,
+#'     ARS = ars,
+#'     code = "",
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
@@ -151,7 +154,6 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
 #'   coord_flip()
-#'
 #' @import teal.devel
 #' @importFrom forcats fct_rev
 tm_g_response <- function(
@@ -226,7 +228,6 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
       ),
       checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
-      # This shall be wrapped in a teal::plot
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
     forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
@@ -278,6 +279,7 @@ srv_g_response <- function(
   )
 
   data_reactive <- reactive({
+
     merge_datasets(
       list(
         xvar_data(),
@@ -303,6 +305,7 @@ srv_g_response <- function(
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
+  # create a plot call from data inserted
   plot_call <- reactive({
     resp_var <- get_dataset_prefixed_col_names(response_data())
     xvar <- get_dataset_prefixed_col_names(xvar_data())
@@ -336,7 +339,8 @@ srv_g_response <- function(
     validate_has_data(anl, 10)
 
     validate(
-        need(is.factor(anl[[resp_var]]),"Please select a factor variable as the name."))
+      need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
+    )
 
     plot_call <- bquote(
       anl %>%
@@ -347,7 +351,7 @@ srv_g_response <- function(
 
     if (!freq) {
       if (swap_axes) {
-        tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse))
+        tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse()))
         tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
         tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
@@ -355,11 +359,10 @@ srv_g_response <- function(
       }
 
       plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
-    }else{
+    } else {
       # Change Y-Axis Label in case of Swap
-      tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse))
+      tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse()))
       plot_call <- call("+", plot_call, tmp_cl1)
-
     }
 
     if (swap_axes) {
