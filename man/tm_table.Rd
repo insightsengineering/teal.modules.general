@@ -44,7 +44,7 @@ keys(asl) <- c("USUBJID", "STUDYID")
 asl_extract_xvar <- teal.devel::data_extract_spec(
     "ASL",
     columns = teal.devel::columns_spec(
-        choices = setdiff(names(asl), keys(asl)),
+        choices = base::setdiff(names(asl), keys(asl)),
         selected = names(asl)[5],
         multiple = FALSE,
         fixed = FALSE
@@ -54,7 +54,7 @@ asl_extract_xvar <- teal.devel::data_extract_spec(
 asl_extract_yvar <- teal.devel::data_extract_spec(
     "ASL",
     columns = teal.devel::columns_spec(
-        choices = setdiff(names(asl), keys(asl)),
+        choices = base::setdiff(names(asl), keys(asl)),
         selected = names(asl)[6],
         multiple = FALSE,
         fixed = FALSE
