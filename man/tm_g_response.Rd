@@ -4,33 +4,35 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Response Plot", dataname, endpoint, resp_var,
-  x_var = NULL, row_facet_var = NULL, col_facet_var = NULL,
-  coord_flip = TRUE, freq = FALSE, plot_height = c(600, 400, 5000),
-  pre_output = NULL, post_output = NULL, code_data_processing = NULL)
+tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
+  row_facet_var = NULL, col_facet_var = NULL, coord_flip = TRUE,
+  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
+  post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
-\item{dataname}{name of dataset used to generate table}
+\item{dataname}{(\code{character}) Name of dataset used to generate the response plot}
 
-\item{endpoint}{(\code{choices_selected}) Which variable to use as EndPoint}
+\item{response}{(\code{list} of \code{data_extract_spec}) Which variable to use as the
+response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
+the \code{column_spec}.}
 
-\item{resp_var}{(\code{choices_selected}) Which variable to use as Response}
+\item{xvar}{(\code{list} of \code{data_extract_spec}) Which variable to use on the
+X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
+in teal. Just allow single columns by \code{multiple = FALSE}.}
 
-\item{x_var}{(\code{choices_selected}) Which variable to use as X}
+\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) Which data columns
+to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.}
 
-\item{row_facet_var}{(\code{choices_selected}) Which variable to use for faceting rows}
-
-\item{col_facet_var}{(\code{choices_selected}) Which variable to use for faceting columns}
+\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
+Just allow single columns by \code{multiple = FALSE}.}
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
-\item{freq}{(\code{logical}) Display frequency}
+\item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
 
-\item{plot_height}{if scalar then the plot will have a fixed height. If a
-slider should be presented to adjust the plot height dynamically then it
-can be a vector of length three with \code{c(value, min and max)}.}
+\item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -39,8 +41,6 @@ output to put the output into context. For example the
 \item{post_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
 }
 \description{
 Response Plots
@@ -48,38 +48,91 @@ Response Plots
 \examples{
 
 library(random.cdisc.data)
+library(teal.devel)
 
 asl <- radsl()
+keys(asl) <- c("USUBJID", "STUDYID")
 ars <- radrs(asl)
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-attr(ars, "source") <- 'subset(random.cdisc.data::radrs(asl, seed = 1), AVISIT == "Follow Up")'
+keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 
-x <- teal::init(
-  data = list(ASL = asl, ARS = ars),
-  modules = root_modules(
-    tm_g_response(
-      dataname = "ARS",
-      endpoint = choices_selected(ars$PARAMCD),
-      resp_var = choices_selected("AVALC"),
-      x_var = choices_selected(names(asl), "SEX"),
-      row_facet_var = choices_selected(names(asl), NULL),
-      col_facet_var = choices_selected(names(asl), NULL)
-    )
+ars_filters <- filter_spec(
+  vars = c("PARAMCD"),
+  sep = " - ",
+  choices = unique(ars$PARAMCD),
+  selected = unique(ars$PARAMCD)[1],
+  multiple = FALSE,
+  label = "Choose endpoint and Censor"
+)
+
+ars_extracted_response <- data_extract_spec(
+  dataname = "ARS",
+  filter = ars_filters,
+  columns = columns_spec(
+    choices = c("AVALC"),
+    selected = c("AVALC"),
+    multiple = FALSE,
+    fixed = TRUE,
+    label = "variable"
   )
 )
 
-\dontrun{
-shinyApp(x$ui, x$server)
+asl_extracted <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = names(asl),
+    selected = c("RACE"),
+    multiple = FALSE,
+    fixed = FALSE
+  )
+)
+asl_extracted_row <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("", "SEX", "AGE"),
+    selected = "",
+    multiple = FALSE,
+    fixed = FALSE
+  )
+)
+asl_extracted_col <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("", "SEX", "AGE"),
+    selected = "",
+    multiple = FALSE,
+    fixed = FALSE
+  )
+)
 
+app <- teal::init(
+  data = cdisc_data(
+    ASL = asl,
+    ARS = ars,
+    code = "",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_response(
+      dataname = "ARS",
+      response = list(ars_extracted_response),
+      xvar = list(asl_extracted),
+      row_facet_var = list(asl_extracted_row),
+      col_facet_var = list(asl_extracted_col)
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
 ## as ggplot only
 library(ggplot2)
 library(dplyr)
 library(forcats)
 
-anl <- inner_join(ars, asl)
+anl <- suppressWarnings(inner_join(ars, asl))
 
 anl_filtered <- anl \%>\%
-  filter(PARAMCD == "BESRSPI") \%>\%
+  dplyr::filter(PARAMCD == "BESRSPI") \%>\%
   mutate(ALL = factor(rep("Response", n())))
 
 anl_filtered \%>\%
@@ -120,13 +173,12 @@ anl_filtered \%>\%
 
 anl_filtered \%>\%
   ggplot() +
-  aes(x = fct_rev(SEX)) +
+  aes(x = forcats::fct_rev(SEX)) +
+  xlab("SEX") +
   geom_bar(aes(fill = AVALC), position = "fill") +
   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
   scale_y_continuous(limits = c(0, 1.4)) +
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution") +
   coord_flip()
-}
-
 }
