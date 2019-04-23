@@ -36,6 +36,7 @@ Scatterplot and Regression Model
 \examples{
 
 library(random.cdisc.data)
+library(teal.devel)
 asl <- radsl(N = 600)
 adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
