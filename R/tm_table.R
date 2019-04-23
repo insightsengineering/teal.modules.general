@@ -85,11 +85,11 @@ tm_table <- function(label,
     all(useNA %in% c("ifany", "no", "always"))
   )
 
-  lapply(xvar,function(ds_extract){
+  lapply(xvar, function(ds_extract){
         stopifnot(!ds_extract$columns$multiple)
       }
       )
-  lapply(yvar,function(ds_extract){
+  lapply(yvar, function(ds_extract){
         stopifnot(!ds_extract$columns$multiple)
       }
       )
