@@ -36,8 +36,8 @@ Scatterplot and Regression Model
 \examples{
 
 library(random.cdisc.data)
+library(teal.devel)
 asl <- radsl(N = 600)
-
 adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
 keys(asl) <- c("STUDYID", "USUBJID")
@@ -87,20 +87,21 @@ asl_extracted <- data_extract_spec(
 )
 
 app <- teal::init(
-   data = cdisc_data(
+  data = cdisc_data(
        ASL = asl,
        ADTE = adte,
        code = "",
        check = FALSE),
    modules = teal::root_modules(
        tm_g_regression(
-           label = "Regression",
-          dataname = c("ASL","ADTE"),
-          response = list(adte_extracted_response),
-           regressor = list(
-               adte_extracted_regressor,
-               asl_extracted
-           )
+
+         label = "Regression",
+         dataname = c("ASL","ADTE"),
+         response = list(adte_extracted_response),
+         regressor = list(
+           adte_extracted_regressor,
+           asl_extracted
+         )
        )
    )
 )

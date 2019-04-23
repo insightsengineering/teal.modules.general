@@ -17,8 +17,8 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
+#' library(teal.devel)
 #' asl <- radsl(N = 600)
-#'
 #' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
 #' keys(asl) <- c("STUDYID", "USUBJID")
@@ -68,20 +68,20 @@
 #' )
 #'
 #'app <- teal::init(
-#'    data = cdisc_data(
+#'   data = cdisc_data(
 #'        ASL = asl,
 #'        ADTE = adte,
 #'        code = "",
 #'        check = FALSE),
 #'    modules = teal::root_modules(
 #'        tm_g_regression(
-#'            label = "Regression",
-#'           dataname = c("ASL","ADTE"),
-#'           response = list(adte_extracted_response),
-#'            regressor = list(
-#'                adte_extracted_regressor,
-#'                asl_extracted
-#'            )
+#'          label = "Regression",
+#'          dataname = c("ASL","ADTE"),
+#'          response = list(adte_extracted_response),
+#'          regressor = list(
+#'            adte_extracted_regressor,
+#'            asl_extracted
+#'          )
 #'        )
 #'    )
 #')
@@ -132,7 +132,7 @@ ui_g_regression <- function(id, ...) {
       )
     ),
     encoding = div(
-      helpText("Datasets: ", arguments$dataname %>% lapply(., tags$code)),
+      helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
       data_extract_input(
         id = ns("regressor"),
         label = "Regressor Variable",
@@ -192,7 +192,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     renew_chunk_environment(envir = environment())
     renew_chunks()
 
-    form %<chunk_env%
+    form <- form %<chunk_env%
         as.formula(
             paste(response_var,
             paste(regressor_var,
