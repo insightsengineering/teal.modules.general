@@ -85,11 +85,11 @@ tm_table <- function(label,
     all(useNA %in% c("ifany", "no", "always"))
   )
 
-  lapply(xvar,function(ds_extract){
+  lapply(xvar, function(ds_extract){
         stopifnot(!ds_extract$columns$multiple)
       }
       )
-  lapply(yvar,function(ds_extract){
+  lapply(yvar, function(ds_extract){
         stopifnot(!ds_extract$columns$multiple)
       }
       )
@@ -175,16 +175,13 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
     validate(need(yvar_name != "", "Please define a column that is not empty."))
 
     dataset <- merge_datasets(
-        list(
-            xvar_data(),
-            yvar_data()
-            )
-        )
-
+      list(
+        xvar_data(),
+        yvar_data()
+      )
+    )
     validate_has_data(dataset, 10)
-
-    useNA <- # nolint
-    input$useNA # nolint
+    useNA <- input$useNA # nolint
     use_margin <- input$margins
 
     renew_chunk_environment(envir = environment())
@@ -192,8 +189,8 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
 
     if (use_margin) {
       expression_to_use <- expr(stats::addmargins(
-                  table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)
-          )) %>%
+        table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)
+      )) %>%
         substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
     } else {
       expression_to_use <- expr(table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)) %>%
