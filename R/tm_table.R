@@ -168,6 +168,12 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
 
   chunk_reactive <- reactive({
 
+    xvar_name <- get_dataset_prefixed_col_names(xvar_data())
+    yvar_name <- get_dataset_prefixed_col_names(yvar_data())
+
+    validate(need(xvar_name != "", "Please define a column that is not empty."))
+    validate(need(yvar_name != "", "Please define a column that is not empty."))
+
     dataset <- merge_datasets(
         list(
             xvar_data(),
@@ -176,9 +182,6 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
         )
 
     validate_has_data(dataset, 10)
-
-    xvar_name <- get_dataset_prefixed_col_names(xvar_data())
-    yvar_name <- get_dataset_prefixed_col_names(yvar_data())
 
     useNA <- # nolint
     input$useNA # nolint
