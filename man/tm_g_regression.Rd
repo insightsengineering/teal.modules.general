@@ -94,7 +94,6 @@ app <- teal::init(
        check = FALSE),
    modules = teal::root_modules(
        tm_g_regression(
-
          label = "Regression",
          dataname = c("ASL","ADTE"),
          response = list(adte_extracted_response),

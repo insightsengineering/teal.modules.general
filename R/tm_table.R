@@ -181,7 +181,7 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
       )
     )
     validate_has_data(dataset, 10)
-    input$useNA # nolint
+    useNA <- input$useNA # nolint
     use_margin <- input$margins
 
     renew_chunk_environment(envir = environment())
