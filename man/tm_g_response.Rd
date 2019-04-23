@@ -5,7 +5,7 @@
 \title{Response Plots}
 \usage{
 tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
-  row_facet_var = NULL, col_facet_var = NULL, coord_flip = FALSE,
+  row_facet_var = NULL, col_facet_var = NULL, coord_flip = TRUE,
   freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL)
 }
@@ -48,7 +48,7 @@ Response Plots
 \examples{
 
 library(random.cdisc.data)
-library(magrittr)
+library(teal.devel)
 
 asl <- radsl()
 keys(asl) <- c("USUBJID", "STUDYID")
@@ -129,10 +129,10 @@ library(ggplot2)
 library(dplyr)
 library(forcats)
 
-anl_filtered <- inner_join(ars, asl)
+anl <- suppressWarnings(inner_join(ars, asl))
 
 anl_filtered <- anl \%>\%
-  filter(PARAMCD == "BESRSPI") \%>\%
+  dplyr::filter(PARAMCD == "BESRSPI") \%>\%
   mutate(ALL = factor(rep("Response", n())))
 
 anl_filtered \%>\%
