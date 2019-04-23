@@ -21,7 +21,7 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' library(magrittr)
+#' library(teal.devel)
 #'
 #' asl <- radsl()
 #' keys(asl) <- c("USUBJID", "STUDYID")
@@ -102,7 +102,9 @@
 #' library(dplyr)
 #' library(forcats)
 #'
-#' anl_filtered <- inner_join(ars, asl)
+#' \donttest{
+#' anl <- inner_join(ars, asl)
+#' }
 #'
 #' anl_filtered <- anl %>%
 #'   filter(PARAMCD == "BESRSPI") %>%
@@ -163,12 +165,36 @@ tm_g_response <- function(
                           xvar = NULL,
                           row_facet_var = NULL,
                           col_facet_var = NULL,
-                          coord_flip = FALSE,
+                          coord_flip = TRUE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
                           post_output = NULL) {
   dataname != "asl" || stop("currently does not work with ASL data")
+
+
+  stopifnot(is.list(response))
+  stopifnot(is.list(xvar))
+  stopifnot(is.list(row_facet_var))
+  stopifnot(is.list(col_facet_var))
+  stopifnot(is.logical(coord_flip))
+  stopifnot(is.logical(freq))
+  stopifnot(is.numeric(plot_height))
+
+  # No empty columns allowed for Response Var
+  # No multiple Response variables allowed
+  lapply(response, function(ds_extract){
+        stopifnot(!("" %in% ds_extract$columns$choices))
+        stopifnot(!ds_extract$columns$multiple)
+      }
+  )
+  # No empty columns allowed for X-Var
+  # No multiple X variables allowed
+  lapply(xvar, function(ds_extract){
+        stopifnot(!("" %in% ds_extract$columns$choices))
+        stopifnot(!ds_extract$columns$multiple)
+      }
+  )
 
   args <- as.list(environment())
 
@@ -288,6 +314,7 @@ srv_g_response <- function(
         response_data()
       )
     )
+
   })
 
   # Insert the plot into a plot_height module from teal.devel
@@ -311,6 +338,9 @@ srv_g_response <- function(
     xvar <- get_dataset_prefixed_col_names(xvar_data())
     row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
     col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+
+    validate(need(resp_var != "", "Please define a valid column for the response variable"))
+    validate(need(xvar != "", "Please define a valid column for the X-variable"))
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
@@ -351,7 +381,9 @@ srv_g_response <- function(
 
     if (!freq) {
       if (swap_axes) {
-        tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse()))
+        tmp_cl1 <- quote(xlab(label)) %>%
+            substituteDirect(list(label = tmp_cl %>%
+                        deparse()))
         tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
         tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
@@ -361,7 +393,9 @@ srv_g_response <- function(
       plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
     } else {
       # Change Y-Axis Label in case of Swap
-      tmp_cl1 <- quote(xlab(label)) %>% substituteDirect(list(label = tmp_cl %>% deparse()))
+      tmp_cl1 <- quote(xlab(label)) %>%
+          substituteDirect(list(label = tmp_cl %>%
+                      deparse()))
       plot_call <- call("+", plot_call, tmp_cl1)
     }
 
