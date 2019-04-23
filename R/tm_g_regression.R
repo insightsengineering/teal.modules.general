@@ -184,8 +184,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   fit <- reactive({
 
-    response_var = get_dataset_prefixed_col_names(response_data())
-    regressor_var = get_dataset_prefixed_col_names(regressor_data())
+    response_var <- get_dataset_prefixed_col_names(response_data())
+    regressor_var <- get_dataset_prefixed_col_names(regressor_data())
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
     validate_has_data(merged_dataset, 10)
 
@@ -265,10 +265,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         dataname = dataname,
         merged_dataname = "merged_dataset",
         merged_datasets = list(response_data(), regressor_data()),
-        title = title,
-        description = "",
-        libraries = c("random.cdisc.data"),
-        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general"))
+        title = title
       )
     )
   })
