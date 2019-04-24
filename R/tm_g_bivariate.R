@@ -69,6 +69,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
+                           ggtheme = "grey",
                            pre_output = NULL,
                            post_output = NULL,
                            with_show_r_code = TRUE,
@@ -93,7 +94,11 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
-    server_args = list(dataname = dataname, code_data_processing = code_data_processing),
+    server_args = list(
+      dataname = dataname,
+      code_data_processing = code_data_processing,
+      ggtheme = ggtheme
+    ),
     filters = dataname
   )
 }
@@ -126,6 +131,12 @@ ui_g_bivariate <- function(id, ...) {
       ),
       checkboxInput(ns("free_x_scales"), "free x scales", value = a$free_x_scales),
       checkboxInput(ns("free_y_scales"), "free y scales", value = a$free_y_scales),
+      optionalSelectInput(
+          inputId = ns("ggtheme"), # nolint
+          label = "ggplot theme",
+          choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+          multiple = FALSE
+          ),
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
     ),
     forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
@@ -141,7 +152,9 @@ srv_g_bivariate <- function(input,
                             session,
                             datasets,
                             dataname,
-                            code_data_processing) {
+                            code_data_processing,
+                            ggtheme = NULL
+                            ) {
 
 
   ## dynamic plot height
@@ -205,6 +218,11 @@ srv_g_bivariate <- function(input,
 
     if (!is.null(facet_cl)) {
       cl <- call("+", cl, facet_cl)
+    }
+
+    ggtheme <- input$ggtheme
+    if(!is.null(ggtheme)){
+      cl <- call("+", cl,  as.call(parse(text = paste0("theme_", ggtheme))))
     }
 
     cl
@@ -337,7 +355,7 @@ g_bp <- function(x = NULL, y = NULL, freq = TRUE) {
     stop("not both variables can be null")
   }
 
-  eval(g_bp_cl("df", "x", "y", class(x), class(y), freq = freq))
+  eval(g_bp_cl("df", "x", "y", class(x), class(y), freq = freq, ggtheme = ggtheme))
 }
 
 
@@ -357,7 +375,8 @@ g_bp_cl <- function(data_name,
                     freq = TRUE,
                     col_var = NULL,
                     x_facet = NULL,
-                    y_facet = NULL) {
+                    y_facet = NULL
+                    ) {
   cl <- aes_geom_call(x_class, y_class, freq = freq)
 
   if (is.null(x_var)) {
