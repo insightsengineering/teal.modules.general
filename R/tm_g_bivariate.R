@@ -574,8 +574,8 @@ substitute_q <- function(x, env) {
 #' bivariate_ggplot_call("factor", "numeric")
 #' bivariate_ggplot_call("factor", "factor")
 bivariate_ggplot_call <- function(
-                                  x_class = c("NULL", "numeric", "factor", "character", "logical"),
-                                  y_class = c("NULL", "numeric", "factor", "character", "logical"),
+                                  x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
+                                  y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE) {
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
@@ -583,8 +583,14 @@ bivariate_ggplot_call <- function(
   if (x_class %in% c("character", "logical")) {
     x_class <- "factor"
   }
+  if (x_class %in% c("integer")) {
+    x_class <- "numeric"
+  }
   if (y_class %in% c("character", "logical")) {
     y_class <- "factor"
+  }
+  if (y_class %in% c("integer")) {
+    y_class <- "numeric"
   }
 
   if (all(c(x_class, y_class) == "NULL")) {
