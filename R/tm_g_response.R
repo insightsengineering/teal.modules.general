@@ -322,7 +322,6 @@ srv_g_response <- function(
     plot_id = session$ns("plot")
   )
 
-
   ## dynamic plot height
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
