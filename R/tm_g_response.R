@@ -400,7 +400,7 @@ srv_g_response <- function(
       plot_call <- call("+", plot_call, quote(coord_flip()))
     }
 
-    facet_cl <- g_facet_cl(row_facet_var_name, col_facet_var_name)
+    facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
 
     if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
 
