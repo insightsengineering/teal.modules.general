@@ -96,7 +96,7 @@
 #'  )
 #' )
 #' \dontrun{
-#'   shinyApp(x$ui, x$server)
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 #'
