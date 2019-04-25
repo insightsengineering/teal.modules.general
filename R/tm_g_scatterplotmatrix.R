@@ -12,14 +12,25 @@
 #' @export
 #'
 #' @examples
-#' asl <- radsl(N = 600)
-#' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
-#' keys(asl) <- c("STUDYID", "USUBJID")
+#' # libraries: shiny, magrittr
+#' asl <- random.cdisc.data::radsl(N = 600)
+#' adte <- random.cdisc.data::radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' teal.devel::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' teal.devel::keys(asl) <- c("STUDYID", "USUBJID")
 #'
-#' adte_prep <- data_extract_spec(
+#' adte_filters <- teal.devel::filter_spec(
+#'   vars = c("PARAMCD"), #'  only key variables are allowed
+#'   sep = " - ",
+#'   choices = c("OS", "PFS", "EFS"),
+#'   selected = "OS",
+#'   multiple = TRUE, #'  if multiple, then a spread is needed
+#'   label = "Choose endpoint"
+#' )
+#'
+#' adte_prep <- teal.devel::data_extract_spec(
 #'   dataname = "ADTE",
-#'   columns = columns_spec(
+#'   filter = adte_filters,
+#'   columns = teal.devel::columns_spec(
 #'     choices = c("*no columns selected*" = "", colnames(adte)),
 #'     selected = "",
 #'     multiple = TRUE,
@@ -29,12 +40,12 @@
 #' )
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.devel::cdisc_data(
 #'     ASL = asl,
 #'     ADTE = adte,
 #'     code = "",
 #'     check = FALSE),
-#'   modules = root_modules(
+#'   modules = teal::root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       dataname = c("ASL","ADTE"),
@@ -63,15 +74,11 @@ tm_g_scatterplotmatrix <- function(
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
     server_args = list(select_col = select_col, dataname = dataname),
-    filters = "all" #dataname
+    filters = "all"
   )
 }
 
 
-#' @import teal
-#' @importFrom teal.devel white_small_well
-#' @importFrom teal.devel plot_height_output
-#' @importFrom teal.devel plot_height_input
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
 
@@ -86,24 +93,21 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       )
     ),
     encoding = div(
-      # helpText("Dataset:", tags$code(args$dataname)),
       helpText("Datasets: ", args$dataname %>% lapply(., tags$code)),
-      # uiOutput(ns("select_ui")),
-      data_extract_input(
+      teal.devel::data_extract_input(
         id = ns("select_col"),
         label = "Selected columns",
         data_extract_spec = args$select_col
       ),
       sliderInput(ns("bins"), "Number of bins in histograms", min = 1, max = 100,
                   value = 30, round = TRUE, step = 3),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
-    )#,
-    # pre_output = args$pre_output,
-    # post_output = args$post_output
+      teal.devel::plot_height_input(id = ns("myplot"), value = args$plot_height)
+    ),
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
-#' @importFrom teal.devel as.global
 # TO DO: import GGally ?? (only requireNamespace should be enough -> discuss)
 # TO DO: no columns selected? keep it as an option?
 # TO DO: check for cardinality - different column names in validate(need()) than in selectInput: ADTE.USUBJID vs USUBJID
@@ -113,10 +117,10 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
   stopifnot(is.list(select_col))
 
   # setup to use chunks
-  use_chunks(session)
+  teal.devel::use_chunks(session)
 
   # data extraction
-  col_extract <- callModule(data_extract_module,
+  col_extract <- callModule(teal.devel::data_extract_module,
                             id = "select_col",
                             datasets = datasets,
                             data_extract_spec = select_col
@@ -128,10 +132,10 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
     bins <- input$bins
 
     # get selected columns
-    cols <- get_dataset_prefixed_col_names(col_extract())
+    cols <- teal.devel::get_dataset_prefixed_col_names(col_extract())
 
     # merge datasets
-    merged_ds <- merge_datasets(list(col_extract()))
+    merged_ds <- teal.devel::merge_datasets(list(col_extract()))
 
     # check columns selected
     validate(need(cols,
@@ -154,26 +158,26 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
                          paste(invalid_cols, collapse = ", "))))
 
     # reset chunks on every user-input change
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    teal.devel::renew_chunk_environment(envir = environment())
+    teal.devel::renew_chunks()
 
     # set up expression chunk
-    set_chunk(
+    teal.devel::set_chunk(
       expression = quote(
         expr = GGally::ggpairs(
           data = merged_ds,
           columns = .cols,
           diag = list(continuous = GGally::wrap(funcVal = "barDiag", bins = .bins)))) %>%
-        substituteDirect(list(.cols = cols, .bins = bins))
+        methods::substituteDirect(list(.cols = cols, .bins = bins))
     )
 
     # evaluate chunk
-    eval_remaining()
+    teal.devel::eval_remaining()
 
   })
 
   # set plot output
-  callModule(plot_with_height,
+  callModule(teal.devel::plot_with_height,
              id = "myplot",
              plot_height = reactive(input$myplot),
              plot_id = session$ns("plot"))
