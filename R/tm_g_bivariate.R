@@ -52,7 +52,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = setdiff(names(ars), keys(ars)),
+#'         choices = base::setdiff(names(ars), keys(ars)),
 #'         selected = names(ars)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
