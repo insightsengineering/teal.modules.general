@@ -62,7 +62,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", names(asl)),
+#'         choices = c("", base::setdiff(names(asl), keys(asl))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -399,9 +399,22 @@ srv_g_bivariate <- function(input,
     anl <- data_reactive()
     xvar_name <- get_dataset_prefixed_col_names(xvar_data())
     yvar_name <- get_dataset_prefixed_col_names(yvar_data())
+
+    validate(need(!(!is.null(yvar_name) && yvar_name %in% keys(yvar_data())),
+            "Please do not select key variables inside data"))
+    validate(need(!(!is.null(xvar_name) && xvar_name %in% keys(yvar_data())),
+            "Please do not select key variables inside data"))
+
     if (input$facetting) {
       row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
       col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+
+      validate(need(!(!is.null(col_facet_var_name) &&
+                    col_facet_var_name %in% keys(col_facet_var_data())),
+              "Please do not select key variables inside data"))
+      validate(need(!(!is.null(row_facet_var_name) &&
+                    row_facet_var_name %in% keys(row_facet_var_data())),
+              "Please do not select key variables inside data"))
 
       if (!is.null(col_facet_var_name) && !is.null(row_facet_var_name)) {
         validate(need(
@@ -416,6 +429,12 @@ srv_g_bivariate <- function(input,
         colour_var_name <- get_dataset_prefixed_col_names(colour_var_data())
         fill_var_name <- get_dataset_prefixed_col_names(fill_var_data())
         size_var_name <- get_dataset_prefixed_col_names(size_var_data())
+        validate(need(!(!is.null(colour_var_name) && colour_var_name %in% keys(colour_var_data())),
+                "Please do not select key variables inside data"))
+        validate(need(!(!is.null(fill_var_name) && fill_var_name %in% keys(fill_var_data())),
+                "Please do not select key variables inside data"))
+        validate(need(!(!is.null(size_var_name) && size_var_name %in% keys(size_var_data())),
+                "Please do not select key variables inside data"))
       }
     }
     use_density <- input$use_density == "density"
@@ -430,6 +449,8 @@ srv_g_bivariate <- function(input,
 
   # Create plot
   plot_call <- reactive({
+
+    validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
 
     # Copy all variables over from variable_reactive
     for (n in ls(variable_reactive(), all.names = TRUE)) assign(n, get(n, variable_reactive()), environment())

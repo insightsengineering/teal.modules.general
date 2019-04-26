@@ -88,7 +88,7 @@ ars_extracted_response <- data_extract_spec(
     dataname = "ARS",
     filter = ars_filters,
     columns = columns_spec(
-        choices = setdiff(names(ars), keys(ars)),
+        choices = base::setdiff(names(ars), keys(ars)),
         selected = names(ars)[5],
         multiple = FALSE,
         fixed = FALSE,
@@ -98,7 +98,7 @@ ars_extracted_response <- data_extract_spec(
 asl_extracted <- data_extract_spec(
     dataname = "ASL",
     columns = columns_spec(
-        choices = c("", names(asl)),
+        choices = c("", base::setdiff(names(asl), keys(asl))),
         selected = c("RACE"),
         multiple = FALSE,
         fixed = FALSE
@@ -132,7 +132,7 @@ app <- teal::init(
  )
 )
 \dontrun{
-  shinyApp(x$ui, x$server)
+  shinyApp(app$ui, app$server)
 }
 
 
