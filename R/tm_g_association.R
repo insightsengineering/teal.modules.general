@@ -146,7 +146,7 @@ srv_tm_g_association <- function(input,
 
     ref_cl <- call(
       "+",
-      g_bp_cl(anl_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
+      bivariate_plot_call(anl_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
       quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
     )
 
@@ -162,7 +162,7 @@ srv_tm_g_association <- function(input,
         var_i <- call("log", as.name(var_i))
       }
 
-      g_bp_cl(anl_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
+      bivariate_plot_call(anl_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
     })
 
 
