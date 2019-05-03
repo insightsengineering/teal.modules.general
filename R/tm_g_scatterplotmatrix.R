@@ -1,13 +1,12 @@
-#' Scatterplot matrix
+#' Create a scatterplot matrix
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
-#' @param label Name of the module.
-#' @param dataname Name of dataset used to generate table.
-#' @param select_col Selected columns to display.
-#' @param plot_height If scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min and max)}.
+#' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
+#' @param select_col (\code{list}) Output of \code{teal.devel::data_extract_spec}
+#'  to define the plotting variables from an incoming dataset with filtering and selecting.
+#' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
+#'  encoding the plot height.
 #'
 #' @export
 #'
@@ -55,8 +54,7 @@
 #' )
 #'
 #' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
+#' shinyApp(app$ui, app$server)}
 #'
 tm_g_scatterplotmatrix <- function(
   label = "Scatterplot matrix",
