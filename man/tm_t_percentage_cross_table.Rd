@@ -5,21 +5,29 @@
 \title{Cross table based on rtables}
 \usage{
 tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
-  y_var)
+  y_var, ...)
 }
 \arguments{
-\item{label}{menue item label of the module in the teal app}
+\item{label}{(\code{character}) Label of the app in the teal menu}
 
-\item{dataname}{analysis data used in teal module, needs to be available in
-the list passed to the \code{data} argument of \code{\link[teal]{init}}.
-Note that the data is expected to be in vertical form with the
-\code{PARAMCD} variable filtering to one observation per patient.}
+\item{dataname}{(\code{character}) Name of the dataset used in the teal app. Just a single
+dataset is allowed!}
 
-\item{x_var}{\code{\link[teal]{choices_selected}} object with all available choices
-with preselected option for variable X}
+\item{x_var}{\code{\link[teal]{choices_selected}} object with all available
+choices with preselected option for variable X}
 
-\item{y_var}{\code{\link[teal]{choices_selected}} object with all available choices
-with preselected option for variable Y}
+\item{y_var}{\code{\link[teal]{choices_selected}} object with all available
+choices with preselected option for variable Y}
+
+\item{...}{Arguments passed on to \code{teal::standard_layout}
+\describe{
+  \item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+  \item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+}}
 }
 \description{
 Cross table based on rtables
@@ -29,11 +37,15 @@ Cross table based on rtables
 library(random.cdisc.data)
 
 asl <- radsl(seed = 1)
-
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
+keys(asl) <- c("USUBJID", "STUDYID")
 
 x <- teal::init(
-  data = list(ASL = asl),
+  data = cdisc_data(ASL = asl,
+     code = "library(random.cdisc.data)
+asl <- radsl(seed = 1)
+keys(asl) <- c('USUBJID', 'STUDYID')",
+     check = TRUE
+  ),
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
@@ -43,11 +55,11 @@ x <- teal::init(
     )
   )
 )
-\dontrun{
 
-shinyApp(x$ui, x$server)
+\dontrun{
+ shinyApp(x$ui, x$server)
 }
 }
 \author{
-Adrian Waddell (waddella) \email{adrian.waddell@roche.com}
+wolfs25 waddella
 }

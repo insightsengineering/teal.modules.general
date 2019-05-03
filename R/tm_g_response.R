@@ -1,59 +1,111 @@
-
-
 #' Response Plots
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal::standard_layout
 #' @export
 #'
-#' @param dataname name of dataset used to generate table
-#' @param endpoint (\code{choices_selected}) Which variable to use as EndPoint
-#' @param resp_var (\code{choices_selected}) Which variable to use as Response
-#' @param x_var (\code{choices_selected}) Which variable to use as X
-#' @param row_facet_var (\code{choices_selected}) Which variable to use for faceting rows
-#' @param col_facet_var (\code{choices_selected}) Which variable to use for faceting columns
+#' @param dataname (\code{character}) Name of dataset used to generate the response plot
+#' @param response (\code{list} of \code{data_extract_spec}) Which variable to use as the
+#'   response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
+#'   the \code{column_spec}.
+#' @param xvar (\code{list} of \code{data_extract_spec}) Which variable to use on the
+#'   X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
+#'   in teal. Just allow single columns by \code{multiple = FALSE}.
+#' @param row_facet_var (\code{list} of \code{data_extract_spec}) Which data columns
+#'   to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.
+#' @param col_facet_var (\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
+#'   Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
-#' @param freq (\code{logical}) Display frequency
-#' @param plot_height if scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min and max)}.
-#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
-
+#' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
+#' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @examples
 #'
 #' library(random.cdisc.data)
+#' library(teal.devel)
 #'
 #' asl <- radsl()
+#' keys(asl) <- c("USUBJID", "STUDYID")
 #' ars <- radrs(asl)
-#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' attr(ars, "source") <- 'subset(random.cdisc.data::radrs(asl, seed = 1), AVISIT == "Follow Up")'
+#' keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
-#' x <- teal::init(
-#'   data = list(ASL = asl, ARS = ars),
-#'   modules = root_modules(
-#'     tm_g_response(
-#'       dataname = "ARS",
-#'       endpoint = choices_selected(ars$PARAMCD),
-#'       resp_var = choices_selected("AVALC"),
-#'       x_var = choices_selected(names(asl), "SEX"),
-#'       row_facet_var = choices_selected(names(asl), NULL),
-#'       col_facet_var = choices_selected(names(asl), NULL)
-#'     )
+#' ars_filters <- filter_spec(
+#'   vars = c("PARAMCD"),
+#'   sep = " - ",
+#'   choices = unique(ars$PARAMCD),
+#'   selected = unique(ars$PARAMCD)[1],
+#'   multiple = FALSE,
+#'   label = "Choose endpoint and Censor"
+#' )
+#'
+#' ars_extracted_response <- data_extract_spec(
+#'   dataname = "ARS",
+#'   filter = ars_filters,
+#'   columns = columns_spec(
+#'     choices = c("AVALC"),
+#'     selected = c("AVALC"),
+#'     multiple = FALSE,
+#'     fixed = TRUE,
+#'     label = "variable"
 #'   )
 #' )
 #'
-#' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' asl_extracted <- data_extract_spec(
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = names(asl),
+#'     selected = c("RACE"),
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
+#' )
+#' asl_extracted_row <- data_extract_spec(
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("", "SEX", "AGE"),
+#'     selected = "",
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
+#' )
+#' asl_extracted_col <- data_extract_spec(
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("", "SEX", "AGE"),
+#'     selected = "",
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
+#' )
 #'
+#' app <- teal::init(
+#'   data = cdisc_data(
+#'     ASL = asl,
+#'     ARS = ars,
+#'     code = "",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_response(
+#'       dataname = "ARS",
+#'       response = list(ars_extracted_response),
+#'       xvar = list(asl_extracted),
+#'       row_facet_var = list(asl_extracted_row),
+#'       col_facet_var = list(asl_extracted_col)
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 #' ## as ggplot only
 #' library(ggplot2)
 #' library(dplyr)
 #' library(forcats)
 #'
-#' anl <- inner_join(ars, asl)
+#' anl <- suppressWarnings(inner_join(ars, asl))
 #'
 #' anl_filtered <- anl %>%
-#'   filter(PARAMCD == "BESRSPI") %>%
+#'   dplyr::filter(PARAMCD == "BESRSPI") %>%
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
 #' anl_filtered %>%
@@ -94,41 +146,53 @@
 #'
 #' anl_filtered %>%
 #'   ggplot() +
-#'   aes(x = fct_rev(SEX)) +
+#'   aes(x = forcats::fct_rev(SEX)) +
+#'   xlab("SEX") +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
 #'   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
 #'   scale_y_continuous(limits = c(0, 1.4)) +
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
 #'   coord_flip()
-#' }
-#'
-#' @importFrom teal add_no_selected_choices
+#' @import teal.devel
+#' @importFrom forcats fct_rev
 tm_g_response <- function(
-  label = "Response Plot",
-  dataname,
-  endpoint,
-  resp_var,
-  x_var = NULL,
-  row_facet_var = NULL,
-  col_facet_var = NULL,
-  coord_flip = TRUE,
-  freq = FALSE,
-  plot_height = c(600, 400, 5000),
-  pre_output = NULL,
-  post_output = NULL,
-  code_data_processing = NULL) {
-  x_var <- teal::add_no_selected_choices(x_var, TRUE)
-  row_facet_var <- teal::add_no_selected_choices(row_facet_var, TRUE)
-  col_facet_var <- teal::add_no_selected_choices(col_facet_var, TRUE)
-
-  stopifnot(is.choices_selected(endpoint))
-  stopifnot(is.choices_selected(resp_var))
-  stopifnot(is.choices_selected(x_var))
-  stopifnot(is.choices_selected(row_facet_var))
-  stopifnot(is.choices_selected(col_facet_var))
+                          label = "Response Plot",
+                          dataname,
+                          response,
+                          xvar = NULL,
+                          row_facet_var = NULL,
+                          col_facet_var = NULL,
+                          coord_flip = TRUE,
+                          freq = FALSE,
+                          plot_height = c(600, 400, 5000),
+                          pre_output = NULL,
+                          post_output = NULL) {
   dataname != "asl" || stop("currently does not work with ASL data")
 
+
+  stopifnot(is.list(response))
+  stopifnot(is.list(xvar))
+  stopifnot(is.list(row_facet_var))
+  stopifnot(is.list(col_facet_var))
+  stopifnot(is.logical(coord_flip))
+  stopifnot(is.logical(freq))
+  stopifnot(is.numeric(plot_height))
+
+  # No empty columns allowed for Response Var
+  # No multiple Response variables allowed
+  lapply(response, function(ds_extract){
+        stopifnot(!("" %in% ds_extract$columns$choices))
+        stopifnot(!ds_extract$columns$multiple)
+      }
+  )
+  # No empty columns allowed for X-Var
+  # No multiple X variables allowed
+  lapply(xvar, function(ds_extract){
+        stopifnot(!("" %in% ds_extract$columns$choices))
+        stopifnot(!ds_extract$columns$multiple)
+      }
+  )
 
   args <- as.list(environment())
 
@@ -139,64 +203,124 @@ tm_g_response <- function(
     ui_args = args,
     server_args = list(
       dataname = dataname,
-      code_data_processing = code_data_processing
+      response = response,
+      xvar = xvar,
+      row_facet_var = row_facet_var,
+      col_facet_var = col_facet_var
     ),
     filters = dataname
   )
 }
 
 #' @import teal
-#' @importFrom teal.devel white_small_well
+#' @importFrom teal.devel white_small_well plot_height_output
 ui_g_response <- function(id, ...) {
-  a <- list(...)
+  arguments <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
-    output = teal.devel::white_small_well(uiOutput(ns("plot_ui"))),
+    output = teal.devel::white_small_well(
+      plot_height_output(id = ns("myplot"))
+    ),
     encoding = div(
-      helpText("Dataset:", tags$code(a$dataname)),
+      helpText("Dataset:", tags$code(arguments$dataname)),
 
-      optionalSelectInput(ns("endpoint"), "Endpoint (PARAMCD)", a$endpoint$choices, a$endpoint$selected),
-      optionalSelectInput(ns("resp_var"), "Response Variable", a$resp_var$choices, a$resp_var$selected),
-      optionalSelectInput(ns("x_var"), "X Variable",
-                          a$x_var$choices, a$x_var$selected,
-                          multiple = TRUE, label_help = helpText("from ASL")
+      data_extract_input(
+        id = ns("response"),
+        label = "Response Variable",
+        data_extract_spec = arguments$response
       ),
-
-      optionalSelectInput(ns("row_facet_var"), "Row facetting Variables",
-                          a$row_facet_var$choices, a$row_facet_var$selected,
-                          multiple = TRUE
+      data_extract_input(
+        id = ns("xvar"),
+        label = "X Variable",
+        data_extract_spec = arguments$xvar
       ),
-      optionalSelectInput(ns("col_facet_var"), "Column facetting Variables",
-                          a$col_facet_var$choices, a$col_facet_var$selected,
-                          multiple = TRUE
+      data_extract_input(
+        id = ns("row_facet_var"),
+        label = "Row facetting Variables ",
+        data_extract_spec = arguments$row_facet_var
+      ),
+      data_extract_input(
+        id = ns("col_facet_var"),
+        label = "Column facetting Variables",
+        data_extract_spec = arguments$col_facet_var
       ),
 
       radioButtons(ns("freq"), NULL,
-                   choices = c("frequency", "density"),
-                   selected = ifelse(a$freq, "frequency", "density"), inline = TRUE
+        choices = c("frequency", "density"),
+        selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "swap axes", value = TRUE),
-      optionalSliderInputValMinMax(ns("plot_height"), "plot height", a$plot_height, ticks = FALSE)
+      checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
+      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
     forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
-    pre_output = a$pre_output,
-    post_output = a$post_output
+    pre_output = arguments$pre_output,
+    post_output = arguments$post_output
   )
 }
 
 
 #' @importFrom teal no_selected_as_NULL
-#' @importFrom teal.devel get_rcode_header
-#' @importFrom forcats fct_rev
+#' @import teal.devel
 srv_g_response <- function(
-  input,
-  output,
-  session,
-  datasets,
-  dataname,
-  code_data_processing) {
+                           input,
+                           output,
+                           session,
+                           datasets,
+                           dataname,
+                           response,
+                           xvar,
+                           row_facet_var,
+                           col_facet_var) {
+  stopifnot(is.list(response))
+  stopifnot(is.list(xvar))
+  stopifnot(is.list(row_facet_var))
+  stopifnot(is.list(col_facet_var))
+
+  use_chunks(session)
+
+  # Data Extraction
+  response_data <- callModule(data_extract_module,
+    id = "response",
+    datasets = datasets,
+    data_extract_spec = response
+  )
+  xvar_data <- callModule(data_extract_module,
+    id = "xvar",
+    datasets = datasets,
+    data_extract_spec = xvar
+  )
+  row_facet_var_data <- callModule(data_extract_module,
+    id = "row_facet_var",
+    datasets = datasets,
+    data_extract_spec = row_facet_var
+  )
+  col_facet_var_data <- callModule(data_extract_module,
+    id = "col_facet_var",
+    datasets = datasets,
+    data_extract_spec = col_facet_var
+  )
+
+  data_reactive <- reactive({
+
+    merge_datasets(
+      list(
+        xvar_data(),
+        row_facet_var_data(),
+        col_facet_var_data(),
+        response_data()
+      )
+    )
+
+  })
+
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -205,57 +329,48 @@ srv_g_response <- function(
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  ANL_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE)) # nolint
-  ASL <- datasets$get_data("ASL", filtered = FALSE, reactive = FALSE) # nolint
-
+  # create a plot call from data inserted
   plot_call <- reactive({
-    endpoint <- input$endpoint # nolint
-    resp_var <- input$resp_var # nolint
-    x_var <- input$x_var
+    resp_var <- get_dataset_prefixed_col_names(response_data())
+    xvar <- get_dataset_prefixed_col_names(xvar_data())
+    row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
+    col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+
+    validate(need(resp_var != "", "Please define a valid column for the response variable"))
+    validate(need(xvar != "", "Please define a valid column for the X-variable"))
+
     freq <- input$freq == "frequency"
-    row_facet_var <- input$row_facet_var
-    col_facet_var <- input$col_facet_var
     swap_axes <- input$coord_flip
 
-    # call global as.global(ANL_head, ASL, resp_var, x_var, freq, row_facet_var, col_facet_var, swap_axes, endpoint)
-
-    x_var <- teal::no_selected_as_NULL(x_var)
-    row_facet_var <- teal::no_selected_as_NULL(row_facet_var)
-    col_facet_var <- teal::no_selected_as_NULL(col_facet_var)
-
-    cl_anl <- bquote(.(as.name(paste0(dataname, "_FILTERED"))) %>%
-                dplyr::filter(PARAMCD %in% .(endpoint)))
-
-    asl_vars <- c(x_var, row_facet_var, col_facet_var)
-    if (!is.null(asl_vars)) {
-      asl_vars <- unique(c("USUBJID", "STUDYID", asl_vars))
-      cl_anl <- call(
-        "%>%", cl_anl,
-        call("left_join", bquote(ASL[, .(asl_vars), drop = FALSE]))
-      )
-    }
-
     arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(x_var)) {
+    cl_arg_x <- if (is.null(xvar)) {
       1
     } else {
-      tmp_cl <- if (length(x_var) == 1) {
-        as.name(x_var)
+      tmp_cl <- if (length(xvar) == 1) {
+        as.name(xvar)
       } else {
-        tmp <- call_fun_dots("interaction", x_var)
+        tmp <- call_fun_dots("interaction", xvar)
         tmp[["sep"]] <- " x "
         tmp
       }
 
       if (swap_axes) {
-        bquote(fct_rev(.(tmp_cl)))
+        bquote(forcats::fct_rev(.(tmp_cl)))
       } else {
         tmp_cl
       }
     }
 
+    anl <- data_reactive()
+
+    validate_has_data(anl, 10)
+
+    validate(
+      need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
+    )
+
     plot_call <- bquote(
-      .(cl_anl) %>%
+      anl %>%
         ggplot() +
         aes(x = .(cl_arg_x)) +
         geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
@@ -263,10 +378,9 @@ srv_g_response <- function(
 
     if (!freq) {
       if (swap_axes) {
-        tmp_cl1 <- quote(geom_text(
-          stat = "count", aes(label = paste(" ", ..count..), hjust = 0), # nolint
-          position = "fill"
-        ))
+        tmp_cl1 <- quote(xlab(label)) %>%
+            substituteDirect(list(label = tmp_cl %>%
+                        deparse()))
         tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
         tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
@@ -274,57 +388,48 @@ srv_g_response <- function(
       }
 
       plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
+    } else {
+      # Change Y-Axis Label in case of Swap
+      tmp_cl1 <- quote(xlab(label)) %>%
+          substituteDirect(list(label = tmp_cl %>%
+                      deparse()))
+      plot_call <- call("+", plot_call, tmp_cl1)
     }
 
     if (swap_axes) {
       plot_call <- call("+", plot_call, quote(coord_flip()))
     }
 
-    facet_cl <- g_facet_cl(row_facet_var, col_facet_var)
+    facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
 
     if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
 
-    plot_call
+    renew_chunk_environment(envir = environment())
+    renew_chunks()
+
+    set_chunk("plotCall", plot_call)
   })
 
   output$plot <- renderPlot({
-    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-
-    plot_call <- plot_call()
-
-    p <- try(eval(
-      plot_call,
-      list2env(setNames(list(anl_filtered, emptyenv()), c(paste0(dataname, "_FILTERED"), "parent")))
-    )) # try and eval
-
-    if (is(p, "try-error")) {
-      validate(need(FALSE, p))
-    } else {
-      p
-    }
+    plot_call()
+    eval_remaining()
   })
 
   observeEvent(input$show_rcode, {
-    header <- teal.devel::get_rcode_header(
-      title = "Bivariate and Univariate Plot",
-      datanames = dataname,
-      datasets = datasets,
-      code_data_processing,
-      packages = c("ggplot2", "forcats", "dplyr")
+    teal.devel::show_rcode_modal(
+      title = "Response Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        dataname = dataname,
+        merged_dataname = "anl",
+        merged_datasets = list(
+          response_data(),
+          xvar_data(),
+          row_facet_var_data(),
+          col_facet_var_data()
+        ),
+        title = "Response Plot"
+      )
     )
-
-    str_rcode <- paste(c(
-      "",
-      header,
-      "",
-      deparse(plot_call(), width.cutoff = 60)
-    ), collapse = "\n")
-
-    showModal(modalDialog(
-      title = "R Code for the Current Plot",
-      tags$pre(tags$code(class = "R", str_rcode)),
-      easyClose = TRUE,
-      size = "l"
-    ))
   })
 }

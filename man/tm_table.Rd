@@ -8,58 +8,77 @@ tm_table(label, dataname, xvar, yvar, useNA = c("ifany", "no", "always"),
   pre_output = NULL, post_output = NULL)
 }
 \arguments{
-\item{label}{menu label}
+\item{label}{(\code{chracter}) menu label}
 
-\item{dataname}{name of dataset used to generate table}
+\item{dataname}{(\code{chracter}) name of dataset used to generate table}
 
-\item{xvar}{(\code{choices_selected}) variable name of x variable. vector with variable names of possible x
-variables. If
-  missing or identincal to \code{xvar} then the table will be fixed to the
-  \code{xvar}.}
+\item{xvar}{(\code{list} of \code{data_extract_spec}) Specification how the
+user can select data to get encoded in the rows of the cross table. Please just use
+single selections inside the \code{columns_spec}.}
 
-\item{yvar}{(\code{choices_selected}) variable name of y variable. vector with variable names of possible y
-variables. If
-  missing or identincal to \code{xvar} then the table will be fixed to the
-  \code{yvar}.}
+\item{yvar}{(\code{list} of \code{data_extract_spec}) Specification how the
+user can select data to get encoded in the columns of the cross table. Please just use
+single selections inside the \code{columns_spec}.}
 
-\item{useNA}{optional pre-selected option indicating how to utilize NA in
+\item{useNA}{(\code{character}) optional pre-selected option indicating how to utilize NA in
 table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 missing then \code{'ifany'} will be used. If vector then only the first
 one will be used.}
 
-\item{pre_output}{html tags appended below the output}
+\item{pre_output}{(\code{shiny.tag}) html tags appended below the output}
 
-\item{post_output}{html tags appended after the output}
+\item{post_output}{(\code{shiny.tag}) html tags appended after the output}
 }
 \description{
 Create a table with the \code{\link{table}[base]} function
 }
 \examples{
-
+#code>
 library(random.cdisc.data)
+library(teal.devel)
 
 asl <- radsl(seed = 1)
+keys(asl) <- c("USUBJID", "STUDYID")
 
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-
-x <- teal::init(
-  data = list(ASL = asl),
-  root_modules(
-    tm_table("Table Choices",
-      "ASL",
-      xvar = choices_selected(c("SEX", "RACE", "STUDYID"), "SEX"),
-      yvar = choices_selected(c("RACE", "SAFFL"), "RACE")
-    ),
-    tm_table("Table No Choices", "ASL",
-      xvar = choices_selected("SEX"),
-      yvar = choices_selected("RACE"),
-      pre_output = helpText("Titles"),
-      post_output = helpText("Footnotes")
+#nocode >
+asl_extract_xvar <- teal.devel::data_extract_spec(
+    "ASL",
+    columns = teal.devel::columns_spec(
+        choices = base::setdiff(names(asl), keys(asl)),
+        selected = names(asl)[5],
+        multiple = FALSE,
+        fixed = FALSE
     )
-  )
+)
+
+asl_extract_yvar <- teal.devel::data_extract_spec(
+    "ASL",
+    columns = teal.devel::columns_spec(
+        choices = base::setdiff(names(asl), keys(asl)),
+        selected = names(asl)[6],
+        multiple = FALSE,
+        fixed = FALSE
+    )
+)
+
+# <nocode
+# <code
+app <- init(
+    data = cdisc_data(
+        ASL = asl,
+        code = "",
+        check = FALSE
+    ),
+    root_modules(
+        tm_table("Table Choices",
+            dataname =  "ASL",
+            xvar = list(asl_extract_xvar),
+            yvar = list(asl_extract_yvar)
+        )
+    )
 )
 
 \dontrun{
-shinyApp(x$ui, x$server)
+shinyApp(app$ui, app$server)
 }
 }

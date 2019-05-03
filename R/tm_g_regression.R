@@ -17,9 +17,11 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
+#' library(teal.devel)
 #' asl <- radsl(N = 600)
-#'
 #' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' keys(asl) <- c("STUDYID", "USUBJID")
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -65,31 +67,24 @@
 #'   )
 #' )
 #'
-#' app <- teal::init(
+#'app <- teal::init(
 #'   data = cdisc_data(
-#'     ASL = data_for_teal(
-#'       asl,
-#'       keys = c("USUBJID", "STUDYID"),
-#'       source = "radsl(N = 600)"
-#'     ),
-#'     ADTE = data_for_teal(
-#'       adte,
-#'       keys = c("USUBJID", "STUDYID", "PARAMCD"),
-#'       source = "radaette(radsl(N = 600))"
-#'     )
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       dataname = c("ASL", "ADTE"),
-#'       response = list(adte_extracted_response),
-#'       regressor = list(
-#'         asl_extracted,
-#'         adte_extracted_regressor
-#'       )
-#'     )
-#'   )
-#' )
+#'        ASL = asl,
+#'        ADTE = adte,
+#'        code = "",
+#'        check = FALSE),
+#'    modules = teal::root_modules(
+#'        tm_g_regression(
+#'          label = "Regression",
+#'          dataname = c("ASL","ADTE"),
+#'          response = list(adte_extracted_response),
+#'          regressor = list(
+#'            adte_extracted_regressor,
+#'            asl_extracted
+#'          )
+#'        )
+#'    )
+#')
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -137,7 +132,7 @@ ui_g_regression <- function(id, ...) {
       )
     ),
     encoding = div(
-      helpText("Datasets: ", arguments$dataname %>% lapply(., tags$code)),
+      helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
       data_extract_input(
         id = ns("regressor"),
         label = "Regressor Variable",
@@ -189,15 +184,15 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   fit <- reactive({
 
-    response_var = get_dataset_prefixed_col_names(response_data())
-    regressor_var = get_dataset_prefixed_col_names(regressor_data())
+    response_var <- get_dataset_prefixed_col_names(response_data())
+    regressor_var <- get_dataset_prefixed_col_names(regressor_data())
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
     validate_has_data(merged_dataset, 10)
 
     renew_chunk_environment(envir = environment())
     renew_chunks()
 
-    form %<chunk_env%
+    form <- form %<chunk_env%
         as.formula(
             paste(response_var,
             paste(regressor_var,
@@ -270,10 +265,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         dataname = dataname,
         merged_dataname = "merged_dataset",
         merged_datasets = list(response_data(), regressor_data()),
-        title = title,
-        description = "",
-        libraries = c("random.cdisc.data"),
-        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel", "NEST/teal.modules.general"))
+        title = title
       )
     )
   })
