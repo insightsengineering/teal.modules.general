@@ -123,8 +123,14 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
                             data_extract_spec = select_col
   )
 
-  # reactive handling of user inputs to produce a scatterplotmatrix
-  reprod_plot <- reactive({
+  # set plot output
+  callModule(plot_with_height,
+             id = "myplot",
+             plot_height = reactive(input$myplot),
+             plot_id = session$ns("plot"))
+
+  # plot
+  output$plot <- renderPlot({
     # get inputs
     alpha <- input$alpha
     cex <- input$cex
@@ -167,27 +173,16 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
 
     # set up expression chunk - lattice graph
     plt %<chunk%
-        methods::substituteDirect(
-          object = quote(
-            lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
-          ),
-          frame = list(.cols = cols, .alpha = alpha, .cex = cex)
-        )
+      methods::substituteDirect(
+        object = quote(
+          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+        ),
+        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
+      )
 
     # evaluate chunk
     eval_remaining()
 
-  })
-
-  # set plot output
-  callModule(plot_with_height,
-             id = "myplot",
-             plot_height = reactive(input$myplot),
-             plot_id = session$ns("plot"))
-
-  # plot
-  output$plot <- renderPlot({
-    reprod_plot()
   })
 
   # show r code
