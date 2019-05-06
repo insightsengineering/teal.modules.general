@@ -26,13 +26,11 @@ Imports:
   lattice,
   methods,
   random.cdisc.data (>= 0.1.2.1),
-  rlang,
   rtables,
   shinyWidgets,
   teal.devel,
   tern,
-  testthat,
-  xtable
+  testthat
 Suggests:
   test.nest
 RoxygenNote: 6.1.1
