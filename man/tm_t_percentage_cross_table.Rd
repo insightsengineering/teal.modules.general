@@ -33,14 +33,16 @@ output to put the output into context. For example the
 Cross table based on rtables
 }
 \examples{
-asl <- random.cdisc.data::radsl(seed = 1)
+\dontrun{
+library(random.cdisc.data)
+asl <- radsl(seed = 1)
 attr(asl, "keys") <- c("USUBJID", "STUDYID")
 
 x <- teal::init(
   data = cdisc_data(
     ASL = asl,
     code = "library(random.cdisc.data)
-asl <- random.cdisc.data::radsl(seed = 1)
+asl <- radsl(seed = 1)
 attr(asl, 'keys') <- c('USUBJID', 'STUDYID')",
     check = TRUE
   ),
@@ -53,7 +55,6 @@ attr(asl, 'keys') <- c('USUBJID', 'STUDYID')",
     )
   )
 )
-\dontrun{
 shinyApp(x$ui, x$server)
 }
 }
