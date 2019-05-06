@@ -54,7 +54,8 @@
 #' )
 #'
 #' \dontrun{
-#' shinyApp(app$ui, app$server)}
+#' shinyApp(app$ui, app$server)
+#' }
 #'
 tm_g_scatterplotmatrix <- function(
   label = "Scatterplot matrix",
@@ -87,13 +88,13 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         plot_height_output(ns("myplot")))
     ),
     encoding = div(
-      helpText("Datasets: ", args$dataname %>% lapply(., tags$code)),
+      helpText("Datasets: ", lapply(args$dataname, tags$code)),
       data_extract_input(
         id = ns("select_col"),
         label = "Selected columns",
         data_extract_spec = args$select_col
       ),
-      sliderInput(ns("alpha"), "Transparency",
+      sliderInput(ns("alpha"), "Opacity",
                   min = 0, max = 1, step = .05, value = .5, ticks = FALSE),
       sliderInput(ns("cex"), "Point Size",
                   min = 0.2, max = 3, step = .05, value = .65, ticks = FALSE),
@@ -105,7 +106,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
-
+#' @importFrom lattice splom
+#' @importFrom methods substituteDirect
 srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, select_col) {
 
   # checks
@@ -170,13 +172,14 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
     )
 
     # set up expression chunk - lattice graph
-    plt %<chunk%
-      methods::substituteDirect(
-        object = quote(
-          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
-        ),
-        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
-      )
+    set_chunk("plt",
+              substituteDirect(
+                object = quote(
+                  splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+                ),
+                frame = list(.cols = cols, .alpha = alpha, .cex = cex)
+              )
+    )
 
     # evaluate chunk
     eval_remaining()
@@ -207,8 +210,3 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
   })
 
 }
-
-
-
-
-
