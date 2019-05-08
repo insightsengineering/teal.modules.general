@@ -23,6 +23,7 @@ Imports:
   dplyr,
   DT,
   forcats,
+  lattice,
   methods,
   random.cdisc.data (>= 0.1.2.1),
   rtables,
