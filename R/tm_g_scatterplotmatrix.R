@@ -30,7 +30,7 @@
 #'   filter = adte_filters,
 #'   columns = teal.devel::columns_spec(
 #'     choices = colnames(adte),
-#'     selected = colnames(adte)[1:2],
+#'     selected = if (all(c('AGE', 'SEX') %in% colnames(adte))) {c('AGE', 'SEX')} else {colnames(adte)[1:2]},
 #'     multiple = TRUE,
 #'     fixed = FALSE, #'  Whether the user can select the item
 #'     label = "" #'  Label the column select dropdown (optional)
