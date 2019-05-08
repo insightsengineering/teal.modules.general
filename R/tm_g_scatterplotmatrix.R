@@ -11,7 +11,6 @@
 #' @export
 #'
 #' @examples
-#' # libraries: shiny, magrittr, teal.devel
 #' asl <- random.cdisc.data::radsl(N = 600)
 #' adte <- random.cdisc.data::radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #' teal.devel::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
