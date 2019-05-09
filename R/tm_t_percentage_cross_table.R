@@ -15,17 +15,14 @@
 #' @examples
 #' \dontrun{
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' asl <- radsl(seed = 1)
-#' keys(asl) <- c('USUBJID', 'STUDYID')
 #'
 #' x <- teal::init(
 #'   data = cdisc_data(
 #'     ASL = asl,
 #'     code = "library(random.cdisc.data)
-#'            asl <- radsl(seed = 1)
-#'            keys(asl) <- c('USUBJID', 'STUDYID')",
+#'             asl <- radsl(seed = 1)",
 #'     check = TRUE
 #'   ),
 #'   modules = teal::root_modules(

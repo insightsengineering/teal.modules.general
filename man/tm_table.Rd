@@ -34,15 +34,13 @@ Create a table with the \code{\link{table}[base]} function
 }
 \examples{
 library(random.cdisc.data)
-library(tern)
 
 asl <- radsl(seed = 1)
-keys(asl) <- c("USUBJID", "STUDYID")
 
 asl_extract_xvar <- data_extract_spec(
     "ASL",
     columns = columns_spec(
-        choices = base::setdiff(names(asl), keys(asl)),
+        choices = base::setdiff(names(asl), utils.nest::keys(asl)),
         selected = names(asl)[5],
         multiple = FALSE,
         fixed = FALSE
@@ -52,7 +50,7 @@ asl_extract_xvar <- data_extract_spec(
 asl_extract_yvar <- data_extract_spec(
     "ASL",
     columns = columns_spec(
-        choices = base::setdiff(names(asl), keys(asl)),
+        choices = base::setdiff(names(asl), utils.nest::keys(asl)),
         selected = names(asl)[6],
         multiple = FALSE,
         fixed = FALSE
@@ -63,8 +61,7 @@ app <- init(
  data = cdisc_data(
    ASL = asl,
    code = 'library(random.cdisc.data)
-           asl <- radsl(seed = 1)
-           keys(asl) <- c("USUBJID", "STUDYID")',
+           asl <- radsl(seed = 1)',
    check = FALSE
  ),
  root_modules(

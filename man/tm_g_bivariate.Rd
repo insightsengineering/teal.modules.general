@@ -67,12 +67,12 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 library(random.cdisc.data)
-library(tern)
 
 asl <- radsl(seed = 1)
 ars <- radrs(asl, seed = 1)
-keys(asl) <- c("USUBJID", "STUDYID")
-keys(ars) <- c("USUBJID", "STUDYID")
+
+utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+utils.nest::keys(ars) <- c("USUBJID", "STUDYID")
 
 ars_filters <- filter_spec(
     vars = c("PARAMCD"),
@@ -86,7 +86,7 @@ ars_extracted_response <- data_extract_spec(
     dataname = "ARS",
     filter = ars_filters,
     columns = columns_spec(
-        choices = base::setdiff(names(ars), keys(ars)),
+        choices = base::setdiff(names(ars), utils.nest::keys(ars)),
         selected = names(ars)[5],
         multiple = FALSE,
         fixed = FALSE,
@@ -96,7 +96,7 @@ ars_extracted_response <- data_extract_spec(
 asl_extracted <- data_extract_spec(
     dataname = "ASL",
     columns = columns_spec(
-        choices = c("", base::setdiff(names(asl), keys(asl))),
+        choices = c("", base::setdiff(names(asl), utils.nest::keys(asl))),
         selected = c("RACE"),
         multiple = FALSE,
         fixed = FALSE
@@ -118,8 +118,8 @@ app <- teal::init(
    ARS = ars,
    code = 'asl <- radsl(seed = 1)
            ars <- radrs(asl, seed = 1)
-           keys(asl) <- c("USUBJID", "STUDYID")
-           keys(ars) <- c("USUBJID", "STUDYID")',
+           utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+           utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(

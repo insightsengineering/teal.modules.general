@@ -31,12 +31,12 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' asl <- radsl(seed = 1)
 #' ars <- radrs(asl, seed = 1)
-#' keys(asl) <- c("USUBJID", "STUDYID")
-#' keys(ars) <- c("USUBJID", "STUDYID")
+#'
+#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID")
 #'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
@@ -50,7 +50,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ars), keys(ars)),
+#'         choices = base::setdiff(names(ars), utils.nest::keys(ars)),
 #'         selected = names(ars)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
@@ -60,7 +60,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", base::setdiff(names(asl), keys(asl))),
+#'         choices = c("", base::setdiff(names(asl), utils.nest::keys(asl))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -82,8 +82,8 @@
 #'    ARS = ars,
 #'    code = 'asl <- radsl(seed = 1)
 #'            ars <- radrs(asl, seed = 1)
-#'            keys(asl) <- c("USUBJID", "STUDYID")
-#'            keys(ars) <- c("USUBJID", "STUDYID")',
+#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
@@ -302,7 +302,7 @@ ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
 #' @importFrom methods is
 #' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names get_rcode show_rcode_modal
 #' @importFrom teal.devel merge_datasets show_rcode_modal
-#' @importFrom tern keys
+#' @importFrom utils.nest keys
 srv_g_bivariate <- function(input,
                             output,
                             session,

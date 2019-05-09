@@ -36,12 +36,11 @@ Scatterplot and Regression Model
 \examples{
 
 library(random.cdisc.data)
-library(tern)
 
 asl <- radsl(seed = 1)
 adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
-keys(asl) <- c("STUDYID", "USUBJID")
+utils.nest::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+utils.nest::keys(asl) <- c("STUDYID", "USUBJID")
 
 adte_filters <- filter_spec(
   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -92,8 +91,8 @@ app <- teal::init(
        ADTE = adte,
        code = 'asl <- radsl(seed = 1)
                adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-               keys(asl) <- c("USUBJID", "STUDYID")
-               keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
+               utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+               utils.nest::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
        check = FALSE),
    modules = teal::root_modules(
        tm_g_regression(

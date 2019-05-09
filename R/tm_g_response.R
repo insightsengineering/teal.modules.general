@@ -21,12 +21,11 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' asl <- radsl()
 #' ars <- radrs(asl)
-#' keys(asl) <- c("USUBJID", "STUDYID")
-#' keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
+#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
 #' ars_filters <- filter_spec(
 #'   vars = c("PARAMCD"),
@@ -83,8 +82,8 @@
 #'     ARS = ars,
 #'     code = 'asl <- radsl(seed = 1)
 #'            ars <- radrs(asl, seed = 1)
-#'            keys(asl) <- c("USUBJID", "STUDYID")
-#'            keys(ars) <- c("USUBJID", "STUDYID")',
+#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
 #'      check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_response(
