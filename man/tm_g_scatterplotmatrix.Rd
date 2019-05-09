@@ -52,7 +52,11 @@ adte_prep <- data_extract_spec(
   filter = adte_filters,
   columns = columns_spec(
     choices = colnames(adte),
-    selected = if (all(c('AGE', 'SEX') \%in\% colnames(adte))) {c('AGE', 'SEX')} else {colnames(adte)[1:2]},
+    selected = if (all(c('AGE', 'SEX') \%in\% colnames(adte))) {
+     c('AGE', 'SEX')
+    } else {
+     colnames(adte)[1:2]
+    },
     multiple = TRUE,
     fixed = FALSE, #'  Whether the user can select the item
     label = "" #'  Label the column select dropdown (optional)
