@@ -19,7 +19,6 @@ Depends:
   teal
 Imports:
   grid,
-  gridExtra,
   dplyr,
   DT,
   forcats,
