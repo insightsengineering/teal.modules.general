@@ -1,7 +1,7 @@
 #' Response Plots
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @export
 #'
 #' @param dataname (\code{character}) Name of dataset used to generate the response plot
@@ -21,12 +21,11 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' library(teal.devel)
 #'
 #' asl <- radsl()
-#' keys(asl) <- c("USUBJID", "STUDYID")
 #' ars <- radrs(asl)
-#' keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
+#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
 #' ars_filters <- filter_spec(
 #'   vars = c("PARAMCD"),
@@ -81,9 +80,11 @@
 #'   data = cdisc_data(
 #'     ASL = asl,
 #'     ARS = ars,
-#'     code = "",
-#'     check = FALSE
-#'   ),
+#'     code = 'asl <- radsl(seed = 1)
+#'            ars <- radrs(asl, seed = 1)
+#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
+#'      check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
@@ -98,7 +99,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #' ## as ggplot only
-#' library(ggplot2)
 #' library(dplyr)
 #' library(forcats)
 #'
@@ -154,8 +154,6 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
 #'   coord_flip()
-#' @import teal.devel
-#' @importFrom forcats fct_rev
 tm_g_response <- function(
                           label = "Response Plot",
                           dataname,
@@ -213,7 +211,7 @@ tm_g_response <- function(
 }
 
 #' @import teal
-#' @importFrom teal.devel white_small_well plot_height_output
+#' @importFrom teal.devel white_small_well plot_height_input plot_height_output standard_layout
 ui_g_response <- function(id, ...) {
   arguments <- list(...)
 
@@ -260,9 +258,10 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-
-#' @importFrom teal no_selected_as_NULL
-#' @import teal.devel
+#' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names merge_datasets plot_with_height
+#' @importFrom teal.devel get_rcode show_rcode_modal
+#' @importFrom forcats fct_rev
+#' @importFrom methods substituteDirect
 srv_g_response <- function(
                            input,
                            output,

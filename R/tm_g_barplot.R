@@ -2,7 +2,7 @@
 #'
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @param dataname (\code{character}) Dataset to be selected inside the app
 #' @param arm_var (\code{character}) Name of the ARM var inside the dataset
 #' @param arm_var_choices (\code{character}) Which variables can be used as the ARM var
@@ -23,7 +23,6 @@
 #' @param plot_height if scalar then the plot will have a fixed height. If a
 #'   slider should be presented to adjust the plot height dynamically then it
 #'   can be a vector of length three with vlaue, min and max.
-#' @param code_data_processing (\code{character}) Code that was used to pre-process the data
 #'
 #' @export
 #'
@@ -32,9 +31,6 @@
 #'
 #' asl <- radsl(N = 600)
 #' adte <- radaette(asl)
-#'
-#' attr(asl, "source")  <- "random.cdisc.data::radsl(seed = 1)"
-#' attr(adte, "source") <- "random.cdisc.data::radaette(asl, seed = 1)"
 #'
 #' app <- teal::init(
 #'   data = list(ASL = asl, ADTE = adte),
@@ -78,8 +74,7 @@ tm_bep_safety0 <- function(label,
                            color_coding_var_choices = color_coding_var,
                            plot_height = c(1200, 400, 5000),
                            pre_output = NULL,
-                           post_output = NULL,
-                           code_data_processing = NULL) {
+                           post_output = NULL) {
   args <- as.list(environment())
   teal::module(
     label = label,
@@ -87,13 +82,13 @@ tm_bep_safety0 <- function(label,
     ui = ui_tm_bep_safety0,
     ui_args = args,
     server_args = list(
-      dataname = dataname,
-      code_data_processing = code_data_processing
+      dataname = dataname
     ),
     filters = dataname
   )
 }
-#' @import teal
+
+#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
 ui_tm_bep_safety0 <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -160,8 +155,7 @@ srv_tm_bep_safety0 <- function(input,
                                output,
                                session,
                                datasets,
-                               dataname,
-                               code_data_processing) {
+                               dataname) {
 
   # not USED, think of removing: global_merged_data <- reactiveVal(NULL)
   # not USED, think of removing: global_partition_slider_flag <- FALSE

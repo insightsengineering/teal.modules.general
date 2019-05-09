@@ -10,7 +10,6 @@
 #' @export
 #'
 #' @examples
-#' library(teal)
 #' library(random.cdisc.data)
 #'
 #' asl <- radsl()
@@ -22,11 +21,10 @@
 #'   )
 #' )
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#'   shinyApp(x$ui, x$server)
 #' }
 #'
 #' # two-datasets example
-#' library(teal)
 #' library(random.cdisc.data)
 #' asl <- radsl()
 #' adte <- radaette(asl)
@@ -158,8 +156,6 @@ srv_page_data_table <- function(input,
   )
 }
 
-
-# ui tab module
 ui_data_table <- function(id,
                           choices,
                           selected) {
@@ -183,7 +179,6 @@ ui_data_table <- function(id,
 }
 
 
-# server tab module
 #' @importFrom dplyr count_
 srv_data_table <- function(input,
                            output,

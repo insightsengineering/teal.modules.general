@@ -63,11 +63,7 @@ Create a table with the \code{\link{table}[base]} function
 library(random.cdisc.data)
 
 asl <- radsl(seed = 1)
-aae <- radae(asl, seed = 99)
-
-# for reproducibility
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-attr(aae, "source") <- "random.cdisc.data::radae(asl, seed = 99)"
+aae <- radae(asl, seed = 1)
 
 x <- teal::init(
   data = list(ASL = asl, AAE = aae),

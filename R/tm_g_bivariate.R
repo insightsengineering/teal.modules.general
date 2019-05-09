@@ -1,7 +1,7 @@
 #' Univariate and bivariate visualizations.
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @param label (\code{character}) Label of the module
 #' @param dataname (\code{character}) name of datasets used to generate the bivariate plot. You need
 #'   to name all datasets used in the available \code{data_extract_spec}
@@ -30,16 +30,14 @@
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
 #' @examples
-#'
 #' library(random.cdisc.data)
-#' library(teal.devel)
 #'
-#' asl <- radsl()
-#' keys(asl) <- c("USUBJID", "STUDYID")
-#' ars <- radrs(asl)
-#' keys(ars) <- c("USUBJID", "STUDYID")
+#' asl <- radsl(seed = 1)
+#' ars <- radrs(asl, seed = 1)
 #'
-#' #nocode >
+#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID")
+#'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
 #'     sep = " - ",
@@ -52,7 +50,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ars), keys(ars)),
+#'         choices = base::setdiff(names(ars), utils.nest::keys(ars)),
 #'         selected = names(ars)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
@@ -62,7 +60,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", base::setdiff(names(asl), keys(asl))),
+#'         choices = c("", base::setdiff(names(asl), utils.nest::keys(asl))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -77,10 +75,16 @@
 #'         fixed = FALSE
 #'     )
 #' )
-#' # <nocode
-#' # <code
+#'
 #' app <- teal::init(
-#'  data = cdisc_data(ASL = asl, ARS = ars, code = "", check = FALSE),
+#'  data = cdisc_data(
+#'    ASL = asl,
+#'    ARS = ars,
+#'    code = 'asl <- radsl(seed = 1)
+#'            ars <- radrs(asl, seed = 1)
+#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
+#'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
 #'      dataname = c("ASL","ARS"),
@@ -96,15 +100,11 @@
 #'  )
 #' )
 #' \dontrun{
-#'   shinyApp(app$ui, app$server)
+#' shinyApp(app$ui, app$server)
 #' }
 #'
 #'
-#' @import ggplot2
-#' @import ggmosaic
 #' @export
-#' @importFrom teal add_no_selected_choices
-#' @import teal.devel
 #' @importFrom methods is
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
@@ -188,8 +188,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 
-#' @import teal
-#' @import teal.devel
+#' @importFrom teal.devel white_small_well optionalSelectInput standard_layout
 #' @importFrom shinyWidgets switchInput
 ui_g_bivariate <- function(id, ...) {
   a <- list(...)
@@ -261,8 +260,7 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-#' @import shiny
-#' @import teal.devel
+#' @importFrom teal.devel data_extract_input
 ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scales, free_y_scales) {
   div(
     data_extract_input(
@@ -279,8 +277,8 @@ ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scal
     checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
   )
 }
-#' @import shiny
-#' @import teal.devel
+
+#' @importFrom teal.devel data_extract_input
 ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
   div(
     data_extract_input(
@@ -302,7 +300,9 @@ ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
 }
 
 #' @importFrom methods is
-#' @importFrom teal.devel get_rcode_header
+#' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names get_rcode show_rcode_modal
+#' @importFrom teal.devel merge_datasets show_rcode_modal
+#' @importFrom utils.nest keys
 srv_g_bivariate <- function(input,
                             output,
                             session,

@@ -20,49 +20,43 @@
 #' @export
 #'
 #' @examples
-#' #code>
 #' library(random.cdisc.data)
-#' library(teal.devel)
 #'
 #' asl <- radsl(seed = 1)
-#' keys(asl) <- c("USUBJID", "STUDYID")
 #'
-#' #nocode >
-#' asl_extract_xvar <- teal.devel::data_extract_spec(
+#' asl_extract_xvar <- data_extract_spec(
 #'     "ASL",
-#'     columns = teal.devel::columns_spec(
-#'         choices = base::setdiff(names(asl), keys(asl)),
+#'     columns = columns_spec(
+#'         choices = base::setdiff(names(asl), utils.nest::keys(asl)),
 #'         selected = names(asl)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE
 #'     )
 #' )
 #'
-#' asl_extract_yvar <- teal.devel::data_extract_spec(
+#' asl_extract_yvar <- data_extract_spec(
 #'     "ASL",
-#'     columns = teal.devel::columns_spec(
-#'         choices = base::setdiff(names(asl), keys(asl)),
+#'     columns = columns_spec(
+#'         choices = base::setdiff(names(asl), utils.nest::keys(asl)),
 #'         selected = names(asl)[6],
 #'         multiple = FALSE,
 #'         fixed = FALSE
 #'     )
 #' )
 #'
-#' # <nocode
-#' # <code
 #' app <- init(
-#'     data = cdisc_data(
-#'         ASL = asl,
-#'         code = "",
-#'         check = FALSE
-#'     ),
-#'     root_modules(
-#'         tm_table("Table Choices",
+#'  data = cdisc_data(
+#'    ASL = asl,
+#'    code = 'library(random.cdisc.data)
+#'            asl <- radsl(seed = 1)',
+#'    check = FALSE
+#'  ),
+#'  root_modules(
+#'    tm_table("Table Choices",
 #'             dataname =  "ASL",
 #'             xvar = list(asl_extract_xvar),
-#'             yvar = list(asl_extract_yvar)
-#'         )
-#'     )
+#'             yvar = list(asl_extract_yvar))
+#'  )
 #' )
 #'
 #' \dontrun{
@@ -109,8 +103,7 @@ tm_table <- function(label,
 }
 
 
-#' @import teal
-#' @import teal.devel
+#' @importFrom teal.devel data_extract_input standard_layout white_small_well
 ui_table <- function(id,
                      label,
                      dataname,
@@ -145,9 +138,10 @@ ui_table <- function(id,
   )
 }
 
-
 #' @import stats
-#' @importFrom teal.devel get_filter_txt
+#' @importFrom teal.devel get_dataset_prefixed_col_names get_filter_txt data_extract_module merge_datasets
+#' @importFrom teal.devel renew_chunk_environment eval_remaining renew_chunks set_chunk
+#' @importFrom teal.devel show_rcode_modal get_rcode
 #' @importFrom methods substituteDirect
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   stopifnot(is.list(xvar))

@@ -5,7 +5,6 @@
 #'
 #' @noRd
 #'
-#' @importFrom stats uniroot
 #'
 #' @return  list with absolute and percentage cross table
 #'
@@ -55,6 +54,7 @@ venn2 <- function(x, y, xlab, ylab) {
 #' @noRd
 #'
 #' @importFrom graphics plot
+#' @importFrom stats uniroot
 #' @import grid
 #' @export
 plot.venn2 <- function(x, ...) {
@@ -215,7 +215,6 @@ plot.venn2 <- function(x, ...) {
 #'   list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #' ))
 #'
-#' attr(asl, "source") <- "do.call(data.frame, c(list(USUBJID = paste('ID', 1:N), STUDYID = '1'), sample_bm_data))"
 #'
 #' x <- teal::init(
 #'   data = list(ASL = asl),
@@ -229,9 +228,7 @@ plot.venn2 <- function(x, ...) {
 #' )
 #'
 #' \dontrun{
-#'
 #' shinyApp(x$ui, x$server)
-#'
 #' }
 tm_venn2 <- function(label,
                      dataname,
@@ -257,6 +254,7 @@ tm_venn2 <- function(label,
   )
 }
 
+#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
 ui_venn2 <- function(id, label, dataname,
                      bm1_var, bm2_var,
                      plot_height,

@@ -6,8 +6,7 @@
 \usage{
 tm_g_association(label = "Association", dataname, var,
   show_association = TRUE, plot_height = c(600, 400, 5000),
-  pre_output = NULL, post_output = NULL, with_show_r_code = TRUE,
-  code_data_processing = NULL)
+  pre_output = NULL, post_output = NULL, with_show_r_code = TRUE)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
@@ -29,9 +28,6 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
 \item{with_show_r_code}{(\code{logical}) Whether show R Code button shall be enabled}
-
-\item{code_data_processing}{(\code{character}) Code for data pre-processing to be shown in the
-"Show R Code" window.}
 }
 \description{
 Stack Plots of variables and show association with reference variable
@@ -41,7 +37,6 @@ Stack Plots of variables and show association with reference variable
 library(random.cdisc.data)
 asl <- radsl()
 
-attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 x <- teal::init(
   data = list(ASL = asl),
   modules = root_modules(

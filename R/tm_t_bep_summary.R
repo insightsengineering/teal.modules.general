@@ -3,7 +3,7 @@
 #' Display a summary table comparing analysis populations as a shiny module
 #' @importFrom teal.devel validate_has_data
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @param label menue item label of the module in the teal app
 #' @param dataname analysis data used in teal module, needs to be available in
 #'   the list passed to the \code{data} argument of \code{\link[teal]{init}}.
@@ -20,10 +20,6 @@
 #'
 #' @export
 #'
-#' @importFrom teal add_no_selected_choices
-#' @importFrom rtables as_html
-#' @importFrom tern t_summary
-#'
 #' @examples
 #'
 #' library(random.cdisc.data)
@@ -34,7 +30,6 @@
 #'     BEP = sample(c(TRUE, FALSE), n(), TRUE),
 #'     BEP2 = sample(c(TRUE, FALSE), n(), TRUE)
 #'   )
-#'
 #'
 #' x <- teal::init(
 #'   data = list(ASL = asl),
@@ -87,7 +82,7 @@ tm_t_bep_summary <- function(label,
 }
 
 #' @import teal
-#' @importFrom teal.devel white_small_well
+#' @importFrom teal.devel optionalSelectInput white_small_well standard_layout
 ui_t_bep_summary <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -125,7 +120,9 @@ ui_t_bep_summary <- function(id, ...) {
   )
 }
 
-#' @importFrom teal no_selected_as_NULL
+#' @importFrom rtables as_html
+#' @importFrom tern t_summary
+#' @importFrom teal.devel validate_has_data
 srv_t_bep_summary <- function(input,
                               output,
                               session,

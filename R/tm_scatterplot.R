@@ -3,7 +3,7 @@
 #' Create a table with the \code{\link{table}[base]} function
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @param dataname name of dataset used to generate table
 #' @param xvar variable name of x varbiable
 #' @param yvar variable name of y variable
@@ -32,18 +32,12 @@
 #'
 #' @export
 #'
-#' @importFrom ggplot2 aes_string ggplot geom_point
-#'
 #' @examples
 #'
 #' library(random.cdisc.data)
 #'
 #' asl <- radsl(seed = 1)
-#' aae <- radae(asl, seed = 99)
-#'
-#' # for reproducibility
-#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' attr(aae, "source") <- "random.cdisc.data::radae(asl, seed = 99)"
+#' aae <- radae(asl, seed = 1)
 #'
 #' x <- teal::init(
 #'   data = list(ASL = asl, AAE = aae),
@@ -87,8 +81,7 @@ tm_scatterplot <- function(label,
   )
 }
 
-
-#' @import teal
+#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
 ui_scatterplot <- function(id,
                            label,
                            dataname,
@@ -139,7 +132,7 @@ ui_scatterplot <- function(id,
 }
 
 #' @import stats utils
-#' @importFrom teal.devel get_filter_txt
+#' @importFrom teal.devel get_filter_txt parse_code_chunks
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
 
 
@@ -177,8 +170,6 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-
-
     p <- ggplot(anl, aes_string(x = xvar, y = yvar, color = color_by)) +
       geom_point(alpha = alpha, size = size)
 
@@ -209,13 +200,8 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       color_by <- NULL
     }
 
-    str_header <- get_rcode_header(
-      title = paste("Scatterplot of", yvar, "vs.", xvar),
-      description = "",
-      libraries = c("ggplot2"),
-      data = setNames(list(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE)), dataname),
-      git_repo = "http://github.roche.com/NEST/teal/R/tm_scatterplot.R"
-    )
+    str_header <- get_rcode_header(title = paste("Scatterplot of", yvar, "vs.", xvar),
+                                   description = "")
 
     str_filter <- teal.devel::get_filter_txt(dataname, datasets)
 

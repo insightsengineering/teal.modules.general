@@ -12,8 +12,7 @@ tm_bep_safety0(label, dataname, arm_var, arm_var_choices = arm_var,
   non_responder_var_choices = non_responder_var, exclude_var,
   exclude_var_choices = exclude_var, color_coding_var,
   color_coding_var_choices = color_coding_var, plot_height = c(1200,
-  400, 5000), pre_output = NULL, post_output = NULL,
-  code_data_processing = NULL)
+  400, 5000), pre_output = NULL, post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
@@ -63,8 +62,6 @@ output to put the output into context. For example the
 \item{post_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{code_data_processing}{(\code{character}) Code that was used to pre-process the data}
 }
 \description{
 Bar plot for safety events
@@ -74,9 +71,6 @@ library(random.cdisc.data)
 
 asl <- radsl(N = 600)
 adte <- radaette(asl)
-
-attr(asl, "source")  <- "random.cdisc.data::radsl(seed = 1)"
-attr(adte, "source") <- "random.cdisc.data::radaette(asl, seed = 1)"
 
 app <- teal::init(
   data = list(ASL = asl, ADTE = adte),

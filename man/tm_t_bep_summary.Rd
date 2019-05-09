@@ -51,7 +51,6 @@ asl <- radsl(N = 100) \%>\%
     BEP2 = sample(c(TRUE, FALSE), n(), TRUE)
   )
 
-
 x <- teal::init(
   data = list(ASL = asl),
   modules = root_modules(
