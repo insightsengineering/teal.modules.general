@@ -19,6 +19,14 @@ tm_g_association(label = "Association", dataname, var,
 
 \item{plot_height}{(\code{numeric}) vector with three elements defining selected, min and max plot height}
 
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
 \item{with_show_r_code}{(\code{logical}) Whether show R Code button shall be enabled}
 }
 \description{

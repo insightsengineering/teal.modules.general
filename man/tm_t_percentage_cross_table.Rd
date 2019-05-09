@@ -21,7 +21,12 @@ choices with preselected option for variable Y}
 
 \item{...}{Arguments passed on to \code{teal.devel::standard_layout}
 \describe{
-  \item{}{}
+  \item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+  \item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 }}
 }
 \description{
