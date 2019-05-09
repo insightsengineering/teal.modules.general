@@ -33,14 +33,6 @@ Just allow single columns by \code{multiple = FALSE}.}
 \item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
 
 \item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
-
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-
-\item{post_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 Response Plots

@@ -46,14 +46,6 @@ then it can be a vector of length three with vlaue, min and max.}
 \item{size}{if scalar then the plot points sizes will have a fixed opacity.
 If a slider should be presented to adjust the plot point sizes dynamically
 then it can be a vector of length three with vlaue, min and max.}
-
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-
-\item{post_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 Create a table with the \code{\link{table}[base]} function

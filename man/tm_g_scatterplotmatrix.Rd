@@ -18,14 +18,6 @@ to define the plotting variables from an incoming dataset with filtering and sel
 
 \item{plot_height}{(\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 encoding the plot height.}
-
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-
-\item{post_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 Create a scatterplot matrix

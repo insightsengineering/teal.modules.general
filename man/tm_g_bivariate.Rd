@@ -50,14 +50,6 @@ plots inside the expert settings}
 \item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
 
 \item{with_show_r_code}{(\code{logical}) Whether show R code button shall be shown}
-
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-
-\item{post_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 Univariate and bivariate visualizations.
