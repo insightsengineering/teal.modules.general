@@ -6,7 +6,6 @@
 #' @inheritParams teal::module
 #'
 #' @export
-#' @importFrom teal module
 tm_variable_browser <- function(label = "variable browser") {
   teal::module(
     label,
@@ -17,10 +16,6 @@ tm_variable_browser <- function(label = "variable browser") {
   )
 }
 
-
-
-#' @import stats
-#' @importFrom shiny div NS
 # ui function
 ui_page_variable_browser <- function(id, datasets) {
   ns <- NS(id)
@@ -72,10 +67,8 @@ ui_page_variable_browser <- function(id, datasets) {
 }
 
 
-## server function
 #' @import utils
-#' @importFrom shiny validate need div reactiveValues
-#' @importFrom teal .log
+#' @import stats
 srv_page_variable_browser <- function(input, output, session, datasets) {
 
 

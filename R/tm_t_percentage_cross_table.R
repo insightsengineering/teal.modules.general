@@ -1,6 +1,6 @@
 #' Cross table based on rtables
 #'
-#' @inheritDotParams teal::standard_layout -output -encoding -forms
+#' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
 #' @param label (\code{character}) Label of the app in the teal menu
 #' @param dataname (\code{character}) Name of the dataset used in the teal app. Just a single
 #'   dataset is allowed!
@@ -8,9 +8,6 @@
 #'   choices with preselected option for variable X
 #' @param y_var \code{\link[teal]{choices_selected}} object with all available
 #'   choices with preselected option for variable Y
-#' @import teal
-#' @importFrom rtables rrowl rtablel as_html
-#' @importFrom stats addmargins
 #' @export
 #'
 #' @author wolfs25 waddella
@@ -18,15 +15,17 @@
 #' @examples
 #' \dontrun{
 #' library(random.cdisc.data)
+#' library(tern)
+#'
 #' asl <- radsl(seed = 1)
-#' attr(asl, "keys") <- c("USUBJID", "STUDYID")
+#' keys(asl) <- c('USUBJID', 'STUDYID')
 #'
 #' x <- teal::init(
 #'   data = cdisc_data(
 #'     ASL = asl,
 #'     code = "library(random.cdisc.data)
-#' asl <- radsl(seed = 1)
-#' attr(asl, 'keys') <- c('USUBJID', 'STUDYID')",
+#'            asl <- radsl(seed = 1)
+#'            keys(asl) <- c('USUBJID', 'STUDYID')",
 #'     check = TRUE
 #'   ),
 #'   modules = teal::root_modules(
@@ -63,7 +62,7 @@ tm_t_percentage_cross_table <- function(
   )
 }
 
-#' @import teal.devel
+#' @importFrom teal.devel optionalSelectInput standard_layout white_small_well
 ui_percentage_cross_table <- function(id, ...) {
   a <- list(...)
 
@@ -82,7 +81,10 @@ ui_percentage_cross_table <- function(id, ...) {
   )
 }
 
-#' @import teal.devel
+#' @importFrom teal.devel get_rcode show_rcode_modal
+#' @importFrom teal.devel eval_remaining renew_chunks renew_chunk_environment set_chunk set_chunk
+#' @importFrom rtables rrowl rtablel as_html
+#' @importFrom stats addmargins
 srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
   use_chunks(session)
 

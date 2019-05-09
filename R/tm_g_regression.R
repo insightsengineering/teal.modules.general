@@ -1,6 +1,5 @@
 #' Scatterplot and Regression Model
 #'
-#' @import teal.devel
 #'
 #' @param dataname name of datasets used to generate the regression plot (just used for labeling)
 #' @param regressor (\code{list}) Output of \code{teal.devel::data_extract_spec}
@@ -12,14 +11,15 @@
 #'
 #' @export
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' library(teal.devel)
-#' asl <- radsl(N = 600)
-#' adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' library(tern)
+#'
+#' asl <- radsl(seed = 1)
+#' adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
 #' keys(asl) <- c("STUDYID", "USUBJID")
 #'
@@ -31,7 +31,6 @@
 #'   multiple = TRUE, #'  if multiple, then a spread is needed
 #'   label = "Choose endpoint"
 #' )
-#'
 #'
 #' adte_extracted_regressor <- data_extract_spec(
 #'   dataname = "ADTE",
@@ -71,7 +70,10 @@
 #'   data = cdisc_data(
 #'        ASL = asl,
 #'        ADTE = adte,
-#'        code = "",
+#'        code = 'asl <- radsl(seed = 1)
+#'                adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#'                keys(asl) <- c("USUBJID", "STUDYID")
+#'                keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
 #'        check = FALSE),
 #'    modules = teal::root_modules(
 #'        tm_g_regression(
@@ -88,8 +90,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_g_regression <- function(
-                            label = "Regression Analysis",
+tm_g_regression <- function(label = "Regression Analysis",
                             dataname,
                             regressor,
                             response,
@@ -118,7 +119,7 @@ tm_g_regression <- function(
 
 
 
-#' @import teal
+#' @importFrom teal.devel data_extract_input plot_height_output standard_layout
 ui_g_regression <- function(id, ...) {
   arguments <- list(...)
 
@@ -163,7 +164,11 @@ ui_g_regression <- function(id, ...) {
 }
 
 #' @importFrom graphics plot abline
-#' @importFrom methods is
+#' @importFrom methods is substituteDirect
+#' @importFrom teal.devel %<chunk% %<chunk_env% %substitute% data_extract_module eval_remaining
+#' @importFrom teal.devel get_envir_chunks get_rcode renew_chunk_environment renew_chunks set_chunk use_chunks
+#' @importFrom teal.devel get_dataset_prefixed_col_names merge_datasets plot_with_height plot_height_input
+#' @importFrom teal.devel get_rcode show_rcode_modal validate_has_data
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
   stopifnot(is.list(response))
   stopifnot(is.list(regressor))
@@ -226,8 +231,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         }
       }
     } else {
-      i <-
-          which(input$plot_type == c(
+      i <- which(input$plot_type == c(
                   "Residuals vs Fitted",
                   "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
                   "Cook's dist vs Leverage h[ii]/(1 - h[ii])"

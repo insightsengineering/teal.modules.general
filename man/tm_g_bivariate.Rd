@@ -66,16 +66,14 @@ Univariate and bivariate visualizations.
 This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
-
 library(random.cdisc.data)
-library(teal.devel)
+library(tern)
 
-asl <- radsl()
+asl <- radsl(seed = 1)
+ars <- radrs(asl, seed = 1)
 keys(asl) <- c("USUBJID", "STUDYID")
-ars <- radrs(asl)
 keys(ars) <- c("USUBJID", "STUDYID")
 
-#nocode >
 ars_filters <- filter_spec(
     vars = c("PARAMCD"),
     sep = " - ",
@@ -113,10 +111,16 @@ asl_extracted_row <- data_extract_spec(
         fixed = FALSE
     )
 )
-# <nocode
-# <code
+
 app <- teal::init(
- data = cdisc_data(ASL = asl, ARS = ars, code = "", check = FALSE),
+ data = cdisc_data(
+   ASL = asl,
+   ARS = ars,
+   code = 'asl <- radsl(seed = 1)
+           ars <- radrs(asl, seed = 1)
+           keys(asl) <- c("USUBJID", "STUDYID")
+           keys(ars) <- c("USUBJID", "STUDYID")',
+   check = FALSE),
  modules = root_modules(
    tm_g_bivariate(
      dataname = c("ASL","ARS"),
@@ -132,7 +136,7 @@ app <- teal::init(
  )
 )
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 }
 
 

@@ -1,16 +1,12 @@
 #' Stack Plots of variables and show association with reference variable
 #'
-#' @importFrom teal choices_selected
-#' @import ggplot2
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @param dataname (\code{character}) data set name to analyze
 #' @param var (\code{choices_selected}) TODO
 #' @param show_association (\code{logical}) TODO
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
-#' @param code_data_processing (\code{character}) Code for data pre-processing to be shown in the
-#'   "Show R Code" window.
 #'
 #' @export
 #'
@@ -19,7 +15,6 @@
 #' library(random.cdisc.data)
 #' asl <- radsl()
 #'
-#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
 #' x <- teal::init(
 #'   data = list(ASL = asl),
 #'   modules = root_modules(
@@ -40,8 +35,7 @@ tm_g_association <- function(label = "Association",
                              plot_height = c(600, 400, 5000),
                              pre_output = NULL,
                              post_output = NULL,
-                             with_show_r_code = TRUE,
-                             code_data_processing = NULL) {
+                             with_show_r_code = TRUE) {
   args <- as.list(environment())
 
   stopifnot(is.choices_selected(var))
@@ -53,15 +47,12 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = list(
-      dataname = dataname,
-      code_data_processing = code_data_processing
-    ),
+    server_args = list(dataname = dataname),
     filters = dataname
   )
 }
 
-#' @import teal
+#' @importFrom teal.devel optionalSliderInputValMinMax standard_layout
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -108,8 +99,7 @@ srv_tm_g_association <- function(input,
                                  output,
                                  session,
                                  datasets,
-                                 dataname,
-                                 code_data_processing) {
+                                 dataname) {
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
     validate(need(plot_height, "need valid plot height"))
@@ -189,13 +179,7 @@ srv_tm_g_association <- function(input,
   })
 
   observeEvent(input$show_rcode, {
-    header <- teal.devel::get_rcode_header(
-      title = "Association Plot",
-      datanames = dataname,
-      datasets = datasets,
-      code_data_processing,
-      libraries = c("ggplot2", "ggmosaic")
-    )
+    header <- teal.devel::get_rcode_header(title = "Association Plot")
 
     str_rcode <- paste(c(
       "",
@@ -206,7 +190,7 @@ srv_tm_g_association <- function(input,
 
     # log code .log("show R code")
     showModal(modalDialog(
-      title = "R Code for the Current Plot",
+      title = "R Code for the Association Plot",
       tags$pre(tags$code(class = "R", str_rcode)),
       easyClose = TRUE,
       size = "l"

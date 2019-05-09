@@ -17,7 +17,6 @@ If not specified for any dataset - first six variables from dataset will be show
 A data table viewer shows the data using a paginated table.
 }
 \examples{
-library(teal)
 library(random.cdisc.data)
 
 asl <- radsl()
@@ -29,11 +28,10 @@ x <- init(
   )
 )
 \dontrun{
-shinyApp(x$ui, x$server)
+  shinyApp(x$ui, x$server)
 }
 
 # two-datasets example
-library(teal)
 library(random.cdisc.data)
 asl <- radsl()
 adte <- radaette(asl)

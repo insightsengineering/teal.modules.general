@@ -48,11 +48,11 @@ Response Plots
 \examples{
 
 library(random.cdisc.data)
-library(teal.devel)
+library(tern)
 
 asl <- radsl()
-keys(asl) <- c("USUBJID", "STUDYID")
 ars <- radrs(asl)
+keys(asl) <- c("USUBJID", "STUDYID")
 keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
 
 ars_filters <- filter_spec(
@@ -108,9 +108,11 @@ app <- teal::init(
   data = cdisc_data(
     ASL = asl,
     ARS = ars,
-    code = "",
-    check = FALSE
-  ),
+    code = 'asl <- radsl(seed = 1)
+           ars <- radrs(asl, seed = 1)
+           keys(asl) <- c("USUBJID", "STUDYID")
+           keys(ars) <- c("USUBJID", "STUDYID")',
+     check = FALSE),
   modules = root_modules(
     tm_g_response(
       dataname = "ARS",
@@ -125,7 +127,6 @@ app <- teal::init(
 shinyApp(app$ui, app$server)
 }
 ## as ggplot only
-library(ggplot2)
 library(dplyr)
 library(forcats)
 

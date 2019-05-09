@@ -19,7 +19,7 @@ choices with preselected option for variable X}
 \item{y_var}{\code{\link[teal]{choices_selected}} object with all available
 choices with preselected option for variable Y}
 
-\item{...}{Arguments passed on to \code{teal::standard_layout}
+\item{...}{Arguments passed on to \code{teal.devel::standard_layout}
 \describe{
   \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -35,15 +35,17 @@ Cross table based on rtables
 \examples{
 \dontrun{
 library(random.cdisc.data)
+library(tern)
+
 asl <- radsl(seed = 1)
-attr(asl, "keys") <- c("USUBJID", "STUDYID")
+keys(asl) <- c('USUBJID', 'STUDYID')
 
 x <- teal::init(
   data = cdisc_data(
     ASL = asl,
     code = "library(random.cdisc.data)
-asl <- radsl(seed = 1)
-attr(asl, 'keys') <- c('USUBJID', 'STUDYID')",
+           asl <- radsl(seed = 1)
+           keys(asl) <- c('USUBJID', 'STUDYID')",
     check = TRUE
   ),
   modules = teal::root_modules(

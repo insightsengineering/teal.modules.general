@@ -1,7 +1,7 @@
 #' Create a scatterplot matrix
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
+#' @inheritParams teal.devel::standard_layout
 #' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
 #' @param select_col (\code{list}) Output of \code{teal.devel::data_extract_spec}
 #'  to define the plotting variables from an incoming dataset with filtering and selecting.
@@ -11,12 +11,14 @@
 #' @export
 #'
 #' @examples
-#' asl <- random.cdisc.data::radsl(N = 600)
-#' adte <- random.cdisc.data::radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' teal.devel::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
-#' teal.devel::keys(asl) <- c("STUDYID", "USUBJID")
+#' library(random.cdisc.data)
+#' library(tern)
+#' asl <- radsl(seed = 1)
+#' adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' keys(asl) <- c("STUDYID", "USUBJID")
 #'
-#' adte_filters <- teal.devel::filter_spec(
+#' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
 #'   sep = " - ",
 #'   choices = c("OS", "PFS", "EFS"),
@@ -25,12 +27,16 @@
 #'   label = "Choose endpoint"
 #' )
 #'
-#' adte_prep <- teal.devel::data_extract_spec(
+#' adte_prep <- data_extract_spec(
 #'   dataname = "ADTE",
 #'   filter = adte_filters,
-#'   columns = teal.devel::columns_spec(
+#'   columns = columns_spec(
 #'     choices = colnames(adte),
-#'     selected = if (all(c('AGE', 'SEX') %in% colnames(adte))) {c('AGE', 'SEX')} else {colnames(adte)[1:2]},
+#'     selected = if (all(c('AGE', 'SEX') %in% colnames(adte))) {
+#'      c('AGE', 'SEX')
+#'     } else {
+#'      colnames(adte)[1:2]
+#'     },
 #'     multiple = TRUE,
 #'     fixed = FALSE, #'  Whether the user can select the item
 #'     label = "" #'  Label the column select dropdown (optional)
@@ -38,11 +44,14 @@
 #' )
 #'
 #' app <- teal::init(
-#'   data = teal.devel::cdisc_data(
-#'     ASL = asl,
-#'     ADTE = adte,
-#'     code = "",
-#'     check = FALSE),
+#'   data = cdisc_data(
+#'        ASL = asl,
+#'        ADTE = adte,
+#'        code = 'asl <- radsl(seed = 1)
+#'                adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#'                keys(asl) <- c("USUBJID", "STUDYID")
+#'                keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'        check = FALSE),
 #'   modules = teal::root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
@@ -76,12 +85,12 @@ tm_g_scatterplotmatrix <- function(
   )
 }
 
-
+#' @importFrom teal.devel standard_layout
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
 
   ns <- NS(id)
-  teal::standard_layout(
+  standard_layout(
     output = white_small_well(
       tags$div(
         plot_height_output(ns("myplot")))
@@ -107,6 +116,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 
 #' @importFrom lattice splom
 #' @importFrom methods substituteDirect
+#' @importFrom teal.devel eval_remaining renew_chunk_environment renew_chunks set_chunk use_chunks
+#' @importFrom teal.devel data_extract_module plot_with_height
+#' @importFrom teal.devel get_rcode show_rcode_modal
 srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, select_col) {
 
   # checks
@@ -174,7 +186,7 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
     set_chunk("plt",
               substituteDirect(
                 object = quote(
-                  splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+                  lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
                 ),
                 frame = list(.cols = cols, .alpha = alpha, .cex = cex)
               )
@@ -200,10 +212,7 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
         merged_dataname = "merged_ds",
         merged_datasets = list(col_extract()),
         title = title,
-        description = "",
-        libraries = c("random.cdisc.data"),
-        git_pkgs = list(roche = c("NEST/teal", "NEST/random.cdisc.data", "NEST/teal.devel",
-                                  "NEST/teal.modules.general"))
+        description = ""
       )
     )
   })

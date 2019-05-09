@@ -31,13 +31,14 @@ output to put the output into context. For example the
 Create a scatterplot matrix
 }
 \examples{
-# libraries: shiny, magrittr, teal.devel
-asl <- random.cdisc.data::radsl(N = 600)
-adte <- random.cdisc.data::radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-teal.devel::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
-teal.devel::keys(asl) <- c("STUDYID", "USUBJID")
+library(random.cdisc.data)
+library(tern)
+asl <- radsl(seed = 1)
+adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
+keys(asl) <- c("STUDYID", "USUBJID")
 
-adte_filters <- teal.devel::filter_spec(
+adte_filters <- filter_spec(
   vars = c("PARAMCD"), #'  only key variables are allowed
   sep = " - ",
   choices = c("OS", "PFS", "EFS"),
@@ -46,12 +47,12 @@ adte_filters <- teal.devel::filter_spec(
   label = "Choose endpoint"
 )
 
-adte_prep <- teal.devel::data_extract_spec(
+adte_prep <- data_extract_spec(
   dataname = "ADTE",
   filter = adte_filters,
-  columns = teal.devel::columns_spec(
+  columns = columns_spec(
     choices = colnames(adte),
-    selected = colnames(adte)[1:2],
+    selected = if (all(c('AGE', 'SEX') \%in\% colnames(adte))) {c('AGE', 'SEX')} else {colnames(adte)[1:2]},
     multiple = TRUE,
     fixed = FALSE, #'  Whether the user can select the item
     label = "" #'  Label the column select dropdown (optional)
@@ -59,11 +60,14 @@ adte_prep <- teal.devel::data_extract_spec(
 )
 
 app <- teal::init(
-  data = teal.devel::cdisc_data(
-    ASL = asl,
-    ADTE = adte,
-    code = "",
-    check = FALSE),
+  data = cdisc_data(
+       ASL = asl,
+       ADTE = adte,
+       code = 'asl <- radsl(seed = 1)
+               adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+               keys(asl) <- c("USUBJID", "STUDYID")
+               keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
+       check = FALSE),
   modules = teal::root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",

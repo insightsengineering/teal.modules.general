@@ -36,9 +36,10 @@ Scatterplot and Regression Model
 \examples{
 
 library(random.cdisc.data)
-library(teal.devel)
-asl <- radsl(N = 600)
-adte <- radtte(asl, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+library(tern)
+
+asl <- radsl(seed = 1)
+adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
 keys(asl) <- c("STUDYID", "USUBJID")
 
@@ -50,7 +51,6 @@ adte_filters <- filter_spec(
   multiple = TRUE, #'  if multiple, then a spread is needed
   label = "Choose endpoint"
 )
-
 
 adte_extracted_regressor <- data_extract_spec(
   dataname = "ADTE",
@@ -90,7 +90,10 @@ app <- teal::init(
   data = cdisc_data(
        ASL = asl,
        ADTE = adte,
-       code = "",
+       code = 'asl <- radsl(seed = 1)
+               adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+               keys(asl) <- c("USUBJID", "STUDYID")
+               keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
        check = FALSE),
    modules = teal::root_modules(
        tm_g_regression(
