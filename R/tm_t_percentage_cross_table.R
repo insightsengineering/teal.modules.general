@@ -113,16 +113,16 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     set_chunk(
       expression =
         quote(add_row <- function(i, x, p) {
-          rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
+          rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
         })
     )
     set_chunk(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
-    set_chunk(expression = quote(rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
+    set_chunk(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
   })
 
   output$table <- renderUI({
     table_code()
-    as_html(eval_remaining())
+    rtables::as_html(eval_remaining())
   })
 
   observeEvent(input$show_rcode, {
