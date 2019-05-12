@@ -22,16 +22,16 @@
 #'
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl()
-#' ars <- radrs(asl)
-#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
-#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID", "PARAMCD")
+#' ASL <- radsl()
+#' ARS <- radrs(ASL)
+#' utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
 #' ars_filters <- filter_spec(
 #'   vars = c("PARAMCD"),
 #'   sep = " - ",
-#'   choices = unique(ars$PARAMCD),
-#'   selected = unique(ars$PARAMCD)[1],
+#'   choices = unique(ARS$PARAMCD),
+#'   selected = unique(ARS$PARAMCD)[1],
 #'   multiple = FALSE,
 #'   label = "Choose endpoint and Censor"
 #' )
@@ -51,7 +51,7 @@
 #' asl_extracted <- data_extract_spec(
 #'   dataname = "ASL",
 #'   columns = columns_spec(
-#'     choices = names(asl),
+#'     choices = names(ASL),
 #'     selected = c("RACE"),
 #'     multiple = FALSE,
 #'     fixed = FALSE
@@ -78,12 +78,12 @@
 #'
 #' app <- teal::init(
 #'   data = cdisc_data(
-#'     ASL = asl,
-#'     ARS = ars,
-#'     code = 'asl <- radsl(seed = 1)
-#'            ars <- radrs(asl, seed = 1)
-#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
-#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
+#'     ASL = ASL,
+#'     ARS = ARS,
+#'     code = 'ASL <- radsl(seed = 1)
+#'            ARS <- radrs(ASL, seed = 1)
+#'            utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")',
 #'      check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_response(
@@ -102,31 +102,31 @@
 #' library(dplyr)
 #' library(forcats)
 #'
-#' anl <- suppressWarnings(inner_join(ars, asl))
+#' ANL <- suppressWarnings(inner_join(ARS, ASL))
 #'
-#' anl_filtered <- anl %>%
+#' ANL_FILTERED <- ANL %>%
 #'   dplyr::filter(PARAMCD == "BESRSPI") %>%
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = ALL) +
 #'   geom_bar(aes(fill = AVALC))
 #'
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC))
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC)) +
 #'   facet_grid(cols = vars(ARM))
 #'
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
@@ -135,7 +135,7 @@
 #'   coord_flip()
 #'
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
@@ -144,7 +144,7 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution")
 #'
-#' anl_filtered %>%
+#' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = forcats::fct_rev(SEX)) +
 #'   xlab("SEX") +

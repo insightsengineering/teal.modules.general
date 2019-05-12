@@ -13,14 +13,14 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' asl <- radsl()
+#' ASL <- radsl()
 #'
 #' x <- teal::init(
-#'   data = list(ASL = asl),
+#'   data = list(ASL = ASL),
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",
-#'       var = choices_selected(names(asl), "AGE")
+#'       var = choices_selected(names(ASL), "AGE")
 #'     )
 #'   )
 #' )

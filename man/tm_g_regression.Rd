@@ -37,10 +37,10 @@ Scatterplot and Regression Model
 
 library(random.cdisc.data)
 
-asl <- radsl(seed = 1)
-adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-utils.nest::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")
-utils.nest::keys(asl) <- c("STUDYID", "USUBJID")
+ASL <- radsl(seed = 1)
+ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
+utils.nest::keys(ASL) <- c("STUDYID", "USUBJID")
 
 adte_filters <- filter_spec(
   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -87,12 +87,12 @@ asl_extracted <- data_extract_spec(
 
 app <- teal::init(
   data = cdisc_data(
-       ASL = asl,
-       ADTE = adte,
-       code = 'asl <- radsl(seed = 1)
-               adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-               utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
-               utils.nest::keys(adte) <- c("STUDYID", "USUBJID", "PARAMCD")',
+       ASL = ASL,
+       ADTE = ADTE,
+       code = 'ASL <- radsl(seed = 1)
+               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+               utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+               utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
        check = FALSE),
    modules = teal::root_modules(
        tm_g_regression(

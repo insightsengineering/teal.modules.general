@@ -22,13 +22,13 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
+#' ASL <- radsl(seed = 1)
 #'
 #' asl_extract_xvar <- data_extract_spec(
 #'     "ASL",
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(asl), utils.nest::keys(asl)),
-#'         selected = names(asl)[5],
+#'         choices = base::setdiff(names(ASL), utils.nest::keys(ASL)),
+#'         selected = names(ASL)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE
 #'     )
@@ -37,8 +37,8 @@
 #' asl_extract_yvar <- data_extract_spec(
 #'     "ASL",
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(asl), utils.nest::keys(asl)),
-#'         selected = names(asl)[6],
+#'         choices = base::setdiff(names(ASL), utils.nest::keys(ASL)),
+#'         selected = names(ASL)[6],
 #'         multiple = FALSE,
 #'         fixed = FALSE
 #'     )
@@ -46,9 +46,9 @@
 #'
 #' app <- init(
 #'  data = cdisc_data(
-#'    ASL = asl,
+#'    ASL = ASL,
 #'    code = 'library(random.cdisc.data)
-#'            asl <- radsl(seed = 1)',
+#'            ASL <- radsl(seed = 1)',
 #'    check = FALSE
 #'  ),
 #'  root_modules(

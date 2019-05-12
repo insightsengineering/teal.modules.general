@@ -36,11 +36,11 @@
 #'
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
-#' aae <- radae(asl, seed = 1)
+#' ASL <- radsl(seed = 1)
+#' AAE <- radae(ASL, seed = 1)
 #'
 #' x <- teal::init(
-#'   data = list(ASL = asl, AAE = aae),
+#'   data = list(ASL = ASL, AAE = AAE),
 #'   root_modules(
 #'     tm_scatterplot("Scatterplot Choices",
 #'       dataname = "AAE",

@@ -211,13 +211,13 @@ plot.venn2 <- function(x, ...) {
 #' sample_bm_data <- lapply(1:10, function(x)sample(c(TRUE, FALSE), N, replace = TRUE))
 #' names(sample_bm_data) <- var_biomarkers
 #'
-#' asl <- do.call(data.frame, c(
+#' ASL <- do.call(data.frame, c(
 #'   list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #' ))
 #'
 #'
 #' x <- teal::init(
-#'   data = list(ASL = asl),
+#'   data = list(ASL = ASL),
 #'   modules = root_modules(
 #'     teal.modules.general:::tm_venn2(
 #'       "Venn Diagram", "ASL",

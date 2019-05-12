@@ -13,8 +13,8 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
-#' adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' ASL <- radsl(seed = 1)
+#' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -29,11 +29,11 @@
 #'   dataname = "ADTE",
 #'   filter = adte_filters,
 #'   columns = columns_spec(
-#'     choices = colnames(adte),
-#'     selected = if (all(c('AGE', 'SEX') %in% colnames(adte))) {
+#'     choices = colnames(ADTE),
+#'     selected = if (all(c('AGE', 'SEX') %in% colnames(ADTE))) {
 #'      c('AGE', 'SEX')
 #'     } else {
-#'      colnames(adte)[1:2]
+#'      colnames(ADTE)[1:2]
 #'     },
 #'     multiple = TRUE,
 #'     fixed = FALSE, #'  Whether the user can select the item
@@ -43,10 +43,10 @@
 #'
 #' app <- teal::init(
 #'   data = cdisc_data(
-#'        ASL = asl,
-#'        ADTE = adte,
-#'        code = 'asl <- radsl(seed = 1)
-#'                adte <- radtte(asl, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))',
+#'        ASL = ASL,
+#'        ADTE = ADTE,
+#'        code = 'ASL <- radsl(seed = 1)
+#'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))',
 #'        check = FALSE),
 #'   modules = teal::root_modules(
 #'     tm_g_scatterplotmatrix(

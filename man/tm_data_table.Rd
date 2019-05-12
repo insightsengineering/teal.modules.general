@@ -19,10 +19,10 @@ A data table viewer shows the data using a paginated table.
 \examples{
 library(random.cdisc.data)
 
-asl <- radsl()
+ASL <- radsl()
 
 x <- init(
-  data = list(ASL = asl),
+  data = list(ASL = ASL),
   modules = root_modules(
     tm_data_table()
   )
@@ -33,11 +33,11 @@ x <- init(
 
 # two-datasets example
 library(random.cdisc.data)
-asl <- radsl()
-adte <- radaette(asl)
+ASL <- radsl()
+ADTE <- radaette(ASL)
 
 x <- init(
-  data = list(ASL = asl, ADTE = adte),
+  data = list(ASL = ASL, ADTE = ADTE),
   modules = root_modules(
     tm_data_table(
       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),

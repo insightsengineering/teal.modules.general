@@ -16,13 +16,13 @@
 #' \dontrun{
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
+#' ASL <- radsl(seed = 1)
 #'
 #' x <- teal::init(
 #'   data = cdisc_data(
-#'     ASL = asl,
+#'     ASL = ASL,
 #'     code = "library(random.cdisc.data)
-#'             asl <- radsl(seed = 1)",
+#'             ASL <- radsl(seed = 1)",
 #'     check = TRUE
 #'   ),
 #'   modules = teal::root_modules(

@@ -32,17 +32,17 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
-#' ars <- radrs(asl, seed = 1)
+#' ASL <- radsl(seed = 1)
+#' ARS <- radrs(ASL, seed = 1)
 #'
-#' utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
-#' utils.nest::keys(ars) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+#' utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")
 #'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
 #'     sep = " - ",
-#'     choices = unique(ars$PARAMCD),
-#'     selected = unique(ars$PARAMCD)[1],
+#'     choices = unique(ARS$PARAMCD),
+#'     selected = unique(ARS$PARAMCD)[1],
 #'     multiple = FALSE,
 #'     label = "Choose endpoint and Censor"
 #' )
@@ -50,8 +50,8 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ars), utils.nest::keys(ars)),
-#'         selected = names(ars)[5],
+#'         choices = base::setdiff(names(ARS), utils.nest::keys(ARS)),
+#'         selected = names(ARS)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
 #'         label = "variable"
@@ -60,7 +60,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", base::setdiff(names(asl), utils.nest::keys(asl))),
+#'         choices = c("", base::setdiff(names(ASL), utils.nest::keys(ASL))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -78,12 +78,12 @@
 #'
 #' app <- teal::init(
 #'  data = cdisc_data(
-#'    ASL = asl,
-#'    ARS = ars,
-#'    code = 'asl <- radsl(seed = 1)
-#'            ars <- radrs(asl, seed = 1)
-#'            utils.nest::keys(asl) <- c("USUBJID", "STUDYID")
-#'            utils.nest::keys(ars) <- c("USUBJID", "STUDYID")',
+#'    ASL = ASL,
+#'    ARS = ARS,
+#'    code = 'ASL <- radsl(seed = 1)
+#'            ARS <- radrs(ASL, seed = 1)
+#'            utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+#'            utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
