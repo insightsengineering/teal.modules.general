@@ -40,7 +40,7 @@ ASL <- radsl(seed = 1)
 asl_extract_xvar <- data_extract_spec(
     "ASL",
     columns = columns_spec(
-        choices = base::setdiff(names(ASL), utils.nest::keys(ASL)),
+        choices = base::setdiff(names(ASL), tern::keys(ASL)),
         selected = names(ASL)[5],
         multiple = FALSE,
         fixed = FALSE
@@ -50,7 +50,7 @@ asl_extract_xvar <- data_extract_spec(
 asl_extract_yvar <- data_extract_spec(
     "ASL",
     columns = columns_spec(
-        choices = base::setdiff(names(ASL), utils.nest::keys(ASL)),
+        choices = base::setdiff(names(ASL), tern::keys(ASL)),
         selected = names(ASL)[6],
         multiple = FALSE,
         fixed = FALSE

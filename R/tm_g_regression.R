@@ -19,8 +19,8 @@
 #'
 #' ASL <- radsl(seed = 1)
 #' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-#' utils.nest::keys(ASL) <- c("STUDYID", "USUBJID")
+#' tern::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' tern::keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -71,8 +71,8 @@
 #'        ADTE = ADTE,
 #'        code = 'ASL <- radsl(seed = 1)
 #'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#'                utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-#'                utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'                tern::keys(ASL) <- c("USUBJID", "STUDYID")
+#'                tern::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
 #'        check = FALSE),
 #'    modules = teal::root_modules(
 #'        tm_g_regression(

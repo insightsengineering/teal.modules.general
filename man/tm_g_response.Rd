@@ -51,8 +51,8 @@ library(random.cdisc.data)
 
 ASL <- radsl()
 ARS <- radrs(ASL)
-utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-utils.nest::keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
+tern::keys(ASL) <- c("USUBJID", "STUDYID")
+tern::keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 
 ars_filters <- filter_spec(
   vars = c("PARAMCD"),
@@ -109,8 +109,8 @@ app <- teal::init(
     ARS = ARS,
     code = 'ASL <- radsl(seed = 1)
            ARS <- radrs(ASL, seed = 1)
-           utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-           utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")',
+           tern::keys(ASL) <- c("USUBJID", "STUDYID")
+           tern::keys(ARS) <- c("USUBJID", "STUDYID")',
      check = FALSE),
   modules = root_modules(
     tm_g_response(
