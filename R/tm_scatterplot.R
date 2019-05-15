@@ -39,23 +39,22 @@
 #' ASL <- radsl(seed = 1)
 #' AAE <- radae(ASL, seed = 1)
 #'
-#' x <- teal::init(
-#'   data = list(ASL = ASL, AAE = AAE),
-#'   root_modules(
-#'     tm_scatterplot("Scatterplot Choices",
-#'       dataname = "AAE",
-#'       xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),
-#'       color_by = "_none_", color_by_choices = c("_none_", "AEBODSYS")
-#'     ),
-#'     tm_scatterplot("Scatterplot No Color Choices",
-#'       dataname = "ASL",
-#'       xvar = "AGE", yvar = "BMRKR1", size = 3, alpha = 1, plot_height = 600
-#'     )
+#' app <- teal::init(
+#'     data = list(ASL = ASL, AAE = AAE),
+#'     root_modules(
+#'       tm_scatterplot("Scatterplot Choices",
+#'           dataname = "AAE",
+#'           xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),
+#'           color_by = "_none_", color_by_choices = c("_none_", "AEBODSYS")
+#'       ),
+#'       tm_scatterplot("Scatterplot No Color Choices",
+#'           dataname = "ASL",
+#'           xvar = "AGE", yvar = "BMRKR1", size = 3, alpha = 1, plot_height = 600
+#'       )
 #'   )
 #' )
-#'
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_scatterplot <- function(label,
                            dataname,
@@ -148,13 +147,8 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     xvar <- input$xvar
     yvar <- input$yvar
     alpha <- input$alpha
-    color_by <- input$color_by
+    color_by <- check_color(input$color_by)
     size <- input$size
-
-    if (color_by %in% c("", "_none_")) {
-      color_by <- NULL
-    }
-
 
     validate(need(alpha, "need alpha"))
     validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
@@ -194,11 +188,8 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     yvar <- input$yvar
     alpha <- input$alpha
     size <- input$size
-    color_by <- input$color_by
+    color_by <- check_color(input$color_by)
 
-    if (color_by %in% c("", "_none_")) {
-      color_by <- NULL
-    }
 
     str_header <- get_rcode_header(title = paste("Scatterplot of", yvar, "vs.", xvar),
                                    description = "")
@@ -247,4 +238,13 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       rcode = code
     )
   })
+}
+
+check_color <- function(x){
+  if (!is.null(x)){
+    if (x %in% c("", "_none_")) {
+      return(NULL)
+    }
+  }
+  return(x)
 }
