@@ -29,8 +29,7 @@ Imports:
   shinyWidgets,
   teal.devel,
   tern,
-  testthat,
-  utils.nest
+  testthat
 Suggests:
   test.nest
 RoxygenNote: 6.1.1
