@@ -179,7 +179,7 @@ srv_tm_g_association <- function(input,
   })
 
   observeEvent(input$show_rcode, {
-    header <- teal.devel::get_rcode_header(title = "Association Plot")
+    header <- "# Association Plot"
 
     str_rcode <- paste(c(
       "",

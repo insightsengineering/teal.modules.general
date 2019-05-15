@@ -131,7 +131,6 @@ ui_scatterplot <- function(id,
 }
 
 #' @import stats utils
-#' @importFrom teal.devel get_filter_txt parse_code_chunks
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
 
   use_chunks(session)
