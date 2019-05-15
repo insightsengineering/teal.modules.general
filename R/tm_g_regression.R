@@ -69,8 +69,8 @@
 #'   data = cdisc_data(
 #'        ASL = ASL,
 #'        ADTE = ADTE,
-#'        code = 'ASL <- radsl(seed = 1)
-#'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#'        code = 'ASL <- random.cdisc.data::radsl(seed = 1)
+#'                ADTE <- rrandom.cdisc.data::adtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #'                tern::keys(ASL) <- c("USUBJID", "STUDYID")
 #'                tern::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
 #'        check = FALSE),
