@@ -139,7 +139,7 @@ ui_table <- function(id,
 }
 
 #' @import stats
-#' @importFrom teal.devel get_dataset_prefixed_col_names get_filter_txt data_extract_module merge_datasets
+#' @importFrom teal.devel get_dataset_prefixed_col_names data_extract_module merge_datasets
 #' @importFrom teal.devel renew_chunk_environment eval_remaining renew_chunks set_chunk
 #' @importFrom teal.devel show_rcode_modal get_rcode
 #' @importFrom methods substituteDirect
