@@ -210,8 +210,8 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
  })
 }
 
-check_color <- function(x){
-  if (!is.null(x)){
+check_color <- function(x) {
+  if (!is.null(x)) {
     if (x %in% c("", "_none_")) {
       return(NULL)
     }

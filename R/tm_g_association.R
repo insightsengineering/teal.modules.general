@@ -93,7 +93,6 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
-#' @importFrom teal.devel get_rcode_header
 #' @importFrom tern stack_grobs
 srv_tm_g_association <- function(input,
                                  output,
