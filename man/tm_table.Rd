@@ -62,7 +62,7 @@ asl_extract_yvar <- data_extract_spec(
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    code = 'ASL <- radsl(seed = 1)',
+    code = 'ASL <- radsl(seed = 1); keys(ASL) <- c("USUBJID", "STUDYID")',
     check = FALSE
   ),
   root_modules(
