@@ -23,14 +23,15 @@ Imports:
   DT,
   forcats,
   lattice,
+  magrittr,
   methods,
-  random.cdisc.data (>= 0.1.2.1),
   rtables,
   shinyWidgets,
   teal.devel,
   tern,
-  testthat,
   utils.nest
 Suggests:
-  test.nest
+  random.cdisc.data (>= 0.1.2.1),
+  test.nest,
+  testthat
 RoxygenNote: 6.1.1

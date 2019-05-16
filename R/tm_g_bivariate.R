@@ -31,12 +31,13 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
+#' library(tern)
 #'
 #' ASL <- radsl(seed = 1)
 #' ARS <- radrs(ASL, seed = 1)
 #'
-#' utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-#' utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")
+#' keys(ASL) <- c("USUBJID", "STUDYID")
+#' keys(ARS) <- c("USUBJID", "STUDYID")
 #'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
@@ -50,7 +51,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ARS), utils.nest::keys(ARS)),
+#'         choices = base::setdiff(names(ARS), keys(ARS)),
 #'         selected = names(ARS)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
@@ -60,7 +61,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", base::setdiff(names(ASL), utils.nest::keys(ASL))),
+#'         choices = c("", base::setdiff(names(ASL), keys(ASL))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -80,10 +81,10 @@
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ARS = ARS,
-#'    code = 'ASL <- radsl(seed = 1)
-#'            ARS <- radrs(ASL, seed = 1)
-#'            utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-#'            utils.nest::keys(ARS) <- c("USUBJID", "STUDYID")',
+#'    code = 'ASL <- random.cdisc.data::radsl(seed = 1)
+#'            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
+#'            keys(ASL) <- c("USUBJID", "STUDYID")
+#'            keys(ARS) <- c("USUBJID", "STUDYID")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
@@ -306,7 +307,7 @@ ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
 #' @importFrom methods is
 #' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names get_rcode show_rcode_modal
 #' @importFrom teal.devel merge_datasets show_rcode_modal
-#' @importFrom utils.nest keys
+#' @importFrom tern keys
 srv_g_bivariate <- function(input,
                             output,
                             session,

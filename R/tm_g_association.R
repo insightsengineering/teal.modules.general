@@ -13,7 +13,7 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' ASL <- radsl()
+#' ASL <- radsl(seed = 1)
 #'
 #' app <- init(
 #'   data = list(ASL = ASL),
