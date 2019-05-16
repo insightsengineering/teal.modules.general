@@ -97,7 +97,6 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
-#' @importFrom teal.devel get_rcode_header
 #' @importFrom tern stack_grobs
 srv_tm_g_association <- function(input,
                                  output,
@@ -185,7 +184,7 @@ srv_tm_g_association <- function(input,
   })
 
   observeEvent(input$show_rcode, {
-    header <- teal.devel::get_rcode_header(title = "Association Plot")
+    header <- "# Association Plot"
 
     str_rcode <- paste(c(
       "",

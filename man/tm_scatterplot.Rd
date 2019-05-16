@@ -65,22 +65,23 @@ library(random.cdisc.data)
 ASL <- radsl(seed = 1)
 AAE <- radae(ASL, seed = 1)
 
-x <- init(
+app <- init(
   data = list(ASL = ASL, AAE = AAE),
   root_modules(
-    tm_scatterplot("Scatterplot Choices",
+    tm_scatterplot(
+     "Scatterplot Choices",
       dataname = "AAE",
       xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),
       color_by = "_none_", color_by_choices = c("_none_", "AEBODSYS")
     ),
-    tm_scatterplot("Scatterplot No Color Choices",
+    tm_scatterplot(
+     "Scatterplot No Color Choices",
       dataname = "ASL",
       xvar = "AGE", yvar = "BMRKR1", size = 3, alpha = 1, plot_height = 600
     )
   )
 )
-
 \dontrun{
-shinyApp(x$ui, x$server)
+shinyApp(app$ui, app$server)
 }
 }
