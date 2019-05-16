@@ -16,11 +16,12 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
+#' library(tern)
 #'
 #' ASL <- radsl(seed = 1)
 #' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' tern::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-#' tern::keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
 #' adte_filters <- filter_spec(
 #'   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -65,28 +66,28 @@
 #'   )
 #' )
 #'
-#'app <- teal::init(
+#' app <- init(
 #'   data = cdisc_data(
-#'        ASL = ASL,
-#'        ADTE = ADTE,
-#'        code = 'library(random.cdisc.data)
-#'                ASL <- radsl(seed = 1)
-#'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#'                tern::keys(ASL) <- c("USUBJID", "STUDYID")
-#'                tern::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
-#'        check = FALSE),
-#'    modules = teal::root_modules(
-#'        tm_g_regression(
-#'          label = "Regression",
-#'          dataname = c("ASL","ADTE"),
-#'          response = list(adte_extracted_response),
-#'          regressor = list(
-#'            adte_extracted_regressor,
-#'            asl_extracted
-#'          )
-#'        )
-#'    )
-#')
+#'     ASL = ASL,
+#'     ADTE = ADTE,
+#'     code = 'ASL <- radsl(seed = 1)
+#'       ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#'       keys(ASL) <- c("USUBJID", "STUDYID")
+#'       keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_regression(
+#'       label = "Regression",
+#'       dataname = c("ASL","ADTE"),
+#'       response = list(adte_extracted_response),
+#'       regressor = list(
+#'         adte_extracted_regressor,
+#'         asl_extracted
+#'       )
+#'     )
+#'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -98,16 +99,20 @@ tm_g_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL) {
 
-  # Error prevention
-  stopifnot(!is.null(dataname))
-  stopifnot(dataname != "")
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
+  stopifnot(is.list(response))
+  stopifnot(is.list(regressor))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+
 
   # No check necessary for regressor and response, as checked in data_extract_input
 
   # Send ui args
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_g_regression,
     ui = ui_g_regression,
@@ -144,7 +149,8 @@ ui_g_regression <- function(id, ...) {
         label = "Response Variable",
         data_extract_spec = arguments$response
       ),
-      radioButtons(ns("plot_type"),
+      radioButtons(
+        ns("plot_type"),
         label = "Plot Type",
         choices = c(
           "Response vs Regressor",
@@ -170,18 +176,19 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom teal.devel get_dataset_prefixed_col_names merge_datasets plot_with_height plot_height_input
 #' @importFrom teal.devel get_rcode show_rcode_modal validate_has_data
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
-  stopifnot(is.list(response))
-  stopifnot(is.list(regressor))
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   use_chunks(session)
 
   # Data Extraction
-  regressor_data <- callModule(data_extract_module,
+  regressor_data <- callModule(
+    data_extract_module,
     id = "regressor",
     datasets = datasets,
     data_extract_spec = regressor
   )
-  response_data <- callModule(data_extract_module,
+  response_data <- callModule(
+    data_extract_module,
     id = "response",
     datasets = datasets,
     data_extract_spec = response
@@ -198,20 +205,23 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     renew_chunks()
 
     form <- form %<chunk_env%
-        as.formula(
-            paste(response_var,
-            paste(regressor_var,
-                collapse = " + "
-            ),
-            sep = " ~ "
-        ))
+      as.formula(
+        paste(
+          response_var,
+          paste(
+            regressor_var,
+            collapse = " + "
+          ),
+          sep = " ~ "
+        )
+      )
 
     set_chunk(
-        expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
+      expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
 
     summary %<chunk%
-        quote(summary <- summary(fit))
+      quote(summary <- summary(fit))
 
     eval_remaining()
 
@@ -221,7 +231,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       if (ncol(fit$model) > 1) {
         validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
         plot %<chunk%
-            plot(fit$model[, 2:1])
+          plot(fit$model[, 2:1])
       } else {
         plot %<chunk% {
           plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
@@ -232,12 +242,12 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       }
     } else {
       i <- which(input$plot_type == c(
-                  "Residuals vs Fitted",
-                  "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-                  "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-              ))
+        "Residuals vs Fitted",
+        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+      ))
       plot %<chunk%
-          plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+        plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
     }
   })
 
@@ -247,10 +257,12 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
   })
 
   # Insert the plot into a plot_height module from teal.devel
-  callModule(plot_with_height,
-      id = "myplot",
-      plot_height = reactive(input$myplot),
-      plot_id = session$ns("plot"))
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
 
   output$text <- renderPrint({
     fit()
@@ -258,11 +270,12 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
   })
 
   observeEvent(input$show_rcode, {
+    title <- paste0(
+      "RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
+      get_dataset_prefixed_col_names(regressor_data())
+    )
 
-    title <- paste0("RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
-        get_dataset_prefixed_col_names(regressor_data()))
-
-    teal.devel::show_rcode_modal(
+    show_rcode_modal(
       title = "R Code for a Regression Plot",
       rcode = get_rcode(
         datasets = datasets,

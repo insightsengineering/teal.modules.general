@@ -67,12 +67,13 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 library(random.cdisc.data)
+library(tern)
 
 ASL <- radsl(seed = 1)
 ARS <- radrs(ASL, seed = 1)
 
-tern::keys(ASL) <- c("USUBJID", "STUDYID")
-tern::keys(ARS) <- c("USUBJID", "STUDYID")
+keys(ASL) <- c("USUBJID", "STUDYID")
+keys(ARS) <- c("USUBJID", "STUDYID")
 
 ars_filters <- filter_spec(
     vars = c("PARAMCD"),
@@ -86,7 +87,7 @@ ars_extracted_response <- data_extract_spec(
     dataname = "ARS",
     filter = ars_filters,
     columns = columns_spec(
-        choices = base::setdiff(names(ARS), tern::keys(ARS)),
+        choices = base::setdiff(names(ARS), keys(ARS)),
         selected = names(ARS)[5],
         multiple = FALSE,
         fixed = FALSE,
@@ -96,7 +97,7 @@ ars_extracted_response <- data_extract_spec(
 asl_extracted <- data_extract_spec(
     dataname = "ASL",
     columns = columns_spec(
-        choices = c("", base::setdiff(names(ASL), tern::keys(ASL))),
+        choices = c("", base::setdiff(names(ASL), keys(ASL))),
         selected = c("RACE"),
         multiple = FALSE,
         fixed = FALSE
@@ -112,14 +113,14 @@ asl_extracted_row <- data_extract_spec(
     )
 )
 
-app <- teal::init(
+app <- init(
  data = cdisc_data(
    ASL = ASL,
    ARS = ARS,
    code = 'ASL <- random.cdisc.data::radsl(seed = 1)
            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
-           tern::keys(ASL) <- c("USUBJID", "STUDYID")
-           tern::keys(ARS) <- c("USUBJID", "STUDYID")',
+           keys(ASL) <- c("USUBJID", "STUDYID")
+           keys(ARS) <- c("USUBJID", "STUDYID")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(

@@ -7,10 +7,10 @@
 #' @import ggplot2
 #' @import ggmosaic
 #' @import graphics
-#' @import random.cdisc.data
+#' @import magrittr
 #' @import shiny
 #' @import teal
-#' @import testthat
+#' @import utils.nest
 #'
 #' @importFrom utils tail
 #'

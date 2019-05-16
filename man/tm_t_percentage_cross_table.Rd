@@ -5,7 +5,7 @@
 \title{Cross table based on rtables}
 \usage{
 tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
-  y_var, ...)
+  y_var)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}
@@ -41,8 +41,7 @@ ASL <- radsl(seed = 1)
 x <- teal::init(
   data = cdisc_data(
     ASL = ASL,
-    code = "library(random.cdisc.data)
-            ASL <- radsl(seed = 1)",
+    code = "ASL <- radsl(seed = 1)",
     check = TRUE
   ),
   modules = teal::root_modules(

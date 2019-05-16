@@ -48,11 +48,12 @@ Response Plots
 \examples{
 
 library(random.cdisc.data)
+library(tern)
 
-ASL <- radsl()
-ARS <- radrs(ASL)
-tern::keys(ASL) <- c("USUBJID", "STUDYID")
-tern::keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
+ASL <- radsl(seed = 1)
+ARS <- radrs(ASL, seed = 1)
+keys(ASL) <- c("USUBJID", "STUDYID")
+keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 
 ars_filters <- filter_spec(
   vars = c("PARAMCD"),
@@ -103,14 +104,14 @@ asl_extracted_col <- data_extract_spec(
   )
 )
 
-app <- teal::init(
+app <- init(
   data = cdisc_data(
     ASL = ASL,
     ARS = ARS,
     code = 'ASL <- random.cdisc.data::radsl(seed = 1)
            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
-           tern::keys(ASL) <- c("USUBJID", "STUDYID")
-           tern::keys(ARS) <- c("USUBJID", "STUDYID")',
+           keys(ASL) <- c("USUBJID", "STUDYID")
+           keys(ARS) <- c("USUBJID", "STUDYID")',
      check = FALSE),
   modules = root_modules(
     tm_g_response(

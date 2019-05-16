@@ -32,9 +32,12 @@ Create a scatterplot matrix
 }
 \examples{
 library(random.cdisc.data)
+library(tern)
 
 ASL <- radsl(seed = 1)
 ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 
 adte_filters <- filter_spec(
   vars = c("PARAMCD"), #'  only key variables are allowed
@@ -61,14 +64,17 @@ adte_prep <- data_extract_spec(
   )
 )
 
-app <- teal::init(
+app <- init(
   data = cdisc_data(
        ASL = ASL,
        ADTE = ADTE,
        code = 'ASL <- radsl(seed = 1)
-               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))',
+               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+               keys(ASL) <- c("STUDYID", "USUBJID")
+               keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
+               ',
        check = FALSE),
-  modules = teal::root_modules(
+  modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       dataname = c("ASL","ADTE"),

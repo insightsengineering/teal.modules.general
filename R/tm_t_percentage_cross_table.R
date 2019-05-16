@@ -21,8 +21,7 @@
 #' x <- teal::init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "library(random.cdisc.data)
-#'             ASL <- radsl(seed = 1)",
+#'     code = "ASL <- radsl(seed = 1)",
 #'     check = TRUE
 #'   ),
 #'   modules = teal::root_modules(
@@ -36,13 +35,12 @@
 #' )
 #' shinyApp(x$ui, x$server)
 #' }
-tm_t_percentage_cross_table <- function(
-                                        label = "Cross Table",
+tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
                                         x_var,
-                                        y_var, ...) {
-  stopifnot(is.character(dataname))
-  stopifnot(length(dataname) == 1)
+                                        y_var) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.single(dataname))
   stopifnot(is.choices_selected(x_var))
   stopifnot(is.choices_selected(y_var))
 
@@ -54,8 +52,7 @@ tm_t_percentage_cross_table <- function(
     ui = ui_percentage_cross_table,
     ui_args = args,
     server_args = list(dataname = dataname, label = label),
-    filters = dataname,
-    ...
+    filters = dataname
   )
 }
 
@@ -83,6 +80,8 @@ ui_percentage_cross_table <- function(id, ...) {
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
 srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
+  stopifnot(all(dataname %in% datasets$datanames()))
+
   use_chunks(session)
 
   table_code <- reactive({

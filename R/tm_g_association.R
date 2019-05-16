@@ -13,9 +13,9 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' ASL <- radsl()
+#' ASL <- radsl(seed = 1)
 #'
-#' x <- teal::init(
+#' app <- init(
 #'   data = list(ASL = ASL),
 #'   modules = root_modules(
 #'     tm_g_association(
@@ -26,7 +26,7 @@
 #' )
 #'
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_g_association <- function(label = "Association",
                              dataname,
@@ -36,13 +36,17 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              with_show_r_code = TRUE) {
-  args <- as.list(environment())
-
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
   stopifnot(is.choices_selected(var))
+  stopifnot(is.logical.single(show_association))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
   stopifnot(is.logical(with_show_r_code))
 
+  args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
@@ -99,6 +103,8 @@ srv_tm_g_association <- function(input,
                                  session,
                                  datasets,
                                  dataname) {
+  stopifnot(all(dataname %in% datasets$datanames()))
+
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
     validate(need(plot_height, "need valid plot height"))

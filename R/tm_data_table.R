@@ -12,7 +12,7 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl()
+#' ASL <- radsl(seed = 1)
 #'
 #' x <- init(
 #'   data = list(ASL = ASL),
@@ -26,8 +26,8 @@
 #'
 #' # two-datasets example
 #' library(random.cdisc.data)
-#' ASL <- radsl()
-#' ADTE <- radaette(ASL)
+#' ASL <- radsl(seed = 1)
+#' ADTE <- radaette(ASL, seed = 1)
 #'
 #' x <- init(
 #'   data = list(ASL = ASL, ADTE = ADTE),

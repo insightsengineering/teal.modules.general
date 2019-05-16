@@ -35,9 +35,9 @@ Stack Plots of variables and show association with reference variable
 \examples{
 
 library(random.cdisc.data)
-ASL <- radsl()
+ASL <- radsl(seed = 1)
 
-x <- teal::init(
+app <- init(
   data = list(ASL = ASL),
   modules = root_modules(
     tm_g_association(
@@ -48,6 +48,6 @@ x <- teal::init(
 )
 
 \dontrun{
-shinyApp(x$ui, x$server)
+shinyApp(app$ui, app$server)
 }
 }

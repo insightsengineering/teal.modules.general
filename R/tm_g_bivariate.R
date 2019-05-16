@@ -31,12 +31,13 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
+#' library(tern)
 #'
 #' ASL <- radsl(seed = 1)
 #' ARS <- radrs(ASL, seed = 1)
 #'
-#' tern::keys(ASL) <- c("USUBJID", "STUDYID")
-#' tern::keys(ARS) <- c("USUBJID", "STUDYID")
+#' keys(ASL) <- c("USUBJID", "STUDYID")
+#' keys(ARS) <- c("USUBJID", "STUDYID")
 #'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
@@ -50,7 +51,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ARS), tern::keys(ARS)),
+#'         choices = base::setdiff(names(ARS), keys(ARS)),
 #'         selected = names(ARS)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
@@ -60,7 +61,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", base::setdiff(names(ASL), tern::keys(ASL))),
+#'         choices = c("", base::setdiff(names(ASL), keys(ASL))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -76,14 +77,14 @@
 #'     )
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ARS = ARS,
 #'    code = 'ASL <- random.cdisc.data::radsl(seed = 1)
 #'            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
-#'            tern::keys(ASL) <- c("USUBJID", "STUDYID")
-#'            tern::keys(ARS) <- c("USUBJID", "STUDYID")',
+#'            keys(ASL) <- c("USUBJID", "STUDYID")
+#'            keys(ARS) <- c("USUBJID", "STUDYID")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
@@ -124,15 +125,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            with_show_r_code = TRUE,
                            pre_output = NULL,
                            post_output = NULL
-                          ) {
+) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
   stopifnot(is.list(xvar))
-  stopifnot(is.list(yvar))
-  stopifnot(is.list(row_facet_var))
-  stopifnot(is.list(col_facet_var))
-  stopifnot(is.list(colour_var))
-  stopifnot(is.list(fill_var))
-  stopifnot(is.list(size_var))
-
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
   lapply(xvar, function(ds_extract) {
@@ -140,11 +136,20 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     stopifnot(!("" %in% ds_extract$columns$choices))
     stopifnot(!ds_extract$columns$multiple)
   })
-
-  stopifnot(is.logical(with_show_r_code))
-  stopifnot(is.logical(free_x_scales))
-  stopifnot(is.logical(free_y_scales))
-  stopifnot(is.logical(use_density))
+  stopifnot(is.list(yvar))
+  stopifnot(is.logical.single(use_density))
+  stopifnot(is.list(row_facet_var))
+  stopifnot(is.list(col_facet_var))
+  stopifnot(is.logical.single(expert_settings))
+  stopifnot(is.list(colour_var))
+  stopifnot(is.list(fill_var))
+  stopifnot(is.list(size_var))
+  stopifnot(is.logical.single(free_x_scales))
+  stopifnot(is.logical.single(free_y_scales))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  stopifnot(is.character.single(ggtheme))
+  stopifnot(is.logical.single(with_show_r_code))
 
   if (expert_settings) {
     if (length(colour_var) == 0) {
@@ -167,7 +172,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
@@ -216,8 +221,8 @@ ui_g_bivariate <- function(id, ...) {
         data_extract_spec = a$xvar
       ),
       radioButtons(ns("use_density"), NULL,
-        choices = c("frequency", "density"),
-        selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
+                   choices = c("frequency", "density"),
+                   selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
       ),
       data_extract_input(
         id = ns("yvar"),
@@ -316,54 +321,47 @@ srv_g_bivariate <- function(input,
                             colour_var = colour_var,
                             fill_var = fill_var,
                             size_var = size_var) {
-  stopifnot(length(datasets$datanames()) == length(dataname))
-  stopifnot(is.list(xvar))
-  stopifnot(is.list(yvar))
-  stopifnot(is.list(row_facet_var))
-  stopifnot(is.list(col_facet_var))
-  stopifnot(is.list(colour_var))
-  stopifnot(is.list(fill_var))
-  stopifnot(is.list(size_var))
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   use_chunks(session)
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
-    id = "xvar",
-    datasets = datasets,
-    data_extract_spec = xvar
+                          id = "xvar",
+                          datasets = datasets,
+                          data_extract_spec = xvar
   )
   yvar_data <- callModule(data_extract_module,
-    id = "yvar",
-    datasets = datasets,
-    data_extract_spec = yvar
+                          id = "yvar",
+                          datasets = datasets,
+                          data_extract_spec = yvar
   )
   row_facet_var_data <- callModule(data_extract_module,
-    id = "row_facet_var",
-    datasets = datasets,
-    data_extract_spec = row_facet_var
+                                   id = "row_facet_var",
+                                   datasets = datasets,
+                                   data_extract_spec = row_facet_var
   )
   col_facet_var_data <- callModule(data_extract_module,
-    id = "col_facet_var",
-    datasets = datasets,
-    data_extract_spec = col_facet_var
+                                   id = "col_facet_var",
+                                   datasets = datasets,
+                                   data_extract_spec = col_facet_var
   )
 
   if (expert_settings) {
     colour_var_data <- callModule(data_extract_module,
-      id = "colour_var",
-      datasets = datasets,
-      data_extract_spec = colour_var
+                                  id = "colour_var",
+                                  datasets = datasets,
+                                  data_extract_spec = colour_var
     )
     fill_var_data <- callModule(data_extract_module,
-      id = "fill_var",
-      datasets = datasets,
-      data_extract_spec = fill_var
+                                id = "fill_var",
+                                datasets = datasets,
+                                data_extract_spec = fill_var
     )
     size_var_data <- callModule(data_extract_module,
-      id = "size_var",
-      datasets = datasets,
-      data_extract_spec = size_var
+                                id = "size_var",
+                                datasets = datasets,
+                                data_extract_spec = size_var
     )
   }
 
@@ -401,20 +399,20 @@ srv_g_bivariate <- function(input,
     yvar_name <- get_dataset_prefixed_col_names(yvar_data())
 
     validate(need(!(!is.null(yvar_name) && yvar_name %in% keys(yvar_data())),
-            "Please do not select key variables inside data"))
+                  "Please do not select key variables inside data"))
     validate(need(!(!is.null(xvar_name) && xvar_name %in% keys(yvar_data())),
-            "Please do not select key variables inside data"))
+                  "Please do not select key variables inside data"))
 
     if (input$facetting) {
       row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
       col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
 
       validate(need(!(!is.null(col_facet_var_name) &&
-                    col_facet_var_name %in% keys(col_facet_var_data())),
-              "Please do not select key variables inside data"))
+                        col_facet_var_name %in% keys(col_facet_var_data())),
+                    "Please do not select key variables inside data"))
       validate(need(!(!is.null(row_facet_var_name) &&
-                    row_facet_var_name %in% keys(row_facet_var_data())),
-              "Please do not select key variables inside data"))
+                        row_facet_var_name %in% keys(row_facet_var_data())),
+                    "Please do not select key variables inside data"))
 
       if (!is.null(col_facet_var_name) && !is.null(row_facet_var_name)) {
         validate(need(
@@ -430,11 +428,11 @@ srv_g_bivariate <- function(input,
         fill_var_name <- get_dataset_prefixed_col_names(fill_var_data())
         size_var_name <- get_dataset_prefixed_col_names(size_var_data())
         validate(need(!(!is.null(colour_var_name) && colour_var_name %in% keys(colour_var_data())),
-                "Please do not select key variables inside data"))
+                      "Please do not select key variables inside data"))
         validate(need(!(!is.null(fill_var_name) && fill_var_name %in% keys(fill_var_data())),
-                "Please do not select key variables inside data"))
+                      "Please do not select key variables inside data"))
         validate(need(!(!is.null(size_var_name) && size_var_name %in% keys(size_var_data())),
-                "Please do not select key variables inside data"))
+                      "Please do not select key variables inside data"))
       }
     }
     use_density <- input$use_density == "density"
@@ -453,7 +451,9 @@ srv_g_bivariate <- function(input,
     validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
 
     # Copy all variables over from variable_reactive
-    for (n in ls(variable_reactive(), all.names = TRUE)) assign(n, get(n, variable_reactive()), environment())
+    for (n in ls(variable_reactive(), all.names = TRUE)) {
+      assign(n, get(n, variable_reactive()), environment())
+    }
 
     cl <- bivariate_plot_call(
       data_name = "anl",
@@ -498,9 +498,9 @@ srv_g_bivariate <- function(input,
 
   # Insert the plot into a plot_height module from teal.devel
   callModule(plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+             id = "myplot",
+             plot_height = reactive(input$myplot),
+             plot_id = session$ns("plot")
   )
   output$plot <- renderPlot({
     plot_call()
@@ -594,8 +594,7 @@ substitute_q <- function(x, env) {
 #' bivariate_ggplot_call("numeric", "factor")
 #' bivariate_ggplot_call("factor", "numeric")
 #' bivariate_ggplot_call("factor", "factor")
-bivariate_ggplot_call <- function(
-                                  x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
+bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE) {
   x_class <- match.arg(x_class)
@@ -642,7 +641,7 @@ bivariate_ggplot_call <- function(
       quote(.ggplotcall + aes(x = .yvar, fill = factor(.fill_var)) + geom_bar() + ylab("Frequency") + coord_flip()) # nolint
     } else {
       quote(.ggplotcall + aes(x = .yvar) + geom_bar(aes(y = ..prop.., group = 1)) + # nolint
-        ylab("Proportion") + coord_flip())
+              ylab("Proportion") + coord_flip())
     }
 
     # Numeric Plots
@@ -692,9 +691,9 @@ facet_ggplot_call <- function(row_facet_var = NULL,
     call("facet_grid", cols = call_fun_dots("vars", col_facet_var), scales = scales)
   } else {
     call("facet_grid",
-      rows = call_fun_dots("vars", row_facet_var),
-      cols = call_fun_dots("vars", col_facet_var),
-      scales = scales
+         rows = call_fun_dots("vars", row_facet_var),
+         cols = call_fun_dots("vars", col_facet_var),
+         scales = scales
     )
   }
 }
