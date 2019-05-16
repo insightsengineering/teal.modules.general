@@ -39,7 +39,7 @@
 #' ASL <- radsl(seed = 1)
 #' AAE <- radae(ASL, seed = 1)
 #'
-#' x <- teal::init(
+#' x <- init(
 #'   data = list(ASL = ASL, AAE = AAE),
 #'   root_modules(
 #'     tm_scatterplot("Scatterplot Choices",
@@ -68,10 +68,26 @@ tm_scatterplot <- function(label,
                            plot_height = c(600, 200, 2000),
                            alpha = c(1, 0, 1),
                            size = c(4, 1, 12),
-                           pre_output = NULL, post_output = NULL) {
+                           pre_output = NULL,
+                           post_output = NULL) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
+  stopifnot(is.character.vector(xvar))
+  stopifnot(is.character.vector(yvar))
+  stopifnot(is.character.vector(xvar_choices))
+  stopifnot(is.character.vector(yvar_choices))
+  stopifnot(is.null(color_by) || is.character.single(color_by))
+  stopifnot(is.null(color_by_choices) || is.character.vector(color_by_choices))
+  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
+  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
+  stopifnot(is_numeric_vector(size) && (length(size) == 3 || length(size) == 1))
+  stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
+
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_scatterplot,
     server_args = list(dataname = dataname),
@@ -134,7 +150,7 @@ ui_scatterplot <- function(id,
 #' @import stats utils
 #' @importFrom teal.devel get_filter_txt parse_code_chunks
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
-
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -151,7 +167,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     color_by <- input$color_by
     size <- input$size
 
-    if (color_by %in% c("", "_none_")) {
+    if (!is.null(color_by) && color_by %in% c("", "_none_")) {
       color_by <- NULL
     }
 

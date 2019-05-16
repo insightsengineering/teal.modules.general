@@ -103,7 +103,7 @@ asl_extracted_col <- data_extract_spec(
   )
 )
 
-app <- teal::init(
+app <- init(
   data = cdisc_data(
     ASL = ASL,
     ARS = ARS,

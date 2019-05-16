@@ -41,14 +41,14 @@
 #'   )
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = cdisc_data(
 #'        ASL = ASL,
 #'        ADTE = ADTE,
 #'        code = 'ASL <- radsl(seed = 1)
 #'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))',
 #'        check = FALSE),
-#'   modules = teal::root_modules(
+#'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       dataname = c("ASL","ADTE"),
@@ -61,13 +61,17 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-tm_g_scatterplotmatrix <- function(
-  label = "Scatterplot matrix",
-  dataname,
-  select_col,
-  plot_height = c(600, 200, 2000),
-  pre_output = NULL,
-  post_output = NULL) {
+tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
+                                   dataname,
+                                   select_col,
+                                   plot_height = c(600, 200, 2000),
+                                   pre_output = NULL,
+                                   post_output = NULL) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
+  stopifnot(is.list(select_col))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   args <- as.list(environment())
 
@@ -115,26 +119,31 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' @importFrom teal.devel eval_remaining renew_chunk_environment renew_chunks set_chunk use_chunks
 #' @importFrom teal.devel data_extract_module plot_with_height
 #' @importFrom teal.devel get_rcode show_rcode_modal
-srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, select_col) {
-
-  # checks
-  stopifnot(is.list(select_col))
+srv_g_scatterplotmatrix <- function(input,
+                                    output,
+                                    session,
+                                    datasets,
+                                    dataname,
+                                    select_col) {
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   # setup to use chunks
   use_chunks(session)
 
   # data extraction
-  col_extract <- callModule(data_extract_module,
-                            id = "select_col",
-                            datasets = datasets,
-                            data_extract_spec = select_col
+  col_extract <- callModule(
+    data_extract_module,
+    id = "select_col",
+    datasets = datasets,
+    data_extract_spec = select_col
   )
 
   # set plot output
-  callModule(plot_with_height,
-             id = "myplot",
-             plot_height = reactive(input$myplot),
-             plot_id = session$ns("plot"))
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot"))
 
   # plot
   output$plot <- renderPlot({
@@ -179,13 +188,14 @@ srv_g_scatterplotmatrix <- function(input, output, session, datasets, dataname, 
     )
 
     # set up expression chunk - lattice graph
-    set_chunk("plt",
-              substituteDirect(
-                object = quote(
-                  lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
-                ),
-                frame = list(.cols = cols, .alpha = alpha, .cex = cex)
-              )
+    set_chunk(
+      "plt",
+      substituteDirect(
+        object = quote(
+          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+        ),
+        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
+      )
     )
 
     # evaluate chunk

@@ -76,7 +76,7 @@
 #'   )
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ARS = ARS,
@@ -154,8 +154,7 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
 #'   coord_flip()
-tm_g_response <- function(
-                          label = "Response Plot",
+tm_g_response <- function(label = "Response Plot",
                           dataname,
                           response,
                           xvar = NULL,
@@ -166,17 +165,10 @@ tm_g_response <- function(
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
                           post_output = NULL) {
-  dataname != "asl" || stop("currently does not work with ASL data")
-
-
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
+  stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
   stopifnot(is.list(response))
-  stopifnot(is.list(xvar))
-  stopifnot(is.list(row_facet_var))
-  stopifnot(is.list(col_facet_var))
-  stopifnot(is.logical(coord_flip))
-  stopifnot(is.logical(freq))
-  stopifnot(is.numeric(plot_height))
-
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
   lapply(response, function(ds_extract){
@@ -184,6 +176,7 @@ tm_g_response <- function(
         stopifnot(!ds_extract$columns$multiple)
       }
   )
+  stopifnot(is.list(xvar))
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
   lapply(xvar, function(ds_extract){
@@ -191,10 +184,17 @@ tm_g_response <- function(
         stopifnot(!ds_extract$columns$multiple)
       }
   )
+  stopifnot(is.null(row_facet_var) || is.list(row_facet_var))
+  stopifnot(is.null(col_facet_var) || is.list(col_facet_var))
+  stopifnot(is.logical.single(coord_flip))
+  stopifnot(is.logical.single(freq))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+
 
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
@@ -262,8 +262,7 @@ ui_g_response <- function(id, ...) {
 #' @importFrom teal.devel get_rcode show_rcode_modal
 #' @importFrom forcats fct_rev
 #' @importFrom methods substituteDirect
-srv_g_response <- function(
-                           input,
+srv_g_response <- function(input,
                            output,
                            session,
                            datasets,
@@ -272,10 +271,7 @@ srv_g_response <- function(
                            xvar,
                            row_facet_var,
                            col_facet_var) {
-  stopifnot(is.list(response))
-  stopifnot(is.list(xvar))
-  stopifnot(is.list(row_facet_var))
-  stopifnot(is.list(col_facet_var))
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   use_chunks(session)
 
@@ -415,7 +411,7 @@ srv_g_response <- function(
   })
 
   observeEvent(input$show_rcode, {
-    teal.devel::show_rcode_modal(
+    show_rcode_modal(
       title = "Response Plot",
       rcode = get_rcode(
         datasets = datasets,

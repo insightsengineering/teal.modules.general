@@ -236,11 +236,16 @@ tm_venn2 <- function(label,
                      bm2_var,
                      plot_height = c(600, 200, 2000),
                      alpha = c(1, 0, 1),
-                     pre_output = shiny::tags$p("NAs get currently removed"),
+                     pre_output = tags$p("NAs get currently removed"),
                      post_output = NULL) {
-
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.single(dataname))
   stopifnot(is.choices_selected(bm1_var))
   stopifnot(is.choices_selected(bm1_var))
+  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
+  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
 
   args <- as.list(environment())
 
@@ -255,7 +260,9 @@ tm_venn2 <- function(label,
 }
 
 #' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
-ui_venn2 <- function(id, label, dataname,
+ui_venn2 <- function(id,
+                     label,
+                     dataname,
                      bm1_var, bm2_var,
                      plot_height,
                      alpha,
@@ -286,6 +293,7 @@ ui_venn2 <- function(id, label, dataname,
 }
 
 srv_venn2 <- function(input, output, session, datasets, dataname) {
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   ## dynamic plot height
   output$plot_ui <- renderUI({

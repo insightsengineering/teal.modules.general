@@ -85,26 +85,27 @@ asl_extracted <- data_extract_spec(
   )
 )
 
-app <- teal::init(
+app <- init(
   data = cdisc_data(
-       ASL = ASL,
-       ADTE = ADTE,
-       code = 'ASL <- radsl(seed = 1)
-               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-               utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
-               utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
-       check = FALSE),
-   modules = teal::root_modules(
-       tm_g_regression(
-         label = "Regression",
-         dataname = c("ASL","ADTE"),
-         response = list(adte_extracted_response),
-         regressor = list(
-           adte_extracted_regressor,
-           asl_extracted
-         )
-       )
-   )
+    ASL = ASL,
+    ADTE = ADTE,
+    code = 'ASL <- radsl(seed = 1)
+      ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+      utils.nest::keys(ASL) <- c("USUBJID", "STUDYID")
+      utils.nest::keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL","ADTE"),
+      response = list(adte_extracted_response),
+      regressor = list(
+        adte_extracted_regressor,
+        asl_extracted
+      )
+    )
+  )
 )
 \dontrun{
 shinyApp(app$ui, app$server)

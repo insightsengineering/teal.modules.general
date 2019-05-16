@@ -58,18 +58,20 @@ asl_extract_yvar <- data_extract_spec(
 )
 
 app <- init(
- data = cdisc_data(
-   ASL = ASL,
-   code = 'library(random.cdisc.data)
-           ASL <- radsl(seed = 1)',
-   check = FALSE
- ),
- root_modules(
-   tm_table("Table Choices",
-            dataname =  "ASL",
-            xvar = list(asl_extract_xvar),
-            yvar = list(asl_extract_yvar))
- )
+  data = cdisc_data(
+    ASL = ASL,
+    code = 'library(random.cdisc.data)
+            ASL <- radsl(seed = 1)',
+    check = FALSE
+  ),
+  root_modules(
+    tm_table(
+      "Table Choices",
+      dataname =  "ASL",
+      xvar = list(asl_extract_xvar),
+      yvar = list(asl_extract_yvar)
+    )
+  )
 )
 
 \dontrun{

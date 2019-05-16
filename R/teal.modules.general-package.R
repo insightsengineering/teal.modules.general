@@ -11,6 +11,7 @@
 #' @import shiny
 #' @import teal
 #' @import testthat
+#' @import utils.nest
 #'
 #' @importFrom utils tail
 #'

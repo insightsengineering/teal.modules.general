@@ -5,7 +5,7 @@
 \title{Cross table based on rtables}
 \usage{
 tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
-  y_var, ...)
+  y_var)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}

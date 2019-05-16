@@ -45,18 +45,20 @@
 #' )
 #'
 #' app <- init(
-#'  data = cdisc_data(
-#'    ASL = ASL,
-#'    code = 'library(random.cdisc.data)
-#'            ASL <- radsl(seed = 1)',
-#'    check = FALSE
-#'  ),
-#'  root_modules(
-#'    tm_table("Table Choices",
-#'             dataname =  "ASL",
-#'             xvar = list(asl_extract_xvar),
-#'             yvar = list(asl_extract_yvar))
-#'  )
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     code = 'library(random.cdisc.data)
+#'             ASL <- radsl(seed = 1)',
+#'     check = FALSE
+#'   ),
+#'   root_modules(
+#'     tm_table(
+#'       "Table Choices",
+#'       dataname =  "ASL",
+#'       xvar = list(asl_extract_xvar),
+#'       yvar = list(asl_extract_yvar)
+#'     )
+#'   )
 #' )
 #'
 #' \dontrun{
@@ -70,23 +72,20 @@ tm_table <- function(label,
                      pre_output = NULL,
                      post_output = NULL) {
   stopifnot(
-    is.character(label),
-    length(label) == 1,
-    is.character(dataname),
+    is.character.single(label),
+    is.character.single(dataname),
     is.list(xvar),
     is.list(yvar),
-    is.character(useNA),
+    is.character.vector(useNA),
     all(useNA %in% c("ifany", "no", "always"))
   )
 
   lapply(xvar, function(ds_extract){
-        stopifnot(!ds_extract$columns$multiple)
-      }
-      )
+    stopifnot(!ds_extract$columns$multiple)
+  })
   lapply(yvar, function(ds_extract){
-        stopifnot(!ds_extract$columns$multiple)
-      }
-      )
+    stopifnot(!ds_extract$columns$multiple)
+  })
 
   args <- as.list(environment())
 
@@ -116,8 +115,8 @@ ui_table <- function(id,
 
   standard_layout(
     output = white_small_well(# from teal.devel
-        tableOutput(ns("table"))
-        ),
+      tableOutput(ns("table"))
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(dataname)),
@@ -126,9 +125,9 @@ ui_table <- function(id,
       data_extract_input(ns("yvar"), label = "Column values", yvar),
       tags$hr(),
       radioButtons(ns("useNA"),
-        label = "Display Missing Values",
-        choices = c("no", "ifany", "always"),
-        selected = useNA
+                   label = "Display Missing Values",
+                   choices = c("no", "ifany", "always"),
+                   selected = useNA
       ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),
@@ -144,20 +143,20 @@ ui_table <- function(id,
 #' @importFrom teal.devel show_rcode_modal get_rcode
 #' @importFrom methods substituteDirect
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
-  stopifnot(is.list(xvar))
-  stopifnot(is.list(yvar))
+  stopifnot(all(dataname %in% datasets$datanames()))
+
   use_chunks(session)
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
-      id = "xvar",
-      datasets = datasets,
-      data_extract_spec = xvar
+                          id = "xvar",
+                          datasets = datasets,
+                          data_extract_spec = xvar
   )
   yvar_data <- callModule(data_extract_module,
-      id = "yvar",
-      datasets = datasets,
-      data_extract_spec = yvar
+                          id = "yvar",
+                          datasets = datasets,
+                          data_extract_spec = yvar
   )
 
   chunk_reactive <- reactive({
@@ -213,8 +212,8 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
         dataname = dataname,
         merged_dataname = "dataset",
         merged_datasets = list(
-            xvar_data(),
-            yvar_data()
+          xvar_data(),
+          yvar_data()
         ),
         title = title
       )

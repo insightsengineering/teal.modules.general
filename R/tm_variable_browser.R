@@ -7,7 +7,9 @@
 #'
 #' @export
 tm_variable_browser <- function(label = "variable browser") {
-  teal::module(
+  stopifnot(is.character.single(label))
+
+  module(
     label,
     server = srv_page_variable_browser,
     ui = ui_page_variable_browser,
@@ -70,7 +72,7 @@ ui_page_variable_browser <- function(id, datasets) {
 #' @import utils
 #' @import stats
 srv_page_variable_browser <- function(input, output, session, datasets) {
-
+  stopifnot(all(dataname %in% datasets$datanames()))
 
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = NULL)
