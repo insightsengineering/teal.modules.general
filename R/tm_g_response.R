@@ -34,7 +34,7 @@
 #'   choices = unique(ARS$PARAMCD),
 #'   selected = unique(ARS$PARAMCD)[1],
 #'   multiple = FALSE,
-#'   label = "Choose endpoint and Censor"
+#'   label = "Choose endpoint"
 #' )
 #'
 #' ars_extracted_response <- data_extract_spec(
