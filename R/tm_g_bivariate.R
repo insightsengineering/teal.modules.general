@@ -70,9 +70,9 @@
 #' asl_extracted_row <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("","SEX", "AGE"),
-#'         selected = "",
-#'         multiple = FALSE,
+#'         choices = c("","SEX", "RACE"),
+#'         selected = "RACE",
+#'         multiple = TRUE,
 #'         fixed = FALSE
 #'     )
 #' )
