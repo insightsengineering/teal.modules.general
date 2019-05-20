@@ -220,14 +220,14 @@ ui_g_bivariate <- function(id, ...) {
         label = "X Variable",
         data_extract_spec = a$xvar
       ),
-      radioButtons(ns("use_density"), NULL,
-                   choices = c("frequency", "density"),
-                   selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
-      ),
       data_extract_input(
         id = ns("yvar"),
         label = "Y Variable",
         data_extract_spec = a$yvar
+      ),
+      radioButtons(ns("use_density"), NULL,
+          choices = c("frequency", "density"),
+          selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
       ),
       div(
         style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
