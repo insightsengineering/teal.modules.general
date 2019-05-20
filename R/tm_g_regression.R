@@ -19,47 +19,13 @@
 #' library(tern)
 #'
 #' ASL <- radsl(seed = 1)
-#' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
-#' adte_filters <- filter_spec(
-#'   vars = c("PARAMCD"), #'  only key variables are allowed
-#'   sep = " - ",
-#'   choices = c("OS", "PFS", "EFS"),
-#'   selected = "OS",
-#'   multiple = TRUE, #'  if multiple, then a spread is needed
-#'   label = "Choose endpoint"
-#' )
-#'
-#' adte_extracted_regressor <- data_extract_spec(
-#'   dataname = "ADTE",
-#'   filter = adte_filters,
-#'   columns = columns_spec(
-#'     choices = c("AVAL", "BMRKR1", "SITEID"),
-#'     selected = c("AVAL"),
-#'     multiple = TRUE,
-#'     fixed = FALSE, #'  Whether the user can select the item (optional)
-#'     label = "Column" #'  Label the column select dropdown (optional)
-#'   )
-#' )
-#'
-#' adte_extracted_response <- data_extract_spec(
-#'   dataname = "ADTE",
-#'   filter = adte_filters,
-#'   columns = columns_spec(
-#'     choices = c("AVAL", "BMRKR1"),
-#'     selected = c("AVAL"),
-#'     multiple = FALSE,
-#'     fixed = FALSE, #'  Whether the user can select the item
-#'     label = "" #'  Label the column select dropdown (optional)
-#'   )
-#' )
 #'
 #' asl_extracted <- data_extract_spec(
 #'   dataname = "ASL",
 #'   columns = columns_spec(
-#'     choices = c("SEX", "AGE"),
+#'     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
 #'     selected = c("AGE"),
 #'     multiple = TRUE,
 #'     fixed = FALSE
@@ -69,25 +35,18 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     ADTE = ADTE,
-#'     code = 'ASL <- radsl(seed = 1)
-#'       ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#'       keys(ASL) <- c("USUBJID", "STUDYID")
-#'       keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")',
-#'     check = FALSE
-#'   ),
+#'     code = "ASL <- radsl(seed = 1); keys(ASL) <- c("STUDYID", "USUBJID")",
+#'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ASL","ADTE"),
-#'       response = list(adte_extracted_response),
-#'       regressor = list(
-#'         adte_extracted_regressor,
-#'         asl_extracted
-#'       )
+#'       dataname = c("ASL"),
+#'       response = list(asl_extracted),
+#'       regressor = list(asl_extracted)
 #'     )
 #'   )
 #' )
+#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
