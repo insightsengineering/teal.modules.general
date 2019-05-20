@@ -32,13 +32,12 @@
 #'   )
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     ADTE = ADTE,
-#'     code = "",
+#'     code = "ASL <- radsl(seed = 1); keys(ASL) <- c("STUDYID", "USUBJID")",
 #'     check = FALSE),
-#'   modules = teal::root_modules(
+#'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL"),
