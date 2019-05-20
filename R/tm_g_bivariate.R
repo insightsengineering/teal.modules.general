@@ -250,14 +250,14 @@ ui_g_bivariate <- function(id, ...) {
           )
         )
       },
+      plot_height_input(id = ns("myplot"), value = a$plot_height),
       optionalSelectInput(
-        inputId = ns("ggtheme"), # nolint
-        label = "Theme (by ggplot)",
-        choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-        selected = a$ggtheme,
-        multiple = FALSE
-      ),
-      plot_height_input(id = ns("myplot"), value = a$plot_height)
+          inputId = ns("ggtheme"), # nolint
+          label = "Theme (by ggplot)",
+          choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+          selected = a$ggtheme,
+          multiple = FALSE
+      )
     ),
     forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
     pre_output = a$pre_output,
