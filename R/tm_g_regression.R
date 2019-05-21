@@ -160,6 +160,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
     validate_has_data(merged_dataset, 10)
 
+    input$plot_type
+
     renew_chunk_environment(envir = environment())
     renew_chunks()
 
@@ -179,10 +181,14 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
 
-    summary %<chunk%
-      quote(summary <- summary(fit))
-
     eval_remaining()
+
+
+  })
+
+  plot_reactive <- reactive({
+
+    fit()
 
     if (input$plot_type == "Response vs Regressor") {
       fit <- get_envir_chunks()$fit
@@ -190,7 +196,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       if (ncol(fit$model) > 1) {
         validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
         plot %<chunk%
-          plot(fit$model[, 2:1])
+            plot(fit$model[, 2:1])
       } else {
         plot %<chunk% {
           plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
@@ -201,17 +207,18 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       }
     } else {
       i <- which(input$plot_type == c(
-        "Residuals vs Fitted",
-        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-      ))
+              "Residuals vs Fitted",
+              "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+              "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+          ))
       plot %<chunk%
-        plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+          plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
     }
-  })
+
+      })
 
   output$plot <- renderPlot({
-    fit()
+    plot_reactive()
     eval_remaining()
   })
 
@@ -225,7 +232,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   output$text <- renderPrint({
     fit()
-    return(get_envir_chunks()$summary)
+    set_chunk(id = "summary", expression = quote(summary(fit)))
+    eval_remaining()
   })
 
   observeEvent(input$show_rcode, {
