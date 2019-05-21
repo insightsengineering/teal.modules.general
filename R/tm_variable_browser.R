@@ -5,6 +5,9 @@
 #'
 #' @inheritParams teal::module
 #'
+#' @importFrom ggplot2 coord_flip ggplotGrob qplot theme_light xlab
+#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
+#'
 #' @export
 tm_variable_browser <- function(label = "variable browser") {
   stopifnot(is.character.single(label))
@@ -69,8 +72,6 @@ ui_page_variable_browser <- function(id, datasets) {
 }
 
 
-#' @import utils
-#' @import stats
 srv_page_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = NULL)
@@ -148,33 +149,33 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       var <- df[[varname]]
       d_var_name <- paste0(data, ".", varname)
 
-      grid::grid.newpage()
+      grid.newpage()
 
       plot_grob <- if (is.factor(var) || is.character(var)) {
         groups <- unique(as.character(var))
         if (length(groups) > 30) {
-          grid::textGrob(paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "),
+          textGrob(paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "),
                                 "\n   ..."),
-            x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"),
+            x = unit(1, "line"), y = unit(1, "npc") - unit(1, "line"),
             just = c("left", "top")
           )
         } else {
-          p <- ggplot2::qplot(var) + ggplot2::xlab(d_var_name) + ggplot2::theme_light() + ggplot2::coord_flip()
-          ggplot2::ggplotGrob(p)
+          p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
+          ggplotGrob(p)
         }
       } else if (is.numeric(var)) {
         ## histogram
-        p <- ggplot2::qplot(var) + ggplot2::xlab(d_var_name) + ggplot2::theme_light() + ggplot2::coord_flip()
-        ggplot2::ggplotGrob(p)
+        p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
+        ggplotGrob(p)
       } else {
-        grid::textGrob(
-          paste(strwrap(capture.output(str(var)), width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)),
+        textGrob(
+          paste(strwrap(capture.output(str(var)), width = .9 * convertWidth(unit(1, "npc"), "char", TRUE)),
                 collapse = "\n"),
-          x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
+          x = unit(1, "line"), y = unit(1, "npc") - unit(1, "line"), just = c("left", "top")
         )
       }
 
-      grid::grid.draw(plot_grob)
+      grid.draw(plot_grob)
     }
   })
 

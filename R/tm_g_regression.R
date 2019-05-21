@@ -35,7 +35,7 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "ASL <- radsl(seed = 1); keys(ASL) <- c("STUDYID", "USUBJID")",
+#'     code = 'ASL <- radsl(seed = 1); keys(ASL) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
@@ -89,7 +89,7 @@ ui_g_regression <- function(id, ...) {
 
   ns <- NS(id)
   standard_layout(
-    output = teal.devel::white_small_well(
+    output = white_small_well(
       tags$div(
         # This shall be wrapped in a teal::plot
         plot_height_output(id = ns("myplot")),

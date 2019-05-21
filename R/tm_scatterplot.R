@@ -40,7 +40,11 @@
 #' AAE <- radae(ASL, seed = 1)
 #'
 #' app <- init(
-#'   data = list(ASL = ASL, AAE = AAE),
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     AAE = AAE,
+#'     code = "ASL <- radsl(seed = 1); AAE <- radae(ASL, seed = 1)",
+#'     check = FALSE),
 #'   root_modules(
 #'     tm_scatterplot(
 #'      "Scatterplot Choices",
@@ -191,42 +195,50 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
 
     if (is.null(color_by)) {
       set_chunk(expression = bquote(
-                  ggplot(.(as.name(data_name)), aes_string(x = xvar, y = yvar)) +
-                      geom_point(alpha = alpha, size = size)) %>% substituteDirect(
-                  list(
-                      alpha = alpha,
-                      size = size,
-                      xvar = xvar,
-                      yvar = yvar
-                  )
-              ))
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar
+        )
+      ))
     } else {
       set_chunk(expression = bquote(
-                  ggplot(.(as.name(data_name)), aes_string(x = xvar, y = yvar, color = color_by)) +
-                      geom_point(alpha = alpha, size = size)) %>% substituteDirect(
-                  list(
-                      alpha = alpha,
-                      size = size,
-                      xvar = xvar,
-                      yvar = yvar,
-                      color_by = color_by
-                  )
-              ))
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar, color = color_by)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar,
+          color_by = color_by
+        )
+      ))
     }
 
     eval_remaining()
   })
 
   observeEvent(input$show_rcode, {
-        teal.devel::show_rcode_modal(
-            title = "Scatter-Plot",
-            rcode = get_rcode(
-                datasets = datasets,
-                dataname = dataname,
-                title = "Scatter-Plot"
-            )
-        )
- })
+    show_rcode_modal(
+      title = "Scatter-Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        dataname = dataname,
+        title = "Scatter-Plot"
+      )
+    )
+  })
 }
 
 check_color <- function(x) {

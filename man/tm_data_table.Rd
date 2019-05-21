@@ -21,14 +21,17 @@ library(random.cdisc.data)
 
 ASL <- radsl(seed = 1)
 
-x <- init(
-  data = list(ASL = ASL),
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    code = "ASL <- radsl(seed = 1)",
+    check = FALSE),
   modules = root_modules(
     tm_data_table()
   )
 )
 \dontrun{
-  shinyApp(x$ui, x$server)
+  shinyApp(app$ui, app$server)
 }
 
 # two-datasets example
@@ -36,8 +39,12 @@ library(random.cdisc.data)
 ASL <- radsl(seed = 1)
 ADTE <- radaette(ASL, seed = 1)
 
-x <- init(
-  data = list(ASL = ASL, ADTE = ADTE),
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADTE = ADTE,
+    code = "ASL <- radsl(seed = 1); ADTE <- radaette(ASL, seed = 1)",
+    check = FALSE),
   modules = root_modules(
     tm_data_table(
       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
@@ -45,6 +52,6 @@ x <- init(
   )
 )
 \dontrun{
-shinyApp(x$ui, x$server)
+shinyApp(app$ui, app$server)
 }
 }

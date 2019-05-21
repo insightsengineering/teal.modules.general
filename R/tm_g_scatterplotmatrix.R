@@ -81,7 +81,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
@@ -120,6 +120,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
+#' @importFrom dplyr mutate_if
 #' @importFrom lattice splom
 #' @importFrom methods substituteDirect
 #' @importFrom teal.devel eval_remaining renew_chunk_environment renew_chunks set_chunk use_chunks
@@ -189,7 +190,7 @@ srv_g_scatterplotmatrix <- function(input,
     # set up expression chunk - lattice graph
     set_chunk(
       expression = quote(
-        merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
+        merged_ds <- mutate_if(merged_ds, is.character, as.factor)
       )
     )
 
@@ -198,7 +199,7 @@ srv_g_scatterplotmatrix <- function(input,
       "plt",
       substituteDirect(
         object = quote(
-          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+          splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
         ),
         frame = list(.cols = cols, .alpha = alpha, .cex = cex)
       )

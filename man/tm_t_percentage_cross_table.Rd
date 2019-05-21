@@ -33,18 +33,17 @@ output to put the output into context. For example the
 Cross table based on rtables
 }
 \examples{
-\dontrun{
 library(random.cdisc.data)
 
 ASL <- radsl(seed = 1)
 
-x <- teal::init(
+app <- init(
   data = cdisc_data(
     ASL = ASL,
     code = "ASL <- radsl(seed = 1)",
     check = TRUE
   ),
-  modules = teal::root_modules(
+  modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
       dataname = "ASL",
@@ -53,7 +52,8 @@ x <- teal::init(
     )
   )
 )
-shinyApp(x$ui, x$server)
+\dontrun{
+shinyApp(app$ui, app$server)
 }
 }
 \author{

@@ -81,10 +81,10 @@
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ARS = ARS,
-#'     code = 'ASL <- random.cdisc.data::radsl(seed = 1)
-#'            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
+#'     code = 'ASL <- radsl(seed = 1)
+#'            ARS <- radrs(ASL, seed = 1)
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
-#'            keys(ARS) <- c("USUBJID", "STUDYID")',
+#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
 #'      check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_response(
@@ -147,7 +147,7 @@
 #'
 #' ANL_FILTERED %>%
 #'   ggplot() +
-#'   aes(x = forcats::fct_rev(SEX)) +
+#'   aes(x = fct_rev(SEX)) +
 #'   xlab("SEX") +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
 #'   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
@@ -219,7 +219,7 @@ ui_g_response <- function(id, ...) {
   ns <- NS(id)
 
   standard_layout(
-    output = teal.devel::white_small_well(
+    output = white_small_well(
       plot_height_output(id = ns("myplot"))
     ),
     encoding = div(
@@ -351,7 +351,7 @@ srv_g_response <- function(input,
       }
 
       if (swap_axes) {
-        bquote(forcats::fct_rev(.(tmp_cl)))
+        bquote(fct_rev(.(tmp_cl)))
       } else {
         tmp_cl
       }
@@ -398,7 +398,9 @@ srv_g_response <- function(input,
 
     facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
 
-    if (!is.null(facet_cl)) plot_call <- call("+", plot_call, facet_cl)
+    if (!is.null(facet_cl)) {
+      plot_call <- call("+", plot_call, facet_cl)
+    }
 
     renew_chunk_environment(envir = environment())
     renew_chunks()
