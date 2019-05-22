@@ -1,10 +1,10 @@
-#' Create a simple cross-table
+#' Create a simple scatterplot
 #'
-#' Create a table with the \code{\link{table}[base]} function
+#' Create a plot with the \code{\link{plot}[base]} function
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param dataname name of dataset used to generate table
+#' @param dataname name of dataset used to generate plot
 #' @param xvar variable name of x varbiable
 #' @param yvar variable name of y variable
 #' @param xvar_choices vector with variable names of possible x variables. If
