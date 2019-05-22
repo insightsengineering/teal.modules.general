@@ -15,7 +15,7 @@
 #' ASL <- radsl(seed = 1)
 #'
 #' x <- init(
-#'   data = list(ASL = ASL),
+#'   data = cdisc_data(ASL = ASL),
 #'   modules = root_modules(
 #'     tm_data_table()
 #'   )
@@ -30,10 +30,10 @@
 #' ADTE <- radaette(ASL, seed = 1)
 #'
 #' x <- init(
-#'   data = list(ASL = ASL, ADTE = ADTE),
+#'   data = cdisc_data(ASL = ASL, ADTE = ADTE),
 #'   modules = root_modules(
 #'     tm_data_table(
-#'       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
+#'       variables_selected = cdisc_data(ASL  = c("SEX", "AGE","RACE"),
 #'                                 ADTE = c("STUDYID","AGE")))
 #'   )
 #' )
