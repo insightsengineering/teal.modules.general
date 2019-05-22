@@ -29,16 +29,16 @@
 #' ASL <- radsl(seed = 1)
 #' ADTE <- radaette(ASL, seed = 1)
 #'
-#' x <- init(
+#' app <- init(
 #'   data = cdisc_data(ASL = ASL, ADTE = ADTE),
 #'   modules = root_modules(
 #'     tm_data_table(
-#'       variables_selected = cdisc_data(ASL  = c("SEX", "AGE","RACE"),
+#'       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
 #'                                 ADTE = c("STUDYID","AGE")))
 #'   )
 #' )
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_data_table <- function(label = "Data table",
                           variables_selected = list()) {

@@ -89,7 +89,7 @@
 #'  modules = root_modules(
 #'    tm_g_bivariate(
 #'      dataname = c("ASL","ARS"),
-#'      xvar = ars_extracted_response),
+#'      xvar = list(ars_extracted_response),
 #'      yvar = list(asl_extracted),
 #'      use_density = FALSE,
 #'      row_facet_var = list(asl_extracted_row),
