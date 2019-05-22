@@ -106,7 +106,7 @@
 #' ANL <- suppressWarnings(inner_join(ARS, ASL))
 #'
 #' ANL_FILTERED <- ANL %>%
-#'   filter(PARAMCD == "BESRSPI") %>%
+#'   dplyr::filter(PARAMCD == "BESRSPI") %>%
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
 #' ANL_FILTERED %>%
