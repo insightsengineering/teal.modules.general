@@ -36,8 +36,7 @@
 #' ASL <- radsl(seed = 1)
 #' ARS <- radrs(ASL, seed = 1)
 #'
-#' keys(ASL) <- c("USUBJID", "STUDYID")
-#' keys(ARS) <- c("USUBJID", "STUDYID")
+#' keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")
 #'
 #' ars_filters <- filter_spec(
 #'     vars = c("PARAMCD"),
@@ -83,8 +82,7 @@
 #'    ARS = ARS,
 #'    code = 'ASL <- radsl(seed = 1)
 #'            ARS <- radrs(ASL, seed = 1)
-#'            keys(ASL) <- c("USUBJID", "STUDYID")
-#'            keys(ARS) <- c("USUBJID", "STUDYID")',
+#'            keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_bivariate(
@@ -516,7 +514,7 @@ srv_g_bivariate <- function(input,
 
 
   observeEvent(input$show_rcode, {
-    teal.devel::show_rcode_modal(
+    show_rcode_modal(
       title = "Bivariate Plot",
       rcode = get_rcode(
         datasets = datasets,

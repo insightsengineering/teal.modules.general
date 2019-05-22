@@ -81,7 +81,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
@@ -120,6 +120,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
+#' @importFrom dplyr mutate_if
 #' @importFrom lattice splom
 #' @importFrom methods substituteDirect
 #' @importFrom teal.devel eval_remaining renew_chunk_environment renew_chunks set_chunk use_chunks

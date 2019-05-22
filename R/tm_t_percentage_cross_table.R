@@ -13,18 +13,17 @@
 #' @author wolfs25 waddella
 #'
 #' @examples
-#' \dontrun{
 #' library(random.cdisc.data)
 #'
 #' ASL <- radsl(seed = 1)
 #'
-#' x <- teal::init(
+#' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     code = "ASL <- radsl(seed = 1)",
 #'     check = TRUE
 #'   ),
-#'   modules = teal::root_modules(
+#'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
 #'       dataname = "ASL",
@@ -33,7 +32,8 @@
 #'     )
 #'   )
 #' )
-#' shinyApp(x$ui, x$server)
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
 #' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
@@ -121,11 +121,11 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
 
   output$table <- renderUI({
     table_code()
-    rtables::as_html(eval_remaining())
+    as_html(eval_remaining())
   })
 
   observeEvent(input$show_rcode, {
-    teal.devel::show_rcode_modal(
+    show_rcode_modal(
       title = "Cross Table",
       rcode = get_rcode(
         datasets = datasets,

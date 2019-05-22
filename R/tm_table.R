@@ -27,23 +27,23 @@
 #' keys(ASL) <- c("USUBJID", "STUDYID")
 #'
 #' asl_extract_xvar <- data_extract_spec(
-#'     "ASL",
-#'     columns = columns_spec(
-#'         choices = base::setdiff(names(ASL), keys(ASL)), # strict call of setdiff
-#'         selected = names(ASL)[5],
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'     )
+#'   "ASL",
+#'   columns = columns_spec(
+#'     choices = base::setdiff(names(ASL), keys(ASL)),
+#'     selected = names(ASL)[5],
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
 #' )
 #'
 #' asl_extract_yvar <- data_extract_spec(
-#'     "ASL",
-#'     columns = columns_spec(
-#'         choices = base::setdiff(names(ASL), keys(ASL)), # strict call of setdiff
-#'         selected = names(ASL)[6],
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'     )
+#'   "ASL",
+#'   columns = columns_spec(
+#'     choices = base::setdiff(names(ASL), keys(ASL)),
+#'     selected = names(ASL)[6],
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
 #' )
 #'
 #' app <- init(
@@ -92,7 +92,7 @@ tm_table <- function(label,
 
   args$useNA <- match.arg(useNA) # nolint
 
-  teal::module(
+  module(
     label = label,
     server = srv_table,
     ui = ui_table,
@@ -138,7 +138,7 @@ ui_table <- function(id,
   )
 }
 
-#' @import stats
+#' @importFrom stats addmargins
 #' @importFrom teal.devel get_dataset_prefixed_col_names data_extract_module merge_datasets
 #' @importFrom teal.devel renew_chunk_environment eval_remaining renew_chunks set_chunk
 #' @importFrom teal.devel show_rcode_modal get_rcode
@@ -206,7 +206,7 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
     yvar_name <- get_dataset_prefixed_col_names(yvar_data())
     title <- paste("Cross-Table of", xvar_name, "vs.", yvar_name)
 
-    teal.devel::show_rcode_modal(
+    show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = get_rcode(
         datasets = datasets,

@@ -111,7 +111,7 @@ app <- init(
     code = 'ASL <- radsl(seed = 1)
            ARS <- radrs(ASL, seed = 1)
            keys(ASL) <- c("USUBJID", "STUDYID")
-           keys(ARS) <- c("USUBJID", "STUDYID")',
+           keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
      check = FALSE),
   modules = root_modules(
     tm_g_response(

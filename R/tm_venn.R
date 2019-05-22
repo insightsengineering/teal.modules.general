@@ -26,13 +26,23 @@
 venn2 <- function(x, y, xlab, ylab) {
 
 
-  if (length(x) <= 0) stop("lenght of x must be > 0")
+  if (length(x) <= 0) {
+    stop("lenght of x must be > 0")
+  }
 
-  if (missing(xlab)) xlab <- deparse(substitute(x))
-  if (missing(ylab)) ylab <- deparse(substitute(y))
+  if (missing(xlab)) {
+    xlab <- deparse(substitute(x))
+  }
+  if (missing(ylab)) {
+    ylab <- deparse(substitute(y))
+  }
 
-  if (length(x) != length(y)) stop("x and y need to be of the same length")
-  if (!is.logical(x) || !is.logical(y)) stop("x and y need to be boolean")
+  if (length(x) != length(y)) {
+    stop("x and y need to be of the same length")
+  }
+  if (!is.logical(x) || !is.logical(y)) {
+    stop("x and y need to be boolean")
+  }
 
   # what to do with NA?
   sel <- !is.na(x) & !is.na(y)
@@ -123,7 +133,7 @@ plot.venn2 <- function(x, ...) {
 
     # solve for a (the cord connecting the cusps of the lens)
 
-    a <- 1 / d_solve * sqrt((- d_solve + ay + ax) * (d_solve + ay - ax) * (d_solve - ay + ax) * (d_solve + ay + ax))
+    a <- 1 / d_solve * sqrt((-d_solve + ay + ax) * (d_solve + ay - ax) * (d_solve - ay + ax) * (d_solve + ay + ax))
 
     # find dx and dy using pythagorean theorm
     # dx and dy are distances from center of cusp to the respective centers of the circles
@@ -216,8 +226,19 @@ plot.venn2 <- function(x, ...) {
 #' ))
 #'
 #'
-#' x <- teal::init(
-#'   data = list(ASL = ASL),
+#' app <- init(
+#'   data = cdisc_data(
+#'   ASL = ASL,
+#'   code = '
+#'     N <- 100
+#'     var_biomarkers <- paste0("B", 1:10)
+#'     sample_bm_data <- lapply(1:10, function(x)sample(c(TRUE, FALSE), N, replace = TRUE))
+#'     names(sample_bm_data) <- var_biomarkers
+#'     ASL <- do.call(data.frame, c(
+#'       list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
+#'     ))
+#'   ',
+#'   check = FALSE),
 #'   modules = root_modules(
 #'     teal.modules.general:::tm_venn2(
 #'       "Venn Diagram", "ASL",
@@ -228,7 +249,7 @@ plot.venn2 <- function(x, ...) {
 #' )
 #'
 #' \dontrun{
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_venn2 <- function(label,
                      dataname,
@@ -323,7 +344,9 @@ srv_venn2 <- function(input, output, session, datasets, dataname) {
 
     x <- try(venn2(bm1, bm2, bm1_var, bm2_var), silent = TRUE)
 
-    if (is(x, "try-error")) validate(need(FALSE, paste0("could not calculate cross table:\n\n", x)))
+    if (is(x, "try-error")) {
+      validate(need(FALSE, paste0("could not calculate cross table:\n\n", x)))
+    }
 
     plot(x)
   })

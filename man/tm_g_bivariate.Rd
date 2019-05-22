@@ -72,8 +72,7 @@ library(tern)
 ASL <- radsl(seed = 1)
 ARS <- radrs(ASL, seed = 1)
 
-keys(ASL) <- c("USUBJID", "STUDYID")
-keys(ARS) <- c("USUBJID", "STUDYID")
+keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")
 
 ars_filters <- filter_spec(
     vars = c("PARAMCD"),
@@ -119,8 +118,7 @@ app <- init(
    ARS = ARS,
    code = 'ASL <- radsl(seed = 1)
            ARS <- radrs(ASL, seed = 1)
-           keys(ASL) <- c("USUBJID", "STUDYID")
-           keys(ARS) <- c("USUBJID", "STUDYID")',
+           keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(

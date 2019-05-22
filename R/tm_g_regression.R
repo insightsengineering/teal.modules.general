@@ -89,7 +89,7 @@ ui_g_regression <- function(id, ...) {
 
   ns <- NS(id)
   standard_layout(
-    output = teal.devel::white_small_well(
+    output = white_small_well(
       tags$div(
         # This shall be wrapped in a teal::plot
         plot_height_output(id = ns("myplot")),
