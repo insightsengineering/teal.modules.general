@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_scatterplot.R
 \name{tm_scatterplot}
 \alias{tm_scatterplot}
-\title{Create a simple cross-table}
+\title{Create a simple scatterplot}
 \usage{
 tm_scatterplot(label, dataname, xvar, yvar, xvar_choices = xvar,
   yvar_choices = yvar, color_by = NULL, color_by_choices = color_by,
@@ -12,7 +12,7 @@ tm_scatterplot(label, dataname, xvar, yvar, xvar_choices = xvar,
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
-\item{dataname}{name of dataset used to generate table}
+\item{dataname}{name of dataset used to generate plot}
 
 \item{xvar}{variable name of x varbiable}
 
@@ -56,7 +56,7 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-Create a table with the \code{\link{table}[base]} function
+Create a plot with the \code{\link{plot}[base]} function
 }
 \examples{
 
