@@ -51,7 +51,7 @@
 #'     dataname = "ARS",
 #'     filter = ars_filters,
 #'     columns = columns_spec(
-#'         choices = setdiff(names(ARS), keys(ARS)),
+#'         choices = base::setdiff(names(ARS), keys(ARS)),
 #'         selected = names(ARS)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE,
@@ -61,7 +61,7 @@
 #' asl_extracted <- data_extract_spec(
 #'     dataname = "ASL",
 #'     columns = columns_spec(
-#'         choices = c("", setdiff(names(ASL), keys(ASL))),
+#'         choices = c("", base::setdiff(names(ASL), keys(ASL))),
 #'         selected = c("RACE"),
 #'         multiple = FALSE,
 #'         fixed = FALSE
