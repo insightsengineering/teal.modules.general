@@ -29,7 +29,7 @@
 #' asl_extract_xvar <- data_extract_spec(
 #'     "ASL",
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ASL), keys(ASL)),
+#'         choices = base::setdiff(names(ASL), keys(ASL)), # strict call of setdiff
 #'         selected = names(ASL)[5],
 #'         multiple = FALSE,
 #'         fixed = FALSE
@@ -39,7 +39,7 @@
 #' asl_extract_yvar <- data_extract_spec(
 #'     "ASL",
 #'     columns = columns_spec(
-#'         choices = base::setdiff(names(ASL), keys(ASL)),
+#'         choices = base::setdiff(names(ASL), keys(ASL)), # strict call of setdiff
 #'         selected = names(ASL)[6],
 #'         multiple = FALSE,
 #'         fixed = FALSE
