@@ -81,8 +81,8 @@
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ARS = ARS,
-#'     code = 'ASL <- random.cdisc.data::radsl(seed = 1)
-#'            ARS <- random.cdisc.data::radrs(ASL, seed = 1)
+#'     code = 'ASL <- radsl(seed = 1)
+#'            ARS <- radrs(ASL, seed = 1)
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
 #'            keys(ARS) <- c("USUBJID", "STUDYID")',
 #'      check = FALSE),
@@ -106,7 +106,7 @@
 #' ANL <- suppressWarnings(inner_join(ARS, ASL))
 #'
 #' ANL_FILTERED <- ANL %>%
-#'   dplyr::filter(PARAMCD == "BESRSPI") %>%
+#'   dplyr::filter(PARAMCD == "BESRSPI") %>% # strict call of filter
 #'   mutate(ALL = factor(rep("Response", n())))
 #'
 #' ANL_FILTERED %>%
@@ -147,7 +147,7 @@
 #'
 #' ANL_FILTERED %>%
 #'   ggplot() +
-#'   aes(x = forcats::fct_rev(SEX)) +
+#'   aes(x = fct_rev(SEX)) +
 #'   xlab("SEX") +
 #'   geom_bar(aes(fill = AVALC), position = "fill") +
 #'   geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +

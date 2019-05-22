@@ -16,7 +16,7 @@
 #' ASL <- radsl(seed = 1)
 #'
 #' app <- init(
-#'   data = list(ASL = ASL),
+#'   data = cdisc_data(ASL = ASL),
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",

@@ -66,7 +66,7 @@ ASL <- radsl(seed = 1)
 AAE <- radae(ASL, seed = 1)
 
 app <- init(
-  data = list(ASL = ASL, AAE = AAE),
+  data = cdisc_data(ASL = ASL, AAE = AAE),
   root_modules(
     tm_scatterplot(
      "Scatterplot Choices",
