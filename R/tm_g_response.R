@@ -351,7 +351,7 @@ srv_g_response <- function(input,
       }
 
       if (swap_axes) {
-        bquote(fct_rev(.(tmp_cl)))
+        bquote(forcats::fct_rev(.(tmp_cl)))
       } else {
         tmp_cl
       }

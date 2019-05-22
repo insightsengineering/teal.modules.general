@@ -182,7 +182,7 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
     renew_chunks()
 
     if (use_margin) {
-      expression_to_use <- expr(addmargins(
+      expression_to_use <- expr(stats::addmargins(
         table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)
       )) %>%
         substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))

@@ -190,7 +190,7 @@ srv_g_scatterplotmatrix <- function(input,
     # set up expression chunk - lattice graph
     set_chunk(
       expression = quote(
-        merged_ds <- mutate_if(merged_ds, is.character, as.factor)
+        merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
       )
     )
 
@@ -199,7 +199,7 @@ srv_g_scatterplotmatrix <- function(input,
       "plt",
       substituteDirect(
         object = quote(
-          splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
         ),
         frame = list(.cols = cols, .alpha = alpha, .cex = cex)
       )
