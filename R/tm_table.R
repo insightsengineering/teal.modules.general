@@ -210,7 +210,6 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
       title = "R Code for the Current Table",
       rcode = get_rcode(
         datasets = datasets,
-        dataname = dataname,
         merged_dataname = "dataset",
         merged_datasets = list(
           xvar_data(),

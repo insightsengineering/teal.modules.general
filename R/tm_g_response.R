@@ -418,7 +418,6 @@ srv_g_response <- function(input,
       title = "Response Plot",
       rcode = get_rcode(
         datasets = datasets,
-        dataname = dataname,
         merged_dataname = "anl",
         merged_datasets = list(
           response_data(),

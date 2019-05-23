@@ -129,7 +129,6 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
       title = "Cross Table",
       rcode = get_rcode(
         datasets = datasets,
-        dataname = dataname,
         title = label
       )
     )
