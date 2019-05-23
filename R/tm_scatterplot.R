@@ -234,7 +234,6 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       title = "Scatter-Plot",
       rcode = get_rcode(
         datasets = datasets,
-        dataname = dataname,
         title = "Scatter-Plot"
       )
     )

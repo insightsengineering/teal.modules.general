@@ -518,7 +518,6 @@ srv_g_bivariate <- function(input,
       title = "Bivariate Plot",
       rcode = get_rcode(
         datasets = datasets,
-        dataname = dataname,
         merged_dataname = "anl",
         merged_datasets = data_to_merge(expert_settings && input$expert),
         title = "Bivariate Plot"
