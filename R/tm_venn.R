@@ -263,9 +263,9 @@ tm_venn2 <- function(label,
   stopifnot(is.character.single(dataname))
   stopifnot(is.choices_selected(bm1_var))
   stopifnot(is.choices_selected(bm1_var))
-  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
   stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
-  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(is.numeric.vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
   stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
 
   args <- as.list(environment())

@@ -76,7 +76,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stopifnot(is.list(select_col))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   args <- as.list(environment())
