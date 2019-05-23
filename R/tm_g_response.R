@@ -189,7 +189,7 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is.null(col_facet_var) || is.list(col_facet_var))
   stopifnot(is.logical.single(coord_flip))
   stopifnot(is.logical.single(freq))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
 

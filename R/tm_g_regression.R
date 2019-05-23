@@ -62,7 +62,7 @@ tm_g_regression <- function(label = "Regression Analysis",
   stopifnot(is.character.vector(dataname))
   stopifnot(is.list(response))
   stopifnot(is.list(regressor))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
 

@@ -144,7 +144,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.list(size_var))
   stopifnot(is.logical.single(free_x_scales))
   stopifnot(is.logical.single(free_y_scales))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
   stopifnot(is.character.single(ggtheme))
   stopifnot(is.logical.single(with_show_r_code))
