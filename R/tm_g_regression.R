@@ -99,14 +99,14 @@ ui_g_regression <- function(id, ...) {
     encoding = div(
       helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
       data_extract_input(
-        id = ns("regressor"),
-        label = "Regressor Variable",
-        data_extract_spec = arguments$regressor
-      ),
-      data_extract_input(
         id = ns("response"),
         label = "Response Variable",
         data_extract_spec = arguments$response
+      ),
+      data_extract_input(
+        id = ns("regressor"),
+        label = "Regressor Variable",
+        data_extract_spec = arguments$regressor
       ),
       radioButtons(
         ns("plot_type"),
