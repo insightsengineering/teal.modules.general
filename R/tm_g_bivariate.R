@@ -443,8 +443,15 @@ srv_g_bivariate <- function(input,
     return(environment())
   })
 
-  # Create plot
-  plot_call <- reactive({
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
+
+  output$plot <- renderPlot({
 
     validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
 
@@ -492,16 +499,6 @@ srv_g_bivariate <- function(input,
     renew_chunks()
 
     set_chunk("plotCall", cl)
-  })
-
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(plot_with_height,
-             id = "myplot",
-             plot_height = reactive(input$myplot),
-             plot_id = session$ns("plot")
-  )
-  output$plot <- renderPlot({
-    plot_call()
 
     p <- eval_remaining()
 

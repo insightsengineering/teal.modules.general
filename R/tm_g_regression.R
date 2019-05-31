@@ -186,7 +186,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   })
 
-  plot_reactive <- reactive({
+  output$plot <- renderPlot({
 
     fit()
 
@@ -196,7 +196,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       if (ncol(fit$model) > 1) {
         validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
         plot %<chunk%
-            plot(fit$model[, 2:1])
+          plot(fit$model[, 2:1])
       } else {
         plot %<chunk% {
           plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
@@ -207,18 +207,14 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       }
     } else {
       i <- which(input$plot_type == c(
-              "Residuals vs Fitted",
-              "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-              "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-          ))
+        "Residuals vs Fitted",
+        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+      ))
       plot %<chunk%
-          plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+        plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
     }
 
-      })
-
-  output$plot <- renderPlot({
-    plot_reactive()
     eval_remaining()
   })
 
