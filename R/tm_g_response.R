@@ -325,8 +325,7 @@ srv_g_response <- function(input,
     plotOutput(session$ns("plot"), height = plot_height)
   })
 
-  # create a plot call from data inserted
-  plot_call <- reactive({
+  output$plot <- renderPlot({
     resp_var <- get_dataset_prefixed_col_names(response_data())
     xvar <- get_dataset_prefixed_col_names(xvar_data())
     row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
@@ -375,8 +374,8 @@ srv_g_response <- function(input,
     if (!freq) {
       if (swap_axes) {
         tmp_cl1 <- quote(xlab(label)) %>%
-            substituteDirect(list(label = tmp_cl %>%
-                        deparse()))
+          substituteDirect(list(label = tmp_cl %>%
+                                  deparse()))
         tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
       } else {
         tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
@@ -387,8 +386,8 @@ srv_g_response <- function(input,
     } else {
       # Change Y-Axis Label in case of Swap
       tmp_cl1 <- quote(xlab(label)) %>%
-          substituteDirect(list(label = tmp_cl %>%
-                      deparse()))
+        substituteDirect(list(label = tmp_cl %>%
+                                deparse()))
       plot_call <- call("+", plot_call, tmp_cl1)
     }
 
@@ -406,10 +405,7 @@ srv_g_response <- function(input,
     renew_chunks()
 
     set_chunk("plotCall", plot_call)
-  })
 
-  output$plot <- renderPlot({
-    plot_call()
     eval_remaining()
   })
 
