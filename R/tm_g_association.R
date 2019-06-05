@@ -67,7 +67,7 @@ ui_tm_g_association <- function(id, ...) {
 
   # standard_layout2(
   standard_layout(
-    output = uiOutput(ns("plot_ui")),
+    output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
@@ -89,11 +89,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      optionalSliderInputValMinMax(ns("plot_height"),
-        "plot height",
-        a$plot_height,
-        ticks = FALSE
-      )
+      plot_height_input(id = ns("myplot"), value = a$plot_height)
     ),
     forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
     pre_output = a$pre_output,
@@ -109,35 +105,36 @@ srv_tm_g_association <- function(input,
                                  dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    validate(need(plot_height, "need valid plot height"))
-    ns <- session$ns
-    plotOutput(ns("plot"), height = plot_height)
-  })
+  use_chunks(session)
 
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
 
-  anl_head <- head(datasets$get_data(dataname, filtered = FALSE, reactive = FALSE))
-
-  anl_name <- paste0(dataname, "_FILTERED")
-
-  plot_call <- reactive({
+  output$plot <- renderPlot({
     var <- input$var
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
 
-    # annotate globals as.global(anl_head, var, association, show_dist, log_transformation)
+    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    anl_name <- paste0(dataname, "_FILTERED")
+    assign(anl_name, anl_f)
 
     validate(
-      need(nrow(anl_head) > 3, "need at least three rows"),
+      need(nrow(anl_f) > 3, "need at least three rows"),
       need(length(var) > 0, "need at least one variable selected"),
-      need(all(var %in% names(anl_head)), paste("not all selected variables are in ", dataname))
+      need(all(var %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
+    renew_chunk_environment(envir = environment())
+    renew_chunks()
 
     ref_var <- var[1]
-    ref_var_class <- class(anl_head[[ref_var]])
+    ref_var_class <- class(anl_f[[ref_var]])
 
     if (ref_var_class == "numeric" && log_transformation) {
       ref_var <- call("log", as.name(ref_var))
@@ -156,7 +153,7 @@ srv_tm_g_association <- function(input,
     }
 
     var_cls <- lapply(var[-1], function(var_i) {
-      class_i <- class(anl_head[[var_i]])
+      class_i <- class(anl_f[[var_i]])
       if (class_i == "numeric" && log_transformation) {
         var_i <- call("log", as.name(var_i))
       }
@@ -169,40 +166,29 @@ srv_tm_g_association <- function(input,
 
     cl2 <- call("<-", quote(p), call("stack_grobs", grobs = quote(lapply(plots, ggplotGrob))))
 
-    call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
-  })
+    cl <- call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
 
+    set_chunk("plotCall", cl)
 
-  output$plot <- renderPlot({
-    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-    plot_call <- plot_call()
-    # annotate globals as.global(plot_call, anl_filtered)
-
-    p <- try(eval(plot_call, list2env(setNames(list(anl_filtered, emptyenv()), c(anl_name, "parent")))))
+    p <- eval_remaining()
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))
     } else {
       p
     }
+
   })
 
   observeEvent(input$show_rcode, {
-    header <- "# Association Plot"
-
-    str_rcode <- paste(c(
-      "",
-      header,
-      "",
-      deparse(plot_call(), width.cutoff = 60)
-    ), collapse = "\n")
-
-    # log code .log("show R code")
-    showModal(modalDialog(
+    show_rcode_modal(
       title = "R Code for the Association Plot",
-      tags$pre(tags$code(class = "R", str_rcode)),
-      easyClose = TRUE,
-      size = "l"
-    ))
+      rcode = get_rcode(
+        datasets = datasets,
+        merged_dataname = "anl",
+        # merged_datasets = data_to_merge(expert_settings && input$expert),
+        title = "Association Plot"
+      )
+    )
   })
 }
