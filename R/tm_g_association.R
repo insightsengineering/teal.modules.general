@@ -3,8 +3,9 @@
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @param dataname (\code{character}) data set name to analyze
-#' @param var (\code{choices_selected}) TODO
-#' @param show_association (\code{logical}) TODO
+#' @param ref_var (\code{choices_selected}) reference variable
+#' @param vars (\code{choices_selected}) associated variables
+#' @param show_association (\code{logical}) wheater show association of \code{vars} with refference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
 #'
@@ -24,7 +25,8 @@
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       dataname = "ASL",
-#'       var = choices_selected(names(ASL), "AGE")
+#'       ref_var = choices_selected(names(ASL), "AGE"),
+#'       vars = choices_selected(names(ASL), "SEX")
 #'     )
 #'   )
 #' )
@@ -34,7 +36,8 @@
 #' }
 tm_g_association <- function(label = "Association",
                              dataname,
-                             var,
+                             ref_var,
+                             vars,
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              pre_output = NULL,
@@ -42,7 +45,8 @@ tm_g_association <- function(label = "Association",
                              with_show_r_code = TRUE) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.choices_selected(var))
+  stopifnot(is.choices_selected(ref_var))
+  stopifnot(is.choices_selected(vars))
   stopifnot(is.logical.single(show_association))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -71,10 +75,18 @@ ui_tm_g_association <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(a$dataname)),
-      optionalSelectInput(ns("var"),
-        "Variables",
-        a$var$choices,
-        a$var$selected,
+      optionalSelectInput(
+        ns("ref_var"),
+        "Reference variable",
+        a$ref_var$choices,
+        a$ref_var$selected,
+        multiple = FALSE
+      ),
+      optionalSelectInput(
+        ns("vars"),
+        "Associated variables",
+        a$vars$choices,
+        a$vars$selected,
         multiple = TRUE
       ),
       checkboxInput(ns("association"),
@@ -115,7 +127,8 @@ srv_tm_g_association <- function(input,
   )
 
   output$plot <- renderPlot({
-    var <- input$var
+    ref_var <- input$ref_var
+    vars <- input$vars
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
@@ -126,14 +139,12 @@ srv_tm_g_association <- function(input,
 
     validate(
       need(nrow(anl_f) > 3, "need at least three rows"),
-      need(length(var) > 0, "need at least one variable selected"),
-      need(all(var %in% names(anl_f)), paste("not all selected variables are in ", dataname))
+      need(length(ref_var) > 0, "need at least one variable selected"),
+      need(!(ref_var %in% vars), "associated variables and reference variable cannot overlap"),
+      need(ref_var %in% names(anl_f), paste("reference variable not found in ", dataname)),
+      need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
-
-    ref_var <- var[1]
     ref_var_class <- class(anl_f[[ref_var]])
 
     if (ref_var_class == "numeric" && log_transformation) {
@@ -152,7 +163,7 @@ srv_tm_g_association <- function(input,
       "NULL"
     }
 
-    var_cls <- lapply(var[-1], function(var_i) {
+    var_cls <- lapply(vars, function(var_i) {
       class_i <- class(anl_f[[var_i]])
       if (class_i == "numeric" && log_transformation) {
         var_i <- call("log", as.name(var_i))
@@ -164,9 +175,12 @@ srv_tm_g_association <- function(input,
 
     cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
 
-    cl2 <- call("<-", quote(p), call("stack_grobs", grobs = quote(lapply(plots, ggplotGrob))))
+    cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
 
-    cl <- call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
+    cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
+
+    renew_chunk_environment(envir = environment())
+    renew_chunks()
 
     set_chunk("plotCall", cl)
 
@@ -186,7 +200,6 @@ srv_tm_g_association <- function(input,
       rcode = get_rcode(
         datasets = datasets,
         merged_dataname = "anl",
-        # merged_datasets = data_to_merge(expert_settings && input$expert),
         title = "Association Plot"
       )
     )
