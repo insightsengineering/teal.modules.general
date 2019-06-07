@@ -145,9 +145,6 @@ srv_tm_g_association <- function(input,
       need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
-
     ref_var_class <- class(anl_f[[ref_var]])
 
     if (ref_var_class == "numeric" && log_transformation) {
@@ -182,6 +179,9 @@ srv_tm_g_association <- function(input,
 
     cl <- call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
 
+    renew_chunk_environment(envir = environment())
+    renew_chunks()
+
     set_chunk("plotCall", cl)
 
     p <- eval_remaining()
@@ -200,7 +200,6 @@ srv_tm_g_association <- function(input,
       rcode = get_rcode(
         datasets = datasets,
         merged_dataname = "anl",
-        # merged_datasets = data_to_merge(expert_settings && input$expert),
         title = "Association Plot"
       )
     )
