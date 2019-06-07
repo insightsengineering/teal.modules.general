@@ -39,29 +39,56 @@ library(random.cdisc.data)
 library(tern)
 
 ASL <- radsl(seed = 1)
-keys(ASL) <- c("STUDYID", "USUBJID")
+ALB <- radlb(ASL, seed = 1)
 
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
 
 asl_extracted <- data_extract_spec(
   dataname = "ASL",
   columns = columns_spec(
     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
-    selected = c("AGE"),
+    selected = c("BMRKR1"),
     multiple = TRUE,
     fixed = FALSE
+  )
+)
+
+alb_filters <- filter_spec(
+  vars = c("PARAMCD", "AVISIT"),
+  sep = " - ",
+  choices = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29"),
+  selected = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29")[1],
+  multiple = FALSE,
+  label = "Choose endpoint"
+)
+
+alb_extracted <- data_extract_spec(
+  dataname = "ALB",
+  filter = alb_filters,
+  columns = columns_spec(
+    choices = c("AVAL"),
+    selected = "AVAL",
+    multiple = FALSE,
+    fixed = FALSE,
+    label = "variable"
   )
 )
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    code = 'ASL <- radsl(seed = 1); keys(ASL) <- c("STUDYID", "USUBJID")',
+    ALB = ALB,
+    code = 'ASL <- radsl(seed = 1)
+            ALB <- radlb(ASL, seed = 1)
+            keys(ASL) <- c("STUDYID", "USUBJID")
+            keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")',
     check = FALSE),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ASL"),
-      response = list(asl_extracted),
+      dataname = c("ASL", "ALB"),
+      response = list(alb_extracted),
       regressor = list(asl_extracted)
     )
   )
