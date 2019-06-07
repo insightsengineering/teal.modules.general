@@ -175,9 +175,9 @@ srv_tm_g_association <- function(input,
 
     cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
 
-    cl2 <- call("<-", quote(p), call("stack_grobs", grobs = quote(lapply(plots, ggplotGrob))))
+    cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
 
-    cl <- call("{", cl1, cl2, quote(grid.newpage()), quote(grid.draw(p)))
+    cl <- bquote({.(cl1); .(cl2); grid.newpage(); grid.draw(p)})
 
     renew_chunk_environment(envir = environment())
     renew_chunks()
