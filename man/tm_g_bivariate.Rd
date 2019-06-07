@@ -72,13 +72,14 @@ library(tern)
 ASL <- radsl(seed = 1)
 ARS <- radrs(ASL, seed = 1)
 
-keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")
 
 ars_filters <- filter_spec(
     vars = c("PARAMCD"),
     sep = " - ",
-    choices = unique(ARS$PARAMCD),
-    selected = unique(ARS$PARAMCD)[1],
+    choices = c("BESRSPI", "INVET"),
+    selected = "BESRSPI",
     multiple = FALSE,
     label = "Choose endpoint"
 )
@@ -86,8 +87,8 @@ ars_extracted_response <- data_extract_spec(
     dataname = "ARS",
     filter = ars_filters,
     columns = columns_spec(
-        choices = base::setdiff(names(ARS), keys(ARS)), # strict call of setdiff
-        selected = names(ARS)[5],
+        choices = c("","AVAL", "AVALC"),
+        selected = "AVALC",
         multiple = FALSE,
         fixed = FALSE,
         label = "variable"
@@ -96,19 +97,21 @@ ars_extracted_response <- data_extract_spec(
 asl_extracted <- data_extract_spec(
     dataname = "ASL",
     columns = columns_spec(
-        choices = c("", base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
-        selected = c("RACE"),
+        choices = c(base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
+        selected = c("AGE"),
         multiple = FALSE,
-        fixed = FALSE
+        fixed = FALSE,
+        label = "variable"
     )
 )
 asl_extracted_row <- data_extract_spec(
     dataname = "ASL",
     columns = columns_spec(
         choices = c("","SEX", "RACE"),
-        selected = "RACE",
+        selected = "",
         multiple = TRUE,
-        fixed = FALSE
+        fixed = FALSE,
+        label = "variable"
     )
 )
 
@@ -117,14 +120,15 @@ app <- init(
    ASL = ASL,
    ARS = ARS,
    code = 'ASL <- radsl(seed = 1)
-           ARS <- radrs(ASL, seed = 1)
-           keys(ASL) <- keys(ARS) <- c("USUBJID", "STUDYID")',
+          ARS <- radrs(ASL, seed = 1)
+          keys(ASL) <- c("STUDYID", "USUBJID")
+          keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(
      dataname = c("ASL","ARS"),
-     xvar = list(ars_extracted_response),
-     yvar = list(asl_extracted),
+     xvar = list(asl_extracted),
+     yvar = list(ars_extracted_response),
      use_density = FALSE,
      row_facet_var = list(asl_extracted_row),
      col_facet_var = list(asl_extracted_row),
