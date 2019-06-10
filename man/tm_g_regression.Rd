@@ -47,6 +47,15 @@ keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
 asl_extracted <- data_extract_spec(
   dataname = "ASL",
   columns = columns_spec(
+    choices = c("BMRKR1", "BMRKR2"),
+    selected = c("BMRKR1"),
+    multiple = FALSE,
+    fixed = FALSE
+  )
+)
+asl_extracted_regressor <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
     selected = c("BMRKR1"),
     multiple = TRUE,

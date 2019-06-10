@@ -4,7 +4,7 @@
 \alias{tm_g_association}
 \title{Stack Plots of variables and show association with reference variable}
 \usage{
-tm_g_association(label = "Association", dataname, var,
+tm_g_association(label = "Association", dataname, ref_var, vars,
   show_association = TRUE, plot_height = c(600, 400, 5000),
   pre_output = NULL, post_output = NULL, with_show_r_code = TRUE)
 }
@@ -13,9 +13,11 @@ tm_g_association(label = "Association", dataname, var,
 
 \item{dataname}{(\code{character}) data set name to analyze}
 
-\item{var}{(\code{choices_selected}) TODO}
+\item{ref_var}{(\code{choices_selected}) reference variable}
 
-\item{show_association}{(\code{logical}) TODO}
+\item{vars}{(\code{choices_selected}) associated variables}
+
+\item{show_association}{(\code{logical}) wheater show association of \code{vars} with refference variable}
 
 \item{plot_height}{(\code{numeric}) vector with three elements defining selected, min and max plot height}
 
@@ -46,7 +48,8 @@ app <- init(
   modules = root_modules(
     tm_g_association(
       dataname = "ASL",
-      var = choices_selected(names(ASL), "AGE")
+      ref_var = choices_selected(names(ASL), "AGE"),
+      vars = choices_selected(names(ASL), "SEX")
     )
   )
 )
