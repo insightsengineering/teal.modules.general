@@ -21,12 +21,20 @@
 #' ASL <- radsl(seed = 1)
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
-#'
-#' asl_extracted <- data_extract_spec(
+#' asl_extracted_response <- data_extract_spec(
+#'   dataname = "ASL",
+#'   columns = columns_spec(
+#'     choices = c("BMRKR1", "BMRKR2"),
+#'     selected = c("BMRKR1"),
+#'     multiple = FALSE,
+#'     fixed = FALSE
+#'   )
+#' )
+#' asl_extracted_regressor <- data_extract_spec(
 #'   dataname = "ASL",
 #'   columns = columns_spec(
 #'     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
-#'     selected = c("AGE"),
+#'     selected = c("AGE", "AGE"),
 #'     multiple = TRUE,
 #'     fixed = FALSE
 #'   )
@@ -41,8 +49,8 @@
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL"),
-#'       response = list(asl_extracted),
-#'       regressor = list(asl_extracted)
+#'       response = list(asl_extracted_response),
+#'       regressor = list(asl_extracted_regressor)
 #'     )
 #'   )
 #' )
@@ -61,6 +69,8 @@ tm_g_regression <- function(label = "Regression Analysis",
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stopifnot(is.list(response))
+  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                   "Response variable should not allow multiple selection"))
   stopifnot(is.list(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -156,6 +166,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
   fit <- reactive({
 
     response_var <- get_dataset_prefixed_col_names(response_data())
+    validate(need(length(response_var) == 1, "Response variable should be of lenght one."))
     regressor_var <- get_dataset_prefixed_col_names(regressor_data())
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
     validate_has_data(merged_dataset, 10)
