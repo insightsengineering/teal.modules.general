@@ -41,12 +41,20 @@ library(tern)
 ASL <- radsl(seed = 1)
 keys(ASL) <- c("STUDYID", "USUBJID")
 
-
-asl_extracted <- data_extract_spec(
+asl_extracted_response <- data_extract_spec(
+  dataname = "ASL",
+  columns = columns_spec(
+    choices = c("BMRKR1", "BMRKR2"),
+    selected = c("BMRKR1"),
+    multiple = FALSE,
+    fixed = FALSE
+  )
+)
+asl_extracted_regressor <- data_extract_spec(
   dataname = "ASL",
   columns = columns_spec(
     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
-    selected = c("AGE"),
+    selected = c("AGE", "AGE"),
     multiple = TRUE,
     fixed = FALSE
   )
@@ -61,8 +69,8 @@ app <- init(
     tm_g_regression(
       label = "Regression",
       dataname = c("ASL"),
-      response = list(asl_extracted),
-      regressor = list(asl_extracted)
+      response = list(asl_extracted_response),
+      regressor = list(asl_extracted_regressor)
     )
   )
 )
