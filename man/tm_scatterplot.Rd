@@ -63,20 +63,19 @@ Create a plot with the \code{\link{plot}[base]} function
 library(random.cdisc.data)
 
 ASL <- radsl(seed = 1)
-AAE <- radae(ASL, seed = 1)
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    AAE = AAE,
-    code = "ASL <- radsl(seed = 1); AAE <- radae(ASL, seed = 1)",
+    code = "ASL <- radsl(seed = 1)",
     check = FALSE),
   root_modules(
     tm_scatterplot(
      "Scatterplot Choices",
-      dataname = "AAE",
-      xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),
-      color_by = "_none_", color_by_choices = c("_none_", "AEBODSYS")
+      dataname = "ASL",
+      xvar = "BMRKR1", xvar_choices = c("AGE", "BMRKR1", "BMRKR2"),
+      yvar = "BMRKR2", yvar_choices = c("AGE", "BMRKR1", "BMRKR2"),
+      color_by = "_none_", color_by_choices = c("_none_", "RACE")
     ),
     tm_scatterplot(
      "Scatterplot No Color Choices",
