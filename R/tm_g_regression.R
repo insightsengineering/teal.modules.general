@@ -8,18 +8,17 @@
 #'  to define the response variable from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
-#'
-#' @export
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @examples
+#' @export
 #'
+#' @examples
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- radsl(seed = 1)
-#' ALB <- radlb(ASL, seed = 1)
+#' ASL <- cadsl
+#' ALB <- cadlb
 #'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -68,8 +67,8 @@
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ALB = ALB,
-#'     code = 'ASL <- radsl(seed = 1)
-#'             ALB <- radlb(ASL, seed = 1)
+#'     code = 'ASL <- cadsl
+#'             ALB <- cadlb
 #'             keys(ASL) <- c("STUDYID", "USUBJID")
 #'             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")',
 #'     check = FALSE),
@@ -120,8 +119,6 @@ tm_g_regression <- function(label = "Regression Analysis",
 }
 
 
-
-#' @importFrom teal.devel data_extract_input plot_height_output standard_layout
 ui_g_regression <- function(id, ...) {
   arguments <- list(...)
 
@@ -166,12 +163,9 @@ ui_g_regression <- function(id, ...) {
   )
 }
 
+
 #' @importFrom graphics plot abline
 #' @importFrom methods is substituteDirect
-#' @importFrom teal.devel %<chunk% %<chunk_env% %substitute% data_extract_module eval_remaining
-#' @importFrom teal.devel get_envir_chunks get_rcode renew_chunk_environment renew_chunks set_chunk use_chunks
-#' @importFrom teal.devel get_dataset_prefixed_col_names merge_datasets plot_with_height plot_height_input
-#' @importFrom teal.devel get_rcode show_rcode_modal validate_has_data
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
@@ -221,8 +215,6 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     )
 
     eval_remaining()
-
-
   })
 
   output$plot <- renderPlot({

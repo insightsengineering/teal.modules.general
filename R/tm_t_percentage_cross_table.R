@@ -15,12 +15,12 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "ASL <- radsl(seed = 1)",
+#'     code = "ASL <- cadsl",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -56,7 +56,6 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
   )
 }
 
-#' @importFrom teal.devel optionalSelectInput standard_layout white_small_well
 ui_percentage_cross_table <- function(id, ...) {
   a <- list(...)
 
@@ -75,8 +74,6 @@ ui_percentage_cross_table <- function(id, ...) {
   )
 }
 
-#' @importFrom teal.devel get_rcode show_rcode_modal
-#' @importFrom teal.devel eval_remaining renew_chunks renew_chunk_environment set_chunk set_chunk
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
 srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
@@ -105,7 +102,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     renew_chunks()
 
     set_chunk(expression = bquote(data_table <-
-      addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
+      stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
 
     set_chunk(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
 
@@ -121,7 +118,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
 
   output$table <- renderUI({
     table_code()
-    as_html(eval_remaining())
+    rtables::as_html(eval_remaining())
   })
 
   observeEvent(input$show_rcode, {

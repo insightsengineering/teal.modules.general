@@ -10,6 +10,7 @@
 #' @import magrittr
 #' @import shiny
 #' @import teal
+#' @import teal.devel
 #' @import utils.nest
 #'
 #' @importFrom utils tail

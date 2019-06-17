@@ -5,7 +5,6 @@
 #'
 #' @noRd
 #'
-#'
 #' @return  list with absolute and percentage cross table
 #'
 #' @examples
@@ -24,8 +23,6 @@
 #' y <- teal.modules.general:::venn2(x, y, "X", "Y")
 #' plot(y)
 venn2 <- function(x, y, xlab, ylab) {
-
-
   if (length(x) <= 0) {
     stop("lenght of x must be > 0")
   }
@@ -280,7 +277,7 @@ tm_venn2 <- function(label,
   )
 }
 
-#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
+
 ui_venn2 <- function(id,
                      label,
                      dataname,
@@ -312,6 +309,7 @@ ui_venn2 <- function(id,
     post_output = post_output
   )
 }
+
 
 srv_venn2 <- function(input, output, session, datasets, dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))

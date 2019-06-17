@@ -35,12 +35,12 @@ Cross table based on rtables
 \examples{
 library(random.cdisc.data)
 
-ASL <- radsl(seed = 1)
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    code = "ASL <- radsl(seed = 1)",
+    code = "ASL <- cadsl",
     check = TRUE
   ),
   modules = root_modules(

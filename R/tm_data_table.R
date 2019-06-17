@@ -12,12 +12,12 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "ASL <- radsl(seed = 1)",
+#'     code = "ASL <- cadsl",
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_data_table()
@@ -29,14 +29,15 @@
 #'
 #' # two-datasets example
 #' library(random.cdisc.data)
-#' ASL <- radsl(seed = 1)
-#' ADTE <- radaette(ASL, seed = 1)
+#'
+#' ASL <- cadsl
+#' ADTE <- cadaette
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ADTE = ADTE,
-#'     code = "ASL <- radsl(seed = 1); ADTE <- radaette(ASL, seed = 1)",
+#'     code = "ASL <- cadsl; ADTE <- cadaette",
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_data_table(
@@ -50,8 +51,7 @@
 tm_data_table <- function(label = "Data table",
                           variables_selected = list()) {
   stopifnot(
-    is.character(label),
-    length(label) == 1,
+    is.character.single(label),
     is.list(variables_selected),
     `if`(length(variables_selected) > 0,
          !is.null(names(variables_selected)), TRUE),
@@ -73,6 +73,7 @@ tm_data_table <- function(label = "Data table",
     ui_args = list(datasets = "teal_datasets", selected = variables_selected)
   )
 }
+
 
 # ui page module
 ui_page_data_table <- function(id,

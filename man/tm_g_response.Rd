@@ -46,12 +46,11 @@ output to put the output into context. For example the
 Response Plots
 }
 \examples{
-
 library(random.cdisc.data)
 library(tern)
 
-ASL <- radsl(seed = 1)
-ARS <- radrs(ASL, seed = 1)
+ASL <- cadsl
+ARS <- cadrs
 keys(ASL) <- c("USUBJID", "STUDYID")
 keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 
@@ -108,8 +107,8 @@ app <- init(
   data = cdisc_data(
     ASL = ASL,
     ARS = ARS,
-    code = 'ASL <- radsl(seed = 1)
-           ARS <- radrs(ASL, seed = 1)
+    code = 'ASL <- cadsl
+           ARS <- cadrs
            keys(ASL) <- c("USUBJID", "STUDYID")
            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
      check = FALSE),
@@ -141,7 +140,6 @@ ANL_FILTERED \%>\%
   aes(x = ALL) +
   geom_bar(aes(fill = AVALC))
 
-
 ANL_FILTERED \%>\%
   ggplot() +
   aes(x = SEX) +
@@ -153,7 +151,6 @@ ANL_FILTERED \%>\%
   geom_bar(aes(fill = AVALC)) +
   facet_grid(cols = vars(ARM))
 
-
 ANL_FILTERED \%>\%
   ggplot() +
   aes(x = SEX) +
@@ -161,7 +158,6 @@ ANL_FILTERED \%>\%
   facet_grid(cols = vars(ARM)) +
   ylab("Distribution") +
   coord_flip()
-
 
 ANL_FILTERED \%>\%
   ggplot() +
