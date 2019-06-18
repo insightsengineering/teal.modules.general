@@ -29,12 +29,16 @@
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
+#' @importFrom methods is
+#'
+#' @export
+#'
 #' @examples
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- radsl(seed = 1)
-#' ARS <- radrs(ASL, seed = 1)
+#' ASL <- cadsl
+#' ARS <- cadrs
 #'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -83,8 +87,8 @@
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ARS = ARS,
-#'    code = 'ASL <- radsl(seed = 1)
-#'           ARS <- radrs(ASL, seed = 1)
+#'    code = 'ASL <- cadsl
+#'           ARS <- cadrs
 #'           keys(ASL) <- c("STUDYID", "USUBJID")
 #'           keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")',
 #'    check = FALSE),
@@ -105,10 +109,6 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
-#'
-#' @export
-#' @importFrom methods is
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            xvar,
@@ -195,7 +195,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 
-#' @importFrom teal.devel white_small_well optionalSelectInput standard_layout
 #' @importFrom shinyWidgets switchInput
 ui_g_bivariate <- function(id, ...) {
   a <- list(...)
@@ -227,9 +226,12 @@ ui_g_bivariate <- function(id, ...) {
         label = "Y Variable",
         data_extract_spec = a$yvar
       ),
-      radioButtons(ns("use_density"), NULL,
-          choices = c("frequency", "density"),
-          selected = ifelse(a$use_density, "density", "frequency"), inline = TRUE
+      radioButtons(
+        inputId = ns("use_density"),
+        label = NULL,
+        choices = c("frequency", "density"),
+        selected = ifelse(a$use_density, "density", "frequency"),
+        inline = TRUE
       ),
       div(
         style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
@@ -254,11 +256,11 @@ ui_g_bivariate <- function(id, ...) {
       },
       plot_height_input(id = ns("myplot"), value = a$plot_height),
       optionalSelectInput(
-          inputId = ns("ggtheme"), # nolint
-          label = "Theme (by ggplot)",
-          choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-          selected = a$ggtheme,
-          multiple = FALSE
+        inputId = ns("ggtheme"),
+        label = "Theme (by ggplot)",
+        choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+        selected = a$ggtheme,
+        multiple = FALSE
       )
     ),
     forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
@@ -267,7 +269,6 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-#' @importFrom teal.devel data_extract_input
 ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scales, free_y_scales) {
   div(
     data_extract_input(
@@ -285,7 +286,6 @@ ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scal
   )
 }
 
-#' @importFrom teal.devel data_extract_input
 ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
   div(
     data_extract_input(
@@ -306,9 +306,9 @@ ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
   )
 }
 
+
+#' @importFrom magrittr %>%
 #' @importFrom methods is
-#' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names get_rcode show_rcode_modal
-#' @importFrom teal.devel merge_datasets show_rcode_modal
 #' @importFrom tern keys
 srv_g_bivariate <- function(input,
                             output,
@@ -569,6 +569,7 @@ substitute_q <- function(x, env) {
   eval(call)
 }
 
+
 #' Create ggplot part of plot call
 #'
 #' Due to the type of the x and y variable the plot type is chosen
@@ -657,6 +658,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     stop("x y type combination not allowed")
   }
 }
+
 
 #' Create facet call
 #'

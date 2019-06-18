@@ -69,8 +69,8 @@ This is a general module to visualize 1 & 2 dimensional data.
 library(random.cdisc.data)
 library(tern)
 
-ASL <- radsl(seed = 1)
-ARS <- radrs(ASL, seed = 1)
+ASL <- cadsl
+ARS <- cadrs
 
 keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -119,8 +119,8 @@ app <- init(
  data = cdisc_data(
    ASL = ASL,
    ARS = ARS,
-   code = 'ASL <- radsl(seed = 1)
-          ARS <- radrs(ASL, seed = 1)
+   code = 'ASL <- cadsl
+          ARS <- cadrs
           keys(ASL) <- c("STUDYID", "USUBJID")
           keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")',
    check = FALSE),
@@ -141,6 +141,4 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
-
-
 }

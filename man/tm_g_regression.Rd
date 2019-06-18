@@ -34,12 +34,11 @@ output to put the output into context. For example the
 Scatterplot and Regression Model
 }
 \examples{
-
 library(random.cdisc.data)
 library(tern)
 
-ASL <- radsl(seed = 1)
-ALB <- radlb(ASL, seed = 1)
+ASL <- cadsl
+ALB <- cadlb
 
 keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -88,8 +87,8 @@ app <- init(
   data = cdisc_data(
     ASL = ASL,
     ALB = ALB,
-    code = 'ASL <- radsl(seed = 1)
-            ALB <- radlb(ASL, seed = 1)
+    code = 'ASL <- cadsl
+            ALB <- cadlb
             keys(ASL) <- c("STUDYID", "USUBJID")
             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")',
     check = FALSE),

@@ -33,15 +33,14 @@
 #' @export
 #'
 #' @examples
-#'
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "ASL <- radsl(seed = 1)",
+#'     code = "ASL <- cadsl",
 #'     check = FALSE),
 #'   root_modules(
 #'     tm_scatterplot(
@@ -101,7 +100,6 @@ tm_scatterplot <- function(label,
   )
 }
 
-#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
 ui_scatterplot <- function(id,
                            label,
                            dataname,
@@ -151,7 +149,8 @@ ui_scatterplot <- function(id,
   )
 }
 
-#' @import stats utils
+#' @importFrom magrittr %>%
+#' @importFrom methods substituteDirect
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 

@@ -36,7 +36,7 @@ Create a table with the \code{\link{table}[base]} function
 library(random.cdisc.data)
 library(tern)
 
-ASL <- radsl(seed = 1)
+ASL <- cadsl
 keys(ASL) <- c("USUBJID", "STUDYID")
 
 asl_extract_xvar <- data_extract_spec(
@@ -62,7 +62,7 @@ asl_extract_yvar <- data_extract_spec(
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    code = 'ASL <- radsl(seed = 1); keys(ASL) <- c("USUBJID", "STUDYID")',
+    code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
     check = FALSE
   ),
   root_modules(

@@ -14,12 +14,12 @@
 #' @examples
 #'
 #' library(random.cdisc.data)
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = "ASL <- radsl(seed = 1)",
+#'     code = "ASL <- cadsl",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
@@ -64,7 +64,7 @@ tm_g_association <- function(label = "Association",
   )
 }
 
-#' @importFrom teal.devel optionalSliderInputValMinMax standard_layout
+
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   a <- list(...)
@@ -109,6 +109,8 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
+
+#' @importFrom grid grid.newpage grid.draw
 #' @importFrom tern stack_grobs
 srv_tm_g_association <- function(input,
                                  output,
