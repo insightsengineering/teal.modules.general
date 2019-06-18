@@ -137,8 +137,9 @@ ui_table <- function(id,
   )
 }
 
-#' @importFrom stats addmargins
+#' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
+#' @importFrom stats addmargins
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   stopifnot(all(dataname %in% datasets$datanames()))
 

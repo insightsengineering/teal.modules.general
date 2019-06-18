@@ -262,6 +262,7 @@ ui_g_response <- function(id, ...) {
 
 
 #' @importFrom forcats fct_rev
+#' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_g_response <- function(input,
                            output,

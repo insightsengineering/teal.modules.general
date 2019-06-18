@@ -76,6 +76,7 @@ tm_data_table <- function(label = "Data table",
 
 
 # ui page module
+#' @importFrom utils head
 ui_page_data_table <- function(id,
                                datasets,
                                selected) {

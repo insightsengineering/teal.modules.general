@@ -307,6 +307,7 @@ ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
 }
 
 
+#' @importFrom magrittr %>%
 #' @importFrom methods is
 #' @importFrom tern keys
 srv_g_bivariate <- function(input,

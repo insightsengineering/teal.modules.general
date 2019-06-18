@@ -19,6 +19,7 @@ tm_variable_browser <- function(label = "variable browser") {
 }
 
 # ui function
+#' @importFrom stats setNames
 ui_page_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
@@ -70,6 +71,7 @@ ui_page_variable_browser <- function(id, datasets) {
 
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
+#' @importFrom utils capture.output str
 srv_page_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = NULL)
@@ -167,8 +169,10 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
         ggplotGrob(p)
       } else {
         grid::textGrob(
-          paste(strwrap(capture.output(str(var)), width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)),
-                collapse = "\n"),
+          paste(strwrap(
+            utils::capture.output(utils::str(var)),
+            width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
+          ), collapse = "\n"),
           x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
         )
       }

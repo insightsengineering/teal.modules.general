@@ -100,7 +100,6 @@ tm_scatterplot <- function(label,
   )
 }
 
-#' @importFrom teal.devel optionalSelectInput optionalSliderInputValMinMax standard_layout
 ui_scatterplot <- function(id,
                            label,
                            dataname,
@@ -150,7 +149,8 @@ ui_scatterplot <- function(id,
   )
 }
 
-#' @import stats utils
+#' @importFrom magrittr %>%
+#' @importFrom methods substituteDirect
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 

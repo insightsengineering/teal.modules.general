@@ -165,7 +165,9 @@ ui_g_regression <- function(id, ...) {
 
 
 #' @importFrom graphics plot abline
+#' @importFrom magrittr %>%
 #' @importFrom methods is substituteDirect
+#' @importFrom stats as.formula
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
@@ -199,7 +201,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     renew_chunks()
 
     form <- form %<chunk_env%
-      as.formula(
+      stats::as.formula(
         paste(
           response_var,
           paste(
