@@ -11,7 +11,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)

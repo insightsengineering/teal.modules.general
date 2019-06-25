@@ -31,7 +31,7 @@
 #'
 #' @importFrom methods is
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)

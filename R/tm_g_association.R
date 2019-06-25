@@ -9,7 +9,7 @@
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #'

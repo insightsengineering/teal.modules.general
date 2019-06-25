@@ -17,7 +17,7 @@
 #' @param pre_output (\code{shiny.tag}) html tags appended below the output
 #' @param post_output (\code{shiny.tag}) html tags appended after the output
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)

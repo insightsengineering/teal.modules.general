@@ -8,7 +8,7 @@
 #' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)

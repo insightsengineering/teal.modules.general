@@ -30,7 +30,7 @@
 #'   If a slider should be presented to adjust the plot point sizes dynamically
 #'   then it can be a vector of length three with vlaue, min and max.
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)
