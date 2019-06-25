@@ -19,12 +19,12 @@ A data table viewer shows the data using a paginated table.
 \examples{
 library(random.cdisc.data)
 
-ASL <- radsl(seed = 1)
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    code = "ASL <- radsl(seed = 1)",
+    code = "ASL <- cadsl",
     check = FALSE),
   modules = root_modules(
     tm_data_table()
@@ -36,14 +36,15 @@ app <- init(
 
 # two-datasets example
 library(random.cdisc.data)
-ASL <- radsl(seed = 1)
-ADTE <- radaette(ASL, seed = 1)
+
+ASL <- cadsl
+ADTE <- cadaette
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
     ADTE = ADTE,
-    code = "ASL <- radsl(seed = 1); ADTE <- radaette(ASL, seed = 1)",
+    code = "ASL <- cadsl; ADTE <- cadaette",
     check = FALSE),
   modules = root_modules(
     tm_data_table(

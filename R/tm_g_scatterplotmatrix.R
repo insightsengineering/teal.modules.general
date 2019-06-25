@@ -14,8 +14,9 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
@@ -48,7 +49,7 @@
 #'   data = cdisc_data(
 #'        ASL = ASL,
 #'        ADTE = ADTE,
-#'        code = 'ASL <- radsl(seed = 1)
+#'        code = 'ASL <- cadsl
 #'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 #'                keys(ASL) <- c("STUDYID", "USUBJID")
 #'                keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -66,7 +67,6 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
 tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
                                    dataname,
                                    select_col,
@@ -91,7 +91,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
   )
 }
 
-#' @importFrom teal.devel standard_layout
+
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
 
@@ -120,12 +120,10 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
+
 #' @importFrom dplyr mutate_if
 #' @importFrom lattice splom
 #' @importFrom methods substituteDirect
-#' @importFrom teal.devel eval_remaining renew_chunk_environment renew_chunks set_chunk use_chunks
-#' @importFrom teal.devel data_extract_module plot_with_height
-#' @importFrom teal.devel get_rcode show_rcode_modal
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
@@ -165,17 +163,14 @@ srv_g_scatterplotmatrix <- function(input,
     merged_ds <- merge_datasets(list(col_extract()))
 
     # check columns selected
-    validate(need(cols,
-                  "Please select columns first."))
+    validate(need(cols, "Please select columns first."))
 
     # lattice need at least 2 columns for the plot
-    validate(need(length(cols) >= 2,
-                  "Please select at least two columns."))
+    validate(need(length(cols) >= 2, "Please select at least two columns."))
 
 
     # check that data are available
-    validate(need(nrow(merged_ds) > 0,
-                  "There are zero observations in the (filtered) dataset."))
+    validate(need(nrow(merged_ds) > 0, "There are zero observations in the (filtered) dataset."))
 
     # check proper input values
     validate(need(cex, "Need a proper cex value."))

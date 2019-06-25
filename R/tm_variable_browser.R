@@ -5,9 +5,6 @@
 #'
 #' @inheritParams teal::module
 #'
-#' @importFrom ggplot2 coord_flip ggplotGrob qplot theme_light xlab
-#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
-#'
 #' @export
 tm_variable_browser <- function(label = "variable browser") {
   stopifnot(is.character.single(label))
@@ -22,6 +19,7 @@ tm_variable_browser <- function(label = "variable browser") {
 }
 
 # ui function
+#' @importFrom stats setNames
 ui_page_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
@@ -72,11 +70,13 @@ ui_page_variable_browser <- function(id, datasets) {
 }
 
 
+#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
+#' @importFrom utils capture.output str
 srv_page_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = NULL)
 
-  current_rows <- new.env() # nolint
+  current_rows <- new.env()
 
   asl_vars <- names(datasets$get_data("ASL"))
 
@@ -149,14 +149,14 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       var <- df[[varname]]
       d_var_name <- paste0(data, ".", varname)
 
-      grid.newpage()
+      grid::grid.newpage()
 
       plot_grob <- if (is.factor(var) || is.character(var)) {
         groups <- unique(as.character(var))
         if (length(groups) > 30) {
-          textGrob(paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "),
-                                "\n   ..."),
-            x = unit(1, "line"), y = unit(1, "npc") - unit(1, "line"),
+          grid::textGrob(
+            paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "), "\n   ..."),
+            x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"),
             just = c("left", "top")
           )
         } else {
@@ -168,14 +168,16 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
         p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
         ggplotGrob(p)
       } else {
-        textGrob(
-          paste(strwrap(capture.output(str(var)), width = .9 * convertWidth(unit(1, "npc"), "char", TRUE)),
-                collapse = "\n"),
-          x = unit(1, "line"), y = unit(1, "npc") - unit(1, "line"), just = c("left", "top")
+        grid::textGrob(
+          paste(strwrap(
+            utils::capture.output(utils::str(var)),
+            width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
+          ), collapse = "\n"),
+          x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
         )
       }
 
-      grid.draw(plot_grob)
+      grid::grid.draw(plot_grob)
     }
   })
 
@@ -217,8 +219,4 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       div(class = "text-warning", style = "margin-bottom: 15px;", msg)
     }
   })
-
-
-
-  NULL
 }

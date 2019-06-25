@@ -23,7 +23,7 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- radsl(seed = 1)
+#' ASL <- cadsl
 #' keys(ASL) <- c("USUBJID", "STUDYID")
 #'
 #' asl_extract_xvar <- data_extract_spec(
@@ -49,7 +49,7 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = 'ASL <- radsl(seed = 1); keys(ASL) <- c("USUBJID", "STUDYID")',
+#'     code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
 #'     check = FALSE
 #'   ),
 #'   root_modules(
@@ -103,7 +103,6 @@ tm_table <- function(label,
 }
 
 
-#' @importFrom teal.devel data_extract_input standard_layout white_small_well
 ui_table <- function(id,
                      label,
                      dataname,
@@ -115,7 +114,7 @@ ui_table <- function(id,
   ns <- NS(id)
 
   standard_layout(
-    output = white_small_well(# from teal.devel
+    output = white_small_well(
       tableOutput(ns("table"))
     ),
     encoding = div(
@@ -138,11 +137,9 @@ ui_table <- function(id,
   )
 }
 
-#' @importFrom stats addmargins
-#' @importFrom teal.devel get_dataset_prefixed_col_names data_extract_module merge_datasets
-#' @importFrom teal.devel renew_chunk_environment eval_remaining renew_chunks set_chunk
-#' @importFrom teal.devel show_rcode_modal get_rcode
+#' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
+#' @importFrom stats addmargins
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   stopifnot(all(dataname %in% datasets$datanames()))
 

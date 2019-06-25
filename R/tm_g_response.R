@@ -1,8 +1,5 @@
 #' Response Plots
 #'
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
-#' @export
 #'
 #' @param dataname (\code{character}) Name of dataset used to generate the response plot
 #' @param response (\code{list} of \code{data_extract_spec}) Which variable to use as the
@@ -18,13 +15,17 @@
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
-#' @examples
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
+#' @export
+#'
+#' @examples
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- radsl(seed = 1)
-#' ARS <- radrs(ASL, seed = 1)
+#' ASL <- cadsl
+#' ARS <- cadrs
 #' keys(ASL) <- c("USUBJID", "STUDYID")
 #' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
@@ -81,8 +82,8 @@
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ARS = ARS,
-#'     code = 'ASL <- radsl(seed = 1)
-#'            ARS <- radrs(ASL, seed = 1)
+#'     code = 'ASL <- cadsl
+#'            ARS <- cadrs
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
 #'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
 #'      check = FALSE),
@@ -114,7 +115,6 @@
 #'   aes(x = ALL) +
 #'   geom_bar(aes(fill = AVALC))
 #'
-#'
 #' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
@@ -126,7 +126,6 @@
 #'   geom_bar(aes(fill = AVALC)) +
 #'   facet_grid(cols = vars(ARM))
 #'
-#'
 #' ANL_FILTERED %>%
 #'   ggplot() +
 #'   aes(x = SEX) +
@@ -134,7 +133,6 @@
 #'   facet_grid(cols = vars(ARM)) +
 #'   ylab("Distribution") +
 #'   coord_flip()
-#'
 #'
 #' ANL_FILTERED %>%
 #'   ggplot() +
@@ -172,18 +170,22 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is.list(response))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
-  lapply(response, function(ds_extract){
-        stopifnot(!("" %in% ds_extract$columns$choices))
-        stopifnot(!ds_extract$columns$multiple)
-      }
+  lapply(
+    response,
+    function(ds_extract) {
+      stopifnot(!("" %in% ds_extract$columns$choices))
+      stopifnot(!ds_extract$columns$multiple)
+    }
   )
   stopifnot(is.list(xvar))
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
-  lapply(xvar, function(ds_extract){
-        stopifnot(!("" %in% ds_extract$columns$choices))
-        stopifnot(!ds_extract$columns$multiple)
-      }
+  lapply(
+    xvar,
+    function(ds_extract){
+      stopifnot(!("" %in% ds_extract$columns$choices))
+      stopifnot(!ds_extract$columns$multiple)
+    }
   )
   stopifnot(is.null(row_facet_var) || is.list(row_facet_var))
   stopifnot(is.null(col_facet_var) || is.list(col_facet_var))
@@ -211,8 +213,7 @@ tm_g_response <- function(label = "Response Plot",
   )
 }
 
-#' @import teal
-#' @importFrom teal.devel white_small_well plot_height_input plot_height_output standard_layout
+
 ui_g_response <- function(id, ...) {
   arguments <- list(...)
 
@@ -259,9 +260,9 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-#' @importFrom teal.devel data_extract_module get_dataset_prefixed_col_names merge_datasets plot_with_height
-#' @importFrom teal.devel get_rcode show_rcode_modal
+
 #' @importFrom forcats fct_rev
+#' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_g_response <- function(input,
                            output,
@@ -312,7 +313,8 @@ srv_g_response <- function(input,
   })
 
   # Insert the plot into a plot_height module from teal.devel
-  callModule(plot_with_height,
+  callModule(
+    plot_with_height,
     id = "myplot",
     plot_height = reactive(input$myplot),
     plot_id = session$ns("plot")

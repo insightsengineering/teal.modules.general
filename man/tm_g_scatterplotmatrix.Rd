@@ -34,8 +34,9 @@ Create a scatterplot matrix
 library(random.cdisc.data)
 library(tern)
 
-ASL <- radsl(seed = 1)
+ASL <- cadsl
 ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+
 keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 
@@ -68,7 +69,7 @@ app <- init(
   data = cdisc_data(
        ASL = ASL,
        ADTE = ADTE,
-       code = 'ASL <- radsl(seed = 1)
+       code = 'ASL <- cadsl
                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
                keys(ASL) <- c("STUDYID", "USUBJID")
                keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
@@ -86,5 +87,4 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
-
 }
