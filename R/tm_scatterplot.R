@@ -154,7 +154,7 @@ ui_scatterplot <- function(id,
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  use_chunks()
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -188,8 +188,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-    renew_chunk_environment()
-    renew_chunks()
+    reset_chunks()
 
     if (is.null(color_by)) {
       set_chunk(expression = bquote(
@@ -224,7 +223,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       ))
     }
 
-    eval_remaining()
+    eval_chunks()
   })
 
   observeEvent(input$show_rcode, {

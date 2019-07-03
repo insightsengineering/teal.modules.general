@@ -275,7 +275,7 @@ srv_g_response <- function(input,
                            col_facet_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  use_chunks()
 
   # Data Extraction
   response_data <- callModule(data_extract_module,
@@ -403,12 +403,11 @@ srv_g_response <- function(input,
       plot_call <- call("+", plot_call, facet_cl)
     }
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    reset_chunks()
 
-    set_chunk("plotCall", plot_call)
+    set_chunk(expression = plot_call, id = "plotCall")
 
-    eval_remaining()
+    eval_chunks()
   })
 
   observeEvent(input$show_rcode, {

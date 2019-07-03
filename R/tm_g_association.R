@@ -12,7 +12,6 @@
 #' @noRd
 #'
 #' @examples
-#'
 #' library(random.cdisc.data)
 #' ASL <- cadsl
 #'
@@ -119,7 +118,7 @@ srv_tm_g_association <- function(input,
                                  dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  use_chunks()
 
   callModule(
     plot_with_height,
@@ -181,12 +180,11 @@ srv_tm_g_association <- function(input,
 
     cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    reset_chunks()
 
-    set_chunk("plotCall", cl)
+    set_chunk(expression = cl, id = "plotCall")
 
-    p <- eval_remaining()
+    p <- eval_chunks()
 
     if (is(p, "try-error")) {
       validate(need(FALSE, p))

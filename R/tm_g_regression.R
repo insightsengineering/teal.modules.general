@@ -171,7 +171,7 @@ ui_g_regression <- function(id, ...) {
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  use_chunks()
 
   # Data Extraction
   regressor_data <- callModule(
@@ -189,34 +189,32 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   fit <- reactive({
 
+    input$plot_type
+
     response_var <- get_dataset_prefixed_col_names(response_data())
     validate(need(length(response_var) == 1, "Response variable should be of lenght one."))
     regressor_var <- get_dataset_prefixed_col_names(regressor_data())
     merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
     validate_has_data(merged_dataset, 10)
 
-    input$plot_type
-
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
-
-    form <- form %<chunk_env%
-      stats::as.formula(
+    form <- stats::as.formula(
+      paste(
+        response_var,
         paste(
-          response_var,
-          paste(
-            regressor_var,
-            collapse = " + "
-          ),
-          sep = " ~ "
-        )
+          regressor_var,
+          collapse = " + "
+        ),
+        sep = " ~ "
       )
+    )
+
+    reset_chunks()
 
     set_chunk(
       expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
 
-    eval_remaining()
+    eval_chunks()
   })
 
   output$plot <- renderPlot({
@@ -224,7 +222,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     fit()
 
     if (input$plot_type == "Response vs Regressor") {
-      fit <- get_envir_chunks()$fit
+      fit <- get_var_chunks("fit")
 
       if (ncol(fit$model) > 1) {
         validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
@@ -241,14 +239,18 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     } else {
       i <- which(input$plot_type == c(
         "Residuals vs Fitted",
-        "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+        "Normal Q-Q",
+        "Scale-Location",
+        "Cook's distance",
+        "Residuals vs Leverage",
         "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
       ))
+      expr <- bquote(plot(fit, which = .(i), id.n = NULL))
       plot %<chunk%
-        plot(fit, which = i, id.n = NULL) %substitute% list(i = i)
+        expr
     }
 
-    eval_remaining()
+    eval_chunks()
   })
 
   # Insert the plot into a plot_height module from teal.devel
@@ -261,8 +263,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   output$text <- renderPrint({
     fit()
-    set_chunk(id = "summary", expression = quote(summary(fit)))
-    eval_remaining()
+    set_chunk(expression = quote(summary(fit)), id = "summary")
+    eval_chunks()
   })
 
   observeEvent(input$show_rcode, {

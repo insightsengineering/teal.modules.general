@@ -79,7 +79,7 @@ ui_percentage_cross_table <- function(id, ...) {
 srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  use_chunks()
 
   table_code <- reactive({
     anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
@@ -97,9 +97,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     assign(data_name, anl_f)
 
     # Set chunks
-
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    reset_chunks()
 
     set_chunk(expression = bquote(data_table <-
       stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
@@ -118,7 +116,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
 
   output$table <- renderUI({
     table_code()
-    rtables::as_html(eval_remaining())
+    rtables::as_html(eval_chunks())
   })
 
   observeEvent(input$show_rcode, {
