@@ -250,7 +250,11 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         expr
     }
 
-    eval_chunks()
+    p <- eval_chunks()
+
+    validate_is_ok_chunks()
+
+    p
   })
 
   # Insert the plot into a plot_height module from teal.devel

@@ -505,11 +505,9 @@ srv_g_bivariate <- function(input,
 
     p <- eval_chunks()
 
-    if (is(p, "try-error")) {
-      validate(need(FALSE, p))
-    } else {
-      p
-    }
+    validate_is_ok_chunks()
+
+    p
   })
 
 

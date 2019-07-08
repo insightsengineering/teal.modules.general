@@ -116,7 +116,9 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
 
   output$table <- renderUI({
     table_code()
-    rtables::as_html(eval_chunks())
+    t <- rtables::as_html(eval_chunks())
+    validate_is_ok_chunks()
+    t
   })
 
   observeEvent(input$show_rcode, {

@@ -186,12 +186,9 @@ srv_tm_g_association <- function(input,
 
     p <- eval_chunks()
 
-    if (is(p, "try-error")) {
-      validate(need(FALSE, p))
-    } else {
-      p
-    }
+    validate_is_ok_chunks()
 
+    p
   })
 
   observeEvent(input$show_rcode, {

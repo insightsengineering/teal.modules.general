@@ -407,7 +407,11 @@ srv_g_response <- function(input,
 
     set_chunk(expression = plot_call, id = "plotCall")
 
-    eval_chunks()
+    p <- eval_chunks()
+
+    validate_is_ok_chunks()
+
+    p
   })
 
   observeEvent(input$show_rcode, {

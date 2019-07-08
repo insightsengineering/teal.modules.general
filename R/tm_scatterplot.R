@@ -223,7 +223,11 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       ))
     }
 
-    eval_chunks()
+    p <- eval_chunks()
+
+    validate_is_ok_chunks()
+
+    p
   })
 
   observeEvent(input$show_rcode, {

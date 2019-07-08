@@ -198,8 +198,11 @@ srv_g_scatterplotmatrix <- function(input,
       )
     )
 
-    # evaluate chunk
-    eval_chunks()
+    p <- eval_chunks()
+
+    validate_is_ok_chunks()
+
+    p
   })
 
   # show r code
