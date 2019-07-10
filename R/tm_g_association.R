@@ -118,7 +118,7 @@ srv_tm_g_association <- function(input,
                                  dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   callModule(
     plot_with_height,
@@ -180,13 +180,13 @@ srv_tm_g_association <- function(input,
 
     cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
 
-    reset_chunks()
+    chunks_reset()
 
-    set_chunk(expression = cl, id = "plotCall")
+    chunks_push(expression = cl, id = "plotCall")
 
-    p <- eval_chunks()
+    p <- chunks_eval()
 
-    validate_is_ok_chunks()
+    chunks_validate_is_ok()
 
     p
   })

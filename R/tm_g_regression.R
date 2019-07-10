@@ -171,7 +171,7 @@ ui_g_regression <- function(id, ...) {
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   # Data Extraction
   regressor_data <- callModule(
@@ -208,13 +208,13 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       )
     )
 
-    reset_chunks()
+    chunks_reset()
 
-    set_chunk(
+    chunks_push(
       expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
     )
 
-    eval_chunks()
+    chunks_eval()
   })
 
   output$plot <- renderPlot({
@@ -222,7 +222,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
     fit()
 
     if (input$plot_type == "Response vs Regressor") {
-      fit <- get_var_chunks("fit")
+      fit <- chunks_get_var("fit")
 
       if (ncol(fit$model) > 1) {
         validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
@@ -250,9 +250,9 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
         expr
     }
 
-    p <- eval_chunks()
+    p <- chunks_eval()
 
-    validate_is_ok_chunks()
+    chunks_validate_is_ok()
 
     p
   })
@@ -267,8 +267,8 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
 
   output$text <- renderPrint({
     fit()
-    set_chunk(expression = quote(summary(fit)), id = "summary")
-    eval_chunks()
+    chunks_push(expression = quote(summary(fit)), id = "summary")
+    chunks_eval()
   })
 
   observeEvent(input$show_rcode, {

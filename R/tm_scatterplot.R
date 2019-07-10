@@ -154,7 +154,7 @@ ui_scatterplot <- function(id,
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -188,10 +188,10 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-    reset_chunks()
+    chunks_reset()
 
     if (is.null(color_by)) {
-      set_chunk(expression = bquote(
+      chunks_push(expression = bquote(
         ggplot(
           .(as.name(data_name)),
           aes_string(x = xvar, y = yvar)
@@ -206,7 +206,7 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
         )
       ))
     } else {
-      set_chunk(expression = bquote(
+      chunks_push(expression = bquote(
         ggplot(
           .(as.name(data_name)),
           aes_string(x = xvar, y = yvar, color = color_by)
@@ -223,9 +223,9 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       ))
     }
 
-    p <- eval_chunks()
+    p <- chunks_eval()
 
-    validate_is_ok_chunks()
+    chunks_validate_is_ok()
 
     p
   })

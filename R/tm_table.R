@@ -143,7 +143,7 @@ ui_table <- function(id,
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
@@ -175,7 +175,7 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
     useNA <- input$useNA # nolint
     use_margin <- input$margins
 
-    reset_chunks()
+    chunks_reset()
 
     expression_to_use <- if (use_margin) {
       expr(stats::addmargins(
@@ -187,14 +187,14 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
         substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
     }
 
-    set_chunk(expression = expression_to_use)
+    chunks_push(expression = expression_to_use)
   })
 
   output$table <- renderTable({
     chunk_reactive()
 
-    tbl <- eval_chunks()
-    validate_is_ok_chunks()
+    tbl <- chunks_eval()
+    chunks_validate_is_ok()
 
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')

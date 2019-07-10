@@ -275,7 +275,7 @@ srv_g_response <- function(input,
                            col_facet_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   # Data Extraction
   response_data <- callModule(data_extract_module,
@@ -403,13 +403,13 @@ srv_g_response <- function(input,
       plot_call <- call("+", plot_call, facet_cl)
     }
 
-    reset_chunks()
+    chunks_reset()
 
-    set_chunk(expression = plot_call, id = "plotCall")
+    chunks_push(expression = plot_call, id = "plotCall")
 
-    p <- eval_chunks()
+    p <- chunks_eval()
 
-    validate_is_ok_chunks()
+    chunks_validate_is_ok()
 
     p
   })

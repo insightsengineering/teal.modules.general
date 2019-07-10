@@ -325,7 +325,7 @@ srv_g_bivariate <- function(input,
                             size_var = size_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks()
+  init_chunks()
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
@@ -499,13 +499,13 @@ srv_g_bivariate <- function(input,
       cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
     }
 
-    reset_chunks()
+    chunks_reset()
 
-    set_chunk(expression = cl, id = "plotCall")
+    chunks_push(expression = cl, id = "plotCall")
 
-    p <- eval_chunks()
+    p <- chunks_eval()
 
-    validate_is_ok_chunks()
+    chunks_validate_is_ok()
 
     p
   })
