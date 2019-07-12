@@ -133,7 +133,7 @@ srv_g_scatterplotmatrix <- function(input,
   stopifnot(all(dataname %in% datasets$datanames()))
 
   # setup to use chunks
-  use_chunks(session)
+  init_chunks()
 
   # data extraction
   col_extract <- callModule(
@@ -179,19 +179,17 @@ srv_g_scatterplotmatrix <- function(input,
     validate(need(alpha, "Need a proper alpha value."))
 
     # reset chunks on every user-input change
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    chunks_reset()
 
     # set up expression chunk - lattice graph
-    set_chunk(
+    chunks_push(
       expression = quote(
         merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
       )
     )
 
     # set up expression chunk - lattice graph
-    set_chunk(
-      "plt",
+    chunks_push(
       substituteDirect(
         object = quote(
           lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
@@ -200,9 +198,11 @@ srv_g_scatterplotmatrix <- function(input,
       )
     )
 
-    # evaluate chunk
-    eval_remaining()
+    p <- chunks_eval()
 
+    chunks_validate_is_ok()
+
+    p
   })
 
   # show r code
