@@ -13,10 +13,10 @@ tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
 \item{dataname}{(\code{character}) Name of the dataset used in the teal app. Just a single
 dataset is allowed!}
 
-\item{x_var}{\code{\link[teal]{choices_selected}} object with all available
+\item{x_var}{(\code{choices_selected}) object with all available
 choices with preselected option for variable X}
 
-\item{y_var}{\code{\link[teal]{choices_selected}} object with all available
+\item{y_var}{(\code{choices_selected}) object with all available
 choices with preselected option for variable Y}
 
 \item{...}{Arguments passed on to \code{teal.devel::standard_layout}

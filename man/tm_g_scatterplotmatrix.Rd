@@ -13,8 +13,8 @@ tm_g_scatterplotmatrix(label = "Scatterplot matrix", dataname,
 
 \item{dataname}{Name of datasets used to generate the regression plot (just used for labeling).}
 
-\item{select_col}{(\code{list}) Output of \code{teal.devel::data_extract_spec}
-to define the plotting variables from an incoming dataset with filtering and selecting.}
+\item{select_col}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Plotting variables from an incoming dataset with filtering and selecting.}
 
 \item{plot_height}{(\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 encoding the plot height.}
@@ -79,7 +79,7 @@ app <- init(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       dataname = c("ASL","ADTE"),
-      select_col = list(adte_prep)
+      select_col = adte_prep
     )
   )
 )

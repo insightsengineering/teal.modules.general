@@ -12,13 +12,13 @@ tm_table(label, dataname, xvar, yvar, useNA = c("ifany", "no", "always"),
 
 \item{dataname}{(\code{chracter}) name of dataset used to generate table}
 
-\item{xvar}{(\code{list} of \code{data_extract_spec}) Specification how the
-user can select data to get encoded in the rows of the cross table. Please just use
-single selections inside the \code{columns_spec}.}
+\item{xvar}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Specification how the user can select data to get encoded in the rows of the cross table.
+Please just use single selections inside the \code{columns_spec}.}
 
-\item{yvar}{(\code{list} of \code{data_extract_spec}) Specification how the
-user can select data to get encoded in the columns of the cross table. Please just use
-single selections inside the \code{columns_spec}.}
+\item{yvar}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Specification how the user can select data to get encoded in the columns of the cross table.
+Please just use single selections inside the \code{columns_spec}.}
 
 \item{useNA}{(\code{character}) optional pre-selected option indicating how to utilize NA in
 table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If

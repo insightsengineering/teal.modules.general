@@ -13,11 +13,11 @@ tm_g_regression(label = "Regression Analysis", dataname, regressor,
 
 \item{dataname}{name of datasets used to generate the regression plot (just used for labeling)}
 
-\item{regressor}{(\code{list}) Output of \code{teal.devel::data_extract_spec}
-to define the regressor variable from an incoming dataset with filtering and selecting.}
+\item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+regressor variable from an incoming dataset with filtering and selecting.}
 
-\item{response}{(\code{list}) Output of \code{teal.devel::data_extract_spec}
-to define the response variable from an incoming dataset with filtering and selecting.}
+\item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+response variable from an incoming dataset with filtering and selecting.}
 
 \item{plot_height}{(\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
 encoding the plot height.}
@@ -96,8 +96,8 @@ app <- init(
     tm_g_regression(
       label = "Regression",
       dataname = c("ASL", "ALB"),
-      response = list(alb_extracted),
-      regressor = list(asl_extracted)
+      response = alb_extracted,
+      regressor = asl_extracted
     )
   )
 )

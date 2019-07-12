@@ -6,8 +6,8 @@
 \usage{
 tm_g_bivariate(label = "Bivariate Plots", dataname, xvar, yvar,
   use_density = FALSE, row_facet_var, col_facet_var,
-  expert_settings = TRUE, colour_var = list(), fill_var = list(),
-  size_var = list(), free_x_scales = FALSE, free_y_scales = FALSE,
+  expert_settings = TRUE, colour_var = NULL, fill_var = NULL,
+  size_var = NULL, free_x_scales = FALSE, free_y_scales = FALSE,
   plot_height = c(600, 200, 2000), ggtheme = "minimal",
   with_show_r_code = TRUE, pre_output = NULL, post_output = NULL)
 }
@@ -17,29 +17,32 @@ tm_g_bivariate(label = "Bivariate Plots", dataname, xvar, yvar,
 \item{dataname}{(\code{character}) name of datasets used to generate the bivariate plot. You need
 to name all datasets used in the available \code{data_extract_spec}}
 
-\item{xvar}{(\code{list} of \code{data_extract_spec}) Variable name selected to plot along the x-axis by default.
-Variable can be numeric, factor or character. No empty selections are allowed!}
+\item{xvar}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
+No empty selections are allowed!}
 
-\item{yvar}{(\code{list} of \code{data_extract_spec}) Variable name selected to plot along the y-axis by default.
-Variable can be numeric, factor or character.}
+\item{yvar}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
 
 \item{use_density}{(\code{logical}) value for whether density (\code{TRUE}) is plotted or frequency (\code{FALSE})}
 
-\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) variable for row facetting}
+\item{row_facet_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable for row facetting}
 
-\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) variable for col facetting}
+\item{col_facet_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable for col facetting}
 
 \item{expert_settings}{(\code{logical}) Whether coloring, filling and size should be chosen
 by the user}
 
-\item{colour_var}{(\code{list} of \code{data_extract_spec}) Variable selection for the colouring
-inside the expert settings}
+\item{colour_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable selection for the colouring inside the expert settings}
 
-\item{fill_var}{(\code{list} of \code{data_extract_spec}) Variable selection for the filling
-inside the expert settings}
+\item{fill_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable selection for the filling inside the expert settings}
 
-\item{size_var}{(\code{list} of \code{data_extract_spec}) Variable selection for the size of \code{geom_point}
-plots inside the expert settings}
+\item{size_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable selection for the size of \code{geom_point} plots inside the expert settings}
 
 \item{free_x_scales}{(\code{logical}) If X scaling shall be changeable}
 
@@ -127,11 +130,11 @@ app <- init(
  modules = root_modules(
    tm_g_bivariate(
      dataname = c("ASL","ARS"),
-     xvar = list(asl_extracted),
-     yvar = list(ars_extracted_response),
+     xvar = asl_extracted,
+     yvar = ars_extracted_response,
      use_density = FALSE,
-     row_facet_var = list(asl_extracted_row),
-     col_facet_var = list(asl_extracted_row),
+     row_facet_var = asl_extracted_row,
+     col_facet_var = asl_extracted_row,
      expert_settings = TRUE,
      plot_height = c(600, 200, 2000),
      ggtheme = "grey"

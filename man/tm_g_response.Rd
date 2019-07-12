@@ -4,7 +4,7 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
+tm_g_response(label = "Response Plot", dataname, response, xvar,
   row_facet_var = NULL, col_facet_var = NULL, coord_flip = TRUE,
   freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL)
@@ -14,19 +14,19 @@ tm_g_response(label = "Response Plot", dataname, response, xvar = NULL,
 
 \item{dataname}{(\code{character}) Name of dataset used to generate the response plot}
 
-\item{response}{(\code{list} of \code{data_extract_spec}) Which variable to use as the
-response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
-the \code{column_spec}.}
+\item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which variable to use as the response. You can define one fixed column by using the
+setting \code{fixed = TRUE} inside the \code{column_spec}.}
 
-\item{xvar}{(\code{list} of \code{data_extract_spec}) Which variable to use on the
-X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
-in teal. Just allow single columns by \code{multiple = FALSE}.}
+\item{xvar}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which variable to use on the X-axis of the response plot. Allow the user to select multiple
+columns from the \code{data} allowed in teal. Just allow single columns by \code{multiple = FALSE}.}
 
-\item{row_facet_var}{(\code{list} of \code{data_extract_spec}) Which data columns
-to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.}
+\item{row_facet_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data columns to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.}
 
-\item{col_facet_var}{(\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
-Just allow single columns by \code{multiple = FALSE}.}
+\item{col_facet_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.}
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
@@ -115,10 +115,10 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       dataname = "ARS",
-      response = list(ars_extracted_response),
-      xvar = list(asl_extracted),
-      row_facet_var = list(asl_extracted_row),
-      col_facet_var = list(asl_extracted_col)
+      response = ars_extracted_response,
+      xvar = asl_extracted,
+      row_facet_var = asl_extracted_row,
+      col_facet_var = asl_extracted_col
     )
   )
 )

@@ -5,21 +5,24 @@
 #' @param label (\code{character}) Label of the module
 #' @param dataname (\code{character}) name of datasets used to generate the bivariate plot. You need
 #'   to name all datasets used in the available \code{data_extract_spec}
-#' @param xvar (\code{list} of \code{data_extract_spec}) Variable name selected to plot along the x-axis by default.
-#'  Variable can be numeric, factor or character. No empty selections are allowed!
-#' @param yvar (\code{list} of \code{data_extract_spec}) Variable name selected to plot along the y-axis by default.
-#'  Variable can be numeric, factor or character.
+#' @param xvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
+#'   No empty selections are allowed!
+#' @param yvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.
 #' @param use_density (\code{logical}) value for whether density (\code{TRUE}) is plotted or frequency (\code{FALSE})
-#' @param row_facet_var (\code{list} of \code{data_extract_spec}) variable for row facetting
-#' @param col_facet_var (\code{list} of \code{data_extract_spec}) variable for col facetting
+#' @param row_facet_var (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable for row facetting
+#' @param col_facet_var (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable for col facetting
 #' @param expert_settings (\code{logical}) Whether coloring, filling and size should be chosen
 #'   by the user
-#' @param colour_var (\code{list} of \code{data_extract_spec}) Variable selection for the colouring
-#'   inside the expert settings
-#' @param fill_var (\code{list} of \code{data_extract_spec}) Variable selection for the filling
-#'   inside the expert settings
-#' @param size_var (\code{list} of \code{data_extract_spec}) Variable selection for the size of \code{geom_point}
-#'   plots inside the expert settings
+#' @param colour_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable selection for the colouring inside the expert settings
+#' @param fill_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable selection for the filling inside the expert settings
+#' @param size_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variable selection for the size of \code{geom_point} plots inside the expert settings
 #' @param free_x_scales (\code{logical}) If X scaling shall be changeable
 #' @param free_y_scales (\code{logical}) If Y scaling shall be changeable
 #' @param plot_height (\code{numeric}) \code{c(value, min and max)} of plot height slider
@@ -95,11 +98,11 @@
 #'  modules = root_modules(
 #'    tm_g_bivariate(
 #'      dataname = c("ASL","ARS"),
-#'      xvar = list(asl_extracted),
-#'      yvar = list(ars_extracted_response),
+#'      xvar = asl_extracted,
+#'      yvar = ars_extracted_response,
 #'      use_density = FALSE,
-#'      row_facet_var = list(asl_extracted_row),
-#'      col_facet_var = list(asl_extracted_row),
+#'      row_facet_var = asl_extracted_row,
+#'      col_facet_var = asl_extracted_row,
 #'      expert_settings = TRUE,
 #'      plot_height = c(600, 200, 2000),
 #'      ggtheme = "grey"
@@ -117,35 +120,38 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            row_facet_var,
                            col_facet_var,
                            expert_settings = TRUE,
-                           colour_var = list(),
-                           fill_var = list(),
-                           size_var = list(),
+                           colour_var = NULL,
+                           fill_var = NULL,
+                           size_var = NULL,
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
                            ggtheme = "minimal",
                            with_show_r_code = TRUE,
                            pre_output = NULL,
-                           post_output = NULL
-) {
+                           post_output = NULL) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.list(xvar))
-  # No empty columns allowed for X-Var
-  # No multiple X variables allowed
-  lapply(xvar, function(ds_extract) {
-    stopifnot(is(ds_extract, "data_extract_spec"))
-    stopifnot(!("" %in% ds_extract$columns$choices))
-    stopifnot(!ds_extract$columns$multiple)
-  })
-  stopifnot(is.list(yvar))
+  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(xvar)) {
+    stop_if_not(list(all(vapply(xvar, function(x) !("" %in% x$columns$choices), logical(1))),
+                     "'xvar' should not allow empty values"))
+    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
+                     "'xvar' should not allow multiple selection"))
+  } else if (is(xvar, "data_extract_spec")) {
+    stop_if_not(list(!("" %in% xvar$columns$choices),
+                     "'xvar' variable should not allow multiple selection"))
+    stop_if_not(list(!(xvar$columns$multiple),
+                     "'xvar' should not allow multiple selection"))
+  }
+  stopifnot(is.class.list("data_extract_spec")(yvar) || is(yvar, "data_extract_spec"))
   stopifnot(is.logical.single(use_density))
-  stopifnot(is.list(row_facet_var))
-  stopifnot(is.list(col_facet_var))
+  stopifnot(is.class.list("data_extract_spec")(row_facet_var) || is(row_facet_var, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(col_facet_var) || is(col_facet_var, "data_extract_spec"))
   stopifnot(is.logical.single(expert_settings))
-  stopifnot(is.list(colour_var))
-  stopifnot(is.list(fill_var))
-  stopifnot(is.list(size_var))
+  stopifnot(is.null(colour_var) || is.class.list("data_extract_spec")(colour_var) || is(colour_var, "data_extract_spec"))
+  stopifnot(is.null(fill_var) || is.class.list("data_extract_spec")(fill_var) || is(fill_var, "data_extract_spec"))
+  stopifnot(is.null(size_var) || is.class.list("data_extract_spec")(size_var) || is(size_var, "data_extract_spec"))
   stopifnot(is.logical.single(free_x_scales))
   stopifnot(is.logical.single(free_y_scales))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
@@ -154,18 +160,18 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.logical.single(with_show_r_code))
 
   if (expert_settings) {
-    if (length(colour_var) == 0) {
-      colour_var <- xvar
+    if (is.null(colour_var)) {
+      colour_var <- `if`(inherits(xvar, "list"), xvar, list(xvar))
       colour_var[[1]]$columns$selected <- ""
       colour_var[[1]]$columns$choices <- c("", colour_var[[1]]$columns$choices)
     }
-    if (length(fill_var) == 0) {
-      fill_var <- xvar
+    if (is.null(fill_var)) {
+      fill_var <- `if`(inherits(xvar, "list"), xvar, list(xvar))
       fill_var[[1]]$columns$selected <- ""
       fill_var[[1]]$columns$choices <- c("", fill_var[[1]]$columns$choices)
     }
-    if (length(size_var) == 0) {
-      size_var <- xvar
+    if (is.null(size_var)) {
+      size_var <- `if`(inherits(xvar, "list"), xvar, list(xvar))
       size_var[[1]]$columns$selected <- ""
       size_var[[1]]$columns$selected <- ""
       size_var[[1]]$columns$choices <- c("", size_var[[1]]$columns$choices)
@@ -263,13 +269,21 @@ ui_g_bivariate <- function(id, ...) {
         multiple = FALSE
       )
     ),
-    forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
+    forms = if (a$with_show_r_code) {
+      actionButton(ns("show_rcode"), "Show R Code", width = "100%")
+    } else {
+      NULL
+    },
     pre_output = a$pre_output,
     post_output = a$post_output
   )
 }
 
-ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scales, free_y_scales) {
+ui_facetting <- function(ns,
+                         row_facet_var_spec,
+                         col_facet_var_spec,
+                         free_x_scales,
+                         free_y_scales) {
   div(
     data_extract_input(
       id = ns("row_facet_var"),
@@ -286,7 +300,10 @@ ui_facetting <- function(ns, row_facet_var_spec, col_facet_var_spec, free_x_scal
   )
 }
 
-ui_expert <- function(ns, colour_var_spec, fill_var_spec, size_var_spec) {
+ui_expert <- function(ns,
+                      colour_var_spec,
+                      fill_var_spec,
+                      size_var_spec) {
   div(
     data_extract_input(
       id = ns("colour_var"),
@@ -315,14 +332,14 @@ srv_g_bivariate <- function(input,
                             session,
                             datasets,
                             dataname,
-                            xvar = xvar,
-                            yvar = yvar,
-                            row_facet_var = row_facet_var,
-                            col_facet_var = col_facet_var,
+                            xvar,
+                            yvar,
+                            row_facet_var,
+                            col_facet_var,
                             expert_settings = FALSE,
-                            colour_var = colour_var,
-                            fill_var = fill_var,
-                            size_var = size_var) {
+                            colour_var,
+                            fill_var,
+                            size_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   use_chunks(session)
@@ -698,7 +715,10 @@ facet_ggplot_call <- function(row_facet_var = NULL,
   }
 }
 
-expert_ggplot_call <- function(colour_var, fill_var, size_var, is_point = FALSE) {
+expert_ggplot_call <- function(colour_var,
+                               fill_var,
+                               size_var,
+                               is_point = FALSE) {
   if (!is.null(colour_var) && !is.null(fill_var) && is_point && !is.null(size_var)) {
     bquote(aes(
       colour = .(as.name(colour_var)),

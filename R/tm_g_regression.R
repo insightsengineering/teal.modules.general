@@ -2,10 +2,10 @@
 #'
 #'
 #' @param dataname name of datasets used to generate the regression plot (just used for labeling)
-#' @param regressor (\code{list}) Output of \code{teal.devel::data_extract_spec}
-#'  to define the regressor variable from an incoming dataset with filtering and selecting.
-#' @param response (\code{list}) Output of \code{teal.devel::data_extract_spec}
-#'  to define the response variable from an incoming dataset with filtering and selecting.
+#' @param regressor (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  regressor variable from an incoming dataset with filtering and selecting.
+#' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  response variable from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
 #' @inheritParams teal::module
@@ -76,8 +76,8 @@
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL", "ALB"),
-#'       response = list(alb_extracted),
-#'       regressor = list(asl_extracted)
+#'       response = alb_extracted,
+#'       regressor = asl_extracted
 #'     )
 #'   )
 #' )
@@ -95,10 +95,15 @@ tm_g_regression <- function(label = "Regression Analysis",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.list(response))
-  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
-                   "Response variable should not allow multiple selection"))
-  stopifnot(is.list(regressor))
+  stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(response)) {
+    stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                     "Response variable should not allow multiple selection"))
+  } else if (is(response, "data_extract_spec")) {
+    stop_if_not(list(!isTRUE(response$columns$multiple),
+                     "Response variable should not allow multiple selection"))
+  }
+  stopifnot(is.class.list("data_extract_spec")(regressor) || is(regressor, "data_extract_spec"))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 

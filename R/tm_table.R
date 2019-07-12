@@ -4,12 +4,12 @@
 #'
 #' @param label (\code{chracter}) menu label
 #' @param dataname (\code{chracter}) name of dataset used to generate table
-#' @param xvar (\code{list} of \code{data_extract_spec}) Specification how the
-#'  user can select data to get encoded in the rows of the cross table. Please just use
-#'  single selections inside the \code{columns_spec}.
-#' @param yvar (\code{list} of \code{data_extract_spec}) Specification how the
-#'  user can select data to get encoded in the columns of the cross table. Please just use
-#'  single selections inside the \code{columns_spec}.
+#' @param xvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Specification how the user can select data to get encoded in the rows of the cross table.
+#'   Please just use single selections inside the \code{columns_spec}.
+#' @param yvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Specification how the user can select data to get encoded in the columns of the cross table.
+#'   Please just use single selections inside the \code{columns_spec}.
 #' @param useNA (\code{character}) optional pre-selected option indicating how to utilize NA in
 #'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 #'   missing then \code{'ifany'} will be used. If vector then only the first
@@ -72,21 +72,26 @@ tm_table <- function(label,
                      useNA = c("ifany", "no", "always"), # nolint
                      pre_output = NULL,
                      post_output = NULL) {
-  stopifnot(
-    is.character.single(label),
-    is.character.single(dataname),
-    is.list(xvar),
-    is.list(yvar),
-    is.character.vector(useNA),
-    all(useNA %in% c("ifany", "no", "always"))
-  )
-
-  lapply(xvar, function(ds_extract){
-    stopifnot(!ds_extract$columns$multiple)
-  })
-  lapply(yvar, function(ds_extract){
-    stopifnot(!ds_extract$columns$multiple)
-  })
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.single(dataname))
+  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(xvar)) {
+    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
+                     "'xvar' should not allow multiple selection"))
+  } else if (is(xvar, "data_extract_spec")) {
+    stop_if_not(list(!(xvar$columns$multiple),
+                     "'xvar' should not allow multiple selection"))
+  }
+  stopifnot(is.class.list("data_extract_spec")(yvar) || is(yvar, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(yvar)) {
+    stop_if_not(list(all(vapply(yvar, function(x) !(x$columns$multiple), logical(1))),
+                     "'yvar' should not allow multiple selection"))
+  } else if (is(yvar, "data_extract_spec")) {
+    stop_if_not(list(!(yvar$columns$multiple),
+                     "'yvar' should not allow multiple selection"))
+  }
+  stopifnot(is.character.vector(useNA))
+  stopifnot(all(useNA %in% c("ifany", "no", "always")))
 
   args <- as.list(environment())
 
