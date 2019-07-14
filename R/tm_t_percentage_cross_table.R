@@ -1,31 +1,28 @@
 #' Cross table based on rtables
 #'
-#' @param label menue item label of the module in the teal app
-#' @param dataname analysis data used in teal module, needs to be available in
-#' the list passed to the \code{data} argument of \code{\link[teal]{init}}.
-#' Note that the data is expected to be in vertical form with the
-#' \code{PARAMCD} variable filtering to one observation per patient.
-#' @param x_var \code{\link[teal]{choices_selected}} object with all available choices
-#' with preselected option for variable X
-#' @param y_var \code{\link[teal]{choices_selected}} object with all available choices
-#' with preselected option for variable Y
-#'
-#' @importFrom rtables rrowl rtablel as_html
-#' @importFrom stats addmargins
+#' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
+#' @param label (\code{character}) Label of the app in the teal menu
+#' @param dataname (\code{character}) Name of the dataset used in the teal app. Just a single
+#'   dataset is allowed!
+#' @param x_var \code{\link[teal]{choices_selected}} object with all available
+#'   choices with preselected option for variable X
+#' @param y_var \code{\link[teal]{choices_selected}} object with all available
+#'   choices with preselected option for variable Y
 #' @export
 #'
-#' @author Adrian Waddell (waddella) \email{adrian.waddell@roche.com}
+#' @author wolfs25 waddella
 #'
 #' @examples
-#'
 #' library(random.cdisc.data)
 #'
-#' asl <- radsl(seed = 1)
+#' ASL <- cadsl
 #'
-#' attr(asl, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#'
-#' x <- teal::init(
-#'   data = list(ASL = asl),
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     code = "ASL <- cadsl",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
@@ -36,13 +33,14 @@
 #'   )
 #' )
 #' \dontrun{
-#'
-#' shinyApp(x$ui, x$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
                                         x_var,
                                         y_var) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.single(dataname))
   stopifnot(is.choices_selected(x_var))
   stopifnot(is.choices_selected(y_var))
 
@@ -53,11 +51,10 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
     server = srv_percentage_cross_table,
     ui = ui_percentage_cross_table,
     ui_args = args,
-    server_args = list(dataname = dataname),
+    server_args = list(dataname = dataname, label = label),
     filters = dataname
   )
 }
-
 
 ui_percentage_cross_table <- function(id, ...) {
   a <- list(...)
@@ -65,52 +62,72 @@ ui_percentage_cross_table <- function(id, ...) {
   ns <- NS(id)
 
   standard_layout(
-    output = teal.devel::white_small_well(uiOutput(ns("table"))),
+    output = white_small_well(uiOutput(ns("table"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
       optionalSelectInput(ns("x_var"), "x var", a$x_var$choices, a$x_var$selected),
       optionalSelectInput(ns("y_var"), "y var", a$y_var$choices, a$y_var$selected)
-    )
+    ),
+    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    pre_output = a$pre_output,
+    post_output = a$post_output
   )
 }
 
+#' @importFrom rtables rrowl rtablel as_html
+#' @importFrom stats addmargins
+srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
+  stopifnot(all(dataname %in% datasets$datanames()))
 
-srv_percentage_cross_table <- function(input, output, session, datasets, dataname) {
-  output$table <- renderUI({
-    anl_filtered <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+  init_chunks()
+
+  table_code <- reactive({
+    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+
     x_var <- input$x_var
     y_var <- input$y_var
 
-    validate(need(anl_filtered, "data missing"))
-    validate(need(nrow(anl_filtered) > 10, "need at least 10 patients"))
+    validate(need(anl_f, "data missing"))
+    validate_has_data(anl_f, 10)
 
-    x <- anl_filtered[[x_var]]
-    y <- anl_filtered[[y_var]]
+    validate(need(x_var, "selected x_var does not exist"))
+    validate(need(y_var, "selected y_var does not exist"))
 
-    validate(need(x, "selected x_var does not exist"))
-    validate(need(y, "selected y_var does not exist"))
+    data_name <- paste0(dataname, "_FILTERED")
+    assign(data_name, anl_f)
 
+    # Set chunks
+    chunks_reset()
 
-    xx <- addmargins(table(x, y))
-    pp <- xx / xx[nrow(xx), ncol(xx)]
+    chunks_push(expression = bquote(data_table <-
+      stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
 
-    tbl <- try({
-      rows <- lapply(1:nrow(xx), function(i) {
-        x_i <- xx[i, ]
-        p_i <- pp[i, ]
+    chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
 
-        r <- Map(function(xii, pii) c(xii, pii), x_i, p_i)
+    chunks_push(
+      expression =
+        quote(add_row <- function(i, x, p) {
+          rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
+        })
+    )
+    chunks_push(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
+    chunks_push(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
+  })
 
-        rrowl(rownames(xx)[i], r)
-      })
+  output$table <- renderUI({
+    table_code()
+    t <- rtables::as_html(chunks_eval())
+    chunks_validate_is_ok()
+    t
+  })
 
-
-      rtablel(header = colnames(xx), rows, format = "xx (xx.xx%)")
-    })
-
-
-    if (is(tbl, "try-error")) validate(need(FALSE, paste0("creating the table failed:\n\n", tbl)))
-
-    as_html(tbl)
+  observeEvent(input$show_rcode, {
+    show_rcode_modal(
+      title = "Cross Table",
+      rcode = get_rcode(
+        datasets = datasets,
+        title = label
+      )
+    )
   })
 }

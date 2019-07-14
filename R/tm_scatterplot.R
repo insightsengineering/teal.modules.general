@@ -1,10 +1,10 @@
-#' Create a simple cross-table
+#' Create a simple scatterplot
 #'
-#' Create a table with the \code{\link{table}[base]} function
+#' Create a plot with the \code{\link{plot}[base]} function
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal::standard_layout
-#' @param dataname name of dataset used to generate table
+#' @inheritParams teal.devel::standard_layout
+#' @param dataname name of dataset used to generate plot
 #' @param xvar variable name of x varbiable
 #' @param yvar variable name of y variable
 #' @param xvar_choices vector with variable names of possible x variables. If
@@ -25,62 +25,72 @@
 #'   can be a vector of length three with \code{c(value, min and max)}.
 #' @param alpha if scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically
-#'   then it can be a vector of length three with \code{c(value, min and max)}.
+#'   then it can be a vector of length three with vlaue, min and max.
 #' @param size if scalar then the plot points sizes will have a fixed opacity.
 #'   If a slider should be presented to adjust the plot point sizes dynamically
-#'   then it can be a vector of length three with \code{c(value, min and max)}.
+#'   then it can be a vector of length three with vlaue, min and max.
 #'
-#' @export
-#'
-#' @importFrom ggplot2 aes_string ggplot geom_point
+#' @noRd
 #'
 #' @examples
-#'
-#' \dontrun{
 #' library(random.cdisc.data)
 #'
-#' ASL <- radsl(seed = 1)
-#' AAE <- radae(ASL, seed = 99)
+#' ASL <- cadsl
 #'
-#' # for reproducibility
-#' attr(ASL, "source") <- "random.cdisc.data::radsl(seed = 1)"
-#' attr(AAE, "source") <- "random.cdisc.data::radae(ASL, seed = 99)"
-#'
-#' x <- teal::init(
-#'   data = list(
+#' app <- init(
+#'   data = cdisc_data(
 #'     ASL = ASL,
-#'     AAE = AAE
-#'   ),
+#'     code = "ASL <- cadsl",
+#'     check = FALSE),
 #'   root_modules(
-#'     tm_data_table(),
-#'     tm_variable_browser(),
-#'     tm_scatterplot("Scatterplot Choices",
-#'       dataname = "AAE",
-#'       xvar = "AEDECOD", yvar = "AETOXGR", xvar_choices = c("AEDECOD", "AETOXGR"),
-#'       color_by = "_none_", color_by_choices = c("_none_", "AEBODSYS")
+#'     tm_scatterplot(
+#'      "Scatterplot Choices",
+#'       dataname = "ASL",
+#'       xvar = "BMRKR1", xvar_choices = c("AGE", "BMRKR1", "BMRKR2"),
+#'       yvar = "BMRKR2", yvar_choices = c("AGE", "BMRKR1", "BMRKR2"),
+#'       color_by = "_none_", color_by_choices = c("_none_", "RACE")
 #'     ),
-#'     tm_scatterplot("Scatterplot No Color Choices",
+#'     tm_scatterplot(
+#'      "Scatterplot No Color Choices",
 #'       dataname = "ASL",
 #'       xvar = "AGE", yvar = "BMRKR1", size = 3, alpha = 1, plot_height = 600
 #'     )
 #'   )
 #' )
-#'
-#' shinyApp(x$ui, x$server)
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
 #' }
 tm_scatterplot <- function(label,
                            dataname,
-                           xvar, yvar,
-                           xvar_choices = xvar, yvar_choices = yvar,
+                           xvar,
+                           yvar,
+                           xvar_choices = xvar,
+                           yvar_choices = yvar,
                            color_by = NULL,
                            color_by_choices = color_by,
                            plot_height = c(600, 200, 2000),
                            alpha = c(1, 0, 1),
                            size = c(4, 1, 12),
-                           pre_output = NULL, post_output = NULL) {
+                           pre_output = NULL,
+                           post_output = NULL) {
+  stopifnot(is.character.single(label))
+  stopifnot(is.character.vector(dataname))
+  stopifnot(is.character.vector(xvar))
+  stopifnot(is.character.vector(yvar))
+  stopifnot(is.character.vector(xvar_choices))
+  stopifnot(is.character.vector(yvar_choices))
+  stopifnot(is.null(color_by) || is.character.single(color_by))
+  stopifnot(is.null(color_by_choices) || is.character.vector(color_by_choices))
+  stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
+  stopifnot(is.numeric.vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
+  stopifnot(is.numeric.vector(size) && (length(size) == 3 || length(size) == 1))
+  stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
+
   args <- as.list(environment())
 
-  teal::module(
+  module(
     label = label,
     server = srv_scatterplot,
     server_args = list(dataname = dataname),
@@ -90,15 +100,23 @@ tm_scatterplot <- function(label,
   )
 }
 
-
-#' @import teal
-ui_scatterplot <- function(id, label,
-                           dataname, xvar, yvar,
-                           xvar_choices, yvar_choices,
-                           color_by, color_by_choices,
-                           plot_height, alpha, size,
-                           pre_output, post_output) {
-  if (plot_height < 200 || plot_height > 2000) stop("plot_height must be between 200 and 2000")
+ui_scatterplot <- function(id,
+                           label,
+                           dataname,
+                           xvar,
+                           yvar,
+                           xvar_choices,
+                           yvar_choices,
+                           color_by,
+                           color_by_choices,
+                           plot_height,
+                           alpha,
+                           size,
+                           pre_output,
+                           post_output) {
+  if (plot_height < 200 || plot_height > 2000) {
+    stop("plot_height must be between 200 and 2000")
+  }
 
 
   ns <- NS(id)
@@ -131,10 +149,12 @@ ui_scatterplot <- function(id, label,
   )
 }
 
-#' @import stats utils
-#' @importFrom teal.devel get_filter_txt
+#' @importFrom magrittr %>%
+#' @importFrom methods substituteDirect
 srv_scatterplot <- function(input, output, session, datasets, dataname) {
+  stopifnot(all(dataname %in% datasets$datanames()))
 
+  init_chunks()
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
@@ -148,11 +168,11 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     xvar <- input$xvar
     yvar <- input$yvar
     alpha <- input$alpha
-    color_by <- input$color_by
+    color_by <- check_color(input$color_by)
     size <- input$size
 
-    if (color_by %in% c("", "_none_")) color_by <- NULL
-
+    data_name <- paste0(dataname, "_FILTERED")
+    assign(data_name, anl)
 
     validate(need(alpha, "need alpha"))
     validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
@@ -168,84 +188,64 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       paste("variable", yvar, " is not available in data", dataname)
     ))
 
-
-
-    p <- ggplot(anl, aes_string(x = xvar, y = yvar, color = color_by)) +
-      geom_point(alpha = alpha, size = size)
-
+    chunks_reset()
 
     if (is.null(color_by)) {
-      # @start_plot_no_color
-      p <- ggplot(anl, aes_string(x = xvar, y = yvar)) +
-        geom_point(alpha = alpha, size = size)
-      # @end_plot_no_color
+      chunks_push(expression = bquote(
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar
+        )
+      ))
     } else {
-      # @start_plot_color
-      p <- ggplot(anl, aes_string(x = xvar, y = yvar, color = color_by)) +
-        geom_point(alpha = alpha, size = size)
-      # @end_plot_color
+      chunks_push(expression = bquote(
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar, color = color_by)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar,
+          color_by = color_by
+        )
+      ))
     }
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
 
     p
   })
 
   observeEvent(input$show_rcode, {
-    xvar <- input$xvar
-    yvar <- input$yvar
-    alpha <- input$alpha
-    size <- input$size
-    color_by <- input$color_by
-
-    if (color_by %in% c("", "_none_")) color_by <- NULL
-
-    str_header <- get_rcode_header(
-      title = paste("Scatterplot of", yvar, "vs.", xvar),
-      description = "",
-      libraries = c("ggplot2"),
-      data = setNames(list(datasets$get_data(dataname, reactive = FALSE, filtered = FALSE)), dataname),
-      git_repo = "http://github.roche.com/NEST/teal/R/tm_scatterplot.R"
-    )
-
-    str_filter <- teal.devel::get_filter_txt(dataname, datasets)
-
-    chunks <- parse_code_chunks(txt = capture.output(srv_scatterplot))
-
-    plot_code <- if (is.null(color_by) || color_by == "_none_") {
-      chunks$plot_no_color
-    } else {
-      pc <- chunks$plot_color
-      sub("color = color_by", paste("color =", color_by), pc, fixed = TRUE)
-    }
-
-    plot_code <- plot_code
-    subst_pairs <- c(
-      "ggplot(ANL" = paste0("ggplot(", dataname, "_FILTERED"),
-      "x = xvar" = paste0("x = ", xvar),
-      "y = yvar" = paste0("y = ", yvar),
-      "alpha = alpha" = paste0("alpha = ", alpha),
-      "size = size" = paste0("size = ", size)
-    )
-
-    f_sub <- Map(function(pattern, repl) {
-      function(txt) sub(pattern, repl, txt, fixed = TRUE)
-    }, names(subst_pairs), subst_pairs)
-
-    plot_code_subst <- Reduce(function(txt, f) f(txt), f_sub, init = plot_code)
-
-    code <- paste(
-      c(
-        "\n",
-        str_header, "\n",
-        str_filter, "\n",
-        plot_code_subst, "\n",
-        "p", "\n"
-      ),
-      collapse = "\n"
-    )
-
-    teal.devel::show_rcode_modal(
-      title = "R Code for the Current Scatterplot",
-      rcode = code
+    show_rcode_modal(
+      title = "Scatter-Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        title = "Scatter-Plot"
+      )
     )
   })
+}
+
+check_color <- function(x) {
+  if (!is.null(x)) {
+    if (x %in% c("", "_none_")) {
+      return(NULL)
+    }
+  }
+  return(x)
 }

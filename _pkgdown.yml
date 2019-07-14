@@ -1,0 +1,28 @@
+url: https://pages.github.roche.com/NEST/teal.modules.general
+
+template:
+  params:
+    bootswatch: cerulean
+
+navbar:
+  right:
+    - icon: fa-github
+      href: https://github.roche.com/NEST/teal.modules.general
+
+development:
+  mode: release
+
+reference:
+  - title:
+    contents:
+      - teal.modules.general-package
+
+  - title: General functionality modules
+    contents:
+      - tm_data_table
+      - tm_variable_browser
+
+  - title: Modules for tables
+    contents:
+      - tm_t_percentage_cross_table
+

@@ -6,9 +6,10 @@
 #' @inheritParams teal::module
 #'
 #' @export
-#' @importFrom teal module
 tm_variable_browser <- function(label = "variable browser") {
-  teal::module(
+  stopifnot(is.character.single(label))
+
+  module(
     label,
     server = srv_page_variable_browser,
     ui = ui_page_variable_browser,
@@ -17,11 +18,8 @@ tm_variable_browser <- function(label = "variable browser") {
   )
 }
 
-
-
-#' @import stats
-#' @importFrom shiny div NS
 # ui function
+#' @importFrom stats setNames
 ui_page_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
@@ -60,8 +58,8 @@ ui_page_variable_browser <- function(id, datasets) {
           div(
             class = "pull-left",
             radioButtons(ns("raw_or_filtered"), NULL,
-                choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
-                selected = "filtered", inline = TRUE)
+                         choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
+                         selected = "filtered", inline = TRUE)
           ),
           actionLink(ns("add_filter_variable"), "add as filter variable", class = "pull-right")
         ),
@@ -72,17 +70,13 @@ ui_page_variable_browser <- function(id, datasets) {
 }
 
 
-## server function
-#' @import utils
-#' @importFrom shiny validate need div reactiveValues
-#' @importFrom teal .log
+#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
+#' @importFrom utils capture.output str
 srv_page_variable_browser <- function(input, output, session, datasets) {
-
-
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = NULL)
 
-  current_rows <- new.env() # nolint
+  current_rows <- new.env()
 
   asl_vars <- names(datasets$get_data("ASL"))
 
@@ -160,23 +154,25 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       plot_grob <- if (is.factor(var) || is.character(var)) {
         groups <- unique(as.character(var))
         if (length(groups) > 30) {
-          grid::textGrob(paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "),
-                  "\n   ..."),
+          grid::textGrob(
+            paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "), "\n   ..."),
             x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"),
             just = c("left", "top")
           )
         } else {
-          p <- ggplot2::qplot(var) + ggplot2::xlab(d_var_name) + ggplot2::theme_light() + ggplot2::coord_flip()
-          ggplot2::ggplotGrob(p)
+          p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
+          ggplotGrob(p)
         }
       } else if (is.numeric(var)) {
         ## histogram
-        p <- ggplot2::qplot(var) + ggplot2::xlab(d_var_name) + ggplot2::theme_light() + ggplot2::coord_flip()
-        ggplot2::ggplotGrob(p)
+        p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
+        ggplotGrob(p)
       } else {
         grid::textGrob(
-          paste(strwrap(capture.output(str(var)), width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)),
-              collapse = "\n"),
+          paste(strwrap(
+            utils::capture.output(utils::str(var)),
+            width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
+          ), collapse = "\n"),
           x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
         )
       }
@@ -185,33 +181,32 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     }
   })
 
+  warning_messages <- reactiveValues(varinfo = "", i = 0)
 
+  observeEvent(input$add_filter_variable, {
+    dataname <- plot_var$data
+    varname <- plot_var$variable
+    active <- plot_var$active
 
-warning_messages <- reactiveValues(varinfo = "", i = 0)
-observeEvent(input$add_filter_variable, {
-      dataname <- plot_var$data
-      varname <- plot_var$variable
-      active <- plot_var$active
+    .log("add filter variable", dataname, "and", varname, "and active:", active)
 
-      .log("add filter variable", dataname, "and", varname, "and active:", active)
-
-      if (!is.null(dataname) && identical(dataname, active)) {
-        if (!is.null(varname)) {
-          if (dataname != "ASL" && varname %in% asl_vars) {
-            warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
-                    Switch to the ASL data and add the variable from there.")
-          } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
-            warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."), "can currently not be
-                    used as a filter variable.")
-          } else {
-            datasets$set_default_filter_state(dataname, varname)
-            warning_messages$varinfo <- ""
-            .log("filter added:", varname)
-          }
-          warning_messages$i <- warning_messages$i + 1
+    if (!is.null(dataname) && identical(dataname, active)) {
+      if (!is.null(varname)) {
+        if (dataname != "ASL" && varname %in% asl_vars) {
+          warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
+                                            Switch to the ASL data and add the variable from there.")
+        } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
+          warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
+                                            "can currently not be used as a filter variable.")
+        } else {
+          datasets$set_default_filter_state(dataname, varname)
+          warning_messages$varinfo <- ""
+          .log("filter added:", varname)
         }
+        warning_messages$i <- warning_messages$i + 1
       }
-    })
+    }
+  })
 
 
   output$warning <- renderUI({
@@ -224,8 +219,4 @@ observeEvent(input$add_filter_variable, {
       div(class = "text-warning", style = "margin-bottom: 15px;", msg)
     }
   })
-
-
-
-  NULL
 }
