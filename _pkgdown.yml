@@ -10,7 +10,7 @@ navbar:
       href: https://github.roche.com/NEST/teal.modules.general
 
 development:
-  mode: release
+  mode: devel
 
 reference:
   - title:
