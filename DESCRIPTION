@@ -1,11 +1,16 @@
 Package: teal.modules.general
 Type: Package
-Date: 2019-02-15
 Title: General modules to add to a teal application
-Version: 0.6.0
+Version: 0.1.0.9000
 Authors@R: c(
-  person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = c("aut", "cre")),
-  person("Vincent", "Wolowski", email = "vincent.wolowski@roche.com", role = "aut")
+    person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
+    person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = "aut"),
+    person("Pawel", "Rucki", email = "pawel.rucki@contractors.roche.com", role = "aut"),
+    person("Dawid", "Kaledkowski", email = "dawid.kaledkowski@contractors.roche.com", role = "aut"),
+    person("Sebastian", "Wolf", email = "sebastian.wolf.sw1@roche.com", role = "aut"),
+    person("Maximilian", "Mordig", email = "maximilian_oliver.mordig@roche.com", role = "aut"),
+    person("Bartosz", "Baranowski", email = "bartosz.baranowski@roche.com", role = "aut"),
+    person("Roche", role = c("cph", "fnd"))
   )
 Description: General Purpose Teal Modules.
 Encoding: UTF-8
@@ -16,7 +21,7 @@ Depends:
   ggmosaic,
   graphics,
   shiny,
-  teal
+  teal (>= 0.7.0)
 Imports:
   grid,
   dplyr,
@@ -25,13 +30,13 @@ Imports:
   lattice,
   magrittr,
   methods,
-  rtables,
+  rtables (>= 0.1.2),
   shinyWidgets,
-  teal.devel,
-  tern,
-  utils.nest
+  teal.devel (>= 0.1.0),
+  tern (>= 0.6.2),
+  utils.nest (>= 0.1.0)
 Suggests:
   random.cdisc.data (>= 0.1.2.1),
-  test.nest,
+  test.nest (>= 0.1.0),
   testthat
 RoxygenNote: 6.1.1

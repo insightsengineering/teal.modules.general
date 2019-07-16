@@ -26,16 +26,3 @@ reference:
     contents:
       - tm_t_percentage_cross_table
 
-  - title: Modules for plots
-    contents:
-      - tm_g_association
-      - tm_g_bivariate
-      - tm_g_regression
-      - tm_g_response
-      - tm_g_scatterplotmatrix
-
-  - title: Other
-    desc: Other utility functions
-    contents:
-      - tm_scatterplot
-      - tm_table

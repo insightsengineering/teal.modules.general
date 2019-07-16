@@ -9,10 +9,9 @@
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
-#'
 #' library(random.cdisc.data)
 #' ASL <- cadsl
 #'
@@ -119,7 +118,7 @@ srv_tm_g_association <- function(input,
                                  dataname) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  init_chunks()
 
   callModule(
     plot_with_height,
@@ -181,19 +180,15 @@ srv_tm_g_association <- function(input,
 
     cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    chunks_reset()
 
-    set_chunk("plotCall", cl)
+    chunks_push(expression = cl, id = "plotCall")
 
-    p <- eval_remaining()
+    p <- chunks_eval()
 
-    if (is(p, "try-error")) {
-      validate(need(FALSE, p))
-    } else {
-      p
-    }
+    chunks_validate_is_ok()
 
+    p
   })
 
   observeEvent(input$show_rcode, {

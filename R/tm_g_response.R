@@ -18,7 +18,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)
@@ -275,7 +275,7 @@ srv_g_response <- function(input,
                            col_facet_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  init_chunks()
 
   # Data Extraction
   response_data <- callModule(data_extract_module,
@@ -403,12 +403,15 @@ srv_g_response <- function(input,
       plot_call <- call("+", plot_call, facet_cl)
     }
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    chunks_reset()
 
-    set_chunk("plotCall", plot_call)
+    chunks_push(expression = plot_call, id = "plotCall")
 
-    eval_remaining()
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
   })
 
   observeEvent(input$show_rcode, {
