@@ -17,7 +17,7 @@
 #' @param pre_output (\code{shiny.tag}) html tags appended below the output
 #' @param post_output (\code{shiny.tag}) html tags appended after the output
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)
@@ -148,7 +148,7 @@ ui_table <- function(id,
 srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  init_chunks()
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
@@ -180,25 +180,26 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
     useNA <- input$useNA # nolint
     use_margin <- input$margins
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    chunks_reset()
 
-    if (use_margin) {
-      expression_to_use <- expr(stats::addmargins(
+    expression_to_use <- if (use_margin) {
+      expr(stats::addmargins(
         table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)
       )) %>%
         substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
     } else {
-      expression_to_use <- expr(table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)) %>%
+      expr(table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)) %>%
         substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
     }
 
-    set_chunk(expression = expression_to_use)
+    chunks_push(expression = expression_to_use)
   })
 
   output$table <- renderTable({
     chunk_reactive()
-    tbl <- eval_remaining()
+
+    tbl <- chunks_eval()
+    chunks_validate_is_ok()
 
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')

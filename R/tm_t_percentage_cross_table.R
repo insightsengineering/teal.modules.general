@@ -79,7 +79,7 @@ ui_percentage_cross_table <- function(id, ...) {
 srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  init_chunks()
 
   table_code <- reactive({
     anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
@@ -97,28 +97,28 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     assign(data_name, anl_f)
 
     # Set chunks
+    chunks_reset()
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
-
-    set_chunk(expression = bquote(data_table <-
+    chunks_push(expression = bquote(data_table <-
       stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
 
-    set_chunk(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
+    chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
 
-    set_chunk(
+    chunks_push(
       expression =
         quote(add_row <- function(i, x, p) {
           rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
         })
     )
-    set_chunk(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
-    set_chunk(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
+    chunks_push(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
+    chunks_push(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
   })
 
   output$table <- renderUI({
     table_code()
-    rtables::as_html(eval_remaining())
+    t <- rtables::as_html(chunks_eval())
+    chunks_validate_is_ok()
+    t
   })
 
   observeEvent(input$show_rcode, {

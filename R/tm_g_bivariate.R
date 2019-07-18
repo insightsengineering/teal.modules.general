@@ -34,7 +34,7 @@
 #'
 #' @importFrom methods is
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' library(random.cdisc.data)
@@ -149,7 +149,9 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.class.list("data_extract_spec")(row_facet_var) || is(row_facet_var, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(col_facet_var) || is(col_facet_var, "data_extract_spec"))
   stopifnot(is.logical.single(expert_settings))
-  stopifnot(is.null(colour_var) || is.class.list("data_extract_spec")(colour_var) || is(colour_var, "data_extract_spec"))
+  stopifnot(is.null(colour_var) ||
+              is.class.list("data_extract_spec")(colour_var) ||
+              is(colour_var, "data_extract_spec"))
   stopifnot(is.null(fill_var) || is.class.list("data_extract_spec")(fill_var) || is(fill_var, "data_extract_spec"))
   stopifnot(is.null(size_var) || is.class.list("data_extract_spec")(size_var) || is(size_var, "data_extract_spec"))
   stopifnot(is.logical.single(free_x_scales))
@@ -342,7 +344,7 @@ srv_g_bivariate <- function(input,
                             size_var) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
-  use_chunks(session)
+  init_chunks()
 
   # Data Extraction
   xvar_data <- callModule(data_extract_module,
@@ -516,18 +518,15 @@ srv_g_bivariate <- function(input,
       cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
     }
 
-    renew_chunk_environment(envir = environment())
-    renew_chunks()
+    chunks_reset()
 
-    set_chunk("plotCall", cl)
+    chunks_push(expression = cl, id = "plotCall")
 
-    p <- eval_remaining()
+    p <- chunks_eval()
 
-    if (is(p, "try-error")) {
-      validate(need(FALSE, p))
-    } else {
-      p
-    }
+    chunks_validate_is_ok()
+
+    p
   })
 
 
