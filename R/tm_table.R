@@ -26,26 +26,6 @@
 #' ASL <- cadsl
 #' keys(ASL) <- c("USUBJID", "STUDYID")
 #'
-#' asl_extract_xvar <- data_extract_spec(
-#'   "ASL",
-#'   columns = columns_spec(
-#'     choices = base::setdiff(names(ASL), keys(ASL)),
-#'     selected = names(ASL)[5],
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#'
-#' asl_extract_yvar <- data_extract_spec(
-#'   "ASL",
-#'   columns = columns_spec(
-#'     choices = base::setdiff(names(ASL), keys(ASL)),
-#'     selected = names(ASL)[6],
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
@@ -56,8 +36,24 @@
 #'     tm_table(
 #'       "Table Choices",
 #'       dataname =  "ASL",
-#'       xvar = list(asl_extract_xvar),
-#'       yvar = list(asl_extract_yvar)
+#'       xvar = data_extract_spec(
+#'         "ASL",
+#'         columns = columns_spec(
+#'           choices = base::setdiff(names(ASL), keys(ASL)),
+#'           selected = names(ASL)[5],
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       yvar = data_extract_spec(
+#'         "ASL",
+#'         columns = columns_spec(
+#'           choices = base::setdiff(names(ASL), keys(ASL)),
+#'           selected = names(ASL)[6],
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
