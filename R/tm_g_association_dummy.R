@@ -151,7 +151,7 @@ srv_tm_g_association_dummy <- function(input,
     plot_height = reactive(input$myplot),
     plot_id = session$ns("plot")
   )
-  browser()
+
   ref_var_data <- callModule(
     data_extract_module,
     id = "ref_var",
@@ -167,14 +167,9 @@ srv_tm_g_association_dummy <- function(input,
 
   output$plot <- renderPlot({
 
-    browser()
     ref_var_name <- get_dataset_prefixed_col_names(ref_var_data())
     vars_names <- get_dataset_prefixed_col_names(vars_data())
-
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-
-
-
 
     # not working currently because it relies on cols and not on already preprocessed data
 

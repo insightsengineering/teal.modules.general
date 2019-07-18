@@ -24,33 +24,34 @@
 #' library(tern)
 #'
 #' ASL <- cadsl
+#' ARS <- cadrs
 #' keys(ASL) <- c("USUBJID", "STUDYID")
+#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
+#'     code = 'to be completed',
 #'     check = FALSE
 #'   ),
-#'   root_modules(
-#'     tm_table(
-#'       "Table Choices",
-#'       dataname =  "ASL",
-#'       xvar = data_extract_spec(
-#'         "ASL",
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       dataname = "ASL",
+#'       ref_var = data_extract_spec(
+#'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ASL), keys(ASL)),
-#'           selected = names(ASL)[5],
+#'           choices = names(ASL),
+#'           selected = c("AGE"),
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       yvar = data_extract_spec(
-#'         "ASL",
+#'       vars = data_extract_spec(
+#'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ASL), keys(ASL)),
-#'           selected = names(ASL)[6],
-#'           multiple = FALSE,
+#'           choices = names(ASL),
+#'           selected = c("SEX"),
+#'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       )
