@@ -16,6 +16,36 @@
 #' @examples
 #' library(random.cdisc.data)
 #' ASL <- cadsl
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     code = 'to be completed',
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       dataname = "ASL",
+#'       ref_var = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = names(ASL),
+#'           selected = c("AGE"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       vars = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = names(ASL),
+#'           selected = c("SEX"),
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
 #'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
