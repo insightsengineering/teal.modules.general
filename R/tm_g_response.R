@@ -86,7 +86,8 @@
 #'            ARS <- cadrs
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
 #'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
-#'      check = FALSE),
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
@@ -171,6 +172,8 @@ tm_g_response <- function(label = "Response Plot",
   # No multiple Response variables allowed
   stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(response)) {
+    # todo: this check should go into data_extract or at least create a function for reusability (add an argument allow_empty_values)
+    # todo: also refactor this in tm_g_response.R to use this function
     stop_if_not(list(all(vapply(response, function(x) !("" %in% x$columns$choices), logical(1))),
                      "'response' should not allow empty values"))
     stop_if_not(list(all(vapply(response, function(x) !(x$columns$multiple), logical(1))),

@@ -3,8 +3,10 @@
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @param dataname (\code{character}) data set name to analyze
-#' @param ref_var (\code{choices_selected}) reference variable
-#' @param vars (\code{choices_selected}) associated variables
+#' @param ref_var (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   reference variable, must set \code{multiple = FALSE}
+#' @param vars (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   reference variable
 #' @param show_association (\code{logical}) wheater show association of \code{vars} with refference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
@@ -14,21 +16,6 @@
 #' @examples
 #' library(random.cdisc.data)
 #' ASL <- cadsl
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
-#'     check = FALSE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_association(
-#'       dataname = "ASL",
-#'       ref_var = choices_selected(names(ASL), "AGE"),
-#'       vars = choices_selected(names(ASL), "SEX")
-#'     )
-#'   )
-#' )
 #'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
@@ -42,10 +29,19 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              with_show_r_code = TRUE) {
+  if (!is.class.list("data_extract_spec")(ref_var)) {
+    ref_var <- list(ref_var)
+  }
+  if (!is.class.list("data_extract_spec")(vars)) {
+    vars <- list(vars)
+  }
+
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.choices_selected(ref_var))
-  stopifnot(is.choices_selected(vars))
+  stopifnot(is.class.list("data_extract_spec")(ref_var) || is(ref_var, "data_extract_spec"))
+  stop_if_not(list(all(vapply(ref_var, function(x) !(x$columns$multiple), logical(1))),
+                   "'ref_var' should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(vars) || is(vars, "data_extract_spec"))
   stopifnot(is.logical.single(show_association))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -58,7 +54,11 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = list(dataname = dataname),
+    server_args = list(
+      dataname = dataname,
+      ref_var = ref_var,
+      vars = vars
+    ),
     filters = dataname
   )
 }
@@ -66,31 +66,27 @@ tm_g_association <- function(label = "Association",
 
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
-  a <- list(...)
+  arguments <- list(...)
 
   # standard_layout2(
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(a$dataname)),
-      optionalSelectInput(
-        ns("ref_var"),
-        "Reference variable",
-        a$ref_var$choices,
-        a$ref_var$selected,
-        multiple = FALSE
+      helpText("Analysis data:", tags$code(arguments$dataname)),
+      data_extract_input(
+        id = ns("ref_var"),
+        label = "Reference variable",
+        data_extract_spec = arguments$ref_var
       ),
-      optionalSelectInput(
-        ns("vars"),
-        "Associated variables",
-        a$vars$choices,
-        a$vars$selected,
-        multiple = TRUE
+      data_extract_input(
+        id = ns("vars"),
+        label = "Associated variables",
+        data_extract_spec = arguments$vars
       ),
       checkboxInput(ns("association"),
         "Association with First Variable",
-        value = a$show_association
+        value = arguments$show_association
       ),
       checkboxInput(ns("show_dist"),
         "Distribution",
@@ -100,11 +96,11 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      plot_height_input(id = ns("myplot"), value = a$plot_height)
+      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
-    forms = if (a$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
-    pre_output = a$pre_output,
-    post_output = a$post_output
+    forms = if (arguments$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
+    pre_output = arguments$pre_output,
+    post_output = arguments$post_output
   )
 }
 
@@ -115,7 +111,11 @@ srv_tm_g_association <- function(input,
                                  output,
                                  session,
                                  datasets,
-                                 dataname) {
+                                 dataname,
+                                 # input vars below
+                                 ref_var,
+                                 vars) {
+  return(NULL) #todo: remove
   stopifnot(all(dataname %in% datasets$datanames()))
 
   init_chunks()
@@ -128,8 +128,21 @@ srv_tm_g_association <- function(input,
   )
 
   output$plot <- renderPlot({
-    ref_var <- input$ref_var
-    vars <- input$vars
+    ref_var_data <- callModule(
+      data_extract_module,
+      id = "ref_var",
+      datasets = datasets,
+      data_extract_spec = ref_var
+    )()
+    vars_data <- callModule(
+      data_extract_module,
+      id = "vars",
+      datasets = datasets,
+      data_extract_spec = vars
+    )()
+    browser()
+    # not working currently because it relies on cols and not on already preprocessed data
+
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
