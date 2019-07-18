@@ -5,7 +5,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param dataname name of dataset used to generate plot
-#' @param xvar variable name of x varbiable
+#' @param xvar variable name of x variable
 #' @param yvar variable name of y variable
 #' @param xvar_choices vector with variable names of possible x variables. If
 #'   missing or identincal to \code{xvar} then the plot will be fixed to the

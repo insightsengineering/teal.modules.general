@@ -116,13 +116,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            xvar,
                            yvar,
-                           use_density = FALSE,
                            row_facet_var,
                            col_facet_var,
-                           expert_settings = TRUE,
                            colour_var = NULL,
                            fill_var = NULL,
                            size_var = NULL,
+                           use_density = FALSE,
+                           expert_settings = TRUE,
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
@@ -130,30 +130,43 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            with_show_r_code = TRUE,
                            pre_output = NULL,
                            post_output = NULL) {
+  if (!is.class.list("data_extract_spec")(xvar)) {
+    xvar <- list(xvar)
+  }
+  if (!is.class.list("data_extract_spec")(yvar)) {
+    yvar <- list(yvar)
+  }
+  if (!is.class.list("data_extract_spec")(row_facet_var)) {
+    row_facet_var <- list(row_facet_var)
+  }
+  if (!is.class.list("data_extract_spec")(col_facet_var)) {
+    col_facet_var <- list_or_null(col_facet_var)
+  }
+  if (!is.class.list("data_extract_spec")(colour_var)) {
+    colour_var <- list(colour_var)
+  }
+  if (!is.class.list("data_extract_spec")(fill_var)) {
+    fill_var <- list_or_null(fill_var)
+  }
+  if (!is.class.list("data_extract_spec")(size_var)) {
+    size_var <- list_or_null(size_var)
+  }
+
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(xvar)) {
-    stop_if_not(list(all(vapply(xvar, function(x) !("" %in% x$columns$choices), logical(1))),
-                     "'xvar' should not allow empty values"))
-    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
-                     "'xvar' should not allow multiple selection"))
-  } else if (is(xvar, "data_extract_spec")) {
-    stop_if_not(list(!("" %in% xvar$columns$choices),
-                     "'xvar' variable should not allow multiple selection"))
-    stop_if_not(list(!(xvar$columns$multiple),
-                     "'xvar' should not allow multiple selection"))
-  }
-  stopifnot(is.class.list("data_extract_spec")(yvar) || is(yvar, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(xvar))
+  stop_if_not(list(all(vapply(xvar, function(x) !("" %in% x$columns$choices), logical(1))),
+                   "'xvar' should not allow empty values")) # todo: move to data_extract
+  stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
+                   "'xvar' should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(yvar))
   stopifnot(is.logical.single(use_density))
-  stopifnot(is.class.list("data_extract_spec")(row_facet_var) || is(row_facet_var, "data_extract_spec"))
-  stopifnot(is.class.list("data_extract_spec")(col_facet_var) || is(col_facet_var, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(row_facet_var))
+  stopifnot(is.class.list("data_extract_spec")(col_facet_var))
   stopifnot(is.logical.single(expert_settings))
-  stopifnot(is.null(colour_var) ||
-              is.class.list("data_extract_spec")(colour_var) ||
-              is(colour_var, "data_extract_spec"))
-  stopifnot(is.null(fill_var) || is.class.list("data_extract_spec")(fill_var) || is(fill_var, "data_extract_spec"))
-  stopifnot(is.null(size_var) || is.class.list("data_extract_spec")(size_var) || is(size_var, "data_extract_spec"))
+  stopifnot(is.null(colour_var) || is.class.list("data_extract_spec")(colour_var))
+  stopifnot(is.null(fill_var) || is.class.list("data_extract_spec")(fill_var))
+  stopifnot(is.null(size_var) || is.class.list("data_extract_spec")(size_var))
   stopifnot(is.logical.single(free_x_scales))
   stopifnot(is.logical.single(free_y_scales))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
@@ -205,17 +218,17 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
 #' @importFrom shinyWidgets switchInput
 ui_g_bivariate <- function(id, ...) {
-  a <- list(...)
+  arguments <- list(...)
 
   # Set default values for expert settings in case those were not given
-  if (is.null(a$colour_var) || length(a$colour_var) == 0) {
-    a[["colour_var"]] <- a$xvar
+  if (is.null(arguments$colour_var) || length(arguments$colour_var) == 0) {
+    a[["colour_var"]] <- arguments$xvar
   }
-  if (is.null(a$fill_var) || length(a$fill_var) == 0) {
-    a[["fill_var"]] <- a$xvar
+  if (is.null(arguments$fill_var) || length(arguments$fill_var) == 0) {
+    a[["fill_var"]] <- arguments$xvar
   }
-  if (is.null(a$size_var) || length(a$size_var) == 0) {
-    a[["size_var"]] <- a$xvar
+  if (is.null(arguments$size_var) || length(arguments$size_var) == 0) {
+    a[["size_var"]] <- arguments$xvar
   }
 
   ns <- NS(id)
@@ -223,22 +236,22 @@ ui_g_bivariate <- function(id, ...) {
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
-      helpText("Dataset:", tags$code(a$dataname)),
+      helpText("Dataset:", tags$code(arguments$dataname)),
       data_extract_input(
         id = ns("xvar"),
         label = "X Variable",
-        data_extract_spec = a$xvar
+        data_extract_spec = arguments$xvar
       ),
       data_extract_input(
         id = ns("yvar"),
         label = "Y Variable",
-        data_extract_spec = a$yvar
+        data_extract_spec = arguments$yvar
       ),
       radioButtons(
         inputId = ns("use_density"),
         label = NULL,
         choices = c("frequency", "density"),
-        selected = ifelse(a$use_density, "density", "frequency"),
+        selected = ifelse(arguments$use_density, "density", "frequency"),
         inline = TRUE
       ),
       div(
@@ -247,10 +260,10 @@ ui_g_bivariate <- function(id, ...) {
         switchInput(inputId = ns("facetting"), value = FALSE, size = "small"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
-          ui_facetting(ns, a$row_facet_var, a$col_facet_var, a$free_x_scales, a$free_y_scales)
+          ui_facetting(ns, arguments$row_facet_var, arguments$col_facet_var, arguments$free_x_scales, arguments$free_y_scales)
         )
       ),
-      if (a$expert_settings) {
+      if (arguments$expert_settings) {
         # Put a grey border around the expert settings
         div(
           style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
@@ -258,26 +271,26 @@ ui_g_bivariate <- function(id, ...) {
           switchInput(inputId = ns("expert"), value = FALSE, size = "small"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
-            ui_expert(ns, a$colour_var, a$fill_var, a$size_var)
+            ui_expert(ns, arguments$colour_var, arguments$fill_var, arguments$size_var)
           )
         )
       },
-      plot_height_input(id = ns("myplot"), value = a$plot_height),
+      plot_height_input(id = ns("myplot"), value = arguments$plot_height),
       optionalSelectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot)",
         choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-        selected = a$ggtheme,
+        selected = arguments$ggtheme,
         multiple = FALSE
       )
     ),
-    forms = if (a$with_show_r_code) {
+    forms = if (arguments$with_show_r_code) {
       actionButton(ns("show_rcode"), "Show R Code", width = "100%")
     } else {
       NULL
     },
-    pre_output = a$pre_output,
-    post_output = a$post_output
+    pre_output = arguments$pre_output,
+    post_output = arguments$post_output
   )
 }
 

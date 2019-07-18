@@ -93,17 +93,19 @@ tm_g_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL) {
 
+  if (!is.class.list("data_extract_spec")(regressor)) {
+    regressor <- list(regressor)
+  }
+  if (!is.class.list("data_extract_spec")(response)) {
+    response <- list(response)
+  }
+
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(response)) {
-    stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
-                     "Response variable should not allow multiple selection"))
-  } else if (is(response, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(response$columns$multiple),
-                     "Response variable should not allow multiple selection"))
-  }
-  stopifnot(is.class.list("data_extract_spec")(regressor) || is(regressor, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(response))
+  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                   "Response variable should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 

@@ -73,9 +73,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
                                    plot_height = c(600, 200, 2000),
                                    pre_output = NULL,
                                    post_output = NULL) {
+  if (!is.class.list("data_extract_spec")(response)) {
+    response <- list(response)
+  }
+
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(select_col) || is(select_col, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(select_col))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 

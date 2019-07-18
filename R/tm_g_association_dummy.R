@@ -65,10 +65,10 @@ tm_g_association_dummy <- function(label = "Association",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(ref_var) || is(ref_var, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(ref_var))
   stop_if_not(list(all(vapply(ref_var, function(x) !(x$columns$multiple), logical(1))),
                    "'ref_var' should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(vars) || is(vars, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(vars))
   stopifnot(is.logical.single(show_association))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -189,6 +189,8 @@ srv_tm_g_association_dummy <- function(input,
       need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
+    exit(1) # below is wrong because ref_var refers to data_extract, is this correct??
+    browser()
     ref_var_class <- class(anl_f[[ref_var]])
 
     if (ref_var_class == "numeric" && log_transformation) {
