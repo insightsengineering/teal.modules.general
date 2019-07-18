@@ -163,7 +163,7 @@ srv_tm_g_association_dummy <- function(input,
     id = "vars",
     datasets = datasets,
     data_extract_spec = vars
-  )()]
+  )
 
   output$plot <- renderPlot({
 
