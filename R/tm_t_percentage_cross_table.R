@@ -4,9 +4,9 @@
 #' @param label (\code{character}) Label of the app in the teal menu
 #' @param dataname (\code{character}) Name of the dataset used in the teal app. Just a single
 #'   dataset is allowed!
-#' @param x_var \code{\link[teal]{choices_selected}} object with all available
+#' @param x_var (\code{choices_selected}) object with all available
 #'   choices with preselected option for variable X
-#' @param y_var \code{\link[teal]{choices_selected}} object with all available
+#' @param y_var (\code{choices_selected}) object with all available
 #'   choices with preselected option for variable Y
 #' @export
 #'

@@ -3,8 +3,8 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
-#' @param select_col (\code{list}) Output of \code{teal.devel::data_extract_spec}
-#'  to define the plotting variables from an incoming dataset with filtering and selecting.
+#' @param select_col (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  Plotting variables from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
 #'
@@ -59,7 +59,7 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       dataname = c("ASL","ADTE"),
-#'       select_col = list(adte_prep)
+#'       select_col = adte_prep
 #'     )
 #'   )
 #' )
@@ -75,7 +75,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
                                    post_output = NULL) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.list(select_col))
+  stopifnot(is.class.list("data_extract_spec")(select_col) || is(select_col, "data_extract_spec"))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 

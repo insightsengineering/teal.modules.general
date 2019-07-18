@@ -2,16 +2,16 @@
 #'
 #'
 #' @param dataname (\code{character}) Name of dataset used to generate the response plot
-#' @param response (\code{list} of \code{data_extract_spec}) Which variable to use as the
-#'   response. You can define one fixed column by using the setting \code{fixed = TRUE} inside
-#'   the \code{column_spec}.
-#' @param xvar (\code{list} of \code{data_extract_spec}) Which variable to use on the
-#'   X-axis of the response plot. Allow the user to select multiple columns from the \code{data} allowed
-#'   in teal. Just allow single columns by \code{multiple = FALSE}.
-#' @param row_facet_var (\code{list} of \code{data_extract_spec}) Which data columns
-#'   to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.
-#' @param col_facet_var (\code{list} of \code{data_extract_spec}) Which data to use for faceting columns.
-#'   Just allow single columns by \code{multiple = FALSE}.
+#' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Which variable to use as the response. You can define one fixed column by using the
+#'   setting \code{fixed = TRUE} inside the \code{column_spec}.
+#' @param xvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
+#'   columns from the \code{data} allowed in teal. Just allow single columns by \code{multiple = FALSE}.
+#' @param row_facet_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Which data columns to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.
+#' @param col_facet_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
@@ -90,10 +90,10 @@
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
-#'       response = list(ars_extracted_response),
-#'       xvar = list(asl_extracted),
-#'       row_facet_var = list(asl_extracted_row),
-#'       col_facet_var = list(asl_extracted_col)
+#'       response = ars_extracted_response,
+#'       xvar = asl_extracted,
+#'       row_facet_var = asl_extracted_row,
+#'       col_facet_var = asl_extracted_col
 #'     )
 #'   )
 #' )
@@ -156,7 +156,7 @@
 tm_g_response <- function(label = "Response Plot",
                           dataname,
                           response,
-                          xvar = NULL,
+                          xvar,
                           row_facet_var = NULL,
                           col_facet_var = NULL,
                           coord_flip = TRUE,
@@ -167,28 +167,38 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
-  stopifnot(is.list(response))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
-  lapply(
-    response,
-    function(ds_extract) {
-      stopifnot(!("" %in% ds_extract$columns$choices))
-      stopifnot(!ds_extract$columns$multiple)
-    }
-  )
-  stopifnot(is.list(xvar))
+  stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(response)) {
+    stop_if_not(list(all(vapply(response, function(x) !("" %in% x$columns$choices), logical(1))),
+                     "'response' should not allow empty values"))
+    stop_if_not(list(all(vapply(response, function(x) !(x$columns$multiple), logical(1))),
+                     "'response' should not allow multiple selection"))
+  } else if (is(response, "data_extract_spec")) {
+    stop_if_not(list(!("" %in% response$columns$choices),
+                     "'response' should not allow multiple selection"))
+    stop_if_not(list(!(response$columns$multiple),
+                     "'response' should not allow multiple selection"))
+  }
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
-  lapply(
-    xvar,
-    function(ds_extract){
-      stopifnot(!("" %in% ds_extract$columns$choices))
-      stopifnot(!ds_extract$columns$multiple)
-    }
-  )
-  stopifnot(is.null(row_facet_var) || is.list(row_facet_var))
-  stopifnot(is.null(col_facet_var) || is.list(col_facet_var))
+  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(xvar)) {
+    stop_if_not(list(all(vapply(xvar, function(x) !("" %in% x$columns$choices), logical(1))),
+                     "'xvar' should not allow empty values"))
+    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
+                     "'xvar' should not allow multiple selection"))
+  } else if (is(xvar, "data_extract_spec")) {
+    stop_if_not(list(!("" %in% xvar$columns$choices),
+                     "'xvar' variable should not allow multiple selection"))
+    stop_if_not(list(!(xvar$columns$multiple),
+                     "'xvar' should not allow multiple selection"))
+  }
+  stopifnot(is.null(row_facet_var) ||
+              is.class.list("data_extract_spec")(row_facet_var) || is(row_facet_var, "data_extract_spec"))
+  stopifnot(is.null(col_facet_var) ||
+              is.class.list("data_extract_spec")(col_facet_var) || is(col_facet_var, "data_extract_spec"))
   stopifnot(is.logical.single(coord_flip))
   stopifnot(is.logical.single(freq))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
