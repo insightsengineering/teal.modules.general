@@ -276,14 +276,14 @@ tm_venn2_dummy <- function(label,
   if (is.class.list("data_extract_spec")(bm1)) {
     stop_if_not(list(all(vapply(bm1, function(x) !isTRUE(x$columns$multiple), logical(1))),
                      "bm1 variable should not allow multiple selection"))
-  } else if (is(response, "data_extract_spec")) {
+  } else if (is(bm1, "data_extract_spec")) {
     stop_if_not(list(!isTRUE(bm2$columns$multiple),
                      "bm1 variable should not allow multiple selection"))
   }
   if (is.class.list("data_extract_spec")(bm2)) {
     stop_if_not(list(all(vapply(bm2, function(x) !isTRUE(x$columns$multiple), logical(1))),
                      "bm2 variable should not allow multiple selection"))
-  } else if (is(response, "data_extract_spec")) {
+  } else if (is(bm2, "data_extract_spec")) {
     stop_if_not(list(!isTRUE(bm2$columns$multiple),
                      "bm2 variable should not allow multiple selection"))
   }

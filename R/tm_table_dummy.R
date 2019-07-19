@@ -14,8 +14,8 @@
 #'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 #'   missing then \code{'ifany'} will be used. If vector then only the first
 #'   one will be used.
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
+#' @param pre_output (\code{shiny.tag}) html tags appended below the output
+#' @param post_output (\code{shiny.tag}) html tags appended after the output
 #'
 #' @noRd
 #'

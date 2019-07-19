@@ -11,6 +11,8 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
+#' @export
+#'
 #' @author wolfs25 waddella
 #'
 #' @examples
@@ -25,7 +27,7 @@
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     tm_t_percentage_cross_table_dummy(
+#'     teal.modules.general:::tm_t_percentage_cross_table_dummy(
 #'       label = "Cross Table",
 #'       dataname = "ASL",
 #'       x = data_extract_spec(

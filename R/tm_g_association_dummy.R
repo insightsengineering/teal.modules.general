@@ -190,8 +190,6 @@ srv_tm_g_association_dummy <- function(input,
       need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
-    exit(1) # below is wrong because ref refers to data_extract, is this correct??
-    browser()
     ref_class <- class(anl_f[[ref]])
 
     if (ref_class == "numeric" && log_transformation) {
