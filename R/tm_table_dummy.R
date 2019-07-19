@@ -24,40 +24,35 @@
 #' library(tern)
 #'
 #' ASL <- cadsl
-#' keys(ASL) <- c("USUBJID", "STUDYID")
-#'
-#' asl_extract_xvar <- data_extract_spec(
-#'   "ASL",
-#'   columns = columns_spec(
-#'     choices = base::setdiff(names(ASL), keys(ASL)),
-#'     selected = names(ASL)[5],
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#'
-#' asl_extract_yvar <- data_extract_spec(
-#'   "ASL",
-#'   columns = columns_spec(
-#'     choices = base::setdiff(names(ASL), keys(ASL)),
-#'     selected = names(ASL)[6],
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
+#' ARS <- cadrs
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
+#'     code = 'to be completed',
 #'     check = FALSE
 #'   ),
-#'   root_modules(
+#'   modules = root_modules(
 #'     tm_table(
-#'       "Table Choices",
-#'       dataname =  "ASL",
-#'       xvar = list(asl_extract_xvar),
-#'       yvar = list(asl_extract_yvar)
+#'       dataname = "ASL",
+#'       ref = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = names(ASL),
+#'           selected = c("AGE"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       vars = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = names(ASL),
+#'           selected = c("SEX"),
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
