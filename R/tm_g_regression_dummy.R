@@ -23,45 +23,6 @@
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
-#' asl_extracted <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("BMRKR1", "BMRKR2"),
-#'     selected = c("BMRKR1"),
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#' asl_extracted_regressor <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
-#'     selected = c("BMRKR1"),
-#'     multiple = TRUE,
-#'     fixed = FALSE
-#'   )
-#' )
-#'
-#' alb_filters <- filter_spec(
-#'   vars = c("PARAMCD", "AVISIT"),
-#'   sep = " - ",
-#'   choices = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29"),
-#'   selected = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29")[1],
-#'   multiple = FALSE,
-#'   label = "Choose endpoint"
-#' )
-#'
-#' alb_extracted <- data_extract_spec(
-#'   dataname = "ALB",
-#'   filter = alb_filters,
-#'   columns = columns_spec(
-#'     choices = c("AVAL"),
-#'     selected = "AVAL",
-#'     multiple = FALSE,
-#'     fixed = FALSE,
-#'     label = "variable"
-#'   )
-#' )
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -76,8 +37,34 @@
 #'     tm_g_regression_dummy(
 #'       label = "Regression",
 #'       dataname = c("ASL", "ALB"),
-#'       response = alb_extracted,
-#'       regressor = asl_extracted
+#'       response = alb_extracted <- data_extract_spec(
+#'         dataname = "ALB",
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD", "AVISIT"),
+#'           sep = " - ",
+#'           choices = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29"),
+#'           selected = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29")[1],
+#'           multiple = FALSE,
+#'           label = "Choose endpoint"
+#'         )
+#'         ,
+#'         columns = columns_spec(
+#'           choices = c("AVAL"),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "variable"
+#'         )
+#'       ),
+#'       regressor = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("BMRKR1", "BMRKR2"),
+#'           selected = c("BMRKR1"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )

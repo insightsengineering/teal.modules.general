@@ -3,14 +3,15 @@
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @param dataname (\code{character}) data set name to analyze
-#' @param ref_var (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param ref (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   reference variable, must set \code{multiple = FALSE}
 #' @param vars (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   reference variable
+#'   associated variables
 #' @param show_association (\code{logical}) wheater show association of \code{vars} with refference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
-#'
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #' @noRd
 #'
 #' @examples
@@ -26,7 +27,7 @@
 #'   modules = root_modules(
 #'     tm_g_association_dummy(
 #'       dataname = "ASL",
-#'       ref_var = data_extract_spec(
+#'       ref = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(label = "Reference variable",
 #'                                choices = names(ASL),
@@ -49,15 +50,15 @@
 #' }
 tm_g_association_dummy <- function(label = "Association",
                              dataname,
-                             ref_var,
+                             ref,
                              vars,
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              pre_output = NULL,
                              post_output = NULL,
                              with_show_r_code = TRUE) {
-  if (!is.class.list("data_extract_spec")(ref_var)) {
-    ref_var <- list(ref_var)
+  if (!is.class.list("data_extract_spec")(ref)) {
+    ref <- list(ref)
   }
   if (!is.class.list("data_extract_spec")(vars)) {
     vars <- list(vars)
@@ -65,9 +66,9 @@ tm_g_association_dummy <- function(label = "Association",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(ref_var))
-  stop_if_not(list(all(vapply(ref_var, function(x) !(x$columns$multiple), logical(1))),
-                   "'ref_var' should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(ref))
+  stop_if_not(list(all(vapply(ref, function(x) !(x$columns$multiple), logical(1))),
+                   "'ref' should not allow multiple selection"))
   stopifnot(is.class.list("data_extract_spec")(vars))
   stopifnot(is.logical.single(show_association))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
@@ -83,7 +84,7 @@ tm_g_association_dummy <- function(label = "Association",
     ui_args = args,
     server_args = list(
       dataname = dataname,
-      ref_var = ref_var,
+      ref = ref,
       vars = vars
     ),
     filters = dataname
@@ -102,9 +103,9 @@ ui_tm_g_association_dummy <- function(id, ...) {
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(arguments$dataname)),
       data_extract_input(
-        id = ns("ref_var"),
+        id = ns("ref"),
         label = "Reference variable",
-        data_extract_spec = arguments$ref_var
+        data_extract_spec = arguments$ref
       ),
       data_extract_input(
         id = ns("vars"),
@@ -140,7 +141,7 @@ srv_tm_g_association_dummy <- function(input,
                                  datasets,
                                  dataname,
                                  # input vars below
-                                 ref_var,
+                                 ref,
                                  vars) {
   stopifnot(all(dataname %in% datasets$datanames()))
   init_chunks()
@@ -152,11 +153,11 @@ srv_tm_g_association_dummy <- function(input,
     plot_id = session$ns("plot")
   )
 
-  ref_var_data <- callModule(
+  ref_data <- callModule(
     data_extract_module,
-    id = "ref_var",
+    id = "ref",
     datasets = datasets,
-    data_extract_spec = ref_var
+    data_extract_spec = ref
   )
   vars_data <- callModule(
     data_extract_module,
@@ -167,7 +168,7 @@ srv_tm_g_association_dummy <- function(input,
 
   output$plot <- renderPlot({
 
-    ref_var_name <- get_dataset_prefixed_col_names(ref_var_data())
+    ref_name <- get_dataset_prefixed_col_names(ref_data())
     vars_names <- get_dataset_prefixed_col_names(vars_data())
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
@@ -183,28 +184,28 @@ srv_tm_g_association_dummy <- function(input,
 
     validate(
       need(nrow(anl_f) > 3, "need at least three rows"),
-      need(length(ref_var) > 0, "need at least one variable selected"),
-      need(!(ref_var %in% vars), "associated variables and reference variable cannot overlap"),
-      need(ref_var %in% names(anl_f), paste("reference variable not found in ", dataname)),
+      need(length(ref) > 0, "need at least one variable selected"),
+      need(!(ref %in% vars), "associated variables and reference variable cannot overlap"),
+      need(ref %in% names(anl_f), paste("reference variable not found in ", dataname)),
       need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
     )
 
-    exit(1) # below is wrong because ref_var refers to data_extract, is this correct??
+    exit(1) # below is wrong because ref refers to data_extract, is this correct??
     browser()
-    ref_var_class <- class(anl_f[[ref_var]])
+    ref_class <- class(anl_f[[ref]])
 
-    if (ref_var_class == "numeric" && log_transformation) {
-      ref_var <- call("log", as.name(ref_var))
+    if (ref_class == "numeric" && log_transformation) {
+      ref <- call("log", as.name(ref))
     }
 
     ref_cl <- call(
       "+",
-      bivariate_plot_call(anl_name, ref_var, NULL, ref_var_class, "NULL", freq = !show_dist),
+      bivariate_plot_call(anl_name, ref, NULL, ref_class, "NULL", freq = !show_dist),
       quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
     )
 
-    ref_var_class_cov <- if (association) {
-      ref_var_class
+    ref_class_cov <- if (association) {
+      ref_class
     } else {
       "NULL"
     }
@@ -215,7 +216,7 @@ srv_tm_g_association_dummy <- function(input,
         var_i <- call("log", as.name(var_i))
       }
 
-      bivariate_plot_call(anl_name, var_i, ref_var, class_i, ref_var_class_cov, freq = !show_dist)
+      bivariate_plot_call(anl_name, var_i, ref, class_i, ref_class_cov, freq = !show_dist)
     })
 
 

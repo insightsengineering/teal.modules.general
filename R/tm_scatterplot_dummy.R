@@ -22,6 +22,8 @@
 #' @param size if scalar then the plot points sizes will have a fixed opacity.
 #'   If a slider should be presented to adjust the plot point sizes dynamically
 #'   then it can be a vector of length three with vlaue, min and max.
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @noRd
 #'

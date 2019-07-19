@@ -4,18 +4,18 @@
 #'
 #' @param label (\code{chracter}) menu label
 #' @param dataname (\code{chracter}) name of dataset used to generate table
-#' @param xvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Specification how the user can select data to get encoded in the rows of the cross table.
 #'   Please just use single selections inside the \code{columns_spec}.
-#' @param yvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Specification how the user can select data to get encoded in the columns of the cross table.
 #'   Please just use single selections inside the \code{columns_spec}.
 #' @param useNA (\code{character}) optional pre-selected option indicating how to utilize NA in
 #'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 #'   missing then \code{'ifany'} will be used. If vector then only the first
 #'   one will be used.
-#' @param pre_output (\code{shiny.tag}) html tags appended below the output
-#' @param post_output (\code{shiny.tag}) html tags appended after the output
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @noRd
 #'
@@ -24,32 +24,33 @@
 #' library(tern)
 #'
 #' ASL <- cadsl
-#' ARS <- cadrs
+#' keys(ASL) <- c("USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     code = 'to be completed',
+#'     code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
 #'     check = FALSE
 #'   ),
-#'   modules = root_modules(
-#'     tm_table(
-#'       dataname = "ASL",
-#'       ref = data_extract_spec(
-#'         dataname = "ASL",
+#'   root_modules(
+#'     tm_table_dummy(
+#'       "Table Choices",
+#'       dataname =  "ASL",
+#'       x = data_extract_spec(
+#'         "ASL",
 #'         columns = columns_spec(
-#'           choices = names(ASL),
-#'           selected = c("AGE"),
+#'           choices = base::setdiff(names(ASL), keys(ASL)),
+#'           selected = names(ASL)[5],
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
-#'         dataname = "ASL",
+#'       y = data_extract_spec(
+#'         "ASL",
 #'         columns = columns_spec(
-#'           choices = names(ASL),
-#'           selected = c("SEX"),
-#'           multiple = TRUE,
+#'           choices = base::setdiff(names(ASL), keys(ASL)),
+#'           selected = names(ASL)[6],
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       )
@@ -60,30 +61,30 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_table <- function(label,
+tm_table_dummy <- function(label,
                      dataname,
-                     xvar,
-                     yvar,
+                     x,
+                     y,
                      useNA = c("ifany", "no", "always"), # nolint
                      pre_output = NULL,
                      post_output = NULL) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.single(dataname))
-  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(xvar)) {
-    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
-                     "'xvar' should not allow multiple selection"))
-  } else if (is(xvar, "data_extract_spec")) {
-    stop_if_not(list(!(xvar$columns$multiple),
-                     "'xvar' should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(x)) {
+    stop_if_not(list(all(vapply(x, function(x) !(x$columns$multiple), logical(1))),
+                     "'x' should not allow multiple selection"))
+  } else if (is(x, "data_extract_spec")) {
+    stop_if_not(list(!(x$columns$multiple),
+                     "'x' should not allow multiple selection"))
   }
-  stopifnot(is.class.list("data_extract_spec")(yvar) || is(yvar, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(yvar)) {
-    stop_if_not(list(all(vapply(yvar, function(x) !(x$columns$multiple), logical(1))),
-                     "'yvar' should not allow multiple selection"))
-  } else if (is(yvar, "data_extract_spec")) {
-    stop_if_not(list(!(yvar$columns$multiple),
-                     "'yvar' should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(y)) {
+    stop_if_not(list(all(vapply(y, function(x) !(x$columns$multiple), logical(1))),
+                     "'y' should not allow multiple selection"))
+  } else if (is(y, "data_extract_spec")) {
+    stop_if_not(list(!(y$columns$multiple),
+                     "'y' should not allow multiple selection"))
   }
   stopifnot(is.character.vector(useNA))
   stopifnot(all(useNA %in% c("ifany", "no", "always")))
@@ -96,18 +97,18 @@ tm_table <- function(label,
     label = label,
     server = srv_table,
     ui = ui_table,
-    server_args = list(dataname = dataname, xvar = xvar, yvar = yvar),
+    server_args = list(dataname = dataname, x = x, y = y),
     ui_args = args,
     filters = dataname
   )
 }
 
 
-ui_table <- function(id,
+ui_table_dummy <- function(id,
                      label,
                      dataname,
-                     xvar,
-                     yvar,
+                     x,
+                     y,
                      useNA, # nolint
                      pre_output,
                      post_output) {
@@ -120,9 +121,9 @@ ui_table <- function(id,
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Analysis data:", tags$code(dataname)),
-      data_extract_input(ns("xvar"), label = "Row values", xvar),
+      data_extract_input(ns("x"), label = "Row values", x),
       tags$hr(),
-      data_extract_input(ns("yvar"), label = "Column values", yvar),
+      data_extract_input(ns("y"), label = "Column values", y),
       tags$hr(),
       radioButtons(ns("useNA"),
                    label = "Display Missing Values",
@@ -140,35 +141,35 @@ ui_table <- function(id,
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 #' @importFrom stats addmargins
-srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
+srv_table_dummy <- function(input, output, session, datasets, dataname, x, y) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   init_chunks()
 
   # Data Extraction
-  xvar_data <- callModule(data_extract_module,
-                          id = "xvar",
+  x_data <- callModule(data_extract_module,
+                          id = "x",
                           datasets = datasets,
-                          data_extract_spec = xvar
+                          data_extract_spec = x
   )
-  yvar_data <- callModule(data_extract_module,
-                          id = "yvar",
+  y_data <- callModule(data_extract_module,
+                          id = "y",
                           datasets = datasets,
-                          data_extract_spec = yvar
+                          data_extract_spec = y
   )
 
   chunk_reactive <- reactive({
 
-    xvar_name <- get_dataset_prefixed_col_names(xvar_data())
-    yvar_name <- get_dataset_prefixed_col_names(yvar_data())
+    x_name <- get_dataset_prefixed_col_names(x_data())
+    y_name <- get_dataset_prefixed_col_names(y_data())
 
-    validate(need(xvar_name != "", "Please define a column that is not empty."))
-    validate(need(yvar_name != "", "Please define a column that is not empty."))
+    validate(need(x_name != "", "Please define a column that is not empty."))
+    validate(need(y_name != "", "Please define a column that is not empty."))
 
     dataset <- merge_datasets(
       list(
-        xvar_data(),
-        yvar_data()
+        x_data(),
+        y_data()
       )
     )
     validate_has_data(dataset, 10)
@@ -179,12 +180,12 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
 
     expression_to_use <- if (use_margin) {
       expr(stats::addmargins(
-        table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)
+        table(dataset[[x_name]], dataset[[y_name]], useNA = useNA)
       )) %>%
-        substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
+        substituteDirect(list(useNA = useNA, x_name = x_name, y_name = y_name))
     } else {
-      expr(table(dataset[[xvar_name]], dataset[[yvar_name]], useNA = useNA)) %>%
-        substituteDirect(list(useNA = useNA, xvar_name = xvar_name, yvar_name = yvar_name))
+      expr(table(dataset[[x_name]], dataset[[y_name]], useNA = useNA)) %>%
+        substituteDirect(list(useNA = useNA, x_name = x_name, y_name = y_name))
     }
 
     chunks_push(expression = expression_to_use)
@@ -200,9 +201,9 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
 
   observeEvent(input$show_rcode, {
-    xvar_name <- get_dataset_prefixed_col_names(xvar_data())
-    yvar_name <- get_dataset_prefixed_col_names(yvar_data())
-    title <- paste("Cross-Table of", xvar_name, "vs.", yvar_name)
+    x_name <- get_dataset_prefixed_col_names(x_data())
+    y_name <- get_dataset_prefixed_col_names(y_data())
+    title <- paste("Cross-Table of", x_name, "vs.", y_name)
 
     show_rcode_modal(
       title = "R Code for the Current Table",
@@ -210,8 +211,8 @@ srv_table <- function(input, output, session, datasets, dataname, xvar, yvar) {
         datasets = datasets,
         merged_dataname = "dataset",
         merged_datasets = list(
-          xvar_data(),
-          yvar_data()
+          x_data(),
+          y_data()
         ),
         title = title
       )

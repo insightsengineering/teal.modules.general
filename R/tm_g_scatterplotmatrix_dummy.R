@@ -3,14 +3,16 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
-#' @param select_col (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param selected (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Plotting variables from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @noRd
 #'
-#' @examples
+#'  @examples
 #' library(random.cdisc.data)
 #' library(tern)
 #'
@@ -20,30 +22,6 @@
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
-#' adte_filters <- filter_spec(
-#'   vars = c("PARAMCD"), #'  only key variables are allowed
-#'   sep = " - ",
-#'   choices = c("OS", "PFS", "EFS"),
-#'   selected = "OS",
-#'   multiple = TRUE, #'  if multiple, then a spread is needed
-#'   label = "Choose endpoint"
-#' )
-#'
-#' adte_prep <- data_extract_spec(
-#'   dataname = "ADTE",
-#'   filter = adte_filters,
-#'   columns = columns_spec(
-#'     choices = colnames(ADTE),
-#'     selected = if (all(c('AGE', 'SEX') %in% colnames(ADTE))) {
-#'      c('AGE', 'SEX')
-#'     } else {
-#'      colnames(ADTE)[1:2]
-#'     },
-#'     multiple = TRUE,
-#'     fixed = FALSE, #'  Whether the user can select the item
-#'     label = "" #'  Label the column select dropdown (optional)
-#'   )
-#' )
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -59,7 +37,28 @@
 #'     tm_g_scatterplotmatrix_dummy(
 #'       label = "Scatterplot matrix",
 #'       dataname = c("ASL","ADTE"),
-#'       select_col = adte_prep
+#'       selected = data_extract_spec(
+#'         dataname = "ADTE",
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"), #'  only key variables are allowed
+#'           sep = " - ",
+#'           choices = c("OS", "PFS", "EFS"),
+#'           selected = "OS",
+#'           multiple = TRUE, #'  if multiple, then a spread is needed
+#'           label = "Choose endpoint"
+#'         ),
+#'         columns = columns_spec(
+#'           choices = colnames(ADTE),
+#'           selected = if (all(c('AGE', 'SEX') %in% colnames(ADTE))) {
+#'             c('AGE', 'SEX')
+#'           } else {
+#'             colnames(ADTE)[1:2]
+#'           },
+#'           multiple = TRUE,
+#'           fixed = FALSE, #'  Whether the user can select the item
+#'           label = "" #'  Label the column select dropdown (optional)
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -69,17 +68,17 @@
 #' }
 tm_g_scatterplotmatrix_dummy <- function(label = "Scatterplot matrix",
                                    dataname,
-                                   select_col,
+                                   selected,
                                    plot_height = c(600, 200, 2000),
                                    pre_output = NULL,
                                    post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(response)) {
-    response <- list(response)
+  if (!is.class.list("data_extract_spec")(selected)) {
+    selected <- list(selected)
   }
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(select_col))
+  stopifnot(is.class.list("data_extract_spec")(selected))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
@@ -90,7 +89,7 @@ tm_g_scatterplotmatrix_dummy <- function(label = "Scatterplot matrix",
     server = function(input, output, session, datasets, ...) return(NULL),
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(select_col = select_col, dataname = dataname),
+    server_args = list(selected = selected, dataname = dataname),
     filters = "all"
   )
 }
