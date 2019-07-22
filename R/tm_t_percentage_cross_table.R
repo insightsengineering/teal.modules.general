@@ -117,14 +117,14 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
   table_code <- reactive({
     anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
-    x_var <- input$x_var
-    y_var <- input$y_var
+    x <- input$x
+    y <- input$y
 
     validate(need(anl_f, "data missing"))
     validate_has_data(anl_f, 10)
 
-    validate(need(x_var, "selected x_var does not exist"))
-    validate(need(y_var, "selected y_var does not exist"))
+    validate(need(x, "selected x does not exist"))
+    validate(need(y, "selected y does not exist"))
 
     data_name <- paste0(dataname, "_FILTERED")
     assign(data_name, anl_f)
@@ -133,7 +133,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     chunks_reset()
 
     chunks_push(expression = bquote(data_table <-
-                                      stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
+                                      stats::addmargins(table(.(as.name(data_name))[[.(x)]], .(as.name(data_name))[[.(y)]]))))
 
     chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
 

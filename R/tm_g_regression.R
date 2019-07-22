@@ -103,7 +103,7 @@ tm_g_regression <- function(label = "Regression Analysis",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = srv_g_regression,
     ui = ui_g_regression,
     ui_args = args,
     server_args = list(regressor = regressor, response = response, dataname = dataname),

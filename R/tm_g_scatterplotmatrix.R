@@ -106,7 +106,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     encoding = div(
       helpText("Datasets: ", lapply(args$dataname, tags$code)),
       data_extract_input(
-        id = ns("select_col"),
+        id = ns("selected"),
         label = "Selected columns",
         data_extract_spec = args$selected
       ),
@@ -131,7 +131,7 @@ srv_g_scatterplotmatrix <- function(input,
                                     session,
                                     datasets,
                                     dataname,
-                                    select_col) {
+                                    selected) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   # setup to use chunks
@@ -140,9 +140,9 @@ srv_g_scatterplotmatrix <- function(input,
   # data extraction
   col_extract <- callModule(
     data_extract_module,
-    id = "select_col",
+    id = "selected",
     datasets = datasets,
-    data_extract_spec = select_col
+    data_extract_spec = selected
   )
 
   # set plot output

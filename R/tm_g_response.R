@@ -270,9 +270,9 @@ srv_g_response <- function(input,
                            datasets,
                            dataname,
                            response,
-                           xvar,
-                           row_facet_var,
-                           col_facet_var) {
+                           x,
+                           row_facet,
+                           col_facet) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   init_chunks()
@@ -283,29 +283,29 @@ srv_g_response <- function(input,
                               datasets = datasets,
                               data_extract_spec = response
   )
-  xvar_data <- callModule(data_extract_module,
-                          id = "xvar",
+  x_data <- callModule(data_extract_module,
+                          id = "x",
                           datasets = datasets,
-                          data_extract_spec = xvar
+                          data_extract_spec = x
   )
-  row_facet_var_data <- callModule(data_extract_module,
-                                   id = "row_facet_var",
+  row_facet_data <- callModule(data_extract_module,
+                                   id = "row_facet",
                                    datasets = datasets,
-                                   data_extract_spec = row_facet_var
+                                   data_extract_spec = row_facet
   )
-  col_facet_var_data <- callModule(data_extract_module,
-                                   id = "col_facet_var",
+  col_facet_data <- callModule(data_extract_module,
+                                   id = "col_facet",
                                    datasets = datasets,
-                                   data_extract_spec = col_facet_var
+                                   data_extract_spec = col_facet
   )
 
   data_reactive <- reactive({
 
     merge_datasets(
       list(
-        xvar_data(),
-        row_facet_var_data(),
-        col_facet_var_data(),
+        x_data(),
+        row_facet_data(),
+        col_facet_data(),
         response_data()
       )
     )
@@ -329,24 +329,24 @@ srv_g_response <- function(input,
 
   output$plot <- renderPlot({
     resp_var <- get_dataset_prefixed_col_names(response_data())
-    xvar <- get_dataset_prefixed_col_names(xvar_data())
-    row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
-    col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+    x <- get_dataset_prefixed_col_names(x_data())
+    row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
+    col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
 
     validate(need(resp_var != "", "Please define a valid column for the response variable"))
-    validate(need(xvar != "", "Please define a valid column for the X-variable"))
+    validate(need(x != "", "Please define a valid column for the X-variable"))
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
 
     arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(xvar)) {
+    cl_arg_x <- if (is.null(x)) {
       1
     } else {
-      tmp_cl <- if (length(xvar) == 1) {
-        as.name(xvar)
+      tmp_cl <- if (length(x) == 1) {
+        as.name(x)
       } else {
-        tmp <- call_fun_dots("interaction", xvar)
+        tmp <- call_fun_dots("interaction", x)
         tmp[["sep"]] <- " x "
         tmp
       }
@@ -397,7 +397,7 @@ srv_g_response <- function(input,
       plot_call <- call("+", plot_call, quote(coord_flip()))
     }
 
-    facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
+    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
       plot_call <- call("+", plot_call, facet_cl)
@@ -422,9 +422,9 @@ srv_g_response <- function(input,
         merged_dataname = "anl",
         merged_datasets = list(
           response_data(),
-          xvar_data(),
-          row_facet_var_data(),
-          col_facet_var_data()
+          x_data(),
+          row_facet_data(),
+          col_facet_data()
         ),
         title = "Response Plot"
       )

@@ -184,8 +184,8 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
 
   output$scatterplot <- renderPlot({
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-    xvar <- input$xvar
-    yvar <- input$yvar
+    x <- input$x
+    y <- input$y
     alpha <- input$alpha
     color_by <- check_color(input$color_by)
     size <- input$size
@@ -196,15 +196,15 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
     validate(need(alpha, "need alpha"))
     validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
     validate(need(nrow(anl) > 0, "no observations left"))
-    validate(need(xvar, "no valid x variable selected"))
-    validate(need(yvar, "no valid y variable selected"))
+    validate(need(x, "no valid x variable selected"))
+    validate(need(y, "no valid y variable selected"))
     validate(need(
-      xvar %in% names(anl),
-      paste("variable", xvar, " is not available in data", dataname)
+      x %in% names(anl),
+      paste("variable", x, " is not available in data", dataname)
     ))
     validate(need(
-      yvar %in% names(anl),
-      paste("variable", yvar, " is not available in data", dataname)
+      y %in% names(anl),
+      paste("variable", y, " is not available in data", dataname)
     ))
 
     chunks_reset()
@@ -213,30 +213,30 @@ srv_scatterplot <- function(input, output, session, datasets, dataname) {
       chunks_push(expression = bquote(
         ggplot(
           .(as.name(data_name)),
-          aes_string(x = xvar, y = yvar)
+          aes_string(x = x, y = y)
         ) +
           geom_point(alpha = alpha, size = size)
       ) %>% substituteDirect(
         list(
           alpha = alpha,
           size = size,
-          xvar = xvar,
-          yvar = yvar
+          x = x,
+          y = y
         )
       ))
     } else {
       chunks_push(expression = bquote(
         ggplot(
           .(as.name(data_name)),
-          aes_string(x = xvar, y = yvar, color = color_by)
+          aes_string(x = x, y = y, color = color_by)
         ) +
           geom_point(alpha = alpha, size = size)
       ) %>% substituteDirect(
         list(
           alpha = alpha,
           size = size,
-          xvar = xvar,
-          yvar = yvar,
+          x = x,
+          y = y,
           color_by = color_by
         )
       ))
