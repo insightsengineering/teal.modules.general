@@ -33,7 +33,7 @@
 #'     check = FALSE
 #'   ),
 #'   root_modules(
-#'     tm_table_dummy(
+#'     tm_table(
 #'       "Table Choices",
 #'       dataname =  "ASL",
 #'       x = data_extract_spec(
@@ -61,7 +61,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_table_dummy <- function(label,
+tm_table <- function(label,
                      dataname,
                      x,
                      y,
@@ -104,7 +104,7 @@ tm_table_dummy <- function(label,
 }
 
 
-ui_table_dummy <- function(id,
+ui_table <- function(id,
                      label,
                      dataname,
                      x,
@@ -141,7 +141,7 @@ ui_table_dummy <- function(id,
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 #' @importFrom stats addmargins
-srv_table_dummy <- function(input, output, session, datasets, dataname, x, y) {
+srv_table <- function(input, output, session, datasets, dataname, x, y) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   init_chunks()

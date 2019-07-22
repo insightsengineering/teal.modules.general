@@ -38,7 +38,7 @@
 #'     code = "ASL <- cadsl",
 #'     check = FALSE),
 #'   root_modules(
-#'     tm_scatterplot_dummy(
+#'     tm_scatterplot(
 #'       "Scatterplot Choices",
 #'       dataname = "ASL",
 #'       x = data_extract_spec(
@@ -77,7 +77,7 @@
 #' \dontrun{
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_scatterplot_dummy <- function(label,
+tm_scatterplot <- function(label,
                            dataname,
                            x,
                            y,
@@ -115,13 +115,13 @@ tm_scatterplot_dummy <- function(label,
     label = label,
     server = function(input, output, session, datasets, ...) return(NULL),
     server_args = list(dataname = dataname),
-    ui = ui_scatterplot_dummy,
+    ui = ui_scatterplot,
     ui_args = args,
     filters = dataname
   )
 }
 
-ui_scatterplot_dummy <- function(id,
+ui_scatterplot <- function(id,
                            label,
                            dataname,
                            x,
