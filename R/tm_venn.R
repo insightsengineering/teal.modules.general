@@ -12,7 +12,7 @@
 #' x = c(rep(T, 5), rep(F, 3), rep(T, 4), rep(F, 9))
 #' y = c(rep(T, 5), rep(F, 3), rep(F, 4), rep(T, 9))
 #' table(x, y)
-#' y <- teal.modules.general:::venn2(x, y, "X", "Y")
+#' y <- teal.modules.general:::venn2_dummy(x, y, "X", "Y")
 #' plot(y)
 #'
 #'
@@ -20,9 +20,9 @@
 #' x = c(F, F, F, F, T, T)
 #' y = c(F, T, T, T, F, F)
 #' table(x, y)
-#' y <- teal.modules.general:::venn2(x, y, "X", "Y")
+#' y <- teal.modules.general:::venn2_dummy(x, y, "X", "Y")
 #' plot(y)
-venn2 <- function(x, y, xlab, ylab) {
+venn2_dummy <- function(x, y, xlab, ylab) {
   if (length(x) <= 0) {
     stop("lenght of x must be > 0")
   }
@@ -50,13 +50,13 @@ venn2 <- function(x, y, xlab, ylab) {
   abs <- table(x, y)
   per <- abs / length(x)
 
-  structure(list(absolute = abs, perentage = per, xlab = xlab, ylab = ylab), class = "venn2")
+  structure(list(absolute = abs, perentage = per, xlab = xlab, ylab = ylab), class = "venn2_dummy")
 }
 
 
-#' plot venn2 object
+#' plot venn2_dummy object
 #'
-#' @param x an object returned by \code{\link{venn2}}
+#' @param x an object returned by \code{\link{venn2_dummy}}
 #'
 #' @noRd
 #'
@@ -64,7 +64,7 @@ venn2 <- function(x, y, xlab, ylab) {
 #' @importFrom stats uniroot
 #' @import grid
 #' @export
-plot.venn2 <- function(x, ...) {
+plot.venn2_dummy <- function(x, ...) {
 
   abs <- x$absolute
   per <- apply(x$perentage, c(1, 2), function(xi) round(xi * 100, 1))
@@ -207,7 +207,7 @@ plot.venn2 <- function(x, ...) {
 }
 
 
-#' Venn2 teal module
+#' venn2_dummy teal module
 #'
 #' @noRd
 #'
@@ -225,41 +225,68 @@ plot.venn2 <- function(x, ...) {
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'   ASL = ASL,
-#'   code = '
+#'     ASL = ASL,
+#'     code = '
 #'     N <- 100
 #'     var_biomarkers <- paste0("B", 1:10)
 #'     sample_bm_data <- lapply(1:10, function(x)sample(c(TRUE, FALSE), N, replace = TRUE))
 #'     names(sample_bm_data) <- var_biomarkers
 #'     ASL <- do.call(data.frame, c(
-#'       list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
+#'     list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #'     ))
-#'   ',
-#'   check = FALSE),
+#'     ',
+#'     check = FALSE),
 #'   modules = root_modules(
-#'     teal.modules.general:::tm_venn2(
+#'     teal.modules.general:::tm_venn2_dummy(
 #'       "Venn Diagram", "ASL",
-#'       bm1_var = choices_selected(var_biomarkers, "B1"),
-#'       bm2_var = choices_selected(var_biomarkers, "B2")
+#'       bm1 = data_extract_spec(
+#'         dataname = "ASL",
+#'         column = columns_spec(
+#'           label = "Select Biomarker",
+#'           choices = var_biomarkers,
+#'           selected = "B1",
+#'           fixed = FALSE)
+#'       ),
+#'       bm2 = data_extract_spec(
+#'         dataname = "ASL",
+#'         column = columns_spec(
+#'           label = "Select Biomarker",
+#'           choices = var_biomarkers,
+#'           selected = "B2",
+#'           fixed = FALSE,)
+#'       )
 #'     )
 #'   )
 #' )
 #'
-#' \dontrun{
 #' shinyApp(app$ui, app$server)
-#' }
-tm_venn2 <- function(label,
+
+tm_venn2_dummy <- function(label,
                      dataname,
-                     bm1_var,
-                     bm2_var,
+                     bm1,
+                     bm2,
                      plot_height = c(600, 200, 2000),
                      alpha = c(1, 0, 1),
                      pre_output = tags$p("NAs get currently removed"),
                      post_output = NULL) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.single(dataname))
-  stopifnot(is.choices_selected(bm1_var))
-  stopifnot(is.choices_selected(bm1_var))
+  stopifnot(is.class.list("data_extract_spec")(bm1) || is(bm1, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(bm2) || is(bm2, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(bm1)) {
+    stop_if_not(list(all(vapply(bm1, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                     "bm1 variable should not allow multiple selection"))
+  } else if (is(bm1, "data_extract_spec")) {
+    stop_if_not(list(!isTRUE(bm2$columns$multiple),
+                     "bm1 variable should not allow multiple selection"))
+  }
+  if (is.class.list("data_extract_spec")(bm2)) {
+    stop_if_not(list(all(vapply(bm2, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                     "bm2 variable should not allow multiple selection"))
+  } else if (is(bm2, "data_extract_spec")) {
+    stop_if_not(list(!isTRUE(bm2$columns$multiple),
+                     "bm2 variable should not allow multiple selection"))
+  }
   stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
   stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
   stopifnot(is.numeric.vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
@@ -269,49 +296,52 @@ tm_venn2 <- function(label,
 
   module(
     label = label,
-    server = srv_venn2,
-    ui = ui_venn2,
+    server = srv_venn2_dummy,
+    ui = ui_venn2_dummy,
     ui_args = args,
-    server_args = list(dataname = dataname),
+    server_args = list(dataname = dataname, bm1 = bm1, bm2 = bm2),
     filters = dataname
   )
 }
 
 
-ui_venn2 <- function(id,
-                     label,
-                     dataname,
-                     bm1_var, bm2_var,
-                     plot_height,
-                     alpha,
-                     pre_output,
-                     post_output) {
+ui_venn2_dummy <- function(id, ...) {
+  arguments <- list(...)
   ns <- NS(id)
 
   standard_layout(
     output = uiOutput(ns("plot_ui")),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(dataname)),
-      optionalSelectInput(ns("bm1_var"), "Biomarker 1", bm1_var$choices, bm1_var$selected, multiple = FALSE),
-      optionalSelectInput(ns("bm2_var"), "Biomarker 2", bm2_var$choices, bm2_var$selected, multiple = FALSE),
+      helpText("Analysis data:", tags$code(arguments$dataname)),
+      data_extract_input(
+        id = ns("bm1"),
+        label = "Biomarker 1",
+        data_extract_spec = arguments$bm1
+      ),
+      data_extract_input(
+        id = ns("bm2"),
+        label = "Biomarker 2",
+        data_extract_spec = arguments$bm2
+      ),
+
       if (all(c(
-        length(plot_height) == 1,
-        length(alpha) == 1
+        length(arguments$plot_height) == 1,
+        length(arguments$alpha) == 1
       ))) {
         NULL
       } else {
         tags$label("Plot Settings", class = "text-primary", style = "margin-top: 15px;")
       },
-      optionalSliderInputValMinMax(ns("plot_height"), "plot height", plot_height, ticks = FALSE)
+      optionalSliderInputValMinMax(ns("plot_height"), "plot height", arguments$plot_height, ticks = FALSE)
     ),
-    pre_output = pre_output,
-    post_output = post_output
+    pre_output = arguments$pre_output,
+    post_output = arguments$post_output
   )
 }
 
 
-srv_venn2 <- function(input, output, session, datasets, dataname) {
+srv_venn2_dummy <- function(input, output, session, datasets, dataname, bm1, bm2) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   ## dynamic plot height
@@ -321,26 +351,33 @@ srv_venn2 <- function(input, output, session, datasets, dataname) {
     plotOutput(session$ns("scatterplot"), height = plot_height)
   })
 
+  bm1_data <- callModule(
+    data_extract_module,
+    id = "bm1",
+    datasets = datasets,
+    data_extract_spec = bm1
+  )
+  bm2_data <- callModule(
+    data_extract_module,
+    id = "bm2",
+    datasets = datasets,
+    data_extract_spec = bm2
+  )
+
   output$scatterplot <- renderPlot({
+    bm1_var <- get_dataset_prefixed_col_names(bm1_data())
+    bm2_var <- get_dataset_prefixed_col_names(bm2_data())
 
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
     validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
     validate(need(nrow(anl) > 0, "no observations left"))
 
+    #validate(need(bm1_var != bm2_var, "Please choose different Biomarker 1 and 2"))
 
-    bm1_var <- input$bm1_var
-    bm2_var <- input$bm2_var
+    merged_dataset <- merge_datasets(list(bm1_data(), bm2_data()))
 
-    validate(need(bm1_var != bm2_var, "Please choose different Biomarker 1 and 2"))
-
-    bm1 <- anl[[bm1_var]]
-    bm2 <- anl[[bm2_var]]
-
-    validate(need(!is.null(bm1), "biomarker 1 does not exist"))
-    validate(need(!is.null(bm2), "biomarker 2 does not exist"))
-
-    x <- try(venn2(bm1, bm2, bm1_var, bm2_var), silent = TRUE)
+    x <- try(venn2_dummy(merged_dataset[[bm1_var]], merged_dataset[[bm2_var]], bm1_var, bm2_var), silent = TRUE)
 
     if (is(x, "try-error")) {
       validate(need(FALSE, paste0("could not calculate cross table:\n\n", x)))
