@@ -76,7 +76,7 @@ ASL <- cadsl
 ARS <- cadrs
 
 keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")
+keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
  data = cdisc_data(

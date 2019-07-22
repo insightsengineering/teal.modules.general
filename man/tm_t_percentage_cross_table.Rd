@@ -52,7 +52,7 @@ app <- init(
     check = TRUE
   ),
   modules = root_modules(
-    teal.modules.general:::tm_t_percentage_cross_table(
+    tm_t_percentage_cross_table(
       label = "Cross Table",
       dataname = "ASL",
       x = data_extract_spec(
