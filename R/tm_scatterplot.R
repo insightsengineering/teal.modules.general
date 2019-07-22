@@ -167,3 +167,104 @@ ui_scatterplot <- function(id,
     post_output = post_output
   )
 }
+
+#' @importFrom magrittr %>%
+#' @importFrom methods substituteDirect
+srv_scatterplot <- function(input, output, session, datasets, dataname) {
+  stopifnot(all(dataname %in% datasets$datanames()))
+
+  init_chunks()
+
+  ## dynamic plot height
+  output$plot_ui <- renderUI({
+    plot_height <- input$plot_height
+    validate(need(plot_height, "need valid plot height"))
+    plotOutput(session$ns("scatterplot"), height = plot_height)
+  })
+
+  output$scatterplot <- renderPlot({
+    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    xvar <- input$xvar
+    yvar <- input$yvar
+    alpha <- input$alpha
+    color_by <- check_color(input$color_by)
+    size <- input$size
+
+    data_name <- paste0(dataname, "_FILTERED")
+    assign(data_name, anl)
+
+    validate(need(alpha, "need alpha"))
+    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
+    validate(need(nrow(anl) > 0, "no observations left"))
+    validate(need(xvar, "no valid x variable selected"))
+    validate(need(yvar, "no valid y variable selected"))
+    validate(need(
+      xvar %in% names(anl),
+      paste("variable", xvar, " is not available in data", dataname)
+    ))
+    validate(need(
+      yvar %in% names(anl),
+      paste("variable", yvar, " is not available in data", dataname)
+    ))
+
+    chunks_reset()
+
+    if (is.null(color_by)) {
+      chunks_push(expression = bquote(
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar
+        )
+      ))
+    } else {
+      chunks_push(expression = bquote(
+        ggplot(
+          .(as.name(data_name)),
+          aes_string(x = xvar, y = yvar, color = color_by)
+        ) +
+          geom_point(alpha = alpha, size = size)
+      ) %>% substituteDirect(
+        list(
+          alpha = alpha,
+          size = size,
+          xvar = xvar,
+          yvar = yvar,
+          color_by = color_by
+        )
+      ))
+    }
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+  observeEvent(input$show_rcode, {
+    show_rcode_modal(
+      title = "Scatter-Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        title = "Scatter-Plot"
+      )
+    )
+  })
+}
+
+check_color <- function(x) {
+  if (!is.null(x)) {
+    if (x %in% c("", "_none_")) {
+      return(NULL)
+    }
+  }
+  return(x)
+}

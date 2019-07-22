@@ -79,7 +79,7 @@ tm_g_association <- function(label = "Association",
 
   module(
     label = label,
-    server = srv_tm_g_association,
+    server = function(input, output, session, datasets, ...) return(NULL),
     ui = ui_tm_g_association,
     ui_args = args,
     server_args = list(
@@ -140,109 +140,108 @@ srv_tm_g_association <- function(input,
                                  session,
                                  datasets,
                                  dataname,
-                                 # input vars below
                                  ref,
                                  vars) {
-  # stopifnot(all(dataname %in% datasets$datanames()))
-  # init_chunks()
-  #
-  # callModule(
-  #   plot_with_height,
-  #   id = "myplot",
-  #   plot_height = reactive(input$myplot),
-  #   plot_id = session$ns("plot")
-  # )
-  #
-  # ref_data <- callModule(
-  #   data_extract_module,
-  #   id = "ref",
-  #   datasets = datasets,
-  #   data_extract_spec = ref
-  # )
-  # vars_data <- callModule(
-  #   data_extract_module,
-  #   id = "vars",
-  #   datasets = datasets,
-  #   data_extract_spec = vars
-  # )
-  #
-  # output$plot <- renderPlot({
-  #
-  #   ref_name <- get_dataset_prefixed_col_names(ref_data())
-  #   vars_names <- get_dataset_prefixed_col_names(vars_data())
-  #   anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-  #
-  #   # not working currently because it relies on cols and not on already preprocessed data
-  #
-  #   association <- input$association
-  #   show_dist <- input$show_dist
-  #   log_transformation <- input$log_transformation
-  #
-  #   anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-  #   anl_name <- paste0(dataname, "_FILTERED")
-  #   assign(anl_name, anl_f)
-  #
-  #   validate(
-  #     need(nrow(anl_f) > 3, "need at least three rows"),
-  #     need(length(ref) > 0, "need at least one variable selected"),
-  #     need(!(ref %in% vars), "associated variables and reference variable cannot overlap"),
-  #     need(ref %in% names(anl_f), paste("reference variable not found in ", dataname)),
-  #     need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
-  #   )
-  #
-  #   ref_class <- class(anl_f[[ref]])
-  #
-  #   if (ref_class == "numeric" && log_transformation) {
-  #     ref <- call("log", as.name(ref))
-  #   }
-  #
-  #   ref_cl <- call(
-  #     "+",
-  #     bivariate_plot_call(anl_name, ref, NULL, ref_class, "NULL", freq = !show_dist),
-  #     quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
-  #   )
-  #
-  #   ref_class_cov <- if (association) {
-  #     ref_class
-  #   } else {
-  #     "NULL"
-  #   }
-  #
-  #   var_cls <- lapply(vars, function(var_i) {
-  #     class_i <- class(anl_f[[var_i]])
-  #     if (class_i == "numeric" && log_transformation) {
-  #       var_i <- call("log", as.name(var_i))
-  #     }
-  #
-  #     bivariate_plot_call(anl_name, var_i, ref, class_i, ref_class_cov, freq = !show_dist)
-  #   })
-  #
-  #
-  #   cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
-  #
-  #   cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
-  #
-  #   cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
-  #
-  #   chunks_reset()
-  #
-  #   chunks_push(expression = cl, id = "plotCall")
-  #
-  #   p <- chunks_eval()
-  #
-  #   chunks_validate_is_ok()
-  #
-  #   p
-  # })
-  #
-  # observeEvent(input$show_rcode, {
-  #   show_rcode_modal(
-  #     title = "R Code for the Association Plot",
-  #     rcode = get_rcode(
-  #       datasets = datasets,
-  #       merged_dataname = "anl",
-  #       title = "Association Plot"
-  #     )
-  #   )
-  # })
+  stopifnot(all(dataname %in% datasets$datanames()))
+  init_chunks()
+
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
+
+  ref_data <- callModule(
+    data_extract_module,
+    id = "ref",
+    datasets = datasets,
+    data_extract_spec = ref
+  )
+  vars_data <- callModule(
+    data_extract_module,
+    id = "vars",
+    datasets = datasets,
+    data_extract_spec = vars
+  )
+
+  output$plot <- renderPlot({
+
+    ref_name <- get_dataset_prefixed_col_names(ref_data())
+    vars_names <- get_dataset_prefixed_col_names(vars_data())
+    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+
+    # not working currently because it relies on cols and not on already preprocessed data
+
+    association <- input$association
+    show_dist <- input$show_dist
+    log_transformation <- input$log_transformation
+
+    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    anl_name <- paste0(dataname, "_FILTERED")
+    assign(anl_name, anl_f)
+
+    validate(
+      need(nrow(anl_f) > 3, "need at least three rows"),
+      need(length(ref) > 0, "need at least one variable selected"),
+      need(!(ref %in% vars), "associated variables and reference variable cannot overlap"),
+      need(ref %in% names(anl_f), paste("reference variable not found in ", dataname)),
+      need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
+    )
+
+    ref_class <- class(anl_f[[ref]])
+
+    if (ref_class == "numeric" && log_transformation) {
+      ref <- call("log", as.name(ref))
+    }
+
+    ref_cl <- call(
+      "+",
+      bivariate_plot_call(anl_name, ref, NULL, ref_class, "NULL", freq = !show_dist),
+      quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
+    )
+
+    ref_class_cov <- if (association) {
+      ref_class
+    } else {
+      "NULL"
+    }
+
+    var_cls <- lapply(vars, function(var_i) {
+      class_i <- class(anl_f[[var_i]])
+      if (class_i == "numeric" && log_transformation) {
+        var_i <- call("log", as.name(var_i))
+      }
+
+      bivariate_plot_call(anl_name, var_i, ref, class_i, ref_class_cov, freq = !show_dist)
+    })
+
+
+    cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
+
+    cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
+
+    cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
+
+    chunks_reset()
+
+    chunks_push(expression = cl, id = "plotCall")
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+  observeEvent(input$show_rcode, {
+    show_rcode_modal(
+      title = "R Code for the Association Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        merged_dataname = "anl",
+        title = "Association Plot"
+      )
+    )
+  })
 }

@@ -12,7 +12,7 @@
 #' x = c(rep(T, 5), rep(F, 3), rep(T, 4), rep(F, 9))
 #' y = c(rep(T, 5), rep(F, 3), rep(F, 4), rep(T, 9))
 #' table(x, y)
-#' y <- teal.modules.general:::venn2_dummy(x, y, "X", "Y")
+#' y <- teal.modules.general:::venn2(x, y, "X", "Y")
 #' plot(y)
 #'
 #'
@@ -20,9 +20,9 @@
 #' x = c(F, F, F, F, T, T)
 #' y = c(F, T, T, T, F, F)
 #' table(x, y)
-#' y <- teal.modules.general:::venn2_dummy(x, y, "X", "Y")
+#' y <- teal.modules.general:::venn2(x, y, "X", "Y")
 #' plot(y)
-venn2_dummy <- function(x, y, xlab, ylab) {
+venn2 <- function(x, y, xlab, ylab) {
   if (length(x) <= 0) {
     stop("lenght of x must be > 0")
   }
@@ -50,13 +50,13 @@ venn2_dummy <- function(x, y, xlab, ylab) {
   abs <- table(x, y)
   per <- abs / length(x)
 
-  structure(list(absolute = abs, perentage = per, xlab = xlab, ylab = ylab), class = "venn2_dummy")
+  structure(list(absolute = abs, perentage = per, xlab = xlab, ylab = ylab), class = "venn2")
 }
 
 
-#' plot venn2_dummy object
+#' plot venn2 object
 #'
-#' @param x an object returned by \code{\link{venn2_dummy}}
+#' @param x an object returned by \code{\link{venn2}}
 #'
 #' @noRd
 #'
@@ -64,7 +64,7 @@ venn2_dummy <- function(x, y, xlab, ylab) {
 #' @importFrom stats uniroot
 #' @import grid
 #' @export
-plot.venn2_dummy <- function(x, ...) {
+plot.venn2 <- function(x, ...) {
 
   abs <- x$absolute
   per <- apply(x$perentage, c(1, 2), function(xi) round(xi * 100, 1))
@@ -207,7 +207,7 @@ plot.venn2_dummy <- function(x, ...) {
 }
 
 
-#' venn2_dummy teal module
+#' venn2 teal module
 #'
 #' @noRd
 #'
@@ -237,7 +237,7 @@ plot.venn2_dummy <- function(x, ...) {
 #'     ',
 #'     check = FALSE),
 #'   modules = root_modules(
-#'     teal.modules.general:::tm_venn2_dummy(
+#'     teal.modules.general:::tm_venn2(
 #'       "Venn Diagram", "ASL",
 #'       bm1 = data_extract_spec(
 #'         dataname = "ASL",
@@ -261,7 +261,7 @@ plot.venn2_dummy <- function(x, ...) {
 #'
 #' shinyApp(app$ui, app$server)
 
-tm_venn2_dummy <- function(label,
+tm_venn2 <- function(label,
                      dataname,
                      bm1,
                      bm2,
@@ -296,8 +296,8 @@ tm_venn2_dummy <- function(label,
 
   module(
     label = label,
-    server = srv_venn2_dummy,
-    ui = ui_venn2_dummy,
+    server = srv_venn2,
+    ui = ui_venn2,
     ui_args = args,
     server_args = list(dataname = dataname, bm1 = bm1, bm2 = bm2),
     filters = dataname
@@ -305,7 +305,7 @@ tm_venn2_dummy <- function(label,
 }
 
 
-ui_venn2_dummy <- function(id, ...) {
+ui_venn2 <- function(id, ...) {
   arguments <- list(...)
   ns <- NS(id)
 
@@ -341,7 +341,7 @@ ui_venn2_dummy <- function(id, ...) {
 }
 
 
-srv_venn2_dummy <- function(input, output, session, datasets, dataname, bm1, bm2) {
+srv_venn2 <- function(input, output, session, datasets, dataname, bm1, bm2) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   ## dynamic plot height
@@ -377,7 +377,7 @@ srv_venn2_dummy <- function(input, output, session, datasets, dataname, bm1, bm2
 
     merged_dataset <- merge_datasets(list(bm1_data(), bm2_data()))
 
-    x <- try(venn2_dummy(merged_dataset[[bm1_var]], merged_dataset[[bm2_var]], bm1_var, bm2_var), silent = TRUE)
+    x <- try(venn2(merged_dataset[[bm1_var]], merged_dataset[[bm2_var]], bm1_var, bm2_var), silent = TRUE)
 
     if (is(x, "try-error")) {
       validate(need(FALSE, paste0("could not calculate cross table:\n\n", x)))

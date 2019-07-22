@@ -27,7 +27,7 @@
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     teal.modules.general:::tm_t_percentage_cross_table_dummy(
+#'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
 #'       dataname = "ASL",
 #'       x = data_extract_spec(
@@ -52,7 +52,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_t_percentage_cross_table_dummy <- function(label = "Cross Table",
+tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
                                         x,
                                         y,
@@ -80,15 +80,15 @@ tm_t_percentage_cross_table_dummy <- function(label = "Cross Table",
 
   module(
     label = label,
-    server = srv_percentage_cross_table_dummy,
-    ui = ui_percentage_cross_table_dummy,
+    server = function(input, output, session, datasets, ...) return(NULL),
+    ui = ui_percentage_cross_table,
     ui_args = args,
     server_args = list(dataname = dataname, label = label, x = x, y = y),
     filters = dataname
   )
 }
 
-ui_percentage_cross_table_dummy <- function(id, ...) {
+ui_percentage_cross_table <- function(id, ...) {
   a <- list(...)
 
   ns <- NS(id)
@@ -109,41 +109,49 @@ ui_percentage_cross_table_dummy <- function(id, ...) {
 
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
-srv_percentage_cross_table_dummy <- function(input, output, session, datasets, dataname, label, x, y) {
+srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
   stopifnot(all(dataname %in% datasets$datanames()))
-
-  # Data Extraction
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  y_data <- callModule(data_extract_module,
-                          id = "y",
-                          datasets = datasets,
-                          data_extract_spec = y
-  )
 
   init_chunks()
 
   table_code <- reactive({
-    x_name <- get_dataset_prefixed_col_names(x_data())
-    y_name <- get_dataset_prefixed_col_names(y_data())
+    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
-    validate(need(x_name != "", "Please define a column that is not empty."))
-    validate(need(y_name != "", "Please define a column that is not empty."))
-    dataset <- merge_datasets(
-      list(
-        x_data(),
-        y_data()
-      )
+    x_var <- input$x_var
+    y_var <- input$y_var
+
+    validate(need(anl_f, "data missing"))
+    validate_has_data(anl_f, 10)
+
+    validate(need(x_var, "selected x_var does not exist"))
+    validate(need(y_var, "selected y_var does not exist"))
+
+    data_name <- paste0(dataname, "_FILTERED")
+    assign(data_name, anl_f)
+
+    # Set chunks
+    chunks_reset()
+
+    chunks_push(expression = bquote(data_table <-
+                                      stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
+
+    chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
+
+    chunks_push(
+      expression =
+        quote(add_row <- function(i, x, p) {
+          rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
+        })
     )
-
+    chunks_push(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
+    chunks_push(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
   })
 
   output$table <- renderUI({
     table_code()
-    NULL
+    t <- rtables::as_html(chunks_eval())
+    chunks_validate_is_ok()
+    t
   })
 
   observeEvent(input$show_rcode, {

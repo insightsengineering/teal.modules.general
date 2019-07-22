@@ -132,98 +132,97 @@ srv_g_scatterplotmatrix <- function(input,
                                     datasets,
                                     dataname,
                                     select_col) {
-  # stopifnot(all(dataname %in% datasets$datanames()))
-  #
-  # # setup to use chunks
-  # init_chunks()
-  #
-  # # data extraction
-  # col_extract <- callModule(
-  #   data_extract_module,
-  #   id = "select_col",
-  #   datasets = datasets,
-  #   data_extract_spec = select_col
-  # )
-  #
-  # # set plot output
-  # callModule(
-  #   plot_with_height,
-  #   id = "myplot",
-  #   plot_height = reactive(input$myplot),
-  #   plot_id = session$ns("plot"))
-  #
-  # # plot
-  # output$plot <- renderPlot({
-  #   # get inputs
-  #   alpha <- input$alpha
-  #   cex <- input$cex
-  #
-  #   # get selected columns
-  #   cols <- get_dataset_prefixed_col_names(col_extract())
-  #
-  #   # merge datasets
-  #   merged_ds <- merge_datasets(list(col_extract()))
-  #
-  #   # check columns selected
-  #   validate(need(cols, "Please select columns first."))
-  #
-  #   # lattice need at least 2 columns for the plot
-  #   validate(need(length(cols) >= 2, "Please select at least two columns."))
-  #
-  #
-  #   # check that data are available
-  #   validate(need(nrow(merged_ds) > 0, "There are zero observations in the (filtered) dataset."))
-  #
-  #   # check proper input values
-  #   validate(need(cex, "Need a proper cex value."))
-  #
-  #   # check proper input values
-  #   validate(need(alpha, "Need a proper alpha value."))
-  #
-  #   # reset chunks on every user-input change
-  #   chunks_reset()
-  #
-  #   # set up expression chunk - lattice graph
-  #   chunks_push(
-  #     expression = quote(
-  #       merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
-  #     )
-  #   )
-  #
-  #   # set up expression chunk - lattice graph
-  #   chunks_push(
-  #     substituteDirect(
-  #       object = quote(
-  #         lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
-  #       ),
-  #       frame = list(.cols = cols, .alpha = alpha, .cex = cex)
-  #     )
-  #   )
-  #
-  #   p <- chunks_eval()
-  #
-  #   chunks_validate_is_ok()
-  #
-  #   p
-  # })
-  #
-  # # show r code
-  # observeEvent(input$show_rcode, {
-  #
-  #   title <- paste0("Scatterplotmatrix of ",
-  #                   paste(get_dataset_prefixed_col_names(col_extract()),
-  #                         collapse = ", "))
-  #
-  #   show_rcode_modal(
-  #     title = "R Code for a Scatterplotmatrix",
-  #     rcode = get_rcode(
-  #       datasets = datasets,
-  #       merged_dataname = "merged_ds",
-  #       merged_datasets = list(col_extract()),
-  #       title = title,
-  #       description = ""
-  #     )
-  #   )
-  # })
+  stopifnot(all(dataname %in% datasets$datanames()))
 
+  # setup to use chunks
+  init_chunks()
+
+  # data extraction
+  col_extract <- callModule(
+    data_extract_module,
+    id = "select_col",
+    datasets = datasets,
+    data_extract_spec = select_col
+  )
+
+  # set plot output
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot"))
+
+  # plot
+  output$plot <- renderPlot({
+    # get inputs
+    alpha <- input$alpha
+    cex <- input$cex
+
+    # get selected columns
+    cols <- get_dataset_prefixed_col_names(col_extract())
+
+    # merge datasets
+    merged_ds <- merge_datasets(list(col_extract()))
+
+    # check columns selected
+    validate(need(cols, "Please select columns first."))
+
+    # lattice need at least 2 columns for the plot
+    validate(need(length(cols) >= 2, "Please select at least two columns."))
+
+
+    # check that data are available
+    validate(need(nrow(merged_ds) > 0, "There are zero observations in the (filtered) dataset."))
+
+    # check proper input values
+    validate(need(cex, "Need a proper cex value."))
+
+    # check proper input values
+    validate(need(alpha, "Need a proper alpha value."))
+
+    # reset chunks on every user-input change
+    chunks_reset()
+
+    # set up expression chunk - lattice graph
+    chunks_push(
+      expression = quote(
+        merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
+      )
+    )
+
+    # set up expression chunk - lattice graph
+    chunks_push(
+      substituteDirect(
+        object = quote(
+          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+        ),
+        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
+      )
+    )
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+  # show r code
+  observeEvent(input$show_rcode, {
+
+    title <- paste0("Scatterplotmatrix of ",
+                    paste(get_dataset_prefixed_col_names(col_extract()),
+                          collapse = ", "))
+
+    show_rcode_modal(
+      title = "R Code for a Scatterplotmatrix",
+      rcode = get_rcode(
+        datasets = datasets,
+        merged_dataname = "merged_ds",
+        merged_datasets = list(col_extract()),
+        title = title,
+        description = ""
+      )
+    )
+  })
 }

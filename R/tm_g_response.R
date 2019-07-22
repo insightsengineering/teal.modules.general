@@ -273,161 +273,161 @@ srv_g_response <- function(input,
                            xvar,
                            row_facet_var,
                            col_facet_var) {
-  # stopifnot(all(dataname %in% datasets$datanames()))
-  #
-  # init_chunks()
-  #
-  # # Data Extraction
-  # response_data <- callModule(data_extract_module,
-  #                             id = "response",
-  #                             datasets = datasets,
-  #                             data_extract_spec = response
-  # )
-  # xvar_data <- callModule(data_extract_module,
-  #                         id = "xvar",
-  #                         datasets = datasets,
-  #                         data_extract_spec = xvar
-  # )
-  # row_facet_var_data <- callModule(data_extract_module,
-  #                                  id = "row_facet_var",
-  #                                  datasets = datasets,
-  #                                  data_extract_spec = row_facet_var
-  # )
-  # col_facet_var_data <- callModule(data_extract_module,
-  #                                  id = "col_facet_var",
-  #                                  datasets = datasets,
-  #                                  data_extract_spec = col_facet_var
-  # )
-  #
-  # data_reactive <- reactive({
-  #
-  #   merge_datasets(
-  #     list(
-  #       xvar_data(),
-  #       row_facet_var_data(),
-  #       col_facet_var_data(),
-  #       response_data()
-  #     )
-  #   )
-  #
-  # })
-  #
-  # # Insert the plot into a plot_height module from teal.devel
-  # callModule(
-  #   plot_with_height,
-  #   id = "myplot",
-  #   plot_height = reactive(input$myplot),
-  #   plot_id = session$ns("plot")
-  # )
-  #
-  # ## dynamic plot height
-  # output$plot_ui <- renderUI({
-  #   plot_height <- input$plot_height
-  #   validate(need(plot_height, "need valid plot height"))
-  #   plotOutput(session$ns("plot"), height = plot_height)
-  # })
-  #
-  # output$plot <- renderPlot({
-  #   resp_var <- get_dataset_prefixed_col_names(response_data())
-  #   xvar <- get_dataset_prefixed_col_names(xvar_data())
-  #   row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
-  #   col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
-  #
-  #   validate(need(resp_var != "", "Please define a valid column for the response variable"))
-  #   validate(need(xvar != "", "Please define a valid column for the X-variable"))
-  #
-  #   freq <- input$freq == "frequency"
-  #   swap_axes <- input$coord_flip
-  #
-  #   arg_position <- if (freq) "stack" else "fill" # nolint
-  #   cl_arg_x <- if (is.null(xvar)) {
-  #     1
-  #   } else {
-  #     tmp_cl <- if (length(xvar) == 1) {
-  #       as.name(xvar)
-  #     } else {
-  #       tmp <- call_fun_dots("interaction", xvar)
-  #       tmp[["sep"]] <- " x "
-  #       tmp
-  #     }
-  #
-  #     if (swap_axes) {
-  #       bquote(forcats::fct_rev(.(tmp_cl)))
-  #     } else {
-  #       tmp_cl
-  #     }
-  #   }
-  #
-  #   anl <- data_reactive()
-  #
-  #   validate_has_data(anl, 10)
-  #
-  #   validate(
-  #     need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
-  #   )
-  #
-  #   plot_call <- bquote(
-  #     anl %>%
-  #       ggplot() +
-  #       aes(x = .(cl_arg_x)) +
-  #       geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
-  #   )
-  #
-  #   if (!freq) {
-  #     if (swap_axes) {
-  #       tmp_cl1 <- quote(xlab(label)) %>%
-  #         substituteDirect(list(label = tmp_cl %>%
-  #                                 deparse()))
-  #       tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
-  #     } else {
-  #       tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
-  #       tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
-  #     }
-  #
-  #     plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
-  #   } else {
-  #     # Change Y-Axis Label in case of Swap
-  #     tmp_cl1 <- quote(xlab(label)) %>%
-  #       substituteDirect(list(label = tmp_cl %>%
-  #                               deparse()))
-  #     plot_call <- call("+", plot_call, tmp_cl1)
-  #   }
-  #
-  #   if (swap_axes) {
-  #     plot_call <- call("+", plot_call, quote(coord_flip()))
-  #   }
-  #
-  #   facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
-  #
-  #   if (!is.null(facet_cl)) {
-  #     plot_call <- call("+", plot_call, facet_cl)
-  #   }
-  #
-  #   chunks_reset()
-  #
-  #   chunks_push(expression = plot_call, id = "plotCall")
-  #
-  #   p <- chunks_eval()
-  #
-  #   chunks_validate_is_ok()
-  #
-  #   p
-  # })
-  #
-  # observeEvent(input$show_rcode, {
-  #   show_rcode_modal(
-  #     title = "Response Plot",
-  #     rcode = get_rcode(
-  #       datasets = datasets,
-  #       merged_dataname = "anl",
-  #       merged_datasets = list(
-  #         response_data(),
-  #         xvar_data(),
-  #         row_facet_var_data(),
-  #         col_facet_var_data()
-  #       ),
-  #       title = "Response Plot"
-  #     )
-  #   )
-  # })
+  stopifnot(all(dataname %in% datasets$datanames()))
+
+  init_chunks()
+
+  # Data Extraction
+  response_data <- callModule(data_extract_module,
+                              id = "response",
+                              datasets = datasets,
+                              data_extract_spec = response
+  )
+  xvar_data <- callModule(data_extract_module,
+                          id = "xvar",
+                          datasets = datasets,
+                          data_extract_spec = xvar
+  )
+  row_facet_var_data <- callModule(data_extract_module,
+                                   id = "row_facet_var",
+                                   datasets = datasets,
+                                   data_extract_spec = row_facet_var
+  )
+  col_facet_var_data <- callModule(data_extract_module,
+                                   id = "col_facet_var",
+                                   datasets = datasets,
+                                   data_extract_spec = col_facet_var
+  )
+
+  data_reactive <- reactive({
+
+    merge_datasets(
+      list(
+        xvar_data(),
+        row_facet_var_data(),
+        col_facet_var_data(),
+        response_data()
+      )
+    )
+
+  })
+
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
+
+  ## dynamic plot height
+  output$plot_ui <- renderUI({
+    plot_height <- input$plot_height
+    validate(need(plot_height, "need valid plot height"))
+    plotOutput(session$ns("plot"), height = plot_height)
+  })
+
+  output$plot <- renderPlot({
+    resp_var <- get_dataset_prefixed_col_names(response_data())
+    xvar <- get_dataset_prefixed_col_names(xvar_data())
+    row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
+    col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+
+    validate(need(resp_var != "", "Please define a valid column for the response variable"))
+    validate(need(xvar != "", "Please define a valid column for the X-variable"))
+
+    freq <- input$freq == "frequency"
+    swap_axes <- input$coord_flip
+
+    arg_position <- if (freq) "stack" else "fill" # nolint
+    cl_arg_x <- if (is.null(xvar)) {
+      1
+    } else {
+      tmp_cl <- if (length(xvar) == 1) {
+        as.name(xvar)
+      } else {
+        tmp <- call_fun_dots("interaction", xvar)
+        tmp[["sep"]] <- " x "
+        tmp
+      }
+
+      if (swap_axes) {
+        bquote(forcats::fct_rev(.(tmp_cl)))
+      } else {
+        tmp_cl
+      }
+    }
+
+    anl <- data_reactive()
+
+    validate_has_data(anl, 10)
+
+    validate(
+      need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
+    )
+
+    plot_call <- bquote(
+      anl %>%
+        ggplot() +
+        aes(x = .(cl_arg_x)) +
+        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
+    )
+
+    if (!freq) {
+      if (swap_axes) {
+        tmp_cl1 <- quote(xlab(label)) %>%
+          substituteDirect(list(label = tmp_cl %>%
+                                  deparse()))
+        tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
+      } else {
+        tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
+        tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
+      }
+
+      plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
+    } else {
+      # Change Y-Axis Label in case of Swap
+      tmp_cl1 <- quote(xlab(label)) %>%
+        substituteDirect(list(label = tmp_cl %>%
+                                deparse()))
+      plot_call <- call("+", plot_call, tmp_cl1)
+    }
+
+    if (swap_axes) {
+      plot_call <- call("+", plot_call, quote(coord_flip()))
+    }
+
+    facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
+
+    if (!is.null(facet_cl)) {
+      plot_call <- call("+", plot_call, facet_cl)
+    }
+
+    chunks_reset()
+
+    chunks_push(expression = plot_call, id = "plotCall")
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+  observeEvent(input$show_rcode, {
+    show_rcode_modal(
+      title = "Response Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        merged_dataname = "anl",
+        merged_datasets = list(
+          response_data(),
+          xvar_data(),
+          row_facet_var_data(),
+          col_facet_var_data()
+        ),
+        title = "Response Plot"
+      )
+    )
+  })
 }
