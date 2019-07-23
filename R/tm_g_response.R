@@ -5,12 +5,12 @@
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use as the response. You can define one fixed column by using the
 #'   setting \code{fixed = TRUE} inside the \code{column_spec}.
-#' @param xvar (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
 #'   columns from the \code{data} allowed in teal. Just allow single columns by \code{multiple = FALSE}.
-#' @param row_facet_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param row_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data columns to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.
-#' @param col_facet_var optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
@@ -27,56 +27,7 @@
 #' ASL <- cadsl
 #' ARS <- cadrs
 #' keys(ASL) <- c("USUBJID", "STUDYID")
-#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
-#'
-#' ars_filters <- filter_spec(
-#'   vars = c("PARAMCD"),
-#'   sep = " - ",
-#'   choices = unique(ARS$PARAMCD),
-#'   selected = unique(ARS$PARAMCD)[1],
-#'   multiple = FALSE,
-#'   label = "Choose endpoint"
-#' )
-#'
-#' ars_extracted_response <- data_extract_spec(
-#'   dataname = "ARS",
-#'   filter = ars_filters,
-#'   columns = columns_spec(
-#'     choices = c("AVALC"),
-#'     selected = c("AVALC"),
-#'     multiple = FALSE,
-#'     fixed = TRUE,
-#'     label = "variable"
-#'   )
-#' )
-#'
-#' asl_extracted <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = names(ASL),
-#'     selected = c("RACE"),
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#' asl_extracted_row <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("", "SEX", "AGE"),
-#'     selected = "",
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#' asl_extracted_col <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("", "SEX", "AGE"),
-#'     selected = "",
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
+#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -85,15 +36,65 @@
 #'     code = 'ASL <- cadsl
 #'            ARS <- cadrs
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
-#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
-#'      check = FALSE),
+#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       dataname = "ARS",
-#'       response = ars_extracted_response,
-#'       xvar = asl_extracted,
-#'       row_facet_var = asl_extracted_row,
-#'       col_facet_var = asl_extracted_col
+#'       response = data_extract_spec(
+#'         dataname = "ARS",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = unique(ARS$PARAMCD),
+#'             selected = unique(ARS$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ARS$AVISIT),
+#'             selected = levels(ARS$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = "AVALC",
+#'           selected = "AVALC",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "variable"
+#'         )
+#'       ),
+#'       x = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = names(ASL),
+#'           selected = c("RACE"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       row_facet = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("", "SEX", "AGE"),
+#'           selected = "",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("", "SEX", "AGE"),
+#'           selected = "",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -156,49 +157,48 @@
 tm_g_response <- function(label = "Response Plot",
                           dataname,
                           response,
-                          xvar,
-                          row_facet_var = NULL,
-                          col_facet_var = NULL,
+                          x,
+                          row_facet = NULL,
+                          col_facet = NULL,
                           coord_flip = TRUE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
                           post_output = NULL) {
+  if (!is.class.list("data_extract_spec")(response)) {
+    response <- list(response)
+  }
+  if (!is.class.list("data_extract_spec")(x)) {
+    x <- list(x)
+  }
+  if (!is.class.list("data_extract_spec")(row_facet)) {
+    row_facet <- list_or_null(row_facet)
+  }
+  if (!is.class.list("data_extract_spec")(col_facet)) {
+    col_facet <- list_or_null(col_facet)
+  }
+
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
-  stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(response)) {
-    stop_if_not(list(all(vapply(response, function(x) !("" %in% x$columns$choices), logical(1))),
-                     "'response' should not allow empty values"))
-    stop_if_not(list(all(vapply(response, function(x) !(x$columns$multiple), logical(1))),
-                     "'response' should not allow multiple selection"))
-  } else if (is(response, "data_extract_spec")) {
-    stop_if_not(list(!("" %in% response$columns$choices),
-                     "'response' should not allow multiple selection"))
-    stop_if_not(list(!(response$columns$multiple),
-                     "'response' should not allow multiple selection"))
-  }
+  stopifnot(is.class.list("data_extract_spec")(response))
+  # todo: this check should go into data_extract or at least create a function for reusability (add an argument allow_empty_values)
+  # todo: also refactor this in tm_g_response.R to use this function
+  stop_if_not(list(all(vapply(response, function(x) !("" %in% x$columns$choices), logical(1))),
+                   "'response' should not allow empty values"))
+  stop_if_not(list(all(vapply(response, function(x) !(x$columns$multiple), logical(1))),
+                   "'response' should not allow multiple selection"))
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
-  stopifnot(is.class.list("data_extract_spec")(xvar) || is(xvar, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(xvar)) {
-    stop_if_not(list(all(vapply(xvar, function(x) !("" %in% x$columns$choices), logical(1))),
-                     "'xvar' should not allow empty values"))
-    stop_if_not(list(all(vapply(xvar, function(x) !(x$columns$multiple), logical(1))),
-                     "'xvar' should not allow multiple selection"))
-  } else if (is(xvar, "data_extract_spec")) {
-    stop_if_not(list(!("" %in% xvar$columns$choices),
-                     "'xvar' variable should not allow multiple selection"))
-    stop_if_not(list(!(xvar$columns$multiple),
-                     "'xvar' should not allow multiple selection"))
-  }
-  stopifnot(is.null(row_facet_var) ||
-              is.class.list("data_extract_spec")(row_facet_var) || is(row_facet_var, "data_extract_spec"))
-  stopifnot(is.null(col_facet_var) ||
-              is.class.list("data_extract_spec")(col_facet_var) || is(col_facet_var, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(x))
+  stop_if_not(list(all(vapply(x, function(x) !("" %in% x$columns$choices), logical(1))),
+                   "'x' should not allow empty values"))
+  stop_if_not(list(all(vapply(x, function(x) !(x$columns$multiple), logical(1))),
+                   "'x' should not allow multiple selection"))
+  stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet))
+  stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet))
   stopifnot(is.logical.single(coord_flip))
   stopifnot(is.logical.single(freq))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
@@ -209,20 +209,19 @@ tm_g_response <- function(label = "Response Plot",
 
   module(
     label = label,
-    server = srv_g_response,
+    server = function(input, output, session, datasets, ...) return(NULL),
     ui = ui_g_response,
     ui_args = args,
     server_args = list(
       dataname = dataname,
       response = response,
-      xvar = xvar,
-      row_facet_var = row_facet_var,
-      col_facet_var = col_facet_var
+      x = x,
+      row_facet = row_facet,
+      col_facet = col_facet
     ),
     filters = dataname
   )
 }
-
 
 ui_g_response <- function(id, ...) {
   arguments <- list(...)
@@ -242,24 +241,24 @@ ui_g_response <- function(id, ...) {
         data_extract_spec = arguments$response
       ),
       data_extract_input(
-        id = ns("xvar"),
+        id = ns("x"),
         label = "X Variable",
-        data_extract_spec = arguments$xvar
+        data_extract_spec = arguments$x
       ),
       data_extract_input(
-        id = ns("row_facet_var"),
+        id = ns("row_facet"),
         label = "Row facetting Variables ",
-        data_extract_spec = arguments$row_facet_var
+        data_extract_spec = arguments$row_facet
       ),
       data_extract_input(
-        id = ns("col_facet_var"),
+        id = ns("col_facet"),
         label = "Column facetting Variables",
-        data_extract_spec = arguments$col_facet_var
+        data_extract_spec = arguments$col_facet
       ),
 
       radioButtons(ns("freq"), NULL,
-        choices = c("frequency", "density"),
-        selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
+                   choices = c("frequency", "density"),
+                   selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
       ),
       checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
@@ -270,7 +269,6 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-
 #' @importFrom forcats fct_rev
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
@@ -280,42 +278,42 @@ srv_g_response <- function(input,
                            datasets,
                            dataname,
                            response,
-                           xvar,
-                           row_facet_var,
-                           col_facet_var) {
+                           x,
+                           row_facet,
+                           col_facet) {
   stopifnot(all(dataname %in% datasets$datanames()))
 
   init_chunks()
 
   # Data Extraction
   response_data <- callModule(data_extract_module,
-    id = "response",
-    datasets = datasets,
-    data_extract_spec = response
+                              id = "response",
+                              datasets = datasets,
+                              data_extract_spec = response
   )
-  xvar_data <- callModule(data_extract_module,
-    id = "xvar",
-    datasets = datasets,
-    data_extract_spec = xvar
+  x_data <- callModule(data_extract_module,
+                          id = "x",
+                          datasets = datasets,
+                          data_extract_spec = x
   )
-  row_facet_var_data <- callModule(data_extract_module,
-    id = "row_facet_var",
-    datasets = datasets,
-    data_extract_spec = row_facet_var
+  row_facet_data <- callModule(data_extract_module,
+                                   id = "row_facet",
+                                   datasets = datasets,
+                                   data_extract_spec = row_facet
   )
-  col_facet_var_data <- callModule(data_extract_module,
-    id = "col_facet_var",
-    datasets = datasets,
-    data_extract_spec = col_facet_var
+  col_facet_data <- callModule(data_extract_module,
+                                   id = "col_facet",
+                                   datasets = datasets,
+                                   data_extract_spec = col_facet
   )
 
   data_reactive <- reactive({
 
     merge_datasets(
       list(
-        xvar_data(),
-        row_facet_var_data(),
-        col_facet_var_data(),
+        x_data(),
+        row_facet_data(),
+        col_facet_data(),
         response_data()
       )
     )
@@ -339,24 +337,24 @@ srv_g_response <- function(input,
 
   output$plot <- renderPlot({
     resp_var <- get_dataset_prefixed_col_names(response_data())
-    xvar <- get_dataset_prefixed_col_names(xvar_data())
-    row_facet_var_name <- get_dataset_prefixed_col_names(row_facet_var_data())
-    col_facet_var_name <- get_dataset_prefixed_col_names(col_facet_var_data())
+    x <- get_dataset_prefixed_col_names(x_data())
+    row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
+    col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
 
     validate(need(resp_var != "", "Please define a valid column for the response variable"))
-    validate(need(xvar != "", "Please define a valid column for the X-variable"))
+    validate(need(x != "", "Please define a valid column for the X-variable"))
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
 
     arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(xvar)) {
+    cl_arg_x <- if (is.null(x)) {
       1
     } else {
-      tmp_cl <- if (length(xvar) == 1) {
-        as.name(xvar)
+      tmp_cl <- if (length(x) == 1) {
+        as.name(x)
       } else {
-        tmp <- call_fun_dots("interaction", xvar)
+        tmp <- call_fun_dots("interaction", x)
         tmp[["sep"]] <- " x "
         tmp
       }
@@ -407,7 +405,7 @@ srv_g_response <- function(input,
       plot_call <- call("+", plot_call, quote(coord_flip()))
     }
 
-    facet_cl <- facet_ggplot_call(row_facet_var_name, col_facet_var_name)
+    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
       plot_call <- call("+", plot_call, facet_cl)
@@ -429,13 +427,7 @@ srv_g_response <- function(input,
       title = "Response Plot",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "anl",
-        merged_datasets = list(
-          response_data(),
-          xvar_data(),
-          row_facet_var_data(),
-          col_facet_var_data()
-        ),
+        merge_expression = "",
         title = "Response Plot"
       )
     )

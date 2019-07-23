@@ -4,10 +4,13 @@
 #' @param label (\code{character}) Label of the app in the teal menu
 #' @param dataname (\code{character}) Name of the dataset used in the teal app. Just a single
 #'   dataset is allowed!
-#' @param x_var (\code{choices_selected}) object with all available
+#' @param x (\code{choices_selected}) object with all available
 #'   choices with preselected option for variable X
-#' @param y_var (\code{choices_selected}) object with all available
+#' @param y (\code{choices_selected}) object with all available
 #'   choices with preselected option for variable Y
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
+#'
 #' @export
 #'
 #' @author wolfs25 waddella
@@ -27,8 +30,22 @@
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
 #'       dataname = "ASL",
-#'       x_var = choices_selected(c("STRATA1"), "STRATA1"),
-#'       y_var = choices_selected(c("STRATA2"), "STRATA2")
+#'       x = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           label = "Select X Variable",
+#'           choices = c("STRATA1", "STRATA2"),
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           label = "Select Y Variable",
+#'           choices = c("STRATA2", "STRATA1"),
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -37,21 +54,36 @@
 #' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
-                                        x_var,
-                                        y_var) {
+                                        x,
+                                        y,
+                                        pre_output = NULL,
+                                        post_output = NULL) {
   stopifnot(is.character.single(label))
   stopifnot(is.character.single(dataname))
-  stopifnot(is.choices_selected(x_var))
-  stopifnot(is.choices_selected(y_var))
-
+  stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
+  if (is.class.list("data_extract_spec")(x)) {
+    stop_if_not(list(all(vapply(x, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                     "x variable should not allow multiple selection"))
+  } else if (is(x, "data_extract_spec")) {
+    stop_if_not(list(!isTRUE(x$columns$multiple),
+                     "x variable should not allow multiple selection"))
+  }
+  if (is.class.list("data_extract_spec")(y)) {
+    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                     "y variable should not allow multiple selection"))
+  } else if (is(y, "data_extract_spec")) {
+    stop_if_not(list(!isTRUE(y$columns$multiple),
+                     "y variable should not allow multiple selection"))
+  }
   args <- as.list(environment())
 
   module(
     label = label,
-    server = srv_percentage_cross_table,
+    server = function(input, output, session, datasets, ...) return(NULL),
     ui = ui_percentage_cross_table,
     ui_args = args,
-    server_args = list(dataname = dataname, label = label),
+    server_args = list(dataname = dataname, label = label, x = x, y = y),
     filters = dataname
   )
 }
@@ -65,8 +97,9 @@ ui_percentage_cross_table <- function(id, ...) {
     output = white_small_well(uiOutput(ns("table"))),
     encoding = div(
       helpText("Dataset:", tags$code(a$dataname)),
-      optionalSelectInput(ns("x_var"), "x var", a$x_var$choices, a$x_var$selected),
-      optionalSelectInput(ns("y_var"), "y var", a$y_var$choices, a$y_var$selected)
+      data_extract_input(ns("x"), label = "Row values", a$x),
+      tags$hr(),
+      data_extract_input(ns("y"), label = "Column values", a$y)
     ),
     forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
     pre_output = a$pre_output,
@@ -84,14 +117,14 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
   table_code <- reactive({
     anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
 
-    x_var <- input$x_var
-    y_var <- input$y_var
+    x <- input$x
+    y <- input$y
 
     validate(need(anl_f, "data missing"))
     validate_has_data(anl_f, 10)
 
-    validate(need(x_var, "selected x_var does not exist"))
-    validate(need(y_var, "selected y_var does not exist"))
+    validate(need(x, "selected x does not exist"))
+    validate(need(y, "selected y does not exist"))
 
     data_name <- paste0(dataname, "_FILTERED")
     assign(data_name, anl_f)
@@ -100,7 +133,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, datanam
     chunks_reset()
 
     chunks_push(expression = bquote(data_table <-
-      stats::addmargins(table(.(as.name(data_name))[[.(x_var)]], .(as.name(data_name))[[.(y_var)]]))))
+                                      stats::addmargins(table(.(as.name(data_name))[[.(x)]], .(as.name(data_name))[[.(y)]]))))
 
     chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
 

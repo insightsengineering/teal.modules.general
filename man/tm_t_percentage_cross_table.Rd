@@ -4,8 +4,8 @@
 \alias{tm_t_percentage_cross_table}
 \title{Cross table based on rtables}
 \usage{
-tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
-  y_var)
+tm_t_percentage_cross_table(label = "Cross Table", dataname, x, y,
+  pre_output = NULL, post_output = NULL)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}
@@ -13,11 +13,19 @@ tm_t_percentage_cross_table(label = "Cross Table", dataname, x_var,
 \item{dataname}{(\code{character}) Name of the dataset used in the teal app. Just a single
 dataset is allowed!}
 
-\item{x_var}{(\code{choices_selected}) object with all available
+\item{x}{(\code{choices_selected}) object with all available
 choices with preselected option for variable X}
 
-\item{y_var}{(\code{choices_selected}) object with all available
+\item{y}{(\code{choices_selected}) object with all available
 choices with preselected option for variable Y}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 
 \item{...}{Arguments passed on to \code{teal.devel::standard_layout}
 \describe{
@@ -47,8 +55,22 @@ app <- init(
     tm_t_percentage_cross_table(
       label = "Cross Table",
       dataname = "ASL",
-      x_var = choices_selected(c("STRATA1"), "STRATA1"),
-      y_var = choices_selected(c("STRATA2"), "STRATA2")
+      x = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          label = "Select X Variable",
+          choices = c("STRATA1", "STRATA2"),
+          fixed = FALSE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          label = "Select Y Variable",
+          choices = c("STRATA2", "STRATA1"),
+          fixed = FALSE
+        )
+      )
     )
   )
 )

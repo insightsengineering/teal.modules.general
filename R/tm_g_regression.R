@@ -21,47 +21,7 @@
 #' ALB <- cadlb
 #'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
-#'
-#' asl_extracted <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("BMRKR1", "BMRKR2"),
-#'     selected = c("BMRKR1"),
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
-#' asl_extracted_regressor <- data_extract_spec(
-#'   dataname = "ASL",
-#'   columns = columns_spec(
-#'     choices = c("SEX", "AGE", "BMRKR1", "BMRKR2"),
-#'     selected = c("BMRKR1"),
-#'     multiple = TRUE,
-#'     fixed = FALSE
-#'   )
-#' )
-#'
-#' alb_filters <- filter_spec(
-#'   vars = c("PARAMCD", "AVISIT"),
-#'   sep = " - ",
-#'   choices = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29"),
-#'   selected = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29")[1],
-#'   multiple = FALSE,
-#'   label = "Choose endpoint"
-#' )
-#'
-#' alb_extracted <- data_extract_spec(
-#'   dataname = "ALB",
-#'   filter = alb_filters,
-#'   columns = columns_spec(
-#'     choices = c("AVAL"),
-#'     selected = "AVAL",
-#'     multiple = FALSE,
-#'     fixed = FALSE,
-#'     label = "variable"
-#'   )
-#' )
+#' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -70,14 +30,47 @@
 #'     code = 'ASL <- cadsl
 #'             ALB <- cadlb
 #'             keys(ASL) <- c("STUDYID", "USUBJID")
-#'             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL", "ALB"),
-#'       response = alb_extracted,
-#'       regressor = asl_extracted
+#'       response = data_extract_spec(
+#'         dataname = "ALB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ALB$PARAMCD),
+#'             selected = levels(ALB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ALB$AVISIT),
+#'             selected = levels(ALB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "variable"
+#'         )
+#'       ),
+#'       regressor = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("BMRKR1", "BMRKR2"),
+#'           selected = c("BMRKR1"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -92,18 +85,19 @@ tm_g_regression <- function(label = "Regression Analysis",
                             plot_height = c(600, 200, 2000),
                             pre_output = NULL,
                             post_output = NULL) {
+  if (!is.class.list("data_extract_spec")(regressor)) {
+    regressor <- list(regressor)
+  }
+  if (!is.class.list("data_extract_spec")(response)) {
+    response <- list(response)
+  }
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stopifnot(is.class.list("data_extract_spec")(response) || is(response, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(response)) {
-    stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
-                     "Response variable should not allow multiple selection"))
-  } else if (is(response, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(response$columns$multiple),
-                     "Response variable should not allow multiple selection"))
-  }
-  stopifnot(is.class.list("data_extract_spec")(regressor) || is(regressor, "data_extract_spec"))
+  stopifnot(is.class.list("data_extract_spec")(response))
+  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
+                   "Response variable should not allow multiple selection"))
+  stopifnot(is.class.list("data_extract_spec")(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
@@ -286,8 +280,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       title = "R Code for a Regression Plot",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "merged_dataset",
-        merged_datasets = list(response_data(), regressor_data()),
+        merge_expression = "",
         title = title
       )
     )
