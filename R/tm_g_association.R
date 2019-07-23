@@ -239,7 +239,7 @@ srv_tm_g_association <- function(input,
       title = "R Code for the Association Plot",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "anl",
+        merge_expression = "",
         title = "Association Plot"
       )
     )

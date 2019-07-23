@@ -209,11 +209,7 @@ srv_table <- function(input, output, session, datasets, dataname, x, y) {
       title = "R Code for the Current Table",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "dataset",
-        merged_datasets = list(
-          x_data(),
-          y_data()
-        ),
+        merge_expression = "",
         title = title
       )
     )

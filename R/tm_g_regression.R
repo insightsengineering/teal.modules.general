@@ -273,8 +273,7 @@ srv_g_regression <- function(input, output, session, datasets, dataname, respons
       title = "R Code for a Regression Plot",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "merged_dataset",
-        merged_datasets = list(response_data(), regressor_data()),
+        merge_expression = "",
         title = title
       )
     )

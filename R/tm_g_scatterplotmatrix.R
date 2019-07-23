@@ -218,10 +218,8 @@ srv_g_scatterplotmatrix <- function(input,
       title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "merged_ds",
-        merged_datasets = list(col_extract()),
-        title = title,
-        description = ""
+        merge_expression = "",
+        title = title
       )
     )
   })
