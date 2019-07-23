@@ -79,71 +79,79 @@ keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
- data = cdisc_data(
-   ASL = ASL,
-   ARS = ARS,
-   code = 'ASL <- cadsl
-          ARS <- cadrs
-          keys(ASL) <- c("STUDYID", "USUBJID")
-          keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-   check = FALSE),
- modules = root_modules(
-  tm_g_bivariate(
-     dataname = c("ASL","ARS"),
-     x = data_extract_spec(
-       dataname = "ASL",
-       columns = columns_spec(
-         choices = c(base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
-         selected = c("AGE"),
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "variable"
-       )
-     ),
-     y = data_extract_spec(
-       dataname = "ARS",
-       filter = filter_spec(
-         vars = c("PARAMCD"),
-         sep = " - ",
-         choices = c("BESRSPI", "INVET"),
-         selected = "BESRSPI",
-         multiple = FALSE,
-         label = "Choose endpoint"
-       ),
-       columns = columns_spec(
-         choices = c("","AVAL", "AVALC"),
-         selected = "AVALC",
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "variable"
-       )
-     ),
-     use_density = FALSE,
-     row_facet = data_extract_spec(
-       dataname = "ASL",
-       columns = columns_spec(
-         choices = c("","SEX", "RACE"),
-         selected = "",
-         multiple = TRUE,
-         fixed = FALSE,
-         label = "variable"
-       )
-     ),
-     col_facet = data_extract_spec(
-       dataname = "ASL",
-       columns = columns_spec(
-         choices = c("","SEX", "RACE"),
-         selected = "",
-         multiple = TRUE,
-         fixed = FALSE,
-         label = "variable"
-       )
-     ),
-     expert_settings = TRUE,
-     plot_height = c(600, 200, 2000),
-     ggtheme = "grey"
-   )
- )
+  data = cdisc_data(
+    ASL = ASL,
+    ARS = ARS,
+    code = 'ASL <- cadsl
+    ARS <- cadrs
+    keys(ASL) <- c("STUDYID", "USUBJID")
+    keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_bivariate(
+      dataname = c("ASL","ARS"),
+      x = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c(base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
+          selected = c("AGE"),
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ARS",
+        filter = list(
+          filter_spec(
+            vars = "PARAMCD",
+            choices = unique(ARS$PARAMCD),
+            selected = unique(ARS$PARAMCD)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ARS$AVISIT),
+            selected = levels(ARS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          )
+        ),
+        columns = columns_spec(
+          choices = c("","AVAL", "AVALC"),
+          selected = "AVALC",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      use_density = FALSE,
+      row_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("","SEX", "RACE"),
+          selected = "",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("","SEX", "RACE"),
+          selected = "",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      expert_settings = TRUE,
+      plot_height = c(600, 200, 2000),
+      ggtheme = "grey"
+    )
+  )
 )
 \dontrun{
 shinyApp(app$ui, app$server)

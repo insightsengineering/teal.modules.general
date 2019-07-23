@@ -38,15 +38,22 @@
 #'       dataname = c("ASL", "ALB"),
 #'       response = data_extract_spec(
 #'         dataname = "ALB",
-#'         filter = filter_spec(
-#'           vars = c("PARAMCD", "AVISIT"),
-#'           sep = " - ",
-#'           choices = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29"),
-#'           selected = paste0(unique(ALB$PARAMCD), " - WEEK 4 DAY 29")[1],
-#'           multiple = FALSE,
-#'           label = "Choose endpoint"
-#'         )
-#'         ,
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ALB$PARAMCD),
+#'             selected = levels(ALB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ALB$AVISIT),
+#'             selected = levels(ALB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         ),
 #'         columns = columns_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",

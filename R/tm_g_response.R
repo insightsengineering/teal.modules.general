@@ -44,17 +44,25 @@
 #'       dataname = "ARS",
 #'       response = data_extract_spec(
 #'         dataname = "ARS",
-#'         filter = filter_spec(
-#'           vars = c("PARAMCD"),
-#'           sep = " - ",
-#'           choices = unique(ARS$PARAMCD),
-#'           selected = unique(ARS$PARAMCD)[1],
-#'           multiple = FALSE,
-#'           label = "Choose endpoint"
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = unique(ARS$PARAMCD),
+#'             selected = unique(ARS$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ARS$AVISIT),
+#'             selected = levels(ARS$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVALC"),
-#'           selected = c("AVALC"),
+#'           choices = "AVALC",
+#'           selected = "AVALC",
 #'           multiple = FALSE,
 #'           fixed = TRUE,
 #'           label = "variable"
