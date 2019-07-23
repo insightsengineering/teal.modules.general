@@ -33,6 +33,7 @@
 #' ASL <- cadsl
 #' ADTE <- cadaette
 #'
+#'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
