@@ -51,7 +51,7 @@
 #'    code = 'ASL <- cadsl
 #'           ARS <- cadrs
 #'           keys(ASL) <- c("STUDYID", "USUBJID")
-#'           keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'           keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'   tm_g_bivariate(

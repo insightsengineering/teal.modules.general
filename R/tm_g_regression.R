@@ -21,8 +21,7 @@
 #' ALB <- cadlb
 #'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")
-#'
+#' keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -31,13 +30,13 @@
 #'     code = 'ASL <- cadsl
 #'             ALB <- cadlb
 #'             keys(ASL) <- c("STUDYID", "USUBJID")
-#'             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD")',
+#'             keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       dataname = c("ASL", "ALB"),
-#'       response = alb_extracted <- data_extract_spec(
+#'       response = data_extract_spec(
 #'         dataname = "ALB",
 #'         filter = filter_spec(
 #'           vars = c("PARAMCD", "AVISIT"),
@@ -49,7 +48,7 @@
 #'         )
 #'         ,
 #'         columns = columns_spec(
-#'           choices = c("AVAL"),
+#'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,

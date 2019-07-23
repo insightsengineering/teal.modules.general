@@ -27,7 +27,7 @@
 #' ASL <- cadsl
 #' ARS <- cadrs
 #' keys(ASL) <- c("USUBJID", "STUDYID")
-#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")
+#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -36,7 +36,7 @@
 #'     code = 'ASL <- cadsl
 #'            ARS <- cadrs
 #'            keys(ASL) <- c("USUBJID", "STUDYID")
-#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD")',
+#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
