@@ -156,4 +156,86 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_bivariate(
+      label = "Bivariate Plots of two long datasets",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      x = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = c("AVAL", "AVALC"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
+                          1, paste, collapse = " - "),
+          selected = "OVRINV - Screening",
+          multiple = TRUE,
+          label = "ADRS filter"
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADTTE",
+        columns = columns_spec(
+          choices = c("AVAL", "CNSR"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD"),
+          choices = unique(ADTTE$PARAMCD),
+          selected = "OS",
+          multiple = FALSE,
+          label = "ADTTE filter"
+        )
+      ),
+      row_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("SEX", "RACE"),
+          selected = NULL,
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("SEX", "RACE"),
+          selected = NULL,
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      expert_settings = TRUE,
+      plot_height = c(600, 200, 2000),
+      ggtheme = "grey"
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
 }

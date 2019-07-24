@@ -107,7 +107,7 @@
 #'         ),
 #'         filter = filter_spec(
 #'           vars = c("PARAMCD", "AVISIT"),
-#'           choices = expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)) %>% apply(1, paste, collapse = " - "),
+#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
 #'           multiple = FALSE
 #'         )
