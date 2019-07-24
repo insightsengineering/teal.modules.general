@@ -77,6 +77,72 @@
 #' \dontrun{
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' # multiple long datasets
+#' library(random.cdisc.data)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADTTE <- cadtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_scatterplot(
+#'       label = "Scatterplot on two long datasets",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       x = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = names(ADRS),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD", "AVISIT"),
+#'           choices = expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)) %>% apply(1, paste, collapse = " - "),
+#'           selected = "OVRINV - Screening",
+#'           multiple = FALSE
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         columns = columns_spec(
+#'           choices = names(ADTTE),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
+#'           multiple = TRUE
+#'         )
+#'       ),
+#'       color_by = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("AGE", "SEX"),
+#'           selected = "AGE",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_scatterplot <- function(label,
                            dataname,
                            x,

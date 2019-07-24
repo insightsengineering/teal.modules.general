@@ -101,7 +101,94 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#' ## as ggplot only
+#'
+#' # multiple long datasets
+#' library(random.cdisc.data)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADTTE <- cadtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_response(
+#'       label = "Response Plot on two long datasets",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       response = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = "AVALC",
+#'           selected = "AVALC",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "variable"
+#'         ),
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = unique(ADRS$PARAMCD),
+#'             selected = unique(ADRS$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADRS$AVISIT),
+#'             selected = levels(ADRS$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         )
+#'       ),
+#'       x = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         columns = columns_spec(
+#'           choices = c("CNSR", "EVENTDESC"),
+#'           selected = "CNSR",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
+#'           multiple = FALSE,
+#'           label = "ADTTE filter"
+#'         )
+#'       ),
+#'       row_facet = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("SEX", "AGE"),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("SEX", "AGE"),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#' # as ggplot only
 #' library(dplyr)
 #' library(forcats)
 #'

@@ -48,6 +48,85 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # multiple long datasets
+#' library(random.cdisc.data)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADTTE <- cadtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       ref = list(
+#'         data_extract_spec(
+#'           dataname = "ADRS",
+#'           columns = columns_spec(
+#'             label = "Reference variable",
+#'             choices = c("AVAL", "AVALC"),
+#'             selected = "AVAL",
+#'             fixed = FALSE
+#'           )
+#'         ),
+#'         data_extract_spec(
+#'           dataname = "ADTTE",
+#'           columns = columns_spec(
+#'             label = "Reference variable",
+#'             choices = c("AVAL", "CNSR"),
+#'             selected = "AVAL",
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       ),
+#'       vars = list(
+#'         data_extract_spec(
+#'           dataname = "ADRS",
+#'           columns = columns_spec(
+#'             label = "Associated variables",
+#'             choices = names(ADRS),
+#'             selected = c("AGE", "SEX"),
+#'             fixed = FALSE
+#'           ),
+#'           filter = filter_spec(
+#'             vars = c("PARAMCD"),
+#'             choices = unique(ADTTE$PARAMCD),
+#'             selected = "OS",
+#'             multiple = FALSE,
+#'             label = "ADTTE filter"
+#'           )
+#'         ),
+#'         data_extract_spec(
+#'           dataname = "ADTTE",
+#'           columns = columns_spec(
+#'             label = "Associated variables",
+#'             choices = names(ADTTE),
+#'             selected = NULL,
+#'             fixed = FALSE
+#'           ),
+#'           filter = filter_spec(
+#'             vars = c("PARAMCD", "AVISIT"),
+#'             choices = expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)) %>% apply(1, paste, collapse = " - "),
+#'             selected = "OVRINV - Screening",
+#'             multiple = TRUE,
+#'             label = "ADRS filter"
+#'           )
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_g_association <- function(label = "Association",
                              dataname,
                              ref,
