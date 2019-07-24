@@ -207,9 +207,9 @@ plot.venn2 <- function(x, ...) {
 
 #' venn2 teal module
 #'
-#'
-#' @examples
 #' @noRd
+#' @examples
+#'
 #'
 #' N <- 100
 #' var_biomarkers <- paste0("B", 1:10)
