@@ -100,4 +100,50 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# datasets: just wide
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    code = 'ASL <- cadsl
+            keys(ASL) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL", "ALB"),
+      response = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("AGE","SEX"),
+          selected = "AGE",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      regressor = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 }
