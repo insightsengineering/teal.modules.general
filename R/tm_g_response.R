@@ -267,7 +267,7 @@ tm_g_response <- function(label = "Response Plot",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
+  # stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
   stopifnot(is.class.list("data_extract_spec")(response))
@@ -306,7 +306,7 @@ tm_g_response <- function(label = "Response Plot",
       row_facet = row_facet,
       col_facet = col_facet
     ),
-    filters = dataname
+    filters = "all"
   )
 }
 

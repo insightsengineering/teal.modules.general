@@ -96,7 +96,7 @@ app <- init(
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = "ASL",
+      dataname = c("ASL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(

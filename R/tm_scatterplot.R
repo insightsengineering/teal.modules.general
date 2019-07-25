@@ -183,7 +183,7 @@ tm_scatterplot <- function(label,
     server_args = list(dataname = dataname),
     ui = ui_scatterplot,
     ui_args = args,
-    filters = dataname
+    filters = "all"
   )
 }
 

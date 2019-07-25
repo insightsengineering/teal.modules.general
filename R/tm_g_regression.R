@@ -97,44 +97,44 @@
 #'     tm_g_regression(
 #'       label = "Regression Analysis on two long datasets",
 #'       dataname = c("ASL", "ADRS", "ADTTE"),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADRS",
+#'       response = data_extract_spec(
+#'         dataname = "ADTTE",
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "AVALC"),
+#'           choices = c("AVAL", "CNSR"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
-#'           vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
-#'           selected = "OVRINV - Screening",
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
 #'           multiple = FALSE,
-#'           label = "ADRS filter"
+#'           label = "ADTTE filter"
 #'         )
 #'       ),
-#'       response = list(
+#'       regressor = list(
 #'         data_extract_spec(
-#'           dataname = "ADTTE",
+#'           dataname = "ADRS",
 #'           columns = columns_spec(
-#'             choices = names(ADTTE),
-#'             selected = c("AVAL", "CNSR"),
+#'             choices = names(ADRS),
+#'             selected = "AVAL",
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             vars = c("PARAMCD"),
-#'             choices = unique(ADTTE$PARAMCD),
-#'             selected = "OS",
+#'             vars = c("PARAMCD", "AVISIT"),
+#'             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             selected = "OVRINV - Screening",
 #'             multiple = TRUE,
-#'             label = "ADTTE filter"
+#'             label = "ADRS filter"
 #'           )
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ASL",
 #'           columns = columns_spec(
-#'             choices = names(ASL),
-#'             selected = NULL,
+#'             choices = c("BMRKR1", "BMRKR2"),
+#'             selected = c("BMRKR1"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           )

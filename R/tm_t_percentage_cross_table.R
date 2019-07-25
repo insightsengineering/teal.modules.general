@@ -71,7 +71,7 @@
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = "ASL",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         columns = columns_spec(
@@ -116,7 +116,7 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         pre_output = NULL,
                                         post_output = NULL) {
   stopifnot(is.character.single(label))
-  stopifnot(is.character.single(dataname))
+  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {

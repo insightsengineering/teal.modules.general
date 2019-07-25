@@ -114,7 +114,7 @@
 #'           ),
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE,
 #'             label = "ADRS filter"
@@ -166,7 +166,7 @@ tm_g_association <- function(label = "Association",
       ref = ref,
       vars = vars
     ),
-    filters = dataname
+    filters = "all"
   )
 }
 
