@@ -63,7 +63,7 @@
 #'           label = "Associated variables",
 #'           choices = names(ASL),
 #'           selected = "SEX",
-#'           multiple = TRUE,
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
