@@ -590,5 +590,121 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
-  NULL
+  stopifnot(all(dataname %in% datasets$datanames()))
+
+  init_chunks()
+
+  # Data Extraction
+  regressor_data <- callModule(
+    data_extract_module,
+    id = "regressor",
+    datasets = datasets,
+    data_extract_spec = regressor
+  )
+  response_data <- callModule(
+    data_extract_module,
+    id = "response",
+    datasets = datasets,
+    data_extract_spec = response
+  )
+
+  fit <- reactive({
+
+    input$plot_type
+
+    response_var <- get_dataset_prefixed_col_names(response_data())
+    validate(need(length(response_var) == 1, "Response variable should be of lenght one."))
+    regressor_var <- get_dataset_prefixed_col_names(regressor_data())
+    merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
+    validate_has_data(merged_dataset, 10)
+
+    form <- stats::as.formula(
+      paste(
+        response_var,
+        paste(
+          regressor_var,
+          collapse = " + "
+        ),
+        sep = " ~ "
+      )
+    )
+
+    chunks_reset()
+
+    chunks_push(
+      expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
+    )
+
+    chunks_eval()
+  })
+
+  output$plot <- renderPlot({
+
+    fit()
+
+    if (input$plot_type == "Response vs Regressor") {
+      fit <- chunks_get_var("fit")
+
+      if (ncol(fit$model) > 1) {
+        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
+        plot %<chunk%
+          plot(fit$model[, 2:1])
+      } else {
+        plot %<chunk% {
+          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
+          names(plot_data) <- rep(names(fit$model), 2)
+          plot <- plot(plot_data)
+          abline(merged_dataset)
+        }
+      }
+    } else {
+      i <- which(input$plot_type == c(
+        "Residuals vs Fitted",
+        "Normal Q-Q",
+        "Scale-Location",
+        "Cook's distance",
+        "Residuals vs Leverage",
+        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+      ))
+      expr <- bquote(plot(fit, which = .(i), id.n = NULL))
+      plot %<chunk%
+        expr
+    }
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
+
+  output$text <- renderPrint({
+    fit()
+    chunks_push(expression = quote(summary(fit)), id = "summary")
+    chunks_eval()
+  })
+
+  observeEvent(input$show_rcode, {
+    title <- paste0(
+      "RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
+      get_dataset_prefixed_col_names(regressor_data())
+    )
+
+    show_rcode_modal(
+      title = "R Code for a Regression Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        merge_expression = "",
+        title = title
+      )
+    )
+  })
 }

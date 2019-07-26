@@ -681,7 +681,204 @@ srv_g_bivariate <- function(input,
                             colour,
                             fill,
                             size) {
-  NULL
+  stopifnot(all(dataname %in% datasets$datanames()))
+
+  init_chunks()
+
+  # Data Extraction
+  x_data <- callModule(data_extract_module,
+                          id = "x",
+                          datasets = datasets,
+                          data_extract_spec = x
+  )
+  y_data <- callModule(data_extract_module,
+                          id = "y",
+                          datasets = datasets,
+                          data_extract_spec = y
+  )
+  row_facet_data <- callModule(data_extract_module,
+                                   id = "row_facet",
+                                   datasets = datasets,
+                                   data_extract_spec = row_facet
+  )
+  col_facet_data <- callModule(data_extract_module,
+                                   id = "col_facet",
+                                   datasets = datasets,
+                                   data_extract_spec = col_facet
+  )
+
+  if (expert_settings) {
+    colour_data <- callModule(data_extract_module,
+                                  id = "colour",
+                                  datasets = datasets,
+                                  data_extract_spec = colour
+    )
+    fill_data <- callModule(data_extract_module,
+                                id = "fill",
+                                datasets = datasets,
+                                data_extract_spec = fill
+    )
+    size_data <- callModule(data_extract_module,
+                                id = "size",
+                                datasets = datasets,
+                                data_extract_spec = size
+    )
+  }
+
+  # Merging data ::: Preparation
+  data_to_merge <- function(do_expert) {
+    standard_data <- list(
+      x_data(),
+      y_data(),
+      row_facet_data(),
+      col_facet_data()
+    )
+    expert_data <- list()
+    if (do_expert) {
+      expert_data <- list(
+        colour_data(),
+        fill_data(),
+        size_data()
+      )
+    }
+    all_data <- append(standard_data, expert_data)
+    return(all_data)
+  }
+
+  # Merging data ::: Execution
+  data_reactive <- reactive({
+    merge_datasets(
+      data_to_merge(expert_settings && input$expert)
+    )
+  })
+
+  # Access variables ::: Pre-checks
+  variable_reactive <- reactive({
+    anl <- data_reactive()
+    x_name <- get_dataset_prefixed_col_names(x_data())
+    y_name <- get_dataset_prefixed_col_names(y_data())
+
+    validate(need(!(!is.null(y_name) && y_name %in% keys(y_data())),
+                  "Please do not select key variables inside data"))
+    validate(need(!(!is.null(x_name) && x_name %in% keys(y_data())),
+                  "Please do not select key variables inside data"))
+
+    if (input$facetting) {
+      row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
+      col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
+
+      validate(need(!(!is.null(col_facet_name) &&
+                        col_facet_name %in% keys(col_facet_data())),
+                    "Please do not select key variables inside data"))
+      validate(need(!(!is.null(row_facet_name) &&
+                        row_facet_name %in% keys(row_facet_data())),
+                    "Please do not select key variables inside data"))
+
+      if (!is.null(col_facet_name) && !is.null(row_facet_name)) {
+        validate(need(
+          length(intersect(row_facet_name, col_facet_name)) == 0,
+          "x and y facet variables cannot overlap"
+        ))
+      }
+    }
+
+    if (expert_settings) {
+      if (input$expert) {
+        colour_name <- get_dataset_prefixed_col_names(colour_data())
+        fill_name <- get_dataset_prefixed_col_names(fill_data())
+        size_name <- get_dataset_prefixed_col_names(size_data())
+        validate(need(!(!is.null(colour_name) && colour_name %in% keys(colour_data())),
+                      "Please do not select key variables inside data"))
+        validate(need(!(!is.null(fill_name) && fill_name %in% keys(fill_data())),
+                      "Please do not select key variables inside data"))
+        validate(need(!(!is.null(size_name) && size_name %in% keys(size_data())),
+                      "Please do not select key variables inside data"))
+      }
+    }
+    use_density <- input$use_density == "density"
+    free_x_scales <- input$free_x_scales
+    free_y_scales <- input$free_y_scales
+
+    validate_has_data(anl, 10)
+    validate(need(!is.null(x), "Please define a valid column for the X-variable"))
+
+    return(environment())
+  })
+
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
+
+  output$plot <- renderPlot({
+
+    validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
+
+    # Copy all variables over from variable_reactive
+    for (n in ls(variable_reactive(), all.names = TRUE)) {
+      assign(n, get(n, variable_reactive()), environment())
+    }
+
+    cl <- bivariate_plot_call(
+      data_name = "anl",
+      x = x_name,
+      y = y_name,
+      x_class = class(anl[[x_name]]),
+      y_class = if (!is.null(y_name)) class(anl[[y_name]]) else NULL,
+      freq = !use_density
+    )
+
+    if (input$facetting) {
+      facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
+
+      if (!is.null(facet_cl)) {
+        cl <- call("+", cl, facet_cl)
+      }
+    }
+
+    expert_cl <- NULL
+    if (expert_settings) {
+      if (input$expert) {
+        expert_cl <- expert_ggplot_call(
+          colour = colour_name, fill = fill_name, size = size_name,
+          is_point = any(grepl("geom_point", cl %>% deparse()))
+        )
+      }
+      if (!is.null(expert_cl)) {
+        cl <- call("+", cl, expert_cl)
+      }
+    }
+
+    ggtheme <- input$ggtheme
+    if (!is.null(ggtheme)) {
+      cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
+    }
+
+    chunks_reset()
+
+    chunks_push(expression = cl, id = "plotCall")
+
+    p <- chunks_eval()
+
+    chunks_validate_is_ok()
+
+    p
+  })
+
+
+  observeEvent(input$show_rcode, {
+    show_rcode_modal(
+      title = "Bivariate Plot",
+      rcode = get_rcode(
+        datasets = datasets,
+        merge_expression = "",
+        title = "Bivariate Plot"
+      )
+    )
+  })
 }
 
 
