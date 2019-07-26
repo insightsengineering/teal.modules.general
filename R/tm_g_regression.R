@@ -87,7 +87,14 @@
 #'     ASL = ASL,
 #'     ADSL_2 = ADSL_2,
 #'     code = 'ASL <- cadsl
-#'             keys(ASL) <- c("STUDYID", "USUBJID")',
+#'             ASL <- mutate_at(ASL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'             ADSL_2 <- mutate_at(cadsl,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#'             keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
@@ -123,13 +130,16 @@
 #' ASL <- cadsl
 #' ADLB <- cadlb
 #'
+#' keys(ASL) <-  c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ADLB = ADLB,
-#'     code = 'ADLB <- cadlb
+#'     code = 'ASL <- cadsl
+#'             ADLB <- cadlb
+#'             keys(ASL) <-  c("STUDYID", "USUBJID")
 #'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
@@ -140,17 +150,17 @@
 #'         dataname = "ADLB",
 #'         filter = list(
 #'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             vars = "PARAM",
+#'             choices = levels(ADLB$PARAM),
+#'             selected = levels(ADLB$PARAM)[c(1,2)],
+#'             multiple = TRUE,
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
+#'             multiple = TRUE,
 #'             label = "Choose visit"
 #'           )
 #'         ),
@@ -170,7 +180,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
@@ -222,11 +232,11 @@
 #'        dataname = "ADLB",
 #'        filter = list(
 #'          filter_spec(
-#'            vars = "PARAMCD",
-#'           choices = levels(ADLB$PARAMCD),
-#'            selected = levels(ADLB$PARAMCD)[1],
+#'            vars = "PARAM",
+#'           choices = levels(ADLB$PARAM),
+#'            selected = levels(ADLB$PARAM)[1],
 #'            multiple = FALSE,
-#'            label = "Choose endpoint"
+#'            label = "Choose measurement"
 #'          ),
 #'          filter_spec(
 #'            vars = "AVISIT",
@@ -248,8 +258,8 @@
 #'        dataname = "ASL",
 #'        columns = columns_spec(
 #'          choices = c("BMRKR1", "BMRKR2"),
-#'          selected = c("BMRKR1"),
-#'          multiple = FALSE,
+#'          selected = c("BMRKR1", "BMRKR2"),
+#'          multiple = TRUE,
 #'          fixed = FALSE
 #'       )
 #'      )
@@ -292,11 +302,11 @@
 #'         dataname = "ADLB",
 #'         filter = list(
 #'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
+#'             vars = "PARAM",
+#'             choices = levels(ADLB$PARAM),
+#'             selected = levels(ADLB$PARAM)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
@@ -317,7 +327,7 @@
 #'         dataname = "ADRS",
 #'         filter = list(
 #'           filter_spec(
-#'             vars = "PARAMCD",
+#'             vars = "ARMCD",
 #'             choices = levels(ADRS$ARMCD),
 #'             selected = levels(ADRS$ARMCD)[1],
 #'             multiple = FALSE,
@@ -351,6 +361,75 @@
 #'   )
 #' )
 #'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#' # datasets: multiple long datasets
+#' library(random.cdisc.data)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADTTE <- cadtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_regression(
+#'       label = "Regression Analysis on two long datasets",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       response = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "CNSR"),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
+#'           multiple = FALSE,
+#'           label = "ADTTE filter"
+#'         )
+#'       ),
+#'       regressor = list(
+#'         data_extract_spec(
+#'           dataname = "ADRS",
+#'           columns = columns_spec(
+#'             choices = names(ADRS),
+#'             selected = "AVAL",
+#'             multiple = TRUE,
+#'             fixed = FALSE
+#'           ),
+#'           filter = filter_spec(
+#'             vars = c("PARAMCD", "AVISIT"),
+#'             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             selected = "OVRINV - Screening",
+#'             multiple = TRUE,
+#'             label = "ADRS filter"
+#'           )
+#'         ),
+#'         data_extract_spec(
+#'           dataname = "ASL",
+#'           columns = columns_spec(
+#'             choices = c("BMRKR1", "BMRKR2"),
+#'             selected = c("BMRKR1"),
+#'             multiple = TRUE,
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }

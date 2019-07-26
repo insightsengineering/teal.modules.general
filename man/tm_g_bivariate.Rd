@@ -69,91 +69,159 @@ Univariate and bivariate visualizations.
 This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
+# datasets: single wide
 library(random.cdisc.data)
-library(tern)
-
 ASL <- cadsl
-ARS <- cadrs
-
-keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    ARS = ARS,
-    code = 'ASL <- cadsl
-    ARS <- cadrs
-    keys(ASL) <- c("STUDYID", "USUBJID")
-    keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE),
+    code = "ASL <- cadsl",
+    check = FALSE
+  ),
   modules = root_modules(
-    tm_g_bivariate(
-      dataname = c("ASL","ARS"),
-      x = data_extract_spec(
+    tm_g_association(
+      dataname = "ASL",
+      ref = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(
-          choices = c(base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
-          selected = c("AGE"),
-          multiple = FALSE,
-          fixed = FALSE,
-          label = "variable"
-        )
+        columns = columns_spec(label = "Reference variable",
+                               choices = names(ASL),
+                               selected = "AGE",
+                               fixed = FALSE)
       ),
-      y = data_extract_spec(
-        dataname = "ARS",
-        filter = list(
-          filter_spec(
-            vars = "PARAMCD",
-            choices = unique(ARS$PARAMCD),
-            selected = unique(ARS$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ARS$AVISIT),
-            selected = levels(ARS$AVISIT)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
-          )
-        ),
-        columns = columns_spec(
-          choices = c("","AVAL", "AVALC"),
-          selected = "AVALC",
-          multiple = FALSE,
-          fixed = FALSE,
-          label = "variable"
-        )
-      ),
-      use_density = FALSE,
-      row_facet = data_extract_spec(
+      vars = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(
-          choices = c("","SEX", "RACE"),
-          selected = "",
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "variable"
-        )
-      ),
-      col_facet = data_extract_spec(
-        dataname = "ASL",
-        columns = columns_spec(
-          choices = c("","SEX", "RACE"),
-          selected = "",
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "variable"
-        )
-      ),
-      expert_settings = TRUE,
-      plot_height = c(600, 200, 2000),
-      ggtheme = "grey"
+        columns = columns_spec(label = "Associated variables",
+                               choices = names(ASL),
+                               selected = "SEX",
+                               multiple = TRUE,
+                               fixed = FALSE)
+      )
     )
   )
 )
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# datasets: different wide
+
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ADSL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ADSL_2) <- c("STUDYID", "USUBJID")
+
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADSL_2 = ADSL_2,
+    code = 'ASL <- cadsl
+            keys(ASL) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_association(
+      label = "Association plots",
+      dataname = c("ASL", "ADSL_2"),
+      ref = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+         label = "Select variable",
+          choices = c("AGE", "SEX", "STRATA1", "RACE"),
+          selected = c("AGE"),
+          multiple = FALSE
+        )),
+      vars = data_extract_spec(
+        dataname = "ADSL_2",
+        columns = columns_spec(
+          label = "Select variables",
+          choices = c("COUNTRY", "AGE", "RACE"),
+          selected = c("AGE", "COUNTRY", "RACE"),
+          multiple = TRUE
+        ))
+    ) #tm_g_regression
+  )# root_modules
+)# init
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: wide and long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADRS <- cadrs
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+ data = cdisc_data(
+   ASL = ASL,
+   ADRS = ADRS,
+   code = 'ASL <- cadsl
+           ADRS <- cadrs
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+   check = FALSE),
+ modules = root_modules(
+   tm_g_association(
+     label = "Association Plots",
+     dataname = c("ASL", "ADRS"),
+     ref = data_extract_spec(
+       dataname = "ADRS",
+       filter = list(
+         filter_spec(
+           vars = "PARAM",
+          choices = unique(ADRS$PARAM),
+           selected = unique(ADRS$PARAM)[1],
+           multiple = FALSE,
+           label = "Choose response"
+         ),
+         filter_spec(
+           vars = "AVISIT",
+           choices = levels(ADRS$AVISIT),
+           selected = levels(ADRS$AVISIT)[1],
+           multiple = FALSE,
+           label = "Choose visit"
+         )
+       ),
+       columns = columns_spec(
+         choices = "AVAL",
+         selected = "AVAL",
+         multiple = FALSE,
+         label = "variable"
+       )
+    ),
+     vars = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = c("SEX", "AGE"),
+         multiple = TRUE,
+         fixed = FALSE
+      )
+     )
+    ) #tm_g_association
+  )# root_modules
+)# init
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 }
