@@ -52,7 +52,7 @@
 #'         columns = columns_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
-#'           multiple = FALSE,
+#'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       )
@@ -109,9 +109,9 @@
 #'           selected = c("AGE", "COUNTRY", "RACE"),
 #'           multiple = TRUE
 #'         ))
-#'     ) #tm_g_regression
-#'   )# root_modules
-#' )# init
+#'     )
+#'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -183,8 +183,6 @@
 #'         columns = columns_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
 #'           label = "variable"
 #'         )
 #'       )
@@ -263,7 +261,7 @@
 #'shinyApp(app$ui, app$server)
 #'}
 #'
-#' # datasets: wide, wide, long
+#' # datasets: wide, long, long
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -274,6 +272,7 @@
 #'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -282,7 +281,8 @@
 #'     code = 'ASL <- cadsl
 #'             ADLB <- cadlb
 #'             keys(ASL) <- c("STUDYID", "USUBJID")
-#'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'             keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(

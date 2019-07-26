@@ -35,93 +35,161 @@
 #' @importFrom methods is
 #'
 #' @examples
+#' # datasets: single wide
 #' library(random.cdisc.data)
-#' library(tern)
-#'
 #' ASL <- cadsl
-#' ARS <- cadrs
-#'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     ARS = ARS,
-#'     code = 'ASL <- cadsl
-#'     ARS <- cadrs
-#'     keys(ASL) <- c("STUDYID", "USUBJID")
-#'     keys(ARS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-#'     check = FALSE),
+#'     code = "ASL <- cadsl",
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       dataname = c("ASL","ARS"),
-#'       x = data_extract_spec(
+#'     tm_g_association(
+#'       dataname = "ASL",
+#'       ref = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(
-#'           choices = c(base::setdiff(names(ASL), keys(ASL))), # strict call of setdiff
-#'           selected = c("AGE"),
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "variable"
-#'         )
+#'         columns = columns_spec(label = "Reference variable",
+#'                                choices = names(ASL),
+#'                                selected = "AGE",
+#'                                fixed = FALSE)
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ARS",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = unique(ARS$PARAMCD),
-#'             selected = unique(ARS$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ARS$AVISIT),
-#'             selected = levels(ARS$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           )
-#'         ),
-#'         columns = columns_spec(
-#'           choices = c("","AVAL", "AVALC"),
-#'           selected = "AVALC",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "variable"
-#'         )
-#'       ),
-#'       use_density = FALSE,
-#'       row_facet = data_extract_spec(
+#'       vars = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(
-#'           choices = c("","SEX", "RACE"),
-#'           selected = "",
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "variable"
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ASL",
-#'         columns = columns_spec(
-#'           choices = c("","SEX", "RACE"),
-#'           selected = "",
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "variable"
-#'         )
-#'       ),
-#'       expert_settings = TRUE,
-#'       plot_height = c(600, 200, 2000),
-#'       ggtheme = "grey"
+#'         columns = columns_spec(label = "Associated variables",
+#'                                choices = names(ASL),
+#'                                selected = "SEX",
+#'                                multiple = TRUE,
+#'                                fixed = FALSE)
+#'       )
 #'     )
 #'   )
 #' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different wide
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#' library(dplyr)
+#'
+#' ASL <- cadsl
+#' ASL <- mutate_at(ASL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#'
+#'
+#' ADSL_2 <- mutate_at(cadsl,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
+#'
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADSL_2 = ADSL_2,
+#'     code = 'ASL <- cadsl
+#'             keys(ASL) <- c("STUDYID", "USUBJID")',
+#'     check = FALSE),
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       label = "Association plots",
+#'       dataname = c("ASL", "ADSL_2"),
+#'       ref = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'          label = "Select variable",
+#'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
+#'           selected = c("AGE"),
+#'           multiple = FALSE
+#'         )),
+#'       vars = data_extract_spec(
+#'         dataname = "ADSL_2",
+#'         columns = columns_spec(
+#'           label = "Select variables",
+#'           choices = c("COUNTRY", "AGE", "RACE"),
+#'           selected = c("AGE", "COUNTRY", "RACE"),
+#'           multiple = TRUE
+#'         ))
+#'     ) #tm_g_regression
+#'   )# root_modules
+#' )# init
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#'# datasets: wide and long
+#'
+#'library(random.cdisc.data)
+#'library(tern)
+#'
+#'ASL <- cadsl
+#'ADRS <- cadrs
+#'
+#'keys(ASL) <- c("STUDYID", "USUBJID")
+#'keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#'app <- init(
+#'  data = cdisc_data(
+#'    ASL = ASL,
+#'    ADRS = ADRS,
+#'    code = 'ASL <- cadsl
+#'            ADRS <- cadrs
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'    check = FALSE),
+#'  modules = root_modules(
+#'    tm_g_association(
+#'      label = "Association Plots",
+#'      dataname = c("ASL", "ADRS"),
+#'      ref = data_extract_spec(
+#'        dataname = "ADRS",
+#'        filter = list(
+#'          filter_spec(
+#'            vars = "PARAM",
+#'           choices = unique(ADRS$PARAM),
+#'            selected = unique(ADRS$PARAM)[1],
+#'            multiple = FALSE,
+#'            label = "Choose response"
+#'          ),
+#'          filter_spec(
+#'            vars = "AVISIT",
+#'            choices = levels(ADRS$AVISIT),
+#'            selected = levels(ADRS$AVISIT)[1],
+#'            multiple = FALSE,
+#'            label = "Choose visit"
+#'          )
+#'        ),
+#'        columns = columns_spec(
+#'          choices = "AVAL",
+#'          selected = "AVAL",
+#'          multiple = FALSE,
+#'          label = "variable"
+#'        )
+#'     ),
+#'      vars = data_extract_spec(
+#'        dataname = "ASL",
+#'        columns = columns_spec(
+#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+#'          selected = c("SEX", "AGE"),
+#'          multiple = TRUE,
+#'          fixed = FALSE
+#'       )
+#'      )
+#'     ) #tm_g_association
+#'   )# root_modules
+#' )# init
+#'
+#'\dontrun{
+#'shinyApp(app$ui, app$server)
+#'}
+#'
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x,
@@ -353,204 +421,7 @@ srv_g_bivariate <- function(input,
                             colour,
                             fill,
                             size) {
-  stopifnot(all(dataname %in% datasets$datanames()))
-
-  init_chunks()
-
-  # Data Extraction
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  y_data <- callModule(data_extract_module,
-                          id = "y",
-                          datasets = datasets,
-                          data_extract_spec = y
-  )
-  row_facet_data <- callModule(data_extract_module,
-                                   id = "row_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = row_facet
-  )
-  col_facet_data <- callModule(data_extract_module,
-                                   id = "col_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = col_facet
-  )
-
-  if (expert_settings) {
-    colour_data <- callModule(data_extract_module,
-                                  id = "colour",
-                                  datasets = datasets,
-                                  data_extract_spec = colour
-    )
-    fill_data <- callModule(data_extract_module,
-                                id = "fill",
-                                datasets = datasets,
-                                data_extract_spec = fill
-    )
-    size_data <- callModule(data_extract_module,
-                                id = "size",
-                                datasets = datasets,
-                                data_extract_spec = size
-    )
-  }
-
-  # Merging data ::: Preparation
-  data_to_merge <- function(do_expert) {
-    standard_data <- list(
-      x_data(),
-      y_data(),
-      row_facet_data(),
-      col_facet_data()
-    )
-    expert_data <- list()
-    if (do_expert) {
-      expert_data <- list(
-        colour_data(),
-        fill_data(),
-        size_data()
-      )
-    }
-    all_data <- append(standard_data, expert_data)
-    return(all_data)
-  }
-
-  # Merging data ::: Execution
-  data_reactive <- reactive({
-    merge_datasets(
-      data_to_merge(expert_settings && input$expert)
-    )
-  })
-
-  # Access variables ::: Pre-checks
-  variable_reactive <- reactive({
-    anl <- data_reactive()
-    x_name <- get_dataset_prefixed_col_names(x_data())
-    y_name <- get_dataset_prefixed_col_names(y_data())
-
-    validate(need(!(!is.null(y_name) && y_name %in% keys(y_data())),
-                  "Please do not select key variables inside data"))
-    validate(need(!(!is.null(x_name) && x_name %in% keys(y_data())),
-                  "Please do not select key variables inside data"))
-
-    if (input$facetting) {
-      row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
-      col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
-
-      validate(need(!(!is.null(col_facet_name) &&
-                        col_facet_name %in% keys(col_facet_data())),
-                    "Please do not select key variables inside data"))
-      validate(need(!(!is.null(row_facet_name) &&
-                        row_facet_name %in% keys(row_facet_data())),
-                    "Please do not select key variables inside data"))
-
-      if (!is.null(col_facet_name) && !is.null(row_facet_name)) {
-        validate(need(
-          length(intersect(row_facet_name, col_facet_name)) == 0,
-          "x and y facet variables cannot overlap"
-        ))
-      }
-    }
-
-    if (expert_settings) {
-      if (input$expert) {
-        colour_name <- get_dataset_prefixed_col_names(colour_data())
-        fill_name <- get_dataset_prefixed_col_names(fill_data())
-        size_name <- get_dataset_prefixed_col_names(size_data())
-        validate(need(!(!is.null(colour_name) && colour_name %in% keys(colour_data())),
-                      "Please do not select key variables inside data"))
-        validate(need(!(!is.null(fill_name) && fill_name %in% keys(fill_data())),
-                      "Please do not select key variables inside data"))
-        validate(need(!(!is.null(size_name) && size_name %in% keys(size_data())),
-                      "Please do not select key variables inside data"))
-      }
-    }
-    use_density <- input$use_density == "density"
-    free_x_scales <- input$free_x_scales
-    free_y_scales <- input$free_y_scales
-
-    validate_has_data(anl, 10)
-    validate(need(!is.null(x), "Please define a valid column for the X-variable"))
-
-    return(environment())
-  })
-
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
-  )
-
-  output$plot <- renderPlot({
-
-    validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
-
-    # Copy all variables over from variable_reactive
-    for (n in ls(variable_reactive(), all.names = TRUE)) {
-      assign(n, get(n, variable_reactive()), environment())
-    }
-
-    cl <- bivariate_plot_call(
-      data_name = "anl",
-      x = x_name,
-      y = y_name,
-      x_class = class(anl[[x_name]]),
-      y_class = if (!is.null(y_name)) class(anl[[y_name]]) else NULL,
-      freq = !use_density
-    )
-
-    if (input$facetting) {
-      facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
-
-      if (!is.null(facet_cl)) {
-        cl <- call("+", cl, facet_cl)
-      }
-    }
-
-    expert_cl <- NULL
-    if (expert_settings) {
-      if (input$expert) {
-        expert_cl <- expert_ggplot_call(
-          colour = colour_name, fill = fill_name, size = size_name,
-          is_point = any(grepl("geom_point", cl %>% deparse()))
-        )
-      }
-      if (!is.null(expert_cl)) {
-        cl <- call("+", cl, expert_cl)
-      }
-    }
-
-    ggtheme <- input$ggtheme
-    if (!is.null(ggtheme)) {
-      cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
-    }
-
-    chunks_reset()
-
-    chunks_push(expression = cl, id = "plotCall")
-
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
-  })
-
-
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "Bivariate Plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = "",
-        title = "Bivariate Plot"
-      )
-    )
-  })
+  NULL
 }
 
 
