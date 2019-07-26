@@ -77,6 +77,124 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
+# datasets: different wide
+
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ADSL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ADSL_2) <- c("STUDYID", "USUBJID")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADSL_2 = ADSL_2,
+    code = 'ASL <- cadsl
+            keys(ASL) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_association(
+      label = "Regression",
+      dataname = c("ASL", "ADSL_2"),
+      ref = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          label = "Select variable",
+          choices = c("AGE", "SEX", "STRATA1", "RACE"),
+          selected = c("AGE"),
+          multiple = FALSE
+        )),
+      vars = data_extract_spec(
+        dataname = "ADSL_2",
+        columns = columns_spec(
+          label = "Select variables",
+          choices = c("COUNTRY", "AGE", "RACE"),
+          selected = c("AGE", "COUNTRY", "RACE"),
+          multiple = TRUE
+        ))
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+# datasets: wide and long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADRS <- cadrs
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+ data = cdisc_data(
+   ASL = ASL,
+   ADRS = ADRS,
+   code = 'ASL <- cadsl
+           ADRS <- cadrs
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+   check = FALSE),
+ modules = root_modules(
+   tm_g_association(
+     label = "Association Plots",
+     dataname = c("ASL", "ADRS"),
+     ref = data_extract_spec(
+       dataname = "ADRS",
+       filter = list(
+         filter_spec(
+           vars = "PARAM",
+           choices = unique(ADRS$PARAM),
+           selected = unique(ADRS$PARAM)[1],
+           multiple = FALSE,
+           label = "Choose response"
+         ),
+         filter_spec(
+           vars = "AVISIT",
+           choices = levels(ADRS$AVISIT),
+           selected = levels(ADRS$AVISIT)[1],
+           multiple = FALSE,
+           label = "Choose visit"
+         )
+       ),
+       columns = columns_spec(
+         choices = "AVAL",
+         selected = "AVAL",
+         multiple = FALSE,
+         label = "variable"
+       )
+    ),
+     vars = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = c("SEX", "AGE"),
+         multiple = TRUE,
+         fixed = FALSE
+      )
+     )
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 # datasets: multiple long datasets
 library(random.cdisc.data)
 

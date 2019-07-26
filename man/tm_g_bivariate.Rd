@@ -106,7 +106,7 @@ app <- init(
         columns = columns_spec(
           label = "Associated variables",
           choices = names(ASL),
-          selected = "SEX",
+          selected = NULL,
           multiple = TRUE,
           fixed = FALSE
         )
@@ -116,7 +116,7 @@ app <- init(
         columns = columns_spec(
           label = "Associated variables",
           choices = names(ASL),
-          selected = "SEX",
+          selected = NULL,
           multiple = TRUE,
           fixed = FALSE
         )
@@ -183,7 +183,7 @@ app <- init(
         columns = columns_spec(
          label = "Associated variables",
          choices = names(ASL),
-         selected = "SEX",
+         selected = NULL,
          multiple = FALSE,
          fixed = FALSE
         )
@@ -193,7 +193,7 @@ app <- init(
         columns = columns_spec(
           label = "Associated variables",
           choices = names(ASL),
-          selected = "SEX",
+          selected = NULL,
           multiple = TRUE,
           fixed = FALSE
         )

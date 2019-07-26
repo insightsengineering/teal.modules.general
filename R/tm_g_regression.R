@@ -176,9 +176,9 @@
 #'         dataname = "ADLB",
 #'         filter = list(
 #'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
+#'             vars = "PARAM",
+#'             choices = levels(ADLB$PARAM),
+#'             selected = levels(ADLB$PARAM)[1],
 #'             multiple = FALSE,
 #'             label = "Choose measurement"
 #'           ),

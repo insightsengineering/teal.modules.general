@@ -93,7 +93,6 @@ shinyApp(app$ui, app$server)
 
 # datasets: multiple long datasets
 library(random.cdisc.data)
-library(dplyr)
 
 ASL <- cadsl
 ADRS <- cadrs
