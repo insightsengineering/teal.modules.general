@@ -137,15 +137,6 @@
 #'       dataname = c("ASL", "ADRS", "ADTTE"),
 #'       selected = list(
 #'         data_extract_spec(
-#'           dataname = "ASL",
-#'           columns = columns_spec(
-#'             choices = names(ASL),
-#'             selected = c("AGE", "SEX"),
-#'             multiple = TRUE,
-#'             fixed = FALSE
-#'           )
-#'         ),
-#'         data_extract_spec(
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
 #'             choices = names(ADRS),
