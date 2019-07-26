@@ -22,10 +22,11 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'        ASL = ASL,
-#'        code = 'ASL <- cadsl
-#'                keys(ASL) <- c("STUDYID", "USUBJID")',
-#'        check = FALSE),
+#'     ASL = ASL,
+#'     code = 'ASL <- cadsl
+#' keys(ASL) <- c("STUDYID", "USUBJID")',
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
@@ -43,7 +44,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -55,15 +55,19 @@
 #'
 #' ASL <- cadsl
 #' ASL <- mutate_at(ASL,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'   .funs = funs(as.factor(.))
+#' ) %>% select(
+#'   "ARM", "ACTARM", "ACTARMCD",
+#'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
+#' )
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #'
 #' ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'   .funs = funs(as.factor(.))
+#' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #' keys(ADSL_2) <- c("STUDYID", "USUBJID")
 #'
 #'
@@ -72,24 +76,26 @@
 #'     ASL = ASL,
 #'     ADSL_2 = ADSL_2,
 #'     code = 'ASL <- cadsl
-#'             ADSL_2 <- mutate_at(cadsl,
-#'                .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#'             keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-#'     check = FALSE),
+#' ADSL_2 <- mutate_at(cadsl,
+#' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#' .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+#'     check = FALSE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       dataname = c("ASL", "ADSL_2"),
 #'       selected = list(
-#'                 data_extract_spec(
+#'         data_extract_spec(
 #'           dataname = "ASL",
 #'           columns = columns_spec(
 #'             label = "Selected columns",
 #'             choices = colnames(ASL),
 #'             selected = c("AGE", "ACTARM", "SEX"),
 #'             multiple = TRUE,
-#'             fixed = FALSE)
+#'             fixed = FALSE
+#'           )
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADSL_2",
@@ -98,13 +104,13 @@
 #'             choices = colnames(ADSL_2),
 #'             selected = c("COUNTRY", "ACTARM", "STRATA2"),
 #'             multiple = TRUE,
-#'             fixed = FALSE)
-#'          )
-#'      )
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -148,7 +154,7 @@
 #'           ),
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE
 #'           )
@@ -172,7 +178,72 @@
 #'     )
 #'   )
 #' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#' # datasets: wide, long
 #'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     code = 'ASL <- cadsl
+#' ADRS <- cadrs
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_scatterplotmatrix(
+#'       label = "ScatterplotMatrix with long and wide data",
+#'       dataname = c("ASL", "ADRS"),
+#'       selected = list(
+#'         data_extract_spec(
+#'           dataname = "ADRS",
+#'           filter = list(
+#'             filter_spec(
+#'               vars = "PARAM",
+#'               choices = unique(ADRS$PARAM),
+#'               selected = unique(ADRS$PARAM)[1],
+#'               multiple = FALSE,
+#'               label = "Choose response"
+#'             ),
+#'             filter_spec(
+#'               vars = "AVISIT",
+#'               choices = levels(ADRS$AVISIT),
+#'               selected = levels(ADRS$AVISIT)[1],
+#'               multiple = FALSE,
+#'               label = "Choose visit"
+#'             )
+#'           ),
+#'           columns = columns_spec(
+#'             choices = "AVAL",
+#'             selected = "AVAL",
+#'             multiple = FALSE,
+#'             label = "variable"
+#'           )
+#'         ), data_extract_spec(
+#'           dataname = "ASL",
+#'           columns = columns_spec(
+#'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+#'             selected = "AGE",
+#'             multiple = FALSE,
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -212,7 +283,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   standard_layout(
     output = white_small_well(
       tags$div(
-        plot_height_output(ns("myplot")))
+        plot_height_output(ns("myplot"))
+      )
     ),
     encoding = div(
       helpText("Datasets: ", lapply(args$dataname, tags$code)),
@@ -222,9 +294,11 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         data_extract_spec = args$selected
       ),
       sliderInput(ns("alpha"), "Opacity",
-                  min = 0, max = 1, step = .05, value = .5, ticks = FALSE),
+        min = 0, max = 1, step = .05, value = .5, ticks = FALSE
+      ),
       sliderInput(ns("cex"), "Point Size",
-                  min = 0.2, max = 3, step = .05, value = .65, ticks = FALSE),
+        min = 0.2, max = 3, step = .05, value = .65, ticks = FALSE
+      ),
       plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
     pre_output = args$pre_output,

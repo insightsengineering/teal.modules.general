@@ -194,7 +194,7 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-#'# datasets: wide, long
+# datasets: wide, long
 
 library(random.cdisc.data)
 library(tern)
@@ -287,9 +287,9 @@ app <- init(
          fixed = FALSE
       )
      ),
-    ) #tm_g_association
-  )# root_modules
-)# init
+    )
+  )
+)
 
 \dontrun{
 shinyApp(app$ui, app$server)
