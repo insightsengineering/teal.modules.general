@@ -141,6 +141,63 @@ keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
 shinyApp(app$ui, app$server)
 }
 
+# datasets: multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_t_percentage_cross_table(
+      label = "Cross Table",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      x = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = names(ADRS),
+          selected = "AVALC",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
+                          1, paste, collapse = " - "),
+          selected = "OVRINV - Screening",
+          multiple = TRUE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADTTE",
+        columns = columns_spec(
+          choices = names(ADTTE),
+          selected = "CNSR",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD"),
+          choices = unique(ADTTE$PARAMCD),
+          selected = "OS",
+          multiple = TRUE
+        )
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 # datasets: wide, long
 
 library(random.cdisc.data)
@@ -205,62 +262,6 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 shinyApp(app$ui, app$server)
 }
 
-# datasets: multiple long datasets
-library(random.cdisc.data)
-
-ASL <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-
-app <- init(
-  data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    ADTTE = ADTTE,
-    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = FALSE
-  ),
-  modules = root_modules(
-    tm_t_percentage_cross_table(
-      label = "Cross Table",
-      dataname = c("ASL", "ADRS", "ADTTE"),
-      x = data_extract_spec(
-        dataname = "ADRS",
-        columns = columns_spec(
-          choices = names(ADRS),
-          selected = "AVALC",
-          multiple = FALSE,
-          fixed = FALSE
-        ),
-        filter = filter_spec(
-          vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
-                          1, paste, collapse = " - "),
-          selected = "OVRINV - Screening",
-          multiple = TRUE
-        )
-      ),
-      y = data_extract_spec(
-        dataname = "ADTTE",
-        columns = columns_spec(
-          choices = names(ADTTE),
-          selected = "CNSR",
-          multiple = FALSE,
-          fixed = FALSE
-        ),
-        filter = filter_spec(
-          vars = c("PARAMCD"),
-          choices = unique(ADTTE$PARAMCD),
-          selected = "OS",
-          multiple = TRUE
-        )
-      )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
 }
 \author{
 wolfs25 waddella

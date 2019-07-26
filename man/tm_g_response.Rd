@@ -91,6 +91,66 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
+# datasets: different wide
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ASL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ASL_2) <- c("STUDYID", "USUBJID")
+
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ASL_2 = ASL_2,
+    code = 'ASL <- cadsl
+            ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                     "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+            ASL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+            keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_response(
+      label = "Response Plots",
+      dataname = c("ASL", "ASL_2"),
+      response = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+         label = "Select variable",
+          choices = c("AGE", "SEX", "STRATA1", "RACE"),
+          selected = c("AGE"),
+          multiple = FALSE
+        )),
+      x = data_extract_spec(
+        dataname = "ASL_2",
+        columns = columns_spec(
+          label = "Select variables",
+          choices = c("COUNTRY", "AGE", "RACE"),
+          selected = "COUNTRY",
+          multiple = FALSE
+        ))
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
@@ -170,66 +230,6 @@ app <- init(
           fixed = FALSE
         )
       )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: different wide
-library(random.cdisc.data)
-library(tern)
-library(dplyr)
-
-ASL <- cadsl
-ASL <- mutate_at(ASL,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
- "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-keys(ASL) <- c("STUDYID", "USUBJID")
-
-
-ASL_2 <- mutate_at(cadsl,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ASL_2) <- c("STUDYID", "USUBJID")
-
-
-app <- init(
-  data = cdisc_data(
-    ASL = ASL,
-    ASL_2 = ASL_2,
-    code = 'ASL <- cadsl
-            ASL <- mutate_at(ASL,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
-                     "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-            ASL_2 <- mutate_at(cadsl,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-            keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
-    check = FALSE),
-  modules = root_modules(
-    tm_g_response(
-      label = "Response Plots",
-      dataname = c("ASL", "ASL_2"),
-      response = data_extract_spec(
-        dataname = "ASL",
-        columns = columns_spec(
-         label = "Select variable",
-          choices = c("AGE", "SEX", "STRATA1", "RACE"),
-          selected = c("AGE"),
-          multiple = FALSE
-        )),
-      x = data_extract_spec(
-        dataname = "ASL_2",
-        columns = columns_spec(
-          label = "Select variables",
-          choices = c("COUNTRY", "AGE", "RACE"),
-          selected = "COUNTRY",
-          multiple = FALSE
-        ))
     )
   )
 )
