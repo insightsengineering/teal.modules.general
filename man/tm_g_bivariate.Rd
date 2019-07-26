@@ -297,7 +297,7 @@ app <- init(
          multiple = FALSE,
          fixed = FALSE
       )
-     ),
+     )
     )
   )
 )

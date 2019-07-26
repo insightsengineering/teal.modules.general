@@ -263,7 +263,7 @@
 #'          multiple = FALSE,
 #'          fixed = FALSE
 #'       )
-#'      ),
+#'      )
 #'     )
 #'   )
 #' )

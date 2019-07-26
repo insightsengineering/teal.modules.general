@@ -368,14 +368,14 @@ ui_g_response <- function(id, ...) {
         label = "X Variable",
         data_extract_spec = arguments$x
       ),
-      if(!is.null( arguments$row_facet) ){
+      if(!is.null(arguments$row_facet) ){
         data_extract_input(
           id = ns("row_facet"),
           label = "Row facetting Variables ",
           data_extract_spec = arguments$row_facet
         )
       },
-      if(!is.null( arguments$col_facet) ){
+      if(!is.null(arguments$col_facet) ){
         data_extract_input(
           id = ns("col_facet"),
           label = "col facetting Variables ",
