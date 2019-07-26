@@ -59,8 +59,8 @@ app <- init(
       response = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-          choices = c("AGE", "SEX"),
-          selected = "AGE",
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE,
           label = "variable"
@@ -69,8 +69,8 @@ app <- init(
       regressor = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = c("BMRKR1"),
+          choices = c("AGE", "SEX", "RACE"),
+          selected = c("AGE"),
           multiple = TRUE,
           fixed = FALSE
         )
