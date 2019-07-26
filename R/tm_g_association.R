@@ -218,8 +218,6 @@ ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   arguments <- list(...)
 
-  browser()
-  # standard_layout2(
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
