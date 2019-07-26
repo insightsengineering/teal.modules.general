@@ -255,7 +255,7 @@ app <- init(
            choices = levels(ADLB$AVISIT),
            selected = levels(ADLB$AVISIT)[1],
            multiple = FALSE,
-           label = "Choose endpoint"
+           label = "Choose visit"
          )
        ),
        columns = columns_spec(

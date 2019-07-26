@@ -79,7 +79,7 @@
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       label = "Regression",
+#'       label = "Association plots",
 #'       dataname = c("ASL", "ADSL_2"),
 #'       ref = data_extract_spec(
 #'         dataname = "ASL",
@@ -103,6 +103,72 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#'# datasets: wide and long
+#'
+#'library(random.cdisc.data)
+#'library(tern)
+#'
+#'ASL <- cadsl
+#'ADRS <- cadrs
+#'
+#'keys(ASL) <- c("STUDYID", "USUBJID")
+#'keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#'app <- init(
+#'  data = cdisc_data(
+#'    ASL = ASL,
+#'    ADRS = ADRS,
+#'    code = 'ASL <- cadsl
+#'            ADRS <- cadrs
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'    check = FALSE),
+#'  modules = root_modules(
+#'    tm_g_association(
+#'      label = "Association Plots",
+#'      dataname = c("ASL", "ADRS"),
+#'      ref = data_extract_spec(
+#'        dataname = "ADRS",
+#'        filter = list(
+#'          filter_spec(
+#'            vars = "PARAM",
+#'           choices = unique(ADRS$PARAM),
+#'            selected = unique(ADRS$PARAM)[1],
+#'            multiple = FALSE,
+#'            label = "Choose response"
+#'          ),
+#'          filter_spec(
+#'            vars = "AVISIT",
+#'            choices = levels(ADRS$AVISIT),
+#'            selected = levels(ADRS$AVISIT)[1],
+#'            multiple = FALSE,
+#'            label = "Choose visit"
+#'          )
+#'        ),
+#'        columns = columns_spec(
+#'          choices = "AVAL",
+#'          selected = "AVAL",
+#'          multiple = FALSE,
+#'          label = "variable"
+#'        )
+#'     ),
+#'      vars = data_extract_spec(
+#'        dataname = "ASL",
+#'        columns = columns_spec(
+#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+#'          selected = c("SEX", "AGE"),
+#'          multiple = TRUE,
+#'          fixed = FALSE
+#'       )
+#'      )
+#'     ) #tm_g_association
+#'   )# root_modules
+#' )# init
+#'
+#'\dontrun{
+#'shinyApp(app$ui, app$server)
+#'}
 #'
 tm_g_association <- function(label = "Association",
                              dataname,
@@ -152,12 +218,13 @@ ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   arguments <- list(...)
 
+  browser()
   # standard_layout2(
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(arguments$dataname)),
+      helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ","))),
       data_extract_input(
         id = ns("ref"),
         label = "Reference variable",
