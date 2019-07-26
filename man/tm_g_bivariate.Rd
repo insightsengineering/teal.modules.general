@@ -80,21 +80,38 @@ app <- init(
     check = FALSE
   ),
   modules = root_modules(
-    tm_g_association(
+    tm_g_bivariate(
       dataname = "ASL",
-      ref = data_extract_spec(
+      x = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(label = "Reference variable",
                                choices = names(ASL),
                                selected = "AGE",
+                               multiple = FALSE,
                                fixed = FALSE)
       ),
-      vars = data_extract_spec(
+      y = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(label = "Associated variables",
+                               choices = names(ASL),
+                               selected = "RACE",
+                               multiple = FALSE,
+                               fixed = FALSE)
+      ),
+      row_facet = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
                                choices = names(ASL),
                                selected = "SEX",
-                               multiple = TRUE,
+                               multiple = FALSE,
+                               fixed = FALSE)
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(label = "Associated variables",
+                               choices = names(ASL),
+                               selected = NULL,
+                               multiple = FALSE,
                                fixed = FALSE)
       )
     )
@@ -132,10 +149,10 @@ app <- init(
             keys(ASL) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
-    tm_g_association(
+    tm_g_bivariate(
       label = "Association plots",
       dataname = c("ASL", "ADSL_2"),
-      ref = data_extract_spec(
+      x = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
          label = "Select variable",
@@ -143,14 +160,30 @@ app <- init(
           selected = c("AGE"),
           multiple = FALSE
         )),
-      vars = data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
           label = "Select variables",
           choices = c("COUNTRY", "AGE", "RACE"),
-          selected = c("AGE", "COUNTRY", "RACE"),
-          multiple = TRUE
-        ))
+          selected = "RACE",
+          multiple = FALSE
+        )),
+      row_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(label = "Associated variables",
+                               choices = names(ASL),
+                               selected = "SEX",
+                               multiple = FALSE,
+                               fixed = FALSE)
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(label = "Associated variables",
+                               choices = names(ASL),
+                               selected = NULL,
+                               multiple = FALSE,
+                               fixed = FALSE)
+      )
     ) #tm_g_regression
   )# root_modules
 )# init
@@ -158,7 +191,7 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-# datasets: wide and long
+#'# datasets: wide, long
 
 library(random.cdisc.data)
 library(tern)
@@ -179,10 +212,10 @@ app <- init(
            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
    check = FALSE),
  modules = root_modules(
-   tm_g_association(
+   tm_g_bivariate(
      label = "Association Plots",
      dataname = c("ASL", "ADRS"),
-     ref = data_extract_spec(
+     x = data_extract_spec(
        dataname = "ADRS",
        filter = list(
          filter_spec(
@@ -207,15 +240,156 @@ app <- init(
          label = "variable"
        )
     ),
-     vars = data_extract_spec(
+     y = data_extract_spec(
        dataname = "ASL",
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-         selected = c("SEX", "AGE"),
-         multiple = TRUE,
+         selected = "AGE",
+         multiple = FALSE,
          fixed = FALSE
       )
-     )
+     ),
+     row_facet = data_extract_spec(
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = unique(ADRS$PARAM),
+            selected = unique(ADRS$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = c("__NONE__", "AVAL"),
+          selected = NULL,
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+     col_facet = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = NULL,
+         multiple = FALSE,
+         fixed = FALSE
+      )
+     ),
+    ) #tm_g_association
+  )# root_modules
+)# init
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: wide, long, long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADLB <- cadlb
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+ data = cdisc_data(
+   ASL = ASL,
+   ADRS = ADRS,
+   ADLB = ADLB,
+   code = 'ASL <- cadsl
+           ADRS <- cadrs
+           ADLB <- cadlb
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+           keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+   check = FALSE),
+ modules = root_modules(
+   tm_g_bivariate(
+     label = "Association Plots",
+     dataname = c("ASL", "ADRS", "ADLB"),
+     x = data_extract_spec(
+       dataname = "ADRS",
+       filter = list(
+         filter_spec(
+           vars = "PARAMCD",
+          choices = unique(ADRS$PARAMCD),
+           selected = unique(ADRS$PARAMCD)[1],
+           multiple = FALSE,
+           label = "Choose response"
+         ),
+         filter_spec(
+           vars = "AVISIT",
+           choices = levels(ADRS$AVISIT),
+           selected = levels(ADRS$AVISIT)[1],
+           multiple = FALSE,
+           label = "Choose visit"
+         )
+       ),
+       columns = columns_spec(
+         choices = "AVAL",
+         selected = "AVAL",
+         multiple = FALSE,
+         label = "variable"
+       )
+    ),
+     y = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = "AGE",
+         multiple = FALSE,
+         fixed = FALSE
+      )
+     ),
+     row_facet = data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADLB$PARAM),
+            selected = levels(ADLB$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose measurement"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = c("__NONE__", "AVAL"),
+          selected = NULL,
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+     col_facet = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = NULL,
+         multiple = FALSE,
+         fixed = FALSE
+      )
+     ),
     ) #tm_g_association
   )# root_modules
 )# init

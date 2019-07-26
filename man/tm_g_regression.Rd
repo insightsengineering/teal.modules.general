@@ -347,7 +347,7 @@ app <- init(
         dataname = "ADRS",
         filter = list(
           filter_spec(
-            vars = "PARAMCD",
+            vars = "ARMCD",
             choices = levels(ADRS$ARMCD),
             selected = levels(ADRS$ARMCD)[1],
             multiple = FALSE,
