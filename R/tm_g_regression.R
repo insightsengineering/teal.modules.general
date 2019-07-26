@@ -23,7 +23,6 @@
 #' library(tern)
 #'
 #' ASL <- cadsl
-#'
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
@@ -39,7 +38,7 @@
 #'       response = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = c("AGE","SEX"),
+#'           choices = c("AGE", "SEX"),
 #'           selected = "AGE",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -61,6 +60,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
 #' # datasets: different wide
 #'
 #' library(random.cdisc.data)
@@ -121,6 +121,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
 #' # datasets: same long
 #'
 #' library(random.cdisc.data)
@@ -202,7 +203,6 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
 #'
 #' # datasets: wide and long
 #' library(random.cdisc.data)

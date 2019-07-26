@@ -131,7 +131,7 @@
 #'       x = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(
-#'          label = "Select variable",
+#'           label = "Select variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
 #'           selected = c("AGE"),
 #'           multiple = FALSE
@@ -306,7 +306,7 @@
 #'        filter = list(
 #'          filter_spec(
 #'            vars = "PARAMCD",
-#'           choices = unique(ADRS$PARAMCD),
+#'            choices = unique(ADRS$PARAMCD),
 #'            selected = unique(ADRS$PARAMCD)[1],
 #'            multiple = FALSE,
 #'            label = "Choose response"
