@@ -17,80 +17,42 @@
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#'
-#' @noRd
-#'
+#' @export
 #' @examples
+#' # datasets: same wide
+#'
 #' library(random.cdisc.data)
 #' library(tern)
 #'
 #' ASL <- cadsl
-#' ARS <- cadrs
-#' keys(ASL) <- c("USUBJID", "STUDYID")
-#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
-#'     ARS = ARS,
 #'     code = 'ASL <- cadsl
-#'            ARS <- cadrs
-#'            keys(ASL) <- c("USUBJID", "STUDYID")
-#'            keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
-#'     check = FALSE
-#'   ),
+#'             keys(ASL) <- c("STUDYID", "USUBJID")',
+#'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_response(
-#'       dataname = "ARS",
+#'       label = "Response Plots",
+#'       dataname = c("ASL"),
 #'       response = data_extract_spec(
-#'         dataname = "ARS",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = unique(ARS$PARAMCD),
-#'             selected = unique(ARS$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ARS$AVISIT),
-#'             selected = levels(ARS$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           )
-#'         ),
+#'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = "AVALC",
-#'           selected = "AVALC",
+#'           choices = c("AGE","SEX"),
+#'           selected = "AGE",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
+#'           fixed = FALSE,
 #'           label = "variable"
 #'         )
 #'       ),
 #'       x = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = names(ASL),
-#'           selected = c("RACE"),
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ASL",
-#'         columns = columns_spec(
-#'           choices = c("", "SEX", "AGE"),
-#'           selected = "",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ASL",
-#'         columns = columns_spec(
-#'           choices = c("", "SEX", "AGE"),
-#'           selected = "",
+#'           choices = c("BMRKR1", "BMRKR2"),
+#'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -101,6 +63,135 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#' # datasets: different wide
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#' library(dplyr)
+#'
+#' ASL <- cadsl
+#' ASL <- mutate_at(ASL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#'
+#'
+#' ADSL_2 <- mutate_at(cadsl,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
+#'
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADSL_2 = ADSL_2,
+#'     code = 'ASL <- cadsl
+#'             ASL <- mutate_at(ASL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'             ADSL_2 <- mutate_at(cadsl,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#'             keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+#'     check = FALSE),
+#'   modules = root_modules(
+#'     tm_g_response(
+#'       label = "Response Plots",
+#'       dataname = c("ASL", "ADSL_2"),
+#'       response = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'          label = "Select variable",
+#'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
+#'           selected = c("AGE"),
+#'           multiple = FALSE
+#'         )),
+#'       x = data_extract_spec(
+#'         dataname = "ADSL_2",
+#'         columns = columns_spec(
+#'           label = "Select variables",
+#'           choices = c("COUNTRY", "AGE", "RACE"),
+#'           selected = "COUNTRY",
+#'           multiple = FALSE
+#'         ))
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#'
+#'# datasets: wide and long
+#'library(random.cdisc.data)
+#'library(tern)
+#'
+#'ASL <- cadsl
+#'ADLB <- cadlb
+#'
+#'keys(ASL) <- c("STUDYID", "USUBJID")
+#'keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#'app <- init(
+#'  data = cdisc_data(
+#'    ASL = ASL,
+#'    ADLB = ADLB,
+#'    code = 'ASL <- cadsl
+#'            ADLB <- cadlb
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'    check = FALSE),
+#'  modules = root_modules(
+#'    tm_g_response(
+#'      label = "Response Plots",
+#'      dataname = c("ASL", "ADLB"),
+#'      response = data_extract_spec(
+#'        dataname = "ADLB",
+#'        filter = list(
+#'          filter_spec(
+#'            vars = "PARAM",
+#'           choices = levels(ADLB$PARAM),
+#'            selected = levels(ADLB$PARAM)[1],
+#'            multiple = FALSE,
+#'            label = "Choose measurement"
+#'          ),
+#'          filter_spec(
+#'            vars = "AVISIT",
+#'            choices = levels(ADLB$AVISIT),
+#'            selected = levels(ADLB$AVISIT)[1],
+#'            multiple = FALSE,
+#'            label = "Choose visit"
+#'          )
+#'        ),
+#'        columns = columns_spec(
+#'          choices = "AVAL",
+#'          selected = "AVAL",
+#'          multiple = FALSE,
+#'          fixed = FALSE,
+#'          label = "variable"
+#'        )
+#'     ),
+#'      x = data_extract_spec(
+#'        dataname = "ASL",
+#'        columns = columns_spec(
+#'          choices = c("BMRKR1", "BMRKR2"),
+#'          selected = c("BMRKR1"),
+#'          multiple = FALSE,
+#'          fixed = FALSE
+#'       )
+#'      )
+#'    )
+#' )
+#')
+#'
+#'\dontrun{
+#'shinyApp(app$ui, app$server)
+#'}
+#'
+#'
 #' ## as ggplot only
 #' library(dplyr)
 #' library(forcats)
@@ -180,7 +271,6 @@ tm_g_response <- function(label = "Response Plot",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-  stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
   stopifnot(is.class.list("data_extract_spec")(response))
@@ -233,7 +323,7 @@ ui_g_response <- function(id, ...) {
       plot_height_output(id = ns("myplot"))
     ),
     encoding = div(
-      helpText("Dataset:", tags$code(arguments$dataname)),
+        helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
 
       data_extract_input(
         id = ns("response"),
@@ -245,17 +335,20 @@ ui_g_response <- function(id, ...) {
         label = "X Variable",
         data_extract_spec = arguments$x
       ),
-      data_extract_input(
-        id = ns("row_facet"),
-        label = "Row facetting Variables ",
-        data_extract_spec = arguments$row_facet
-      ),
-      data_extract_input(
-        id = ns("col_facet"),
-        label = "Column facetting Variables",
-        data_extract_spec = arguments$col_facet
-      ),
-
+      if(!is.null( arguments$row_facet) ){
+        data_extract_input(
+          id = ns("row_facet"),
+          label = "Row facetting Variables ",
+          data_extract_spec = arguments$row_facet
+        )
+      },
+      if(!is.null( arguments$col_facet) ){
+        data_extract_input(
+          id = ns("col_facet"),
+          label = "col facetting Variables ",
+          data_extract_spec = arguments$col_facet
+        )
+      },
       radioButtons(ns("freq"), NULL,
                    choices = c("frequency", "density"),
                    selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
@@ -281,155 +374,5 @@ srv_g_response <- function(input,
                            x,
                            row_facet,
                            col_facet) {
-  stopifnot(all(dataname %in% datasets$datanames()))
-
-  init_chunks()
-
-  # Data Extraction
-  response_data <- callModule(data_extract_module,
-                              id = "response",
-                              datasets = datasets,
-                              data_extract_spec = response
-  )
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  row_facet_data <- callModule(data_extract_module,
-                                   id = "row_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = row_facet
-  )
-  col_facet_data <- callModule(data_extract_module,
-                                   id = "col_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = col_facet
-  )
-
-  data_reactive <- reactive({
-
-    merge_datasets(
-      list(
-        x_data(),
-        row_facet_data(),
-        col_facet_data(),
-        response_data()
-      )
-    )
-
-  })
-
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
-  )
-
-  ## dynamic plot height
-  output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("plot"), height = plot_height)
-  })
-
-  output$plot <- renderPlot({
-    resp_var <- get_dataset_prefixed_col_names(response_data())
-    x <- get_dataset_prefixed_col_names(x_data())
-    row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
-    col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
-
-    validate(need(resp_var != "", "Please define a valid column for the response variable"))
-    validate(need(x != "", "Please define a valid column for the X-variable"))
-
-    freq <- input$freq == "frequency"
-    swap_axes <- input$coord_flip
-
-    arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(x)) {
-      1
-    } else {
-      tmp_cl <- if (length(x) == 1) {
-        as.name(x)
-      } else {
-        tmp <- call_fun_dots("interaction", x)
-        tmp[["sep"]] <- " x "
-        tmp
-      }
-
-      if (swap_axes) {
-        bquote(forcats::fct_rev(.(tmp_cl)))
-      } else {
-        tmp_cl
-      }
-    }
-
-    anl <- data_reactive()
-
-    validate_has_data(anl, 10)
-
-    validate(
-      need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
-    )
-
-    plot_call <- bquote(
-      anl %>%
-        ggplot() +
-        aes(x = .(cl_arg_x)) +
-        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
-    )
-
-    if (!freq) {
-      if (swap_axes) {
-        tmp_cl1 <- quote(xlab(label)) %>%
-          substituteDirect(list(label = tmp_cl %>%
-                                  deparse()))
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
-      } else {
-        tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
-      }
-
-      plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
-    } else {
-      # Change Y-Axis Label in case of Swap
-      tmp_cl1 <- quote(xlab(label)) %>%
-        substituteDirect(list(label = tmp_cl %>%
-                                deparse()))
-      plot_call <- call("+", plot_call, tmp_cl1)
-    }
-
-    if (swap_axes) {
-      plot_call <- call("+", plot_call, quote(coord_flip()))
-    }
-
-    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
-
-    if (!is.null(facet_cl)) {
-      plot_call <- call("+", plot_call, facet_cl)
-    }
-
-    chunks_reset()
-
-    chunks_push(expression = plot_call, id = "plotCall")
-
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
-  })
-
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "Response Plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = "",
-        title = "Response Plot"
-      )
-    )
-  })
+  NULL
 }

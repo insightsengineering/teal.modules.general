@@ -16,7 +16,6 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-
 #'
 #' # datasets: same wide
 #'
