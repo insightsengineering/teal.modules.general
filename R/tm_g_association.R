@@ -224,7 +224,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ","))),
+      helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ", "))),
       data_extract_input(
         id = ns("ref"),
         label = "Reference variable",
