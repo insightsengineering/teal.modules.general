@@ -3,10 +3,8 @@
 #' @param x boolean has biomarker or not
 #' @param y boolean has biomarker of not
 #'
-#' @noRd
-#'
 #' @return  list with absolute and percentage cross table
-#'
+#' @noRd
 #' @examples
 #'
 #' x = c(rep(T, 5), rep(F, 3), rep(T, 4), rep(F, 9))
@@ -210,8 +208,8 @@ plot.venn2 <- function(x, ...) {
 #' venn2 teal module
 #'
 #' @noRd
-#'
 #' @examples
+#'
 #'
 #' N <- 100
 #' var_biomarkers <- paste0("B", 1:10)
@@ -258,9 +256,9 @@ plot.venn2 <- function(x, ...) {
 #'     )
 #'   )
 #' )
-#'
-#' shinyApp(app$ui, app$server)
-
+#' \dontRun{
+#'  shinyApp(app$ui, app$server)
+#' }
 tm_venn2 <- function(label,
                      dataname,
                      bm1,

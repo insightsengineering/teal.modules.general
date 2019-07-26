@@ -9,8 +9,7 @@
 #'  encoding the plot height.
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @noRd
-#'
+#' @export
 #' @examples
 #' library(random.cdisc.data)
 #' library(tern)

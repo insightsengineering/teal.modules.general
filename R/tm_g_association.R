@@ -13,9 +13,10 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @noRd
-#'
 #' @examples
 #' library(random.cdisc.data)
+#'
+#'
 #' ASL <- cadsl
 #'
 #' app <- init(
