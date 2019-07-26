@@ -93,6 +93,7 @@ shinyApp(app$ui, app$server)
 
 # datasets: multiple long datasets
 library(random.cdisc.data)
+library(dplyr)
 
 ASL <- cadsl
 ADRS <- cadrs
@@ -180,6 +181,8 @@ shinyApp(app$ui, app$server)
 # datasets: different wide
 library(random.cdisc.data)
 library(tern)
+library(dplyr)
+
 ASL <- cadsl
 ASL <- mutate_at(ASL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
