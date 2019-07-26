@@ -103,15 +103,15 @@
 #'         dataname = "ASL",
 #'         columns = columns_spec(
 #'          label = "Select variable",
-#'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
-#'           selected = c("AGE"),
+#'           choices = c("STRATA1", "STRATA2"),
+#'           selected = c("STRATA1"),
 #'           multiple = FALSE
 #'         )),
 #'       regressor = data_extract_spec(
 #'         dataname = "ASL_2",
 #'         columns = columns_spec(
 #'           label = "Select variables",
-#'           choices = c("COUNTRY", "AGE", "RACE"),
+#'           choices = c("AGE", "COUNTRY", "RACE"),
 #'           selected = c("AGE", "COUNTRY", "RACE"),
 #'           multiple = TRUE
 #'         ))
@@ -353,7 +353,7 @@
 #'         columns = columns_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
-#'           multiple = FALSE,
+#'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       )

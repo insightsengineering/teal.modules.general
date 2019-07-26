@@ -124,7 +124,7 @@ app <- init(
         dataname = "ASL",
         columns = columns_spec(
          label = "Select variable",
-          choices = c("AGE", "SEX", "STRATA1", "RACE"),
+          choices = c("AGE", "STRATA1", "RACE"),
           selected = c("AGE"),
           multiple = FALSE
         )),
