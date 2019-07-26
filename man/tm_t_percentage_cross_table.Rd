@@ -78,7 +78,7 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-# multiple long datasets
+# datasets: multiple long datasets
 library(random.cdisc.data)
 
 ASL <- cadsl
