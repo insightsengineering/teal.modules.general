@@ -20,20 +20,20 @@
 #'
 #' # datasets: single wide
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
+#'     ADSL = ADSL,
+#'     code = "ADSL <- cadsl",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = "ASL",
+#'       dataname = "ADSL",
 #'       x = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Select X Variable",
 #'           choices = c("STRATA1", "STRATA2"),
@@ -41,7 +41,7 @@
 #'         )
 #'       ),
 #'       y = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Select Y Variable",
 #'           choices = c("STRATA2", "STRATA1"),
@@ -58,22 +58,22 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
+#'     ADSL = ADSL,
 #'     ADRS = ADRS,
 #'     ADTTE = ADTTE,
-#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         columns = columns_spec(

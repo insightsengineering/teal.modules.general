@@ -17,28 +17,28 @@
 #'
 #' # datasets: single wide
 #' library(random.cdisc.data)
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
+#'     ADSL = ADSL,
+#'     code = "ADSL <- cadsl",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = "ASL",
+#'       dataname = "ADSL",
 #'       ref = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(label = "Reference variable",
-#'                                choices = names(ASL),
+#'                                choices = names(ADSL),
 #'                                selected = "AGE",
 #'                                fixed = FALSE)
 #'       ),
 #'       vars = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
+#'                                choices = names(ADSL),
 #'                                selected = "SEX",
 #'                                multiple = TRUE,
 #'                                fixed = FALSE)
@@ -53,21 +53,21 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
+#'     ADSL = ADSL,
 #'     ADRS = ADRS,
 #'     ADTTE = ADTTE,
-#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       ref = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
