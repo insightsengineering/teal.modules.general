@@ -36,10 +36,8 @@ library(tern)
 
 ASL <- cadsl
 ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-
 keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-
 
 app <- init(
   data = cdisc_data(
@@ -75,6 +73,74 @@ app <- init(
           },
           multiple = TRUE,
           fixed = FALSE
+        )
+      )
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix on two long datasets",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      selected = list(
+        data_extract_spec(
+          dataname = "ASL",
+          columns = columns_spec(
+            choices = names(ASL),
+            selected = c("AGE", "SEX"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADRS",
+          columns = columns_spec(
+            choices = names(ADRS),
+            selected = c("AVAL", "AVALC"),
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            selected = "OVRINV - Screening",
+            multiple = TRUE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADTTE",
+          columns = columns_spec(
+            choices = names(ADTTE),
+            selected = c("AVAL", "CNSR"),
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            vars = c("PARAMCD"),
+            choices = unique(ADTTE$PARAMCD),
+            selected = "OS",
+            multiple = TRUE
+          )
         )
       )
     )

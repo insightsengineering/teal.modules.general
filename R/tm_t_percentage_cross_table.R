@@ -52,6 +52,63 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: multiple long datasets
+#' library(random.cdisc.data)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADTTE <- cadtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_t_percentage_cross_table(
+#'       label = "Cross Table",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       x = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = names(ADRS),
+#'           selected = "AVALC",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD", "AVISIT"),
+#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
+#'                           1, paste, collapse = " - "),
+#'           selected = "OVRINV - Screening",
+#'           multiple = TRUE
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         columns = columns_spec(
+#'           choices = names(ADTTE),
+#'           selected = "CNSR",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
+#'           multiple = TRUE
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
                                         x,
@@ -59,7 +116,7 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         pre_output = NULL,
                                         post_output = NULL) {
   stopifnot(is.character.single(label))
-  stopifnot(is.character.single(dataname))
+  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
