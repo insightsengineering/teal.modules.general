@@ -212,17 +212,17 @@
 #' }
 #'
 #'
-#'# datasets: wide and long
-#'library(random.cdisc.data)
-#'library(tern)
+#' # datasets: wide and long
+#' library(random.cdisc.data)
+#' library(tern)
 #'
-#'ASL <- cadsl
-#'ADLB <- cadlb
+#' ASL <- cadsl
+#' ADLB <- cadlb
 #'
-#'keys(ASL) <- c("STUDYID", "USUBJID")
-#'keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
-#'app <- init(
+#' app <- init(
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ADLB = ADLB,
@@ -272,11 +272,11 @@
 #'      )
 #'    )
 #' )
-#')
+#' )
 #'
-#'\dontrun{
-#'shinyApp(app$ui, app$server)
-#'}
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 #'
 tm_g_response <- function(label = "Response Plot",
                           dataname,

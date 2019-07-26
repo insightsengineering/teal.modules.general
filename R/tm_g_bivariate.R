@@ -50,35 +50,42 @@
 #'       dataname = "ASL",
 #'       x = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Reference variable",
-#'                                choices = names(ASL),
-#'                                selected = "AGE",
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'           label = "Reference variable",
+#'           choices = names(ASL),
+#'           selected = "AGE",
+#'           fixed = FALSE
+#'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
-#'                                selected = "RACE",
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'           label = "Associated variables",
+#'           choices = names(ASL),
+#'           selected = "SEX",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
-#'                                selected = "SEX",
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'           label = "Associated variables",
+#'           choices = names(ASL),
+#'           selected = "SEX",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
-#'                                selected = NULL,
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'           label = "Associated variables",
+#'           choices = names(ASL),
+#'           selected = "SEX",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       )
 #'     )
 #'   )
@@ -139,19 +146,23 @@
 #'         )),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
-#'                                selected = "SEX",
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'          label = "Associated variables",
+#'          choices = names(ASL),
+#'          selected = "SEX",
+#'          multiple = FALSE,
+#'          fixed = FALSE
+#'         )
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ASL",
-#'         columns = columns_spec(label = "Associated variables",
-#'                                choices = names(ASL),
-#'                                selected = NULL,
-#'                                multiple = FALSE,
-#'                                fixed = FALSE)
+#'         columns = columns_spec(
+#'           label = "Associated variables",
+#'           choices = names(ASL),
+#'           selected = "SEX",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       )
 #'     )
 #'   )
@@ -160,18 +171,18 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-#'# datasets: wide, long
+#' # datasets: wide, long
 #'
-#'library(random.cdisc.data)
-#'library(tern)
+#' library(random.cdisc.data)
+#' library(tern)
 #'
-#'ASL <- cadsl
-#'ADRS <- cadrs
+#' ASL <- cadsl
+#' ADRS <- cadrs
 #'
-#'keys(ASL) <- c("STUDYID", "USUBJID")
-#'keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
-#'app <- init(
+#' app <- init(
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ADRS = ADRS,
@@ -189,7 +200,7 @@
 #'        filter = list(
 #'          filter_spec(
 #'            vars = "PARAM",
-#'           choices = unique(ADRS$PARAM),
+#'            choices = unique(ADRS$PARAM),
 #'            selected = unique(ADRS$PARAM)[1],
 #'            multiple = FALSE,
 #'            label = "Choose response"
@@ -257,24 +268,24 @@
 #'   )
 #' )
 #'
-#'\dontrun{
-#'shinyApp(app$ui, app$server)
-#'}
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 #'
-#'# datasets: wide, long, long
+#' # datasets: wide, long, long
 #'
-#'library(random.cdisc.data)
-#'library(tern)
+#' library(random.cdisc.data)
+#' library(tern)
 #'
-#'ASL <- cadsl
-#'ADRS <- cadrs
-#'ADLB <- cadlb
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' ADLB <- cadlb
 #'
-#'keys(ASL) <- c("STUDYID", "USUBJID")
-#'keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
-#'keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
-#'app <- init(
+#' app <- init(
 #'  data = cdisc_data(
 #'    ASL = ASL,
 #'    ADRS = ADRS,
