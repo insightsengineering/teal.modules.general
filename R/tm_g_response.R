@@ -255,7 +255,7 @@ tm_g_response <- function(label = "Response Plot",
       row_facet = row_facet,
       col_facet = col_facet
     ),
-    filters = dataname
+    filters = "all"
   )
 }
 

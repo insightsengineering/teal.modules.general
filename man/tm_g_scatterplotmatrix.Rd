@@ -31,50 +31,162 @@ output to put the output into context. For example the
 Create a scatterplot matrix
 }
 \examples{
+
+# datasets: single wide dataset
+
 library(random.cdisc.data)
 library(tern)
 
 ASL <- cadsl
-ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-
 keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-
 
 app <- init(
   data = cdisc_data(
        ASL = ASL,
-       ADTE = ADTE,
        code = 'ASL <- cadsl
-               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-               keys(ASL) <- c("STUDYID", "USUBJID")
-               keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-               ',
+               keys(ASL) <- c("STUDYID", "USUBJID")',
        check = FALSE),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ASL","ADTE"),
+      dataname = c("ASL"),
       selected = data_extract_spec(
-        dataname = "ADTE",
-        filter = filter_spec(
-          vars = c("PARAMCD"),
-          sep = " - ",
-          choices = c("OS", "PFS", "EFS"),
-          selected = "OS",
-          multiple = TRUE,
-          label = "Choose endpoint"
-        ),
+        dataname = "ASL",
         columns = columns_spec(
           label = "Selected columns",
-          choices = colnames(ADTE),
-          selected = if (all(c('AGE', 'SEX') \%in\% colnames(ADTE))) {
-            c('AGE', 'SEX')
-          } else {
-            colnames(ADTE)[1:2]
-          },
+          choices = colnames(ASL),
+          selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,
           fixed = FALSE
+        )
+      )
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+# datasets: different wide
+
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ADSL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ADSL_2) <- c("STUDYID", "USUBJID")
+
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADSL_2 = ADSL_2,
+    code = 'ASL <- cadsl
+            ADSL_2 <- mutate_at(cadsl,
+               .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+               .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+            keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix",
+      dataname = c("ASL", "ADSL_2"),
+      selected = list(
+                data_extract_spec(
+          dataname = "ASL",
+          columns = columns_spec(
+            label = "Selected columns",
+            choices = colnames(ASL),
+            selected = c("AGE", "ACTARM", "SEX"),
+            multiple = TRUE,
+            fixed = FALSE)
+        ),
+        data_extract_spec(
+          dataname = "ADSL_2",
+          columns = columns_spec(
+            label = "Selected columns",
+            choices = colnames(ADSL_2),
+            selected = c("COUNTRY", "ACTARM", "STRATA2"),
+            multiple = TRUE,
+            fixed = FALSE)
+         )
+     )
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix on two long datasets",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      selected = list(
+        data_extract_spec(
+          dataname = "ASL",
+          columns = columns_spec(
+            choices = names(ASL),
+            selected = c("AGE", "SEX"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADRS",
+          columns = columns_spec(
+            choices = names(ADRS),
+            selected = c("AVAL", "AVALC"),
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            selected = "OVRINV - Screening",
+            multiple = TRUE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADTTE",
+          columns = columns_spec(
+            choices = names(ADTTE),
+            selected = c("AVAL", "CNSR"),
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            vars = c("PARAMCD"),
+            choices = unique(ADTTE$PARAMCD),
+            selected = "OS",
+            multiple = TRUE
+          )
         )
       )
     )

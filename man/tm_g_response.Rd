@@ -64,7 +64,7 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ASL", "ALB"),
+      dataname = c("ASL"),
       response = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
@@ -218,58 +218,4 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-
-## as ggplot only
-library(dplyr)
-library(forcats)
-
-ANL <- suppressWarnings(inner_join(ARS, ASL))
-
-ANL_FILTERED <- ANL \%>\%
-  dplyr::filter(PARAMCD == "BESRSPI") \%>\% # strict call of filter
-  mutate(ALL = factor(rep("Response", n())))
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = ALL) +
-  geom_bar(aes(fill = AVALC))
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = SEX) +
-  geom_bar(aes(fill = AVALC))
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = SEX) +
-  geom_bar(aes(fill = AVALC)) +
-  facet_grid(cols = vars(ARM))
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = SEX) +
-  geom_bar(aes(fill = AVALC), position = "fill") +
-  facet_grid(cols = vars(ARM)) +
-  ylab("Distribution") +
-  coord_flip()
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = SEX) +
-  geom_bar(aes(fill = AVALC), position = "fill") +
-  geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill") +
-  expand_limits(y = c(0, 1.2)) +
-  facet_grid(cols = vars(ARM)) +
-  ylab("Distribution")
-
-ANL_FILTERED \%>\%
-  ggplot() +
-  aes(x = fct_rev(SEX)) +
-  xlab("SEX") +
-  geom_bar(aes(fill = AVALC), position = "fill") +
-  geom_text(stat = "count", aes(label = paste(" ", ..count..), hjust = 0), position = "fill") +
-  scale_y_continuous(limits = c(0, 1.4)) +
-  facet_grid(cols = vars(ARM)) +
-  ylab("Distribution") +
-  coord_flip()
 }

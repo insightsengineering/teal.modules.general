@@ -129,15 +129,15 @@ library(dplyr)
 
 ASL <- cadsl
 ASL <- mutate_at(ASL,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+ .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
 keys(ASL) <- c("STUDYID", "USUBJID")
 
 
 ADSL_2 <- mutate_at(cadsl,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+  .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 keys(ADSL_2) <- c("STUDYID", "USUBJID")
 
 
@@ -146,7 +146,10 @@ app <- init(
     ASL = ASL,
     ADSL_2 = ADSL_2,
     code = 'ASL <- cadsl
-            keys(ASL) <- c("STUDYID", "USUBJID")',
+            ADSL_2 <- mutate_at(cadsl,
+               .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+               .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+            keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
     tm_g_bivariate(
