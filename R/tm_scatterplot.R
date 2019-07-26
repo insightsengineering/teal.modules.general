@@ -80,143 +80,68 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
-#' # datasets: different wide
-#'
+#' # datasets: multiple long datasets
 #' library(random.cdisc.data)
-#' library(tern)
-#' library(dplyr)
-#'
-#' ASL <- cadsl
-#' ASL <- mutate_at(ASL,
-#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
-#' ) %>% select(
-#'   "ARM", "ACTARM", "ACTARMCD",
-#'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
-#' )
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#'
-#'
-#' ADSL_2 <- mutate_at(cadsl,
-#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
-#' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADSL_2 = ADSL_2,
-#'     code = 'ASL <- cadsl
-#' ADSL_2 <- mutate_at(cadsl,
-#' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-#'     check = FALSE
-#'   ),
-#'   modules = root_modules(
-#'     tm_scatterplot("Scatterplot for different wide data",
-#'      dataname = c("ASL", "ADSL_2"),
-#'      x = data_extract_spec(
-#'         dataname = "ASL",
-#'         columns = columns_spec(
-#'          label = "Select variable",
-#'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
-#'           selected = c("AGE"),
-#'           multiple = FALSE
-#'         )),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL_2",
-#'         columns = columns_spec(
-#'           label = "Select variables",
-#'           choices = c("COUNTRY", "AGE", "RACE"),
-#'           selected = "RACE",
-#'           multiple = FALSE
-#'         )),
-#'       color_by = data_extract_spec(
-#'         dataname = "ADSL_2",
-#'         columns = columns_spec(
-#'           label = "Select variables",
-#'           choices = c("COUNTRY", "AGE", "RACE"),
-#'           selected = "COUNTRY",
-#'           multiple = FALSE
-#'         ))
-#'      )
-#'    )
-#' )
-#'
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#' # datasets: wide, long
-#'
-#' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ASL <- cadsl
 #' ADRS <- cadrs
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     ASL = ASL,
 #'     ADRS = ADRS,
-#'     code = 'ASL <- cadsl
-#' ADRS <- cadrs
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     ADTTE = ADTTE,
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
-#'    tm_scatterplot("Scatterplot for wide and long data",
-#'      dataname = c("ASL", "ADRS"),
-#'      x = data_extract_spec(
-#'           dataname = "ADRS",
-#'           filter = list(
-#'             filter_spec(
-#'               vars = "PARAM",
-#'               choices = unique(ADRS$PARAM),
-#'               selected = unique(ADRS$PARAM)[1],
-#'               multiple = FALSE,
-#'               label = "Choose response"
-#'             ),
-#'             filter_spec(
-#'               vars = "AVISIT",
-#'               choices = levels(ADRS$AVISIT),
-#'               selected = levels(ADRS$AVISIT)[1],
-#'               multiple = FALSE,
-#'               label = "Choose visit"
-#'             )
-#'           ),
-#'           columns = columns_spec(
-#'             choices = "AVAL",
-#'             selected = "AVAL",
-#'             multiple = FALSE,
-#'             label = "variable"
-#'           )
+#'     tm_scatterplot(
+#'       label = "Scatterplot on two long datasets",
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       x = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = names(ADRS),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         ),
-#'      y = data_extract_spec(
-#'           dataname = "ASL",
-#'           columns = columns_spec(
-#'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'             selected = "AGE",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
-#'         ),
-#'      color_by = data_extract_spec(
-#'           dataname = "ASL",
-#'           columns = columns_spec(
-#'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'             selected = NULL,
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD", "AVISIT"),
+#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'           selected = "OVRINV - Screening",
+#'           multiple = FALSE
 #'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         columns = columns_spec(
+#'           choices = names(ADTTE),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = c("PARAMCD"),
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = "OS",
+#'           multiple = TRUE
+#'         )
+#'       ),
+#'       color_by = data_extract_spec(
+#'         dataname = "ASL",
+#'         columns = columns_spec(
+#'           choices = c("AGE", "SEX"),
+#'           selected = "AGE",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
+#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }

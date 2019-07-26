@@ -79,6 +79,7 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+<<<<<<< HEAD
 # datasets: different wide
 
 library(random.cdisc.data)
@@ -148,11 +149,21 @@ ASL <- cadsl
 ADRS <- cadrs
 keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+=======
+
+# datasets: multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+>>>>>>> devel
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
     ADRS = ADRS,
+<<<<<<< HEAD
     code = 'ASL <- cadsl
 ADRS <- cadrs
 keys(ASL) <- c("STUDYID", "USUBJID")
@@ -196,6 +207,47 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
             fixed = FALSE
           )
         ),
+=======
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_t_percentage_cross_table(
+      label = "Cross Table",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      x = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = names(ADRS),
+          selected = "AVALC",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
+                          1, paste, collapse = " - "),
+          selected = "OVRINV - Screening",
+          multiple = TRUE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADTTE",
+        columns = columns_spec(
+          choices = names(ADTTE),
+          selected = "CNSR",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD"),
+          choices = unique(ADTTE$PARAMCD),
+          selected = "OS",
+          multiple = TRUE
+        )
+      )
+>>>>>>> devel
     )
   )
 )
