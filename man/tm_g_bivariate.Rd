@@ -84,35 +84,42 @@ app <- init(
       dataname = "ASL",
       x = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Reference variable",
-                               choices = names(ASL),
-                               selected = "AGE",
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Reference variable",
+          choices = names(ASL),
+          selected = "AGE",
+          fixed = FALSE
+        )
       ),
       y = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = "RACE",
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Associated variables",
+          choices = names(ASL),
+          selected = "SEX",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       ),
       row_facet = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = "SEX",
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Associated variables",
+          choices = names(ASL),
+          selected = "SEX",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       ),
       col_facet = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = NULL,
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Associated variables",
+          choices = names(ASL),
+          selected = "SEX",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       )
     )
   )
@@ -158,7 +165,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-         label = "Select variable",
+          label = "Select variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
           multiple = FALSE
@@ -173,19 +180,23 @@ app <- init(
         )),
       row_facet = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = "SEX",
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+         label = "Associated variables",
+         choices = names(ASL),
+         selected = "SEX",
+         multiple = FALSE,
+         fixed = FALSE
+        )
       ),
       col_facet = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = NULL,
-                               multiple = FALSE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Associated variables",
+          choices = names(ASL),
+          selected = "SEX",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       )
     )
   )
@@ -223,7 +234,7 @@ app <- init(
        filter = list(
          filter_spec(
            vars = "PARAM",
-          choices = unique(ADRS$PARAM),
+           choices = unique(ADRS$PARAM),
            selected = unique(ADRS$PARAM)[1],
            multiple = FALSE,
            label = "Choose response"
@@ -329,7 +340,7 @@ app <- init(
        filter = list(
          filter_spec(
            vars = "PARAMCD",
-          choices = unique(ADRS$PARAMCD),
+           choices = unique(ADRS$PARAMCD),
            selected = unique(ADRS$PARAMCD)[1],
            multiple = FALSE,
            label = "Choose response"

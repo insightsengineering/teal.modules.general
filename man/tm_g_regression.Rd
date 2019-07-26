@@ -44,7 +44,6 @@ library(random.cdisc.data)
 library(tern)
 
 ASL <- cadsl
-
 keys(ASL) <- c("STUDYID", "USUBJID")
 
 app <- init(
@@ -60,7 +59,7 @@ app <- init(
       response = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-          choices = c("AGE","SEX"),
+          choices = c("AGE", "SEX"),
           selected = "AGE",
           multiple = FALSE,
           fixed = FALSE,
@@ -82,6 +81,7 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
 # datasets: different wide
 
 library(random.cdisc.data)
@@ -142,6 +142,7 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
 # datasets: same long
 
 library(random.cdisc.data)
@@ -223,7 +224,6 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
-
 
 # datasets: wide and long
 library(random.cdisc.data)
@@ -343,7 +343,8 @@ app <- init(
           fixed = FALSE,
           label = "variable"
         )
-      ),data_extract_spec(
+      ),
+      data_extract_spec(
         dataname = "ADRS",
         filter = list(
           filter_spec(
@@ -375,75 +376,6 @@ app <- init(
           selected = c("BMRKR1"),
           multiple = FALSE,
           fixed = FALSE
-        )
-      )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: multiple long datasets
-library(random.cdisc.data)
-
-ASL <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-
-app <- init(
-  data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    ADTTE = ADTTE,
-    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = FALSE
-  ),
-  modules = root_modules(
-    tm_g_regression(
-      label = "Regression Analysis on two long datasets",
-      dataname = c("ASL", "ADRS", "ADTTE"),
-      response = data_extract_spec(
-        dataname = "ADTTE",
-        columns = columns_spec(
-          choices = c("AVAL", "CNSR"),
-          selected = "AVAL",
-          multiple = FALSE,
-          fixed = FALSE
-        ),
-        filter = filter_spec(
-          vars = c("PARAMCD"),
-          choices = unique(ADTTE$PARAMCD),
-          selected = "OS",
-          multiple = FALSE,
-          label = "ADTTE filter"
-        )
-      ),
-      regressor = list(
-        data_extract_spec(
-          dataname = "ADRS",
-          columns = columns_spec(
-            choices = names(ADRS),
-            selected = "AVAL",
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            vars = c("PARAMCD", "AVISIT"),
-            choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
-            selected = "OVRINV - Screening",
-            multiple = TRUE,
-            label = "ADRS filter"
-          )
-        ),
-        data_extract_spec(
-          dataname = "ASL",
-          columns = columns_spec(
-            choices = c("BMRKR1", "BMRKR2"),
-            selected = c("BMRKR1"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
         )
       )
     )

@@ -53,18 +53,22 @@ app <- init(
       dataname = "ASL",
       ref = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Reference variable",
-                               choices = names(ASL),
-                               selected = "AGE",
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Reference variable",
+          choices = names(ASL),
+          selected = "AGE",
+          fixed = FALSE
+        )
       ),
       vars = data_extract_spec(
         dataname = "ASL",
-        columns = columns_spec(label = "Associated variables",
-                               choices = names(ASL),
-                               selected = "SEX",
-                               multiple = TRUE,
-                               fixed = FALSE)
+        columns = columns_spec(
+          label = "Associated variables",
+          choices = names(ASL),
+          selected = "SEX",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       )
     )
   )
