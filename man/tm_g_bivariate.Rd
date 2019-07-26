@@ -393,13 +393,23 @@ app <- init(
          fixed = FALSE
       )
      ),
-    ) #tm_g_association
-  )# root_modules
-)# init
+       expert_settings = TRUE,
+      plot_height = c(600, 200, 2000),
+      ggtheme = "grey"
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+    )
+  )
+)
 
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
 
 # datasets: multiple long datasets
 library(random.cdisc.data)

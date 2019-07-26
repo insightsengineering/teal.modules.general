@@ -38,13 +38,8 @@ library(random.cdisc.data)
 library(tern)
 
 ASL <- cadsl
-<<<<<<< HEAD
-keys(ASL) <- c("STUDYID", "USUBJID")
-=======
 ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
->>>>>>> devel
 
 app <- init(
   data = cdisc_data(
@@ -130,139 +125,6 @@ keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
             choices = colnames(ADSL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
             multiple = TRUE,
-            fixed = FALSE
-          )
-        )
-      )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: multiple long datasets
-library(random.cdisc.data)
-
-ASL <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-
-app <- init(
-  data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    ADTTE = ADTTE,
-    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = FALSE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      label = "Scatterplot matrix on two long datasets",
-      dataname = c("ASL", "ADRS", "ADTTE"),
-      selected = list(
-        data_extract_spec(
-          dataname = "ASL",
-          columns = columns_spec(
-            choices = names(ASL),
-            selected = c("AGE", "SEX"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADRS",
-          columns = columns_spec(
-            choices = names(ADRS),
-            selected = c("AVAL", "AVALC"),
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            vars = c("PARAMCD", "AVISIT"),
-            choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
-            selected = "OVRINV - Screening",
-            multiple = TRUE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADTTE",
-          columns = columns_spec(
-            choices = names(ADTTE),
-            selected = c("AVAL", "CNSR"),
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            vars = c("PARAMCD"),
-            choices = unique(ADTTE$PARAMCD),
-            selected = "OS",
-            multiple = TRUE
-          )
-        )
-      )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-# datasets: wide, long
-
-library(random.cdisc.data)
-library(tern)
-
-ASL <- cadsl
-ADRS <- cadrs
-
-keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
-
-app <- init(
-  data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    code = 'ASL <- cadsl
-ADRS <- cadrs
-keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      label = "ScatterplotMatrix with long and wide data",
-      dataname = c("ASL", "ADRS"),
-      selected = list(
-        data_extract_spec(
-          dataname = "ADRS",
-          filter = list(
-            filter_spec(
-              vars = "PARAM",
-              choices = unique(ADRS$PARAM),
-              selected = unique(ADRS$PARAM)[1],
-              multiple = FALSE,
-              label = "Choose response"
-            ),
-            filter_spec(
-              vars = "AVISIT",
-              choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[1],
-              multiple = FALSE,
-              label = "Choose visit"
-            )
-          ),
-          columns = columns_spec(
-            choices = "AVAL",
-            selected = "AVAL",
-            multiple = FALSE,
-            label = "variable"
-          )
-        ), data_extract_spec(
-          dataname = "ASL",
-          columns = columns_spec(
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-            selected = "AGE",
-            multiple = FALSE,
             fixed = FALSE
           )
         )

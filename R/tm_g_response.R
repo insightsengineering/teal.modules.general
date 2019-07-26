@@ -63,12 +63,6 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-<<<<<<< HEAD
-#' # datasets: different wide
-#'
-#' library(random.cdisc.data)
-#' library(tern)
-=======
 #'
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
@@ -156,10 +150,9 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-#' # as ggplot only
->>>>>>> devel
-#' library(dplyr)
-#'
+#' # datasets: different wide
+#' library(random.cdisc.data)
+#' library(tern)
 #' ASL <- cadsl
 #' ASL <- mutate_at(ASL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
@@ -308,10 +301,6 @@ tm_g_response <- function(label = "Response Plot",
 
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
-<<<<<<< HEAD
-=======
-  # stop_if_not(list(toupper(dataname) != "ASL", "currently does not work with ASL data"))
->>>>>>> devel
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
   stopifnot(is.class.list("data_extract_spec")(response))

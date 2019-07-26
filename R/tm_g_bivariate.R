@@ -350,7 +350,6 @@
 #'           label = "variable"
 #'         )
 #'       ),
-<<<<<<< HEAD
 #'      col_facet = data_extract_spec(
 #'        dataname = "ASL",
 #'        columns = columns_spec(
@@ -360,16 +359,7 @@
 #'          fixed = FALSE
 #'       )
 #'      ),
-#'     ) #tm_g_association
-#'   )# root_modules
-#' )# init
-#'
-#'\dontrun{
-#'shinyApp(app$ui, app$server)
-#'}
-#'
-=======
-#'       expert_settings = TRUE,
+#'        expert_settings = TRUE,
 #'       plot_height = c(600, 200, 2000),
 #'       ggtheme = "grey"
 #'     )
@@ -378,6 +368,15 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'     )
+#'   )
+#' )
+#'
+#'\dontrun{
+#'shinyApp(app$ui, app$server)
+#'}
+#'
+
 #'
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
@@ -460,7 +459,6 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
->>>>>>> devel
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x,
