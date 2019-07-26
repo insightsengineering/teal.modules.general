@@ -45,20 +45,20 @@ library(random.cdisc.data)
 
 # datasets: single wide
 
-ADSL <- cadsl
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    code = "ADSL <- cadsl",
+    ASL = ASL,
+    code = "ASL <- cadsl",
     check = TRUE
   ),
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = "ADSL",
+      dataname = "ASL",
       x = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           label = "Select X Variable",
           choices = c("STRATA1", "STRATA2"),
@@ -66,7 +66,7 @@ app <- init(
         )
       ),
       y = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           label = "Select Y Variable",
           choices = c("STRATA2", "STRATA1"),
@@ -83,22 +83,22 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
+    ASL = ASL,
     ADRS = ADRS,
     ADTTE = ADTTE,
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = FALSE
   ),
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(

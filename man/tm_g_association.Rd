@@ -40,28 +40,28 @@ Stack Plots of variables and show association with reference variable
 
 # datasets: single wide
 library(random.cdisc.data)
-ADSL <- cadsl
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    code = "ADSL <- cadsl",
+    ASL = ASL,
+    code = "ASL <- cadsl",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_association(
-      dataname = "ADSL",
+      dataname = "ASL",
       ref = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Reference variable",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "AGE",
                                fixed = FALSE)
       ),
       vars = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "SEX",
                                multiple = TRUE,
                                fixed = FALSE)
@@ -76,21 +76,21 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
+    ASL = ASL,
     ADRS = ADRS,
     ADTTE = ADTTE,
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_association(
-      dataname = c("ADSL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADTTE"),
       ref = list(
         data_extract_spec(
           dataname = "ADRS",

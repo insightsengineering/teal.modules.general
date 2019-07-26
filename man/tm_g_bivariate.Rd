@@ -71,45 +71,45 @@ This is a general module to visualize 1 & 2 dimensional data.
 \examples{
 # datasets: single wide
 library(random.cdisc.data)
-ADSL <- cadsl
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    code = "ADSL <- cadsl",
+    ASL = ASL,
+    code = "ASL <- cadsl",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_bivariate(
-      dataname = "ADSL",
+      dataname = "ASL",
       x = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Reference variable",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "AGE",
                                multiple = FALSE,
                                fixed = FALSE)
       ),
       y = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "RACE",
                                multiple = FALSE,
                                fixed = FALSE)
       ),
       row_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "SEX",
                                multiple = FALSE,
                                fixed = FALSE)
       ),
       col_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = NULL,
                                multiple = FALSE,
                                fixed = FALSE)
@@ -127,36 +127,36 @@ library(random.cdisc.data)
 library(tern)
 library(dplyr)
 
-ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
+ASL <- cadsl
+ASL <- mutate_at(ASL,
  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
  .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-keys(ADSL) <- c("STUDYID", "USUBJID")
+keys(ASL) <- c("STUDYID", "USUBJID")
 
 
-ADSL_2 <- mutate_at(cadsl,
+ASL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
   .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ADSL_2) <- c("STUDYID", "USUBJID")
+keys(ASL_2) <- c("STUDYID", "USUBJID")
 
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    ADSL_2 = ADSL_2,
-    code = 'ADSL <- cadsl
-            ADSL_2 <- mutate_at(cadsl,
+    ASL = ASL,
+    ASL_2 = ASL_2,
+    code = 'ASL <- cadsl
+            ASL_2 <- mutate_at(cadsl,
                .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-            keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+            keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
     tm_g_bivariate(
       label = "Association plots",
-      dataname = c("ADSL", "ADSL_2"),
+      dataname = c("ASL", "ASL_2"),
       x = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
          label = "Select variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
@@ -164,7 +164,7 @@ app <- init(
           multiple = FALSE
         )),
       y = data_extract_spec(
-        dataname = "ADSL_2",
+        dataname = "ASL_2",
         columns = columns_spec(
           label = "Select variables",
           choices = c("COUNTRY", "AGE", "RACE"),
@@ -172,24 +172,24 @@ app <- init(
           multiple = FALSE
         )),
       row_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = "SEX",
                                multiple = FALSE,
                                fixed = FALSE)
       ),
       col_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(label = "Associated variables",
-                               choices = names(ADSL),
+                               choices = names(ASL),
                                selected = NULL,
                                multiple = FALSE,
                                fixed = FALSE)
       )
-    ) #tm_g_regression
-  )# root_modules
-)# init
+    )
+  )
+)
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -199,25 +199,25 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(tern)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 
-keys(ADSL) <- c("STUDYID", "USUBJID")
+keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
  data = cdisc_data(
-   ADSL = ADSL,
+   ASL = ASL,
    ADRS = ADRS,
-   code = 'ADSL <- cadsl
+   code = 'ASL <- cadsl
            ADRS <- cadrs
-           keys(ADSL) <- c("STUDYID", "USUBJID")
+           keys(ASL) <- c("STUDYID", "USUBJID")
            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(
      label = "Association Plots",
-     dataname = c("ADSL", "ADRS"),
+     dataname = c("ASL", "ADRS"),
      x = data_extract_spec(
        dataname = "ADRS",
        filter = list(
@@ -244,7 +244,7 @@ app <- init(
        )
     ),
      y = data_extract_spec(
-       dataname = "ADSL",
+       dataname = "ASL",
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = "AGE",
@@ -279,7 +279,7 @@ app <- init(
         )
       ),
      col_facet = data_extract_spec(
-       dataname = "ADSL",
+       dataname = "ASL",
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = NULL,
@@ -300,30 +300,30 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(tern)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADLB <- cadlb
 
-keys(ADSL) <- c("STUDYID", "USUBJID")
+keys(ASL) <- c("STUDYID", "USUBJID")
 keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
  data = cdisc_data(
-   ADSL = ADSL,
+   ASL = ASL,
    ADRS = ADRS,
    ADLB = ADLB,
-   code = 'ADSL <- cadsl
+   code = 'ASL <- cadsl
            ADRS <- cadrs
            ADLB <- cadlb
-           keys(ADSL) <- c("STUDYID", "USUBJID")
+           keys(ASL) <- c("STUDYID", "USUBJID")
            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
    check = FALSE),
  modules = root_modules(
    tm_g_bivariate(
      label = "Association Plots",
-     dataname = c("ADSL", "ADRS", "ADLB"),
+     dataname = c("ASL", "ADRS", "ADLB"),
      x = data_extract_spec(
        dataname = "ADRS",
        filter = list(
@@ -350,7 +350,7 @@ app <- init(
        )
     ),
      y = data_extract_spec(
-       dataname = "ADSL",
+       dataname = "ASL",
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = "AGE",
@@ -385,7 +385,7 @@ app <- init(
         )
       ),
      col_facet = data_extract_spec(
-       dataname = "ADSL",
+       dataname = "ASL",
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = NULL,
@@ -406,22 +406,22 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
+    ASL = ASL,
     ADRS = ADRS,
     ADTTE = ADTTE,
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_bivariate(
       label = "Bivariate Plots of two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
@@ -456,7 +456,7 @@ app <- init(
         )
       ),
       row_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("SEX", "RACE"),
           selected = NULL,
@@ -466,7 +466,7 @@ app <- init(
         )
       ),
       col_facet = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("SEX", "RACE"),
           selected = NULL,

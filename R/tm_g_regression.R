@@ -22,22 +22,22 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ADSL <- cadsl
+#' ASL <- cadsl
 #'
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
-#'     code = 'ADSL <- cadsl
-#'             keys(ADSL) <- c("STUDYID", "USUBJID")',
+#'     ASL = ASL,
+#'     code = 'ASL <- cadsl
+#'             keys(ASL) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ALB"),
+#'       dataname = c("ASL", "ALB"),
 #'       response = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ASL",
 #'         columns = columns_spec(
 #'           choices = c("AGE","SEX"),
 #'           selected = "AGE",
@@ -47,7 +47,7 @@
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ASL",
 #'         columns = columns_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
@@ -67,40 +67,40 @@
 #' library(tern)
 #' library(dplyr)
 #'
-#' ADSL <- cadsl
-#' ADSL <- mutate_at(ADSL,
+#' ASL <- cadsl
+#' ASL <- mutate_at(ASL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
 #'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #'
-#' ADSL_2 <- mutate_at(cadsl,
+#' ASL_2 <- mutate_at(cadsl,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
+#' keys(ASL_2) <- c("STUDYID", "USUBJID")
 #'
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
-#'     ADSL_2 = ADSL_2,
-#'     code = 'ADSL <- cadsl
-#'             ADSL <- mutate_at(ADSL,
+#'     ASL = ASL,
+#'     ASL_2 = ASL_2,
+#'     code = 'ASL <- cadsl
+#'             ASL <- mutate_at(ASL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
 #'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-#'             ADSL_2 <- mutate_at(cadsl,
+#'             ASL_2 <- mutate_at(cadsl,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#'             keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+#'             keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADSL_2"),
+#'       dataname = c("ASL", "ASL_2"),
 #'       response = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ASL",
 #'         columns = columns_spec(
 #'          label = "Select variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
@@ -108,7 +108,7 @@
 #'           multiple = FALSE
 #'         )),
 #'       regressor = data_extract_spec(
-#'         dataname = "ADSL_2",
+#'         dataname = "ASL_2",
 #'         columns = columns_spec(
 #'           label = "Select variables",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
@@ -126,25 +126,25 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ADSL <- cadsl
+#' ASL <- cadsl
 #' ADLB <- cadlb
 #'
-#' keys(ADSL) <-  c("STUDYID", "USUBJID")
+#' keys(ASL) <-  c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
+#'     ASL = ASL,
 #'     ADLB = ADLB,
-#'     code = 'ADSL <- cadsl
+#'     code = 'ASL <- cadsl
 #'             ADLB <- cadlb
-#'             keys(ADSL) <-  c("STUDYID", "USUBJID")
+#'             keys(ASL) <-  c("STUDYID", "USUBJID")
 #'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADLB"),
+#'       dataname = c("ASL", "ADLB"),
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -208,25 +208,25 @@
 #'library(random.cdisc.data)
 #'library(tern)
 #'
-#'ADSL <- cadsl
+#'ASL <- cadsl
 #'ADLB <- cadlb
 #'
-#'keys(ADSL) <- c("STUDYID", "USUBJID")
+#'keys(ASL) <- c("STUDYID", "USUBJID")
 #'keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #'app <- init(
 #'  data = cdisc_data(
-#'    ADSL = ADSL,
+#'    ASL = ASL,
 #'    ADLB = ADLB,
-#'    code = 'ADSL <- cadsl
+#'    code = 'ASL <- cadsl
 #'            ADLB <- cadlb
-#'            keys(ADSL) <- c("STUDYID", "USUBJID")
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
 #'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_regression(
 #'      label = "Regression",
-#'      dataname = c("ADSL", "ADLB"),
+#'      dataname = c("ASL", "ADLB"),
 #'      response = data_extract_spec(
 #'        dataname = "ADLB",
 #'        filter = list(
@@ -254,7 +254,7 @@
 #'        )
 #'     ),
 #'      regressor = data_extract_spec(
-#'        dataname = "ADSL",
+#'        dataname = "ASL",
 #'        columns = columns_spec(
 #'          choices = c("BMRKR1", "BMRKR2"),
 #'          selected = c("BMRKR1", "BMRKR2"),
@@ -275,28 +275,28 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ADSL <- cadsl
+#' ASL <- cadsl
 #' ADLB <- cadlb
 #' ADRS <- cadrs
 #'
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
+#' keys(ASL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
+#'     ASL = ASL,
 #'     ADLB = ADLB,
-#'     code = 'ADSL <- cadsl
+#'     code = 'ASL <- cadsl
 #'             ADLB <- cadlb
-#'             keys(ADSL) <- c("STUDYID", "USUBJID")
+#'             keys(ASL) <- c("STUDYID", "USUBJID")
 #'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'             keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADLB", "ADRS"),
+#'       dataname = c("ASL", "ADLB", "ADRS"),
 #'       response = list(data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -348,7 +348,7 @@
 #'         )
 #'       )),
 #'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ASL",
 #'         columns = columns_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
@@ -366,22 +366,22 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ADSL <- cadsl
+#' ASL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
+#'     ASL = ASL,
 #'     ADRS = ADRS,
 #'     ADTTE = ADTTE,
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression Analysis on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
 #'       response = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         columns = columns_spec(
@@ -416,7 +416,7 @@
 #'           )
 #'         ),
 #'         data_extract_spec(
-#'           dataname = "ADSL",
+#'           dataname = "ASL",
 #'           columns = columns_spec(
 #'             choices = c("BMRKR1", "BMRKR2"),
 #'             selected = c("BMRKR1"),
@@ -435,22 +435,22 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ADSL <- cadsl
+#' ASL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
+#'     ASL = ASL,
 #'     ADRS = ADRS,
 #'     ADTTE = ADTTE,
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression Analysis on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
+#'       dataname = c("ASL", "ADRS", "ADTTE"),
 #'       response = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         columns = columns_spec(
@@ -485,7 +485,7 @@
 #'           )
 #'         ),
 #'         data_extract_spec(
-#'           dataname = "ADSL",
+#'           dataname = "ASL",
 #'           columns = columns_spec(
 #'             choices = c("BMRKR1", "BMRKR2"),
 #'             selected = c("BMRKR1"),

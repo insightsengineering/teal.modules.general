@@ -37,26 +37,26 @@ Create a scatterplot matrix
 library(random.cdisc.data)
 library(tern)
 
-ADSL <- cadsl
-ADTE <- radtte(ADSL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-keys(ADSL) <- c("STUDYID", "USUBJID")
+ASL <- cadsl
+ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+keys(ASL) <- c("STUDYID", "USUBJID")
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    code = 'ADSL <- cadsl
-keys(ADSL) <- c("STUDYID", "USUBJID")',
+    ASL = ASL,
+    code = 'ASL <- cadsl
+keys(ASL) <- c("STUDYID", "USUBJID")',
     check = FALSE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ADSL"),
+      dataname = c("ASL"),
       selected = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           label = "Selected columns",
-          choices = colnames(ADSL),
+          choices = colnames(ASL),
           selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,
           fixed = FALSE
@@ -74,55 +74,55 @@ library(random.cdisc.data)
 library(tern)
 library(dplyr)
 
-ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
+ASL <- cadsl
+ASL <- mutate_at(ASL,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
   .funs = funs(as.factor(.))
 ) \%>\% select(
   "ARM", "ACTARM", "ACTARMCD",
   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
 )
-keys(ADSL) <- c("STUDYID", "USUBJID")
+keys(ASL) <- c("STUDYID", "USUBJID")
 
 
-ADSL_2 <- mutate_at(cadsl,
+ASL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
   .funs = funs(as.factor(.))
 ) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ADSL_2) <- c("STUDYID", "USUBJID")
+keys(ASL_2) <- c("STUDYID", "USUBJID")
 
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    ADSL_2 = ADSL_2,
-    code = 'ADSL <- cadsl
-ADSL_2 <- mutate_at(cadsl,
+    ASL = ASL,
+    ASL_2 = ASL_2,
+    code = 'ASL <- cadsl
+ASL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ADSL", "ADSL_2"),
+      dataname = c("ASL", "ASL_2"),
       selected = list(
         data_extract_spec(
-          dataname = "ADSL",
+          dataname = "ASL",
           columns = columns_spec(
             label = "Selected columns",
-            choices = colnames(ADSL),
+            choices = colnames(ASL),
             selected = c("AGE", "ACTARM", "SEX"),
             multiple = TRUE,
             fixed = FALSE
           )
         ),
         data_extract_spec(
-          dataname = "ADSL_2",
+          dataname = "ASL_2",
           columns = columns_spec(
             label = "Selected columns",
-            choices = colnames(ADSL_2),
+            choices = colnames(ASL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
             multiple = TRUE,
             fixed = FALSE
@@ -139,27 +139,27 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
+    ASL = ASL,
     ADRS = ADRS,
     ADTTE = ADTTE,
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADTTE"),
       selected = list(
         data_extract_spec(
-          dataname = "ADSL",
+          dataname = "ASL",
           columns = columns_spec(
-            choices = names(ADSL),
+            choices = names(ASL),
             selected = c("AGE", "SEX"),
             multiple = TRUE,
             fixed = FALSE

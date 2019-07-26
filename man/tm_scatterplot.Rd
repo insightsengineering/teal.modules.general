@@ -53,19 +53,19 @@ Create a plot with the \code{\link{plot}[base]} function
 
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
-    code = "ADSL <- cadsl",
+    ASL = ASL,
+    code = "ASL <- cadsl",
     check = FALSE),
   modules = root_modules(
     tm_scatterplot(
       "Scatterplot Choices",
-      dataname = "ADSL",
+      dataname = "ASL",
       x = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "AGE",
@@ -75,7 +75,7 @@ app <- init(
         )
       ),
       y = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -85,7 +85,7 @@ app <- init(
         )
       ),
       color_by = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("RACE"),
           selected = "RACE", # todo: how to select nothing
@@ -104,22 +104,22 @@ app <- init(
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ASL <- cadsl
 ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
-    ADSL = ADSL,
+    ASL = ASL,
     ADRS = ADRS,
     ADTTE = ADTTE,
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = FALSE
   ),
   modules = root_modules(
     tm_scatterplot(
       label = "Scatterplot on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
@@ -151,7 +151,7 @@ app <- init(
         )
       ),
       color_by = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ASL",
         columns = columns_spec(
           choices = c("AGE", "SEX"),
           selected = "AGE",
