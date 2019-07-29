@@ -71,7 +71,7 @@
 #' ASL <- mutate_at(ASL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'  "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
 #' keys(ASL) <- c("STUDYID", "USUBJID")
 #'
 #'
@@ -103,16 +103,16 @@
 #'         dataname = "ASL",
 #'         columns = columns_spec(
 #'          label = "Select variable",
-#'           choices = c("STRATA1", "STRATA2"),
-#'           selected = c("STRATA1"),
+#'           choices = c("BMRKR1", "BMRKR2"),
+#'           selected = c("BMRKR1"),
 #'           multiple = FALSE
 #'         )),
 #'       regressor = data_extract_spec(
 #'         dataname = "ASL_2",
 #'         columns = columns_spec(
 #'           label = "Select variables",
-#'           choices = c("AGE", "COUNTRY", "RACE"),
-#'           selected = c("AGE", "COUNTRY", "RACE"),
+#'           choices = c("AGE", "RACE", "COUNTRY"),
+#'           selected = c("AGE", "RACE"),
 #'           multiple = TRUE
 #'         ))
 #'     )
@@ -185,7 +185,7 @@
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
+#'             selected = levels(ADLB$AVISIT)[2],
 #'             multiple = FALSE,
 #'             label = "Choose visit"
 #'           )

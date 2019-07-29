@@ -341,8 +341,8 @@ app <- init(
      y = data_extract_spec(
        dataname = "ASL",
        columns = columns_spec(
-         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-         selected = "AGE",
+         choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
+         selected = "BMRKR1",
          multiple = FALSE,
          fixed = FALSE
       )
@@ -447,8 +447,8 @@ app <- init(
      y = data_extract_spec(
        dataname = "ASL",
        columns = columns_spec(
-         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-         selected = "AGE",
+         choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
+         selected = "BMRKR1",
          multiple = FALSE,
          fixed = FALSE
       )
