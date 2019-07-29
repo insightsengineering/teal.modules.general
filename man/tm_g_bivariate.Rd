@@ -156,4 +156,207 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# datasets: multiple long datasets
+library(random.cdisc.data)
+
+ASL <- cadsl
+ADRS <- cadrs
+ADTTE <- cadtte
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    ADTTE = ADTTE,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_bivariate(
+      label = "Bivariate Plots of two long datasets",
+      dataname = c("ASL", "ADRS", "ADTTE"),
+      x = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = c("AVAL", "AVALC"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
+                          1, paste, collapse = " - "),
+          selected = "OVRINV - Screening",
+          multiple = TRUE,
+          label = "ADRS filter"
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADTTE",
+        columns = columns_spec(
+          choices = c("AVAL", "CNSR"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = c("PARAMCD"),
+          choices = unique(ADTTE$PARAMCD),
+          selected = "OS",
+          multiple = FALSE,
+          label = "ADTTE filter"
+        )
+      ),
+      row_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("SEX", "RACE"),
+          selected = NULL,
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("SEX", "RACE"),
+          selected = NULL,
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      expert_settings = TRUE,
+      plot_height = c(600, 200, 2000),
+      ggtheme = "grey"
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: different subsets of long dataset
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADLB <- cadlb
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- teal::init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADLB = ADLB,
+    code = 'ASL <- cadsl
+            ADLB <- cadlb
+            keys(ASL) <- c("STUDYID", "USUBJID")
+            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_bivariate(
+      dataname = "ADLB",
+      x = data_extract_spec(
+        dataname = "ADLB",
+        filter = filter_spec(
+          vars = "PARAMCD",
+          choices = as.character(unique(ADLB$PARAMCD)),
+          selected = as.character(unique(ADLB$PARAMCD))[1],
+          multiple = FALSE,
+          label = "Choose endpoint"
+        ),
+        columns = columns_spec(
+          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          selected = c("AVAL"),
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Variable"
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADLB",
+        filter = filter_spec(
+          vars = "PARAMCD",
+          choices = as.character(unique(ADLB$PARAMCD)),
+          selected = as.character(unique(ADLB$PARAMCD))[1],
+          multiple = FALSE,
+          label = "Choose endpoint"
+        ),
+        columns = columns_spec(
+          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Variable"
+        )
+      ),
+      use_density = FALSE,
+      row_facet = data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAMCD",
+            choices = levels(ADLB$PARAMCD),
+            selected = levels(ADLB$PARAMCD)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          )
+        ),
+        columns = columns_spec(
+          choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+          selected = "",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "Facetting variable"
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAMCD",
+            choices = levels(ADLB$PARAMCD),
+            selected = levels(ADLB$PARAMCD)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose endpoint"
+          )
+        ),
+        columns = columns_spec(
+          choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+          selected = "",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "Facetting variable"
+        )
+      ),
+      expert_settings = TRUE,
+      plot_height = c(600, 200, 2000),
+      ggtheme = "grey"
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
 }
