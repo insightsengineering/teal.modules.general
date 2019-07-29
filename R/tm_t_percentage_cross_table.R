@@ -52,6 +52,91 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'            ADLB <- cadlb
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_t_percentage_cross_table(
+#'       label = "Cross Table",
+#'       dataname = "ADLB",
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("STRATA1", "STRATA2"),
+#'           selected = "STRATA1",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("STRATA1", "STRATA2"),
+#'           selected = "STRATA1",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
                                         dataname,
                                         x,

@@ -61,6 +61,91 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'            ADLB <- cadlb
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
+#'   root_modules(
+#'     tm_table(
+#'       "Table Choices",
+#'       dataname =  "ADLB",
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = base::setdiff(names(ADLB), keys(ADLB)),
+#'           selected = base::setdiff(names(ADLB), keys(ADLB))[1],
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = base::setdiff(names(ADLB), keys(ADLB)),
+#'           selected = base::setdiff(names(ADLB), keys(ADLB))[2],
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_table <- function(label,
                      dataname,
                      x,

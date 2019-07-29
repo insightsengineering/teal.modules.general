@@ -122,6 +122,127 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- teal::init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'             ADLB <- cadlb
+#'             keys(ASL) <- c("STUDYID", "USUBJID")
+#'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE),
+#'   modules = root_modules(
+#'     tm_g_bivariate(
+#'       dataname = "ADLB",
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = filter_spec(
+#'           vars = "PARAMCD",
+#'           choices = as.character(unique(ADLB$PARAMCD)),
+#'           selected = as.character(unique(ADLB$PARAMCD))[1],
+#'           multiple = FALSE,
+#'           label = "Choose endpoint"
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
+#'           selected = c("AVAL"),
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = filter_spec(
+#'           vars = "PARAMCD",
+#'           choices = as.character(unique(ADLB$PARAMCD)),
+#'           selected = as.character(unique(ADLB$PARAMCD))[1],
+#'           multiple = FALSE,
+#'           label = "Choose endpoint"
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       use_density = FALSE,
+#'       row_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+#'           selected = "",
+#'           multiple = TRUE,
+#'           fixed = FALSE,
+#'           label = "Facetting variable"
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+#'           selected = "",
+#'           multiple = TRUE,
+#'           fixed = FALSE,
+#'           label = "Facetting variable"
+#'         )
+#'       ),
+#'       expert_settings = TRUE,
+#'       plot_height = c(600, 200, 2000),
+#'       ggtheme = "grey"
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x,
