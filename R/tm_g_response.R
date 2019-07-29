@@ -51,8 +51,8 @@
 #'       x = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(
-#'           choices = c("AGE", "SEX"),
-#'           selected = "AGE",
+#'           choices = c("AGE", "SEX", "RACE"),
+#'           selected = "RACE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )

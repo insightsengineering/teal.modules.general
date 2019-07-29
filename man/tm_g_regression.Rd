@@ -347,8 +347,8 @@ app <- init(
      regressor = data_extract_spec(
        dataname = "ASL",
        columns = columns_spec(
-         choices = c("BMRKR1", "BMRKR2"),
-         selected = c("BMRKR1", "BMRKR2"),
+         choices = c("BMRKR1", "BMRKR2", "AGE"),
+         selected = c("AGE"),
          multiple = TRUE,
          fixed = FALSE
       )
