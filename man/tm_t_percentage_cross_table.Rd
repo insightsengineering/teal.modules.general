@@ -174,7 +174,7 @@ app <- init(
           selected = "AVALC",
           multiple = FALSE,
           fixed = FALSE
-        ),
+        )
       ),
       y = data_extract_spec(
         dataname = "ADTTE",
