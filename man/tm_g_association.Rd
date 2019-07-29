@@ -238,7 +238,7 @@ app <- init(
        columns = columns_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = c("AGE"),
-         multiple = F,
+         multiple = FALSE,
          fixed = FALSE
       )
      ),
