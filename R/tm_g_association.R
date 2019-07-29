@@ -42,7 +42,7 @@
 #'         columns = columns_spec(
 #'           label = "Associated variables",
 #'           choices = names(ASL),
-#'           selected = "SEX",
+#'           selected = "BMRKR1",
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
@@ -89,7 +89,7 @@
 #'         columns = columns_spec(
 #'           label = "Select variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
-#'           selected = c("AGE"),
+#'           selected = c("STRATA1"),
 #'           multiple = FALSE
 #'         )),
 #'       vars = data_extract_spec(
@@ -130,8 +130,8 @@
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
 #'             label = "Reference variable",
-#'             choices = c("AVAL", "AVALC"),
-#'             selected = "AVAL",
+#'             choices = c("AGE", "SEX"),
+#'             selected = c("AGE"),
 #'             fixed = FALSE
 #'           )
 #'         ),
@@ -151,7 +151,7 @@
 #'           columns = columns_spec(
 #'             label = "Associated variables",
 #'             choices = names(ADRS),
-#'             selected = c("AGE", "SEX"),
+#'             selected = c("AVAL", "AVALC"),
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
@@ -164,18 +164,18 @@
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
-#'           columns = columns_spec(
-#'             label = "Associated variables",
-#'             choices = names(ADTTE),
-#'             selected = NULL,
-#'             fixed = FALSE
-#'           ),
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
 #'             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE,
 #'             label = "ADRS filter"
+#'           ),
+#'           columns = columns_spec(
+#'             label = "Associated variables",
+#'             choices = names(ADTTE),
+#'             selected = NULL,
+#'             fixed = FALSE
 #'           )
 #'         )
 #'       )
@@ -211,6 +211,15 @@
 #'      label = "Association Plots",
 #'      dataname = c("ASL", "ADRS"),
 #'      ref = data_extract_spec(
+#'        dataname = "ASL",
+#'        columns = columns_spec(
+#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+#'          selected = c("AGE"),
+#'          multiple = F,
+#'          fixed = FALSE
+#'       )
+#'      ),
+#'      vars = data_extract_spec(
 #'        dataname = "ADRS",
 #'        filter = list(
 #'          filter_spec(
@@ -224,7 +233,7 @@
 #'            vars = "AVISIT",
 #'            choices = levels(ADRS$AVISIT),
 #'            selected = levels(ADRS$AVISIT)[1],
-#'            multiple = FALSE,
+#'            multiple = F,
 #'            label = "Choose visit"
 #'          )
 #'        ),
@@ -234,16 +243,7 @@
 #'          multiple = FALSE,
 #'          label = "variable"
 #'        )
-#'     ),
-#'      vars = data_extract_spec(
-#'        dataname = "ASL",
-#'        columns = columns_spec(
-#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'          selected = c("SEX", "AGE"),
-#'          multiple = TRUE,
-#'          fixed = FALSE
 #'       )
-#'      )
 #'     )
 #'   )
 #' )

@@ -65,7 +65,7 @@ app <- init(
         columns = columns_spec(
           label = "Associated variables",
           choices = names(ASL),
-          selected = "SEX",
+          selected = "BMRKR1",
           multiple = TRUE,
           fixed = FALSE
         )
@@ -112,7 +112,7 @@ app <- init(
         columns = columns_spec(
           label = "Select variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
-          selected = c("AGE"),
+          selected = c("STRATA1"),
           multiple = FALSE
         )),
       vars = data_extract_spec(
@@ -153,8 +153,8 @@ app <- init(
           dataname = "ADRS",
           columns = columns_spec(
             label = "Reference variable",
-            choices = c("AVAL", "AVALC"),
-            selected = "AVAL",
+            choices = c("AGE", "SEX"),
+            selected = c("AGE"),
             fixed = FALSE
           )
         ),
@@ -174,7 +174,7 @@ app <- init(
           columns = columns_spec(
             label = "Associated variables",
             choices = names(ADRS),
-            selected = c("AGE", "SEX"),
+            selected = c("AVAL", "AVALC"),
             fixed = FALSE
           ),
           filter = filter_spec(
@@ -187,18 +187,18 @@ app <- init(
         ),
         data_extract_spec(
           dataname = "ADTTE",
-          columns = columns_spec(
-            label = "Associated variables",
-            choices = names(ADTTE),
-            selected = NULL,
-            fixed = FALSE
-          ),
           filter = filter_spec(
             vars = c("PARAMCD", "AVISIT"),
             choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = TRUE,
             label = "ADRS filter"
+          ),
+          columns = columns_spec(
+            label = "Associated variables",
+            choices = names(ADTTE),
+            selected = NULL,
+            fixed = FALSE
           )
         )
       )
@@ -234,6 +234,15 @@ app <- init(
      label = "Association Plots",
      dataname = c("ASL", "ADRS"),
      ref = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+         selected = c("AGE"),
+         multiple = F,
+         fixed = FALSE
+      )
+     ),
+     vars = data_extract_spec(
        dataname = "ADRS",
        filter = list(
          filter_spec(
@@ -257,16 +266,7 @@ app <- init(
          multiple = FALSE,
          label = "variable"
        )
-    ),
-     vars = data_extract_spec(
-       dataname = "ASL",
-       columns = columns_spec(
-         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-         selected = c("SEX", "AGE"),
-         multiple = TRUE,
-         fixed = FALSE
       )
-     )
     )
   )
 )
