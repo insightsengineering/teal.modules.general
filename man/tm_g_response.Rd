@@ -68,8 +68,8 @@ app <- init(
       response = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-          choices = c("AGE","SEX"),
-          selected = "AGE",
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE,
           label = "variable"
@@ -78,8 +78,8 @@ app <- init(
       x = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = "BMRKR1",
+          choices = c("AGE", "SEX"),
+          selected = "AGE",
           multiple = FALSE,
           fixed = FALSE
         )
@@ -118,7 +118,7 @@ app <- init(
             ASL <- mutate_at(ASL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
-                     "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+                     "SEX", "BMRKR1", "AGE", "USUBJID", "STUDYID", "BMRKR2")
             ASL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
@@ -132,8 +132,8 @@ app <- init(
         dataname = "ASL",
         columns = columns_spec(
          label = "Select variable",
-          choices = c("AGE", "SEX", "STRATA1", "RACE"),
-          selected = c("AGE"),
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
           multiple = FALSE
         )),
       x = data_extract_spec(
@@ -156,29 +156,47 @@ library(random.cdisc.data)
 
 ASL <- cadsl
 ADRS <- cadrs
-ADTTE <- cadtte
+ADLB <- cadlb
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
     ADRS = ADRS,
-    ADTTE = ADTTE,
-    code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    ADLB = ADLB,
+    code = "ASL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_response(
       label = "Response Plot on two long datasets",
-      dataname = c("ASL", "ADRS", "ADTTE"),
+      dataname = c("ASL", "ADRS", "ADLB"),
       response = data_extract_spec(
-        dataname = "ADRS",
-        columns = columns_spec(
-          choices = "AVALC",
-          selected = "AVALC",
-          multiple = FALSE,
-          fixed = TRUE,
-          label = "variable"
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAMCD",
+            choices = levels(ADLB$PARAMCD),
+            selected = levels(ADLB$PARAMCD)[1],
+            multiple = FALSE,
+            label = "Choose measurement"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
         ),
+        columns = columns_spec(
+          choices = c("AVAL", "AVALC"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      x = data_extract_spec(
+        dataname = "ADRS",
         filter = list(
           filter_spec(
             vars = "PARAMCD",
@@ -192,24 +210,15 @@ app <- init(
             choices = levels(ADRS$AVISIT),
             selected = levels(ADRS$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose endpoint"
+            label = "Choose visit"
           )
-        )
-      ),
-      x = data_extract_spec(
-        dataname = "ADTTE",
-        columns = columns_spec(
-          choices = c("CNSR", "EVENTDESC"),
-          selected = "CNSR",
-          multiple = FALSE,
-          fixed = FALSE
         ),
-        filter = filter_spec(
-          vars = c("PARAMCD"),
-          choices = unique(ADTTE$PARAMCD),
-          selected = "OS",
+        columns = columns_spec(
+          choices = "AVALC",
+          selected = "AVALC",
           multiple = FALSE,
-          label = "ADTTE filter"
+          fixed = TRUE,
+          label = "variable"
         )
       ),
       row_facet = data_extract_spec(
