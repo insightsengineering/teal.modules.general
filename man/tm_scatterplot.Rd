@@ -113,7 +113,7 @@ ASL <- mutate_at(ASL,
   .funs = funs(as.factor(.))
 ) \%>\% select(
   "ARM", "ACTARM", "ACTARMCD",
-  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
+  "SEX", "BMRKR1", "BMRKR2", "AGE", "USUBJID", "STUDYID"
 )
 keys(ASL) <- c("STUDYID", "USUBJID")
 
@@ -142,16 +142,16 @@ keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
         dataname = "ASL",
         columns = columns_spec(
          label = "Select variable",
-          choices = c("AGE", "SEX", "STRATA1", "RACE"),
-          selected = c("AGE"),
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
           multiple = FALSE
         )),
       y = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
           label = "Select variables",
-          choices = c("COUNTRY", "AGE", "RACE"),
-          selected = "RACE",
+          choices = c("AGE", "RACE"),
+          selected = "AGE",
           multiple = FALSE
         )),
       color_by = data_extract_spec(
@@ -260,6 +260,15 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
    tm_scatterplot("Scatterplot for wide and long data",
      dataname = c("ASL", "ADRS"),
      x = data_extract_spec(
+          dataname = "ASL",
+          columns = columns_spec(
+            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+            selected = "AGE",
+            multiple = FALSE,
+            fixed = FALSE
+          )
+        ),
+     y = data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
@@ -282,15 +291,6 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
             selected = "AVAL",
             multiple = FALSE,
             label = "variable"
-          )
-        ),
-     y = data_extract_spec(
-          dataname = "ASL",
-          columns = columns_spec(
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-            selected = "AGE",
-            multiple = FALSE,
-            fixed = FALSE
           )
         ),
      color_by = data_extract_spec(
