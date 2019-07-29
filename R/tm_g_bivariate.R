@@ -321,39 +321,24 @@
 #'       )
 #'      ),
 #'      row_facet = data_extract_spec(
-#'         dataname = "ADRS",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAM",
-#'             choices = unique(ADRS$PARAM),
-#'             selected = unique(ADRS$PARAM)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADRS$AVISIT),
-#'             selected = levels(ADRS$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Choose visit"
-#'           )
-#'         ),
-#'         columns = columns_spec(
-#'           choices = c("__NONE__", "AVAL"),
-#'           selected = NULL,
+#'        dataname = "ADRS",
+#'        columns = columns_spec(
+#'           choices = c("__NONE__", "PARAMCD"),
+#'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "variable"
 #'         )
-#'       ),
+#'      ),
 #'      col_facet = data_extract_spec(
-#'        dataname = "ASL",
+#'        dataname = "ADRS",
 #'        columns = columns_spec(
-#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'          selected = "SEX",
-#'          multiple = FALSE,
-#'          fixed = FALSE
-#'       )
+#'           choices = c("__NONE__", "AVISIT"),
+#'           selected = "AVISIT",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "variable"
+#'         )
 #'      )
 #'     )
 #'   )
