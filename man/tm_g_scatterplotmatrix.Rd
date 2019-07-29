@@ -31,46 +31,33 @@ output to put the output into context. For example the
 Create a scatterplot matrix
 }
 \examples{
+
+# datasets: single wide dataset
+
 library(random.cdisc.data)
 library(tern)
 
 ASL <- cadsl
 ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
 keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 
 app <- init(
   data = cdisc_data(
-       ASL = ASL,
-       ADTE = ADTE,
-       code = 'ASL <- cadsl
-               ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-               keys(ASL) <- c("STUDYID", "USUBJID")
-               keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-               ',
-       check = FALSE),
+    ASL = ASL,
+    code = 'ASL <- cadsl
+keys(ASL) <- c("STUDYID", "USUBJID")',
+    check = FALSE
+  ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ASL","ADTE"),
+      dataname = c("ASL"),
       selected = data_extract_spec(
-        dataname = "ADTE",
-        filter = filter_spec(
-          vars = c("PARAMCD"),
-          sep = " - ",
-          choices = c("OS", "PFS", "EFS"),
-          selected = "OS",
-          multiple = TRUE,
-          label = "Choose endpoint"
-        ),
+        dataname = "ASL",
         columns = columns_spec(
           label = "Selected columns",
-          choices = colnames(ADTE),
-          selected = if (all(c('AGE', 'SEX') \%in\% colnames(ADTE))) {
-            c('AGE', 'SEX')
-          } else {
-            colnames(ADTE)[1:2]
-          },
+          choices = colnames(ASL),
+          selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,
           fixed = FALSE
         )
@@ -78,11 +65,76 @@ app <- init(
     )
   )
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+# datasets: different wide
 
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+  .funs = funs(as.factor(.))
+) \%>\% select(
+  "ARM", "ACTARM", "ACTARMCD",
+  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
+)
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ASL_2 <- mutate_at(cadsl,
+  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+  .funs = funs(as.factor(.))
+) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ASL_2) <- c("STUDYID", "USUBJID")
+
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ASL_2 = ASL_2,
+    code = 'ASL <- cadsl
+ASL_2 <- mutate_at(cadsl,
+.vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+.funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
+    check = FALSE
+  ),
+  modules = root_modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix",
+      dataname = c("ASL", "ASL_2"),
+      selected = list(
+        data_extract_spec(
+          dataname = "ASL",
+          columns = columns_spec(
+            label = "Selected columns",
+            choices = colnames(ASL),
+            selected = c("AGE", "ACTARM", "SEX"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ASL_2",
+          columns = columns_spec(
+            label = "Selected columns",
+            choices = colnames(ASL_2),
+            selected = c("COUNTRY", "ACTARM", "STRATA2"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        )
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
@@ -103,15 +155,6 @@ app <- init(
       label = "Scatterplot matrix on two long datasets",
       dataname = c("ASL", "ADRS", "ADTTE"),
       selected = list(
-        data_extract_spec(
-          dataname = "ASL",
-          columns = columns_spec(
-            choices = names(ASL),
-            selected = c("AGE", "SEX"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        ),
         data_extract_spec(
           dataname = "ADRS",
           columns = columns_spec(
