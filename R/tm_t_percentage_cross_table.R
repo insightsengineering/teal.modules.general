@@ -36,7 +36,7 @@
 #'         dataname = "ASL",
 #'         columns = columns_spec(
 #'           label = "Select X Variable",
-#'           choices = c("STRATA1", "STRATA2"),
+#'           choices = c("COUNTRY", "STUDYID"),
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -44,7 +44,7 @@
 #'         dataname = "ASL",
 #'         columns = columns_spec(
 #'           label = "Select Y Variable",
-#'           choices = c("STRATA2", "STRATA1"),
+#'           choices = c("SEX", "RACE"),
 #'           fixed = FALSE
 #'         )
 #'       )
@@ -138,33 +138,33 @@
 #'       dataname = c("ASL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
-#'           choices = names(ADRS),
-#'           selected = "AVALC",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         ),
 #'         filter = filter_spec(
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)),
 #'                           1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
 #'           multiple = TRUE
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADTTE",
+#'         ),
 #'         columns = columns_spec(
-#'           choices = names(ADTTE),
-#'           selected = "CNSR",
+#'           choices = names(ADRS),
+#'           selected = "AVALC",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADTTE",
 #'         filter = filter_spec(
 #'           vars = c("PARAMCD"),
 #'           choices = unique(ADTTE$PARAMCD),
 #'           selected = "OS",
 #'           multiple = TRUE
+#'         ),
+#'         columns = columns_spec(
+#'           choices = names(ADTTE),
+#'           selected = "CNSR",
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         )
 #'       )
 #'     )
@@ -216,8 +216,8 @@
 #'             )
 #'           ),
 #'           columns = columns_spec(
-#'             choices = "AVAL",
-#'             selected = "AVAL",
+#'             choices = "STUDYID",
+#'             selected = "STUDYID",
 #'             multiple = FALSE,
 #'             label = "variable"
 #'           )
