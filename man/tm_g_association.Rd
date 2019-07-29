@@ -256,7 +256,7 @@ app <- init(
            vars = "AVISIT",
            choices = levels(ADRS$AVISIT),
            selected = levels(ADRS$AVISIT)[1],
-           multiple = FALSE,
+           multiple = F,
            label = "Choose visit"
          )
        ),

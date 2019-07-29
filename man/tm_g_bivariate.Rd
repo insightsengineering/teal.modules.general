@@ -178,6 +178,7 @@ app <- init(
           selected = "RACE",
           multiple = FALSE
         )),
+      # Row facetting by first data set
       row_facet = data_extract_spec(
         dataname = "ASL",
         columns = columns_spec(
@@ -188,8 +189,9 @@ app <- init(
          fixed = FALSE
         )
       ),
+      # Col facetting by second data set
       col_facet = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ASL_2",
         columns = columns_spec(
           label = "Associated variables",
           choices = names(ASL),
@@ -471,7 +473,7 @@ app <- init(
         ),
         columns = columns_spec(
           choices = c("__NONE__", "AVAL"),
-          selected = NULL,
+          selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
           label = "variable"
