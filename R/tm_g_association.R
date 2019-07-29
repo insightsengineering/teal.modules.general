@@ -233,7 +233,7 @@
 #'            vars = "AVISIT",
 #'            choices = levels(ADRS$AVISIT),
 #'            selected = levels(ADRS$AVISIT)[1],
-#'            multiple = F,
+#'            multiple = FALSE,
 #'            label = "Choose visit"
 #'          )
 #'        ),
