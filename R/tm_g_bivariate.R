@@ -518,7 +518,7 @@
 #'           filter_spec(
 #'             vars = "STRATA1",
 #'             choices = levels(ADLB$STRATA1),
-#'             selected = levels(ADLB$STRATA1)[1],
+#'             selected = levels(ADLB$STRATA1)[2],
 #'             multiple = FALSE,
 #'             label = "Choose category"
 #'           )
