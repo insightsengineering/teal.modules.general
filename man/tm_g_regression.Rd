@@ -37,43 +37,152 @@ Scatterplot and Regression Model
 library(random.cdisc.data)
 library(tern)
 
-# datasets: wide and long
+
+# datasets: same wide
+
+library(random.cdisc.data)
+library(tern)
 
 ASL <- cadsl
-ALB <- cadlb
-
 keys(ASL) <- c("STUDYID", "USUBJID")
-keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     ASL = ASL,
-    ALB = ALB,
     code = 'ASL <- cadsl
-            ALB <- cadlb
-            keys(ASL) <- c("STUDYID", "USUBJID")
-            keys(ALB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+            keys(ASL) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
       dataname = c("ASL", "ALB"),
       response = data_extract_spec(
-        dataname = "ALB",
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = "BMRKR1",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      regressor = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("AGE", "SEX", "RACE"),
+          selected = c("AGE"),
+          multiple = TRUE,
+          fixed = FALSE
+        )
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: different wide
+
+library(random.cdisc.data)
+library(tern)
+library(dplyr)
+
+ASL <- cadsl
+ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+keys(ASL) <- c("STUDYID", "USUBJID")
+
+
+ASL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+keys(ASL_2) <- c("STUDYID", "USUBJID")
+
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ASL_2 = ASL_2,
+    code = 'ASL <- cadsl
+            ASL <- mutate_at(ASL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                     "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+            ASL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+            keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL", "ASL_2"),
+      response = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+         label = "Select variable",
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
+          multiple = FALSE
+        )),
+      regressor = data_extract_spec(
+        dataname = "ASL_2",
+        columns = columns_spec(
+          label = "Select variables",
+          choices = c("AGE", "RACE", "COUNTRY"),
+          selected = c("AGE", "RACE"),
+          multiple = TRUE
+        ))
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: same long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADLB <- cadlb
+
+keys(ASL) <-  c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADLB = ADLB,
+    code = 'ASL <- cadsl
+            ADLB <- cadlb
+            keys(ASL) <-  c("STUDYID", "USUBJID")
+            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL", "ADLB"),
+      response = data_extract_spec(
+        dataname = "ADLB",
         filter = list(
           filter_spec(
-            vars = "PARAMCD",
-            choices = levels(ALB$PARAMCD),
-            selected = levels(ALB$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
+            vars = "PARAM",
+            choices = levels(ADLB$PARAM),
+            selected = levels(ADLB$PARAM)[c(1,2)],
+            multiple = TRUE,
+            label = "Choose measurement"
           ),
           filter_spec(
             vars = "AVISIT",
-            choices = levels(ALB$AVISIT),
-            selected = levels(ALB$AVISIT)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = TRUE,
+            label = "Choose visit"
           )
         ),
         columns = columns_spec(
@@ -85,17 +194,33 @@ app <- init(
         )
       ),
       regressor = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADLB$PARAM),
+            selected = levels(ADLB$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose measurement"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[2],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
         columns = columns_spec(
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = c("BMRKR1"),
-          multiple = FALSE,
-          fixed = FALSE
+          choices = "AVAL",
+          selected = "AVAL",
+          label = "variable"
         )
       )
     )
   )
 )
+
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -160,6 +285,167 @@ app <- init(
             multiple = TRUE,
             fixed = FALSE
           )
+        )
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: wide and long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADLB <- cadlb
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+ data = cdisc_data(
+   ASL = ASL,
+   ADLB = ADLB,
+   code = 'ASL <- cadsl
+           ADLB <- cadlb
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+   check = FALSE),
+ modules = root_modules(
+   tm_g_regression(
+     label = "Regression",
+     dataname = c("ASL", "ADLB"),
+     response = data_extract_spec(
+       dataname = "ADLB",
+       filter = list(
+         filter_spec(
+           vars = "PARAM",
+          choices = levels(ADLB$PARAM),
+           selected = levels(ADLB$PARAM)[1],
+           multiple = FALSE,
+           label = "Choose measurement"
+         ),
+         filter_spec(
+           vars = "AVISIT",
+           choices = levels(ADLB$AVISIT),
+           selected = levels(ADLB$AVISIT)[1],
+           multiple = FALSE,
+           label = "Choose visit"
+         )
+       ),
+       columns = columns_spec(
+         choices = "AVAL",
+         selected = "AVAL",
+         multiple = FALSE,
+         fixed = FALSE,
+         label = "variable"
+       )
+    ),
+     regressor = data_extract_spec(
+       dataname = "ASL",
+       columns = columns_spec(
+         choices = c("BMRKR1", "BMRKR2", "AGE"),
+         selected = c("AGE"),
+         multiple = TRUE,
+         fixed = FALSE
+      )
+     )
+   )
+)
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: wide, long, long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADLB <- cadlb
+ADRS <- cadrs
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADLB = ADLB,
+    code = 'ASL <- cadsl
+            ADLB <- cadlb
+            keys(ASL) <- c("STUDYID", "USUBJID")
+            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_regression(
+      label = "Regression",
+      dataname = c("ASL", "ADLB", "ADRS"),
+      response = list(data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADLB$PARAM),
+            selected = levels(ADLB$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose measurement"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "variable"
+        )
+      ),
+      data_extract_spec(
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "ARMCD",
+            choices = levels(ADRS$ARMCD),
+            selected = levels(ADRS$ARMCD)[1],
+            multiple = FALSE,
+            label = "Choose ARM"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      )),
+      regressor = data_extract_spec(
+        dataname = "ASL",
+        columns = columns_spec(
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
+          multiple = TRUE,
+          fixed = FALSE
         )
       )
     )
