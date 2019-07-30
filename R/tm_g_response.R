@@ -286,6 +286,141 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'            ADLB <- cadrs
+#'            keys(ASL) <- c("USUBJID", "STUDYID")
+#'            keys(ADLB) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_response(
+#'       dataname = "ADLB",
+#'       response = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("ARMCD", "ACTARMCD"),
+#'           selected = "ARMCD",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       row_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("", "SEX", "RACE"),
+#'           selected = "",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("", "SEX", "RACE"),
+#'           selected = "",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_g_response <- function(label = "Response Plot",
                           dataname,
                           response,

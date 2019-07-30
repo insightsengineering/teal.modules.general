@@ -456,6 +456,144 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
+#'#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- teal::init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'             ADLB <- cadlb
+#'             keys(ASL) <- c("STUDYID", "USUBJID")
+#'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE),
+#'   modules = root_modules(
+#'     tm_g_bivariate(
+#'       dataname = "ADLB",
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVISIT", "AVISITN"),
+#'           selected = c("AVISIT"),
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[2],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "CHG"),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       use_density = FALSE,
+#'       row_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
+#'           selected = "",
+#'           multiple = TRUE,
+#'           fixed = FALSE,
+#'           label = "Facetting variable"
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
+#'           selected = "",
+#'           multiple = TRUE,
+#'           fixed = FALSE,
+#'           label = "Facetting variable"
+#'         )
+#'       ),
+#'       expert_settings = TRUE,
+#'       plot_height = c(600, 200, 2000),
+#'       ggtheme = "grey"
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            dataname,
                            x,

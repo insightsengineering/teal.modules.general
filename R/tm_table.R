@@ -61,6 +61,73 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'            ADLB <- cadlb
+#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
+#'   root_modules(
+#'     tm_table(
+#'       "Table Choices",
+#'       dataname =  "ADLB",
+#'       x = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = filter_spec(
+#'           vars = "ARMCD",
+#'           choices = levels(ADLB$ARMCD),
+#'           selected = levels(ADLB$ARMCD)[1],
+#'           multiple = FALSE,
+#'           label = "Choose ARM"
+#'         ),
+#'         columns = columns_spec(
+#'           choices = names(ADLB),
+#'           selected = "AVISIT",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = filter_spec(
+#'           vars = "ARMCD",
+#'           choices = levels(ADLB$ARMCD),
+#'           selected = levels(ADLB$ARMCD)[1],
+#'           multiple = FALSE,
+#'           label = "Choose ARM"
+#'         ),
+#'         columns = columns_spec(
+#'           choices = names(ADLB),
+#'           selected = "PARAMCD",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_table <- function(label,
                      dataname,
                      x,

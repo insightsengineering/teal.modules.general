@@ -56,4 +56,36 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# datasets: different subsets of long dataset
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADLB <- cadlb
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADLB = ADLB,
+    code = 'ASL <- cadsl
+           ADLB <- cadlb
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ASL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
 }

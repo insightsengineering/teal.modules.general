@@ -434,7 +434,89 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-
+#' # datasets: different subsets of long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADLB <- cadlb
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADLB = ADLB,
+#'     code = 'ASL <- cadsl
+#'             ADLB <- cadlb
+#'             keys(ASL) <- c("STUDYID", "USUBJID")
+#'             keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+#'     check = FALSE),
+#'   modules = root_modules(
+#'     tm_g_regression(
+#'       label = "Regression",
+#'       dataname = "ADLB",
+#'       response = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "CHG"),
+#'           selected = "CHG",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       regressor = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[2],
+#'             multiple = FALSE,
+#'             label = "Choose visit"
+#'           )
+#'         ),
+#'         columns = columns_spec(
+#'           choices = c("AVAL", "CHG", "BMRKR1", "BRRKR2", "AGE", "STRATA1", "STRATA2"),
+#'           selected = "AVAL",
+#'           multiple = TRUE,
+#'           fixed = FALSE,
+#'           label = "Variables"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_g_regression <- function(label = "Regression Analysis",
                             dataname,
                             regressor,
