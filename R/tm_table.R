@@ -16,9 +16,7 @@
 #'   one will be used.
 #' @param pre_output (\code{shiny.tag}) html tags appended below the output
 #' @param post_output (\code{shiny.tag}) html tags appended after the output
-#'
-#' @noRd
-#'
+#' @export
 #' @examples
 #' library(random.cdisc.data)
 #' library(tern)
@@ -89,25 +87,16 @@
 #'       dataname =  "ADLB",
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Choose visit"
-#'           )
+#'         filter = filter_spec(
+#'           vars = "ARMCD",
+#'           choices = levels(ADLB$ARMCD),
+#'           selected = levels(ADLB$ARMCD)[1],
+#'           multiple = FALSE,
+#'           label = "Choose ARM"
 #'         ),
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ADLB), keys(ADLB)),
-#'           selected = base::setdiff(names(ADLB), keys(ADLB))[1],
+#'           choices = names(ADLB),
+#'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Variable"
@@ -115,25 +104,16 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose endpoint"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Choose visit"
-#'           )
+#'         filter = filter_spec(
+#'           vars = "ARMCD",
+#'           choices = levels(ADLB$ARMCD),
+#'           selected = levels(ADLB$ARMCD)[1],
+#'           multiple = FALSE,
+#'           label = "Choose ARM"
 #'         ),
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ADLB), keys(ADLB)),
-#'           selected = base::setdiff(names(ADLB), keys(ADLB))[2],
+#'           choices = names(ADLB),
+#'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Variable"

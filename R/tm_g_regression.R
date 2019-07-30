@@ -171,7 +171,7 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADLB"),
+#'       dataname = "ADLB",
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -191,7 +191,7 @@
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = "AVAL",
+#'           choices = c("AVAL", "CHG"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -211,13 +211,13 @@
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
+#'             selected = levels(ADLB$AVISIT)[2],
 #'             multiple = FALSE,
 #'             label = "Choose visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "BMRKR1", "BRRKR2", "AGE", "STRATA1", "STRATA2"),
+#'           choices = c("AVAL", "CHG", "BMRKR1", "BRRKR2", "AGE", "STRATA1", "STRATA2"),
 #'           selected = "AVAL",
 #'           multiple = TRUE,
 #'           fixed = FALSE,

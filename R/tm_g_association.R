@@ -12,7 +12,7 @@
 #' @param with_show_r_code (\code{logical}) Whether show R Code button shall be enabled
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @noRd
+#' @export
 #' @examples
 #' library(random.cdisc.data)
 #'
@@ -134,6 +134,7 @@
 #' # datasets: different subsets of long dataset
 #'
 #' library(random.cdisc.data)
+#' library(tern)
 #'
 #' ASL <- cadsl
 #' ADLB <- cadlb

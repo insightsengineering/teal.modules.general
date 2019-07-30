@@ -162,25 +162,16 @@ app <- init(
       dataname = "ADLB",
       x = data_extract_spec(
         dataname = "ADLB",
-        filter = list(
-          filter_spec(
-            vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
-            selected = levels(ADLB$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
-            multiple = FALSE,
-            label = "Choose visit"
-          )
+        filter = filter_spec(
+           vars = "ARMCD",
+          choices = levels(ADLB$ARMCD),
+          selected = levels(ADLB$ARMCD)[1],
+          multiple = FALSE,
+          label = "Choose ARM"
         ),
         columns = columns_spec(
-          choices = c("STRATA1", "STRATA2"),
-          selected = "STRATA1",
+          choices = names(ADLB),
+          selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
           label = "Variable"
@@ -188,25 +179,16 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADLB",
-        filter = list(
-          filter_spec(
-            vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
-            selected = levels(ADLB$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Choose endpoint"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
-            multiple = FALSE,
-            label = "Choose visit"
-          )
+        filter = filter_spec(
+          vars = "ARMCD",
+          choices = levels(ADLB$ARMCD),
+          selected = levels(ADLB$ARMCD)[1],
+          multiple = FALSE,
+          label = "Choose ARM"
         ),
         columns = columns_spec(
-          choices = c("STRATA1", "STRATA2"),
-          selected = "STRATA1",
+          choices = names(ADLB),
+          selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
           label = "Variable"

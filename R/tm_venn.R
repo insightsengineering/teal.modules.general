@@ -207,7 +207,7 @@ plot.venn2 <- function(x, ...) {
 
 #' venn2 teal module
 #'
-#' @noRd
+#' @export
 #' @examples
 #'
 #'

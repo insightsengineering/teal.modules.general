@@ -230,16 +230,25 @@
 #'       dataname = "ADLB",
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = filter_spec(
-#'           vars = "PARAMCD",
-#'           choices = as.character(unique(ADLB$PARAMCD)),
-#'           selected = as.character(unique(ADLB$PARAMCD))[1],
-#'           multiple = FALSE,
-#'           label = "Choose endpoint"
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
-#'           selected = c("AVAL"),
+#'           choices = c("AVISIT", "AVISITN"),
+#'           selected = c("AVISIT"),
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Variable"
@@ -247,15 +256,24 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = filter_spec(
-#'           vars = "PARAMCD",
-#'           choices = as.character(unique(ADLB$PARAMCD)),
-#'           selected = as.character(unique(ADLB$PARAMCD))[1],
-#'           multiple = FALSE,
-#'           label = "Choose endpoint"
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAMCD",
+#'             choices = levels(ADLB$PARAMCD),
+#'             selected = levels(ADLB$PARAMCD)[1],
+#'             multiple = FALSE,
+#'             label = "Choose endpoint"
+#'           ),
+#'           filter_spec(
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
+#'             multiple = FALSE,
+#'             label = "Choose category"
+#'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
+#'           choices = c("AVAL", "CHG"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -274,15 +292,15 @@
 #'             label = "Choose endpoint"
 #'           ),
 #'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose category"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+#'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
 #'           selected = "",
 #'           multiple = TRUE,
 #'           fixed = FALSE,
@@ -300,15 +318,15 @@
 #'             label = "Choose endpoint"
 #'           ),
 #'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
+#'             vars = "STRATA1",
+#'             choices = levels(ADLB$STRATA1),
+#'             selected = levels(ADLB$STRATA1)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose category"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("","STRATA1", "STRATA2", "RACE", "SEX"),
+#'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
 #'           selected = "",
 #'           multiple = TRUE,
 #'           fixed = FALSE,

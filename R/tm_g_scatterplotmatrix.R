@@ -175,7 +175,7 @@
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "BMRKR1", "BMRKR2", "AGE"),
+#'           choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE"),
 #'           selected = "AVAL",
 #'           multiple = TRUE,
 #'           fixed = FALSE,

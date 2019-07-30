@@ -207,7 +207,7 @@ app <- init(
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2", "AGE"),
+          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE", "AVISITN"),
           selected = "AVAL",
           multiple = TRUE,
           fixed = FALSE,
@@ -227,13 +227,13 @@ app <- init(
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
+            selected = levels(ADLB$AVISIT)[2],
             multiple = FALSE,
             label = "Choose visit"
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2", "AGE"),
+          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE", "AVISITN"),
           selected = "AVAL",
           multiple = TRUE,
           fixed = FALSE,

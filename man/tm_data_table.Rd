@@ -60,6 +60,7 @@ shinyApp(app$ui, app$server)
 # datasets: different subsets of long dataset
 
 library(random.cdisc.data)
+library(tern)
 
 ASL <- cadsl
 ADLB <- cadlb
@@ -78,8 +79,8 @@ app <- init(
     check = FALSE),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
-                                ADLB = c("STUDYID","AGE")))
+      variables_selected = list(ASL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
   )
 )
 

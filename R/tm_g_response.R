@@ -18,7 +18,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @noRd
+#' @export
 #'
 #' @examples
 #' library(random.cdisc.data)
@@ -191,6 +191,13 @@
 #' # as ggplot only
 #' library(dplyr)
 #' library(forcats)
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ARS <- cadrs
+#' keys(ASL) <- c("USUBJID", "STUDYID")
+#' keys(ARS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")
 #'
 #' ANL <- suppressWarnings(inner_join(ARS, ASL))
 #'
@@ -311,10 +318,10 @@
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
+#'           choices = c("ARMCD", "ACTARMCD"),
+#'           selected = "ARMCD",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
+#'           fixed = FALSE,
 #'           label = "Variable"
 #'         )
 #'       ),
@@ -337,7 +344,7 @@
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("", "SEX", "AGE"),
+#'           choices = c("", "SEX", "RACE"),
 #'           selected = "",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -363,7 +370,7 @@
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("", "SEX", "AGE"),
+#'           choices = c("", "SEX", "RACE"),
 #'           selected = "",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
