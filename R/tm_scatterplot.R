@@ -321,7 +321,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
@@ -345,9 +345,9 @@
 #'           filter_spec(
 #'             vars = "PARAMCD",
 #'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
+#'             selected = levels(ADLB$PARAMCD)[2],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
@@ -373,7 +373,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",

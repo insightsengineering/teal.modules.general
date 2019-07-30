@@ -466,7 +466,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
@@ -478,7 +478,7 @@
 #'         ),
 #'         columns = columns_spec(
 #'           choices = c("AVAL", "CHG"),
-#'           selected = "AVAL",
+#'           selected = "CHG",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Variable"
@@ -492,7 +492,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",

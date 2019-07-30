@@ -487,7 +487,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
@@ -513,7 +513,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
@@ -540,7 +540,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
@@ -566,7 +566,7 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose endpoint"
+#'             label = "Choose measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
