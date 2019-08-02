@@ -145,7 +145,7 @@
 #'           ),
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE
 #'           )

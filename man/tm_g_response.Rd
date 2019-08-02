@@ -200,8 +200,8 @@ app <- init(
         filter = list(
           filter_spec(
             vars = "PARAMCD",
-            choices = unique(ADRS$PARAMCD),
-            selected = unique(ADRS$PARAMCD)[1],
+            choices = levels(ADRS$PARAMCD),
+            selected = levels(ADRS$PARAMCD)[1],
             multiple = FALSE,
             label = "Choose endpoint"
           ),
