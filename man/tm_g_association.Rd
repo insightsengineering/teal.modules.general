@@ -189,7 +189,7 @@ app <- init(
           dataname = "ADTTE",
           filter = filter_spec(
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(expand.grid(unique(ADRS$PARAMCD), unique(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = TRUE,
             label = "ADRS filter"
@@ -247,8 +247,8 @@ app <- init(
        filter = list(
          filter_spec(
            vars = "PARAM",
-           choices = unique(ADRS$PARAM),
-           selected = unique(ADRS$PARAM)[1],
+           choices = levels(ADRS$PARAM),
+           selected = levels(ADRS$PARAM)[1],
            multiple = FALSE,
            label = "Choose response"
          ),
