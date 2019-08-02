@@ -34,7 +34,7 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ASL", "ALB"),
+#'       dataname = "ASL",
 #'       response = data_extract_spec(
 #'         dataname = "ASL",
 #'         columns = columns_spec(

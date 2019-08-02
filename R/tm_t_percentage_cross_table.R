@@ -238,6 +238,53 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
+#' # datasets: same long
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     code = "", check = FALSE),
+#'   modules = root_modules(
+#'     tm_t_percentage_cross_table(
+#'       "Scatterplot for same long dataset",
+#'       dataname = "ADRS",
+#'       x = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = c("PARAMCD", "AVISIT"),
+#'           selected = c("PARAMCD"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = c("AVISIT", "PARAMCD"),
+#'           selected = c("AVISIT"),
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+
+
+
+#'
 #' # datasets: different subsets of long dataset
 #'
 #' library(random.cdisc.data)

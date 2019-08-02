@@ -490,7 +490,76 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-#' # datasets: different subsets of long dataset
+# datasets: same dataset long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADRS <- cadrs
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- teal::init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADRS = ADRS,
+    code = 'ASL <- cadsl
+    ADRS <- cadrs
+    keys(ASL) <- c("STUDYID", "USUBJID")
+    keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_g_bivariate(
+      dataname = "ADRS",
+      x = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+        )
+      ),
+      row_facet = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = "PARAMCD",
+          selected = "PARAMCD",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "Facetting variable"
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ADRS",
+        columns = columns_spec(
+          choices = "AVISIT",
+          selected = "AVISIT",
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "Facetting variable"
+        )
+      )
+    )
+  )
+)
+
+\dontrun{
+  shinyApp(app$ui, app$server)
+}
+
+# datasets: different subsets of long dataset
 
 library(random.cdisc.data)
 library(tern)

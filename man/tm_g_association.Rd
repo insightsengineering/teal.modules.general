@@ -275,6 +275,57 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
+# datasets: same long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADRS <- cadrs
+
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+ data = cdisc_data(
+   ASL = ASL,
+   ADRS = ADRS,
+   code = 'ASL <- cadsl
+           ADRS <- cadrs
+           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+   check = FALSE),
+ modules = root_modules(
+   tm_g_association(
+     label = "Association Plots",
+     dataname = "ADRS",
+     ref = data_extract_spec(
+       dataname = "ADRS",
+       columns = columns_spec(
+         choices = names(ADRS),
+         selected = "AVAL",
+         multiple = FALSE,
+         fixed = FALSE
+      )
+     ),
+     vars = data_extract_spec(
+       dataname = "ADRS",
+       columns = columns_spec(
+         choices = names(ADRS),
+         selected = "PARAMCD",
+         multiple = FALSE,
+         label = "variable"
+       )
+      )
+    )
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+
 # datasets: different subsets of long dataset
 
 library(random.cdisc.data)

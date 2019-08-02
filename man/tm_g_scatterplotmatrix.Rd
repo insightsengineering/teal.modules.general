@@ -135,6 +135,42 @@ keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
+# datasets: same long
+
+library(random.cdisc.data)
+library(tern)
+
+ASL <- cadsl
+ADTE <- cadtte
+keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
+
+app <- init(
+  data = cdisc_data(
+    ASL = ASL,
+    ADTE = ADTE,
+    code = "", check = FALSE),
+  modules = root_modules(
+    tm_g_scatterplotmatrix(
+      "Scatterplot matrix for same long dataset",
+      dataname = "ADTE",
+      selected = data_extract_spec(
+        dataname = "ADTE",
+        columns = columns_spec(
+          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          selected = c("AVAL", "BMRKR1", "BMRKR2"),
+          multiple = TRUE,
+          fixed = FALSE
+        )
+      )
+    )
+  )
+)
+\dontrun{
+  shinyApp(app$ui, app$server)
+}
+
 # datasets: multiple long datasets
 library(random.cdisc.data)
 

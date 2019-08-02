@@ -286,6 +286,79 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
+#' # datasets: same long dataset
+#'
+#' library(random.cdisc.data)
+#' library(tern)
+#'
+#' ASL <- cadsl
+#' ADRS <- cadrs
+#'
+#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     ASL = ASL,
+#'     ADRS = ADRS,
+#'     code = 'ASL <- cadsl
+#'            ADRS <- cadrs
+#'            keys(ASL) <- c("USUBJID", "STUDYID")
+#'            keys(ADRS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
+#'     check = FALSE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_response(
+#'       dataname = "ADRS",
+#'       response = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       x = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = c("ARMCD", "ACTARMCD"),
+#'           selected = "ARMCD",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       row_facet = data_extract_spec(
+#'         dataname = "ADRS",,
+#'         columns = columns_spec(
+#'           choices = "PARAMCD",
+#'           selected = "PARAMCD",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "ADRS",
+#'         columns = columns_spec(
+#'           choices = "AVISIT",
+#'           selected = "AVISIT",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Variable"
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#'
 #' # datasets: different subsets of long dataset
 #'
 #' library(random.cdisc.data)
