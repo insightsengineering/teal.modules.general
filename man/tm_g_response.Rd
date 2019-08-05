@@ -51,22 +51,22 @@ Response Plots
 library(random.cdisc.data)
 library(tern)
 
-ASL <- cadsl
+ADSL <- cadsl
 
-keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADSL) <- c("STUDYID", "USUBJID")
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    code = 'ASL <- cadsl
-            keys(ASL) <- c("STUDYID", "USUBJID")',
+    cdisc_dataset("ADSL", ADSL),
+    code = 'ADSL <- cadsl
+            keys(ADSL) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ASL"),
+      dataname = c("ADSL"),
       response = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADSL",
         columns = columns_spec(
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -76,7 +76,7 @@ app <- init(
         )
       ),
       x = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADSL",
         columns = columns_spec(
           choices = c("AGE", "SEX", "RACE"),
           selected = "RACE",
@@ -96,40 +96,40 @@ library(random.cdisc.data)
 library(tern)
 library(dplyr)
 
-ASL <- cadsl
-ASL <- mutate_at(ASL,
+ADSL <- cadsl
+ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADSL) <- c("STUDYID", "USUBJID")
 
 
-ASL_2 <- mutate_at(cadsl,
+ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ASL_2) <- c("STUDYID", "USUBJID")
+keys(ADSL_2) <- c("STUDYID", "USUBJID")
 
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    ASL_2 = ASL_2,
-    code = 'ASL <- cadsl
-            ASL <- mutate_at(ASL,
+    cdisc_dataset("ADSL", ADSL),
+    dataset("ADSL_2", ADSL_2),
+    code = 'ADSL <- cadsl
+            ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
                      "SEX", "BMRKR1", "AGE", "USUBJID", "STUDYID", "BMRKR2")
-            ASL_2 <- mutate_at(cadsl,
+            ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-            keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
+            keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ASL", "ASL_2"),
+      dataname = c("ADSL", "ADSL_2"),
       response = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADSL",
         columns = columns_spec(
          label = "Select variable",
           choices = c("BMRKR1", "BMRKR2"),
@@ -137,7 +137,7 @@ app <- init(
           multiple = FALSE
         )),
       x = data_extract_spec(
-        dataname = "ASL_2",
+        dataname = "ADSL_2",
         columns = columns_spec(
           label = "Select variables",
           choices = c("COUNTRY", "AGE", "RACE"),
@@ -154,22 +154,22 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 library(random.cdisc.data)
 
-ASL <- cadsl
+ADSL <- cadsl
 ADRS <- cadrs
 ADLB <- cadlb
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    ADLB = ADLB,
-    code = "ASL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADRS", ADRS),
+    cdisc_dataset("ADLB", ADLB),
+    code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
     check = FALSE
   ),
   modules = root_modules(
     tm_g_response(
       label = "Response Plot on two long datasets",
-      dataname = c("ASL", "ADRS", "ADLB"),
+      dataname = c("ADSL", "ADRS", "ADLB"),
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(
@@ -222,7 +222,7 @@ app <- init(
         )
       ),
       row_facet = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADSL",
         columns = columns_spec(
           choices = c("SEX", "AGE"),
           selected = NULL,
@@ -231,7 +231,7 @@ app <- init(
         )
       ),
       col_facet = data_extract_spec(
-        dataname = "ASL",
+        dataname = "ADSL",
         columns = columns_spec(
           choices = c("SEX", "AGE"),
           selected = NULL,

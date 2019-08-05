@@ -20,20 +20,20 @@
 #'
 #' # datasets: single wide
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = "ADSL <- cadsl",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = "ASL",
+#'       dataname = "ADSL",
 #'       x = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Select X Variable",
 #'           choices = c("COUNTRY", "STUDYID"),
@@ -41,7 +41,7 @@
 #'         )
 #'       ),
 #'       y = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Select Y Variable",
 #'           choices = c("SEX", "RACE"),
@@ -61,15 +61,15 @@
 #' library(tern)
 #' library(dplyr)
 #'
-#' ASL <- cadsl
-#' ASL <- mutate_at(ASL,
+#' ADSL <- cadsl
+#' ADSL <- mutate_at(ADSL,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'   .funs = funs(as.factor(.))
 #' ) %>% select(
 #'   "ARM", "ACTARM", "ACTARMCD",
 #'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
 #' )
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #'
 #'
 #' ADSL_2 <- mutate_at(cadsl,
@@ -80,20 +80,20 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADSL_2 = ADSL_2,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     dataset("ADSL_2", ADSL_2),
+#'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #' .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ASL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
+#' keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table("Cross Table",
-#'      dataname = c("ASL", "ADSL_2"),
+#'      dataname = c("ADSL", "ADSL_2"),
 #'      x = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'          label = "Select variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
@@ -120,22 +120,22 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADRS = ADRS,
-#'     ADTTE = ADTTE,
-#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     cdisc_dataset("ADTTE", ADTTE),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = filter_spec(
@@ -179,24 +179,24 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADRS = ADRS,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     code = 'ADSL <- cadsl
 #' ADRS <- cadrs
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'    tm_t_percentage_cross_table("Cross Table",
-#'      dataname = c("ASL", "ADRS"),
+#'      dataname = c("ADSL", "ADRS"),
 #'      x = data_extract_spec(
 #'           dataname = "ADRS",
 #'           filter = list(
@@ -223,7 +223,7 @@
 #'           )
 #'         ),
 #'      y = data_extract_spec(
-#'           dataname = "ASL",
+#'           dataname = "ADSL",
 #'           columns = columns_spec(
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = "AGE",
@@ -242,15 +242,15 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADRS = ADRS,
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
 #'     code = "", check = FALSE),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
@@ -290,19 +290,19 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADLB <- cadlb
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADLB = ADLB,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = 'ADSL <- cadsl
 #'            ADLB <- cadlb
-#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADSL) <- c("STUDYID", "USUBJID")
 #'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = TRUE
 #'   ),
