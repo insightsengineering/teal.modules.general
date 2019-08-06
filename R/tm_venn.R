@@ -216,29 +216,29 @@ plot.venn2 <- function(x, ...) {
 #' sample_bm_data <- lapply(1:10, function(x)sample(c(TRUE, FALSE), N, replace = TRUE))
 #' names(sample_bm_data) <- var_biomarkers
 #'
-#' ASL <- do.call(data.frame, c(
+#' ADSL <- do.call(data.frame, c(
 #'   list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #' ))
 #'
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
+#'     cdisc_dataset("ADSL", ADSL),
 #'     code = '
 #'     N <- 100
 #'     var_biomarkers <- paste0("B", 1:10)
 #'     sample_bm_data <- lapply(1:10, function(x)sample(c(TRUE, FALSE), N, replace = TRUE))
 #'     names(sample_bm_data) <- var_biomarkers
-#'     ASL <- do.call(data.frame, c(
+#'     ADSL <- do.call(data.frame, c(
 #'     list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #'     ))
 #'     ',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     teal.modules.general:::tm_venn2(
-#'       "Venn Diagram", "ASL",
+#'       "Venn Diagram", "ADSL",
 #'       bm1 = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         column = columns_spec(
 #'           label = "Select Biomarker",
 #'           choices = var_biomarkers,
@@ -246,7 +246,7 @@ plot.venn2 <- function(x, ...) {
 #'           fixed = FALSE)
 #'       ),
 #'       bm2 = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         column = columns_spec(
 #'           label = "Select Biomarker",
 #'           choices = var_biomarkers,

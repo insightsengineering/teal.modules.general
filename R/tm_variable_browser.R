@@ -43,7 +43,7 @@ ui_page_variable_browser <- function(id, datasets) {
             }), NULL))
           )
         ),
-        checkboxInput(ns("show_asl_vars"), "Show ASL variables datasets other than ASL", value = FALSE)
+        checkboxInput(ns("show_adsl_vars"), "Show ADSL variables datasets other than ADSL", value = FALSE)
       )
     ),
     div(
@@ -78,7 +78,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
 
   current_rows <- new.env()
 
-  asl_vars <- names(datasets$get_data("ASL"))
+  adsl_vars <- names(datasets$get_data("ADSL"))
 
 
   lapply(datasets$datanames(), function(name) {
@@ -89,7 +89,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     output[[ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
 
-      show_asl_vars <- input$show_asl_vars
+      show_adsl_vars <- input$show_adsl_vars
 
       if (is.null(df)) {
         current_rows[[name]] <- character(0)
@@ -100,9 +100,9 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
           if (is.null(lab)) "" else lab
         }))
 
-        if (!show_asl_vars && name != "ASL") {
-          asl_vars <- names(datasets$get_data("ASL", filtered = FALSE, reactive = FALSE))
-          labels <- labels[!(names(labels) %in% asl_vars)]
+        if (!show_adsl_vars && name != "ADSL") {
+          adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE, reactive = FALSE))
+          labels <- labels[!(names(labels) %in% adsl_vars)]
         }
 
         current_rows[[name]] <- names(labels)
@@ -192,9 +192,9 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
 
     if (!is.null(dataname) && identical(dataname, active)) {
       if (!is.null(varname)) {
-        if (dataname != "ASL" && varname %in% asl_vars) {
-          warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
-                                            Switch to the ASL data and add the variable from there.")
+        if (dataname != "ADSL" && varname %in% adsl_vars) {
+          warning_messages$varinfo <- paste("You can not add an ADSL variable from any dataset other than ADSL.
+                                            Switch to the ADSL data and add the variable from there.")
         } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
           warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
                                             "can currently not be used as a filter variable.")
