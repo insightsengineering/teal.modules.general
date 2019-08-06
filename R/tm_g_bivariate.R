@@ -761,7 +761,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 
-#' @importFrom shinyWidgets switchInput
+#' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   arguments <- list(...)
 
@@ -792,17 +792,17 @@ ui_g_bivariate <- function(id, ...) {
         label = "Y Variable",
         data_extract_spec = arguments$y
       ),
-      radioButtons(
+      radioGroupButtons(
         inputId = ns("use_density"),
         label = NULL,
         choices = c("frequency", "density"),
         selected = ifelse(arguments$use_density, "density", "frequency"),
-        inline = TRUE
+        justified = TRUE
       ),
       div(
         style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
         tags$label("Facetting:"),
-        switchInput(inputId = ns("facetting"), value = TRUE, size = "small"),
+        switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
           ui_facetting(ns, arguments$row_facet, arguments$col_facet, arguments$free_x_scales, arguments$free_y_scales)
@@ -813,7 +813,7 @@ ui_g_bivariate <- function(id, ...) {
         div(
           style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
           tags$label("Expert settings:"),
-          switchInput(inputId = ns("expert"), value = FALSE, size = "small"),
+          switchInput(inputId = ns("expert"), value = FALSE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
             ui_expert(ns, arguments$colour, arguments$fill, arguments$size)
@@ -847,12 +847,12 @@ ui_facetting <- function(ns,
   div(
     data_extract_input(
       id = ns("row_facet"),
-      label = "Row facetting Variable",
+      label = "Row facetting by:",
       data_extract_spec = row_facet_spec
     ),
     data_extract_input(
       id = ns("col_facet"),
-      label = "Column facetting Variable",
+      label = "Column facetting by:",
       data_extract_spec = col_facet_spec
     ),
     checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales),
