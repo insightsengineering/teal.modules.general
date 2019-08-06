@@ -36,6 +36,7 @@
 #'
 #' @examples
 #' # datasets: single wide
+#' # Bivariate plot of selected variable (AGE) againts selected (SEX)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
 #'
@@ -51,16 +52,17 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Reference variable",
+#'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "AGE",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "SEX",
 #'           multiple = FALSE,
@@ -70,7 +72,7 @@
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
 #'           multiple = TRUE,
@@ -80,7 +82,7 @@
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
 #'           multiple = TRUE,

@@ -70,6 +70,7 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 # datasets: single wide
+# Bivariate plot of selected variable (AGE) againts selected (SEX)
 library(random.cdisc.data)
 ADSL <- cadsl
 
@@ -85,16 +86,17 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Reference variable",
+          label = "Select Variable",
           choices = names(ADSL),
           selected = "AGE",
+          multiple = FALSE,
           fixed = FALSE
         )
       ),
       y = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select Variable",
           choices = names(ADSL),
           selected = "SEX",
           multiple = FALSE,
@@ -104,7 +106,7 @@ app <- init(
       row_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
           multiple = TRUE,
@@ -114,7 +116,7 @@ app <- init(
       col_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
           multiple = TRUE,

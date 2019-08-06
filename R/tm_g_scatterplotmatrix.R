@@ -13,7 +13,7 @@
 #' @examples
 #'
 #' # datasets: single wide dataset
-#'
+#' # Scatterplot matrix of variables from ADSL dataset
 #' library(random.cdisc.data)
 #' library(tern)
 #'
@@ -35,7 +35,7 @@
 #'       selected = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Selected columns",
+#'           label = "Select Variables",
 #'           choices = colnames(ADSL),
 #'           selected = c("AGE", "RACE", "SEX"),
 #'           multiple = TRUE,

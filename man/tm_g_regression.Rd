@@ -39,6 +39,8 @@ library(tern)
 
 
 # datasets: same wide
+# Regression graphs from selected response variable (BMRKR1) and
+# selected regressors (AGE)
 
 library(random.cdisc.data)
 library(tern)
@@ -59,18 +61,19 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "variable"
+          fixed = FALSE
         )
       ),
       regressor = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select Variables",
           choices = c("AGE", "SEX", "RACE"),
-          selected = c("AGE"),
+          selected = "AGE",
           multiple = TRUE,
           fixed = FALSE
         )

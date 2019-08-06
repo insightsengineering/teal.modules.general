@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
-#'
+#' # Percentage cross table of variables from ADSL dataset
 #' # datasets: single wide
 #'
 #' ADSL <- cadsl
@@ -35,16 +35,20 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select X Variable",
+#'           label = "Select Variable",
 #'           choices = c("COUNTRY", "STUDYID"),
+#'           selected = "COUNTRY",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select Y Variable",
+#'           label = "Select Variable",
 #'           choices = c("SEX", "RACE"),
+#'           selected = "SEX",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       )

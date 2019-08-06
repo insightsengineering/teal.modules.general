@@ -39,6 +39,8 @@ Stack Plots of variables and show association with reference variable
 \examples{
 
 # datasets: single wide
+# Accociation plot of selected reference variable (SEX)
+# against other selected variables (BMRKR1)
 library(random.cdisc.data)
 ADSL <- cadsl
 
@@ -54,16 +56,17 @@ app <- init(
       ref = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Reference variable",
+          label = "Select Variable",
           choices = names(ADSL),
           selected = "AGE",
+          multiple = FALSE,
           fixed = FALSE
         )
       ),
       vars = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = "BMRKR1",
           multiple = TRUE,

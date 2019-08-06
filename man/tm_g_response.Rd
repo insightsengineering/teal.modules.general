@@ -47,7 +47,7 @@ Response Plots
 }
 \examples{
 # datasets: same wide
-
+# Response plot with selected response (BMRKR1) and selected x variable (RACE)
 library(random.cdisc.data)
 library(tern)
 
@@ -68,7 +68,7 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -78,7 +78,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variable",
           choices = c("AGE", "SEX", "RACE"),
           selected = "RACE",
           multiple = FALSE,
