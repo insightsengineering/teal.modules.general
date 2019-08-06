@@ -317,6 +317,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: same long
+# Scatterplot of different continuous variables from ADRS dataset
 
 library(random.cdisc.data)
 library(tern)
@@ -341,26 +342,28 @@ app <- init(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
           selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE
+          fixed = FALSE,
+          label = "Select Variable"
         )
       ),
       y = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
-          selected = "AVAL",
+          selected = "BMRKR1",
           multiple = FALSE,
-          fixed = FALSE
+          fixed = FALSE,
+          label = "Select Variable"
         )
       ),
       color_by = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
-          choices = c("AGE", "SEX", "RACE"),
-          selected = "SEX", # todo: how to select nothing
+          choices = c("", "AGE", "SEX", "RACE"),
+          selected = "",
           multiple = FALSE, #todo: 0 or 1
           fixed = FALSE,
-          label = "Color"
+          label = "Select Variable"
         )
       )
     )
@@ -373,6 +376,7 @@ app <- init(
 
 
 # datasets: different subsets of long dataset
+# Scatterplot of different continuous variables from ADLB dataset
 
 library(random.cdisc.data)
 library(tern)
@@ -404,22 +408,21 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE", "AVISITN"),
+          choices = "AVAL",
           selected = "AVAL",
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "Variable"
+          multiple = FALSE,
+          fixed = TRUE
         )
       ),
       y = data_extract_spec(
@@ -430,22 +433,21 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[2],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[2],
+            selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE", "AVISITN"),
+          choices = "AVAL",
           selected = "AVAL",
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "Variable"
+          multiple = FALSE,
+          fixed = TRUE
         )
       ),
       color_by = data_extract_spec(
@@ -456,14 +458,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
@@ -471,7 +473,7 @@ app <- init(
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       ),
     )
