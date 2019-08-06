@@ -85,7 +85,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = names(ADSL),
           selected = "AGE",
           multiple = FALSE,
@@ -95,7 +95,7 @@ app <- init(
       y = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = "SEX",
           multiple = FALSE,
@@ -105,7 +105,7 @@ app <- init(
       row_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
           multiple = TRUE,
@@ -115,7 +115,7 @@ app <- init(
       col_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
           multiple = TRUE,

@@ -67,7 +67,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "AGE",
           multiple = FALSE,
@@ -77,7 +77,7 @@ app <- init(
       y = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -87,7 +87,7 @@ app <- init(
       color_by = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = c("RACE", "SEX"),
           selected = NULL,
           multiple = TRUE,

@@ -55,7 +55,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")',
       selected = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = colnames(ADSL),
           selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,

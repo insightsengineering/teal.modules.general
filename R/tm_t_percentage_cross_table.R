@@ -35,7 +35,7 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select X Variable",
+#'           label = "Select Variable",
 #'           choices = c("COUNTRY", "STUDYID"),
 #'           selected = "COUNTRY",
 #'           multiple = FALSE,
@@ -45,7 +45,7 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select Y Variable",
+#'           label = "Select Variable",
 #'           choices = c("SEX", "RACE"),
 #'           selected = "SEX",
 #'           multiple = FALSE,
