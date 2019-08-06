@@ -309,7 +309,7 @@ app <- init(
          selected = "AVAL",
          multiple = FALSE,
          fixed = FALSE,
-         label = "Reference variable"
+         label = "Select Variable"
       )
      ),
      vars = data_extract_spec(
@@ -319,7 +319,7 @@ app <- init(
          selected = "PARAMCD",
          multiple = FALSE,
          fixed = FALSE,
-         label = "Associated variable"
+         label = "Select Variable"
        )
       )
     )
@@ -378,8 +378,7 @@ app <- init(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = TRUE,
-          label = "Reference variable"
+          fixed = TRUE
         )
       ),
       vars = data_extract_spec(
@@ -404,8 +403,7 @@ app <- init(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = TRUE,
-          label = "Associated variable"
+          fixed = TRUE
         )
       )
     )

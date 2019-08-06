@@ -278,11 +278,11 @@ app <- init(
           )
         ),
         columns = columns_spec(
-          choices = "AVAL",
-          selected = "AVAL",
-          multiple = FALSE,
-          fixed = TRUE,
-          label = "Variable"
+          choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
+          selected = c("AVAL", "CHNG"),
+          multiple = TRUE,
+          fixed = FALSE,
+          label = "Variables"
         )
       )
     )

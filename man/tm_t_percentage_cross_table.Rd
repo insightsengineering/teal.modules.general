@@ -289,7 +289,7 @@ app <- init(
           selected = c("PARAMCD"),
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row variable"
+          label = "Select Variable"
         )
       ),
       y = data_extract_spec(
@@ -299,7 +299,7 @@ app <- init(
           selected = c("AVISIT"),
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column variable"
+          label = "Select Variable"
         )
       )
     )
@@ -311,7 +311,7 @@ shinyApp(app$ui, app$server)
 
 
 # datasets: different subsets of long dataset
-# Contingency table of variables from ADLB dataset
+# Contingency table of variables from Lab dataset (ADLB)
 
 library(random.cdisc.data)
 library(tern)
@@ -350,7 +350,7 @@ app <- init(
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row variable"
+          label = "Row Variable"
         )
       ),
       y = data_extract_spec(
@@ -367,7 +367,7 @@ app <- init(
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column variable"
+          label = "Column Variable"
         )
       )
     )

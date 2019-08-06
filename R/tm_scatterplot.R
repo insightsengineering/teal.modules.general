@@ -317,7 +317,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "X variable"
+#'           label = "X Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -327,7 +327,7 @@
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Y variable"
+#'           label = "Y Variable"
 #'         )
 #'       ),
 #'       color_by = data_extract_spec(
@@ -337,7 +337,7 @@
 #'           selected = "",
 #'           multiple = FALSE, #todo: 0 or 1
 #'           fixed = FALSE,
-#'           label = "Color variable"
+#'           label = "Color Variable"
 #'         )
 #'       )
 #'     )
@@ -396,8 +396,7 @@
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "X variable"
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -422,8 +421,7 @@
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "Y variable"
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       color_by = data_extract_spec(
@@ -449,7 +447,7 @@
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Color variable"
+#'           label = "Color Variable"
 #'         )
 #'       ),
 #'     )

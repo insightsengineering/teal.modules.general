@@ -286,7 +286,7 @@
 #'          selected = "AVAL",
 #'          multiple = FALSE,
 #'          fixed = FALSE,
-#'          label = "Reference variable"
+#'          label = "Select Variable"
 #'       )
 #'      ),
 #'      vars = data_extract_spec(
@@ -296,7 +296,7 @@
 #'          selected = "PARAMCD",
 #'          multiple = FALSE,
 #'          fixed = FALSE,
-#'          label = "Associated variable"
+#'          label = "Select Variable"
 #'        )
 #'       )
 #'     )
@@ -355,8 +355,7 @@
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "Reference variable"
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       vars = data_extract_spec(
@@ -381,8 +380,7 @@
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "Associated variable"
+#'           fixed = TRUE
 #'         )
 #'       )
 #'     )

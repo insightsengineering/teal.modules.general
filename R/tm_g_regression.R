@@ -157,14 +157,14 @@
 #'             choices = levels(ADRS$PARAM),
 #'             selected = levels(ADRS$PARAM)[1],
 #'             multiple = FALSE,
-#'             label = "Choose measurement"
+#'             label = "Choose Measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADRS$AVISIT),
 #'             selected = levels(ADRS$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit"
+#'             label = "Choose Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
@@ -172,7 +172,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Response variable"
+#'           label = "Response Variable"
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
@@ -183,14 +183,14 @@
 #'             choices = levels(ADRS$PARAM),
 #'             selected = levels(ADRS$PARAM)[1:2],
 #'             multiple = TRUE,
-#'             label = "Choose measurement"
+#'             label = "Choose Measurement"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADRS$AVISIT),
 #'             selected = levels(ADRS$AVISIT)[2],
 #'             multiple = TRUE,
-#'             label = "Choose visit"
+#'             label = "Choose Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
@@ -198,7 +198,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Regressor variable"
+#'           label = "Regressor Variable"
 #'         )
 #'       )
 #'     )
@@ -488,8 +488,7 @@
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "Response variable"
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
@@ -500,22 +499,21 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[2:3],
 #'             multiple = TRUE,
-#'             label = "Choose measurement"
+#'             label = "Lab"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit"
+#'             label = "Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = TRUE,
-#'           label = "Regressor variable"
+#'           fixed = TRUE
 #'         )
 #'       )
 #'     )

@@ -436,8 +436,7 @@ app <- init(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = TRUE,
-          label = "Response variable"
+          fixed = TRUE
         )
       ),
       x = data_extract_spec(
@@ -462,8 +461,7 @@ app <- init(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = TRUE,
-          label = "X variable"
+          fixed = TRUE
         )
       ),
       row_facet = data_extract_spec(
@@ -489,7 +487,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row facetting variable"
+          label = "Row Facetting Variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -515,7 +513,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column facetting variable"
+          label = "Column Facetting Variable"
         )
       )
     )
