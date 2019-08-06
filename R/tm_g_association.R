@@ -116,6 +116,7 @@
 #' }
 #'
 #' # datasets: multiple long datasets
+#' # Association plot of different parameters from ADRS or ADTTE datasets
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
@@ -137,18 +138,20 @@
 #'         data_extract_spec(
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
-#'             label = "Reference variable",
+#'             label = "Select Variable",
 #'             choices = c("AGE", "SEX"),
-#'             selected = c("AGE"),
+#'             selected = "AGE",
+#'             multiple = FALSE,
 #'             fixed = FALSE
 #'           )
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
 #'           columns = columns_spec(
-#'             label = "Reference variable",
+#'             label = "Select Variable",
 #'             choices = c("AVAL", "CNSR"),
 #'             selected = "AVAL",
+#'             multiple = FALSE,
 #'             fixed = FALSE
 #'           )
 #'         )
@@ -157,33 +160,35 @@
 #'         data_extract_spec(
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
-#'             label = "Associated variables",
+#'             label = "Select Variables",
 #'             choices = names(ADRS),
 #'             selected = c("AVAL", "AVALC"),
+#'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             vars = c("PARAMCD"),
+#'             label = "Select Parameter",
+#'             vars = "PARAMCD",
 #'             choices = unique(ADTTE$PARAMCD),
 #'             selected = "OS",
-#'             multiple = FALSE,
-#'             label = "ADTTE filter"
+#'             multiple = FALSE
 #'           )
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
 #'           filter = filter_spec(
+#'             label = "Select Endpoints",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'             choices = apply(expand.grid(levels(ADRS$PARAMCD),
 #'             levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
-#'             multiple = TRUE,
-#'             label = "ADRS filter"
+#'             multiple = TRUE
 #'           ),
 #'           columns = columns_spec(
-#'             label = "Associated variables",
+#'             label = "Select Variables",
 #'             choices = names(ADTTE),
 #'             selected = NULL,
+#'             multiple = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         )

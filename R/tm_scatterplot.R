@@ -154,6 +154,7 @@
 #'
 
 #' # datasets: multiple long datasets
+#' #' Scatterplot of parameters from ADTTE and ADRS datasets.
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
@@ -175,12 +176,14 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         columns = columns_spec(
+#'           label = "Select Variable",
 #'           choices = names(ADRS),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
+#'           label = "Select Endpoint",
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(
 #'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
@@ -191,12 +194,14 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         columns = columns_spec(
+#'           label = "Select Variable",
 #'           choices = names(ADTTE),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
+#'           label = "Select Parameters",
 #'           vars = c("PARAMCD"),
 #'           choices = unique(ADTTE$PARAMCD),
 #'           selected = "OS",
@@ -206,6 +211,7 @@
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select Variable",
 #'           choices = c("AGE", "SEX"),
 #'           selected = "AGE",
 #'           multiple = FALSE,

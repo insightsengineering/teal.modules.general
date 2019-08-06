@@ -148,6 +148,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: multiple long datasets
+#' Percentage cross table of parameters from ADTTE and ADRS datasets.
 library(random.cdisc.data)
 
 ADSL <- cadsl
@@ -169,6 +170,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
+          label = "Select Endpoints",
           vars = c("PARAMCD", "AVISIT"),
           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
@@ -176,6 +178,7 @@ app <- init(
           multiple = TRUE
         ),
         columns = columns_spec(
+          label = "Select Variable",
           choices = names(ADRS),
           selected = "AVALC",
           multiple = FALSE,
@@ -185,12 +188,14 @@ app <- init(
       y = data_extract_spec(
         dataname = "ADTTE",
         filter = filter_spec(
+          label = "Select Parameters",
           vars = c("PARAMCD"),
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",
           multiple = TRUE
         ),
         columns = columns_spec(
+          label = "Select Variable",
           choices = names(ADTTE),
           selected = "CNSR",
           multiple = FALSE,

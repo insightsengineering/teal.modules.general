@@ -236,6 +236,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: multiple long datasets
+# Regression plots from model of different parameters from ADRS or ADTTE datasets
 library(random.cdisc.data)
 
 ADSL <- cadsl
@@ -257,42 +258,45 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADTTE",
         columns = columns_spec(
+          label = "Select Variable",
           choices = c("AVAL", "CNSR"),
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE
         ),
         filter = filter_spec(
+          label = "Select Parameter",
           vars = c("PARAMCD"),
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",
-          multiple = FALSE,
-          label = "ADTTE filter"
+          multiple = FALSE
         )
       ),
       regressor = list(
         data_extract_spec(
           dataname = "ADRS",
           columns = columns_spec(
+            label = "Select Variables",
             choices = names(ADRS),
             selected = "AVAL",
             multiple = TRUE,
             fixed = FALSE
           ),
           filter = filter_spec(
+            label = "Select Endpoints",
             vars = c("PARAMCD", "AVISIT"),
             choices = apply(expand.grid(
             levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
-            multiple = TRUE,
-            label = "ADRS filter"
+            multiple = TRUE
           )
         ),
         data_extract_spec(
           dataname = "ADSL",
           columns = columns_spec(
+            label = "Select Variables",
             choices = c("BMRKR1", "BMRKR2"),
-            selected = c("BMRKR1"),
+            selected = "BMRKR1",
             multiple = TRUE,
             fixed = FALSE
           )

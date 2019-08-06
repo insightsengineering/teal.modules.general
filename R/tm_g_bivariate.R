@@ -179,6 +179,7 @@
 #' }
 #'
 #' # datasets: multiple long datasets
+#' # Bivariate plot of different parameters from ADRS or ADTTE datasets
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
@@ -200,47 +201,49 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = filter_spec(
+#'           label = "Select Endpoints",
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
 #'                           1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
-#'           multiple = TRUE,
-#'           label = "ADRS filter"
+#'           multiple = TRUE
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "AVALC"),
+#'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = FALSE
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         columns = columns_spec(
+#'           label = "Select Variable",
 #'           choices = c("AVAL", "CNSR"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
+#'           label = "Select Parameter",
 #'           vars = c("PARAMCD"),
 #'           choices = unique(ADTTE$PARAMCD),
 #'           selected = "OS",
-#'           multiple = FALSE,
-#'           label = "ADTTE filter"
+#'           multiple = FALSE
 #'         )
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = filter_spec(
+#'           label = "Select Endpoints",
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
 #'                           1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
-#'           multiple = TRUE,
-#'           label = "ADRS filter"
+#'           multiple = TRUE
 #'         ),
 #'         columns = columns_spec(
+#'           label = "Select Variable",
 #'           choices = c("AVAL", "AVISIT"),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
@@ -250,11 +253,11 @@
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select Variables",
 #'           choices = c("SEX", "RACE"),
 #'           selected = NULL,
 #'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "variable"
+#'           fixed = FALSE
 #'         )
 #'       ),
 #'       expert_settings = TRUE,
@@ -765,7 +768,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 
-#' @importFrom shinyWidgets switchInput
+#' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   arguments <- list(...)
 
@@ -796,17 +799,17 @@ ui_g_bivariate <- function(id, ...) {
         label = "Y Variable",
         data_extract_spec = arguments$y
       ),
-      radioButtons(
+      radioGroupButtons(
         inputId = ns("use_density"),
         label = NULL,
         choices = c("frequency", "density"),
         selected = ifelse(arguments$use_density, "density", "frequency"),
-        inline = TRUE
+        justified = TRUE
       ),
       div(
         style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
         tags$label("Facetting:"),
-        switchInput(inputId = ns("facetting"), value = TRUE, size = "small"),
+        switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
           ui_facetting(ns, arguments$row_facet, arguments$col_facet, arguments$free_x_scales, arguments$free_y_scales)
@@ -817,7 +820,7 @@ ui_g_bivariate <- function(id, ...) {
         div(
           style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
           tags$label("Expert settings:"),
-          switchInput(inputId = ns("expert"), value = FALSE, size = "small"),
+          switchInput(inputId = ns("expert"), value = FALSE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
             ui_expert(ns, arguments$colour, arguments$fill, arguments$size)
@@ -851,12 +854,12 @@ ui_facetting <- function(ns,
   div(
     data_extract_input(
       id = ns("row_facet"),
-      label = "Row facetting Variable",
+      label = "Row facetting by:",
       data_extract_spec = row_facet_spec
     ),
     data_extract_input(
       id = ns("col_facet"),
-      label = "Column facetting Variable",
+      label = "Column facetting by:",
       data_extract_spec = col_facet_spec
     ),
     checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales),
