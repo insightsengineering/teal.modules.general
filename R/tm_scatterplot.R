@@ -81,7 +81,7 @@
 #' }
 #'
 #' # datasets: different wide
-#'
+#' # Scatterplot of AGE and BMRKR1 colored by COUNTRY
 #' library(random.cdisc.data)
 #' library(tern)
 #' library(dplyr)
@@ -120,26 +120,29 @@
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'          label = "Select variable",
+#'          label = "Select Variable",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
-#'           multiple = FALSE
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         )),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         columns = columns_spec(
-#'           label = "Select variables",
+#'           label = "Select Variable",
 #'           choices = c("AGE", "RACE"),
 #'           selected = "AGE",
-#'           multiple = FALSE
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         )),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         columns = columns_spec(
-#'           label = "Select variables",
+#'           label = "Select variable",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "COUNTRY",
-#'           multiple = FALSE
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         ))
 #'      )
 #'    )
@@ -218,7 +221,7 @@
 #' }
 #'
 #' # datasets: wide, long
-#'
+#' # Scatterplot of response duration and patient age
 #' library(random.cdisc.data)
 #' library(tern)
 #'
@@ -243,6 +246,7 @@
 #'      x = data_extract_spec(
 #'           dataname = "ADSL",
 #'           columns = columns_spec(
+#'             label = "Select Variable",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = "AGE",
 #'             multiple = FALSE,
@@ -268,15 +272,17 @@
 #'             )
 #'           ),
 #'           columns = columns_spec(
+#'             label = "Selected Variable",
 #'             choices = "AVAL",
 #'             selected = "AVAL",
 #'             multiple = FALSE,
-#'             label = "variable"
+#'             fixed = TRUE
 #'           )
 #'         ),
 #'      color_by = data_extract_spec(
 #'           dataname = "ADSL",
 #'           columns = columns_spec(
+#'             label = "Select Variable",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = NULL,
 #'             multiple = FALSE,

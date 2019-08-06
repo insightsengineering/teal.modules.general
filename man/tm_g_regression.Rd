@@ -86,7 +86,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
-
+# Regression of BMRKR1 by AGE + RACE
 library(random.cdisc.data)
 library(tern)
 library(dplyr)
@@ -128,18 +128,20 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-         label = "Select variable",
+          label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = c("BMRKR1"),
-          multiple = FALSE
+          multiple = FALSE,
+          fixed = FALSE
         )),
       regressor = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = c("AGE", "RACE", "COUNTRY"),
           selected = c("AGE", "RACE"),
-          multiple = TRUE
+          multiple = TRUE,
+          fixed = FALSE
         ))
     )
   )
@@ -301,7 +303,8 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: wide and long
-
+# Regression of lab measurement (ADLB$AVAL) by
+#   patient age (ADSL$AGE)
 library(random.cdisc.data)
 library(tern)
 
@@ -343,16 +346,17 @@ app <- init(
          )
        ),
        columns = columns_spec(
+         label = "Select Variable",
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
-         fixed = FALSE,
-         label = "variable"
+         fixed = TRUE
        )
     ),
      regressor = data_extract_spec(
        dataname = "ADSL",
        columns = columns_spec(
+         label = "Select Variables",
          choices = c("BMRKR1", "BMRKR2", "AGE"),
          selected = c("AGE"),
          multiple = TRUE,

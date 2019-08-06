@@ -97,7 +97,7 @@
 #' }
 #'
 #' # datasets: different wide
-#'
+#' # Bivariate plot with RACE (factor) plotted over AGE (numeric)
 #' library(random.cdisc.data)
 #' library(tern)
 #' library(dplyr)
@@ -136,7 +136,7 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select variable",
+#'           label = "Select Variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
 #'           selected = c("AGE"),
 #'           multiple = FALSE
@@ -144,7 +144,7 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         columns = columns_spec(
-#'           label = "Select variables",
+#'           label = "Select Variables",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "RACE",
 #'           multiple = FALSE
@@ -153,7 +153,7 @@
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'          label = "Associated variables",
+#'          label = "Select Variable",
 #'          choices = names(ADSL),
 #'          selected = NULL,
 #'          multiple = FALSE,
@@ -164,7 +164,7 @@
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
 #'           multiple = TRUE,
@@ -268,7 +268,8 @@
 #' }
 #'
 #' # datasets: wide, long
-#'
+#' # Bivariate plot with biomarker measurement (ADSL$BMRKR1) plotted over
+#' # date of response (ADRS$AVAL)
 #' library(random.cdisc.data)
 #' library(tern)
 #'
@@ -313,7 +314,8 @@
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
-#'          label = "variable"
+#'          label = "Selected Variable",
+#'          fixed = TRUE
 #'        )
 #'     ),
 #'      y = data_extract_spec(
@@ -322,6 +324,7 @@
 #'          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = "BMRKR1",
 #'          multiple = FALSE,
+#'          label = "Select Variable",
 #'          fixed = FALSE
 #'       )
 #'      ),
@@ -332,7 +335,7 @@
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "variable"
+#'           label = "Select Variable"
 #'         )
 #'      ),
 #'      col_facet = data_extract_spec(
@@ -342,7 +345,7 @@
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "variable"
+#'           label = "Select Variable"
 #'         )
 #'      )
 #'     )

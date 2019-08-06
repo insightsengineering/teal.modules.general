@@ -81,6 +81,8 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
+# Create an association plot with the stratification (STRATA1) as the reference
+# and the AGE, COUNTRY, RACE as plotted variables
 
 library(random.cdisc.data)
 library(tern)
@@ -114,18 +116,20 @@ app <- init(
       ref = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("STRATA1"),
-          multiple = FALSE
+          multiple = FALSE,
+          fixed = FALSE
         )),
       vars = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variables",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = c("AGE", "COUNTRY", "RACE"),
-          multiple = TRUE
+          multiple = TRUE,
+          fixed = FALSE
         ))
     )
   )
@@ -215,7 +219,9 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: wide and long
-
+# Create an association plot with the patient AGE (ADSL$AGE) as the reference
+# and a measurement the response time filtered by visit and response as
+# the plotted variable
 library(random.cdisc.data)
 library(tern)
 
@@ -244,7 +250,8 @@ app <- init(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = c("AGE"),
          multiple = FALSE,
-         fixed = FALSE
+         fixed = FALSE,
+         label = "Select Variable"
       )
      ),
      vars = data_extract_spec(
@@ -269,7 +276,8 @@ app <- init(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
-         label = "variable"
+         fixed = TRUE,
+         label = "Selected Variable"
        )
       )
     )

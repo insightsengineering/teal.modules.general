@@ -85,7 +85,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
-
+# Percentage cross table with AGE groups over RACE
 library(random.cdisc.data)
 library(tern)
 library(dplyr)
@@ -124,18 +124,20 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
      x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-         label = "Select variable",
+          label = "Select Variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
-          multiple = FALSE
+          multiple = FALSE,
+          fixed = FALSE
         )),
       y = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select variables",
+          label = "Select Variable",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "RACE",
-          multiple = FALSE
+          multiple = FALSE,
+          fixed = FALSE
         )),
      )
    )
@@ -203,7 +205,8 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: wide, long
-
+# Percentage cross table with AGE groups per STUDYID
+#   filtered by response type and VISIT
 library(random.cdisc.data)
 library(tern)
 
@@ -244,15 +247,17 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
             )
           ),
           columns = columns_spec(
+            label = "Selected Variable",
             choices = "STUDYID",
             selected = "STUDYID",
             multiple = FALSE,
-            label = "variable"
+            fixed = TRUE
           )
         ),
      y = data_extract_spec(
           dataname = "ADSL",
           columns = columns_spec(
+            label = "Select variable",
             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
             selected = "AGE",
             multiple = FALSE,

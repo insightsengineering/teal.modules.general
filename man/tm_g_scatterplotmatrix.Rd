@@ -69,7 +69,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")',
 shinyApp(app$ui, app$server)
 }
 # datasets: different wide
-
+# Scatterplot matrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
 library(random.cdisc.data)
 library(tern)
 library(dplyr)
@@ -111,7 +111,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
         data_extract_spec(
           dataname = "ADSL",
           columns = columns_spec(
-            label = "Selected columns",
+            label = "Select Variables",
             choices = colnames(ADSL),
             selected = c("AGE", "ACTARM", "SEX"),
             multiple = TRUE,
@@ -121,7 +121,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
         data_extract_spec(
           dataname = "ADSL_2",
           columns = columns_spec(
-            label = "Selected columns",
+            label = "Select Variables",
             choices = colnames(ADSL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
             multiple = TRUE,
