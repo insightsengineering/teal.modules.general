@@ -37,6 +37,8 @@
 #'         columns = columns_spec(
 #'           label = "Select X Variable",
 #'           choices = c("COUNTRY", "STUDYID"),
+#'           selected = "COUNTRY",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -45,6 +47,8 @@
 #'         columns = columns_spec(
 #'           label = "Select Y Variable",
 #'           choices = c("SEX", "RACE"),
+#'           selected = "SEX",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       )

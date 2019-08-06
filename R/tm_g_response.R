@@ -41,16 +41,17 @@
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select variable",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "variable"
+#'           fixed = FALSE
 #'         )
 #'       ),
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select variables",
 #'           choices = c("AGE", "SEX", "RACE"),
 #'           selected = "RACE",
 #'           multiple = FALSE,
@@ -114,7 +115,7 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         columns = columns_spec(
-#'           label = "Select variables",
+#'           label = "Select variable",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "COUNTRY",
 #'           multiple = FALSE

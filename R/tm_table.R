@@ -39,6 +39,7 @@
 #'       x = data_extract_spec(
 #'         "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select variable",
 #'           choices = base::setdiff(names(ADSL), keys(ADSL)),
 #'           selected = names(ADSL)[5],
 #'           multiple = FALSE,
@@ -48,6 +49,7 @@
 #'       y = data_extract_spec(
 #'         "ADSL",
 #'         columns = columns_spec(
+#'           label = "Select variable",
 #'           choices = base::setdiff(names(ADSL), keys(ADSL)),
 #'           selected = names(ADSL)[6],
 #'           multiple = FALSE,

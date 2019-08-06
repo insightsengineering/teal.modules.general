@@ -51,16 +51,17 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Reference variable",
+#'           label = "Select variable",
 #'           choices = names(ADSL),
 #'           selected = "AGE",
+#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select variables",
 #'           choices = names(ADSL),
 #'           selected = "SEX",
 #'           multiple = FALSE,
@@ -70,7 +71,7 @@
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Associated variables",
+#'           label = "Select variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
 #'           multiple = TRUE,
