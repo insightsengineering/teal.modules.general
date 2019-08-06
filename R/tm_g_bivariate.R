@@ -490,7 +490,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "X Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -500,7 +500,7 @@
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Y Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       row_facet = data_extract_spec(
@@ -510,7 +510,7 @@
 #'           selected = "PARAMCD",
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Row Facetting Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       col_facet = data_extract_spec(
@@ -520,7 +520,7 @@
 #'           selected = "AVISIT",
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Column Facetting Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )
@@ -629,7 +629,7 @@
 #'           selected = "",
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Row facetting variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       col_facet = data_extract_spec(
@@ -655,7 +655,7 @@
 #'           selected = "",
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Column facetting variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       expert_settings = TRUE,

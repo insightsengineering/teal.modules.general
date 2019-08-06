@@ -320,7 +320,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = TRUE,
-#'           label = "Response variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       x = data_extract_spec(
@@ -330,7 +330,7 @@
 #'           selected = "ARMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "X variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       row_facet = data_extract_spec(
@@ -340,7 +340,7 @@
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Row facetting variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       col_facet = data_extract_spec(
@@ -350,7 +350,7 @@
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Column facetting variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )
@@ -460,7 +460,7 @@
 #'           selected = "",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Row Facetting Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       col_facet = data_extract_spec(
@@ -486,7 +486,7 @@
 #'           selected = "",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Column Facetting Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )

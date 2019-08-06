@@ -350,7 +350,7 @@ app <- init(
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row Variable"
+          label = "Select Variable"
         )
       ),
       y = data_extract_spec(
@@ -367,7 +367,7 @@ app <- init(
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column Variable"
+          label = "Select Variable"
         )
       )
     )

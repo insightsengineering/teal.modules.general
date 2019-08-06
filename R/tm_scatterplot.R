@@ -317,7 +317,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "X Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -327,7 +327,7 @@
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Y Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       color_by = data_extract_spec(
@@ -337,7 +337,7 @@
 #'           selected = "",
 #'           multiple = FALSE, #todo: 0 or 1
 #'           fixed = FALSE,
-#'           label = "Color Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )
@@ -447,7 +447,7 @@
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Color Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'     )

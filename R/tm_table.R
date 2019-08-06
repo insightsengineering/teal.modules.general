@@ -101,7 +101,7 @@
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -118,7 +118,7 @@
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )

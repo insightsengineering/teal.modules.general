@@ -172,7 +172,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Response Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
@@ -198,7 +198,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Regressor Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )

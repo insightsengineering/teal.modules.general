@@ -163,7 +163,7 @@ app <- init(
           selected = c("AVAL", "BMRKR1", "BMRKR2"),
           multiple = TRUE,
           fixed = FALSE,
-          label = "Choose variables"
+          label = "Select Variables"
         )
       )
     )
@@ -282,7 +282,7 @@ app <- init(
           selected = c("AVAL", "CHNG"),
           multiple = TRUE,
           fixed = FALSE,
-          label = "Variables"
+          label = "Select Variables"
         )
       )
     )

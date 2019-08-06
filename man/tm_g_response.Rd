@@ -347,7 +347,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = TRUE,
-          label = "Response variable"
+          label = "Select Variable"
         )
       ),
       x = data_extract_spec(
@@ -357,7 +357,7 @@ app <- init(
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "X variable"
+          label = "Select Variable"
         )
       ),
       row_facet = data_extract_spec(
@@ -367,7 +367,7 @@ app <- init(
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row facetting variable"
+          label = "Select Variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -377,7 +377,7 @@ app <- init(
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column facetting variable"
+          label = "Select Variable"
         )
       )
     )
@@ -487,7 +487,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Row Facetting Variable"
+          label = "Select Variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -513,7 +513,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Column Facetting Variable"
+          label = "Select Variable"
         )
       )
     )
