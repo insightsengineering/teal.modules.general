@@ -16,7 +16,7 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ADSL = ADSL,
+#'     cdisc_dataset("ADSL", ADSL),
 #'     code = "ADSL <- cadsl",
 #'     check = FALSE),
 #'   modules = root_modules(
@@ -63,8 +63,8 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL = ADSL,
-#'     ADLB = ADLB,
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
 #'     code = 'ADSL <- cadsl
 #'            ADLB <- cadlb
 #'            keys(ADSL) <- c("STUDYID", "USUBJID")
@@ -73,7 +73,8 @@
 #'   modules = root_modules(
 #'     tm_data_table(
 #'       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-#'                                 ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
+#'                                 ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD",
+#'                                 "AVISIT", "AVISITN", "AVAL", "CHG")))
 #'   )
 #' )
 #'

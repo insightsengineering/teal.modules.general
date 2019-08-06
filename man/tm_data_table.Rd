@@ -16,3 +16,77 @@ If not specified for any dataset - first six variables from dataset will be show
 \description{
 A data table viewer shows the data using a paginated table.
 }
+\examples{
+library(random.cdisc.data)
+
+ADSL <- cadsl
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    code = "ADSL <- cadsl",
+    check = FALSE),
+  modules = root_modules(
+    tm_data_table()
+  )
+)
+\dontrun{
+  shinyApp(app$ui, app$server)
+}
+
+# two-datasets example
+library(random.cdisc.data)
+
+ADSL <- cadsl
+ADTTE <- cadaette
+
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADTTE", ADTTE),
+    code = "ADSL <- cadsl; ADTTE <- cadaette",
+    check = FALSE),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ADSL  = c("SEX", "AGE","RACE"),
+                                ADTTE = c("STUDYID","AGE")))
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# datasets: different subsets of long dataset
+
+library(random.cdisc.data)
+library(tern)
+
+ADSL <- cadsl
+ADLB <- cadlb
+
+keys(ADSL) <- c("STUDYID", "USUBJID")
+keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    code = 'ADSL <- cadsl
+           ADLB <- cadlb
+           keys(ADSL) <- c("STUDYID", "USUBJID")
+           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    check = FALSE),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD",
+                                "AVISIT", "AVISITN", "AVAL", "CHG")))
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+}

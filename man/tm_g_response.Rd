@@ -99,14 +99,15 @@ library(dplyr)
 ADSL <- cadsl
 ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
 keys(ADSL) <- c("STUDYID", "USUBJID")
 
 
 ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
+                 "USUBJID", "STUDYID")
 keys(ADSL_2) <- c("STUDYID", "USUBJID")
 
 
@@ -117,11 +118,12 @@ app <- init(
     code = 'ADSL <- cadsl
             ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
                      "SEX", "BMRKR1", "AGE", "USUBJID", "STUDYID", "BMRKR2")
             ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
+                 "COUNTRY", "USUBJID", "STUDYID")
             keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE),
   modules = root_modules(
@@ -251,25 +253,25 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(tern)
 
-ASL <- cadsl
+ADSL <- cadsl
 ADLB <- cadlb
 
-keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADSL) <- c("STUDYID", "USUBJID")
 keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
  data = cdisc_data(
-   ASL = ASL,
-   ADLB = ADLB,
-   code = 'ASL <- cadsl
+   cdisc_dataset("ADSL", ADSL),
+   cdisc_dataset("ADLB", ADLB),
+   code = 'ADSL <- cadsl
            ADLB <- cadlb
-           keys(ASL) <- c("STUDYID", "USUBJID")
+           keys(ADSL) <- c("STUDYID", "USUBJID")
            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
    check = FALSE),
  modules = root_modules(
    tm_g_response(
      label = "Response Plots",
-     dataname = c("ASL", "ADLB"),
+     dataname = c("ADSL", "ADLB"),
      response = data_extract_spec(
        dataname = "ADLB",
        filter = list(
@@ -297,7 +299,7 @@ app <- init(
        )
     ),
      x = data_extract_spec(
-       dataname = "ASL",
+       dataname = "ADSL",
        columns = columns_spec(
          choices = c("BMRKR1", "BMRKR2"),
          selected = c("BMRKR1"),
@@ -318,19 +320,19 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(tern)
 
-ASL <- cadsl
+ADSL <- cadsl
 ADRS <- cadrs
 
-keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADSL) <- c("STUDYID", "USUBJID")
 keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    ADRS = ADRS,
-    code = 'ASL <- cadsl
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADRS", ADRS),
+    code = 'ADSL <- cadsl
            ADRS <- cadrs
-           keys(ASL) <- c("USUBJID", "STUDYID")
+           keys(ADSL) <- c("USUBJID", "STUDYID")
            keys(ADRS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
     check = FALSE
   ),
@@ -391,19 +393,19 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(tern)
 
-ASL <- cadsl
+ADSL <- cadsl
 ADLB <- cadlb
 
-keys(ASL) <- c("STUDYID", "USUBJID")
+keys(ADSL) <- c("STUDYID", "USUBJID")
 keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    ADLB = ADLB,
-    code = 'ASL <- cadsl
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    code = 'ADSL <- cadsl
            ADLB <- cadrs
-           keys(ASL) <- c("USUBJID", "STUDYID")
+           keys(ADSL) <- c("USUBJID", "STUDYID")
            keys(ADLB) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
     check = FALSE
   ),

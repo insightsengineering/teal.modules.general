@@ -17,31 +17,31 @@
 #'
 #' # datasets: single wide
 #' library(random.cdisc.data)
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = "ADSL <- cadsl",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = "ASL",
+#'       dataname = "ADSL",
 #'       ref = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Reference variable",
-#'           choices = names(ASL),
+#'           choices = names(ADSL),
 #'           selected = "AGE",
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       vars = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Associated variables",
-#'           choices = names(ASL),
+#'           choices = names(ADSL),
 #'           selected = "BMRKR1",
 #'           multiple = TRUE,
 #'           fixed = FALSE
@@ -60,32 +60,33 @@
 #' library(tern)
 #' library(dplyr)
 #'
-#' ASL <- cadsl
-#' ASL <- mutate_at(ASL,
+#' ADSL <- cadsl
+#' ADSL <- mutate_at(ADSL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = funs(as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'                  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #'
 #'
 #' ADSL_2 <- mutate_at(cadsl,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
+#'                  "COUNTRY", "USUBJID", "STUDYID")
 #' keys(ADSL_2) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADSL_2 = ADSL_2,
-#'     code = 'ASL <- cadsl
-#'             keys(ASL) <- c("STUDYID", "USUBJID")',
+#'     cdisc_dataset("ADSL", ADSL),
+#'     dataset("ADSL_2", ADSL_2),
+#'     code = 'ADSL <- cadsl
+#'             keys(ADSL) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       label = "Regression",
-#'       dataname = c("ASL", "ADSL_2"),
+#'       dataname = c("ADSL", "ADSL_2"),
 #'       ref = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Select variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
@@ -110,21 +111,21 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADRS = ADRS,
-#'     ADTTE = ADTTE,
-#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     cdisc_dataset("ADTTE", ADTTE),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       ref = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
@@ -166,7 +167,8 @@
 #'           dataname = "ADTTE",
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             choices = apply(expand.grid(levels(ADRS$PARAMCD),
+#'             levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE,
 #'             label = "ADRS filter"
@@ -191,27 +193,27 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'  data = cdisc_data(
-#'    ASL = ASL,
-#'    ADRS = ADRS,
-#'    code = 'ASL <- cadsl
+#'    cdisc_dataset("ADSL", ADSL),
+#'    cdisc_dataset("ADRS", ADRS),
+#'    code = 'ADSL <- cadsl
 #'            ADRS <- cadrs
-#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADSL) <- c("STUDYID", "USUBJID")
 #'            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'    check = FALSE),
 #'  modules = root_modules(
 #'    tm_g_association(
 #'      label = "Association Plots",
-#'      dataname = c("ASL", "ADRS"),
+#'      dataname = c("ADSL", "ADRS"),
 #'      ref = data_extract_spec(
-#'        dataname = "ASL",
+#'        dataname = "ADSL",
 #'        columns = columns_spec(
 #'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = c("AGE"),
@@ -257,19 +259,19 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'  data = cdisc_data(
-#'    ASL = ASL,
-#'    ADRS = ADRS,
-#'    code = 'ASL <- cadsl
+#'    cdisc_dataset("ADSL", ADSL),
+#'    cdisc_dataset("ADRS", ADRS),
+#'    code = 'ADSL <- cadsl
 #'            ADRS <- cadrs
-#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADSL) <- c("STUDYID", "USUBJID")
 #'            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'    check = FALSE),
 #'  modules = root_modules(
@@ -308,19 +310,19 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADLB <- cadlb
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADLB = ADLB,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = 'ADSL <- cadsl
 #'            ADLB <- cadlb
-#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADSL) <- c("STUDYID", "USUBJID")
 #'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE
 #'   ),

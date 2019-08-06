@@ -17,26 +17,26 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
-#' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' ADSL <- cadsl
+#' ADTTE <- radtte(ADSL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = 'ASL <- cadsl
-#' keys(ASL) <- c("STUDYID", "USUBJID")',
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = 'ADSL <- cadsl
+#' keys(ADSL) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
-#'       dataname = c("ASL"),
+#'       dataname = c("ADSL"),
 #'       selected = data_extract_spec(
-#'         dataname = "ASL",
+#'         dataname = "ADSL",
 #'         columns = columns_spec(
 #'           label = "Selected columns",
-#'           choices = colnames(ASL),
+#'           choices = colnames(ADSL),
 #'           selected = c("AGE", "RACE", "SEX"),
 #'           multiple = TRUE,
 #'           fixed = FALSE
@@ -54,55 +54,55 @@
 #' library(tern)
 #' library(dplyr)
 #'
-#' ASL <- cadsl
-#' ASL <- mutate_at(ASL,
+#' ADSL <- cadsl
+#' ADSL <- mutate_at(ADSL,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
+#'   .funs = list(~as.factor(.))
 #' ) %>% select(
 #'   "ARM", "ACTARM", "ACTARMCD",
 #'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
 #' )
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #'
 #'
-#' ASL_2 <- mutate_at(cadsl,
+#' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
+#'   .funs = list(~as.factor(.))
 #' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ASL_2) <- c("STUDYID", "USUBJID")
+#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
 #'
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ASL_2 = ASL_2,
-#'     code = 'ASL <- cadsl
-#' ASL_2 <- mutate_at(cadsl,
+#'     cdisc_dataset("ADSL", ADSL),
+#'     dataset("ADSL_2", ADSL_2),
+#'     code = 'ADSL <- cadsl
+#' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ASL) <- keys(ASL_2) <- c("STUDYID", "USUBJID")',
+#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
-#'       dataname = c("ASL", "ASL_2"),
+#'       dataname = c("ADSL", "ADSL_2"),
 #'       selected = list(
 #'         data_extract_spec(
-#'           dataname = "ASL",
+#'           dataname = "ADSL",
 #'           columns = columns_spec(
 #'             label = "Selected columns",
-#'             choices = colnames(ASL),
+#'             choices = colnames(ADSL),
 #'             selected = c("AGE", "ACTARM", "SEX"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         ),
 #'         data_extract_spec(
-#'           dataname = "ASL_2",
+#'           dataname = "ADSL_2",
 #'           columns = columns_spec(
 #'             label = "Selected columns",
-#'             choices = colnames(ASL_2),
+#'             choices = colnames(ADSL_2),
 #'             selected = c("COUNTRY", "ACTARM", "STRATA2"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
@@ -121,22 +121,22 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
-#' ADTE <- cadtte
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
+#' ADSL <- cadsl
+#' ADTTE <- cadtte
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
+#' keys(ADTTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADTE = ADTE,
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADTTE", ADTTE),
 #'     code = "", check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       "Scatterplot matrix for same long dataset",
-#'       dataname = "ADTE",
+#'       dataname = "ADTTE",
 #'       selected = data_extract_spec(
-#'         dataname = "ADTE",
+#'         dataname = "ADTTE",
 #'         columns = columns_spec(
 #'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           selected = c("AVAL", "BMRKR1", "BMRKR2"),
@@ -154,22 +154,22 @@
 #' # datasets: multiple long datasets
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADRS = ADRS,
-#'     ADTTE = ADTTE,
-#'     code = "ASL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     cdisc_dataset("ADTTE", ADTTE),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix on two long datasets",
-#'       dataname = c("ASL", "ADRS", "ADTTE"),
+#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       selected = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
@@ -181,7 +181,8 @@
 #'           ),
 #'           filter = filter_spec(
 #'             vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'           choices = apply(expand.grid(
+#'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE
 #'           )
@@ -215,19 +216,19 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADLB <- cadlb
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADLB = ADLB,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = 'ADSL <- cadsl
 #'            ADLB <- cadrs
-#'            keys(ASL) <- c("USUBJID", "STUDYID")
+#'            keys(ADSL) <- c("USUBJID", "STUDYID")
 #'            keys(ADLB) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
 #'     check = FALSE
 #'   ),

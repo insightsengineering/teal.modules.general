@@ -64,7 +64,7 @@
 #' ADSL <- cadsl
 #' ADSL <- mutate_at(ADSL,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
+#'   .funs = list(~as.factor(.))
 #' ) %>% select(
 #'   "ARM", "ACTARM", "ACTARMCD",
 #'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
@@ -74,7 +74,7 @@
 #'
 #' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = funs(as.factor(.))
+#'   .funs = list(~as.factor(.))
 #' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #' keys(ADSL_2) <- c("STUDYID", "USUBJID")
 #'
@@ -85,7 +85,7 @@
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = funs(as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #' keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
 #'     check = FALSE
 #'   ),

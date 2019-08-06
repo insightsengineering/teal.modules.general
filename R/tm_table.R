@@ -23,33 +23,33 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
-#' keys(ASL) <- c("USUBJID", "STUDYID")
+#' ADSL <- cadsl
+#' keys(ADSL) <- c("USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = 'ASL <- cadsl; keys(ASL) <- c("USUBJID", "STUDYID")',
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = 'ADSL <- cadsl; keys(ADSL) <- c("USUBJID", "STUDYID")',
 #'     check = FALSE
 #'   ),
 #'   root_modules(
 #'     tm_table(
 #'       "Table Choices",
-#'       dataname =  "ASL",
+#'       dataname =  "ADSL",
 #'       x = data_extract_spec(
-#'         "ASL",
+#'         "ADSL",
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ASL), keys(ASL)),
-#'           selected = names(ASL)[5],
+#'           choices = base::setdiff(names(ADSL), keys(ADSL)),
+#'           selected = names(ADSL)[5],
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
-#'         "ASL",
+#'         "ADSL",
 #'         columns = columns_spec(
-#'           choices = base::setdiff(names(ASL), keys(ASL)),
-#'           selected = names(ASL)[6],
+#'           choices = base::setdiff(names(ADSL), keys(ADSL)),
+#'           selected = names(ADSL)[6],
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -67,19 +67,19 @@
 #' library(random.cdisc.data)
 #' library(tern)
 #'
-#' ASL <- cadsl
+#' ADSL <- cadsl
 #' ADLB <- cadlb
 #'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
+#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADLB = ADLB,
-#'     code = 'ASL <- cadsl
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = 'ADSL <- cadsl
 #'            ADLB <- cadlb
-#'            keys(ASL) <- c("STUDYID", "USUBJID")
+#'            keys(ADSL) <- c("STUDYID", "USUBJID")
 #'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
 #'     check = FALSE
 #'   ),

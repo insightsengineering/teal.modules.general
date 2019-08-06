@@ -89,7 +89,7 @@ library(dplyr)
 ADSL <- cadsl
 ADSL <- mutate_at(ADSL,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = funs(as.factor(.))
+  .funs = list(~as.factor(.))
 ) \%>\% select(
   "ARM", "ACTARM", "ACTARMCD",
   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
@@ -99,7 +99,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")
 
 ADSL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = funs(as.factor(.))
+  .funs = list(~as.factor(.))
 ) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 keys(ADSL_2) <- c("STUDYID", "USUBJID")
 
@@ -110,7 +110,7 @@ app <- init(
     code = 'ADSL <- cadsl
 ADSL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-.funs = funs(as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+.funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
     check = FALSE
   ),
@@ -164,7 +164,7 @@ app <- init(
         dataname = "ADRS",
         filter = filter_spec(
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = lapply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
