@@ -211,6 +211,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: multiple long datasets
+# Bivariate plot of different parameters from ADRS or ADTTE datasets
 library(random.cdisc.data)
 
 ADSL <- cadsl
@@ -232,47 +233,49 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
+          label = "Select Endpoints",
           vars = c("PARAMCD", "AVISIT"),
           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
-          multiple = TRUE,
-          label = "ADRS filter"
+          multiple = TRUE
         ),
         columns = columns_spec(
-          choices = c("AVAL", "AVALC"),
+          choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE
+          fixed = TRUE
         )
       ),
       y = data_extract_spec(
         dataname = "ADTTE",
         columns = columns_spec(
+          label = "Select Variable",
           choices = c("AVAL", "CNSR"),
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE
         ),
         filter = filter_spec(
+          label = "Select Parameter",
           vars = c("PARAMCD"),
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",
-          multiple = FALSE,
-          label = "ADTTE filter"
+          multiple = FALSE
         )
       ),
       row_facet = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
+          label = "Select Endpoints",
           vars = c("PARAMCD", "AVISIT"),
           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
-          multiple = TRUE,
-          label = "ADRS filter"
+          multiple = TRUE
         ),
         columns = columns_spec(
+          label = "Select Variable",
           choices = c("AVAL", "AVISIT"),
           selected = "AVISIT",
           multiple = FALSE,
@@ -282,11 +285,11 @@ app <- init(
       col_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select Variables",
           choices = c("SEX", "RACE"),
           selected = NULL,
           multiple = TRUE,
-          fixed = FALSE,
-          label = "variable"
+          fixed = FALSE
         )
       ),
       expert_settings = TRUE,

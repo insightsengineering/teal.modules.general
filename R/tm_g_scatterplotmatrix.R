@@ -154,6 +154,7 @@
 #' }
 #'
 #' # datasets: multiple long datasets
+#' # Scatterplot matrix of parameters from ADTTE and ADRS datasets.
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
@@ -176,12 +177,14 @@
 #'         data_extract_spec(
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
+#'             label = "Select Variables",
 #'             choices = names(ADRS),
 #'             selected = c("AVAL", "AVALC"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
+#'             label = "Select Endpoints",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(
 #'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
@@ -192,13 +195,15 @@
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
 #'           columns = columns_spec(
+#'             label = "Select Variables",
 #'             choices = names(ADTTE),
 #'             selected = c("AVAL", "CNSR"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             vars = c("PARAMCD"),
+#'             label = "Select Parameters",
+#'             vars = "PARAMCD",
 #'             choices = unique(ADTTE$PARAMCD),
 #'             selected = "OS",
 #'             multiple = TRUE
