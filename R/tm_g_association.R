@@ -255,6 +255,7 @@
 #' }
 #'
 #' # datasets: same long
+#' # Examine association between two different variables from ADRS dataset.
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -284,7 +285,8 @@
 #'          choices = names(ADRS),
 #'          selected = "AVAL",
 #'          multiple = FALSE,
-#'          fixed = FALSE
+#'          fixed = FALSE,
+#'          label = "Reference variable"
 #'       )
 #'      ),
 #'      vars = data_extract_spec(
@@ -293,7 +295,8 @@
 #'          choices = names(ADRS),
 #'          selected = "PARAMCD",
 #'          multiple = FALSE,
-#'          label = "variable"
+#'          fixed = FALSE,
+#'          label = "Associated variable"
 #'        )
 #'       )
 #'     )
@@ -306,6 +309,7 @@
 #'
 #'
 #' # datasets: different subsets of long dataset
+#' # Examine association between two different measurements from ALB dataset.
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -337,21 +341,21 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose measurement"
+#'             label = "Lab"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit"
+#'             label = "Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = names(ADLB),
+#'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
-#'           fixed = FALSE,
+#'           fixed = TRUE,
 #'           label = "Reference variable"
 #'         )
 #'       ),
@@ -361,24 +365,24 @@
 #'           filter_spec(
 #'             vars = "PARAMCD",
 #'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Choose measurement"
+#'             selected = levels(ADLB$PARAMCD)[2:3],
+#'             multiple = TRUE,
+#'             label = "Lab"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit"
+#'             label = "Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = names(ADLB),
-#'           selected = "ARMCD",
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Associated variables"
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "Associated variable"
 #'         )
 #'       )
 #'     )

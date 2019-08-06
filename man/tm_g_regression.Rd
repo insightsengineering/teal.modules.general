@@ -146,43 +146,70 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: same long
+# Examine linear relationship between responses of different parameters
 
 library(random.cdisc.data)
 library(tern)
 
 ADSL <- cadsl
-ADLB <- cadlb
+ADRS <- cadrs
 
 keys(ADSL) <-  c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
+keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADLB", ADLB),
+    cdisc_dataset("ADRS", ADRS),
     code = 'ADSL <- cadsl
-            ADLB <- cadlb
+            ADRS <- cadrs
             keys(ADSL) <-  c("STUDYID", "USUBJID")
-            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
     check = FALSE),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ADSL", "ADLB"),
+      dataname = c("ADSL", "ADRS"),
       response = data_extract_spec(
-        dataname = "ADLB",
+        dataname = "ADRS",
         filter = list(
           filter_spec(
             vars = "PARAM",
-            choices = levels(ADLB$PARAM),
-            selected = levels(ADLB$PARAM)[c(1,2)],
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose measurement"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Response variable"
+        )
+      ),
+      regressor = data_extract_spec(
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1:2],
             multiple = TRUE,
             label = "Choose measurement"
           ),
           filter_spec(
             vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[2],
             multiple = TRUE,
             label = "Choose visit"
           )
@@ -192,31 +219,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
-          label = "variable"
-        )
-      ),
-      regressor = data_extract_spec(
-        dataname = "ADLB",
-        filter = list(
-          filter_spec(
-            vars = "PARAM",
-            choices = levels(ADLB$PARAM),
-            selected = levels(ADLB$PARAM)[1],
-            multiple = FALSE,
-            label = "Choose measurement"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[2],
-            multiple = FALSE,
-            label = "Choose visit"
-          )
-        ),
-        columns = columns_spec(
-          choices = "AVAL",
-          selected = "AVAL",
-          label = "variable"
+          label = "Regressor variable"
         )
       )
     )
@@ -460,6 +463,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different subsets of long dataset
+# Examine linear relationship between different lab measurements
 
 library(random.cdisc.data)
 library(tern)
@@ -491,6 +495,32 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
+            label = "Lab"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Visit"
+          )
+        ),
+        columns = columns_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = TRUE,
+          label = "Response variable"
+        )
+      ),
+      regressor = data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAMCD",
+            choices = levels(ADLB$PARAMCD),
+            selected = levels(ADLB$PARAMCD)[2:3],
+            multiple = TRUE,
             label = "Choose measurement"
           ),
           filter_spec(
@@ -502,37 +532,11 @@ app <- init(
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "CHG"),
-          selected = "CHG",
-          multiple = FALSE,
-          fixed = FALSE,
-          label = "Variable"
-        )
-      ),
-      regressor = data_extract_spec(
-        dataname = "ADLB",
-        filter = list(
-          filter_spec(
-            vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
-            selected = levels(ADLB$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Choose measurement"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[2],
-            multiple = FALSE,
-            label = "Choose visit"
-          )
-        ),
-        columns = columns_spec(
-          choices = c("AVAL", "CHG", "BMRKR1", "BRRKR2", "AGE", "STRATA1", "STRATA2"),
+          choices = "AVAL",
           selected = "AVAL",
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "Variables"
+          multiple = FALSE,
+          fixed = TRUE,
+          label = "Regressor variable"
         )
       )
     )

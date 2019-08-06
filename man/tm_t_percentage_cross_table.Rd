@@ -164,7 +164,7 @@ app <- init(
         dataname = "ADRS",
         filter = filter_spec(
           vars = c("PARAMCD", "AVISIT"),
-          choices = lapply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -263,6 +263,8 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: same long
+# Contingency table of variables from ADRS dataset
+
 library(random.cdisc.data)
 library(tern)
 
@@ -286,7 +288,8 @@ app <- init(
           choices = c("PARAMCD", "AVISIT"),
           selected = c("PARAMCD"),
           multiple = FALSE,
-          fixed = FALSE
+          fixed = FALSE,
+          label = "Row variable"
         )
       ),
       y = data_extract_spec(
@@ -295,7 +298,8 @@ app <- init(
           choices = c("AVISIT", "PARAMCD"),
           selected = c("AVISIT"),
           multiple = FALSE,
-          fixed = FALSE
+          fixed = FALSE,
+          label = "Column variable"
         )
       )
     )
@@ -307,6 +311,7 @@ shinyApp(app$ui, app$server)
 
 
 # datasets: different subsets of long dataset
+# Contingency table of variables from ADLB dataset
 
 library(random.cdisc.data)
 library(tern)
@@ -334,35 +339,35 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADLB",
         filter = filter_spec(
-           vars = "ARMCD",
-          choices = levels(ADLB$ARMCD),
-          selected = levels(ADLB$ARMCD)[1],
-          multiple = FALSE,
-          label = "Choose ARM"
+          vars = "PARAMCD",
+          choices = levels(ADLB$PARAMCD),
+          selected = levels(ADLB$PARAMCD)[1],
+          multiple = TRUE,
+          label = "Lab"
         ),
         columns = columns_spec(
           choices = names(ADLB),
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Row variable"
         )
       ),
       y = data_extract_spec(
         dataname = "ADLB",
         filter = filter_spec(
-          vars = "ARMCD",
-          choices = levels(ADLB$ARMCD),
-          selected = levels(ADLB$ARMCD)[1],
-          multiple = FALSE,
-          label = "Choose ARM"
+          vars = "PARAMCD",
+          choices = levels(ADLB$PARAMCD),
+          selected = levels(ADLB$PARAMCD)[2],
+          multiple = TRUE,
+          label = "Lab"
         ),
         columns = columns_spec(
           choices = names(ADLB),
-          selected = "PARAMCD",
+          selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Column variable"
         )
       )
     )

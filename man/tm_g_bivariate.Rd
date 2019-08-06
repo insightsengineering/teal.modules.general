@@ -494,6 +494,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: same dataset long
+# Bivariate plot of AVAL vs biomarker value split by PARAMCD and AVISIT
 
 library(random.cdisc.data)
 library(tern)
@@ -519,19 +520,21 @@ app <- teal::init(
       x = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2"),
+          choices = c("AVAL"),
           selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE
+          fixed = FALSE,
+          label = "X variable"
         )
       ),
       y = data_extract_spec(
         dataname = "ADRS",
         columns = columns_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2"),
-          selected = "AVAL",
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE,
+          label = "Y variable"
         )
       ),
       row_facet = data_extract_spec(
@@ -563,6 +566,7 @@ app <- teal::init(
 }
 
 # datasets: different subsets of long dataset
+# Bivariate plot of one lab measurement versus another, optionally split by additional variables
 
 library(random.cdisc.data)
 library(tern)
@@ -593,22 +597,22 @@ app <- teal::init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "STRATA1",
-            choices = levels(ADLB$STRATA1),
-            selected = levels(ADLB$STRATA1)[1],
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[2],
             multiple = FALSE,
-            label = "Choose category"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
-          choices = c("AVISIT", "AVISITN"),
-          selected = c("AVISIT"),
+          choices = "AVAL",
+          selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "Variable"
+          fixed = TRUE,
+          label = "X variable"
         )
       ),
       y = data_extract_spec(
@@ -619,22 +623,22 @@ app <- teal::init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "STRATA1",
-            choices = levels(ADLB$STRATA1),
-            selected = levels(ADLB$STRATA1)[2],
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[2],
             multiple = FALSE,
-            label = "Choose category"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
-          choices = c("AVAL", "CHG"),
+          choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "Variable"
+          fixed = TRUE,
+          label = "Y ariable"
         )
       ),
       use_density = FALSE,
@@ -646,14 +650,14 @@ app <- teal::init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "STRATA1",
             choices = levels(ADLB$STRATA1),
             selected = levels(ADLB$STRATA1)[1],
             multiple = FALSE,
-            label = "Choose category"
+            label = "Category"
           )
         ),
         columns = columns_spec(
@@ -661,7 +665,7 @@ app <- teal::init(
           selected = "",
           multiple = TRUE,
           fixed = FALSE,
-          label = "Facetting variable"
+          label = "Row facetting variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -672,14 +676,14 @@ app <- teal::init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "STRATA1",
             choices = levels(ADLB$STRATA1),
             selected = levels(ADLB$STRATA1)[1],
             multiple = FALSE,
-            label = "Choose category"
+            label = "Category"
           )
         ),
         columns = columns_spec(
@@ -687,7 +691,7 @@ app <- teal::init(
           selected = "",
           multiple = TRUE,
           fixed = FALSE,
-          label = "Facetting variable"
+          label = "Column facetting variable"
         )
       ),
       expert_settings = TRUE,
