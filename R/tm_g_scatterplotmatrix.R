@@ -117,6 +117,7 @@
 #' }
 #'
 #' # datasets: same long
+#' # Display scatterplots of multiple continuous variables from ADTTE dataset
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -141,7 +142,8 @@
 #'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           selected = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           multiple = TRUE,
-#'           fixed = FALSE
+#'           fixed = FALSE,
+#'           label = "Select Variables"
 #'         )
 #'       )
 #'     )
@@ -212,6 +214,7 @@
 #' }
 #'
 #' # datasets: different subsets of long dataset
+#' # Display scatterplots of multiple continuous variables from ADLB dataset
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -234,7 +237,7 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
-#'       label = "Scatterplot matrix",
+#'       label = "Scatterplot matrix on two long datasets with subsets",
 #'       dataname = "ADLB",
 #'       selected = data_extract_spec(
 #'         dataname = "ADLB",
@@ -244,22 +247,22 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose measurement"
+#'             label = "Lab"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit"
+#'             label = "Visit"
 #'           )
 #'         ),
 #'         columns = columns_spec(
-#'           choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2", "AGE"),
-#'           selected = c("AVAL", "CHG"),
+#'           choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
+#'           selected = c("AVAL", "CHNG"),
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Variable"
+#'           label = "Select Variables"
 #'         )
 #'       )
 #'     )
@@ -312,7 +315,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       helpText("Datasets: ", lapply(args$dataname, tags$code)),
       data_extract_input(
         id = ns("selected"),
-        label = "Selected columns",
+        label = "Selected variables",
         data_extract_spec = args$selected
       ),
       sliderInput(ns("alpha"), "Opacity",
@@ -372,10 +375,10 @@ srv_g_scatterplotmatrix <- function(input,
     merged_ds <- merge_datasets(list(col_extract()))
 
     # check columns selected
-    validate(need(cols, "Please select columns first."))
+    validate(need(cols, "Please select variables first."))
 
     # lattice need at least 2 columns for the plot
-    validate(need(length(cols) >= 2, "Please select at least two columns."))
+    validate(need(length(cols) >= 2, "Please select at least two variables."))
 
 
     # check that data are available
