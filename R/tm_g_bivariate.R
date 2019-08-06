@@ -62,7 +62,7 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select Variables",
+#'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "SEX",
 #'           multiple = FALSE,

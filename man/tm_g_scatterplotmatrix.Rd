@@ -33,7 +33,7 @@ Create a scatterplot matrix
 \examples{
 
 # datasets: single wide dataset
-# Scatterplot matrix of selected columns (AGE, RACE, SEX)
+# Scatterplot matrix of variables from ADSL dataset
 library(random.cdisc.data)
 library(tern)
 

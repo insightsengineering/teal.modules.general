@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
-#' # Percentage cross table of selected x (COUNTRY) and selected y (SEX)
+#' # Percentage cross table of variables from ADSL dataset
 #' # datasets: single wide
 #'
 #' ADSL <- cadsl
