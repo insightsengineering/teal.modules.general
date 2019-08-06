@@ -316,6 +316,7 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: same long dataset
+# Examine response with respect to chosen explanatory variable, split by PARAMCD and AVISIT
 
 library(random.cdisc.data)
 library(tern)
@@ -346,7 +347,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = TRUE,
-          label = "Variable"
+          label = "Select Variable"
         )
       ),
       x = data_extract_spec(
@@ -356,7 +357,7 @@ app <- init(
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       ),
       row_facet = data_extract_spec(
@@ -366,7 +367,7 @@ app <- init(
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -376,7 +377,7 @@ app <- init(
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       )
     )
@@ -389,6 +390,7 @@ shinyApp(app$ui, app$server)
 
 
 # datasets: different subsets of long dataset
+# Examine lab values with respect to chosen explanatory variable, split by PARAMCD and AVISIT
 
 library(random.cdisc.data)
 library(tern)
@@ -420,22 +422,21 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
-          fixed = TRUE,
-          label = "Variable"
+          fixed = TRUE
         )
       ),
       x = data_extract_spec(
@@ -444,24 +445,23 @@ app <- init(
           filter_spec(
             vars = "PARAMCD",
             choices = levels(ADLB$PARAMCD),
-            selected = levels(ADLB$PARAMCD)[1],
+            selected = levels(ADLB$PARAMCD)[2],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
-          choices = c("ARMCD", "ACTARMCD"),
-          selected = "ARMCD",
+          choices = "AVAL",
+          selected = "AVAL",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "Variable"
+          fixed = TRUE
         )
       ),
       row_facet = data_extract_spec(
@@ -472,14 +472,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
@@ -487,7 +487,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       ),
       col_facet = data_extract_spec(
@@ -498,14 +498,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit"
           )
         ),
         columns = columns_spec(
@@ -513,7 +513,7 @@ app <- init(
           selected = "",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Variable"
+          label = "Select Variable"
         )
       )
     )

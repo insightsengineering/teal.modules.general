@@ -244,6 +244,8 @@
 #' }
 #'
 #' # datasets: same long
+#' # Contingency table of variables from ADRS dataset
+#'
 #' library(random.cdisc.data)
 #' library(tern)
 #'
@@ -267,7 +269,8 @@
 #'           choices = c("PARAMCD", "AVISIT"),
 #'           selected = c("PARAMCD"),
 #'           multiple = FALSE,
-#'           fixed = FALSE
+#'           fixed = FALSE,
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -276,7 +279,8 @@
 #'           choices = c("AVISIT", "PARAMCD"),
 #'           selected = c("AVISIT"),
 #'           multiple = FALSE,
-#'           fixed = FALSE
+#'           fixed = FALSE,
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )
@@ -291,6 +295,7 @@
 
 #'
 #' # datasets: different subsets of long dataset
+#' # Contingency table of variables from Lab dataset (ADLB)
 #'
 #' library(random.cdisc.data)
 #' library(tern)
@@ -318,35 +323,35 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = filter_spec(
-#'            vars = "ARMCD",
-#'           choices = levels(ADLB$ARMCD),
-#'           selected = levels(ADLB$ARMCD)[1],
-#'           multiple = FALSE,
-#'           label = "Choose ARM"
+#'           vars = "PARAMCD",
+#'           choices = levels(ADLB$PARAMCD),
+#'           selected = levels(ADLB$PARAMCD)[1],
+#'           multiple = TRUE,
+#'           label = "Lab"
 #'         ),
 #'         columns = columns_spec(
 #'           choices = names(ADLB),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Variable"
+#'           label = "Select Variable"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = filter_spec(
-#'           vars = "ARMCD",
-#'           choices = levels(ADLB$ARMCD),
-#'           selected = levels(ADLB$ARMCD)[1],
-#'           multiple = FALSE,
-#'           label = "Choose ARM"
+#'           vars = "PARAMCD",
+#'           choices = levels(ADLB$PARAMCD),
+#'           selected = levels(ADLB$PARAMCD)[2],
+#'           multiple = TRUE,
+#'           label = "Lab"
 #'         ),
 #'         columns = columns_spec(
 #'           choices = names(ADLB),
-#'           selected = "PARAMCD",
+#'           selected = "ARMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Variable"
+#'           label = "Select Variable"
 #'         )
 #'       )
 #'     )
