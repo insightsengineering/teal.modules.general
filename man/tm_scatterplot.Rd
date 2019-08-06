@@ -62,36 +62,36 @@ app <- init(
     check = FALSE),
   modules = root_modules(
     tm_scatterplot(
-      "Scatterplot Choices",
+      label = "Scatterplot Choices",
       dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select variable",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "AGE",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "x variable"
+          fixed = FALSE
         )
       ),
       y = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select variable",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "y variable"
+          fixed = FALSE
         )
       ),
       color_by = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          choices = c("RACE"),
-          selected = "RACE", # todo: how to select nothing
-          multiple = TRUE, #todo: 0 or 1
-          fixed = FALSE,
-          label = "color by"
+          label = "Select variables",
+          choices = c("RACE", "SEX"),
+          selected = NULL,
+          multiple = TRUE,
+          fixed = FALSE
         )
       )
     )
@@ -199,7 +199,7 @@ app <- init(
         ),
         filter = filter_spec(
           vars = c("PARAMCD", "AVISIT"),
-          choices = lapply(expand.grid(
+          choices = apply(expand.grid(
           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = FALSE

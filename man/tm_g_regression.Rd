@@ -59,18 +59,19 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
-          fixed = FALSE,
-          label = "variable"
+          fixed = FALSE
         )
       ),
       regressor = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
+          label = "Select variables",
           choices = c("AGE", "SEX", "RACE"),
-          selected = c("AGE"),
+          selected = "AGE",
           multiple = TRUE,
           fixed = FALSE
         )

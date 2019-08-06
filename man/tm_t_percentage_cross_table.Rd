@@ -62,6 +62,8 @@ app <- init(
         columns = columns_spec(
           label = "Select X Variable",
           choices = c("COUNTRY", "STUDYID"),
+          selected = "COUNTRY",
+          multiple = FALSE,
           fixed = FALSE
         )
       ),
@@ -70,6 +72,8 @@ app <- init(
         columns = columns_spec(
           label = "Select Y Variable",
           choices = c("SEX", "RACE"),
+          selected = "SEX",
+          multiple = FALSE,
           fixed = FALSE
         )
       )
@@ -164,7 +168,7 @@ app <- init(
         dataname = "ADRS",
         filter = filter_spec(
           vars = c("PARAMCD", "AVISIT"),
-          choices = lapply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE

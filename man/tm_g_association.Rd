@@ -54,16 +54,17 @@ app <- init(
       ref = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Reference variable",
+          label = "Select variable",
           choices = names(ADSL),
           selected = "AGE",
+          multiple = FALSE,
           fixed = FALSE
         )
       ),
       vars = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Associated variables",
+          label = "Select variables",
           choices = names(ADSL),
           selected = "BMRKR1",
           multiple = TRUE,

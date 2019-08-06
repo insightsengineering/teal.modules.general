@@ -55,7 +55,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")',
       selected = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Selected columns",
+          label = "Select variables",
           choices = colnames(ADSL),
           selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,
@@ -201,7 +201,7 @@ app <- init(
           ),
           filter = filter_spec(
             vars = c("PARAMCD", "AVISIT"),
-          choices = lapply(expand.grid(
+          choices = apply(expand.grid(
           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = TRUE
