@@ -69,7 +69,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")',
 shinyApp(app$ui, app$server)
 }
 # datasets: different wide
-# Scatterplotmatrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
+# Scatterplot matrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
 library(random.cdisc.data)
 library(tern)
 library(dplyr)

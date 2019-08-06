@@ -120,7 +120,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
      x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
           multiple = FALSE,
@@ -129,7 +129,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
       y = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select Variable",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "RACE",
           multiple = FALSE,

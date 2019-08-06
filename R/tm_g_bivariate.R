@@ -151,7 +151,7 @@
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'          label = "Select Variables",
+#'          label = "Select Variable",
 #'          choices = names(ADSL),
 #'          selected = NULL,
 #'          multiple = FALSE,
@@ -312,7 +312,7 @@
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
-#'          label = "Select Variable",
+#'          label = "Selected Variable",
 #'          fixed = TRUE
 #'        )
 #'     ),
