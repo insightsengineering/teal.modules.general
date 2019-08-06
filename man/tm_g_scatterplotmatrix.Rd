@@ -201,7 +201,7 @@ app <- init(
           ),
           filter = filter_spec(
             vars = c("PARAMCD", "AVISIT"),
-          choices = lapply(expand.grid(
+          choices = apply(expand.grid(
           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = TRUE
