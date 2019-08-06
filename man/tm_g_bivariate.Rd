@@ -300,7 +300,8 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: wide, long
-# Bivariate plot with biomarker measurement (ADSL$BMRKR1) plotted over date of response (ADRS$AVAL)
+# Bivariate plot with biomarker measurement (ADSL$BMRKR1) plotted over
+# date of response (ADRS$AVAL)
 library(random.cdisc.data)
 library(tern)
 
