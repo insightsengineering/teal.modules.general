@@ -16,6 +16,8 @@
 #' @examples
 #'
 #' # datasets: single wide
+#' # Accociation plot of selected reference variable (SEX)
+#' # against other selected variables (BMRKR1)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
 #'

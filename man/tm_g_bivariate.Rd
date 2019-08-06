@@ -70,6 +70,7 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 # datasets: single wide
+# Bivariate plot of selected variable (AGE) againts selected (SEX)
 library(random.cdisc.data)
 ADSL <- cadsl
 

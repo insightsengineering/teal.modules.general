@@ -36,6 +36,7 @@
 #'
 #' @examples
 #' # datasets: single wide
+#' # Bivariate plot of selected variable (AGE) againts selected (SEX)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
 #'

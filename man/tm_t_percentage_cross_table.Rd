@@ -42,7 +42,7 @@ Cross table based on rtables
 }
 \examples{
 library(random.cdisc.data)
-
+# Percentage cross table of selected x (COUNTRY) and selected y (SEX)
 # datasets: single wide
 
 ADSL <- cadsl

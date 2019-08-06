@@ -50,7 +50,7 @@ Create a plot with the \code{\link{plot}[base]} function
 \examples{
 
 # datasets: single wide
-
+# Scatterplot of selected x (AGE) and selected y (BMRKR1)
 library(random.cdisc.data)
 
 ADSL <- cadsl

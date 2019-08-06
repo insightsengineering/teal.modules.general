@@ -39,6 +39,8 @@ library(tern)
 
 
 # datasets: same wide
+# Regression graphs from selected response variable (BMRKR1) and
+# selected regressors (AGE)
 
 library(random.cdisc.data)
 library(tern)

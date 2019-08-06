@@ -13,7 +13,7 @@
 #' @examples
 #'
 #' # datasets: single wide dataset
-#'
+#' # Scatterplot matrix of selected columns (AGE, RACE, SEX)
 #' library(random.cdisc.data)
 #' library(tern)
 #'
