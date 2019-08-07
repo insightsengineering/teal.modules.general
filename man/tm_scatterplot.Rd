@@ -4,14 +4,12 @@
 \alias{tm_scatterplot}
 \title{Create a simple scatterplot}
 \usage{
-tm_scatterplot(label, dataname, x, y, color_by = NULL,
-  plot_height = c(600, 200, 2000), alpha = c(1, 0, 1), size = c(4, 1,
-  12), pre_output = NULL, post_output = NULL)
+tm_scatterplot(label, x, y, color_by = NULL, plot_height = c(600, 200,
+  2000), alpha = c(1, 0, 1), size = c(4, 1, 12), pre_output = NULL,
+  post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
-
-\item{dataname}{name of dataset used to generate plot}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 x variable}
@@ -63,7 +61,6 @@ app <- init(
   modules = root_modules(
     tm_scatterplot(
       label = "Scatterplot Choices",
-      dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -137,7 +134,6 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
   ),
   modules = root_modules(
     tm_scatterplot("Scatterplot for different wide data",
-     dataname = c("ADSL", "ADSL_2"),
      x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -192,7 +188,6 @@ app <- init(
   modules = root_modules(
     tm_scatterplot(
       label = "Scatterplot on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
@@ -268,7 +263,6 @@ keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
   ),
   modules = root_modules(
    tm_scatterplot("Scatterplot for wide and long data",
-     dataname = c("ADSL", "ADRS"),
      x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
@@ -341,7 +335,6 @@ app <- init(
   modules = root_modules(
     tm_scatterplot(
       "Scatterplot for same long dataset",
-      dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
@@ -405,7 +398,6 @@ app <- init(
   modules = root_modules(
     tm_scatterplot(
       "Scatterplot Choices",
-      dataname = "ADLB",
       x = data_extract_spec(
         dataname = "ADLB",
         filter = list(

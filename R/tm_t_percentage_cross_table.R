@@ -2,8 +2,6 @@
 #'
 #' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
 #' @param label (\code{character}) Label of the app in the teal menu
-#' @param dataname (\code{character}) Name of the dataset used in the teal app. Just a single
-#'   dataset is allowed!
 #' @param x (\code{choices_selected}) object with all available
 #'   choices with preselected option for variable X
 #' @param y (\code{choices_selected}) object with all available
@@ -31,7 +29,6 @@
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -95,7 +92,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table("Cross Table",
-#'      dataname = c("ADSL", "ADSL_2"),
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -142,7 +138,6 @@
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = filter_spec(
@@ -208,7 +203,6 @@
 #'   ),
 #'   modules = root_modules(
 #'    tm_t_percentage_cross_table("Cross Table",
-#'      dataname = c("ADSL", "ADRS"),
 #'      x = data_extract_spec(
 #'           dataname = "ADRS",
 #'           filter = list(
@@ -271,7 +265,6 @@
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       "Scatterplot for same long dataset",
-#'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
@@ -328,7 +321,6 @@
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table(
 #'       label = "Cross Table",
-#'       dataname = "ADLB",
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = filter_spec(
@@ -371,13 +363,11 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_t_percentage_cross_table <- function(label = "Cross Table",
-                                        dataname,
                                         x,
                                         y,
                                         pre_output = NULL,
                                         post_output = NULL) {
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
@@ -398,10 +388,13 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_percentage_cross_table,
     ui_args = args,
-    server_args = list(dataname = dataname, label = label, x = x, y = y),
+    server_args = list(label = label, x = x, y = y),
     filters = "all"
   )
 }
@@ -414,7 +407,7 @@ ui_percentage_cross_table <- function(id, ...) {
   standard_layout(
     output = white_small_well(uiOutput(ns("table"))),
     encoding = div(
-      helpText("Dataset:", tags$code(a$dataname)),
+      uiOutput(ns("dataname")),
       data_extract_input(ns("x"), label = "Row values", a$x),
       tags$hr(),
       data_extract_input(ns("y"), label = "Column values", a$y)
@@ -427,10 +420,14 @@ ui_percentage_cross_table <- function(id, ...) {
 
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
-srv_percentage_cross_table <- function(input, output, session, datasets, dataname, label) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+srv_percentage_cross_table <- function(input, output, session, datasets, label) {
+
+  dataname <- datasets$datanames()
 
   init_chunks()
+
+  output$dataname <- renderText(dataname)
+
 
   table_code <- reactive({
     anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)

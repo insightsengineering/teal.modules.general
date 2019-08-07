@@ -2,7 +2,6 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
 #' @param selected (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Plotting variables from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
@@ -31,7 +30,6 @@
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
-#'       dataname = c("ADSL"),
 #'       selected = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -86,7 +84,6 @@
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
-#'       dataname = c("ADSL", "ADSL_2"),
 #'       selected = list(
 #'         data_extract_spec(
 #'           dataname = "ADSL",
@@ -135,7 +132,6 @@
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       "Scatterplot matrix for same long dataset",
-#'       dataname = "ADTTE",
 #'       selected = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         select = select_spec(
@@ -172,7 +168,6 @@
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       selected = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
@@ -243,7 +238,6 @@
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix on two long datasets with subsets",
-#'       dataname = "ADLB",
 #'       selected = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -278,7 +272,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
-                                   dataname,
                                    selected,
                                    plot_height = c(600, 200, 2000),
                                    pre_output = NULL,
@@ -288,7 +281,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
   }
 
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(selected))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -297,10 +289,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(selected = selected, dataname = dataname),
+    server_args = list(selected = selected),
     filters = "all"
   )
 }
@@ -317,7 +312,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       )
     ),
     encoding = div(
-      helpText("Datasets: ", lapply(args$dataname, tags$code)),
+      uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("selected"),
         label = "Selected variables",

@@ -1,7 +1,6 @@
 #' Scatterplot and Regression Model
 #'
 #'
-#' @param dataname name of datasets used to generate the regression plot (just used for labeling)
 #' @param regressor (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  regressor variable from an incoming dataset with filtering and selecting.
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -31,7 +30,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = "ADSL",
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -98,7 +96,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADSL_2"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -148,7 +145,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADRS"),
 #'       response = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = list(
@@ -228,7 +224,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression Analysis on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       response = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         select = select_spec(
@@ -307,7 +302,6 @@
 #'  modules = root_modules(
 #'    tm_g_regression(
 #'      label = "Regression",
-#'      dataname = c("ADSL", "ADLB"),
 #'      response = data_extract_spec(
 #'        dataname = "ADLB",
 #'        filter = list(
@@ -379,7 +373,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADLB", "ADRS"),
 #'       response = list(data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -471,7 +464,6 @@
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
-#'       dataname = "ADLB",
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -530,7 +522,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_regression <- function(label = "Regression Analysis",
-                            dataname,
                             regressor,
                             response,
                             plot_height = c(600, 200, 2000),
@@ -544,14 +535,12 @@ tm_g_regression <- function(label = "Regression Analysis",
   }
 
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(response))
   stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
                    "Response variable should not allow multiple selection"))
   stopifnot(is.class.list("data_extract_spec")(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
-
 
   # No check necessary for regressor and response, as checked in data_extract_input
 
@@ -560,10 +549,13 @@ tm_g_regression <- function(label = "Regression Analysis",
 
   module(
     label = label,
-    server = srv_g_regression,
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_g_regression,
     ui_args = args,
-    server_args = list(regressor = regressor, response = response, dataname = dataname),
+    server_args = list(regressor = regressor, response = response),
     filters = "all"
   )
 }
@@ -582,7 +574,7 @@ ui_g_regression <- function(id, ...) {
       )
     ),
     encoding = div(
-      helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
+        uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("response"),
         label = "Response Variable",

@@ -3,8 +3,6 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param label (\code{character}) Label of the module
-#' @param dataname (\code{character}) name of datasets used to generate the bivariate plot. You need
-#'   to name all datasets used in the available \code{data_extract_spec}
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 #'   No empty selections are allowed!
@@ -48,7 +46,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_bivariate(
-#'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -131,7 +128,6 @@
 #'   modules = root_modules(
 #'     tm_g_bivariate(
 #'       label = "Association plots",
-#'       dataname = c("ADSL", "ADSL_2"),
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -196,7 +192,6 @@
 #'   modules = root_modules(
 #'     tm_g_bivariate(
 #'       label = "Bivariate Plots of two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         filter = filter_spec(
@@ -293,7 +288,6 @@
 #'  modules = root_modules(
 #'    tm_g_bivariate(
 #'      label = "Association Plots",
-#'      dataname = c("ADSL", "ADRS"),
 #'      x = data_extract_spec(
 #'        dataname = "ADRS",
 #'        filter = list(
@@ -386,7 +380,6 @@
 #'  modules = root_modules(
 #'    tm_g_bivariate(
 #'      label = "Association Plots",
-#'      dataname = c("ADSL", "ADRS", "ADLB"),
 #'      x = data_extract_spec(
 #'        dataname = "ADRS",
 #'        filter = list(
@@ -489,7 +482,6 @@
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_bivariate(
-#'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
@@ -561,7 +553,6 @@
 #'     check = FALSE),
 #'   modules = root_modules(
 #'     tm_g_bivariate(
-#'       dataname = "ADLB",
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -676,7 +667,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_bivariate <- function(label = "Bivariate Plots",
-                           dataname,
                            x,
                            y,
                            row_facet,
@@ -694,7 +684,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL) {
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"))
@@ -748,11 +737,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_g_bivariate,
     ui_args = args,
     server_args = list(
-      dataname = dataname,
       x = x,
       y = y,
       row_facet = row_facet,
@@ -787,7 +778,7 @@ ui_g_bivariate <- function(id, ...) {
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
-      helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ", "))),
+      uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("x"),
         label = "X Variable",
