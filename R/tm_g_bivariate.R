@@ -395,14 +395,14 @@
 #'            choices = levels(ADRS$PARAMCD),
 #'            selected = levels(ADRS$PARAMCD)[1],
 #'            multiple = FALSE,
-#'            label = "Response"
+#'            label = "Response:"
 #'          ),
 #'          filter_spec(
 #'            vars = "AVISIT",
 #'            choices = levels(ADRS$AVISIT),
 #'            selected = levels(ADRS$AVISIT)[1],
 #'            multiple = FALSE,
-#'            label = "Visit"
+#'            label = "Visit:"
 #'          )
 #'        ),
 #'        select = select_spec(
@@ -431,14 +431,14 @@
 #'             choices = levels(ADLB$PARAM),
 #'             selected = levels(ADLB$PARAM)[1],
 #'             multiple = FALSE,
-#'             label = "Lab"
+#'             label = "Lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Visit"
+#'             label = "Visit:"
 #'           )
 #'         ),
 #'         select = select_spec(

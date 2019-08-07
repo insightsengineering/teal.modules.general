@@ -590,7 +590,7 @@ ui_g_regression <- function(id, ...) {
       ),
       data_extract_input(
         id = ns("regressor"),
-        label = "Regressor variable(-s)",
+        label = "Regressor variables",
         data_extract_spec = arguments$regressor
       ),
       radioButtons(
