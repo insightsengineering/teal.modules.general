@@ -35,25 +35,21 @@ Scatterplot and Regression Model
 }
 \examples{
 library(random.cdisc.data)
-library(tern)
-
 
 # datasets: same wide
 # Regression graphs from selected response variable (BMRKR1) and
 # selected regressors (AGE)
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
-keys(ADSL) <- c("STUDYID", "USUBJID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = 'ADSL <- cadsl
-            keys(ADSL) <- c("STUDYID", "USUBJID")',
-    check = FALSE),
+    code = "ADSL <- cadsl",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
@@ -61,7 +57,7 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -71,7 +67,7 @@ app <- init(
       regressor = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variables",
+          label = "Select variables:",
           choices = c("AGE", "SEX", "RACE"),
           selected = "AGE",
           multiple = TRUE,
@@ -88,7 +84,6 @@ shinyApp(app$ui, app$server)
 # datasets: different wide
 # Regression of BMRKR1 by AGE + RACE
 library(random.cdisc.data)
-library(tern)
 library(dplyr)
 
 ADSL <- cadsl
@@ -96,15 +91,10 @@ ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-keys(ADSL) <- c("STUDYID", "USUBJID")
-
-
 ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
                  "USUBJID", "STUDYID")
-keys(ADSL_2) <- c("STUDYID", "USUBJID")
-
 
 app <- init(
   data = cdisc_data(
@@ -118,9 +108,9 @@ app <- init(
             ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
-                 "COUNTRY", "USUBJID", "STUDYID")
-            keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-    check = FALSE),
+                 "COUNTRY", "USUBJID", "STUDYID")',
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
@@ -128,16 +118,16 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("BMRKR1", "BMRKR2"),
-          selected = c("BMRKR1"),
+          selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE
         )),
       regressor = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select Variables",
+          label = "Select variables:",
           choices = c("AGE", "RACE", "COUNTRY"),
           selected = c("AGE", "RACE"),
           multiple = TRUE,
@@ -154,23 +144,17 @@ shinyApp(app$ui, app$server)
 # Examine linear relationship between responses of different parameters
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADRS <- cadrs
-
-keys(ADSL) <-  c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
-    code = 'ADSL <- cadsl
-            ADRS <- cadrs
-            keys(ADSL) <-  c("STUDYID", "USUBJID")
-            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
@@ -183,14 +167,14 @@ app <- init(
             choices = levels(ADRS$PARAM),
             selected = levels(ADRS$PARAM)[1],
             multiple = FALSE,
-            label = "Choose Measurement"
+            label = "Choose measurement:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADRS$AVISIT),
             selected = levels(ADRS$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -198,7 +182,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       regressor = data_extract_spec(
@@ -209,14 +193,14 @@ app <- init(
             choices = levels(ADRS$PARAM),
             selected = levels(ADRS$PARAM)[1:2],
             multiple = TRUE,
-            label = "Choose Measurement"
+            label = "Choose measurements:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADRS$AVISIT),
             selected = levels(ADRS$AVISIT)[2],
             multiple = TRUE,
-            label = "Choose Visit"
+            label = "Choose visits:"
           )
         ),
         columns = columns_spec(
@@ -224,7 +208,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       )
     )
@@ -249,7 +233,7 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = FALSE
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_regression(
@@ -258,14 +242,14 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADTTE",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("AVAL", "CNSR"),
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE
         ),
         filter = filter_spec(
-          label = "Select Parameter",
+          label = "Select parameter:",
           vars = c("PARAMCD"),
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",
@@ -276,14 +260,14 @@ app <- init(
         data_extract_spec(
           dataname = "ADRS",
           columns = columns_spec(
-            label = "Select Variables",
+            label = "Select variables:",
             choices = names(ADRS),
             selected = "AVAL",
             multiple = TRUE,
             fixed = FALSE
           ),
           filter = filter_spec(
-            label = "Select Endpoints",
+            label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = apply(expand.grid(
             levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
@@ -294,7 +278,7 @@ app <- init(
         data_extract_spec(
           dataname = "ADSL",
           columns = columns_spec(
-            label = "Select Variables",
+            label = "Select variables:",
             choices = c("BMRKR1", "BMRKR2"),
             selected = "BMRKR1",
             multiple = TRUE,
@@ -313,23 +297,17 @@ shinyApp(app$ui, app$server)
 # Regression of lab measurement (ADLB$AVAL) by
 #   patient age (ADSL$AGE)
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
  data = cdisc_data(
    cdisc_dataset("ADSL", ADSL),
    cdisc_dataset("ADLB", ADLB),
-   code = 'ADSL <- cadsl
-           ADLB <- cadlb
-           keys(ADSL) <- c("STUDYID", "USUBJID")
-           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-   check = FALSE),
+   code = "ADSL <- cadsl; ADLB <- cadlb",
+   check = TRUE
+ ),
  modules = root_modules(
    tm_g_regression(
      label = "Regression",
@@ -342,18 +320,18 @@ app <- init(
           choices = levels(ADLB$PARAM),
            selected = levels(ADLB$PARAM)[1],
            multiple = FALSE,
-           label = "Choose measurement"
+           label = "Choose measurement:"
          ),
          filter_spec(
            vars = "AVISIT",
            choices = levels(ADLB$AVISIT),
            selected = levels(ADLB$AVISIT)[1],
            multiple = FALSE,
-           label = "Choose visit"
+           label = "Choose visit:"
          )
        ),
        columns = columns_spec(
-         label = "Select Variable",
+         label = "Select variable:",
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
@@ -363,9 +341,9 @@ app <- init(
      regressor = data_extract_spec(
        dataname = "ADSL",
        columns = columns_spec(
-         label = "Select Variables",
+         label = "Select variables:",
          choices = c("BMRKR1", "BMRKR2", "AGE"),
-         selected = c("AGE"),
+         selected = "AGE",
          multiple = TRUE,
          fixed = FALSE
       )
@@ -381,27 +359,19 @@ shinyApp(app$ui, app$server)
 # datasets: wide, long, long
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
 ADRS <- cadrs
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
     cdisc_dataset("ADRS", ADRS),
-    code = 'ADSL <- cadsl
-            ADLB <- cadlb
-            keys(ADSL) <- c("STUDYID", "USUBJID")
-            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
-            keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE),
+    code = "ADSL <- cadsl; ADLB <- cadlb",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
@@ -414,14 +384,14 @@ app <- init(
             choices = levels(ADLB$PARAM),
             selected = levels(ADLB$PARAM)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Choose measurement:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -429,7 +399,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
-          label = "variable"
+          label = "Select variable:"
         )
       ),
       data_extract_spec(
@@ -440,14 +410,14 @@ app <- init(
             choices = levels(ADRS$ARMCD),
             selected = levels(ADRS$ARMCD)[1],
             multiple = FALSE,
-            label = "Choose ARM"
+            label = "Choose ARM:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADRS$AVISIT),
             selected = levels(ADRS$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -477,23 +447,17 @@ shinyApp(app$ui, app$server)
 # Examine linear relationship between different lab measurements
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = 'ADSL <- cadsl
-            ADLB <- cadlb
-            keys(ADSL) <- c("STUDYID", "USUBJID")
-            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE),
+    code = "ADSL <- cadsl; ADLB <- cadlb",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
@@ -506,14 +470,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Lab"
+            label = "Choose lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -531,14 +495,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[2:3],
             multiple = TRUE,
-            label = "Lab"
+            label = "Choose Labs:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(

@@ -233,25 +233,30 @@ plot.venn2 <- function(x, ...) {
 #'     list(USUBJID = paste("ID", 1:N), STUDYID = "1"), sample_bm_data
 #'     ))
 #'     ',
-#'     check = FALSE),
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     teal.modules.general:::tm_venn2(
 #'       "Venn Diagram", "ADSL",
 #'       bm1 = data_extract_spec(
 #'         dataname = "ADSL",
 #'         column = columns_spec(
-#'           label = "Select Biomarker",
+#'           label = "Select biomarker:",
 #'           choices = var_biomarkers,
 #'           selected = "B1",
-#'           fixed = FALSE)
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       ),
 #'       bm2 = data_extract_spec(
 #'         dataname = "ADSL",
 #'         column = columns_spec(
-#'           label = "Select Biomarker",
+#'           label = "Select biomarkers:",
 #'           choices = var_biomarkers,
 #'           selected = "B2",
-#'           fixed = FALSE,)
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       )
 #'     )
 #'   )
@@ -314,12 +319,12 @@ ui_venn2 <- function(id, ...) {
       helpText("Analysis data:", tags$code(arguments$dataname)),
       data_extract_input(
         id = ns("bm1"),
-        label = "Biomarker 1",
+        label = "Biomarker 1:",
         data_extract_spec = arguments$bm1
       ),
       data_extract_input(
         id = ns("bm2"),
-        label = "Biomarker 2",
+        label = "Biomarker 2:",
         data_extract_spec = arguments$bm2
       ),
 
@@ -329,7 +334,7 @@ ui_venn2 <- function(id, ...) {
       ))) {
         NULL
       } else {
-        tags$label("Plot Settings", class = "text-primary", style = "margin-top: 15px;")
+        tags$label("Plot settings", class = "text-primary", style = "margin-top: 15px;")
       },
       optionalSliderInputValMinMax(ns("plot_height"), "plot height", arguments$plot_height, ticks = FALSE)
     ),

@@ -49,18 +49,15 @@ Response Plots
 # datasets: same wide
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = 'ADSL <- cadsl
-            keys(ADSL) <- c("STUDYID", "USUBJID")',
-    check = FALSE),
+    code = "ADSL <- cadsl",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
@@ -68,7 +65,7 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -78,7 +75,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("AGE", "SEX", "RACE"),
           selected = "RACE",
           multiple = FALSE,
@@ -94,7 +91,6 @@ shinyApp(app$ui, app$server)
 
 # datasets: different wide
 library(random.cdisc.data)
-library(tern)
 library(dplyr)
 
 ADSL <- cadsl
@@ -102,15 +98,11 @@ ADSL <- mutate_at(ADSL,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-keys(ADSL) <- c("STUDYID", "USUBJID")
-
 
 ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
                  "USUBJID", "STUDYID")
-keys(ADSL_2) <- c("STUDYID", "USUBJID")
-
 
 app <- init(
   data = cdisc_data(
@@ -124,9 +116,9 @@ app <- init(
             ADSL_2 <- mutate_at(cadsl,
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
-                 "COUNTRY", "USUBJID", "STUDYID")
-            keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-    check = FALSE),
+                 "COUNTRY", "USUBJID", "STUDYID")',
+    check = TRUE
+  ),
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
@@ -134,19 +126,21 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-         label = "Select variable",
+          label = "Select variable:",
           choices = c("BMRKR1", "BMRKR2"),
           selected = c("BMRKR1"),
           multiple = FALSE
-        )),
+        )
+      ),
       x = data_extract_spec(
         dataname = "ADSL_2",
         columns = columns_spec(
-          label = "Select variable",
+          label = "Select variable:",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "COUNTRY",
           multiple = FALSE
-        ))
+        )
+      )
     )
   )
 )
@@ -168,7 +162,7 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADLB", ADLB),
     code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
-    check = FALSE
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_response(
@@ -178,14 +172,14 @@ app <- init(
         dataname = "ADLB",
         filter = list(
           filter_spec(
-            label = "Select Parameter",
+            label = "Select parameter:",
             vars = "PARAMCD",
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE
           ),
           filter_spec(
-            label = "Select Visit",
+            label = "Select visit:",
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
@@ -193,7 +187,7 @@ app <- init(
           )
         ),
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("AVAL", "AVALC"),
           selected = "AVAL",
           multiple = FALSE,
@@ -204,14 +198,14 @@ app <- init(
         dataname = "ADRS",
         filter = list(
           filter_spec(
-            label = "Select Parameter",
+            label = "Select parameter:",
             vars = "PARAMCD",
             choices = levels(ADRS$PARAMCD),
             selected = levels(ADRS$PARAMCD)[1],
             multiple = FALSE
           ),
           filter_spec(
-            label = "Select Visit",
+            label = "Select visit:",
             vars = "AVISIT",
             choices = levels(ADRS$AVISIT),
             selected = levels(ADRS$AVISIT)[1],
@@ -228,7 +222,7 @@ app <- init(
       row_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("SEX", "AGE"),
           selected = NULL,
           multiple = FALSE,
@@ -238,7 +232,7 @@ app <- init(
       col_facet = data_extract_spec(
         dataname = "ADSL",
         columns = columns_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("SEX", "AGE"),
           selected = NULL,
           multiple = FALSE,
@@ -252,69 +246,61 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 
-
 # datasets: wide and long
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
 
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
-
 app <- init(
- data = cdisc_data(
-   cdisc_dataset("ADSL", ADSL),
-   cdisc_dataset("ADLB", ADLB),
-   code = 'ADSL <- cadsl
-           ADLB <- cadlb
-           keys(ADSL) <- c("STUDYID", "USUBJID")
-           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-   check = FALSE),
- modules = root_modules(
-   tm_g_response(
-     label = "Response Plots",
-     dataname = c("ADSL", "ADLB"),
-     response = data_extract_spec(
-       dataname = "ADLB",
-       filter = list(
-         filter_spec(
-           vars = "PARAM",
-          choices = levels(ADLB$PARAM),
-           selected = levels(ADLB$PARAM)[1],
-           multiple = FALSE,
-           label = "Choose measurement"
-         ),
-         filter_spec(
-           vars = "AVISIT",
-           choices = levels(ADLB$AVISIT),
-           selected = levels(ADLB$AVISIT)[1],
-           multiple = FALSE,
-           label = "Choose visit"
-         )
-       ),
-       columns = columns_spec(
-         choices = "AVAL",
-         selected = "AVAL",
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "variable"
-       )
-    ),
-     x = data_extract_spec(
-       dataname = "ADSL",
-       columns = columns_spec(
-         choices = c("BMRKR1", "BMRKR2"),
-         selected = c("BMRKR1"),
-         multiple = FALSE,
-         fixed = FALSE
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    code = "ADSL <- cadsl; ADLB <- cadlb",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_g_response(
+      label = "Response Plots",
+      dataname = c("ADSL", "ADLB"),
+      response = data_extract_spec(
+        dataname = "ADLB",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADLB$PARAM),
+            selected = levels(ADLB$PARAM)[1],
+            multiple = FALSE,
+            label = "Choose measurement:"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
+            multiple = FALSE,
+            label = "Choose visit:"
+          )
+        ),
+        columns = columns_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Select variable:"
+        )
+      ),
+      x = data_extract_spec(
+        dataname = "ADSL",
+        columns = columns_spec(
+          choices = c("BMRKR1", "BMRKR2"),
+          selected = c("BMRKR1"),
+          multiple = FALSE,
+          fixed = FALSE
+        )
       )
-     )
-   )
+    )
+  )
 )
-)
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -323,23 +309,16 @@ shinyApp(app$ui, app$server)
 # Examine response with respect to chosen explanatory variable, split by PARAMCD and AVISIT
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADRS <- cadrs
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
-    code = 'ADSL <- cadsl
-           ADRS <- cadrs
-           keys(ADSL) <- c("USUBJID", "STUDYID")
-           keys(ADRS) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
-    check = FALSE
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_response(
@@ -351,7 +330,7 @@ app <- init(
           selected = "AVAL",
           multiple = FALSE,
           fixed = TRUE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       x = data_extract_spec(
@@ -361,7 +340,7 @@ app <- init(
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       row_facet = data_extract_spec(
@@ -371,7 +350,7 @@ app <- init(
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       col_facet = data_extract_spec(
@@ -381,13 +360,12 @@ app <- init(
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       )
     )
   )
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -397,23 +375,16 @@ shinyApp(app$ui, app$server)
 # Examine lab values with respect to chosen explanatory variable, split by PARAMCD and AVISIT
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = 'ADSL <- cadsl
-           ADLB <- cadrs
-           keys(ADSL) <- c("USUBJID", "STUDYID")
-           keys(ADLB) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
-    check = FALSE
+    code = "ADSL <- cadsl; ADLB <- cadrs",
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_response(
@@ -426,14 +397,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Lab"
+            label = "Choose lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -451,14 +422,14 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[2],
             multiple = FALSE,
-            label = "Lab"
+            label = "Choose lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
@@ -476,19 +447,19 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Lab"
+            label = "Choose lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
-          choices = c("", "SEX", "RACE"),
-          selected = "",
+          choices = c("SEX", "RACE"),
+          selected = NULL,
           multiple = FALSE,
           fixed = FALSE,
           label = "Select Variable"
@@ -502,28 +473,27 @@ app <- init(
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
-            label = "Lab"
+            label = "Choose lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Visit"
+            label = "Choose visit:"
           )
         ),
         columns = columns_spec(
-          choices = c("", "SEX", "RACE"),
-          selected = "",
+          choices = c("SEX", "RACE"),
+          selected = NULL,
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       )
     )
   )
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }

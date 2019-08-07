@@ -15,18 +15,15 @@
 #' # datasets: single wide dataset
 #' # Scatterplot matrix of variables from ADSL dataset
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADTTE <- radtte(ADSL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = 'ADSL <- cadsl
-#' keys(ADSL) <- c("STUDYID", "USUBJID")',
-#'     check = FALSE
+#'     code = "ADSL <- cadsl",
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
@@ -35,7 +32,7 @@
 #'       selected = data_extract_spec(
 #'         dataname = "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select Variables",
+#'           label = "Select variables:",
 #'           choices = colnames(ADSL),
 #'           selected = c("AGE", "RACE", "SEX"),
 #'           multiple = TRUE,
@@ -51,7 +48,6 @@
 #' # datasets: different wide
 #' # Scatterplot matrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
 #' library(random.cdisc.data)
-#' library(tern)
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
@@ -62,15 +58,11 @@
 #'   "ARM", "ACTARM", "ACTARMCD",
 #'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
 #' )
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#'
 #'
 #' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'   .funs = list(~as.factor(.))
 #' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
-#'
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -79,9 +71,8 @@
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-#'     check = FALSE
+#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
@@ -91,7 +82,7 @@
 #'         data_extract_spec(
 #'           dataname = "ADSL",
 #'           columns = columns_spec(
-#'             label = "Select Variables",
+#'             label = "Select variables:",
 #'             choices = colnames(ADSL),
 #'             selected = c("AGE", "ACTARM", "SEX"),
 #'             multiple = TRUE,
@@ -101,7 +92,7 @@
 #'         data_extract_spec(
 #'           dataname = "ADSL_2",
 #'           columns = columns_spec(
-#'             label = "Select Variables",
+#'             label = "Select variables:",
 #'             choices = colnames(ADSL_2),
 #'             selected = c("COUNTRY", "ACTARM", "STRATA2"),
 #'             multiple = TRUE,
@@ -120,18 +111,17 @@
 #' # Display scatterplots of multiple continuous variables from ADTTE dataset
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADTTE <- cadtte
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADTTE) <- c("STUDYID", "USUBJID", "PARAMCD")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "", check = FALSE),
+#'     code = "ADSL <- cadsl; ADTTE <- cadtte",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       "Scatterplot matrix for same long dataset",
@@ -143,7 +133,7 @@
 #'           selected = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Select Variables"
+#'           label = "Select variables:"
 #'         )
 #'       )
 #'     )
@@ -167,7 +157,7 @@
 #'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADTTE", ADTTE),
 #'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-#'     check = FALSE
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
@@ -177,14 +167,14 @@
 #'         data_extract_spec(
 #'           dataname = "ADRS",
 #'           columns = columns_spec(
-#'             label = "Select Variables",
+#'             label = "Select variables:",
 #'             choices = names(ADRS),
 #'             selected = c("AVAL", "AVALC"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             label = "Select Endpoints",
+#'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(
 #'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
@@ -195,14 +185,14 @@
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
 #'           columns = columns_spec(
-#'             label = "Select Variables",
+#'             label = "Select variables:",
 #'             choices = names(ADTTE),
 #'             selected = c("AVAL", "CNSR"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             label = "Select Parameters",
+#'             label = "Select parameters:",
 #'             vars = "PARAMCD",
 #'             choices = unique(ADTTE$PARAMCD),
 #'             selected = "OS",
@@ -222,23 +212,16 @@
 #' # Display scatterplots of multiple continuous variables from ADLB dataset
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADLB <- cadlb
-#'
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADLB", ADLB),
-#'     code = 'ADSL <- cadsl
-#'            ADLB <- cadrs
-#'            keys(ADSL) <- c("USUBJID", "STUDYID")
-#'            keys(ADLB) <- c("USUBJID", "STUDYID", "PARAMCD", "AVISIT")',
-#'     check = FALSE
+#'     code = "ADSL <- cadsl; ADLB <- cadrs",
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
@@ -252,14 +235,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Lab"
+#'             label = "Choose lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Visit"
+#'             label = "Choose visit:"
 #'           )
 #'         ),
 #'         columns = columns_spec(
@@ -267,7 +250,7 @@
 #'           selected = c("AVAL", "CHNG"),
 #'           multiple = TRUE,
 #'           fixed = FALSE,
-#'           label = "Select Variables"
+#'           label = "Select variables:"
 #'         )
 #'       )
 #'     )
@@ -320,20 +303,20 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       helpText("Datasets: ", lapply(args$dataname, tags$code)),
       data_extract_input(
         id = ns("selected"),
-        label = "Selected variables",
+        label = "Selected variables:",
         data_extract_spec = args$selected
       ),
-      sliderInput(ns("alpha"), "Opacity",
+      sliderInput(ns("alpha"), "Opacity:",
         min = 0, max = 1, step = .05, value = .5, ticks = FALSE
       ),
-      sliderInput(ns("cex"), "Point Size",
+      sliderInput(ns("cex"), "Points size:",
         min = 0.2, max = 3, step = .05, value = .65, ticks = FALSE
       ),
       plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%")
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
   )
 }
 

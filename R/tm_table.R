@@ -21,16 +21,14 @@
 #'
 #' @examples
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
-#' keys(ADSL) <- c("USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = 'ADSL <- cadsl; keys(ADSL) <- c("USUBJID", "STUDYID")',
-#'     check = FALSE
+#'     code = "ADSL <- cadsl",
+#'     check = TRUE
 #'   ),
 #'   root_modules(
 #'     tm_table(
@@ -39,8 +37,8 @@
 #'       x = data_extract_spec(
 #'         "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select variable",
-#'           choices = base::setdiff(names(ADSL), keys(ADSL)),
+#'           label = "Select variable:",
+#'           choices = names(ADSL),
 #'           selected = names(ADSL)[5],
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -49,8 +47,8 @@
 #'       y = data_extract_spec(
 #'         "ADSL",
 #'         columns = columns_spec(
-#'           label = "Select variable",
-#'           choices = base::setdiff(names(ADSL), keys(ADSL)),
+#'           label = "Select variable:",
+#'           choices = names(ADSL),
 #'           selected = names(ADSL)[6],
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -67,23 +65,16 @@
 #' # datasets: different subsets of long dataset
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADLB <- cadlb
-#'
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADLB", ADLB),
-#'     code = 'ADSL <- cadsl
-#'            ADLB <- cadlb
-#'            keys(ADSL) <- c("STUDYID", "USUBJID")
-#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-#'     check = FALSE
+#'     code = "ADSL <- cadsl; ADLB <- cadlb",
+#'     check = TRUE
 #'   ),
 #'   root_modules(
 #'     tm_table(
@@ -96,14 +87,14 @@
 #'           choices = levels(ADLB$ARMCD),
 #'           selected = levels(ADLB$ARMCD)[1],
 #'           multiple = FALSE,
-#'           label = "Choose ARM"
+#'           label = "Choose ARM:"
 #'         ),
 #'         columns = columns_spec(
 #'           choices = names(ADLB),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -113,14 +104,14 @@
 #'           choices = levels(ADLB$ARMCD),
 #'           selected = levels(ADLB$ARMCD)[1],
 #'           multiple = FALSE,
-#'           label = "Choose ARM"
+#'           label = "Choose ARM:"
 #'         ),
 #'         columns = columns_spec(
 #'           choices = names(ADLB),
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       )
 #'     )
@@ -195,13 +186,13 @@ ui_table <- function(id,
       data_extract_input(ns("y"), label = "Column values", y),
       tags$hr(),
       radioButtons(ns("useNA"),
-                   label = "Display Missing Values",
+                   label = "Display missing values:",
                    choices = c("no", "ifany", "always"),
                    selected = useNA
       ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = pre_output,
     post_output = post_output
   )
