@@ -13,12 +13,9 @@
 #' @export
 #'
 #' @examples
-#' library(random.cdisc.data)
-#'
 #' # datasets: same wide
 #' # Regression graphs from selected response variable (BMRKR1) and
 #' # selected regressors (AGE)
-#'
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
@@ -35,7 +32,7 @@
 #'       dataname = "ADSL",
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
@@ -45,7 +42,7 @@
 #'       ),
 #'       regressor = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variables:",
 #'           choices = c("AGE", "SEX", "RACE"),
 #'           selected = "AGE",
@@ -96,7 +93,7 @@
 #'       dataname = c("ADSL", "ADSL_2"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
@@ -105,7 +102,7 @@
 #'         )),
 #'       regressor = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variables:",
 #'           choices = c("AGE", "RACE", "COUNTRY"),
 #'           selected = c("AGE", "RACE"),
@@ -156,7 +153,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -182,7 +179,7 @@
 #'             label = "Choose visits:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -220,7 +217,7 @@
 #'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       response = data_extract_spec(
 #'         dataname = "ADTTE",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("AVAL", "CNSR"),
 #'           selected = "AVAL",
@@ -238,7 +235,7 @@
 #'       regressor = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = names(ADRS),
 #'             selected = "AVAL",
@@ -256,7 +253,7 @@
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADSL",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = c("BMRKR1", "BMRKR2"),
 #'             selected = "BMRKR1",
@@ -309,7 +306,7 @@
 #'            label = "Choose visit:"
 #'          )
 #'        ),
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          label = "Select variable:",
 #'          choices = "AVAL",
 #'          selected = "AVAL",
@@ -319,7 +316,7 @@
 #'     ),
 #'      regressor = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          label = "Select variables:",
 #'          choices = c("BMRKR1", "BMRKR2", "AGE"),
 #'          selected = "AGE",
@@ -373,7 +370,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -399,7 +396,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -408,7 +405,7 @@
 #'       )),
 #'       regressor = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
 #'           multiple = TRUE,
@@ -459,7 +456,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -484,7 +481,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -515,7 +512,7 @@ tm_g_regression <- function(label = "Regression Analysis",
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(response))
-  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$columns$multiple), logical(1))),
+  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
                    "Response variable should not allow multiple selection"))
   stopifnot(is.class.list("data_extract_spec")(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)

@@ -39,7 +39,7 @@ Stack Plots of variables and show association with reference variable
 \examples{
 
 # datasets: single wide
-# Accociation plot of selected reference variable (SEX)
+# Association plot of selected reference variable (SEX)
 # against other selected variables (BMRKR1)
 library(random.cdisc.data)
 ADSL <- cadsl
@@ -55,17 +55,16 @@ app <- init(
       dataname = "ADSL",
       ref = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = names(ADSL),
           selected = "AGE",
-          multiple = FALSE,
           fixed = FALSE
         )
       ),
       vars = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variables:",
           choices = names(ADSL),
           selected = "BMRKR1",
@@ -111,7 +110,7 @@ app <- init(
       dataname = c("ADSL", "ADSL_2"),
       ref = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("STRATA1"),
@@ -120,7 +119,7 @@ app <- init(
         )),
       vars = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variables:",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = c("AGE", "COUNTRY", "RACE"),
@@ -156,7 +155,7 @@ app <- init(
       ref = list(
         data_extract_spec(
           dataname = "ADRS",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variable:",
             choices = c("AGE", "SEX"),
             selected = "AGE",
@@ -166,7 +165,7 @@ app <- init(
         ),
         data_extract_spec(
           dataname = "ADTTE",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variable:",
             choices = c("AVAL", "CNSR"),
             selected = "AVAL",
@@ -178,7 +177,7 @@ app <- init(
       vars = list(
         data_extract_spec(
           dataname = "ADRS",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = names(ADRS),
             selected = c("AVAL", "AVALC"),
@@ -203,7 +202,7 @@ app <- init(
             selected = "OVRINV - Screening",
             multiple = TRUE
           ),
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = names(ADTTE),
             selected = NULL,
@@ -241,7 +240,7 @@ app <- init(
      dataname = c("ADSL", "ADRS"),
      ref = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = c("AGE"),
          multiple = FALSE,
@@ -267,7 +266,7 @@ app <- init(
            label = "Choose visit:"
          )
        ),
-       columns = columns_spec(
+       select = select_spec(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
@@ -304,7 +303,7 @@ app <- init(
      dataname = "ADRS",
      ref = data_extract_spec(
        dataname = "ADRS",
-       columns = columns_spec(
+       select = select_spec(
          choices = names(ADRS),
          selected = "AVAL",
          multiple = FALSE,
@@ -314,7 +313,7 @@ app <- init(
      ),
      vars = data_extract_spec(
        dataname = "ADRS",
-       columns = columns_spec(
+       select = select_spec(
          choices = names(ADRS),
          selected = "PARAMCD",
          multiple = FALSE,
@@ -367,7 +366,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -392,7 +391,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,

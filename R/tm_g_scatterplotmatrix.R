@@ -31,7 +31,7 @@
 #'       dataname = c("ADSL"),
 #'       selected = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variables:",
 #'           choices = colnames(ADSL),
 #'           selected = c("AGE", "RACE", "SEX"),
@@ -81,7 +81,7 @@
 #'       selected = list(
 #'         data_extract_spec(
 #'           dataname = "ADSL",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = colnames(ADSL),
 #'             selected = c("AGE", "ACTARM", "SEX"),
@@ -91,7 +91,7 @@
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADSL_2",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = colnames(ADSL_2),
 #'             selected = c("COUNTRY", "ACTARM", "STRATA2"),
@@ -128,7 +128,7 @@
 #'       dataname = "ADTTE",
 #'       selected = data_extract_spec(
 #'         dataname = "ADTTE",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           selected = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           multiple = TRUE,
@@ -166,7 +166,7 @@
 #'       selected = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = names(ADRS),
 #'             selected = c("AVAL", "AVALC"),
@@ -184,7 +184,7 @@
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select variables:",
 #'             choices = names(ADTTE),
 #'             selected = c("AVAL", "CNSR"),
@@ -245,7 +245,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
 #'           selected = c("AVAL", "CHNG"),
 #'           multiple = TRUE,

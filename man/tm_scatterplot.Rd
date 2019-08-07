@@ -67,7 +67,7 @@ app <- init(
       dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "AGE",
@@ -77,7 +77,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -87,7 +87,7 @@ app <- init(
       ),
       color_by = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variables:",
           choices = c("RACE", "SEX"),
           selected = NULL,
@@ -136,7 +136,7 @@ ADSL_2 <- mutate_at(cadsl,
      dataname = c("ADSL", "ADSL_2"),
      x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
          label = "Select variable:",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -145,7 +145,7 @@ ADSL_2 <- mutate_at(cadsl,
         )),
       y = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "RACE"),
           selected = "AGE",
@@ -154,7 +154,7 @@ ADSL_2 <- mutate_at(cadsl,
         )),
       color_by = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "COUNTRY",
@@ -191,7 +191,7 @@ app <- init(
       dataname = c("ADSL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = names(ADRS),
           selected = "AVAL",
@@ -209,7 +209,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADTTE",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = names(ADTTE),
           selected = "AVAL",
@@ -226,7 +226,7 @@ app <- init(
       ),
       color_by = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "SEX"),
           selected = "AGE",
@@ -261,7 +261,7 @@ app <- init(
      dataname = c("ADSL", "ADRS"),
      x = data_extract_spec(
           dataname = "ADSL",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variable:",
             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
             selected = "AGE",
@@ -287,7 +287,7 @@ app <- init(
               label = "Choose visit:"
             )
           ),
-          columns = columns_spec(
+          select = select_spec(
             label = "Selected variable:",
             choices = "AVAL",
             selected = "AVAL",
@@ -297,7 +297,7 @@ app <- init(
         ),
      color_by = data_extract_spec(
           dataname = "ADSL",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variable:",
             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
             selected = NULL,
@@ -333,7 +333,7 @@ app <- init(
       dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
           selected = "AVAL",
           multiple = FALSE,
@@ -343,7 +343,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -353,7 +353,7 @@ app <- init(
       ),
       color_by = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AGE", "SEX", "RACE"),
           selected = NULL,
           multiple = FALSE, #todo: 0 or 1
@@ -407,7 +407,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -432,7 +432,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -457,7 +457,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("RACE", "SEX"),
           selected = "SEX",
           multiple = FALSE,

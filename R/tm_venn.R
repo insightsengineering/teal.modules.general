@@ -240,7 +240,7 @@ plot.venn2 <- function(x, ...) {
 #'       "Venn Diagram", "ADSL",
 #'       bm1 = data_extract_spec(
 #'         dataname = "ADSL",
-#'         column = columns_spec(
+#'         select = select_spec(
 #'           label = "Select biomarker:",
 #'           choices = var_biomarkers,
 #'           selected = "B1",
@@ -250,7 +250,7 @@ plot.venn2 <- function(x, ...) {
 #'       ),
 #'       bm2 = data_extract_spec(
 #'         dataname = "ADSL",
-#'         column = columns_spec(
+#'         select = select_spec(
 #'           label = "Select biomarkers:",
 #'           choices = var_biomarkers,
 #'           selected = "B2",
@@ -277,17 +277,17 @@ tm_venn2 <- function(label,
   stopifnot(is.class.list("data_extract_spec")(bm1) || is(bm1, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(bm2) || is(bm2, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(bm1)) {
-    stop_if_not(list(all(vapply(bm1, function(x) !isTRUE(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(bm1, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "bm1 variable should not allow multiple selection"))
   } else if (is(bm1, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(bm2$columns$multiple),
+    stop_if_not(list(!isTRUE(bm2$select$multiple),
                      "bm1 variable should not allow multiple selection"))
   }
   if (is.class.list("data_extract_spec")(bm2)) {
-    stop_if_not(list(all(vapply(bm2, function(x) !isTRUE(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(bm2, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "bm2 variable should not allow multiple selection"))
   } else if (is(bm2, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(bm2$columns$multiple),
+    stop_if_not(list(!isTRUE(bm2$select$multiple),
                      "bm2 variable should not allow multiple selection"))
   }
   stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))

@@ -34,7 +34,7 @@
 #'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("COUNTRY", "STUDYID"),
 #'           selected = "COUNTRY",
@@ -44,7 +44,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("SEX", "RACE"),
 #'           selected = "SEX",
@@ -93,7 +93,7 @@
 #'      dataname = c("ADSL", "ADSL_2"),
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
 #'           selected = c("AGE"),
@@ -102,7 +102,7 @@
 #'         )),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "RACE",
@@ -148,7 +148,7 @@
 #'           selected = "OVRINV - Screening",
 #'           multiple = TRUE
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = names(ADRS),
 #'           selected = "AVALC",
@@ -165,7 +165,7 @@
 #'           selected = "OS",
 #'           multiple = TRUE
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = names(ADTTE),
 #'           selected = "CNSR",
@@ -216,7 +216,7 @@
 #'             label = "Choose visit:"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = "STUDYID",
 #'           selected = "STUDYID",
@@ -226,7 +226,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'           selected = "AGE",
@@ -262,7 +262,7 @@
 #'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("PARAMCD", "AVISIT"),
 #'           selected = c("PARAMCD"),
 #'           multiple = FALSE,
@@ -272,7 +272,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVISIT", "PARAMCD"),
 #'           selected = c("AVISIT"),
 #'           multiple = FALSE,
@@ -319,7 +319,7 @@
 #'           multiple = TRUE,
 #'           label = "Choose lab:"
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = names(ADLB),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
@@ -336,7 +336,7 @@
 #'           multiple = TRUE,
 #'           label = "Choose lab:"
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = names(ADLB),
 #'           selected = "ARMCD",
 #'           multiple = FALSE,
@@ -362,17 +362,17 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
-    stop_if_not(list(all(vapply(x, function(x) !isTRUE(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(x, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "x variable should not allow multiple selection"))
   } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(x$columns$multiple),
+    stop_if_not(list(!isTRUE(x$select$multiple),
                      "x variable should not allow multiple selection"))
   }
   if (is.class.list("data_extract_spec")(y)) {
-    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "y variable should not allow multiple selection"))
   } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(y$columns$multiple),
+    stop_if_not(list(!isTRUE(y$select$multiple),
                      "y variable should not allow multiple selection"))
   }
   args <- as.list(environment())

@@ -51,7 +51,7 @@ app <- init(
       dataname = c("ADSL"),
       selected = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variables:",
           choices = colnames(ADSL),
           selected = c("AGE", "RACE", "SEX"),
@@ -101,7 +101,7 @@ ADSL_2 <- mutate_at(cadsl,
       selected = list(
         data_extract_spec(
           dataname = "ADSL",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = colnames(ADSL),
             selected = c("AGE", "ACTARM", "SEX"),
@@ -111,7 +111,7 @@ ADSL_2 <- mutate_at(cadsl,
         ),
         data_extract_spec(
           dataname = "ADSL_2",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = colnames(ADSL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
@@ -148,7 +148,7 @@ app <- init(
       dataname = "ADTTE",
       selected = data_extract_spec(
         dataname = "ADTTE",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
           selected = c("AVAL", "BMRKR1", "BMRKR2"),
           multiple = TRUE,
@@ -186,7 +186,7 @@ app <- init(
       selected = list(
         data_extract_spec(
           dataname = "ADRS",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = names(ADRS),
             selected = c("AVAL", "AVALC"),
@@ -204,7 +204,7 @@ app <- init(
         ),
         data_extract_spec(
           dataname = "ADTTE",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select variables:",
             choices = names(ADTTE),
             selected = c("AVAL", "CNSR"),
@@ -265,7 +265,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
           selected = c("AVAL", "CHNG"),
           multiple = TRUE,

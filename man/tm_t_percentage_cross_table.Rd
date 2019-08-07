@@ -59,7 +59,7 @@ app <- init(
       dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("COUNTRY", "STUDYID"),
           selected = "COUNTRY",
@@ -69,7 +69,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("SEX", "RACE"),
           selected = "SEX",
@@ -118,7 +118,7 @@ ADSL_2 <- mutate_at(cadsl,
      dataname = c("ADSL", "ADSL_2"),
      x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
@@ -127,7 +127,7 @@ ADSL_2 <- mutate_at(cadsl,
         )),
       y = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "RACE",
@@ -172,7 +172,7 @@ app <- init(
           selected = "OVRINV - Screening",
           multiple = TRUE
         ),
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = names(ADRS),
           selected = "AVALC",
@@ -189,7 +189,7 @@ app <- init(
           selected = "OS",
           multiple = TRUE
         ),
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = names(ADTTE),
           selected = "CNSR",
@@ -240,7 +240,7 @@ app <- init(
             label = "Choose visit:"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = "STUDYID",
           selected = "STUDYID",
@@ -250,7 +250,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = c("SEX", "AGE", "RACE", "COUNTRY"),
           selected = "AGE",
@@ -286,7 +286,7 @@ app <- init(
       dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("PARAMCD", "AVISIT"),
           selected = c("PARAMCD"),
           multiple = FALSE,
@@ -296,7 +296,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVISIT", "PARAMCD"),
           selected = c("AVISIT"),
           multiple = FALSE,
@@ -340,7 +340,7 @@ app <- init(
           multiple = TRUE,
           label = "Choose lab:"
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = names(ADLB),
           selected = "AVISIT",
           multiple = FALSE,
@@ -357,7 +357,7 @@ app <- init(
           multiple = TRUE,
           label = "Choose lab:"
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = names(ADLB),
           selected = "ARMCD",
           multiple = FALSE,
