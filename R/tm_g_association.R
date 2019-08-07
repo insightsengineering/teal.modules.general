@@ -488,11 +488,11 @@ srv_tm_g_association <- function(input,
                                  output,
                                  session,
                                  datasets,
-                                 dataname,
                                  ref,
                                  vars) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+  dataname <- datasets$datanames()
   init_chunks()
+
 
   callModule(
     plot_with_height,

@@ -340,9 +340,8 @@ srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
                                     datasets,
-                                    dataname,
                                     selected) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+  dataname <- datasets$datanames()
 
   # setup to use chunks
   init_chunks()

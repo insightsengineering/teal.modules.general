@@ -610,9 +610,8 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
-srv_g_regression <- function(input, output, session, datasets, dataname, response, regressor) {
-  stopifnot(all(dataname %in% datasets$datanames()))
-
+srv_g_regression <- function(input, output, session, datasets, response, regressor) {
+  dataname <- datasets$datanames()
   init_chunks()
 
   # Data Extraction

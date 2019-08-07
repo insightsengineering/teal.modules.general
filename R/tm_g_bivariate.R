@@ -888,7 +888,6 @@ srv_g_bivariate <- function(input,
                             output,
                             session,
                             datasets,
-                            dataname,
                             x,
                             y,
                             row_facet,
@@ -897,7 +896,8 @@ srv_g_bivariate <- function(input,
                             colour,
                             fill,
                             size) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+  dataname <- datasets$datanames()
+
 
   init_chunks()
 

@@ -508,7 +508,6 @@ tm_scatterplot <- function(label,
 
 ui_scatterplot <- function(id,
                            label,
-                           dataname,
                            x,
                            y,
                            color_by,
@@ -555,8 +554,9 @@ ui_scatterplot <- function(id,
 
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
-srv_scatterplot <- function(input, output, session, datasets, dataname) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+srv_scatterplot <- function(input, output, session, datasets) {
+
+  dataname <- datasets$datanames()
 
   init_chunks()
 
