@@ -195,13 +195,13 @@ ui_table <- function(id,
       data_extract_input(ns("y"), label = "Column values", y),
       tags$hr(),
       radioButtons(ns("useNA"),
-                   label = "Display Missing Values",
+                   label = "Display missing values",
                    choices = c("no", "ifany", "always"),
                    selected = useNA
       ),
       checkboxInput(ns("margins"), "Add margins", value = FALSE)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = pre_output,
     post_output = post_output
   )

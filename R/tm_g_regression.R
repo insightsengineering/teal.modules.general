@@ -590,17 +590,17 @@ ui_g_regression <- function(id, ...) {
       helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
       data_extract_input(
         id = ns("response"),
-        label = "Response Variable",
+        label = "Response variable",
         data_extract_spec = arguments$response
       ),
       data_extract_input(
         id = ns("regressor"),
-        label = "Regressor Variable",
+        label = "Regressor variable(-s)",
         data_extract_spec = arguments$regressor
       ),
       radioButtons(
         ns("plot_type"),
-        label = "Plot Type",
+        label = "Plot type",
         choices = c(
           "Response vs Regressor",
           "Residuals vs Fitted",
@@ -614,7 +614,7 @@ ui_g_regression <- function(id, ...) {
     ),
     pre_output = arguments$pre_output,
     post_output = arguments$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%")
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
   )
 }
 
