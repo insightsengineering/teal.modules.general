@@ -107,8 +107,9 @@
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = TRUE
+#' .funs = list(~as.factor(.))) %>%
+#' select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot("Scatterplot for different wide data",

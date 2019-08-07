@@ -85,7 +85,7 @@
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
 #'                  "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = TRUE
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_regression(
@@ -99,7 +99,8 @@
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )),
+#'         )
+#'       ),
 #'       regressor = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         select = select_spec(
@@ -108,7 +109,8 @@
 #'           selected = c("AGE", "RACE"),
 #'           multiple = TRUE,
 #'           fixed = FALSE
-#'         ))
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -190,7 +192,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -278,56 +279,55 @@
 #' ADLB <- cadlb
 #'
 #' app <- init(
-#'  data = cdisc_data(
-#'    cdisc_dataset("ADSL", ADSL),
-#'    cdisc_dataset("ADLB", ADLB),
-#'    code = "ADSL <- cadsl; ADLB <- cadlb",
-#'    check = TRUE
-#'  ),
-#'  modules = root_modules(
-#'    tm_g_regression(
-#'      label = "Regression",
-#'      dataname = c("ADSL", "ADLB"),
-#'      response = data_extract_spec(
-#'        dataname = "ADLB",
-#'        filter = list(
-#'          filter_spec(
-#'            vars = "PARAM",
-#'           choices = levels(ADLB$PARAM),
-#'            selected = levels(ADLB$PARAM)[1],
-#'            multiple = FALSE,
-#'            label = "Choose measurement:"
-#'          ),
-#'          filter_spec(
-#'            vars = "AVISIT",
-#'            choices = levels(ADLB$AVISIT),
-#'            selected = levels(ADLB$AVISIT)[1],
-#'            multiple = FALSE,
-#'            label = "Choose visit:"
-#'          )
-#'        ),
-#'        select = select_spec(
-#'          label = "Select variable:",
-#'          choices = "AVAL",
-#'          selected = "AVAL",
-#'          multiple = FALSE,
-#'          fixed = TRUE
-#'        )
-#'     ),
-#'      regressor = data_extract_spec(
-#'        dataname = "ADSL",
-#'        select = select_spec(
-#'          label = "Select variables:",
-#'          choices = c("BMRKR1", "BMRKR2", "AGE"),
-#'          selected = "AGE",
-#'          multiple = TRUE,
-#'          fixed = FALSE
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = "ADSL <- cadsl; ADLB <- cadlb",
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_regression(
+#'       label = "Regression",
+#'       dataname = c("ADSL", "ADLB"),
+#'       response = data_extract_spec(
+#'         dataname = "ADLB",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAM",
+#'             choices = levels(ADLB$PARAM),
+#'             selected = levels(ADLB$PARAM)[1],
+#'             multiple = FALSE,
+#'             label = "Choose measurement:"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADLB$AVISIT),
+#'             selected = levels(ADLB$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Choose visit:"
+#'           )
+#'         ),
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = TRUE
+#'         )
+#'       ),
+#'       regressor = data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           label = "Select variables:",
+#'           choices = c("BMRKR1", "BMRKR2", "AGE"),
+#'           selected = "AGE",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
 #'       )
-#'      )
-#'    )
+#'     )
+#'   )
 #' )
-#' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -345,7 +345,7 @@
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADLB", ADLB),
 #'     cdisc_dataset("ADRS", ADRS),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
+#'     code = "ADSL <- cadsl; ADLB <- cadlb; ADRS <- cadrs",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -491,7 +491,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }

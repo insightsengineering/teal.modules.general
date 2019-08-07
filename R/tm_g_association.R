@@ -25,7 +25,7 @@
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     code = "ADSL <- cadsl",
-#'     check = TRUE
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
@@ -79,7 +79,7 @@
 #'     cdisc_dataset("ADSL", ADSL),
 #'     dataset("ADSL_2", ADSL_2),
 #'     code = "ADSL <- cadsl",
-#'     check = TRUE
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
@@ -254,7 +254,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -301,7 +300,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -378,7 +376,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }

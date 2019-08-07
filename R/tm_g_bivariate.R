@@ -121,7 +121,7 @@
 #'                .funs = list(~as.factor(.)))
 #'                %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
 #'                "USUBJID", "STUDYID")',
-#'     check = TRUE
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_bivariate(
@@ -355,7 +355,6 @@
 #' ADLB <- cadlb
 #'
 #' app <- init(
-#'     check = TRUE
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
@@ -638,7 +637,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -859,6 +857,7 @@ ui_expert <- function(ns,
 
 #' @importFrom magrittr %>%
 #' @importFrom methods is
+#' @importFrom tern keys
 srv_g_bivariate <- function(input,
                             output,
                             session,

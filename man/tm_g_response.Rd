@@ -117,7 +117,7 @@ app <- init(
                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
                  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
                  "COUNTRY", "USUBJID", "STUDYID")',
-    check = TRUE
+    check = FALSE #TODO
   ),
   modules = root_modules(
     tm_g_response(
@@ -383,7 +383,7 @@ app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl; ADLB <- cadrs",
+    code = "ADSL <- cadsl; ADLB <- cadlb",
     check = TRUE
   ),
   modules = root_modules(
