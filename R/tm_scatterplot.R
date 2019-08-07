@@ -45,7 +45,7 @@
 #'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "BMRKR1", "BMRKR2"),
 #'           selected = "AGE",
@@ -55,7 +55,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
@@ -65,7 +65,7 @@
 #'       ),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = c("RACE", "SEX"),
 #'           selected = NULL,
@@ -119,7 +119,7 @@
 #'      dataname = c("ADSL", "ADSL_2"),
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'          label = "Select Variable",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
@@ -128,7 +128,7 @@
 #'         )),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "RACE"),
 #'           selected = "AGE",
@@ -137,7 +137,7 @@
 #'         )),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "COUNTRY",
@@ -175,7 +175,7 @@
 #'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = names(ADRS),
 #'           selected = "AVAL",
@@ -193,7 +193,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADTTE",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = names(ADTTE),
 #'           selected = "AVAL",
@@ -210,7 +210,7 @@
 #'       ),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "SEX"),
 #'           selected = "AGE",
@@ -251,7 +251,7 @@
 #'      dataname = c("ADSL", "ADRS"),
 #'      x = data_extract_spec(
 #'           dataname = "ADSL",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variable",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = "AGE",
@@ -277,7 +277,7 @@
 #'               label = "Choose visit"
 #'             )
 #'           ),
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Selected Variable",
 #'             choices = "AVAL",
 #'             selected = "AVAL",
@@ -287,7 +287,7 @@
 #'         ),
 #'      color_by = data_extract_spec(
 #'           dataname = "ADSL",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variable",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = NULL,
@@ -324,7 +324,7 @@
 #'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -334,7 +334,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVAL", "BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
@@ -344,7 +344,7 @@
 #'       ),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("", "AGE", "SEX", "RACE"),
 #'           selected = "",
 #'           multiple = FALSE, #todo: 0 or 1
@@ -404,7 +404,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -429,7 +429,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -454,7 +454,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("RACE", "SEX"),
 #'           selected = "SEX",
 #'           multiple = FALSE,

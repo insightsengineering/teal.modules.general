@@ -16,7 +16,7 @@
 #' @examples
 #'
 #' # datasets: single wide
-#' # Accociation plot of selected reference variable (SEX)
+#' # Association plot of selected reference variable (SEX)
 #' # against other selected variables (BMRKR1)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
@@ -32,17 +32,16 @@
 #'       dataname = "ADSL",
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "AGE",
-#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       vars = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = "BMRKR1",
@@ -92,7 +91,7 @@
 #'       dataname = c("ADSL", "ADSL_2"),
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
 #'           selected = c("STRATA1"),
@@ -101,7 +100,7 @@
 #'         )),
 #'       vars = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = c("AGE", "COUNTRY", "RACE"),
@@ -137,7 +136,7 @@
 #'       ref = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variable",
 #'             choices = c("AGE", "SEX"),
 #'             selected = "AGE",
@@ -147,7 +146,7 @@
 #'         ),
 #'         data_extract_spec(
 #'           dataname = "ADTTE",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variable",
 #'             choices = c("AVAL", "CNSR"),
 #'             selected = "AVAL",
@@ -159,7 +158,7 @@
 #'       vars = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variables",
 #'             choices = names(ADRS),
 #'             selected = c("AVAL", "AVALC"),
@@ -184,7 +183,7 @@
 #'             selected = "OVRINV - Screening",
 #'             multiple = TRUE
 #'           ),
-#'           columns = columns_spec(
+#'           select = select_spec(
 #'             label = "Select Variables",
 #'             choices = names(ADTTE),
 #'             selected = NULL,
@@ -228,7 +227,7 @@
 #'      dataname = c("ADSL", "ADRS"),
 #'      ref = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = c("AGE"),
 #'          multiple = FALSE,
@@ -254,7 +253,7 @@
 #'            label = "Choose visit"
 #'          )
 #'        ),
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
@@ -297,7 +296,7 @@
 #'      dataname = "ADRS",
 #'      ref = data_extract_spec(
 #'        dataname = "ADRS",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = names(ADRS),
 #'          selected = "AVAL",
 #'          multiple = FALSE,
@@ -307,7 +306,7 @@
 #'      ),
 #'      vars = data_extract_spec(
 #'        dataname = "ADRS",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = names(ADRS),
 #'          selected = "PARAMCD",
 #'          multiple = FALSE,
@@ -367,7 +366,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -392,7 +391,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -425,7 +424,7 @@ tm_g_association <- function(label = "Association",
   stopifnot(is.character.single(label))
   stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(ref))
-  stop_if_not(list(all(vapply(ref, function(x) !(x$columns$multiple), logical(1))),
+  stop_if_not(list(all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
                    "'ref' should not allow multiple selection"))
   stopifnot(is.class.list("data_extract_spec")(vars))
   stopifnot(is.logical.single(show_association))
@@ -529,7 +528,6 @@ srv_tm_g_association <- function(input,
     anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
 
     # not working currently because it relies on cols and not on already preprocessed data
-
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation

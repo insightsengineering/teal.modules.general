@@ -54,7 +54,7 @@ keys(ADSL) <- c("STUDYID", "USUBJID")',
       dataname = c("ADSL"),
       selected = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = colnames(ADSL),
           selected = c("AGE", "RACE", "SEX"),
@@ -110,7 +110,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
       selected = list(
         data_extract_spec(
           dataname = "ADSL",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = colnames(ADSL),
             selected = c("AGE", "ACTARM", "SEX"),
@@ -120,7 +120,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
         ),
         data_extract_spec(
           dataname = "ADSL_2",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = colnames(ADSL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
@@ -158,7 +158,7 @@ app <- init(
       dataname = "ADTTE",
       selected = data_extract_spec(
         dataname = "ADTTE",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "BMRKR1", "BMRKR2"),
           selected = c("AVAL", "BMRKR1", "BMRKR2"),
           multiple = TRUE,
@@ -196,7 +196,7 @@ app <- init(
       selected = list(
         data_extract_spec(
           dataname = "ADRS",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = names(ADRS),
             selected = c("AVAL", "AVALC"),
@@ -214,7 +214,7 @@ app <- init(
         ),
         data_extract_spec(
           dataname = "ADTTE",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = names(ADTTE),
             selected = c("AVAL", "CNSR"),
@@ -282,7 +282,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
           selected = c("AVAL", "CHNG"),
           multiple = TRUE,

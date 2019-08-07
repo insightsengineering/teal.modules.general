@@ -34,14 +34,9 @@ output to put the output into context. For example the
 Scatterplot and Regression Model
 }
 \examples{
-library(random.cdisc.data)
-library(tern)
-
-
 # datasets: same wide
 # Regression graphs from selected response variable (BMRKR1) and
 # selected regressors (AGE)
-
 library(random.cdisc.data)
 library(tern)
 
@@ -60,7 +55,7 @@ app <- init(
       dataname = "ADSL",
       response = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -70,7 +65,7 @@ app <- init(
       ),
       regressor = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = c("AGE", "SEX", "RACE"),
           selected = "AGE",
@@ -127,7 +122,7 @@ app <- init(
       dataname = c("ADSL", "ADSL_2"),
       response = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = c("BMRKR1"),
@@ -136,7 +131,7 @@ app <- init(
         )),
       regressor = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = c("AGE", "RACE", "COUNTRY"),
           selected = c("AGE", "RACE"),
@@ -193,7 +188,7 @@ app <- init(
             label = "Choose Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -219,7 +214,7 @@ app <- init(
             label = "Choose Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -257,7 +252,7 @@ app <- init(
       dataname = c("ADSL", "ADRS", "ADTTE"),
       response = data_extract_spec(
         dataname = "ADTTE",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AVAL", "CNSR"),
           selected = "AVAL",
@@ -275,7 +270,7 @@ app <- init(
       regressor = list(
         data_extract_spec(
           dataname = "ADRS",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = names(ADRS),
             selected = "AVAL",
@@ -293,7 +288,7 @@ app <- init(
         ),
         data_extract_spec(
           dataname = "ADSL",
-          columns = columns_spec(
+          select = select_spec(
             label = "Select Variables",
             choices = c("BMRKR1", "BMRKR2"),
             selected = "BMRKR1",
@@ -352,7 +347,7 @@ app <- init(
            label = "Choose visit"
          )
        ),
-       columns = columns_spec(
+       select = select_spec(
          label = "Select Variable",
          choices = "AVAL",
          selected = "AVAL",
@@ -362,7 +357,7 @@ app <- init(
     ),
      regressor = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          label = "Select Variables",
          choices = c("BMRKR1", "BMRKR2", "AGE"),
          selected = c("AGE"),
@@ -424,7 +419,7 @@ app <- init(
             label = "Choose visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -450,7 +445,7 @@ app <- init(
             label = "Choose visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -459,7 +454,7 @@ app <- init(
       )),
       regressor = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("BMRKR1", "BMRKR2"),
           selected = c("BMRKR1"),
           multiple = TRUE,
@@ -516,7 +511,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -541,7 +536,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,

@@ -4,7 +4,7 @@
 #' @param dataname (\code{character}) Name of dataset used to generate the response plot
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use as the response. You can define one fixed column by using the
-#'   setting \code{fixed = TRUE} inside the \code{column_spec}.
+#'   setting \code{fixed = TRUE} inside the \code{select_spec}.
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
 #'   columns from the \code{data} allowed in teal. Just allow single columns by \code{multiple = FALSE}.
@@ -40,7 +40,7 @@
 #'       dataname = c("ADSL"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
@@ -50,7 +50,7 @@
 #'       ),
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "SEX", "RACE"),
 #'           selected = "RACE",
@@ -106,7 +106,7 @@
 #'       dataname = c("ADSL", "ADSL_2"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'          label = "Select variable",
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = c("BMRKR1"),
@@ -114,7 +114,7 @@
 #'         )),
 #'       x = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "COUNTRY",
@@ -165,7 +165,7 @@
 #'             multiple = FALSE
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AVAL", "AVALC"),
 #'           selected = "AVAL",
@@ -191,7 +191,7 @@
 #'             multiple = FALSE
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVALC",
 #'           selected = "AVALC",
 #'           multiple = FALSE,
@@ -200,7 +200,7 @@
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("SEX", "AGE"),
 #'           selected = NULL,
@@ -210,7 +210,7 @@
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("SEX", "AGE"),
 #'           selected = NULL,
@@ -267,7 +267,7 @@
 #'            label = "Choose visit"
 #'          )
 #'        ),
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
@@ -277,7 +277,7 @@
 #'     ),
 #'      x = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = c("BMRKR1", "BMRKR2"),
 #'          selected = c("BMRKR1"),
 #'          multiple = FALSE,
@@ -319,7 +319,7 @@
 #'       dataname = "ADRS",
 #'       response = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -329,7 +329,7 @@
 #'       ),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("ARMCD", "ACTARMCD"),
 #'           selected = "ARMCD",
 #'           multiple = FALSE,
@@ -339,7 +339,7 @@
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADRS",,
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "PARAMCD",
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
@@ -349,7 +349,7 @@
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVISIT",
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
@@ -409,7 +409,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -434,7 +434,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -459,7 +459,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("", "SEX", "RACE"),
 #'           selected = "",
 #'           multiple = FALSE,
@@ -485,7 +485,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("", "SEX", "RACE"),
 #'           selected = "",
 #'           multiple = FALSE,
@@ -531,16 +531,16 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is.class.list("data_extract_spec")(response))
   # todo: this check should go into data_extract or at least create a function for reusability (add an argument allow_empty_values)
   # todo: also refactor this in tm_g_response.R to use this function
-  stop_if_not(list(all(vapply(response, function(x) !("" %in% x$columns$choices), logical(1))),
+  stop_if_not(list(all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
                    "'response' should not allow empty values"))
-  stop_if_not(list(all(vapply(response, function(x) !(x$columns$multiple), logical(1))),
+  stop_if_not(list(all(vapply(response, function(x) !(x$select$multiple), logical(1))),
                    "'response' should not allow multiple selection"))
   # No empty columns allowed for X-Var
   # No multiple X variables allowed
   stopifnot(is.class.list("data_extract_spec")(x))
-  stop_if_not(list(all(vapply(x, function(x) !("" %in% x$columns$choices), logical(1))),
+  stop_if_not(list(all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
                    "'x' should not allow empty values"))
-  stop_if_not(list(all(vapply(x, function(x) !(x$columns$multiple), logical(1))),
+  stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
                    "'x' should not allow multiple selection"))
   stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet))
   stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet))

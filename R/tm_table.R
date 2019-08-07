@@ -6,10 +6,10 @@
 #' @param dataname (\code{chracter}) name of dataset used to generate table
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Specification how the user can select data to get encoded in the rows of the cross table.
-#'   Please just use single selections inside the \code{columns_spec}.
+#'   Please just use single selections inside the \code{select_spec}.
 #' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Specification how the user can select data to get encoded in the columns of the cross table.
-#'   Please just use single selections inside the \code{columns_spec}.
+#'   Please just use single selections inside the \code{select_spec}.
 #' @param useNA (\code{character}) optional pre-selected option indicating how to utilize NA in
 #'   table display. One of \code{'ifany'}, \code{'always'}, \code{'no'}. If
 #'   missing then \code{'ifany'} will be used. If vector then only the first
@@ -38,7 +38,7 @@
 #'       dataname =  "ADSL",
 #'       x = data_extract_spec(
 #'         "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable",
 #'           choices = base::setdiff(names(ADSL), keys(ADSL)),
 #'           selected = names(ADSL)[5],
@@ -48,7 +48,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select variable",
 #'           choices = base::setdiff(names(ADSL), keys(ADSL)),
 #'           selected = names(ADSL)[6],
@@ -98,7 +98,7 @@
 #'           multiple = FALSE,
 #'           label = "Choose ARM"
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = names(ADLB),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
@@ -115,7 +115,7 @@
 #'           multiple = FALSE,
 #'           label = "Choose ARM"
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = names(ADLB),
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
@@ -141,18 +141,18 @@ tm_table <- function(label,
   stopifnot(is.character.single(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
-    stop_if_not(list(all(vapply(x, function(x) !(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
                      "'x' should not allow multiple selection"))
   } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(!(x$columns$multiple),
+    stop_if_not(list(!(x$select$multiple),
                      "'x' should not allow multiple selection"))
   }
   stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(y)) {
-    stop_if_not(list(all(vapply(y, function(x) !(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(y, function(x) !(x$select$multiple), logical(1))),
                      "'y' should not allow multiple selection"))
   } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(!(y$columns$multiple),
+    stop_if_not(list(!(y$select$multiple),
                      "'y' should not allow multiple selection"))
   }
   stopifnot(is.character.vector(useNA))
