@@ -16,7 +16,7 @@ tm_g_response(label = "Response Plot", dataname, response, x,
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use as the response. You can define one fixed column by using the
-setting \code{fixed = TRUE} inside the \code{column_spec}.}
+setting \code{fixed = TRUE} inside the \code{select_spec}.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use on the X-axis of the response plot. Allow the user to select multiple
@@ -67,7 +67,7 @@ app <- init(
       dataname = c("ADSL"),
       response = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
@@ -77,7 +77,7 @@ app <- init(
       ),
       x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AGE", "SEX", "RACE"),
           selected = "RACE",
@@ -133,7 +133,7 @@ app <- init(
       dataname = c("ADSL", "ADSL_2"),
       response = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
          label = "Select variable",
           choices = c("BMRKR1", "BMRKR2"),
           selected = c("BMRKR1"),
@@ -141,7 +141,7 @@ app <- init(
         )),
       x = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select variable",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "COUNTRY",
@@ -192,7 +192,7 @@ app <- init(
             multiple = FALSE
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AVAL", "AVALC"),
           selected = "AVAL",
@@ -218,7 +218,7 @@ app <- init(
             multiple = FALSE
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVALC",
           selected = "AVALC",
           multiple = FALSE,
@@ -227,7 +227,7 @@ app <- init(
       ),
       row_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("SEX", "AGE"),
           selected = NULL,
@@ -237,7 +237,7 @@ app <- init(
       ),
       col_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("SEX", "AGE"),
           selected = NULL,
@@ -294,7 +294,7 @@ app <- init(
            label = "Choose visit"
          )
        ),
-       columns = columns_spec(
+       select = select_spec(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
@@ -304,7 +304,7 @@ app <- init(
     ),
      x = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          choices = c("BMRKR1", "BMRKR2"),
          selected = c("BMRKR1"),
          multiple = FALSE,
@@ -346,7 +346,7 @@ app <- init(
       dataname = "ADRS",
       response = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -356,7 +356,7 @@ app <- init(
       ),
       x = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("ARMCD", "ACTARMCD"),
           selected = "ARMCD",
           multiple = FALSE,
@@ -366,7 +366,7 @@ app <- init(
       ),
       row_facet = data_extract_spec(
         dataname = "ADRS",,
-        columns = columns_spec(
+        select = select_spec(
           choices = "PARAMCD",
           selected = "PARAMCD",
           multiple = FALSE,
@@ -376,7 +376,7 @@ app <- init(
       ),
       col_facet = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVISIT",
           selected = "AVISIT",
           multiple = FALSE,
@@ -436,7 +436,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -461,7 +461,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -486,7 +486,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("", "SEX", "RACE"),
           selected = "",
           multiple = FALSE,
@@ -512,7 +512,7 @@ app <- init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("", "SEX", "RACE"),
           selected = "",
           multiple = FALSE,

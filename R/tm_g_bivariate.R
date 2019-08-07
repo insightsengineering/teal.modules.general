@@ -36,7 +36,7 @@
 #'
 #' @examples
 #' # datasets: single wide
-#' # Bivariate plot of selected variable (AGE) againts selected (SEX)
+#' # Bivariate plot of selected variable (AGE) against selected (SEX)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
 #'
@@ -51,17 +51,16 @@
 #'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "AGE",
-#'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = names(ADSL),
 #'           selected = "SEX",
@@ -71,7 +70,7 @@
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
@@ -81,7 +80,7 @@
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
@@ -135,7 +134,7 @@
 #'       dataname = c("ADSL", "ADSL_2"),
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
 #'           selected = c("AGE"),
@@ -143,7 +142,7 @@
 #'         )),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "RACE",
@@ -152,7 +151,7 @@
 #'       # Row facetting by first data set
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'          label = "Select Variable",
 #'          choices = names(ADSL),
 #'          selected = NULL,
@@ -163,7 +162,7 @@
 #'       # Col facetting by second data set
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL_2",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = names(ADSL),
 #'           selected = NULL,
@@ -208,7 +207,7 @@
 #'           selected = "OVRINV - Screening",
 #'           multiple = TRUE
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -217,7 +216,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADTTE",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AVAL", "CNSR"),
 #'           selected = "AVAL",
@@ -242,7 +241,7 @@
 #'           selected = "OVRINV - Screening",
 #'           multiple = TRUE
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variable",
 #'           choices = c("AVAL", "AVISIT"),
 #'           selected = "AVISIT",
@@ -252,7 +251,7 @@
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           label = "Select Variables",
 #'           choices = c("SEX", "RACE"),
 #'           selected = NULL,
@@ -313,7 +312,7 @@
 #'            label = "Choose visit"
 #'          )
 #'        ),
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
@@ -323,7 +322,7 @@
 #'     ),
 #'      y = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = "BMRKR1",
 #'          multiple = FALSE,
@@ -333,7 +332,7 @@
 #'      ),
 #'      row_facet = data_extract_spec(
 #'        dataname = "ADRS",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'           choices = c("__NONE__", "PARAMCD"),
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
@@ -343,7 +342,7 @@
 #'      ),
 #'      col_facet = data_extract_spec(
 #'        dataname = "ADRS",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'           choices = c("__NONE__", "AVISIT"),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
@@ -406,7 +405,7 @@
 #'            label = "Choose visit"
 #'          )
 #'        ),
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = "AVAL",
 #'          selected = "AVAL",
 #'          multiple = FALSE,
@@ -415,7 +414,7 @@
 #'     ),
 #'      y = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = "BMRKR1",
 #'          multiple = FALSE,
@@ -440,7 +439,7 @@
 #'             label = "Choose visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("__NONE__", "AVAL"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -450,7 +449,7 @@
 #'       ),
 #'      col_facet = data_extract_spec(
 #'        dataname = "ADSL",
-#'        columns = columns_spec(
+#'        select = select_spec(
 #'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'          selected = NULL,
 #'          multiple = FALSE,
@@ -493,7 +492,7 @@
 #'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("AVAL"),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -503,7 +502,7 @@
 #'       ),
 #'       y = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
@@ -513,7 +512,7 @@
 #'       ),
 #'       row_facet = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "PARAMCD",
 #'           selected = "PARAMCD",
 #'           multiple = TRUE,
@@ -523,7 +522,7 @@
 #'       ),
 #'       col_facet = data_extract_spec(
 #'         dataname = "ADRS",
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVISIT",
 #'           selected = "AVISIT",
 #'           multiple = TRUE,
@@ -581,7 +580,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -606,7 +605,7 @@
 #'             label = "Visit"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = "AVAL",
 #'           selected = "AVAL",
 #'           multiple = FALSE,
@@ -632,7 +631,7 @@
 #'             label = "Category"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
 #'           selected = "",
 #'           multiple = TRUE,
@@ -658,7 +657,7 @@
 #'             label = "Category"
 #'           )
 #'         ),
-#'         columns = columns_spec(
+#'         select = select_spec(
 #'           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
 #'           selected = "",
 #'           multiple = TRUE,
@@ -704,17 +703,17 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.null(fill) || is.class.list("data_extract_spec")(fill) || is(fill, "data_extract_spec"))
   stopifnot(is.null(size) || is.class.list("data_extract_spec")(size) || is(size, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
-    stop_if_not(list(all(vapply(x, function(xx) !isTRUE(xx$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1))),
                      "x variable should not allow multiple selection"))
   } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(x$columns$multiple),
+    stop_if_not(list(!isTRUE(x$select$multiple),
                      "x variable should not allow multiple selection"))
   }
   if (is.class.list("data_extract_spec")(y)) {
-    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$columns$multiple), logical(1))),
+    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "y variable should not allow multiple selection"))
   } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(y$columns$multiple),
+    stop_if_not(list(!isTRUE(y$select$multiple),
                      "y variable should not allow multiple selection"))
   }
   stopifnot(is.logical.single(use_density))
@@ -729,19 +728,19 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (expert_settings) {
     if (is.null(colour)) {
       colour <- `if`(inherits(x, "list"), x, list(x))
-      colour[[1]]$columns$selected <- ""
-      colour[[1]]$columns$choices <- c("", colour[[1]]$columns$choices)
+      colour[[1]]$select$selected <- ""
+      colour[[1]]$select$choices <- c("", colour[[1]]$select$choices)
     }
     if (is.null(fill)) {
       fill <- `if`(inherits(x, "list"), x, list(x))
-      fill[[1]]$columns$selected <- ""
-      fill[[1]]$columns$choices <- c("", fill[[1]]$columns$choices)
+      fill[[1]]$select$selected <- ""
+      fill[[1]]$select$choices <- c("", fill[[1]]$select$choices)
     }
     if (is.null(size)) {
       size <- `if`(inherits(x, "list"), x, list(x))
-      size[[1]]$columns$selected <- ""
-      size[[1]]$columns$selected <- ""
-      size[[1]]$columns$choices <- c("", size[[1]]$columns$choices)
+      size[[1]]$select$selected <- ""
+      size[[1]]$select$selected <- ""
+      size[[1]]$select$choices <- c("", size[[1]]$select$choices)
     }
   }
 

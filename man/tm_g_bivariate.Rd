@@ -70,7 +70,7 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 # datasets: single wide
-# Bivariate plot of selected variable (AGE) againts selected (SEX)
+# Bivariate plot of selected variable (AGE) against selected (SEX)
 library(random.cdisc.data)
 ADSL <- cadsl
 
@@ -85,17 +85,16 @@ app <- init(
       dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = names(ADSL),
           selected = "AGE",
-          multiple = FALSE,
           fixed = FALSE
         )
       ),
       y = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = names(ADSL),
           selected = "SEX",
@@ -105,7 +104,7 @@ app <- init(
       ),
       row_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
@@ -115,7 +114,7 @@ app <- init(
       ),
       col_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
@@ -169,7 +168,7 @@ app <- init(
       dataname = c("ADSL", "ADSL_2"),
       x = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
@@ -177,7 +176,7 @@ app <- init(
         )),
       y = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "RACE",
@@ -186,7 +185,7 @@ app <- init(
       # Row facetting by first data set
       row_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
          label = "Select Variable",
          choices = names(ADSL),
          selected = NULL,
@@ -197,7 +196,7 @@ app <- init(
       # Col facetting by second data set
       col_facet = data_extract_spec(
         dataname = "ADSL_2",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = names(ADSL),
           selected = NULL,
@@ -242,7 +241,7 @@ app <- init(
           selected = "OVRINV - Screening",
           multiple = TRUE
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -251,7 +250,7 @@ app <- init(
       ),
       y = data_extract_spec(
         dataname = "ADTTE",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AVAL", "CNSR"),
           selected = "AVAL",
@@ -276,7 +275,7 @@ app <- init(
           selected = "OVRINV - Screening",
           multiple = TRUE
         ),
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variable",
           choices = c("AVAL", "AVISIT"),
           selected = "AVISIT",
@@ -286,7 +285,7 @@ app <- init(
       ),
       col_facet = data_extract_spec(
         dataname = "ADSL",
-        columns = columns_spec(
+        select = select_spec(
           label = "Select Variables",
           choices = c("SEX", "RACE"),
           selected = NULL,
@@ -347,7 +346,7 @@ app <- init(
            label = "Choose visit"
          )
        ),
-       columns = columns_spec(
+       select = select_spec(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
@@ -357,7 +356,7 @@ app <- init(
     ),
      y = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
          selected = "BMRKR1",
          multiple = FALSE,
@@ -367,7 +366,7 @@ app <- init(
      ),
      row_facet = data_extract_spec(
        dataname = "ADRS",
-       columns = columns_spec(
+       select = select_spec(
           choices = c("__NONE__", "PARAMCD"),
           selected = "PARAMCD",
           multiple = FALSE,
@@ -377,7 +376,7 @@ app <- init(
      ),
      col_facet = data_extract_spec(
        dataname = "ADRS",
-       columns = columns_spec(
+       select = select_spec(
           choices = c("__NONE__", "AVISIT"),
           selected = "AVISIT",
           multiple = FALSE,
@@ -440,7 +439,7 @@ app <- init(
            label = "Choose visit"
          )
        ),
-       columns = columns_spec(
+       select = select_spec(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
@@ -449,7 +448,7 @@ app <- init(
     ),
      y = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
          selected = "BMRKR1",
          multiple = FALSE,
@@ -474,7 +473,7 @@ app <- init(
             label = "Choose visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("__NONE__", "AVAL"),
           selected = "AVAL",
           multiple = FALSE,
@@ -484,7 +483,7 @@ app <- init(
       ),
      col_facet = data_extract_spec(
        dataname = "ADSL",
-       columns = columns_spec(
+       select = select_spec(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = NULL,
          multiple = FALSE,
@@ -527,7 +526,7 @@ app <- teal::init(
       dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("AVAL"),
           selected = "AVAL",
           multiple = FALSE,
@@ -537,7 +536,7 @@ app <- teal::init(
       ),
       y = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = c("BMRKR1", "BMRKR2"),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -547,7 +546,7 @@ app <- teal::init(
       ),
       row_facet = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = "PARAMCD",
           selected = "PARAMCD",
           multiple = TRUE,
@@ -557,7 +556,7 @@ app <- teal::init(
       ),
       col_facet = data_extract_spec(
         dataname = "ADRS",
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVISIT",
           selected = "AVISIT",
           multiple = TRUE,
@@ -615,7 +614,7 @@ app <- teal::init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -640,7 +639,7 @@ app <- teal::init(
             label = "Visit"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
@@ -666,7 +665,7 @@ app <- teal::init(
             label = "Category"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
           selected = "",
           multiple = TRUE,
@@ -692,7 +691,7 @@ app <- teal::init(
             label = "Category"
           )
         ),
-        columns = columns_spec(
+        select = select_spec(
           choices = c("","RACE", "SEX", "ARMCD", "ACTARMCD"),
           selected = "",
           multiple = TRUE,
