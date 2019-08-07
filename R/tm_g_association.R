@@ -434,12 +434,12 @@ ui_tm_g_association <- function(id, ...) {
       helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ", "))),
       data_extract_input(
         id = ns("ref"),
-        label = "Reference variable:",
+        label = "Reference variable",
         data_extract_spec = arguments$ref
       ),
       data_extract_input(
         id = ns("vars"),
-        label = "Associated variables:",
+        label = "Associated variables",
         data_extract_spec = arguments$vars
       ),
       checkboxInput(ns("association"),

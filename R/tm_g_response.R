@@ -552,25 +552,25 @@ ui_g_response <- function(id, ...) {
 
       data_extract_input(
         id = ns("response"),
-        label = "Response variable:",
+        label = "Response variable",
         data_extract_spec = arguments$response
       ),
       data_extract_input(
         id = ns("x"),
-        label = "X variable:",
+        label = "X variable",
         data_extract_spec = arguments$x
       ),
       if (!is.null(arguments$row_facet)) {
         data_extract_input(
           id = ns("row_facet"),
-          label = "Row facetting by:",
+          label = "Row facetting",
           data_extract_spec = arguments$row_facet
         )
       },
       if (!is.null(arguments$col_facet)) {
         data_extract_input(
           id = ns("col_facet"),
-          label = "Column facetting by:",
+          label = "Column facetting",
           data_extract_spec = arguments$col_facet
         )
       },

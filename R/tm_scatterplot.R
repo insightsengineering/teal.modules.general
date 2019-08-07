@@ -520,17 +520,17 @@ ui_scatterplot <- function(id,
       helpText("Analysis data:", tags$code(dataname)),
       data_extract_input(
         id = ns("x"),
-        label = "x variable",
+        label = "X variable",
         data_extract_spec = x
       ),
       data_extract_input(
         id = ns("y"),
-        label = "y variable",
+        label = "Y variable",
         data_extract_spec = y
       ),
       data_extract_input(
         id = ns("color_by"),
-        label = "Color by:",
+        label = "Color by variable",
         data_extract_spec = color_by
       ),
       optionalSliderInputValMinMax(ns("plot_height"), "Plot height", plot_height, ticks = FALSE),

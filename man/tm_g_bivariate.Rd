@@ -253,7 +253,7 @@ app <- init(
           fixed = FALSE
         ),
         filter = filter_spec(
-          label = "Select parameter:",
+          label = "Select endpoint:",
           vars = c("PARAMCD"),
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",

@@ -304,7 +304,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       helpText("Datasets: ", lapply(args$dataname, tags$code)),
       data_extract_input(
         id = ns("selected"),
-        label = "Selected variables:",
+        label = "Selected variables",
         data_extract_spec = args$selected
       ),
       sliderInput(ns("alpha"), "Opacity:",

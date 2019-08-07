@@ -219,7 +219,7 @@
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
-#'           label = "Select parameter:",
+#'           label = "Select endpoint:",
 #'           vars = c("PARAMCD"),
 #'           choices = unique(ADTTE$PARAMCD),
 #'           selected = "OS",
@@ -755,12 +755,12 @@ ui_g_bivariate <- function(id, ...) {
       helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ", "))),
       data_extract_input(
         id = ns("x"),
-        label = "X variable:",
+        label = "X variable",
         data_extract_spec = arguments$x
       ),
       data_extract_input(
         id = ns("y"),
-        label = "Y variable:",
+        label = "Y variable",
         data_extract_spec = arguments$y
       ),
       radioGroupButtons(
@@ -771,8 +771,8 @@ ui_g_bivariate <- function(id, ...) {
         justified = TRUE
       ),
       div(
-        style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
-        tags$label("Facetting:"),
+        class = "data-extract-box",
+        tags$label("Facetting"),
         switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
@@ -782,8 +782,8 @@ ui_g_bivariate <- function(id, ...) {
       if (arguments$expert_settings) {
         # Put a grey border around the expert settings
         div(
-          style = "border: 1px solid #e3e3e3; border-radius: 5px; padding: 0.6em; margin-left: -0.6em",
-          tags$label("Expert settings:"),
+          class = "data-extract-box",
+          tags$label("Expert settings"),
           switchInput(inputId = ns("expert"), value = FALSE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
@@ -818,12 +818,12 @@ ui_facetting <- function(ns,
   div(
     data_extract_input(
       id = ns("row_facet"),
-      label = "Row facetting by:",
+      label = "Row facetting variable",
       data_extract_spec = row_facet_spec
     ),
     data_extract_input(
       id = ns("col_facet"),
-      label = "Column facetting by:",
+      label = "Column facetting variable",
       data_extract_spec = col_facet_spec
     ),
     checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales),
@@ -838,17 +838,17 @@ ui_expert <- function(ns,
   div(
     data_extract_input(
       id = ns("colour"),
-      label = "Colour by variable:",
+      label = "Colour by variable",
       data_extract_spec = colour_spec
     ),
     data_extract_input(
       id = ns("fill"),
-      label = "Fill colour by variable:",
+      label = "Fill colour by variable",
       data_extract_spec = fill_spec
     ),
     data_extract_input(
       id = ns("size"),
-      label = "Size of points by variable (only if x and y are numeric):",
+      label = "Size of points by variable (only if x and y are numeric)",
       data_extract_spec = size_spec
     )
   )

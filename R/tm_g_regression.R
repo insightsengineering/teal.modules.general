@@ -550,12 +550,12 @@ ui_g_regression <- function(id, ...) {
       helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
       data_extract_input(
         id = ns("response"),
-        label = "Response variable:",
+        label = "Response variable",
         data_extract_spec = arguments$response
       ),
       data_extract_input(
         id = ns("regressor"),
-        label = "Regressor variables:",
+        label = "Regressor variables",
         data_extract_spec = arguments$regressor
       ),
       radioButtons(

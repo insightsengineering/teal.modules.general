@@ -319,12 +319,12 @@ ui_venn2 <- function(id, ...) {
       helpText("Analysis data:", tags$code(arguments$dataname)),
       data_extract_input(
         id = ns("bm1"),
-        label = "Biomarker 1:",
+        label = "Biomarker 1",
         data_extract_spec = arguments$bm1
       ),
       data_extract_input(
         id = ns("bm2"),
-        label = "Biomarker 2:",
+        label = "Biomarker 2",
         data_extract_spec = arguments$bm2
       ),
 
