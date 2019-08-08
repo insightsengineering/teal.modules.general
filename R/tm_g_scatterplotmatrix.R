@@ -184,12 +184,12 @@
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             label = "Select Endpoints",
+#'             label = "Select Endpoint",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(
 #'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
-#'             multiple = TRUE
+#'             multiple = FALSE
 #'           )
 #'         ),
 #'         data_extract_spec(
@@ -333,7 +333,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%")
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
   )
 }
 

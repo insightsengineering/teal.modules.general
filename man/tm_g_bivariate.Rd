@@ -429,21 +429,22 @@ app <- init(
            choices = levels(ADRS$PARAMCD),
            selected = levels(ADRS$PARAMCD)[1],
            multiple = FALSE,
-           label = "Choose response"
+           label = "Response:"
          ),
          filter_spec(
            vars = "AVISIT",
            choices = levels(ADRS$AVISIT),
            selected = levels(ADRS$AVISIT)[1],
            multiple = FALSE,
-           label = "Choose visit"
+           label = "Visit:"
          )
        ),
        select = select_spec(
          choices = "AVAL",
          selected = "AVAL",
          multiple = FALSE,
-         label = "variable"
+         fixed = FALSE,
+         label = "Select variable:"
        )
     ),
      y = data_extract_spec(
@@ -452,7 +453,8 @@ app <- init(
          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
          selected = "BMRKR1",
          multiple = FALSE,
-         fixed = FALSE
+         fixed = FALSE,
+         label = "Select variable:"
       )
      ),
      row_facet = data_extract_spec(
@@ -463,22 +465,22 @@ app <- init(
             choices = levels(ADLB$PARAM),
             selected = levels(ADLB$PARAM)[1],
             multiple = FALSE,
-            label = "Choose measurement"
+            label = "Lab:"
           ),
           filter_spec(
             vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
-            label = "Choose visit"
+            label = "Visit:"
           )
         ),
         select = select_spec(
-          choices = c("__NONE__", "AVAL"),
-          selected = "AVAL",
+          choices = c("__NONE__", "ARMCD"),
+          selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "variable"
+          label = "Select variable:"
         )
       ),
      col_facet = data_extract_spec(
@@ -487,7 +489,8 @@ app <- init(
          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
          selected = NULL,
          multiple = FALSE,
-         fixed = FALSE
+         fixed = FALSE,
+         label = "Select variable:"
       )
      ),
        expert_settings = TRUE,

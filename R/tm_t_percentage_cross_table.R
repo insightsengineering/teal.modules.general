@@ -419,7 +419,7 @@ ui_percentage_cross_table <- function(id, ...) {
       tags$hr(),
       data_extract_input(ns("y"), label = "Column values", a$y)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = a$pre_output,
     post_output = a$post_output
   )

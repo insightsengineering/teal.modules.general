@@ -582,25 +582,25 @@ ui_g_response <- function(id, ...) {
 
       data_extract_input(
         id = ns("response"),
-        label = "Response Variable",
+        label = "Response variable",
         data_extract_spec = arguments$response
       ),
       data_extract_input(
         id = ns("x"),
-        label = "X Variable",
+        label = "X variable",
         data_extract_spec = arguments$x
       ),
       if(!is.null(arguments$row_facet) ){
         data_extract_input(
           id = ns("row_facet"),
-          label = "Row facetting Variables ",
+          label = "Variables",
           data_extract_spec = arguments$row_facet
         )
       },
       if(!is.null(arguments$col_facet) ){
         data_extract_input(
           id = ns("col_facet"),
-          label = "col facetting Variables ",
+          label = "Variables",
           data_extract_spec = arguments$col_facet
         )
       },
@@ -608,10 +608,10 @@ ui_g_response <- function(id, ...) {
                    choices = c("frequency", "density"),
                    selected = ifelse(arguments$freq, "frequency", "density"), inline = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
+      checkboxInput(ns("coord_flip"), "Swap axes", value = arguments$coord_flip),
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = arguments$pre_output,
     post_output = arguments$post_output
   )
