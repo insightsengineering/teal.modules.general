@@ -291,14 +291,14 @@
 #'            choices = levels(ADRS$PARAM),
 #'            selected = levels(ADRS$PARAM)[1],
 #'            multiple = FALSE,
-#'            label = "Choose response:"
+#'            label = "Select response:"
 #'          ),
 #'          filter_spec(
 #'            vars = "AVISIT",
 #'            choices = levels(ADRS$AVISIT),
 #'            selected = levels(ADRS$AVISIT)[1],
 #'            multiple = FALSE,
-#'            label = "Choose visit:"
+#'            label = "Select visit:"
 #'          )
 #'        ),
 #'        select = select_spec(
@@ -374,14 +374,14 @@
 #'             choices = levels(ADRS$PARAMCD),
 #'             selected = levels(ADRS$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose response:"
+#'             label = "Select response:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADRS$AVISIT),
 #'             selected = levels(ADRS$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -408,14 +408,14 @@
 #'             choices = levels(ADLB$PARAM),
 #'             selected = levels(ADLB$PARAM)[1],
 #'             multiple = FALSE,
-#'             label = "Choose measurement:"
+#'             label = "Select measurement:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -536,14 +536,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[2],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -561,14 +561,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[2],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -587,14 +587,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
 #'             choices = levels(ADLB$STRATA1),
 #'             selected = levels(ADLB$STRATA1)[1],
 #'             multiple = FALSE,
-#'             label = "Choose category:"
+#'             label = "Select category:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -613,14 +613,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "STRATA1",
 #'             choices = levels(ADLB$STRATA1),
 #'             selected = levels(ADLB$STRATA1)[1],
 #'             multiple = FALSE,
-#'             label = "Choose category:"
+#'             label = "Select category:"
 #'           )
 #'         ),
 #'         select = select_spec(

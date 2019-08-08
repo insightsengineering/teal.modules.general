@@ -244,14 +244,14 @@
 #'             choices = levels(ADLB$PARAM),
 #'             selected = levels(ADLB$PARAM)[1],
 #'             multiple = FALSE,
-#'             label = "Choose measurement:"
+#'             label = "Select measurement:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -370,14 +370,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -395,14 +395,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[2],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -420,14 +420,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -446,14 +446,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Choose lab:"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Choose visit:"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(

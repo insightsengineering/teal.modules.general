@@ -86,7 +86,7 @@
 #'           choices = levels(ADLB$ARMCD),
 #'           selected = levels(ADLB$ARMCD)[1],
 #'           multiple = FALSE,
-#'           label = "Choose ARM:"
+#'           label = "Select ARM:"
 #'         ),
 #'         select = select_spec(
 #'           choices = names(ADLB),
@@ -103,7 +103,7 @@
 #'           choices = levels(ADLB$ARMCD),
 #'           selected = levels(ADLB$ARMCD)[1],
 #'           multiple = FALSE,
-#'           label = "Choose ARM:"
+#'           label = "Select ARM:"
 #'         ),
 #'         select = select_spec(
 #'           choices = names(ADLB),
