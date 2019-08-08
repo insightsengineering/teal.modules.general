@@ -4,14 +4,12 @@
 \alias{tm_g_scatterplotmatrix}
 \title{Create a scatterplot matrix}
 \usage{
-tm_g_scatterplotmatrix(label = "Scatterplot matrix", dataname, selected,
+tm_g_scatterplotmatrix(label = "Scatterplot matrix", selected,
   plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
-
-\item{dataname}{Name of datasets used to generate the regression plot (just used for labeling).}
 
 \item{selected}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
@@ -48,7 +46,6 @@ app <- init(
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ADSL"),
       selected = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -98,7 +95,6 @@ select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      dataname = c("ADSL", "ADSL_2"),
       selected = list(
         data_extract_spec(
           dataname = "ADSL",
@@ -146,7 +142,6 @@ app <- init(
   modules = root_modules(
     tm_g_scatterplotmatrix(
       "Scatterplot matrix for same long dataset",
-      dataname = "ADTTE",
       selected = data_extract_spec(
         dataname = "ADTTE",
         select = select_spec(
@@ -183,7 +178,6 @@ app <- init(
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       selected = list(
         data_extract_spec(
           dataname = "ADRS",
@@ -247,7 +241,6 @@ app <- init(
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix on two long datasets with subsets",
-      dataname = "ADLB",
       selected = data_extract_spec(
         dataname = "ADLB",
         filter = list(

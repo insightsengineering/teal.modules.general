@@ -4,15 +4,13 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Response Plot", dataname, response, x,
-  row_facet = NULL, col_facet = NULL, coord_flip = TRUE,
-  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
+tm_g_response(label = "Response Plot", response, x, row_facet = NULL,
+  col_facet = NULL, coord_flip = TRUE, freq = FALSE,
+  plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
-
-\item{dataname}{(\code{character}) Name of dataset used to generate the response plot}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use as the response. You can define one fixed column by using the
@@ -61,7 +59,6 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ADSL"),
       response = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -122,7 +119,6 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ADSL", "ADSL_2"),
       response = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -167,7 +163,6 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       label = "Response Plot on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADLB"),
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(
@@ -262,7 +257,6 @@ app <- init(
   modules = root_modules(
     tm_g_response(
       label = "Response Plots",
-      dataname = c("ADSL", "ADLB"),
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(
@@ -322,7 +316,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_response(
-      dataname = "ADRS",
       response = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
@@ -388,7 +381,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_response(
-      dataname = "ADLB",
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(

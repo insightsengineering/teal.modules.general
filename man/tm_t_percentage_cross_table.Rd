@@ -4,14 +4,11 @@
 \alias{tm_t_percentage_cross_table}
 \title{Cross table based on rtables}
 \usage{
-tm_t_percentage_cross_table(label = "Cross Table", dataname, x, y,
+tm_t_percentage_cross_table(label = "Cross Table", x, y,
   pre_output = NULL, post_output = NULL)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}
-
-\item{dataname}{(\code{character}) Name of the dataset used in the teal app. Just a single
-dataset is allowed!}
 
 \item{x}{(\code{choices_selected}) object with all available
 choices with preselected option for variable X}
@@ -56,7 +53,6 @@ app <- init(
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -116,7 +112,6 @@ select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
   ),
   modules = root_modules(
     tm_t_percentage_cross_table("Cross Table",
-     dataname = c("ADSL", "ADSL_2"),
      x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -162,7 +157,6 @@ app <- init(
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
@@ -221,8 +215,8 @@ app <- init(
     check = TRUE
   ),
   modules = root_modules(
-    tm_t_percentage_cross_table("Cross Table",
-      dataname = c("ADSL", "ADRS"),
+    tm_t_percentage_cross_table(
+      "Cross Table",
       x = data_extract_spec(
         dataname = "ADRS",
         filter = list(
@@ -284,7 +278,6 @@ app <- init(
   modules = root_modules(
     tm_t_percentage_cross_table(
       "Scatterplot for same long dataset",
-      dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
@@ -331,7 +324,6 @@ app <- init(
   modules = root_modules(
     tm_t_percentage_cross_table(
       label = "Cross Table",
-      dataname = "ADLB",
       x = data_extract_spec(
         dataname = "ADLB",
         filter = filter_spec(

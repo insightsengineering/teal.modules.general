@@ -4,18 +4,15 @@
 \alias{tm_g_bivariate}
 \title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Bivariate Plots", dataname, x, y, row_facet,
-  col_facet, colour = NULL, fill = NULL, size = NULL,
-  use_density = FALSE, expert_settings = TRUE, free_x_scales = FALSE,
+tm_g_bivariate(label = "Bivariate Plots", x, y, row_facet, col_facet,
+  colour = NULL, fill = NULL, size = NULL, use_density = FALSE,
+  expert_settings = TRUE, free_x_scales = FALSE,
   free_y_scales = FALSE, plot_height = c(600, 200, 2000),
   ggtheme = "minimal", with_show_r_code = TRUE, pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the module}
-
-\item{dataname}{(\code{character}) name of datasets used to generate the bivariate plot. You need
-to name all datasets used in the available \code{data_extract_spec}}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
@@ -82,7 +79,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_bivariate(
-      dataname = "ADSL",
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -160,7 +156,6 @@ app <- init(
   modules = root_modules(
     tm_g_bivariate(
       label = "Association plots",
-      dataname = c("ADSL", "ADSL_2"),
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -225,7 +220,6 @@ app <- init(
   modules = root_modules(
     tm_g_bivariate(
       label = "Bivariate Plots of two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       x = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
@@ -316,7 +310,6 @@ app <- init(
  modules = root_modules(
    tm_g_bivariate(
      label = "Association Plots",
-     dataname = c("ADSL", "ADRS"),
      x = data_extract_spec(
        dataname = "ADRS",
        filter = list(
@@ -399,7 +392,6 @@ app <- init(
   modules = root_modules(
     tm_g_bivariate(
       label = "Association Plots",
-      dataname = c("ADSL", "ADRS", "ADLB"),
       x = data_extract_spec(
         dataname = "ADRS",
         filter = list(
@@ -497,7 +489,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_bivariate(
-      dataname = "ADRS",
       x = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
@@ -562,7 +553,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_bivariate(
-      dataname = "ADLB",
       x = data_extract_spec(
         dataname = "ADLB",
         filter = list(

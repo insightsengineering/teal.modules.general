@@ -4,14 +4,12 @@
 \alias{tm_g_association}
 \title{Stack Plots of variables and show association with reference variable}
 \usage{
-tm_g_association(label = "Association", dataname, ref, vars,
+tm_g_association(label = "Association", ref, vars,
   show_association = TRUE, plot_height = c(600, 400, 5000),
   pre_output = NULL, post_output = NULL, with_show_r_code = TRUE)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
-
-\item{dataname}{(\code{character}) data set name to analyze}
 
 \item{ref}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 reference variable, must set \code{multiple = FALSE}}
@@ -52,7 +50,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_association(
-      dataname = "ADSL",
       ref = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -107,7 +104,6 @@ app <- init(
   modules = root_modules(
     tm_g_association(
       label = "Regression",
-      dataname = c("ADSL", "ADSL_2"),
       ref = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -151,7 +147,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_association(
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       ref = list(
         data_extract_spec(
           dataname = "ADRS",
@@ -237,7 +232,6 @@ app <- init(
  modules = root_modules(
    tm_g_association(
      label = "Association Plots",
-     dataname = c("ADSL", "ADRS"),
      ref = data_extract_spec(
        dataname = "ADSL",
        select = select_spec(
@@ -299,7 +293,6 @@ app <- init(
  modules = root_modules(
    tm_g_association(
      label = "Association Plots",
-     dataname = "ADRS",
      ref = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
@@ -345,7 +338,6 @@ app <- init(
   ),
   modules = root_modules(
     tm_g_association(
-      dataname = "ADLB",
       ref = data_extract_spec(
         dataname = "ADLB",
         filter = list(

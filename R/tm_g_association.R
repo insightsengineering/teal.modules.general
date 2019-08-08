@@ -2,7 +2,6 @@
 #'
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
-#' @param dataname (\code{character}) data set name to analyze
 #' @param ref (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   reference variable, must set \code{multiple = FALSE}
 #' @param vars (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -29,7 +28,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = "ADSL",
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -84,7 +82,6 @@
 #'   modules = root_modules(
 #'     tm_g_association(
 #'       label = "Regression",
-#'       dataname = c("ADSL", "ADSL_2"),
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -128,7 +125,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       ref = list(
 #'         data_extract_spec(
 #'           dataname = "ADRS",
@@ -214,7 +210,6 @@
 #'  modules = root_modules(
 #'    tm_g_association(
 #'      label = "Association Plots",
-#'      dataname = c("ADSL", "ADRS"),
 #'      ref = data_extract_spec(
 #'        dataname = "ADSL",
 #'        select = select_spec(
@@ -276,7 +271,6 @@
 #'  modules = root_modules(
 #'    tm_g_association(
 #'      label = "Association Plots",
-#'      dataname = "ADRS",
 #'      ref = data_extract_spec(
 #'        dataname = "ADRS",
 #'        select = select_spec(
@@ -322,7 +316,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       dataname = "ADLB",
 #'       ref = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -380,7 +373,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_association <- function(label = "Association",
-                             dataname,
                              ref,
                              vars,
                              show_association = TRUE,
@@ -396,7 +388,6 @@ tm_g_association <- function(label = "Association",
   }
 
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(ref))
   stop_if_not(list(all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
                    "'ref' should not allow multiple selection"))
@@ -410,11 +401,13 @@ tm_g_association <- function(label = "Association",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_tm_g_association,
     ui_args = args,
     server_args = list(
-      dataname = dataname,
       ref = ref,
       vars = vars
     ),
@@ -431,7 +424,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(paste(arguments$dataname, collapse = ", "))),
+      uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("ref"),
         label = "Reference variable",
@@ -469,11 +462,11 @@ srv_tm_g_association <- function(input,
                                  output,
                                  session,
                                  datasets,
-                                 dataname,
                                  ref,
                                  vars) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+  dataname <- datasets$datanames()
   init_chunks()
+
 
   callModule(
     plot_with_height,

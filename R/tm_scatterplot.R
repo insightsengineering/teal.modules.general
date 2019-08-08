@@ -4,7 +4,6 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param dataname name of dataset used to generate plot
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   x variable
 #' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -43,7 +42,6 @@
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       dataname = "ADSL",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -113,7 +111,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot("Scatterplot for different wide data",
-#'      dataname = c("ADSL", "ADSL_2"),
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -169,7 +166,6 @@
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       label = "Scatterplot on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADTTE"),
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
@@ -239,7 +235,6 @@
 #'   ),
 #'   modules = root_modules(
 #'    tm_scatterplot("Scatterplot for wide and long data",
-#'      dataname = c("ADSL", "ADRS"),
 #'      x = data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
@@ -311,7 +306,6 @@
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       "Scatterplot for same long dataset",
-#'       dataname = "ADRS",
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
@@ -369,7 +363,6 @@
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       "Scatterplot Choices",
-#'       dataname = "ADLB",
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -453,7 +446,6 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_scatterplot <- function(label,
-                           dataname,
                            x,
                            y,
                            color_by = NULL,
@@ -473,7 +465,6 @@ tm_scatterplot <- function(label,
   }
 
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   stopifnot(is.class.list("data_extract_spec")(x))
   stopifnot(is.class.list("data_extract_spec")(y))
   stopifnot(is.class.list("data_extract_spec")(color_by))
@@ -488,8 +479,11 @@ tm_scatterplot <- function(label,
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
-    server_args = list(dataname = dataname),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
+    server_args = NULL,
     ui = ui_scatterplot,
     ui_args = args,
     filters = "all"
@@ -498,7 +492,6 @@ tm_scatterplot <- function(label,
 
 ui_scatterplot <- function(id,
                            label,
-                           dataname,
                            x,
                            y,
                            color_by,
@@ -517,7 +510,7 @@ ui_scatterplot <- function(id,
     output = uiOutput(ns("plot_ui")),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(dataname)),
+      uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
@@ -545,8 +538,9 @@ ui_scatterplot <- function(id,
 
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
-srv_scatterplot <- function(input, output, session, datasets, dataname) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+srv_scatterplot <- function(input, output, session, datasets) {
+
+  dataname <- datasets$datanames()
 
   init_chunks()
 

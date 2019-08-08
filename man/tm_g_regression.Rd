@@ -4,14 +4,12 @@
 \alias{tm_g_regression}
 \title{Scatterplot and Regression Model}
 \usage{
-tm_g_regression(label = "Regression Analysis", dataname, regressor,
-  response, plot_height = c(600, 200, 2000), pre_output = NULL,
+tm_g_regression(label = "Regression Analysis", regressor, response,
+  plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
-
-\item{dataname}{name of datasets used to generate the regression plot (just used for labeling)}
 
 \item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 regressor variable from an incoming dataset with filtering and selecting.}
@@ -50,7 +48,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = "ADSL",
       response = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -111,7 +108,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ADSL", "ADSL_2"),
       response = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -157,7 +153,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ADSL", "ADRS"),
       response = data_extract_spec(
         dataname = "ADRS",
         filter = list(
@@ -236,7 +231,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression Analysis on two long datasets",
-      dataname = c("ADSL", "ADRS", "ADTTE"),
       response = data_extract_spec(
         dataname = "ADTTE",
         select = select_spec(
@@ -309,7 +303,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ADSL", "ADLB"),
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(
@@ -372,7 +365,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = c("ADSL", "ADLB", "ADRS"),
       response = list(data_extract_spec(
         dataname = "ADLB",
         filter = list(
@@ -458,7 +450,6 @@ app <- init(
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
-      dataname = "ADLB",
       response = data_extract_spec(
         dataname = "ADLB",
         filter = list(
