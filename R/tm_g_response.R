@@ -1,7 +1,6 @@
 #' Response Plots
 #'
 #'
-#' @param dataname (\code{character}) Name of dataset used to generate the response plot
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use as the response. You can define one fixed column by using the
 #'   setting \code{fixed = TRUE} inside the \code{select_spec}.
@@ -37,7 +36,6 @@
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       dataname = c("ADSL"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -103,7 +101,6 @@
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       dataname = c("ADSL", "ADSL_2"),
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -146,7 +143,6 @@
 #'   modules = root_modules(
 #'     tm_g_response(
 #'       label = "Response Plot on two long datasets",
-#'       dataname = c("ADSL", "ADRS", "ADLB"),
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -248,7 +244,6 @@
 #'  modules = root_modules(
 #'    tm_g_response(
 #'      label = "Response Plots",
-#'      dataname = c("ADSL", "ADLB"),
 #'      response = data_extract_spec(
 #'        dataname = "ADLB",
 #'        filter = list(
@@ -316,7 +311,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
-#'       dataname = "ADRS",
 #'       response = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
@@ -390,7 +384,6 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
-#'       dataname = "ADLB",
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = list(
@@ -501,7 +494,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_response <- function(label = "Response Plot",
-                          dataname,
                           response,
                           x,
                           row_facet = NULL,
@@ -525,7 +517,6 @@ tm_g_response <- function(label = "Response Plot",
   }
 
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
   # No empty columns allowed for Response Var
   # No multiple Response variables allowed
   stopifnot(is.class.list("data_extract_spec")(response))
@@ -551,14 +542,15 @@ tm_g_response <- function(label = "Response Plot",
 
 
   args <- as.list(environment())
-
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) return(NULL),
+    server = function(input, output, session, datasets, ...) {
+      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
+      return(NULL)
+    },
     ui = ui_g_response,
     ui_args = args,
     server_args = list(
-      dataname = dataname,
       response = response,
       x = x,
       row_facet = row_facet,
@@ -578,7 +570,7 @@ ui_g_response <- function(id, ...) {
       plot_height_output(id = ns("myplot"))
     ),
     encoding = div(
-        helpText("Datasets: ", lapply(arguments$dataname, tags$code)),
+      uiOutput(ns("dataname")),
 
       data_extract_input(
         id = ns("response"),
