@@ -581,7 +581,7 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(arguments$freq, "frequency", "density"),
         inline = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "swap axes", value = arguments$coord_flip),
+      checkboxInput(ns("coord_flip"), "Swap axes", value = arguments$coord_flip),
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),

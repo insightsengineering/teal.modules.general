@@ -419,8 +419,8 @@
 #'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = c("__NONE__", "AVAL"),
-#'           selected = "AVAL",
+#'           choices = c("__NONE__", "ARMCD"),
+#'           selected = "ARMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
@@ -432,7 +432,8 @@
 #'           choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'           selected = NULL,
 #'           multiple = FALSE,
-#'           fixed = FALSE
+#'           fixed = FALSE,
+#'           label = "Select variable:"
 #'         )
 #'       ),
 #'       expert_settings = TRUE,
