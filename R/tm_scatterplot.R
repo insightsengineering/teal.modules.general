@@ -37,14 +37,15 @@
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     code = "ADSL <- cadsl",
-#'     check = FALSE),
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       label = "Scatterplot Choices",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = c("AGE", "BMRKR1", "BMRKR2"),
 #'           selected = "AGE",
 #'           multiple = FALSE,
@@ -54,7 +55,7 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = c("AGE", "BMRKR1", "BMRKR2"),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
@@ -64,7 +65,7 @@
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select Variables",
+#'           label = "Select variables:",
 #'           choices = c("RACE", "SEX"),
 #'           selected = NULL,
 #'           multiple = TRUE,
@@ -81,7 +82,6 @@
 #' # datasets: different wide
 #' # Scatterplot of AGE and BMRKR1 colored by COUNTRY
 #' library(random.cdisc.data)
-#' library(tern)
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
@@ -92,14 +92,11 @@
 #'   "ARM", "ACTARM", "ACTARMCD",
 #'   "SEX", "BMRKR1", "BMRKR2", "AGE", "USUBJID", "STUDYID"
 #' )
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#'
 #'
 #' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'   .funs = list(~as.factor(.))
 #' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL_2) <- c("STUDYID", "USUBJID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -108,25 +105,25 @@
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#' keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-#'     check = FALSE
+#' .funs = list(~as.factor(.))) %>%
+#' select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot("Scatterplot for different wide data",
 #'      x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'          label = "Select Variable",
+#'          label = "Select variable:",
 #'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = c("BMRKR1"),
+#'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )),
 #'       y = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = c("AGE", "RACE"),
 #'           selected = "AGE",
 #'           multiple = FALSE,
@@ -135,7 +132,7 @@
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         select = select_spec(
-#'           label = "Select variable",
+#'           label = "Select variable:",
 #'           choices = c("COUNTRY", "AGE", "RACE"),
 #'           selected = "COUNTRY",
 #'           multiple = FALSE,
@@ -164,7 +161,7 @@
 #'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADTTE", ADTTE),
 #'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-#'     check = FALSE
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot(
@@ -172,14 +169,14 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = names(ADRS),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
-#'           label = "Select Endpoint",
+#'           label = "Select endpoint:",
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(expand.grid(
 #'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
@@ -190,14 +187,14 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADTTE",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = names(ADTTE),
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
 #'         filter = filter_spec(
-#'           label = "Select Parameters",
+#'           label = "Select parameters:",
 #'           vars = c("PARAMCD"),
 #'           choices = unique(ADTTE$PARAMCD),
 #'           selected = "OS",
@@ -207,7 +204,7 @@
 #'       color_by = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select Variable",
+#'           label = "Select variable:",
 #'           choices = c("AGE", "SEX"),
 #'           selected = "AGE",
 #'           multiple = FALSE,
@@ -225,29 +222,23 @@
 #' # datasets: wide, long
 #' # Scatterplot of response duration and patient age
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADRS <- cadrs
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
-#'     code = 'ADSL <- cadsl
-#' ADRS <- cadrs
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-#'     check = FALSE
+#'     code = "ADSL <- cadsl; ADRS <- cadrs",
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'    tm_scatterplot("Scatterplot for wide and long data",
 #'      x = data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
-#'             label = "Select Variable",
+#'             label = "Select variable:",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = "AGE",
 #'             multiple = FALSE,
@@ -262,18 +253,18 @@
 #'               choices = levels(ADRS$PARAM),
 #'               selected = levels(ADRS$PARAM)[1],
 #'               multiple = FALSE,
-#'               label = "Choose response"
+#'               label = "Select response:"
 #'             ),
 #'             filter_spec(
 #'               vars = "AVISIT",
 #'               choices = levels(ADRS$AVISIT),
 #'               selected = levels(ADRS$AVISIT)[1],
 #'               multiple = FALSE,
-#'               label = "Choose visit"
+#'               label = "Select visit:"
 #'             )
 #'           ),
 #'           select = select_spec(
-#'             label = "Selected Variable",
+#'             label = "Selected variable:",
 #'             choices = "AVAL",
 #'             selected = "AVAL",
 #'             multiple = FALSE,
@@ -283,7 +274,7 @@
 #'      color_by = data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
-#'             label = "Select Variable",
+#'             label = "Select variable:",
 #'             choices = c("SEX", "AGE", "RACE", "COUNTRY"),
 #'             selected = NULL,
 #'             multiple = FALSE,
@@ -301,18 +292,17 @@
 #' # Scatterplot of different continuous variables from ADRS dataset
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADRS <- cadrs
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
-#'     code = "", check = FALSE),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       "Scatterplot for same long dataset",
@@ -323,7 +313,7 @@
 #'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       ),
 #'       y = data_extract_spec(
@@ -333,17 +323,17 @@
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       ),
 #'       color_by = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
-#'           choices = c("", "AGE", "SEX", "RACE"),
-#'           selected = "",
+#'           choices = c("AGE", "SEX", "RACE"),
+#'           selected = NULL,
 #'           multiple = FALSE, #todo: 0 or 1
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       )
 #'     )
@@ -359,23 +349,17 @@
 #' # Scatterplot of different continuous variables from ADLB dataset
 #'
 #' library(random.cdisc.data)
-#' library(tern)
 #'
 #' ADSL <- cadsl
 #' ADLB <- cadlb
-#'
-#' keys(ADSL) <- c("STUDYID", "USUBJID")
-#' keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADLB", ADLB),
-#'     code = 'ADSL <- cadsl
-#'            ADLB <- cadlb
-#'            keys(ADSL) <- c("STUDYID", "USUBJID")
-#'            keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-#'     check = FALSE),
+#'     code = "ADSL <- cadsl; ADLB <- cadlb",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_scatterplot(
 #'       "Scatterplot Choices",
@@ -387,14 +371,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Lab"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Visit"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -412,14 +396,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[2],
 #'             multiple = FALSE,
-#'             label = "Lab"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Visit"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -437,14 +421,14 @@
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
-#'             label = "Lab"
+#'             label = "Select lab:"
 #'           ),
 #'           filter_spec(
 #'             vars = "AVISIT",
 #'             choices = levels(ADLB$AVISIT),
 #'             selected = levels(ADLB$AVISIT)[1],
 #'             multiple = FALSE,
-#'             label = "Visit"
+#'             label = "Select visit:"
 #'           )
 #'         ),
 #'         select = select_spec(
@@ -452,7 +436,7 @@
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
-#'           label = "Select Variable"
+#'           label = "Select variable:"
 #'         )
 #'       ),
 #'     )
@@ -539,12 +523,12 @@ ui_scatterplot <- function(id,
       ),
       data_extract_input(
         id = ns("color_by"),
-        label = "Color by",
+        label = "Color by variable",
         data_extract_spec = color_by
       ),
       optionalSliderInputValMinMax(ns("plot_height"), "Plot height", plot_height, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("alpha"), "Opacity", alpha, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("size"), "Point size", size, ticks = FALSE)
+      optionalSliderInputValMinMax(ns("alpha"), "Opacity:", alpha, ticks = FALSE),
+      optionalSliderInputValMinMax(ns("size"), "Points size:", size, ticks = FALSE)
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = pre_output,

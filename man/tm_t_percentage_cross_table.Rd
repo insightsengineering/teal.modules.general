@@ -56,7 +56,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("COUNTRY", "STUDYID"),
           selected = "COUNTRY",
           multiple = FALSE,
@@ -66,7 +66,7 @@ app <- init(
       y = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("SEX", "RACE"),
           selected = "SEX",
           multiple = FALSE,
@@ -83,7 +83,6 @@ shinyApp(app$ui, app$server)
 # datasets: different wide
 # Percentage cross table with AGE groups over RACE
 library(random.cdisc.data)
-library(tern)
 library(dplyr)
 
 ADSL <- cadsl
@@ -94,14 +93,11 @@ ADSL <- mutate_at(ADSL,
   "ARM", "ACTARM", "ACTARMCD",
   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
 )
-keys(ADSL) <- c("STUDYID", "USUBJID")
-
 
 ADSL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
   .funs = list(~as.factor(.))
 ) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ADSL_2) <- c("STUDYID", "USUBJID")
 
 app <- init(
   data = cdisc_data(
@@ -110,16 +106,16 @@ app <- init(
     code = 'ADSL <- cadsl
 ADSL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-.funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
-    check = FALSE
+.funs = list(~as.factor(.))) \%>\%
+select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+    check = FALSE #TODO
   ),
   modules = root_modules(
     tm_t_percentage_cross_table("Cross Table",
      x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("AGE", "SEX", "STRATA1", "RACE"),
           selected = c("AGE"),
           multiple = FALSE,
@@ -128,7 +124,7 @@ keys(ADSL) <- keys(ADSL_2) <- c("STUDYID", "USUBJID")',
       y = data_extract_spec(
         dataname = "ADSL_2",
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = c("COUNTRY", "AGE", "RACE"),
           selected = "RACE",
           multiple = FALSE,
@@ -156,7 +152,7 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = FALSE
+    check = TRUE
   ),
   modules = root_modules(
     tm_t_percentage_cross_table(
@@ -164,7 +160,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADRS",
         filter = filter_spec(
-          label = "Select Endpoints",
+          label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
           choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
@@ -172,7 +168,7 @@ app <- init(
           multiple = TRUE
         ),
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = names(ADRS),
           selected = "AVALC",
           multiple = FALSE,
@@ -182,14 +178,14 @@ app <- init(
       y = data_extract_spec(
         dataname = "ADTTE",
         filter = filter_spec(
-          label = "Select Parameters",
-          vars = c("PARAMCD"),
+          label = "Select parameters:",
+          vars = "PARAMCD",
           choices = unique(ADTTE$PARAMCD),
           selected = "OS",
           multiple = TRUE
         ),
         select = select_spec(
-          label = "Select Variable",
+          label = "Select variable:",
           choices = names(ADTTE),
           selected = "CNSR",
           multiple = FALSE,
@@ -207,61 +203,56 @@ shinyApp(app$ui, app$server)
 # Percentage cross table with AGE groups per STUDYID
 #   filtered by response type and VISIT
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADRS <- cadrs
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
-    code = 'ADSL <- cadsl
-ADRS <- cadrs
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
   ),
   modules = root_modules(
-   tm_t_percentage_cross_table("Cross Table",
-     x = data_extract_spec(
-          dataname = "ADRS",
-          filter = list(
-            filter_spec(
-              vars = "PARAM",
-              choices = levels(ADRS$PARAM),
-              selected = levels(ADRS$PARAM)[1],
-              multiple = FALSE,
-              label = "Choose response"
-            ),
-            filter_spec(
-              vars = "AVISIT",
-              choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[1],
-              multiple = FALSE,
-              label = "Choose visit"
-            )
+    tm_t_percentage_cross_table(
+      "Cross Table",
+      x = data_extract_spec(
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1],
+            multiple = FALSE,
+            label = "Select response:"
           ),
-          select = select_spec(
-            label = "Selected Variable",
-            choices = "STUDYID",
-            selected = "STUDYID",
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
             multiple = FALSE,
-            fixed = TRUE
+            label = "Select visit:"
           )
         ),
-     y = data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variable",
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-            selected = "AGE",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        ),
+        select = select_spec(
+          label = "Select variable:",
+          choices = "STUDYID",
+          selected = "STUDYID",
+          multiple = FALSE,
+          fixed = TRUE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+          selected = "AGE",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      )
     )
   )
 )
@@ -273,18 +264,17 @@ shinyApp(app$ui, app$server)
 # Contingency table of variables from ADRS dataset
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADRS <- cadrs
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADRS) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
-    code = "", check = FALSE),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_t_percentage_cross_table(
       "Scatterplot for same long dataset",
@@ -295,7 +285,7 @@ app <- init(
           selected = c("PARAMCD"),
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       y = data_extract_spec(
@@ -305,7 +295,7 @@ app <- init(
           selected = c("AVISIT"),
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       )
     )
@@ -320,22 +310,15 @@ shinyApp(app$ui, app$server)
 # Contingency table of variables from Lab dataset (ADLB)
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = 'ADSL <- cadsl
-           ADLB <- cadlb
-           keys(ADSL) <- c("STUDYID", "USUBJID")
-           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
+    code = "ADSL <- cadsl; ADLB <- cadlb",
     check = TRUE
   ),
   modules = root_modules(
@@ -348,14 +331,14 @@ app <- init(
           choices = levels(ADLB$PARAMCD),
           selected = levels(ADLB$PARAMCD)[1],
           multiple = TRUE,
-          label = "Lab"
+          label = "Select lab:"
         ),
         select = select_spec(
           choices = names(ADLB),
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       ),
       y = data_extract_spec(
@@ -365,14 +348,14 @@ app <- init(
           choices = levels(ADLB$PARAMCD),
           selected = levels(ADLB$PARAMCD)[2],
           multiple = TRUE,
-          label = "Lab"
+          label = "Select lab:"
         ),
         select = select_spec(
           choices = names(ADLB),
           selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
-          label = "Select Variable"
+          label = "Select variable:"
         )
       )
     )

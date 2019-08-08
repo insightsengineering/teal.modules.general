@@ -25,7 +25,8 @@ app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     code = "ADSL <- cadsl",
-    check = FALSE),
+    check = TRUE
+  ),
   modules = root_modules(
     tm_data_table()
   )
@@ -46,7 +47,8 @@ app <- init(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADTTE", ADTTE),
     code = "ADSL <- cadsl; ADTTE <- cadaette",
-    check = FALSE),
+    check = TRUE
+  ),
   modules = root_modules(
     tm_data_table(
       variables_selected = list(ADSL  = c("SEX", "AGE","RACE"),
@@ -60,23 +62,17 @@ shinyApp(app$ui, app$server)
 # datasets: different subsets of long dataset
 
 library(random.cdisc.data)
-library(tern)
 
 ADSL <- cadsl
 ADLB <- cadlb
-
-keys(ADSL) <- c("STUDYID", "USUBJID")
-keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = 'ADSL <- cadsl
-           ADLB <- cadlb
-           keys(ADSL) <- c("STUDYID", "USUBJID")
-           keys(ADLB) <- c("STUDYID", "USUBJID", "PARAMCD", "AVISIT")',
-    check = FALSE),
+    code = "ADSL <- cadsl; ADLB <- cadlb",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_data_table(
       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
