@@ -162,7 +162,7 @@
 #'             fixed = FALSE
 #'           ),
 #'           filter = filter_spec(
-#'             label = "Select Parameter",
+#'             label = "Select Endpoint",
 #'             vars = "PARAMCD",
 #'             choices = unique(ADTTE$PARAMCD),
 #'             selected = "OS",
@@ -462,7 +462,7 @@ ui_tm_g_association <- function(id, ...) {
         data_extract_spec = arguments$vars
       ),
       checkboxInput(ns("association"),
-        "Association with First Variable",
+        "Association with first variable",
         value = arguments$show_association
       ),
       checkboxInput(ns("show_dist"),
@@ -475,7 +475,7 @@ ui_tm_g_association <- function(id, ...) {
       ),
       plot_height_input(id = ns("myplot"), value = arguments$plot_height)
     ),
-    forms = if (arguments$with_show_r_code) actionButton(ns("show_rcode"), "Show R Code", width = "100%") else NULL,
+    forms = if (arguments$with_show_r_code) actionButton(ns("show_rcode"), "Show R code", width = "100%") else NULL,
     pre_output = arguments$pre_output,
     post_output = arguments$post_output
   )

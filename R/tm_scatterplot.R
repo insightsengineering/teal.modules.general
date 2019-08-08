@@ -529,24 +529,24 @@ ui_scatterplot <- function(id,
       uiOutput(ns("dataname")),
       data_extract_input(
         id = ns("x"),
-        label = "x variable",
+        label = "X variable",
         data_extract_spec = x
       ),
       data_extract_input(
         id = ns("y"),
-        label = "y variable",
+        label = "Y variable",
         data_extract_spec = y
       ),
       data_extract_input(
         id = ns("color_by"),
-        label = "color by",
+        label = "Color by",
         data_extract_spec = color_by
       ),
-      optionalSliderInputValMinMax(ns("plot_height"), "plot height", plot_height, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("alpha"), "opacity", alpha, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("size"), "point size", size, ticks = FALSE)
+      optionalSliderInputValMinMax(ns("plot_height"), "Plot height", plot_height, ticks = FALSE),
+      optionalSliderInputValMinMax(ns("alpha"), "Opacity", alpha, ticks = FALSE),
+      optionalSliderInputValMinMax(ns("size"), "Point size", size, ticks = FALSE)
     ),
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%"),
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = pre_output,
     post_output = post_output
   )

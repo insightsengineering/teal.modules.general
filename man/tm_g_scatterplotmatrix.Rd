@@ -198,12 +198,12 @@ app <- init(
             fixed = FALSE
           ),
           filter = filter_spec(
-            label = "Select Endpoints",
+            label = "Select Endpoint",
             vars = c("PARAMCD", "AVISIT"),
           choices = apply(expand.grid(
           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
-            multiple = TRUE
+            multiple = FALSE
           )
         ),
         data_extract_spec(
