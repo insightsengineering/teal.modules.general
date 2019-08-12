@@ -26,11 +26,15 @@
 #' @param plot_height (\code{numeric}) \code{c(value, min and max)} of plot height slider
 #' @param with_show_r_code (\code{logical}) Whether show R code button shall be shown
 #' @param ggtheme (\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.
-#' @export
+#'
+#'
+#'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
 #' @importFrom methods is
+#' @export
+#'
 #'
 #' @examples
 #' # datasets: single wide
@@ -849,7 +853,6 @@ ui_expert <- function(ns,
 
 #' @importFrom magrittr %>%
 #' @importFrom methods is
-#' @importFrom tern keys
 srv_g_bivariate <- function(input,
                             output,
                             session,
@@ -939,6 +942,11 @@ srv_g_bivariate <- function(input,
     anl <- data_reactive()
     x_name <- get_dataset_prefixed_col_names(x_data())
     y_name <- get_dataset_prefixed_col_names(y_data())
+
+    # TODO: update this section
+    keys <- function(...) {
+      1
+    }
 
     validate(need(!(!is.null(y_name) && y_name %in% keys(y_data())),
                   "Please do not select key variables inside data"))
