@@ -515,7 +515,6 @@ tm_g_regression <- function(label = "Regression Analysis",
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
     ui = ui_g_regression,
@@ -527,7 +526,7 @@ tm_g_regression <- function(label = "Regression Analysis",
 
 
 ui_g_regression <- function(id, ...) {
-  arguments <- list(...)
+  args <- list(...)
 
   ns <- NS(id)
   standard_layout(
@@ -539,16 +538,17 @@ ui_g_regression <- function(id, ...) {
       )
     ),
     encoding = div(
-        uiOutput(ns("dataname")),
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args[c("response", "regressor")]),
       data_extract_input(
         id = ns("response"),
         label = "Response variable",
-        data_extract_spec = arguments$response
+        data_extract_spec = args$response
       ),
       data_extract_input(
         id = ns("regressor"),
         label = "Regressor variables",
-        data_extract_spec = arguments$regressor
+        data_extract_spec = args$regressor
       ),
       radioButtons(
         ns("plot_type"),
@@ -562,10 +562,10 @@ ui_g_regression <- function(id, ...) {
         selected = "Response vs Regressor"
       ),
       # This shall be wrapped in a teal::plot
-      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
+      plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
-    pre_output = arguments$pre_output,
-    post_output = arguments$post_output,
+    pre_output = args$pre_output,
+    post_output = args$post_output,
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
   )
 }
@@ -576,7 +576,7 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 srv_g_regression <- function(input, output, session, datasets, response, regressor) {
-  dataname <- datasets$datanames()
+  dataname <- get_extract_datanames(list(response, regressor))
   init_chunks()
 
   # Data Extraction

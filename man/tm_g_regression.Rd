@@ -9,8 +9,6 @@ tm_g_regression(label = "Regression Analysis", regressor, response,
   post_output = NULL)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
-
 \item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 regressor variable from an incoming dataset with filtering and selecting.}
 

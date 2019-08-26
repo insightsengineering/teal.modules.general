@@ -9,8 +9,6 @@ tm_g_association(label = "Association", ref, vars,
   pre_output = NULL, post_output = NULL, with_show_r_code = TRUE)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
-
 \item{ref}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 reference variable, must set \code{multiple = FALSE}}
 

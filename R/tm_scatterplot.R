@@ -480,67 +480,59 @@ tm_scatterplot <- function(label,
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
-    server_args = NULL,
     ui = ui_scatterplot,
     ui_args = args,
+    server_args = list(x = x, y = y, color_by = color_by),
     filters = "all"
   )
 }
 
-ui_scatterplot <- function(id,
-                           label,
-                           x,
-                           y,
-                           color_by,
-                           plot_height,
-                           alpha,
-                           size,
-                           pre_output,
-                           post_output) {
-  if (plot_height < 200 || plot_height > 2000) {
+ui_scatterplot <- function(id, ...) {
+  args <- list(...)
+  ns <- NS(id)
+
+  if (args$plot_height < 200 || args$plot_height > 2000) {
     stop("plot_height must be between 200 and 2000")
   }
 
-  ns <- NS(id)
 
   standard_layout(
     output = uiOutput(ns("plot_ui")),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      uiOutput(ns("dataname")),
+      helpText("Dataset:",
+               tags$code(paste(get_extract_datanames(args[c("x", "y", "color_by")]), collapse = ", "))),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = x
+        data_extract_spec = args$x
       ),
       data_extract_input(
         id = ns("y"),
         label = "Y variable",
-        data_extract_spec = y
+        data_extract_spec = args$y
       ),
       data_extract_input(
         id = ns("color_by"),
         label = "Color by variable",
-        data_extract_spec = color_by
+        data_extract_spec = args$color_by
       ),
-      optionalSliderInputValMinMax(ns("plot_height"), "Plot height", plot_height, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("alpha"), "Opacity:", alpha, ticks = FALSE),
-      optionalSliderInputValMinMax(ns("size"), "Points size:", size, ticks = FALSE)
+      optionalSliderInputValMinMax(ns("plot_height"), "Plot height", args$plot_height, ticks = FALSE),
+      optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+      optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
-    pre_output = pre_output,
-    post_output = post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
-srv_scatterplot <- function(input, output, session, datasets) {
-
-  dataname <- datasets$datanames()
+srv_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
+  dataname <- get_extract_datanames(list(x, y, color_by))
 
   init_chunks()
 

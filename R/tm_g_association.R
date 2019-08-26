@@ -75,7 +75,7 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2),
+#'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("USUBJID", "STUDYID"), foreign = NULL, parent = NULL)),
 #'     code = "ADSL <- cadsl",
 #'     check = FALSE #TODO
 #'   ),
@@ -402,7 +402,6 @@ tm_g_association <- function(label = "Association",
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
     ui = ui_tm_g_association,
@@ -418,26 +417,26 @@ tm_g_association <- function(label = "Association",
 
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
-  arguments <- list(...)
+  args <- list(...)
 
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      uiOutput(ns("dataname")),
+      datanames_input(args[c("ref", "vars")]),
       data_extract_input(
         id = ns("ref"),
         label = "Reference variable",
-        data_extract_spec = arguments$ref
+        data_extract_spec = args$ref
       ),
       data_extract_input(
         id = ns("vars"),
         label = "Associated variables",
-        data_extract_spec = arguments$vars
+        data_extract_spec = args$vars
       ),
       checkboxInput(ns("association"),
         "Association with the first variable",
-        value = arguments$show_association
+        value = args$show_association
       ),
       checkboxInput(ns("show_dist"),
         "Distribution",
@@ -447,11 +446,11 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
+      plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
-    forms = if (arguments$with_show_r_code) actionButton(ns("show_rcode"), "Show R code", width = "100%") else NULL,
-    pre_output = arguments$pre_output,
-    post_output = arguments$post_output
+    forms = if (args$with_show_r_code) actionButton(ns("show_rcode"), "Show R code", width = "100%") else NULL,
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
@@ -464,9 +463,8 @@ srv_tm_g_association <- function(input,
                                  datasets,
                                  ref,
                                  vars) {
-  dataname <- datasets$datanames()
+  dataname <- get_extract_datanames(list(ref, vars))
   init_chunks()
-
 
   callModule(
     plot_with_height,
@@ -474,7 +472,6 @@ srv_tm_g_association <- function(input,
     plot_height = reactive(input$myplot),
     plot_id = session$ns("plot")
   )
-
   ref_data <- callModule(
     data_extract_module,
     id = "ref",

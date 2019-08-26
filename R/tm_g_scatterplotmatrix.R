@@ -274,7 +274,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
     ui = ui_g_scatterplotmatrix,
@@ -296,7 +295,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       )
     ),
     encoding = div(
-      uiOutput(ns("dataname")),
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args["selected"]),
       data_extract_input(
         id = ns("selected"),
         label = "Selected variables",
@@ -325,7 +325,7 @@ srv_g_scatterplotmatrix <- function(input,
                                     session,
                                     datasets,
                                     selected) {
-  dataname <- datasets$datanames()
+  dataname <- get_extract_datanames(list(selected))
 
   # setup to use chunks
   init_chunks()

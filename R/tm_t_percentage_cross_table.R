@@ -372,7 +372,6 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
     ui = ui_percentage_cross_table,
@@ -383,29 +382,29 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
 }
 
 ui_percentage_cross_table <- function(id, ...) {
-  a <- list(...)
+  args <- list(...)
 
   ns <- NS(id)
 
   standard_layout(
     output = white_small_well(uiOutput(ns("table"))),
     encoding = div(
-      uiOutput(ns("dataname")),
-      data_extract_input(ns("x"), label = "Row values", a$x),
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args[c("x", "y")]),
+      data_extract_input(ns("x"), label = "Row values", args$x),
       tags$hr(),
-      data_extract_input(ns("y"), label = "Column values", a$y)
+      data_extract_input(ns("y"), label = "Column values", args$y)
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
-    pre_output = a$pre_output,
-    post_output = a$post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
-srv_percentage_cross_table <- function(input, output, session, datasets, label) {
-
-  dataname <- datasets$datanames()
+srv_percentage_cross_table <- function(input, output, session, datasets, label, x, y) {
+  dataname <- get_extract_datanames(list(x, y))
 
   init_chunks()
 

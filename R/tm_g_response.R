@@ -515,7 +515,6 @@ tm_g_response <- function(label = "Response Plot",
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
       return(NULL)
     },
     ui = ui_g_response,
@@ -531,7 +530,7 @@ tm_g_response <- function(label = "Response Plot",
 }
 
 ui_g_response <- function(id, ...) {
-  arguments <- list(...)
+  args <- list(...)
 
   ns <- NS(id)
 
@@ -540,45 +539,45 @@ ui_g_response <- function(id, ...) {
       plot_height_output(id = ns("myplot"))
     ),
     encoding = div(
-      uiOutput(ns("dataname")),
-
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
       data_extract_input(
         id = ns("response"),
         label = "Response variable",
-        data_extract_spec = arguments$response
+        data_extract_spec = args$response
       ),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = arguments$x
+        data_extract_spec = args$x
       ),
-      if (!is.null(arguments$row_facet)) {
+      if (!is.null(args$row_facet)) {
         data_extract_input(
           id = ns("row_facet"),
           label = "Row facetting",
-          data_extract_spec = arguments$row_facet
+          data_extract_spec = args$row_facet
         )
       },
-      if (!is.null(arguments$col_facet)) {
+      if (!is.null(args$col_facet)) {
         data_extract_input(
           id = ns("col_facet"),
           label = "Column facetting",
-          data_extract_spec = arguments$col_facet
+          data_extract_spec = args$col_facet
         )
       },
       radioButtons(
         ns("freq"),
         NULL,
         choices = c("frequency", "density"),
-        selected = ifelse(arguments$freq, "frequency", "density"),
+        selected = ifelse(args$freq, "frequency", "density"),
         inline = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "Swap axes", value = arguments$coord_flip),
-      plot_height_input(id = ns("myplot"), value = arguments$plot_height)
+      checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
+      plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
-    pre_output = arguments$pre_output,
-    post_output = arguments$post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
@@ -594,8 +593,7 @@ srv_g_response <- function(input,
                            x,
                            row_facet,
                            col_facet) {
-  stopifnot(all(dataname %in% datasets$datanames()))
-
+  dataname <- get_extract_datanames(list(response, x, row_facet, col_facet))
   init_chunks()
 
   # Data Extraction

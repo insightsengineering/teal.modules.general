@@ -9,8 +9,6 @@ tm_g_scatterplotmatrix(label = "Scatterplot matrix", selected,
   post_output = NULL)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
-
 \item{selected}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 

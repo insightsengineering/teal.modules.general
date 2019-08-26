@@ -9,8 +9,6 @@ tm_scatterplot(label, x, y, color_by = NULL, plot_height = c(600, 200,
   post_output = NULL)
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
-
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 x variable}
 

@@ -730,40 +730,40 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
 #' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
-  arguments <- list(...)
+  args <- list(...)
 
   # Set default values for expert settings in case those were not given
-  if (is.null(arguments$colour) || length(arguments$colour) == 0) {
-    a[["colour"]] <- arguments$x
+  if (is.null(args$colour) || length(args$colour) == 0) {
+    a[["colour"]] <- args$x
   }
-  if (is.null(arguments$fill) || length(arguments$fill) == 0) {
-    a[["fill"]] <- arguments$x
+  if (is.null(args$fill) || length(args$fill) == 0) {
+    a[["fill"]] <- args$x
   }
-  if (is.null(arguments$size) || length(arguments$size) == 0) {
-    a[["size"]] <- arguments$x
+  if (is.null(args$size) || length(args$size) == 0) {
+    a[["size"]] <- args$x
   }
 
   ns <- NS(id)
-
   standard_layout(
     output = white_small_well(plot_height_output(id = ns("myplot"))),
     encoding = div(
-      uiOutput(ns("dataname")),
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args[c("x", "y", "row_facet", "col_facet", "colour", "fill", "size")]),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = arguments$x
+        data_extract_spec = args$x
       ),
       data_extract_input(
         id = ns("y"),
         label = "Y variable",
-        data_extract_spec = arguments$y
+        data_extract_spec = args$y
       ),
       radioGroupButtons(
         inputId = ns("use_density"),
         label = NULL,
         choices = c("frequency", "density"),
-        selected = ifelse(arguments$use_density, "density", "frequency"),
+        selected = ifelse(args$use_density, "density", "frequency"),
         justified = TRUE
       ),
       div(
@@ -772,10 +772,10 @@ ui_g_bivariate <- function(id, ...) {
         switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
-          ui_facetting(ns, arguments$row_facet, arguments$col_facet, arguments$free_x_scales, arguments$free_y_scales)
+          ui_facetting(ns, args$row_facet, args$col_facet, args$free_x_scales, args$free_y_scales)
         )
       ),
-      if (arguments$expert_settings) {
+      if (args$expert_settings) {
         # Put a grey border around the expert settings
         div(
           class = "data-extract-box",
@@ -783,26 +783,26 @@ ui_g_bivariate <- function(id, ...) {
           switchInput(inputId = ns("expert"), value = FALSE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
-            ui_expert(ns, arguments$colour, arguments$fill, arguments$size)
+            ui_expert(ns, args$colour, args$fill, args$size)
           )
         )
       },
-      plot_height_input(id = ns("myplot"), value = arguments$plot_height),
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
       optionalSelectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
         choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-        selected = arguments$ggtheme,
+        selected = args$ggtheme,
         multiple = FALSE
       )
     ),
-    forms = if (arguments$with_show_r_code) {
+    forms = if (args$with_show_r_code) {
       actionButton(ns("show_rcode"), "Show R code", width = "100%")
     } else {
       NULL
     },
-    pre_output = arguments$pre_output,
-    post_output = arguments$post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
@@ -865,7 +865,7 @@ srv_g_bivariate <- function(input,
                             colour,
                             fill,
                             size) {
-  dataname <- datasets$datanames()
+  dataname <- get_extract_datanames(list(x, y, row_facet, col_facet, colour, fill, size))
 
 
   init_chunks()
