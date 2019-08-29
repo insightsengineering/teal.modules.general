@@ -85,21 +85,20 @@ library(dplyr)
 
 ADSL <- cadsl
 ADSL <- mutate_at(ADSL,
-                 .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
-                 .funs = list(~as.factor(.)))
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                 "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
 
-ADSL_2 <- ADSL
+ADSL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
+                 "COUNTRY", "USUBJID", "STUDYID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2,
-            keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
-    code = "ADSL <- cadsl
-    ADSL <- mutate_at(ADSL,
-    .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
-    .funs = list(~as.factor(.)))
-    ADSL2 <- ADSL",
+    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
+    code = "ADSL <- cadsl",
     check = FALSE #TODO
   ),
   modules = root_modules(
@@ -125,7 +124,7 @@ app <- init(
         ))
     )
   )
-  )
+)
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -143,9 +142,7 @@ app <- init(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte",
+    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = TRUE
   ),
   modules = root_modules(
@@ -174,11 +171,11 @@ app <- init(
       ),
       vars = list(
         data_extract_spec(
-          dataname = "ADTTE",
+          dataname = "ADRS",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADTTE),
-            selected = c("AVAL", "AVALU"),
+            choices = names(ADRS),
+            selected = c("AVAL", "AVALC"),
             multiple = TRUE,
             fixed = FALSE
           ),
@@ -191,18 +188,18 @@ app <- init(
           )
         ),
         data_extract_spec(
-          dataname = "ADRS",
+          dataname = "ADTTE",
           filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(expand.grid(levels(ADRS$PARAMCD),
-            levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD),
+            levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = TRUE
           ),
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADRS),
+            choices = names(ADTTE),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
@@ -325,7 +322,6 @@ shinyApp(app$ui, app$server)
 
 
 # datasets: different subsets of long dataset
-# bug: PARAMCD and AVISIT not renamed
 # Examine association between two different measurements from ALB dataset.
 
 library(random.cdisc.data)

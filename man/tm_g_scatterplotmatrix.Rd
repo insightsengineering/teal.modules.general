@@ -84,8 +84,7 @@ ADSL_2 <- mutate_at(cadsl,
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2,
-            keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
+    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
     code = 'ADSL <- cadsl
 ADSL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
@@ -192,8 +191,8 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(expand.grid(
-              levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            choices = apply(as.matrix(expand.grid(
+              levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
             selected = "OVRINV - Screening",
             multiple = FALSE
           )
@@ -261,8 +260,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2"),
-          selected = c("AVAL", "CHG"),
+          choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
+          selected = c("AVAL", "CHNG"),
           multiple = TRUE,
           fixed = FALSE,
           label = "Select variables:"

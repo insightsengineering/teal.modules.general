@@ -126,29 +126,31 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
-# Bivariate plot with RACE (factor) plotted over AGE (numeric
+# Bivariate plot with RACE (factor) plotted over AGE (numeric)
 library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
 ADSL <- mutate_at(ADSL,
  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
- .funs = list(~as.factor(.)))
+ .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
 
 ADSL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.)))
+  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
+  "USUBJID", "STUDYID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
-                                          foreign = NULL,
-                                          parent = NULL)),
+    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
     code = 'ADSL <- cadsl
             ADSL_2 <- mutate_at(cadsl,
                .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-               .funs = list(~as.factor(.)))',
+               .funs = list(~as.factor(.)))
+               \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
+               "USUBJID", "STUDYID")',
     check = FALSE #TODO
   ),
   modules = root_modules(
@@ -223,7 +225,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -257,7 +259,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -347,7 +349,7 @@ app <- init(
      row_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c(NULL, "PARAMCD"),
+          choices = c("__NONE__", "PARAMCD"),
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
@@ -357,7 +359,7 @@ app <- init(
      col_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c(NULL, "AVISIT"),
+          choices = c("__NONE__", "AVISIT"),
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
@@ -443,8 +445,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = c(NULL, "ARMCD"),
-          selected = NULL,
+          choices = c("__NONE__", "ARMCD"),
+          selected = "ARMCD",
           multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"
