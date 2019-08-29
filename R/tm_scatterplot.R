@@ -96,17 +96,18 @@
 #' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'   .funs = list(~as.factor(.))
-#' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' ) %>% select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
+#'     dataset("ADSL_2", ADSL_2,
+#'             keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #' .funs = list(~as.factor(.))) %>%
-#' select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+#' select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
 #'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
@@ -179,7 +180,7 @@
 #'           label = "Select endpoint:",
 #'           vars = c("PARAMCD", "AVISIT"),
 #'           choices = apply(as.matrix(expand.grid(
-#'               levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
+#'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
 #'           multiple = FALSE
 #'         )
@@ -479,9 +480,7 @@ tm_scatterplot <- function(label,
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      return(NULL)
-    },
+    server = srv_scatterplot,
     ui = ui_scatterplot,
     ui_args = args,
     server_args = list(x = x, y = y, color_by = color_by),
@@ -497,13 +496,18 @@ ui_scatterplot <- function(id, ...) {
     stop("plot_height must be between 200 and 2000")
   }
 
-
   standard_layout(
-    output = uiOutput(ns("plot_ui")),
+    output = white_small_well(
+      plot_height_output(id = ns("myplot"))
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Dataset:",
-               tags$code(paste(get_extract_datanames(args[c("x", "y", "color_by")]), collapse = ", "))),
+               tags$code(paste(
+                 get_extract_datanames(args[c("x", "y", "color_by")]),
+                 collapse = ", "
+               ))
+      ),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
@@ -519,7 +523,7 @@ ui_scatterplot <- function(id, ...) {
         label = "Color by variable",
         data_extract_spec = args$color_by
       ),
-      optionalSliderInputValMinMax(ns("plot_height"), "Plot height", args$plot_height, ticks = FALSE),
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
       optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
       optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
     ),
@@ -532,100 +536,66 @@ ui_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
-  dataname <- get_extract_datanames(list(x, y, color_by))
+  init_chunks(session)
 
-  init_chunks()
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
 
-  ## dynamic plot height
-  output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("scatterplot"), height = plot_height)
-  })
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = list(x, y, color_by),
+    input_id = c("x", "y", "color_by")
+  )
 
-  output$scatterplot <- renderPlot({
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-    x <- input$x
-    y <- input$y
+  output$plot <- renderPlot({
+    ANL <- merged_data()$data()
+    chunks_reset()
+    x_var <- merged_data()$columns_source$x
+    y_var <- merged_data()$columns_source$y
+    color_by_var <- merged_data()$columns_source$color_by
     alpha <- input$alpha
-    color_by <- check_color(input$color_by)
     size <- input$size
 
-    data_name <- paste0(dataname, "_FILTERED")
-    assign(data_name, anl)
+    validate(need(alpha, "need opacity alpha"))
+    validate_has_data(ANL, 10)
+    validate(need(length(x_var) == 1, "there must be exactly one x var"))
+    validate(need(length(y_var) == 1, "there must be exactly one y var"))
+    validate(need(length(color_by_var) <= 1, "can color by at most 1 color"))
 
-    validate(need(alpha, "need alpha"))
-    validate(need(!is.null(anl) && is.data.frame(anl), "no data left"))
-    validate(need(nrow(anl) > 0, "no observations left"))
-    validate(need(x, "no valid x variable selected"))
-    validate(need(y, "no valid y variable selected"))
-    validate(need(
-      x %in% names(anl),
-      paste("variable", x, " is not available in data", dataname)
-    ))
-    validate(need(
-      y %in% names(anl),
-      paste("variable", y, " is not available in data", dataname)
-    ))
-
-    chunks_reset()
-
-    if (is.null(color_by)) {
+    if (is.character.empty(color_by_var)) {
       chunks_push(expression = bquote(
         ggplot(
-          .(as.name(data_name)),
-          aes_string(x = x, y = y)
+          ANL,
+          aes_string(x = .(x_var), y = .(y_var))
         ) +
-          geom_point(alpha = alpha, size = size)
-      ) %>% substituteDirect(
-        list(
-          alpha = alpha,
-          size = size,
-          x = x,
-          y = y
-        )
+          geom_point(alpha = .(alpha), size = .(size))
       ))
     } else {
       chunks_push(expression = bquote(
         ggplot(
-          .(as.name(data_name)),
-          aes_string(x = x, y = y, color = color_by)
+          ANL,
+          aes_string(x = .(x_var), y = .(y_var), color = .(color_by_var))
         ) +
-          geom_point(alpha = alpha, size = size)
-      ) %>% substituteDirect(
-        list(
-          alpha = alpha,
-          size = size,
-          x = x,
-          y = y,
-          color_by = color_by
-        )
+          geom_point(alpha = .(alpha), size = .(size))
       ))
     }
 
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
+    safe_chunks_eval()
   })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "Scatter-Plot",
+      title = "R Code for a scatterplot matrix",
       rcode = get_rcode(
         datasets = datasets,
-        title = "Scatter-Plot"
+        merge_expression = merged_data()$expr,
+        title = "Scatterplot matrix",
       )
     )
   })
-}
-
-check_color <- function(x) {
-  if (!is.null(x)) {
-    if (x %in% c("", "_none_")) {
-      return(NULL)
-    }
-  }
-  return(x)
 }

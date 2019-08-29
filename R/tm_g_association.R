@@ -61,17 +61,8 @@
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
-#' ADSL <- cadsl
-#' ADSL <- mutate_at(ADSL,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-#'
-#' ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
-#'                  "COUNTRY", "USUBJID", "STUDYID")
-#'
+#' ADSL_1 <- cadsl
+#' ADSL_2 <- cadsl
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
