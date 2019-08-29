@@ -19,6 +19,7 @@
 #' @export
 #' @examples
 #' # datasets: same wide
+#' # bug: lapply(selector_list, check_selector) this function throw an error if some
 #' # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 #' library(random.cdisc.data)
 #'
@@ -37,8 +38,8 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = "BMRKR1",
+#'           choices = c("BMRKR2", "COUNTRY"),
+#'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -47,7 +48,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("AGE", "SEX", "RACE"),
+#'           choices = c("SEX", "RACE"),
 #'           selected = "RACE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -65,30 +66,21 @@
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
-#' ADSL <- mutate_at(ADSL,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-#'
-#' ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-#'                  "USUBJID", "STUDYID")
+#' ADSL <- select(ADSL, "ARM", "ACTARM", "ACTARMCD", "SEX",
+#'   "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+#' ADSL_2 <- select(cadsl, "ACTARM", "AGE", "RACE",
+#'   "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2, , keys = get_cdisc_keys("ADSL")),
+#'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
 #'     code = 'ADSL <- cadsl
-#'             ADSL <- mutate_at(ADSL,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                      "SEX", "BMRKR1", "AGE", "USUBJID", "STUDYID", "BMRKR2")
-#'             ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
-#'                  "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = FALSE #TODO
+#'             ADSL <- select(ADSL, "ARM", "ACTARM", "ACTARMCD", "SEX",
+#'               "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+#'             ADSL_2 <- select(cadsl, "ACTARM", "AGE", "RACE",
+#'               "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+#'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_response(
@@ -97,8 +89,8 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = c("BMRKR1"),
+#'           choices = c("BMRKR2", "SEX"),
+#'           selected = c("BMRKR2"),
 #'           multiple = FALSE
 #'         )
 #'       ),
@@ -121,17 +113,18 @@
 #' # datasets: multiple long datasets
 #' # Response plot of different parameters from ADRS or ADLB datasets
 #' library(random.cdisc.data)
+#' library(dplyr)
 #'
 #' ADSL <- cadsl
 #' ADRS <- cadrs
-#' ADLB <- cadlb
+#' ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -157,8 +150,8 @@
 #'         ),
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("AVAL", "AVALC"),
-#'           selected = "AVAL",
+#'           choices = c("BEP01FL"),
+#'           selected = "BEP01FL",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -182,8 +175,8 @@
 #'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = "AVALC",
-#'           selected = "AVALC",
+#'           choices = "STRATA2",
+#'           selected = "STRATA2",
 #'           multiple = FALSE,
 #'           fixed = TRUE
 #'         )
@@ -192,7 +185,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("SEX", "AGE"),
+#'           choices = c("SEX"),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -202,7 +195,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("SEX", "AGE"),
+#'           choices = c("SEX", "COUNTRY"),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -217,15 +210,16 @@
 #'
 #' # datasets: wide and long
 #' library(random.cdisc.data)
+#' library(dplyr)
 #'
 #' ADSL <- cadsl
-#' ADLB <- cadlb
+#' ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
+#'     code = "ADSL <- cadsl; ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -250,8 +244,8 @@
 #'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
+#'           choices = "BEP01FL",
+#'           selected = "BEP01FL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
@@ -260,8 +254,8 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = c("BMRKR1"),
+#'           choices = c("BMRKR2", "COUNTRY"),
+#'           selected = c("BMRKR2"),
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -293,8 +287,8 @@
 #'       response = data_extract_spec(
 #'         dataname = "ADRS",
 #'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
+#'           choices = "BMRKR2",
+#'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = TRUE,
 #'           label = "Select variable:"
@@ -357,50 +351,32 @@
 #'     tm_g_response(
 #'       response = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
+#'         filter = filter_spec(
 #'             vars = "PARAMCD",
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[1],
 #'             multiple = FALSE,
 #'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
+#'           choices = "BEP01FL",
+#'           selected = "BEP01FL",
 #'           multiple = FALSE,
 #'           fixed = TRUE
 #'         )
 #'       ),
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
+#'         filter = filter_spec(
 #'             vars = "PARAMCD",
 #'             choices = levels(ADLB$PARAMCD),
 #'             selected = levels(ADLB$PARAMCD)[2],
 #'             multiple = FALSE,
 #'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
+#'           choices = "AVISIT",
+#'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = TRUE
 #'         )
@@ -514,9 +490,7 @@ tm_g_response <- function(label = "Response Plot",
   args <- as.list(environment())
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      return(NULL)
-    },
+    server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
     server_args = list(
@@ -530,9 +504,8 @@ tm_g_response <- function(label = "Response Plot",
 }
 
 ui_g_response <- function(id, ...) {
-  args <- list(...)
-
   ns <- NS(id)
+  args <- list(...)
 
   standard_layout(
     output = white_small_well(
@@ -584,162 +557,144 @@ ui_g_response <- function(id, ...) {
 #' @importFrom forcats fct_rev
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
+#' @importFrom utils.nest is.character.empty
 srv_g_response <- function(input,
                            output,
                            session,
                            datasets,
-                           dataname,
                            response,
                            x,
                            row_facet,
                            col_facet) {
-  dataname <- get_extract_datanames(list(response, x, row_facet, col_facet))
-  init_chunks()
+  init_chunks(session)
 
-  # Data Extraction
-  response_data <- callModule(data_extract_module,
-                              id = "response",
-                              datasets = datasets,
-                              data_extract_spec = response
-  )
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  row_facet_data <- callModule(data_extract_module,
-                                   id = "row_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = row_facet
-  )
-  col_facet_data <- callModule(data_extract_module,
-                                   id = "col_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = col_facet
-  )
+  data_extract <- list(response, x, row_facet, col_facet)
+  names(data_extract) <- c("response", "x", "row_facet", "col_facet")
+  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  data_reactive <- reactive({
-
-    merge_datasets(
-      list(
-        x_data(),
-        row_facet_data(),
-        col_facet_data(),
-        response_data()
-      )
-    )
-
-  })
+  merged_data <- data_merge_module(
+      datasets = datasets,
+      data_extract = data_extract,
+      input_id = names(data_extract)
+  )
 
   # Insert the plot into a plot_height module from teal.devel
   callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+      plot_with_height,
+      id = "myplot",
+      plot_height = reactive(input$myplot),
+      plot_id = session$ns("plot")
   )
 
   ## dynamic plot height
   output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("plot"), height = plot_height)
-  })
+      plot_height <- input$plot_height
+      validate(need(plot_height, "need valid plot height"))
+      plotOutput(session$ns("plot"), height = plot_height)
+    })
 
   output$plot <- renderPlot({
-    resp_var <- get_dataset_prefixed_col_names(response_data())
-    x <- get_dataset_prefixed_col_names(x_data())
-    row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
-    col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
 
-    validate(need(resp_var != "", "Please define a valid column for the response variable"))
-    validate(need(x != "", "Please define a valid column for the X-variable"))
+      ANL <- merged_data()$data() # nolint
+      chunks_reset()
 
-    freq <- input$freq == "frequency"
-    swap_axes <- input$coord_flip
+      resp_var <- merged_data()$columns_source$response
+      x <- merged_data()$columns_source$x
 
-    arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(x)) {
-      1
-    } else {
-      tmp_cl <- if (length(x) == 1) {
-        as.name(x)
+      row_facet_name <- merged_data()$columns_source$col_facet
+      col_facet_name <- merged_data()$columns_source$row_facet
+
+      validate(need(!is.character.empty(x), "Please define a valid column for the response variable"))
+      validate(need(!is.character.empty(x), "Please define a valid column for the X-variable"))
+
+
+      freq <- input$freq == "frequency"
+      swap_axes <- input$coord_flip
+
+      arg_position <- if (freq) "stack" else "fill" # nolint
+      cl_arg_x <- if (is.character.empty(x)) {
+            1
+          } else {
+            tmp_cl <- if (length(x) == 1) {
+                  as.name(x)
+                } else {
+                  tmp <- call_fun_dots("interaction", x)
+                  tmp[["sep"]] <- " x "
+                  tmp
+                }
+
+            if (swap_axes) {
+              bquote(forcats::fct_rev(.(tmp_cl)))
+            } else {
+              tmp_cl
+            }
+          }
+
+      validate_has_data(ANL, 10)
+
+      validate(
+          need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response.")
+      )
+      validate(
+          need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable.")
+      )
+
+      plot_call <- bquote(
+          ANL %>%
+              ggplot() +
+              aes(x = .(cl_arg_x)) +
+              geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
+      )
+
+      if (!freq) {
+        if (swap_axes) {
+          tmp_cl1 <- quote(xlab(label)) %>%
+              substituteDirect(list(label = tmp_cl %>%
+                          deparse()))
+          tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
+        } else {
+          tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
+          tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
+        }
+
+        plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
       } else {
-        tmp <- call_fun_dots("interaction", x)
-        tmp[["sep"]] <- " x "
-        tmp
-      }
-
-      if (swap_axes) {
-        bquote(forcats::fct_rev(.(tmp_cl)))
-      } else {
-        tmp_cl
-      }
-    }
-
-    anl <- data_reactive()
-
-    validate_has_data(anl, 10)
-
-    validate(
-      need(is.factor(anl[[resp_var]]), "Please select a factor variable as the name.")
-    )
-
-    plot_call <- bquote(
-      anl %>%
-        ggplot() +
-        aes(x = .(cl_arg_x)) +
-        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
-    )
-
-    if (!freq) {
-      if (swap_axes) {
+        # Change Y-Axis Label in case of Swap
         tmp_cl1 <- quote(xlab(label)) %>%
-          substituteDirect(list(label = tmp_cl %>%
-                                  deparse()))
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
-      } else {
-        tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
+            substituteDirect(list(label = tmp_cl %>%
+                        deparse()))
+        plot_call <- call("+", plot_call, tmp_cl1)
       }
 
-      plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
-    } else {
-      # Change Y-Axis Label in case of Swap
-      tmp_cl1 <- quote(xlab(label)) %>%
-        substituteDirect(list(label = tmp_cl %>%
-                                deparse()))
-      plot_call <- call("+", plot_call, tmp_cl1)
-    }
+      if (swap_axes) {
+        plot_call <- call("+", plot_call, quote(coord_flip()))
+      }
 
-    if (swap_axes) {
-      plot_call <- call("+", plot_call, quote(coord_flip()))
-    }
+      if(!is.character.empty(row_facet_name) || !is.character.empty(col_facet_name)) {
+        facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
+        if (!is.null(facet_cl)) {
+          plot_call <- call("+", plot_call, facet_cl)
+        }
+      }
 
-    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
-    if (!is.null(facet_cl)) {
-      plot_call <- call("+", plot_call, facet_cl)
-    }
+      chunks_push(expression = plot_call, id = "plotCall")
 
-    chunks_reset()
+      p <- chunks_eval()
 
-    chunks_push(expression = plot_call, id = "plotCall")
+      chunks_validate_is_ok()
 
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
-  })
+      p
+    })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "Response Plot",
+      title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
-        title = "Response Plot"
+        merge_expression = merged_data()$expr,
+        title = "",
+        description = ""
       )
     )
   })

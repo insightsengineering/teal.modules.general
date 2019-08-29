@@ -83,18 +83,27 @@ shinyApp(app$ui, app$server)
 library(random.cdisc.data)
 library(dplyr)
 
-ADSL_1 <- cadsl
-ADSL_2 <- cadsl
+ADSL <- cadsl
+ADSL <- mutate_at(ADSL,
+                 .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
+                 .funs = list(~as.factor(.)))
+
+ADSL_2 <- ADSL
+
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-    code = "ADSL <- cadsl",
+    dataset("ADSL_2", ADSL_2,
+            keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
+    code = "ADSL <- cadsl
+    ADSL <- mutate_at(ADSL,
+    .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
+    .funs = list(~as.factor(.)))
+    ADSL2 <- ADSL",
     check = FALSE #TODO
   ),
   modules = root_modules(
     tm_g_association(
-      label = "Regression",
       ref = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
@@ -103,7 +112,8 @@ app <- init(
           selected = c("STRATA1"),
           multiple = FALSE,
           fixed = FALSE
-        )),
+        )
+      ),
       vars = data_extract_spec(
         dataname = "ADSL_2",
         select = select_spec(
@@ -112,10 +122,11 @@ app <- init(
           selected = c("AGE", "COUNTRY", "RACE"),
           multiple = TRUE,
           fixed = FALSE
-        ))
+        )
+      )
     )
   )
-)
+  )
 \dontrun{
 shinyApp(app$ui, app$server)
 }
@@ -133,68 +144,47 @@ app <- init(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+    code = "ADSL <- cadsl
+    ADRS <- cadrs
+    ADTTE <- cadtte",
     check = TRUE
   ),
   modules = root_modules(
     tm_g_association(
-      ref = list(
-        data_extract_spec(
-          dataname = "ADRS",
-          select = select_spec(
-            label = "Select variable:",
-            choices = c("AGE", "SEX"),
-            selected = "AGE",
-            multiple = FALSE,
-            fixed = FALSE
-          )
+      ref = data_extract_spec(
+        dataname = "ADRS",
+        select = select_spec(
+          label = "Select variable:",
+          choices = c("AGE", "SEX"),
+          selected = "AGE",
+          multiple = FALSE,
+          fixed = FALSE
         ),
-        data_extract_spec(
-          dataname = "ADTTE",
-          select = select_spec(
-            label = "Select variable:",
-            choices = c("AVAL", "CNSR"),
-            selected = "AVAL",
-            multiple = FALSE,
-            fixed = FALSE
-          )
+        filter = filter_spec(
+          label = "Select endpoints:",
+          vars = c("PARAMCD", "AVISIT"),
+          choices = apply(expand.grid(levels(ADRS$PARAMCD)[1],
+                                      levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+          selected = "BESRSPI - Screening",
+          multiple = FALSE
         )
       ),
-      vars = list(
-        data_extract_spec(
-          dataname = "ADRS",
-          select = select_spec(
-            label = "Select variables:",
-            choices = names(ADRS),
-            selected = c("AVAL", "AVALC"),
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            label = "Select endpoint:",
-            vars = "PARAMCD",
-            choices = unique(ADTTE$PARAMCD),
-            selected = "OS",
-            multiple = FALSE
-          )
+      vars = data_extract_spec(
+        dataname = "ADTTE",
+        reshape = TRUE,
+        select = select_spec(
+          label = "Select variables:",
+          choices = names(ADTTE),
+          selected = c("AVAL", "AVALU"),
+          multiple = TRUE,
+          fixed = FALSE
         ),
-        data_extract_spec(
-          dataname = "ADTTE",
-          filter = filter_spec(
-            label = "Select endpoints:",
-            vars = c("PARAMCD", "AVISIT"),
-            choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD),
-            levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
-            selected = "OVRINV - Screening",
-            multiple = TRUE
-          ),
-          select = select_spec(
-            label = "Select variables:",
-            choices = names(ADTTE),
-            selected = NULL,
-            multiple = TRUE,
-            fixed = FALSE
-          )
+        filter = filter_spec(
+          label = "Select endpoint:",
+          vars = "PARAMCD",
+          choices = unique(ADTTE$PARAMCD),
+          selected = c("PFS", "EFS"),
+          multiple = TRUE
         )
       )
     )
@@ -214,50 +204,50 @@ ADSL <- cadsl
 ADRS <- cadrs
 
 app <- init(
- data = cdisc_data(
-   cdisc_dataset("ADSL", ADSL),
-   cdisc_dataset("ADRS", ADRS),
-   code = "ADSL <- cadsl; ADRS <- cadrs",
-   check = TRUE
- ),
- modules = root_modules(
-   tm_g_association(
-     label = "Association Plots",
-     ref = data_extract_spec(
-       dataname = "ADSL",
-       select = select_spec(
-         choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-         selected = c("AGE"),
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "Select variable:"
-      )
-     ),
-     vars = data_extract_spec(
-       dataname = "ADRS",
-       filter = list(
-         filter_spec(
-           vars = "PARAM",
-           choices = levels(ADRS$PARAM),
-           selected = levels(ADRS$PARAM)[1],
-           multiple = FALSE,
-           label = "Select response"
-         ),
-         filter_spec(
-           vars = "AVISIT",
-           choices = levels(ADRS$AVISIT),
-           selected = levels(ADRS$AVISIT)[1],
-           multiple = FALSE,
-           label = "Select visit:"
-         )
-       ),
-       select = select_spec(
-         choices = "AVAL",
-         selected = "AVAL",
-         multiple = FALSE,
-         fixed = TRUE,
-         label = "Selected variable:"
-       )
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADRS", ADRS),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_g_association(
+      label = "Association Plots",
+      ref = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+          selected = c("AGE"),
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Select variable:"
+        )
+      ),
+      vars = data_extract_spec(
+        dataname = "ADRS",
+        select = select_spec(
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = TRUE,
+          label = "Selected variable:"
+        ),
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1],
+            multiple = FALSE,
+            label = "Select response"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Select visit:"
+          )
+        )
       )
     )
   )
@@ -275,34 +265,34 @@ ADSL <- cadsl
 ADRS <- cadrs
 
 app <- init(
- data = cdisc_data(
-   cdisc_dataset("ADSL", ADSL),
-   cdisc_dataset("ADRS", ADRS),
-   code = "ADSL <- cadsl; ADRS <- cadrs",
-   check = TRUE
- ),
- modules = root_modules(
-   tm_g_association(
-     label = "Association Plots",
-     ref = data_extract_spec(
-       dataname = "ADRS",
-       select = select_spec(
-         choices = names(ADRS),
-         selected = "AVAL",
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "Select variable:"
-      )
-     ),
-     vars = data_extract_spec(
-       dataname = "ADRS",
-       select = select_spec(
-         choices = names(ADRS),
-         selected = "PARAMCD",
-         multiple = FALSE,
-         fixed = FALSE,
-         label = "Select variable:"
-       )
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADRS", ADRS),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_g_association(
+      label = "Association Plots",
+      ref = data_extract_spec(
+        dataname = "ADRS",
+        select = select_spec(
+          choices = names(ADRS),
+          selected = "AVAL",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Select variable:"
+        )
+      ),
+      vars = data_extract_spec(
+        dataname = "ADRS",
+        select = select_spec(
+          choices = names(ADRS),
+          selected = "PARAMCD",
+          multiple = FALSE,
+          fixed = FALSE,
+          label = "Select variable:"
+        )
       )
     )
   )
@@ -313,6 +303,7 @@ shinyApp(app$ui, app$server)
 
 
 # datasets: different subsets of long dataset
+# bug: PARAMCD and AVISIT not renamed
 # Examine association between two different measurements from ALB dataset.
 
 library(random.cdisc.data)

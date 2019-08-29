@@ -45,6 +45,7 @@ Response Plots
 }
 \examples{
 # datasets: same wide
+# bug: lapply(selector_list, check_selector) this function throw an error if some
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 library(random.cdisc.data)
 
@@ -63,8 +64,8 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = "BMRKR1",
+          choices = c("BMRKR2", "COUNTRY"),
+          selected = "BMRKR2",
           multiple = FALSE,
           fixed = FALSE
         )
@@ -73,7 +74,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("AGE", "SEX", "RACE"),
+          choices = c("SEX", "RACE"),
           selected = "RACE",
           multiple = FALSE,
           fixed = FALSE
@@ -91,30 +92,21 @@ library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
- "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-
-ADSL_2 <- mutate_at(cadsl,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-                 "USUBJID", "STUDYID")
+ADSL <- select(ADSL, "ARM", "ACTARM", "ACTARMCD", "SEX",
+  "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+ADSL_2 <- select(cadsl, "ACTARM", "AGE", "RACE",
+  "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2, , keys = get_cdisc_keys("ADSL")),
+    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
     code = 'ADSL <- cadsl
-            ADSL <- mutate_at(ADSL,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
-                     "SEX", "BMRKR1", "AGE", "USUBJID", "STUDYID", "BMRKR2")
-            ADSL_2 <- mutate_at(cadsl,
-                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2",
-                 "COUNTRY", "USUBJID", "STUDYID")',
-    check = FALSE #TODO
+            ADSL <- select(ADSL, "ARM", "ACTARM", "ACTARMCD", "SEX",
+              "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+            ADSL_2 <- select(cadsl, "ACTARM", "AGE", "RACE",
+              "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_response(
@@ -123,8 +115,8 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = c("BMRKR1"),
+          choices = c("BMRKR2", "SEX"),
+          selected = c("BMRKR2"),
           multiple = FALSE
         )
       ),
@@ -147,17 +139,18 @@ shinyApp(app$ui, app$server)
 # datasets: multiple long datasets
 # Response plot of different parameters from ADRS or ADLB datasets
 library(random.cdisc.data)
+library(dplyr)
 
 ADSL <- cadsl
 ADRS <- cadrs
-ADLB <- cadlb
+ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
+    code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))",
     check = TRUE
   ),
   modules = root_modules(
@@ -183,8 +176,8 @@ app <- init(
         ),
         select = select_spec(
           label = "Select variable:",
-          choices = c("AVAL", "AVALC"),
-          selected = "AVAL",
+          choices = c("BEP01FL"),
+          selected = "BEP01FL",
           multiple = FALSE,
           fixed = FALSE
         )
@@ -208,8 +201,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = "AVALC",
-          selected = "AVALC",
+          choices = "STRATA2",
+          selected = "STRATA2",
           multiple = FALSE,
           fixed = TRUE
         )
@@ -218,7 +211,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("SEX", "AGE"),
+          choices = c("SEX"),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
@@ -228,7 +221,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("SEX", "AGE"),
+          choices = c("SEX", "COUNTRY"),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
@@ -243,15 +236,16 @@ shinyApp(app$ui, app$server)
 
 # datasets: wide and long
 library(random.cdisc.data)
+library(dplyr)
 
 ADSL <- cadsl
-ADLB <- cadlb
+ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl; ADLB <- cadlb",
+    code = "ADSL <- cadsl; ADLB <- mutate(cadlb, ABLFL2 = as.factor(ABLFL2))",
     check = TRUE
   ),
   modules = root_modules(
@@ -276,8 +270,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = "AVAL",
-          selected = "AVAL",
+          choices = "BEP01FL",
+          selected = "BEP01FL",
           multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"
@@ -286,8 +280,8 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = c("BMRKR1"),
+          choices = c("BMRKR2", "COUNTRY"),
+          selected = c("BMRKR2"),
           multiple = FALSE,
           fixed = FALSE
         )
@@ -319,8 +313,8 @@ app <- init(
       response = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
-          choices = "AVAL",
-          selected = "AVAL",
+          choices = "BMRKR2",
+          selected = "BMRKR2",
           multiple = FALSE,
           fixed = TRUE,
           label = "Select variable:"
@@ -383,50 +377,32 @@ app <- init(
     tm_g_response(
       response = data_extract_spec(
         dataname = "ADLB",
-        filter = list(
-          filter_spec(
+        filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE,
             label = "Select lab:"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
-            multiple = FALSE,
-            label = "Select visit:"
-          )
         ),
         select = select_spec(
-          choices = "AVAL",
-          selected = "AVAL",
+          choices = "BEP01FL",
+          selected = "BEP01FL",
           multiple = FALSE,
           fixed = TRUE
         )
       ),
       x = data_extract_spec(
         dataname = "ADLB",
-        filter = list(
-          filter_spec(
+        filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(ADLB$PARAMCD),
             selected = levels(ADLB$PARAMCD)[2],
             multiple = FALSE,
             label = "Select lab:"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
-            multiple = FALSE,
-            label = "Select visit:"
-          )
         ),
         select = select_spec(
-          choices = "AVAL",
-          selected = "AVAL",
+          choices = "AVISIT",
+          selected = "AVISIT",
           multiple = FALSE,
           fixed = TRUE
         )

@@ -56,28 +56,37 @@
 #' }
 #'
 #' # datasets: different wide
+#' # bug: RACE not found in ADSL_2
 #' # Regression of BMRKR1 by AGE + RACE
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
-#' ADSL_1 <- ADSL %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                           "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-#' ADSL_2 <- ADSL %>%
+#' ADSL <- mutate_at(ADSL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'  "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+#' ADSL_2 <- mutate_at(cadsl,
+#'                     .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                     .funs = list(~as.factor(.))) %>%
 #'   select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL_1),
+#'     cdisc_dataset("ADSL", ADSL),
 #'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
 #'                                           foreign = NULL,
 #'                                           parent = NULL)),
 #'     code = 'ADSL <- cadsl
-#'             ADSL_1 <- ADSL %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                                      "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-#'             ADSL_2 <- ADSL %>%
-#'               select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = TRUE
+#'             ADSL <- mutate_at(ADSL,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
+#'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2", "BMRKR1", "BMRKR2")
+#'             ADSL_2 <- mutate_at(cadsl,
+#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "RACE", "STRATA2",
+#'                  "COUNTRY", "USUBJID", "STUDYID")',
+#'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_regression(
@@ -106,41 +115,76 @@
 #'   )
 #' )
 #' \dontrun{
-#'   shinyApp(app$ui, app$server)
+#' shinyApp(app$ui, app$server)
 #' }
 #'
 #' # datasets: same long
+#' # bug: AVISIT not renamed
 #' # Examine linear relationship between responses of different parameters
 #'
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
+#' ADRS <- cadrs
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- cadsl",
+#'     cdisc_dataset("ADRS", ADRS),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_regression(
 #'       label = "Regression",
 #'       response = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ADRS",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAM",
+#'             choices = levels(ADRS$PARAM),
+#'             selected = levels(ADRS$PARAM)[1],
+#'             multiple = FALSE,
+#'             label = "Select measurement:"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADRS$AVISIT),
+#'             selected = levels(ADRS$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Select visit:"
+#'           )
+#'         ),
 #'         select = select_spec(
-#'           choices = c("AGE", "BMRKR1"),
-#'           selected = c("AGE"),
+#'           choices = "AVAL",
+#'           selected = "AVAL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
+#'         dataname = "ADRS",
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAM",
+#'             choices = levels(ADRS$PARAM),
+#'             selected = levels(ADRS$PARAM)[1:2],
+#'             multiple = TRUE,
+#'             label = "Select measurements:"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADRS$AVISIT),
+#'             selected = levels(ADRS$AVISIT)[2],
+#'             multiple = TRUE,
+#'             label = "Select visits:"
+#'           )
+#'         ),
 #'         select = select_spec(
-#'           choices = c("AGE", "BMRKR1"),
-#'           selected = c("BMRKR1"),
-#'           multiple = TRUE,
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
 #'         )
@@ -153,17 +197,19 @@
 #' }
 #'
 #' # datasets: multiple long datasets
-#' # Regression plots from model of different parameters from ADSL or ADTTE datasets
+#' # Regression plots from model of different parameters from ADRS or ADTTE datasets
 #' library(random.cdisc.data)
 #'
 #' ADSL <- cadsl
+#' ADRS <- cadrs
 #' ADTTE <- cadtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- cadsl; ADTTE <- cadtte",
+#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -186,14 +232,34 @@
 #'           multiple = FALSE
 #'         )
 #'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = "BMRKR1",
-#'           multiple = TRUE,
-#'           fixed = FALSE
+#'       regressor = list(
+#'         data_extract_spec(
+#'           dataname = "ADRS",
+#'           select = select_spec(
+#'             label = "Select variables:",
+#'             choices = names(ADRS),
+#'             selected = "AVAL",
+#'             multiple = TRUE,
+#'             fixed = FALSE
+#'           ),
+#'           filter = filter_spec(
+#'             label = "Select endpoints:",
+#'             vars = c("PARAMCD", "AVISIT"),
+#'             choices = apply(expand.grid(
+#'             levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             selected = "OVRINV - Screening",
+#'             multiple = TRUE
+#'           )
+#'         ),
+#'         data_extract_spec(
+#'           dataname = "ADSL",
+#'           select = select_spec(
+#'             label = "Select variables:",
+#'             choices = c("BMRKR1", "BMRKR2"),
+#'             selected = "BMRKR1",
+#'             multiple = TRUE,
+#'             fixed = FALSE
+#'           )
 #'         )
 #'       )
 #'     )
@@ -444,6 +510,7 @@ tm_g_regression <- function(label = "Regression Analysis",
   stopifnot(is.class.list("data_extract_spec")(regressor))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+
   # No check necessary for regressor and response, as checked in data_extract_input
 
   # Send ui args
@@ -466,10 +533,9 @@ ui_g_regression <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      tags$div(
-        plot_height_output(id = ns("myplot")),
-        tags$div(verbatimTextOutput(ns("text")))
-      )
+      tags$div(verbatimTextOutput(ns("outtext"))),
+      tags$div(verbatimTextOutput(ns("strtext"))),
+      tags$div(DT::dataTableOutput(ns("outtable")))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -494,8 +560,7 @@ ui_g_regression <- function(id, ...) {
           "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
         ),
         selected = "Response vs Regressor"
-      ),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      )
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
@@ -510,118 +575,39 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom stats as.formula
 srv_g_regression <- function(input, output, session, datasets, response, regressor) {
   init_chunks(session)
+  dataname <- get_extract_datanames(list(response, regressor))
+  data_extract <- list(response, regressor)
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = list(response, regressor),
+    data_extract = data_extract,
     input_id = c("response", "regressor")
   )
 
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
-  )
-
-  # sets chunk object and populates it with data merge call and fit expression
-  fit <- reactive({
-    # we need to call it ANL rather than data because ANL statement is added to chunks automatically
-    ANL <- merged_data()$data()
+  output$outtext <- renderText({
     chunks_reset()
-    response_var <- merged_data()$columns_source$response
-    regressor_var <- merged_data()$columns_source$regressor
+    chunks_validate_is_ok()
 
-    # validation
-    validate_has_data(ANL, 10)
-    validate(need(length(response_var) == 1, "Response variable should be of length one."))
-    if (input$plot_type == "Response vs Regressor") {
-      validate(need(length(regressor_var) == 1, "Response vs Regressor is only provided for exactly one regressor"))
-    }
-
-    form <- stats::as.formula(
-      paste(
-        response_var,
-        paste(
-          regressor_var,
-          collapse = " + "
-        ),
-        sep = " ~ "
-      )
-    )
-
-    chunks_push(
-      expression = quote(fit <- lm(form, data = ANL)) %>% substituteDirect(list(form = form))
-    )
-    safe_chunks_eval() # to access fit object outside
-    return(form)
+    merged_data()$expr
   })
 
-  output$plot <- renderPlot({
-    fit()
-
-    if (input$plot_type == "Response vs Regressor") {
-      fit <- chunks_get_var("fit") # chunk already evaluated
-
-      if (ncol(fit$model) > 1) {
-        stopifnot(ncol(fit$model) == 2) # already validated in fit() function
-        chunks_push(quote(plot(fit$model[, 2:1])))
-      } else {
-        ANL <- chunks_get_var("ANL")
-        # what is this supposed to be doing??
-        chunks_push(quote({
-          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
-          names(plot_data) <- rep(names(fit$model), 2)
-          plot <- plot(plot_data)
-          #todo: not working currently: Unknown or uninitialised column: 'coefficients'. (execute code from Show R Code)
-          abline(ANL)
-        }))
-      }
-    } else {
-      i <- which(input$plot_type == c(
-        "Residuals vs Fitted",
-        "Normal Q-Q",
-        "Scale-Location",
-        "Cook's distance",
-        "Residuals vs Leverage",
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-      ))
-      chunks_push(bquote(plot(fit, which = .(i), id.n = NULL))) # bquote to substitute .(i)
-    }
-
-    safe_chunks_eval()
+  output$strtext <- renderText({
+    paste0(capture.output(str(merged_data())), collapse = "\n")
   })
 
-  output$text <- renderPrint({
-    fit()
-    chunks_push(expression = quote(summary(fit)), id = "summary")
-    safe_chunks_eval()
+  output$outtable <- DT::renderDataTable({
+    merged_data()$data
   })
 
   observeEvent(input$show_rcode, {
-    regr_formula <- fit()
-    title <- paste0(
-      "Regression plot of ",
-      format(regr_formula)
-    )
     show_rcode_modal(
-      title = "R code for the regression plot",
+      title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
         merge_expression = merged_data()$expr,
-        title = title
+        title = "",
+        description = ""
       )
     )
   })
 }
-
-#' Suppresses warning that chunk was already evaluated and validates that chunks are okay
-#'
-#' @return value of \code{chunks_eval}
-safe_chunks_eval <- function() {
-  res <- chunks_eval()
-  chunks_validate_is_ok()
-  return(res)
-}
-

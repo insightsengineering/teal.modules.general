@@ -76,28 +76,37 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
+# bug: RACE not found in ADSL_2
 # Regression of BMRKR1 by AGE + RACE
 library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
-ADSL_1 <- ADSL \%>\% select("ARM", "ACTARM", "ACTARMCD",
-                          "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-ADSL_2 <- ADSL \%>\%
+ADSL <- mutate_at(ADSL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+ "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
+ADSL_2 <- mutate_at(cadsl,
+                    .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                    .funs = list(~as.factor(.))) \%>\%
   select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL_1),
+    cdisc_dataset("ADSL", ADSL),
     dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
                                           foreign = NULL,
                                           parent = NULL)),
     code = 'ADSL <- cadsl
-            ADSL_1 <- ADSL \%>\% select("ARM", "ACTARM", "ACTARMCD",
-                                     "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-            ADSL_2 <- ADSL \%>\%
-              select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-    check = TRUE
+            ADSL <- mutate_at(ADSL,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
+                     "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2", "BMRKR1", "BMRKR2")
+            ADSL_2 <- mutate_at(cadsl,
+                 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+                 .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "RACE", "STRATA2",
+                 "COUNTRY", "USUBJID", "STUDYID")',
+    check = FALSE #TODO
   ),
   modules = root_modules(
     tm_g_regression(
@@ -126,41 +135,76 @@ app <- init(
   )
 )
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 }
 
 # datasets: same long
+# bug: AVISIT not renamed
 # Examine linear relationship between responses of different parameters
 
 library(random.cdisc.data)
 
 ADSL <- cadsl
+ADRS <- cadrs
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    cdisc_dataset("ADRS", ADRS),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
     check = TRUE
   ),
   modules = root_modules(
     tm_g_regression(
       label = "Regression",
       response = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1],
+            multiple = FALSE,
+            label = "Select measurement:"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
+            multiple = FALSE,
+            label = "Select visit:"
+          )
+        ),
         select = select_spec(
-          choices = c("AGE", "BMRKR1"),
-          selected = c("AGE"),
+          choices = "AVAL",
+          selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"
         )
       ),
       regressor = data_extract_spec(
-        dataname = "ADSL",
+        dataname = "ADRS",
+        filter = list(
+          filter_spec(
+            vars = "PARAM",
+            choices = levels(ADRS$PARAM),
+            selected = levels(ADRS$PARAM)[1:2],
+            multiple = TRUE,
+            label = "Select measurements:"
+          ),
+          filter_spec(
+            vars = "AVISIT",
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[2],
+            multiple = TRUE,
+            label = "Select visits:"
+          )
+        ),
         select = select_spec(
-          choices = c("AGE", "BMRKR1"),
-          selected = c("BMRKR1"),
-          multiple = TRUE,
+          choices = "AVAL",
+          selected = "AVAL",
+          multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"
         )
@@ -173,17 +217,19 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: multiple long datasets
-# Regression plots from model of different parameters from ADSL or ADTTE datasets
+# Regression plots from model of different parameters from ADRS or ADTTE datasets
 library(random.cdisc.data)
 
 ADSL <- cadsl
+ADRS <- cadrs
 ADTTE <- cadtte
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl; ADTTE <- cadtte",
+    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
     check = TRUE
   ),
   modules = root_modules(
@@ -206,14 +252,34 @@ app <- init(
           multiple = FALSE
         )
       ),
-      regressor = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = c("BMRKR1", "BMRKR2"),
-          selected = "BMRKR1",
-          multiple = TRUE,
-          fixed = FALSE
+      regressor = list(
+        data_extract_spec(
+          dataname = "ADRS",
+          select = select_spec(
+            label = "Select variables:",
+            choices = names(ADRS),
+            selected = "AVAL",
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            label = "Select endpoints:",
+            vars = c("PARAMCD", "AVISIT"),
+            choices = apply(expand.grid(
+            levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+            selected = "OVRINV - Screening",
+            multiple = TRUE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variables:",
+            choices = c("BMRKR1", "BMRKR2"),
+            selected = "BMRKR1",
+            multiple = TRUE,
+            fixed = FALSE
+          )
         )
       )
     )
