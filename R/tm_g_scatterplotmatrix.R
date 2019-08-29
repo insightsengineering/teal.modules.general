@@ -65,8 +65,7 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2,
-#'             keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
+#'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
 #'     code = 'ADSL <- cadsl
 #' ADSL_2 <- mutate_at(cadsl,
 #' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
@@ -173,8 +172,8 @@
 #'           filter = filter_spec(
 #'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = apply(expand.grid(
-#'               levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'             choices = apply(as.matrix(expand.grid(
+#'               levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
 #'             selected = "OVRINV - Screening",
 #'             multiple = FALSE
 #'           )
@@ -242,8 +241,8 @@
 #'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2"),
-#'           selected = c("AVAL", "CHG"),
+#'           choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
+#'           selected = c("AVAL", "CHNG"),
 #'           multiple = TRUE,
 #'           fixed = FALSE,
 #'           label = "Select variables:"
@@ -274,7 +273,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   module(
     label = label,
-    server = srv_g_scatterplotmatrix,
+    server = function(input, output, session, datasets, ...) {
+      return(NULL)
+    },
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
     server_args = list(selected = selected),
@@ -285,13 +286,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
-  ns <- NS(id)
 
+  ns <- NS(id)
   standard_layout(
     output = white_small_well(
-      tags$div(verbatimTextOutput(ns("outtext"))),
-      tags$div(verbatimTextOutput(ns("strtext"))),
-      tags$div(DT::dataTableOutput(ns("outtable")))
+      tags$div(
+        plot_height_output(ns("myplot"))
+      )
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -324,39 +325,94 @@ srv_g_scatterplotmatrix <- function(input,
                                     session,
                                     datasets,
                                     selected) {
-  init_chunks(session)
   dataname <- get_extract_datanames(list(selected))
-  data_extract <- list(selected)
 
-  merged_data <- data_merge_module(
+  # setup to use chunks
+  init_chunks()
+
+  # data extraction
+  col_extract <- callModule(
+    data_extract_module,
+    id = "selected",
     datasets = datasets,
-    data_extract = data_extract,
-    input_id = c("selected")
+    data_extract_spec = selected
   )
 
-  output$outtext <- renderText({
+  # set plot output
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot"))
+
+  # plot
+  output$plot <- renderPlot({
+    # get inputs
+    alpha <- input$alpha
+    cex <- input$cex
+
+    # get selected columns
+    cols <- get_dataset_prefixed_col_names(col_extract())
+
+    # merge datasets
+    merged_ds <- merge_datasets(list(col_extract()))
+
+    # check columns selected
+    validate(need(cols, "Please select variables first."))
+
+    # lattice need at least 2 columns for the plot
+    validate(need(length(cols) >= 2, "Please select at least two variables."))
+
+
+    # check that data are available
+    validate(need(nrow(merged_ds) > 0, "There are zero observations in the (filtered) dataset."))
+
+    # check proper input values
+    validate(need(cex, "Need a proper cex value."))
+
+    # check proper input values
+    validate(need(alpha, "Need a proper alpha value."))
+
+    # reset chunks on every user-input change
     chunks_reset()
+
+    # set up expression chunk - lattice graph
+    chunks_push(
+      expression = quote(
+        merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
+      )
+    )
+
+    # set up expression chunk - lattice graph
+    chunks_push(
+      substituteDirect(
+        object = quote(
+          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
+        ),
+        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
+      )
+    )
+
+    p <- chunks_eval()
+
     chunks_validate_is_ok()
 
-    merged_data()$expr
+    p
   })
 
-  output$strtext <- renderText({
-    paste0(capture.output(str(merged_data())), collapse = "\n")
-  })
-
-  output$outtable <- DT::renderDataTable({
-    merged_data()$data
-  })
-
+  # show r code
   observeEvent(input$show_rcode, {
+
+    title <- paste0("Scatterplotmatrix of ",
+                    paste(get_dataset_prefixed_col_names(col_extract()),
+                          collapse = ", "))
+
     show_rcode_modal(
       title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "",
-        description = ""
+        merge_expression = "",
+        title = title
       )
     )
   })

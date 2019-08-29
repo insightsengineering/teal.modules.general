@@ -179,8 +179,8 @@
 #'         filter = filter_spec(
 #'           label = "Select endpoint:",
 #'           vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(expand.grid(
-#'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT)), 1, paste, collapse = " - "),
+#'           choices = apply(as.matrix(expand.grid(
+#'           levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
 #'           selected = "OVRINV - Screening",
 #'           multiple = FALSE
 #'         )
@@ -496,17 +496,18 @@ ui_scatterplot <- function(id, ...) {
     stop("plot_height must be between 200 and 2000")
   }
 
-
   standard_layout(
     output = white_small_well(
-      tags$div(verbatimTextOutput(ns("outtext"))),
-      tags$div(verbatimTextOutput(ns("strtext"))),
-      tags$div(DT::dataTableOutput(ns("outtable")))
+      plot_height_output(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       helpText("Dataset:",
-               tags$code(paste(get_extract_datanames(args[c("x", "y", "color_by")]), collapse = ", "))),
+               tags$code(paste(
+                 get_extract_datanames(args[c("x", "y", "color_by")]),
+                 collapse = ", "
+               ))
+      ),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
@@ -522,7 +523,7 @@ ui_scatterplot <- function(id, ...) {
         label = "Color by variable",
         data_extract_spec = args$color_by
       ),
-      optionalSliderInputValMinMax(ns("plot_height"), "Plot height", args$plot_height, ticks = FALSE),
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
       optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
       optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
     ),
@@ -535,46 +536,66 @@ ui_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
-  dataname <- get_extract_datanames(list(x, y, color_by))
-  data_extract <- list(x, y, color_by)
   init_chunks(session)
+
+  # Insert the plot into a plot_height module from teal.devel
+  callModule(
+    plot_with_height,
+    id = "myplot",
+    plot_height = reactive(input$myplot),
+    plot_id = session$ns("plot")
+  )
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = data_extract,
+    data_extract = list(x, y, color_by),
     input_id = c("x", "y", "color_by")
   )
 
-  output$outtext <- renderText({
-    merged_data()$expr
-  })
+  output$plot <- renderPlot({
+    ANL <- merged_data()$data()
+    chunks_reset()
+    x_var <- merged_data()$columns_source$x
+    y_var <- merged_data()$columns_source$y
+    color_by_var <- merged_data()$columns_source$color_by
+    alpha <- input$alpha
+    size <- input$size
 
-  output$strtext <- renderText({
-    paste0(capture.output(str(merged_data())), collapse = "\n")
-  })
+    validate(need(alpha, "need opacity alpha"))
+    validate_has_data(ANL, 10)
+    validate(need(length(x_var) == 1, "there must be exactly one x var"))
+    validate(need(length(y_var) == 1, "there must be exactly one y var"))
+    validate(need(length(color_by_var) <= 1, "can color by at most 1 color"))
 
-  output$outtable <- DT::renderDataTable({
-    merged_data()$data
+    if (is.character.empty(color_by_var)) {
+      chunks_push(expression = bquote(
+        ggplot(
+          ANL,
+          aes_string(x = .(x_var), y = .(y_var))
+        ) +
+          geom_point(alpha = .(alpha), size = .(size))
+      ))
+    } else {
+      chunks_push(expression = bquote(
+        ggplot(
+          ANL,
+          aes_string(x = .(x_var), y = .(y_var), color = .(color_by_var))
+        ) +
+          geom_point(alpha = .(alpha), size = .(size))
+      ))
+    }
+
+    safe_chunks_eval()
   })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "R Code for a Scatterplotmatrix",
+      title = "R Code for a scatterplot matrix",
       rcode = get_rcode(
         datasets = datasets,
         merge_expression = merged_data()$expr,
-        title = "",
-        description = ""
+        title = "Scatterplot matrix",
       )
     )
   })
-}
-
-check_color <- function(x) {
-  if (!is.null(x)) {
-    if (x %in% c("", "_none_")) {
-      return(NULL)
-    }
-  }
-  return(x)
 }
