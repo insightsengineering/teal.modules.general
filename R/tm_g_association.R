@@ -63,20 +63,21 @@
 #'
 #' ADSL <- cadsl
 #' ADSL <- mutate_at(ADSL,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'                  .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
+#'                  .funs = list(~as.factor(.)))
 #'
-#' ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
-#'                  "COUNTRY", "USUBJID", "STUDYID")
+#' ADSL_2 <- ADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("USUBJID", "STUDYID"), foreign = NULL, parent = NULL)),
-#'     code = "ADSL <- cadsl",
+#'     dataset("ADSL_2", ADSL_2,
+#'             keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
+#'     code = "ADSL <- cadsl
+#'     ADSL <- mutate_at(ADSL,
+#'     .vars = vars(ARM, ACTARM, ACTARMCD, SEX, STRATA1, STRATA2),
+#'     .funs = list(~as.factor(.)))
+#'     ADSL2 <- ADSL",
 #'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
@@ -102,7 +103,7 @@
 #'         ))
 #'     )
 #'   )
-#' )
+#'   )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -120,7 +121,9 @@
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ADSL <- cadsl
+#'             ADRS <- cadrs
+#'             ADTTE <- cadtte",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -149,11 +152,11 @@
 #'       ),
 #'       vars = list(
 #'         data_extract_spec(
-#'           dataname = "ADRS",
+#'           dataname = "ADTTE",
 #'           select = select_spec(
 #'             label = "Select variables:",
-#'             choices = names(ADRS),
-#'             selected = c("AVAL", "AVALC"),
+#'             choices = names(ADTTE),
+#'             selected = c("AVAL", "AVALU"),
 #'             multiple = TRUE,
 #'             fixed = FALSE
 #'           ),
@@ -166,7 +169,7 @@
 #'           )
 #'         ),
 #'         data_extract_spec(
-#'           dataname = "ADTTE",
+#'           dataname = "ADRS",
 #'           filter = filter_spec(
 #'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
@@ -177,7 +180,7 @@
 #'           ),
 #'           select = select_spec(
 #'             label = "Select variables:",
-#'             choices = names(ADTTE),
+#'             choices = names(ADRS),
 #'             selected = NULL,
 #'             multiple = TRUE,
 #'             fixed = FALSE
@@ -300,6 +303,7 @@
 #'
 #'
 #' # datasets: different subsets of long dataset
+#' # bug: PARAMCD and AVISIT not renamed
 #' # Examine association between two different measurements from ALB dataset.
 #'
 #' library(random.cdisc.data)
@@ -398,7 +402,6 @@ tm_g_association <- function(label = "Association",
   stopifnot(is.logical(with_show_r_code))
 
   args <- as.list(environment())
-
   module(
     label = label,
     server = function(input, output, session, datasets, ...) {
@@ -406,10 +409,7 @@ tm_g_association <- function(label = "Association",
     },
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = list(
-      ref = ref,
-      vars = vars
-    ),
+    server_args = list(ref = ref, vars = vars),
     filters = "all"
   )
 }
@@ -420,18 +420,22 @@ ui_tm_g_association <- function(id, ...) {
   args <- list(...)
 
   standard_layout(
-    output = white_small_well(plot_height_output(id = ns("myplot"))),
+    output = white_small_well(
+      tags$div(verbatimTextOutput(ns("outtext"))),
+      tags$div(verbatimTextOutput(ns("strtext"))),
+      tags$div(DT::dataTableOutput(ns("outtable")))
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("ref", "vars")]),
       data_extract_input(
         id = ns("ref"),
-        label = "Reference variable",
+        label = "Reference Variable",
         data_extract_spec = args$ref
       ),
       data_extract_input(
         id = ns("vars"),
-        label = "Associated variables",
+        label = "Association variables",
         data_extract_spec = args$vars
       ),
       checkboxInput(ns("association"),
@@ -463,103 +467,41 @@ srv_tm_g_association <- function(input,
                                  datasets,
                                  ref,
                                  vars) {
+  init_chunks(session)
+
   dataname <- get_extract_datanames(list(ref, vars))
-  init_chunks()
+  data_extract <- list(ref, vars)
+  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
-  )
-  ref_data <- callModule(
-    data_extract_module,
-    id = "ref",
+  merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract_spec = ref
-  )
-  vars_data <- callModule(
-    data_extract_module,
-    id = "vars",
-    datasets = datasets,
-    data_extract_spec = vars
+    data_extract = data_extract,
+    input_id = c("ref", "vars")
   )
 
-  output$plot <- renderPlot({
-
-    ref_name <- get_dataset_prefixed_col_names(ref_data())
-    vars_names <- get_dataset_prefixed_col_names(vars_data())
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
-
-    # not working currently because it relies on cols and not on already preprocessed data
-    association <- input$association
-    show_dist <- input$show_dist
-    log_transformation <- input$log_transformation
-
-    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-    anl_name <- paste0(dataname, "_FILTERED")
-    assign(anl_name, anl_f)
-
-    validate(
-      need(nrow(anl_f) > 3, "need at least three rows"),
-      need(length(ref) > 0, "need at least one variable selected"),
-      need(!(ref %in% vars), "associated variables and reference variable cannot overlap"),
-      need(ref %in% names(anl_f), paste("reference variable not found in ", dataname)),
-      need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
-    )
-
-    ref_class <- class(anl_f[[ref]])
-
-    if (ref_class == "numeric" && log_transformation) {
-      ref <- call("log", as.name(ref))
-    }
-
-    ref_cl <- call(
-      "+",
-      bivariate_plot_call(anl_name, ref, NULL, ref_class, "NULL", freq = !show_dist),
-      quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
-    )
-
-    ref_class_cov <- if (association) {
-      ref_class
-    } else {
-      "NULL"
-    }
-
-    var_cls <- lapply(vars, function(var_i) {
-      class_i <- class(anl_f[[var_i]])
-      if (class_i == "numeric" && log_transformation) {
-        var_i <- call("log", as.name(var_i))
-      }
-
-      bivariate_plot_call(anl_name, var_i, ref, class_i, ref_class_cov, freq = !show_dist)
-    })
-
-
-    cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
-
-    cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
-
-    cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
-
+  output$outtext <- renderText({
     chunks_reset()
-
-    chunks_push(expression = cl, id = "plotCall")
-
-    p <- chunks_eval()
-
     chunks_validate_is_ok()
 
-    p
+    merged_data()$expr
+  })
+
+  output$strtext <- renderText({
+    paste0(capture.output(str(merged_data())), collapse = "\n")
+  })
+
+  output$outtable <- DT::renderDataTable({
+    merged_data()$data
   })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "R Code for the Association Plot",
+      title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
-        title = "Association Plot"
+        merge_expression = merged_data()$expr,
+        title = "",
+        description = ""
       )
     )
   })

@@ -126,31 +126,29 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different wide
-# Bivariate plot with RACE (factor) plotted over AGE (numeric)
+# Bivariate plot with RACE (factor) plotted over AGE (numeric
 library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
 ADSL <- mutate_at(ADSL,
  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
- .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
- "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+ .funs = list(~as.factor(.)))
 
 ADSL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-  "USUBJID", "STUDYID")
+  .funs = list(~as.factor(.)))
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2),
+    dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
+                                          foreign = NULL,
+                                          parent = NULL)),
     code = 'ADSL <- cadsl
             ADSL_2 <- mutate_at(cadsl,
                .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-               .funs = list(~as.factor(.)))
-               \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-               "USUBJID", "STUDYID")',
+               .funs = list(~as.factor(.)))',
     check = FALSE #TODO
   ),
   modules = root_modules(
@@ -349,7 +347,7 @@ app <- init(
      row_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c("__NONE__", "PARAMCD"),
+          choices = c(NULL, "PARAMCD"),
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
@@ -359,7 +357,7 @@ app <- init(
      col_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c("__NONE__", "AVISIT"),
+          choices = c(NULL, "AVISIT"),
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
@@ -445,8 +443,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = c("__NONE__", "ARMCD"),
-          selected = "ARMCD",
+          choices = c(NULL, "ARMCD"),
+          selected = NULL,
           multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"

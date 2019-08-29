@@ -113,7 +113,6 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- datasets$datanames()
-
   tagList(
     fluidRow(
       column(

@@ -6,6 +6,9 @@
 \usage{
 tm_variable_browser(label = "variable browser")
 }
+\arguments{
+\item{label}{label shown in the navigation for the item}
+}
 \description{
 The variable browser provides a table with variable names and labels and a
 plot the visualizes the content of a particular variable.

@@ -56,6 +56,7 @@
 #' }
 #'
 #' # datasets: different wide
+#' # bug: RACE not found in ADSL_2
 #' # Regression of BMRKR1 by AGE + RACE
 #' library(random.cdisc.data)
 #' library(dplyr)
@@ -66,22 +67,24 @@
 #'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
 #'  "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
 #' ADSL_2 <- mutate_at(cadsl,
-#'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-#'                  "USUBJID", "STUDYID")
+#'                     .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
+#'                     .funs = list(~as.factor(.))) %>%
+#'   select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2),
+#'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
+#'                                           foreign = NULL,
+#'                                           parent = NULL)),
 #'     code = 'ADSL <- cadsl
 #'             ADSL <- mutate_at(ADSL,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 #'                  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'                      "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2", "BMRKR1", "BMRKR2")
 #'             ADSL_2 <- mutate_at(cadsl,
 #'                  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2",
+#'                  .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "RACE", "STRATA2",
 #'                  "COUNTRY", "USUBJID", "STUDYID")',
 #'     check = FALSE #TODO
 #'   ),
@@ -116,6 +119,7 @@
 #' }
 #'
 #' # datasets: same long
+#' # bug: AVISIT not renamed
 #' # Examine linear relationship between responses of different parameters
 #'
 #' library(random.cdisc.data)
@@ -514,9 +518,7 @@ tm_g_regression <- function(label = "Regression Analysis",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      return(NULL)
-    },
+    server = srv_g_regression,
     ui = ui_g_regression,
     ui_args = args,
     server_args = list(regressor = regressor, response = response),
@@ -526,16 +528,14 @@ tm_g_regression <- function(label = "Regression Analysis",
 
 
 ui_g_regression <- function(id, ...) {
+  ns <- NS(id)
   args <- list(...)
 
-  ns <- NS(id)
   standard_layout(
     output = white_small_well(
-      tags$div(
-        # This shall be wrapped in a teal::plot
-        plot_height_output(id = ns("myplot")),
-        tags$div(verbatimTextOutput(ns("text")))
-      )
+      tags$div(verbatimTextOutput(ns("outtext"))),
+      tags$div(verbatimTextOutput(ns("strtext"))),
+      tags$div(DT::dataTableOutput(ns("outtable")))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -560,9 +560,7 @@ ui_g_regression <- function(id, ...) {
           "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
         ),
         selected = "Response vs Regressor"
-      ),
-      # This shall be wrapped in a teal::plot
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      )
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
@@ -576,119 +574,39 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 srv_g_regression <- function(input, output, session, datasets, response, regressor) {
+  init_chunks(session)
   dataname <- get_extract_datanames(list(response, regressor))
-  init_chunks()
+  data_extract <- list(response, regressor)
 
-  # Data Extraction
-  regressor_data <- callModule(
-    data_extract_module,
-    id = "regressor",
+  merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract_spec = regressor
-  )
-  response_data <- callModule(
-    data_extract_module,
-    id = "response",
-    datasets = datasets,
-    data_extract_spec = response
+    data_extract = data_extract,
+    input_id = c("response", "regressor")
   )
 
-  fit <- reactive({
-
-    input$plot_type
-
-    response_var <- get_dataset_prefixed_col_names(response_data())
-    validate(need(length(response_var) == 1, "Response variable should be of lenght one."))
-    regressor_var <- get_dataset_prefixed_col_names(regressor_data())
-    merged_dataset <- merge_datasets(list(response_data(), regressor_data()))
-    validate_has_data(merged_dataset, 10)
-
-    form <- stats::as.formula(
-      paste(
-        response_var,
-        paste(
-          regressor_var,
-          collapse = " + "
-        ),
-        sep = " ~ "
-      )
-    )
-
+  output$outtext <- renderText({
     chunks_reset()
-
-    chunks_push(
-      expression = quote(fit <- lm(form, data = merged_dataset)) %>% substituteDirect(list(form = form))
-    )
-
-    chunks_eval()
-  })
-
-  output$plot <- renderPlot({
-
-    fit()
-
-    if (input$plot_type == "Response vs Regressor") {
-      fit <- chunks_get_var("fit")
-
-      if (ncol(fit$model) > 1) {
-        validate(need(dim(fit$model)[2] < 3, "Response vs Regressor is not provided for >2 Regressors"))
-        plot %<chunk%
-          plot(fit$model[, 2:1])
-      } else {
-        plot %<chunk% {
-          plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
-          names(plot_data) <- rep(names(fit$model), 2)
-          plot <- plot(plot_data)
-          abline(merged_dataset)
-        }
-      }
-    } else {
-      i <- which(input$plot_type == c(
-        "Residuals vs Fitted",
-        "Normal Q-Q",
-        "Scale-Location",
-        "Cook's distance",
-        "Residuals vs Leverage",
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-      ))
-      expr <- bquote(plot(fit, which = .(i), id.n = NULL))
-      plot %<chunk%
-        expr
-    }
-
-    p <- chunks_eval()
-
     chunks_validate_is_ok()
 
-    p
+    merged_data()$expr
   })
 
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
-  )
+  output$strtext <- renderText({
+    paste0(capture.output(str(merged_data())), collapse = "\n")
+  })
 
-  output$text <- renderPrint({
-    fit()
-    chunks_push(expression = quote(summary(fit)), id = "summary")
-    chunks_eval()
+  output$outtable <- DT::renderDataTable({
+    merged_data()$data
   })
 
   observeEvent(input$show_rcode, {
-    title <- paste0(
-      "RegressionPlot of ",  get_dataset_prefixed_col_names(response_data()), " ~ ",
-      get_dataset_prefixed_col_names(regressor_data())
-    )
-
     show_rcode_modal(
-      title = "R Code for a Regression Plot",
+      title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
-        title = title
+        merge_expression = merged_data()$expr,
+        title = "",
+        description = ""
       )
     )
   })

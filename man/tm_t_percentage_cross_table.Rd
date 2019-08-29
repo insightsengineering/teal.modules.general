@@ -91,23 +91,24 @@ ADSL <- mutate_at(ADSL,
   .funs = list(~as.factor(.))
 ) \%>\% select(
   "ARM", "ACTARM", "ACTARMCD",
-  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
+  "SEX", "STRATA1", "AGE", "RACE", "USUBJID", "STUDYID", "STRATA2"
 )
 
 ADSL_2 <- mutate_at(cadsl,
   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
   .funs = list(~as.factor(.))
-) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+) \%>\% select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2),
+    dataset("ADSL_2", ADSL_2,
+            keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
     code = 'ADSL <- cadsl
 ADSL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
 .funs = list(~as.factor(.))) \%>\%
-select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
+select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
     check = FALSE #TODO
   ),
   modules = root_modules(

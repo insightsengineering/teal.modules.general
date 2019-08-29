@@ -9,6 +9,8 @@ tm_g_scatterplotmatrix(label = "Scatterplot matrix", selected,
   post_output = NULL)
 }
 \arguments{
+\item{label}{label shown in the navigation for the item}
+
 \item{selected}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 
@@ -82,7 +84,8 @@ ADSL_2 <- mutate_at(cadsl,
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2),
+    dataset("ADSL_2", ADSL_2,
+            keys = list(primary = c("STUDYID", "USUBJID"), foreign = NULL, parent = NULL)),
     code = 'ADSL <- cadsl
 ADSL_2 <- mutate_at(cadsl,
 .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
@@ -258,8 +261,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
-          selected = c("AVAL", "CHNG"),
+          choices = c("AVAL", "CHG", "BMRKR1", "BMRKR2"),
+          selected = c("AVAL", "CHG"),
           multiple = TRUE,
           fixed = FALSE,
           label = "Select variables:"

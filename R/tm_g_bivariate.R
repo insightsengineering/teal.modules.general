@@ -97,31 +97,29 @@
 #' }
 #'
 #' # datasets: different wide
-#' # Bivariate plot with RACE (factor) plotted over AGE (numeric)
+#' # Bivariate plot with RACE (factor) plotted over AGE (numeric
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
 #' ADSL <- mutate_at(ADSL,
 #'  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'  .funs = list(~as.factor(.))) %>% select("ARM", "ACTARM", "ACTARMCD",
-#'  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
+#'  .funs = list(~as.factor(.)))
 #'
 #' ADSL_2 <- mutate_at(cadsl,
 #'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = list(~as.factor(.))) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-#'   "USUBJID", "STUDYID")
+#'   .funs = list(~as.factor(.)))
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2),
+#'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
+#'                                           foreign = NULL,
+#'                                           parent = NULL)),
 #'     code = 'ADSL <- cadsl
 #'             ADSL_2 <- mutate_at(cadsl,
 #'                .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'                .funs = list(~as.factor(.)))
-#'                %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-#'                "USUBJID", "STUDYID")',
+#'                .funs = list(~as.factor(.)))',
 #'     check = FALSE #TODO
 #'   ),
 #'   modules = root_modules(
@@ -320,7 +318,7 @@
 #'      row_facet = data_extract_spec(
 #'        dataname = "ADRS",
 #'        select = select_spec(
-#'           choices = c("__NONE__", "PARAMCD"),
+#'           choices = c(NULL, "PARAMCD"),
 #'           selected = "PARAMCD",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -330,7 +328,7 @@
 #'      col_facet = data_extract_spec(
 #'        dataname = "ADRS",
 #'        select = select_spec(
-#'           choices = c("__NONE__", "AVISIT"),
+#'           choices = c(NULL, "AVISIT"),
 #'           selected = "AVISIT",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
@@ -416,8 +414,8 @@
 #'           )
 #'         ),
 #'         select = select_spec(
-#'           choices = c("__NONE__", "ARMCD"),
-#'           selected = "ARMCD",
+#'           choices = c(NULL, "ARMCD"),
+#'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
@@ -687,19 +685,15 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (expert_settings) {
     if (is.null(colour)) {
       colour <- `if`(inherits(x, "list"), x, list(x))
-      colour[[1]]$select$selected <- ""
-      colour[[1]]$select$choices <- c("", colour[[1]]$select$choices)
+      colour[[1]]$select["selected"] <- list(NULL)
     }
     if (is.null(fill)) {
       fill <- `if`(inherits(x, "list"), x, list(x))
-      fill[[1]]$select$selected <- ""
-      fill[[1]]$select$choices <- c("", fill[[1]]$select$choices)
+      fill[[1]]$select["selected"] <- list(NULL)
     }
     if (is.null(size)) {
       size <- `if`(inherits(x, "list"), x, list(x))
-      size[[1]]$select$selected <- ""
-      size[[1]]$select$selected <- ""
-      size[[1]]$select$choices <- c("", size[[1]]$select$choices)
+      size[[1]]$select["selected"] <- list(NULL)
     }
   }
 
@@ -707,10 +701,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      output$dataname <- renderUI(helpText("Dataset:",tags$code(paste(datasets$datanames(), collapse = ", "))))
-      return(NULL)
-    },
+    server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
     server_args = list(
@@ -731,31 +722,23 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 #' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
-
-  # Set default values for expert settings in case those were not given
-  if (is.null(args$colour) || length(args$colour) == 0) {
-    a[["colour"]] <- args$x
-  }
-  if (is.null(args$fill) || length(args$fill) == 0) {
-    a[["fill"]] <- args$x
-  }
-  if (is.null(args$size) || length(args$size) == 0) {
-    a[["size"]] <- args$x
-  }
-
   ns <- NS(id)
   standard_layout(
-    output = white_small_well(plot_height_output(id = ns("myplot"))),
+    output = white_small_well(
+      tags$div(verbatimTextOutput(ns("outtext"))),
+      tags$div(verbatimTextOutput(ns("strtext"))),
+      tags$div(DT::dataTableOutput(ns("outtable")))
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "row_facet", "col_facet", "colour", "fill", "size")]),
       data_extract_input(
-        id = ns("x"),
+        id = ns("xyz_1"),
         label = "X variable",
         data_extract_spec = args$x
       ),
       data_extract_input(
-        id = ns("y"),
+        id = ns("xyz_2"),
         label = "Y variable",
         data_extract_spec = args$y
       ),
@@ -772,7 +755,20 @@ ui_g_bivariate <- function(id, ...) {
         switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
         conditionalPanel(
           condition = paste0("input['", ns("facetting"), "']"),
-          ui_facetting(ns, args$row_facet, args$col_facet, args$free_x_scales, args$free_y_scales)
+          div(
+            data_extract_input(
+              id = ns("xyz_3"),
+              label = "Row facetting variable",
+              data_extract_spec = args$row_facet
+            ),
+            data_extract_input(
+              id = ns("xyz_4"),
+              label = "Column facetting variable",
+              data_extract_spec = args$col_facet
+            ),
+            checkboxInput(ns("free_x_scales"), "free x scales", value = args$free_x_scales),
+            checkboxInput(ns("free_y_scales"), "free y scales", value = args$free_y_scales)
+          )
         )
       ),
       if (args$expert_settings) {
@@ -783,18 +779,26 @@ ui_g_bivariate <- function(id, ...) {
           switchInput(inputId = ns("expert"), value = FALSE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("expert"), "']"),
-            ui_expert(ns, args$colour, args$fill, args$size)
+            div(
+              data_extract_input(
+                id = ns("xyz_5"),
+                label = "Colour by variable",
+                data_extract_spec = args$colour
+              ),
+              data_extract_input(
+                id = ns("xyz_6"),
+                label = "Fill colour by variable",
+                data_extract_spec = args$fill
+              ),
+              data_extract_input(
+                id = ns("xyz_7"),
+                label = "Size of points by variable (only if x and y are numeric)",
+                data_extract_spec = args$size
+              )
+            )
           )
         )
-      },
-      plot_height_input(id = ns("myplot"), value = args$plot_height),
-      optionalSelectInput(
-        inputId = ns("ggtheme"),
-        label = "Theme (by ggplot):",
-        choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-        selected = args$ggtheme,
-        multiple = FALSE
-      )
+      }
     ),
     forms = if (args$with_show_r_code) {
       actionButton(ns("show_rcode"), "Show R code", width = "100%")
@@ -803,50 +807,6 @@ ui_g_bivariate <- function(id, ...) {
     },
     pre_output = args$pre_output,
     post_output = args$post_output
-  )
-}
-
-ui_facetting <- function(ns,
-                         row_facet_spec,
-                         col_facet_spec,
-                         free_x_scales,
-                         free_y_scales) {
-  div(
-    data_extract_input(
-      id = ns("row_facet"),
-      label = "Row facetting variable",
-      data_extract_spec = row_facet_spec
-    ),
-    data_extract_input(
-      id = ns("col_facet"),
-      label = "Column facetting variable",
-      data_extract_spec = col_facet_spec
-    ),
-    checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales),
-    checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
-  )
-}
-
-ui_expert <- function(ns,
-                      colour_spec,
-                      fill_spec,
-                      size_spec) {
-  div(
-    data_extract_input(
-      id = ns("colour"),
-      label = "Colour by variable",
-      data_extract_spec = colour_spec
-    ),
-    data_extract_input(
-      id = ns("fill"),
-      label = "Fill colour by variable",
-      data_extract_spec = fill_spec
-    ),
-    data_extract_input(
-      id = ns("size"),
-      label = "Size of points by variable (only if x and y are numeric)",
-      data_extract_spec = size_spec
-    )
   )
 }
 
@@ -865,207 +825,43 @@ srv_g_bivariate <- function(input,
                             colour,
                             fill,
                             size) {
+  init_chunks(session)
   dataname <- get_extract_datanames(list(x, y, row_facet, col_facet, colour, fill, size))
-
-
-  init_chunks()
-
-  # Data Extraction
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  y_data <- callModule(data_extract_module,
-                          id = "y",
-                          datasets = datasets,
-                          data_extract_spec = y
-  )
-  row_facet_data <- callModule(data_extract_module,
-                                   id = "row_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = row_facet
-  )
-  col_facet_data <- callModule(data_extract_module,
-                                   id = "col_facet",
-                                   datasets = datasets,
-                                   data_extract_spec = col_facet
-  )
-
-  if (expert_settings) {
-    colour_data <- callModule(data_extract_module,
-                                  id = "colour",
-                                  datasets = datasets,
-                                  data_extract_spec = colour
-    )
-    fill_data <- callModule(data_extract_module,
-                                id = "fill",
-                                datasets = datasets,
-                                data_extract_spec = fill
-    )
-    size_data <- callModule(data_extract_module,
-                                id = "size",
-                                datasets = datasets,
-                                data_extract_spec = size
-    )
+  data_extract <- if (expert_settings) {
+    list(x, y, row_facet, col_facet, colour, fill, size)
+  } else {
+    list(x, y, row_facet, col_facet)
   }
 
-  # Merging data ::: Preparation
-  data_to_merge <- function(do_expert) {
-    standard_data <- list(
-      x_data(),
-      y_data(),
-      row_facet_data(),
-      col_facet_data()
-    )
-    expert_data <- list()
-    if (do_expert) {
-      expert_data <- list(
-        colour_data(),
-        fill_data(),
-        size_data()
-      )
-    }
-    all_data <- append(standard_data, expert_data)
-    return(all_data)
-  }
-
-  # Merging data ::: Execution
-  data_reactive <- reactive({
-    merge_datasets(
-      data_to_merge(expert_settings && input$expert)
-    )
-  })
-
-  # Access variables ::: Pre-checks
-  variable_reactive <- reactive({
-    anl <- data_reactive()
-    x_name <- get_dataset_prefixed_col_names(x_data())
-    y_name <- get_dataset_prefixed_col_names(y_data())
-
-    # TODO: update this section
-    keys <- function(...) {
-      1
-    }
-
-    validate(need(!(!is.null(y_name) && y_name %in% keys(y_data())),
-                  "Please do not select key variables inside data"))
-    validate(need(!(!is.null(x_name) && x_name %in% keys(y_data())),
-                  "Please do not select key variables inside data"))
-
-    if (input$facetting) {
-      row_facet_name <- get_dataset_prefixed_col_names(row_facet_data())
-      col_facet_name <- get_dataset_prefixed_col_names(col_facet_data())
-
-      validate(need(!(!is.null(col_facet_name) &&
-                        col_facet_name %in% keys(col_facet_data())),
-                    "Please do not select key variables inside data"))
-      validate(need(!(!is.null(row_facet_name) &&
-                        row_facet_name %in% keys(row_facet_data())),
-                    "Please do not select key variables inside data"))
-
-      if (!is.null(col_facet_name) && !is.null(row_facet_name)) {
-        validate(need(
-          length(intersect(row_facet_name, col_facet_name)) == 0,
-          "x and y facet variables cannot overlap"
-        ))
-      }
-    }
-
-    if (expert_settings) {
-      if (input$expert) {
-        colour_name <- get_dataset_prefixed_col_names(colour_data())
-        fill_name <- get_dataset_prefixed_col_names(fill_data())
-        size_name <- get_dataset_prefixed_col_names(size_data())
-        validate(need(!(!is.null(colour_name) && colour_name %in% keys(colour_data())),
-                      "Please do not select key variables inside data"))
-        validate(need(!(!is.null(fill_name) && fill_name %in% keys(fill_data())),
-                      "Please do not select key variables inside data"))
-        validate(need(!(!is.null(size_name) && size_name %in% keys(size_data())),
-                      "Please do not select key variables inside data"))
-      }
-    }
-    use_density <- input$use_density == "density"
-    free_x_scales <- input$free_x_scales
-    free_y_scales <- input$free_y_scales
-
-    validate_has_data(anl, 10)
-    validate(need(!is.null(x), "Please define a valid column for the X-variable"))
-
-    return(environment())
-  })
-
-  # Insert the plot into a plot_height module from teal.devel
-  callModule(
-    plot_with_height,
-    id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = data_extract,
+    input_id = paste0("xyz_", seq_along(data_extract))
   )
 
-  output$plot <- renderPlot({
-
-    validate(need(is.environment(variable_reactive()), "Error in your variable selection"))
-
-    # Copy all variables over from variable_reactive
-    for (n in ls(variable_reactive(), all.names = TRUE)) {
-      assign(n, get(n, variable_reactive()), environment())
-    }
-
-    cl <- bivariate_plot_call(
-      data_name = "anl",
-      x = x_name,
-      y = y_name,
-      x_class = class(anl[[x_name]]),
-      y_class = if (!is.null(y_name)) class(anl[[y_name]]) else NULL,
-      freq = !use_density
-    )
-
-    if (input$facetting) {
-      facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
-
-      if (!is.null(facet_cl)) {
-        cl <- call("+", cl, facet_cl)
-      }
-    }
-
-    expert_cl <- NULL
-    if (expert_settings) {
-      if (input$expert) {
-        expert_cl <- expert_ggplot_call(
-          colour = colour_name, fill = fill_name, size = size_name,
-          is_point = any(grepl("geom_point", cl %>% deparse()))
-        )
-      }
-      if (!is.null(expert_cl)) {
-        cl <- call("+", cl, expert_cl)
-      }
-    }
-
-    ggtheme <- input$ggtheme
-    if (!is.null(ggtheme)) {
-      cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
-    }
-
+  output$outtext <- renderText({
     chunks_reset()
-
-    chunks_push(expression = cl, id = "plotCall")
-
-    p <- chunks_eval()
-
     chunks_validate_is_ok()
 
-    p
+    merged_data()$expr
   })
 
+  output$strtext <- renderText({
+    paste0(capture.output(str(merged_data())), collapse = "\n")
+  })
+
+  output$outtable <- DT::renderDataTable({
+    merged_data()$data
+  })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "Bivariate Plot",
+      title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
-        title = "Bivariate Plot"
+        merge_expression = merged_data()$expr,
+        title = "",
+        description = ""
       )
     )
   })
