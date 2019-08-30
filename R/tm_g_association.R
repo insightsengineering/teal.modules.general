@@ -61,18 +61,18 @@
 #' library(random.cdisc.data)
 #' library(dplyr)
 #'
-#' ADSL_1 <- cadsl
+#' ADSL <- cadsl
 #' ADSL_2 <- cadsl
+#'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-#'     code = "ADSL <- cadsl",
-#'     check = FALSE #TODO
+#'     code = "ADSL <- cadsl; ADSL2 <- cadsl",
+#'     check = FALSE #TRUE todo: does not work
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       label = "Regression",
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
@@ -81,7 +81,8 @@
 #'           selected = c("STRATA1"),
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )),
+#'         )
+#'       ),
 #'       vars = data_extract_spec(
 #'         dataname = "ADSL_2",
 #'         select = select_spec(
@@ -90,7 +91,8 @@
 #'           selected = c("AGE", "COUNTRY", "RACE"),
 #'           multiple = TRUE,
 #'           fixed = FALSE
-#'         ))
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
@@ -111,68 +113,47 @@
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADRS", ADRS),
 #'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
+#'     code = "ADSL <- cadsl
+#'     ADRS <- cadrs
+#'     ADTTE <- cadtte",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
 #'     tm_g_association(
-#'       ref = list(
-#'         data_extract_spec(
-#'           dataname = "ADRS",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = c("AGE", "SEX"),
-#'             selected = "AGE",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
+#'       ref = data_extract_spec(
+#'         dataname = "ADRS",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = c("AGE", "SEX"),
+#'           selected = "AGE",
+#'           multiple = FALSE,
+#'           fixed = FALSE
 #'         ),
-#'         data_extract_spec(
-#'           dataname = "ADTTE",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = c("AVAL", "CNSR"),
-#'             selected = "AVAL",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
+#'         filter = filter_spec(
+#'           label = "Select endpoints:",
+#'           vars = c("PARAMCD", "AVISIT"),
+#'           choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD)[1],
+#'                                       levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
+#'           selected = "BESRSPI - Screening",
+#'           multiple = FALSE
 #'         )
 #'       ),
-#'       vars = list(
-#'         data_extract_spec(
-#'           dataname = "ADRS",
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = names(ADRS),
-#'             selected = c("AVAL", "AVALC"),
-#'             multiple = TRUE,
-#'             fixed = FALSE
-#'           ),
-#'           filter = filter_spec(
-#'             label = "Select endpoint:",
-#'             vars = "PARAMCD",
-#'             choices = unique(ADTTE$PARAMCD),
-#'             selected = "OS",
-#'             multiple = FALSE
-#'           )
+#'       vars = data_extract_spec(
+#'         dataname = "ADTTE",
+#'         reshape = TRUE,
+#'         select = select_spec(
+#'           label = "Select variables:",
+#'           choices = names(ADTTE),
+#'           selected = c("AVAL", "AVALU"),
+#'           multiple = TRUE,
+#'           fixed = FALSE
 #'         ),
-#'         data_extract_spec(
-#'           dataname = "ADTTE",
-#'           filter = filter_spec(
-#'             label = "Select endpoints:",
-#'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD),
-#'             levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
-#'             selected = "OVRINV - Screening",
-#'             multiple = TRUE
-#'           ),
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = names(ADTTE),
-#'             selected = NULL,
-#'             multiple = TRUE,
-#'             fixed = FALSE
-#'           )
+#'         filter = filter_spec(
+#'           label = "Select endpoint:",
+#'           vars = "PARAMCD",
+#'           choices = unique(ADTTE$PARAMCD),
+#'           selected = c("PFS", "EFS"),
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -192,50 +173,50 @@
 #' ADRS <- cadrs
 #'
 #' app <- init(
-#'  data = cdisc_data(
-#'    cdisc_dataset("ADSL", ADSL),
-#'    cdisc_dataset("ADRS", ADRS),
-#'    code = "ADSL <- cadsl; ADRS <- cadrs",
-#'    check = TRUE
-#'  ),
-#'  modules = root_modules(
-#'    tm_g_association(
-#'      label = "Association Plots",
-#'      ref = data_extract_spec(
-#'        dataname = "ADSL",
-#'        select = select_spec(
-#'          choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'          selected = c("AGE"),
-#'          multiple = FALSE,
-#'          fixed = FALSE,
-#'          label = "Select variable:"
-#'       )
-#'      ),
-#'      vars = data_extract_spec(
-#'        dataname = "ADRS",
-#'        filter = list(
-#'          filter_spec(
-#'            vars = "PARAM",
-#'            choices = levels(ADRS$PARAM),
-#'            selected = levels(ADRS$PARAM)[1],
-#'            multiple = FALSE,
-#'            label = "Select response"
-#'          ),
-#'          filter_spec(
-#'            vars = "AVISIT",
-#'            choices = levels(ADRS$AVISIT),
-#'            selected = levels(ADRS$AVISIT)[1],
-#'            multiple = FALSE,
-#'            label = "Select visit:"
-#'          )
-#'        ),
-#'        select = select_spec(
-#'          choices = "AVAL",
-#'          selected = "AVAL",
-#'          multiple = FALSE,
-#'          fixed = TRUE,
-#'          label = "Selected variable:"
-#'        )
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs",
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       label = "Association Plots",
+#'       ref = data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+#'           selected = c("AGE"),
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Select variable:"
+#'         )
+#'       ),
+#'       vars = data_extract_spec(
+#'         dataname = "ADRS",
+#'         select = select_spec(
+#'           choices = "AVAL",
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = TRUE,
+#'           label = "Selected variable:"
+#'         ),
+#'         filter = list(
+#'           filter_spec(
+#'             vars = "PARAM",
+#'             choices = levels(ADRS$PARAM),
+#'             selected = levels(ADRS$PARAM)[1],
+#'             multiple = FALSE,
+#'             label = "Select response"
+#'           ),
+#'           filter_spec(
+#'             vars = "AVISIT",
+#'             choices = levels(ADRS$AVISIT),
+#'             selected = levels(ADRS$AVISIT)[1],
+#'             multiple = FALSE,
+#'             label = "Select visit:"
+#'           )
+#'         )
 #'       )
 #'     )
 #'   )
@@ -253,34 +234,34 @@
 #' ADRS <- cadrs
 #'
 #' app <- init(
-#'  data = cdisc_data(
-#'    cdisc_dataset("ADSL", ADSL),
-#'    cdisc_dataset("ADRS", ADRS),
-#'    code = "ADSL <- cadsl; ADRS <- cadrs",
-#'    check = TRUE
-#'  ),
-#'  modules = root_modules(
-#'    tm_g_association(
-#'      label = "Association Plots",
-#'      ref = data_extract_spec(
-#'        dataname = "ADRS",
-#'        select = select_spec(
-#'          choices = names(ADRS),
-#'          selected = "AVAL",
-#'          multiple = FALSE,
-#'          fixed = FALSE,
-#'          label = "Select variable:"
-#'       )
-#'      ),
-#'      vars = data_extract_spec(
-#'        dataname = "ADRS",
-#'        select = select_spec(
-#'          choices = names(ADRS),
-#'          selected = "PARAMCD",
-#'          multiple = FALSE,
-#'          fixed = FALSE,
-#'          label = "Select variable:"
-#'        )
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADRS", ADRS),
+#'     code = "ADSL <- cadsl; ADRS <- cadrs",
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_g_association(
+#'       label = "Association Plots",
+#'       ref = data_extract_spec(
+#'         dataname = "ADRS",
+#'         select = select_spec(
+#'           choices = names(ADRS),
+#'           selected = "AVAL",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Select variable:"
+#'         )
+#'       ),
+#'       vars = data_extract_spec(
+#'         dataname = "ADRS",
+#'         select = select_spec(
+#'           choices = names(ADRS),
+#'           selected = "PARAMCD",
+#'           multiple = FALSE,
+#'           fixed = FALSE,
+#'           label = "Select variable:"
+#'         )
 #'       )
 #'     )
 #'   )
@@ -392,9 +373,7 @@ tm_g_association <- function(label = "Association",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      return(NULL)
-    },
+    server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
     server_args = list(
@@ -463,51 +442,40 @@ srv_tm_g_association <- function(input,
     plot_height = reactive(input$myplot),
     plot_id = session$ns("plot")
   )
-  ref_data <- callModule(
-    data_extract_module,
-    id = "ref",
+
+  merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract_spec = ref
-  )
-  vars_data <- callModule(
-    data_extract_module,
-    id = "vars",
-    datasets = datasets,
-    data_extract_spec = vars
+    data_extract = list(ref, vars),
+    input_id = c("ref", "vars")
   )
 
   output$plot <- renderPlot({
+    ANL <- merged_data()$data() # nolint
 
-    ref_name <- get_dataset_prefixed_col_names(ref_data())
-    vars_names <- get_dataset_prefixed_col_names(vars_data())
-    anl <- datasets$get_data(dataname, reactive = TRUE, filtered = TRUE)
+    chunks_reset()
 
-    # not working currently because it relies on cols and not on already preprocessed data
+    ref_name <- merged_data()$columns_source$ref
+    vars_names <- merged_data()$columns_source$vars
+
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation
 
-    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-    anl_name <- paste0(dataname, "_FILTERED")
-    assign(anl_name, anl_f)
-
     validate(
-      need(nrow(anl_f) > 3, "need at least three rows"),
-      need(length(ref) > 0, "need at least one variable selected"),
-      need(!(ref %in% vars), "associated variables and reference variable cannot overlap"),
-      need(ref %in% names(anl_f), paste("reference variable not found in ", dataname)),
-      need(all(vars %in% names(anl_f)), paste("not all selected variables are in ", dataname))
+      need(nrow(ANL) > 3, "need at least three rows"),
+      need(length(ref_name) > 0, "need at least one variable selected"),
+      need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap")
     )
 
-    ref_class <- class(anl_f[[ref]])
-
-    if (ref_class == "numeric" && log_transformation) {
-      ref <- call("log", as.name(ref))
+    ref_class <- class(ANL[[ref_name]])
+    ref_cl_name <- if (ref_class == "numeric" && log_transformation) {
+      call("log", as.name(ref_name))
+    } else {
+      as.name(ref_name)
     }
-
     ref_cl <- call(
       "+",
-      bivariate_plot_call(anl_name, ref, NULL, ref_class, "NULL", freq = !show_dist),
+      bivariate_plot_call(as.name("ANL"), ref_cl_name, NULL, ref_class, "NULL", freq = !show_dist),
       quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip")))
     )
 
@@ -516,31 +484,36 @@ srv_tm_g_association <- function(input,
     } else {
       "NULL"
     }
-
-    var_cls <- lapply(vars, function(var_i) {
-      class_i <- class(anl_f[[var_i]])
-      if (class_i == "numeric" && log_transformation) {
-        var_i <- call("log", as.name(var_i))
+    var_cls <- lapply(vars_names, function(var_i) {
+      class_i <- class(ANL[[var_i]])
+      var_cl_name <- if (class_i == "numeric" && log_transformation) {
+        call("log", as.name(var_i))
+      } else {
+        as.name(var_i)
       }
-
-      bivariate_plot_call(anl_name, var_i, ref, class_i, ref_class_cov, freq = !show_dist)
+      bivariate_plot_call(as.name("ANL"), var_cl_name, ref_cl_name, class_i, ref_class_cov, freq = !show_dist)
     })
 
-
     cl1 <- call("<-", quote(plots), do.call("call", c(list("list", ref_cl), var_cls), quote = TRUE))
-
     cl2 <- bquote(p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)))
-
     cl <- bquote({.(cl1); .(cl2); grid::grid.newpage(); grid::grid.draw(p)})
-
-    chunks_reset()
-
     chunks_push(expression = cl, id = "plotCall")
 
+    # todo: remove code above and write as below, there is currently still a problem with call objects
+    #nolint start
+    # chunks_push(
+    #   expression = bquote({
+    #     plots <- .(ref_cl(var_cls))
+    #     p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)) #todo: include tern and grid in library call of showRCode
+    #     grid::grid.newpage()
+    #     grid::grid.draw(p)
+    #   }),
+    #   id = "plotCall"
+    # )
+    #nolint end
+
     p <- chunks_eval()
-
     chunks_validate_is_ok()
-
     p
   })
 
@@ -549,7 +522,7 @@ srv_tm_g_association <- function(input,
       title = "R Code for the Association Plot",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
+        merge_expression = merged_data()$expr,
         title = "Association Plot"
       )
     )
