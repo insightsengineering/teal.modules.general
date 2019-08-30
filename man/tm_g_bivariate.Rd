@@ -131,26 +131,14 @@ library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
- .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
- .funs = list(~as.factor(.))) \%>\% select("ARM", "ACTARM", "ACTARMCD",
- "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2")
-
-ADSL_2 <- mutate_at(cadsl,
-  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-  "USUBJID", "STUDYID")
+ADSL_2 <- ADSL
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
     code = 'ADSL <- cadsl
-            ADSL_2 <- mutate_at(cadsl,
-               .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-               .funs = list(~as.factor(.)))
-               \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY",
-               "USUBJID", "STUDYID")',
+            ADSL_2 <- ADSL',
     check = FALSE #TODO
   ),
   modules = root_modules(
@@ -225,7 +213,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
+          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -259,7 +247,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
+          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -349,7 +337,7 @@ app <- init(
      row_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c("__NONE__", "PARAMCD"),
+          choices = "PARAMCD",
           selected = "PARAMCD",
           multiple = FALSE,
           fixed = FALSE,
@@ -359,7 +347,7 @@ app <- init(
      col_facet = data_extract_spec(
        dataname = "ADRS",
        select = select_spec(
-          choices = c("__NONE__", "AVISIT"),
+          choices = "AVISIT",
           selected = "AVISIT",
           multiple = FALSE,
           fixed = FALSE,
@@ -445,8 +433,8 @@ app <- init(
           )
         ),
         select = select_spec(
-          choices = c("__NONE__", "ARMCD"),
-          selected = "ARMCD",
+          choices = "ARMCD",
+          selected = NULL,
           multiple = FALSE,
           fixed = FALSE,
           label = "Select variable:"
@@ -492,7 +480,7 @@ app <- init(
       x = data_extract_spec(
         dataname = "ADRS",
         select = select_spec(
-          choices = c("AVAL"),
+          choices = "AVAL",
           selected = "AVAL",
           multiple = FALSE,
           fixed = FALSE,
@@ -564,7 +552,7 @@ app <- init(
             label = "Select lab:"
           ),
           filter_spec(
-            vars = "STRATA1",
+            vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
             selected = levels(ADLB$AVISIT)[2],
             multiple = FALSE,
@@ -589,9 +577,9 @@ app <- init(
             label = "Select lab:"
           ),
           filter_spec(
-            vars = "STRATA1",
+            vars = "AVISIT",
             choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[2],
+            selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
             label = "Select visit:"
           )
@@ -615,9 +603,9 @@ app <- init(
             label = "Select lab:"
           ),
           filter_spec(
-            vars = "STRATA1",
-            choices = levels(ADLB$STRATA1),
-            selected = levels(ADLB$STRATA1)[1],
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[1],
             multiple = FALSE,
             label = "Select category:"
           )
@@ -641,9 +629,9 @@ app <- init(
             label = "Select lab:"
           ),
           filter_spec(
-            vars = "STRATA1",
-            choices = levels(ADLB$STRATA1),
-            selected = levels(ADLB$STRATA1)[1],
+            vars = "AVISIT",
+            choices = levels(ADLB$AVISIT),
+            selected = levels(ADLB$AVISIT)[3],
             multiple = FALSE,
             label = "Select category:"
           )

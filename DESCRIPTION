@@ -40,3 +40,17 @@ Suggests:
   test.nest (>= 0.1.0),
   testthat
 RoxygenNote: 6.1.1
+Collate: 
+    'teal.modules.general-package.R'
+    'tm_data_table.R'
+    'tm_g_association.R'
+    'utils.R'
+    'tm_g_bivariate.R'
+    'tm_g_regression.R'
+    'tm_g_response.R'
+    'tm_g_scatterplotmatrix.R'
+    'tm_scatterplot.R'
+    'tm_t_percentage_cross_table.R'
+    'tm_table.R'
+    'tm_variable_browser.R'
+    'tm_venn.R'

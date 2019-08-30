@@ -68,7 +68,7 @@
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-#'     code = "ADSL <- cadsl; ADSL2 <- cadsl",
+#'     code = "ADSL <- cadsl; ADSL_2 <- cadsl",
 #'     check = FALSE #TRUE todo: does not work
 #'   ),
 #'   modules = root_modules(

@@ -2,17 +2,17 @@ context("expert_ggplot_call")
 
 test_that("expert_ggplot_call can work with all combinations", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, FALSE),
+    expert_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
   )
 
   expect_equal(
-    expert_ggplot_call("ADSL", NULL, NULL, FALSE) %>% deparse(),
+    expert_ggplot_call("ADSL", character(0), character(0), FALSE) %>% deparse(),
     "aes(colour = ADSL)"
   )
 
   expect_equal(
-    expert_ggplot_call("ADSL", "ADSL", NULL, FALSE) %>% deparse(),
+    expert_ggplot_call("ADSL", "ADSL", character(0), FALSE) %>% deparse(),
     "aes(colour = ADSL, fill = ADSL)"
   )
   expect_equal(
@@ -20,7 +20,7 @@ test_that("expert_ggplot_call can work with all combinations", {
     "aes(colour = ADSL, fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call("ADSL", "ADSL", NULL, TRUE) %>% deparse(),
+    expert_ggplot_call("ADSL", "ADSL", character(0), TRUE) %>% deparse(),
     "aes(colour = ADSL, fill = ADSL)"
   )
 
@@ -29,45 +29,45 @@ test_that("expert_ggplot_call can work with all combinations", {
     "aes(colour = ADSL, fill = ADSL, size = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call("ADSL", NULL, "ADSL", TRUE) %>% deparse(),
+    expert_ggplot_call("ADSL", character(0), "ADSL", TRUE) %>% deparse(),
     "aes(colour = ADSL, size = ADSL)"
   )
 })
 test_that("expert_ggplot_call can work with all combinations without colour_var", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, FALSE),
+    expert_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
   )
 
   expect_equal(
-    expert_ggplot_call(NULL, "ADSL", NULL, FALSE) %>% deparse(),
+    expert_ggplot_call(character(0), "ADSL", character(0), FALSE) %>% deparse(),
     "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ADSL", "ADSL", FALSE) %>% deparse(),
+    expert_ggplot_call(character(0), "ADSL", "ADSL", FALSE) %>% deparse(),
     "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ADSL", NULL, TRUE) %>% deparse(),
+    expert_ggplot_call(character(0), "ADSL", character(0), TRUE) %>% deparse(),
     "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ADSL", "ADSL", TRUE) %>% deparse(),
+    expert_ggplot_call(character(0), "ADSL", "ADSL", TRUE) %>% deparse(),
     "aes(fill = ADSL, size = ADSL)"
   )
 })
 
 test_that("expert_ggplot_call can work size_var", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, "ADSL", TRUE) %>% deparse(),
+    expert_ggplot_call(character(0), character(0), "ADSL", TRUE) %>% deparse(),
     "aes(size = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, TRUE),
+    expert_ggplot_call(character(0), character(0), character(0), TRUE),
     NULL
   )
   expect_equal(
-    expert_ggplot_call(NULL, NULL, "ADSL", FALSE),
+    expert_ggplot_call(character(0), character(0), "ADSL", FALSE),
     NULL
   )
 })
