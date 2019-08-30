@@ -213,7 +213,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE
@@ -247,7 +247,7 @@ app <- init(
         filter = filter_spec(
           label = "Select endpoints:",
           vars = c("PARAMCD", "AVISIT"),
-          choices = apply(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT)),
+          choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
                           1, paste, collapse = " - "),
           selected = "OVRINV - Screening",
           multiple = TRUE

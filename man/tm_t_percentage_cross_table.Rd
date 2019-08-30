@@ -86,29 +86,15 @@ library(random.cdisc.data)
 library(dplyr)
 
 ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
-  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))
-) \%>\% select(
-  "ARM", "ACTARM", "ACTARMCD",
-  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
-)
-
-ADSL_2 <- mutate_at(cadsl,
-  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))
-) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+ADSL_2 <- ADSL
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
     code = 'ADSL <- cadsl
-ADSL_2 <- mutate_at(cadsl,
-.vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-.funs = list(~as.factor(.))) \%>\%
-select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-    check = FALSE #TODO
+ADSL_2 <- ADSL',
+    check = FALSE
   ),
   modules = root_modules(
     tm_t_percentage_cross_table("Cross Table",

@@ -62,29 +62,15 @@
 #' library(dplyr)
 #'
 #' ADSL <- cadsl
-#' ADSL <- mutate_at(ADSL,
-#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = list(~as.factor(.))
-#' ) %>% select(
-#'   "ARM", "ACTARM", "ACTARMCD",
-#'   "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
-#' )
-#'
-#' ADSL_2 <- mutate_at(cadsl,
-#'   .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#'   .funs = list(~as.factor(.))
-#' ) %>% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+#' ADSL_2 <- ADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
 #'     cdisc_dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
 #'     code = 'ADSL <- cadsl
-#' ADSL_2 <- mutate_at(cadsl,
-#' .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-#' .funs = list(~as.factor(.))) %>%
-#' select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = FALSE #TODO
+#' ADSL_2 <- ADSL',
+#'     check = FALSE
 #'   ),
 #'   modules = root_modules(
 #'     tm_t_percentage_cross_table("Cross Table",
@@ -371,9 +357,7 @@ tm_t_percentage_cross_table <- function(label = "Cross Table",
 
   module(
     label = label,
-    server = function(input, output, session, datasets, ...) {
-      return(NULL)
-    },
+    server = srv_percentage_cross_table,
     ui = ui_percentage_cross_table,
     ui_args = args,
     server_args = list(label = label, x = x, y = y),
@@ -401,61 +385,54 @@ ui_percentage_cross_table <- function(id, ...) {
   )
 }
 
+#' @importFrom tern t_summary
 #' @importFrom rtables rrowl rtablel as_html
 #' @importFrom stats addmargins
 srv_percentage_cross_table <- function(input, output, session, datasets, label, x, y) {
-  dataname <- get_extract_datanames(list(x, y))
+  init_chunks(session)
 
-  init_chunks()
-
-  output$dataname <- renderText(dataname)
-
-
-  table_code <- reactive({
-    anl_f <- datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
-
-    x <- input$x
-    y <- input$y
-
-    validate(need(anl_f, "data missing"))
-    validate_has_data(anl_f, 10)
-
-    validate(need(x, "selected x does not exist"))
-    validate(need(y, "selected y does not exist"))
-
-    data_name <- paste0(dataname, "_FILTERED")
-    assign(data_name, anl_f)
-
-    # Set chunks
-    chunks_reset()
-
-    chunks_push(expression = bquote(data_table <-
-                                      stats::addmargins(table(.(as.name(data_name))[[.(x)]], .(as.name(data_name))[[.(y)]]))))
-
-    chunks_push(expression = quote(perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]))
-
-    chunks_push(
-      expression =
-        quote(add_row <- function(i, x, p) {
-          rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
-        })
-    )
-    chunks_push(expression = quote(rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)))
-    chunks_push(expression = quote(rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")))
-  })
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = list(x, y),
+    input_id = c("x", "y")
+  )
 
   output$table <- renderUI({
-    table_code()
-    t <- rtables::as_html(chunks_eval())
-    chunks_validate_is_ok()
-    t
+    ANL <- merged_data()$data()
+    chunks_reset()
+    x_var <- merged_data()$columns_source$x
+    y_var <- merged_data()$columns_source$y
+
+    validate_has_data(ANL, 10)
+    validate(need(x_var, "selected x_var does not exist"))
+    validate(need(y_var, "selected y_var does not exist"))
+
+    chunks_push(expression = bquote({
+      data_table <- addmargins(table(ANL[[.(x_var)]], ANL[[.(y_var)]]))
+      perc_table <- data_table / data_table[nrow(data_table), ncol(data_table)]
+      add_row <- function(i, x, p) {
+        # todo: rename args
+        rtables::rrowl(rownames(x)[i], Map(function(xii, pii) c(xii, pii), x[i, ], p[i, ]))
+      }
+      rows <- lapply(1:nrow(data_table), add_row, x = data_table, p = perc_table)
+      rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")
+    }))
+
+    tbl <- safe_chunks_eval()
+    div(
+      as_html(tbl), # don't push this to chunks
+      # todo: eventually use t_summary below
+      h3("using t_summary"),
+      as_html(eval(bquote(t_summary(ANL[[.(x_var)]], col_by = as.factor(ANL[[.(y_var)]]), total = "Sum"))))
+    )
   })
 
   observeEvent(input$show_rcode, {
     show_rcode_modal(
-      title = "Cross Table",
+      title = "R code for the cross table",
       rcode = get_rcode(
         datasets = datasets,
+        merge_expression = merged_data()$expr,
         title = label
       )
     )
