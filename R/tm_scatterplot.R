@@ -1,3 +1,6 @@
+#' @include utils.R
+NULL
+
 #' Create a simple scatterplot
 #'
 #' Create a plot with the \code{\link{plot}[base]} function

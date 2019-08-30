@@ -1,3 +1,6 @@
+#' @include utils.R
+NULL
+
 #' Scatterplot and Regression Model
 #'
 #'
@@ -614,14 +617,5 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
       )
     )
   })
-}
-
-#' Suppresses warning that chunk was already evaluated and validates that chunks are okay
-#'
-#' @return value of \code{chunks_eval}
-safe_chunks_eval <- function() {
-  res <- chunks_eval()
-  chunks_validate_is_ok()
-  return(res)
 }
 
