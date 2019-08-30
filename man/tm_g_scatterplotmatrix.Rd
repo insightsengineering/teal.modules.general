@@ -26,7 +26,10 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-Create a scatterplot matrix
+The module allows to add and remove dataset selectors (data extract inputs) and it will create
+the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
+The available datasets to choose from for each dataset selector is the same and
+determined by the argument \code{selected}.
 }
 \examples{
 
@@ -65,32 +68,18 @@ shinyApp(app$ui, app$server)
 # datasets: different wide
 # Scatterplot matrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
 library(random.cdisc.data)
-library(dplyr)
 
 ADSL <- cadsl
-ADSL <- mutate_at(ADSL,
-  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))
-) \%>\% select(
-  "ARM", "ACTARM", "ACTARMCD",
-  "SEX", "STRATA1", "AGE", "USUBJID", "STUDYID", "STRATA2"
-)
-
-ADSL_2 <- mutate_at(cadsl,
-  .vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-  .funs = list(~as.factor(.))
-) \%>\% select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
+ADSL_2 <- cadsl
+ADSL_3 <- cadsl
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-    code = 'ADSL <- cadsl
-ADSL_2 <- mutate_at(cadsl,
-.vars = vars(c("ARM", "ACTARM", "ACTARMCD", "SEX", "STRATA1", "STRATA2")),
-.funs = list(~as.factor(.))) \%>\%
-select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-    check = FALSE #TODO
+    dataset("ADSL_3", ADSL_2, keys = get_cdisc_keys("ADSL")),
+    code = 'ADSL <- cadsl; ADSL_2 <- cadsl; ADSL_3 <- cadsl',
+    check = TRUE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
@@ -112,6 +101,16 @@ select("ACTARM", "AGE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
             label = "Select variables:",
             choices = colnames(ADSL_2),
             selected = c("COUNTRY", "ACTARM", "STRATA2"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADSL_3",
+          select = select_spec(
+            label = "Select variables:",
+            choices = colnames(ADSL_3),
+            selected = c("AGE", "ACTARM", "SEX"),
             multiple = TRUE,
             fixed = FALSE
           )
@@ -230,38 +229,39 @@ library(random.cdisc.data)
 
 ADSL <- cadsl
 ADLB <- cadlb
+ADRS <- cadrs
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl; ADLB <- cadlb",
+    cdisc_dataset("ADRS", ADRS),
+    code = "ADSL <- cadsl; ADRS <- cadrs",
     check = TRUE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix on two long datasets with subsets",
       selected = data_extract_spec(
-        dataname = "ADLB",
+        dataname = "ADRS",
         filter = list(
           filter_spec(
             vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
-            selected = levels(ADLB$PARAMCD)[1],
+            choices = levels(ADRS$PARAMCD),
+            selected = levels(ADRS$PARAMCD)[1],
             multiple = FALSE,
             label = "Select lab:"
           ),
           filter_spec(
             vars = "AVISIT",
-            choices = levels(ADLB$AVISIT),
-            selected = levels(ADLB$AVISIT)[1],
+            choices = levels(ADRS$AVISIT),
+            selected = levels(ADRS$AVISIT)[1],
             multiple = FALSE,
             label = "Select visit:"
           )
         ),
         select = select_spec(
-          choices = c("AVAL", "CHNG", "BMRKR1", "BMRKR2"),
-          selected = c("AVAL", "CHNG"),
+          choices = c("AVAL", "BMRKR1", "BMRKR2", "AGE"),
+          selected = c("AVAL", "AGE"),
           multiple = TRUE,
           fixed = FALSE,
           label = "Select variables:"
