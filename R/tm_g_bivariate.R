@@ -911,7 +911,7 @@ srv_g_bivariate <- function(input,
 
     chunks_reset() #todo: why are you calling chunks_reset twice?
     chunks_push(expression = cl, id = "plotCall")
-    safe_chunks_eval()
+    chunks_safe_eval()
   })
 
   observeEvent(input$show_rcode, {

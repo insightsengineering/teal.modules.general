@@ -512,9 +512,7 @@ srv_tm_g_association <- function(input,
     # )
     #nolint end
 
-    p <- chunks_eval()
-    chunks_validate_is_ok()
-    p
+    chunks_safe_eval()
   })
 
   observeEvent(input$show_rcode, {

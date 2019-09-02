@@ -588,7 +588,7 @@ srv_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
       ))
     }
 
-    safe_chunks_eval()
+    chunks_safe_eval()
   })
 
   observeEvent(input$show_rcode, {

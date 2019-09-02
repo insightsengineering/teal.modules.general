@@ -557,7 +557,7 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
     chunks_push(
       expression = quote(fit <- lm(form, data = ANL)) %>% substituteDirect(list(form = form))
     )
-    safe_chunks_eval() # to access fit object outside
+    chunks_safe_eval()
     return(form)
   })
 
@@ -593,13 +593,13 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
       chunks_push(bquote(plot(fit, which = .(i), id.n = NULL))) # bquote to substitute .(i)
     }
 
-    safe_chunks_eval()
+    chunks_safe_eval()
   })
 
   output$text <- renderPrint({
     fit()
     chunks_push(expression = quote(summary(fit)), id = "summary")
-    safe_chunks_eval()
+    chunks_safe_eval()
   })
 
   observeEvent(input$show_rcode, {

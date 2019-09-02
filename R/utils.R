@@ -9,12 +9,3 @@ list_or_null <- function(obj) {
     list(obj)
   }
 }
-
-#' Suppresses warning that chunk was already evaluated and validates that chunks are okay
-#'
-#' @return value of \code{chunks_eval}
-safe_chunks_eval <- function() {
-  res <- chunks_eval()
-  chunks_validate_is_ok()
-  return(res)
-}

@@ -726,11 +726,7 @@ srv_g_response <- function(input,
 
     chunks_push(expression = plot_call, id = "plotCall")
 
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
+    chunks_safe_eval()
   })
 
   observeEvent(input$show_rcode, {

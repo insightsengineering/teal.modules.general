@@ -431,7 +431,7 @@ srv_g_scatterplotmatrix <- function(input,
       lattice::splom(ANL[, .(cols_names)], pch = 16, alpha = .(alpha), cex = .(cex))
     }))
 
-    safe_chunks_eval()
+    chunks_safe_eval()
   })
 
   # show r code

@@ -418,7 +418,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, label, 
       rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")
     }))
 
-    tbl <- safe_chunks_eval()
+    tbl <- chunks_safe_eval()
     div(
       as_html(tbl), # don't push this to chunks
       # todo: eventually use t_summary below

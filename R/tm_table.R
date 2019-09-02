@@ -253,8 +253,7 @@ srv_table <- function(input, output, session, datasets, dataname, x, y) {
   output$table <- renderTable({
     chunk_reactive()
 
-    tbl <- chunks_eval()
-    chunks_validate_is_ok()
+    tbl <- chunks_safe_eval()
 
     as.data.frame.matrix(tbl, row.names = rownames(tbl))
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
