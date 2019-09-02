@@ -48,6 +48,7 @@
 #'         "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
+#'           choices = names(ADSL),
 #'           selected = names(ADSL)[6],
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -82,11 +83,10 @@
 #'       x = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = filter_spec(
-#'           vars = "ARMCD",
-#'           choices = levels(ADLB$ARMCD),
-#'           selected = levels(ADLB$ARMCD)[1],
-#'           multiple = FALSE,
-#'           label = "Select ARM:"
+#'           vars = "PARAMCD",
+#'           choices = levels(ADLB$PARAMCD),
+#'           selected = levels(ADLB$PARAMCD)[1],
+#'           multiple = FALSE
 #'         ),
 #'         select = select_spec(
 #'           choices = names(ADLB),
@@ -99,15 +99,14 @@
 #'       y = data_extract_spec(
 #'         dataname = "ADLB",
 #'         filter = filter_spec(
-#'           vars = "ARMCD",
-#'           choices = levels(ADLB$ARMCD),
-#'           selected = levels(ADLB$ARMCD)[1],
-#'           multiple = FALSE,
-#'           label = "Select ARM:"
+#'           vars = "PARAMCD",
+#'           choices = levels(ADLB$PARAMCD),
+#'           selected = levels(ADLB$PARAMCD)[1],
+#'           multiple = FALSE
 #'         ),
 #'         select = select_spec(
 #'           choices = names(ADLB),
-#'           selected = "PARAMCD",
+#'           selected = "LOQFL",
 #'           multiple = FALSE,
 #'           fixed = FALSE,
 #'           label = "Select variable:"
@@ -205,45 +204,37 @@ srv_table <- function(input, output, session, datasets, dataname, x, y) {
 
   init_chunks()
 
-  # Data Extraction
-  x_data <- callModule(data_extract_module,
-                          id = "x",
-                          datasets = datasets,
-                          data_extract_spec = x
-  )
-  y_data <- callModule(data_extract_module,
-                          id = "y",
-                          datasets = datasets,
-                          data_extract_spec = y
+  dataname <- get_extract_datanames(list(x, y))
+
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = list(x, y),
+    input_id = c("x", "y")
   )
 
   chunk_reactive <- reactive({
+    ANL <- merged_data()$data()
 
-    x_name <- get_dataset_prefixed_col_names(x_data())
-    y_name <- get_dataset_prefixed_col_names(y_data())
+    chunks_reset()
+
+    x_name <- unname(merged_data()$columns_source$x)
+    y_name <- unname(merged_data()$columns_source$y)
 
     validate(need(x_name != "", "Please define a column that is not empty."))
     validate(need(y_name != "", "Please define a column that is not empty."))
 
-    dataset <- merge_datasets(
-      list(
-        x_data(),
-        y_data()
-      )
-    )
-    validate_has_data(dataset, 10)
+    validate_has_data(ANL, 10)
+
     useNA <- input$useNA # nolint
     use_margin <- input$margins
 
-    chunks_reset()
-
     expression_to_use <- if (use_margin) {
       expr(stats::addmargins(
-        table(dataset[[x_name]], dataset[[y_name]], useNA = useNA)
+        table(ANL[[x_name]], ANL[[y_name]], useNA = useNA)
       )) %>%
         substituteDirect(list(useNA = useNA, x_name = x_name, y_name = y_name))
     } else {
-      expr(table(dataset[[x_name]], dataset[[y_name]], useNA = useNA)) %>%
+      expr(table(ANL[[x_name]], ANL[[y_name]], useNA = useNA)) %>%
         substituteDirect(list(useNA = useNA, x_name = x_name, y_name = y_name))
     }
 
@@ -259,15 +250,15 @@ srv_table <- function(input, output, session, datasets, dataname, x, y) {
   }, rownames = TRUE, bordered = TRUE, html.table.attributes = 'style="background-color:white;"')
 
   observeEvent(input$show_rcode, {
-    x_name <- get_dataset_prefixed_col_names(x_data())
-    y_name <- get_dataset_prefixed_col_names(y_data())
+    x_name <- merged_data()$columns_source$x
+    y_name <- merged_data()$columns_source$y
     title <- paste("Cross-Table of", x_name, "vs.", y_name)
 
     show_rcode_modal(
       title = "R Code for the Current Table",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = "",
+        merge_expression = merged_data()$expr,
         title = title
       )
     )
