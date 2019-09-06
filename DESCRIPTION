@@ -36,12 +36,14 @@ Imports:
   tern (>= 0.6.2),
   utils.nest (>= 0.1.0)
 Suggests:
+  knitr,
   random.cdisc.data (>= 0.1.2.1),
   test.nest (>= 0.1.0),
   testthat
 RoxygenNote: 6.1.1
 Collate: 
     'teal.modules.general-package.R'
+    'tm_cross_table.R'
     'tm_data_table.R'
     'tm_g_association.R'
     'utils.R'
@@ -51,5 +53,5 @@ Collate:
     'tm_g_scatterplotmatrix.R'
     'tm_scatterplot.R'
     'tm_t_percentage_cross_table.R'
-    'tm_table.R'
     'tm_variable_browser.R'
+VignetteBuilder: knitr

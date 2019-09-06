@@ -176,8 +176,8 @@ srv_page_data_table <- function(input,
                                 session,
                                 datasets) {
 
-  if_filtered <- reactive(input$if_filtered)
-  if_distinct <- reactive(input$if_distinct)
+  if_filtered <- reactive(as.logical(input$if_filtered))
+  if_distinct <- reactive(as.logical(input$if_distinct))
 
   lapply(
     datasets$datanames(),

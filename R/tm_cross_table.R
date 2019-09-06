@@ -3,7 +3,6 @@
 #' Create a table with the \code{\link{table}[base]} function
 #'
 #' @param label (\code{chracter}) menu label
-#' @param dataname (\code{chracter}) name of dataset used to generate table
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Specification how the user can select data to get encoded in the rows of the cross table.
 #'   Please just use single selections inside the \code{select_spec}.
@@ -17,7 +16,7 @@
 #' @param pre_output (\code{shiny.tag}) html tags appended below the output
 #' @param post_output (\code{shiny.tag}) html tags appended after the output
 #'
-#' @noRd
+#' @export
 #'
 #' @examples
 #' library(random.cdisc.data)
@@ -31,25 +30,24 @@
 #'     check = TRUE
 #'   ),
 #'   root_modules(
-#'     tm_table(
+#'     tm_cross_table(
 #'       "Table Choices",
-#'       dataname =  "ADSL",
 #'       x = data_extract_spec(
-#'         "ADSL",
+#'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = names(ADSL),
-#'           selected = names(ADSL)[5],
+#'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
-#'         "ADSL",
+#'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = names(ADSL),
-#'           selected = names(ADSL)[6],
+#'           selected = "ARM",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -61,73 +59,13 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
-#' # datasets: different subsets of long dataset
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADLB <- cadlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
-#'     check = TRUE
-#'   ),
-#'   root_modules(
-#'     tm_table(
-#'       "Table Choices",
-#'       dataname =  "ADLB",
-#'       x = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = filter_spec(
-#'           vars = "PARAMCD",
-#'           choices = levels(ADLB$PARAMCD),
-#'           selected = levels(ADLB$PARAMCD)[1],
-#'           multiple = FALSE
-#'         ),
-#'         select = select_spec(
-#'           choices = names(ADLB),
-#'           selected = "AVISIT",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = filter_spec(
-#'           vars = "PARAMCD",
-#'           choices = levels(ADLB$PARAMCD),
-#'           selected = levels(ADLB$PARAMCD)[1],
-#'           multiple = FALSE
-#'         ),
-#'         select = select_spec(
-#'           choices = names(ADLB),
-#'           selected = "LOQFL",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#'
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-tm_table <- function(label,
-                     dataname,
+tm_cross_table <- function(label = "Cross table",
                      x,
                      y,
                      useNA = c("ifany", "no", "always"), # nolint
                      pre_output = NULL,
                      post_output = NULL) {
   stopifnot(is.character.single(label))
-  stopifnot(is.character.single(dataname))
   stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   if (is.class.list("data_extract_spec")(x)) {
     stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
@@ -153,18 +91,17 @@ tm_table <- function(label,
 
   module(
     label = label,
-    server = srv_table,
-    ui = ui_table,
-    server_args = list(dataname = dataname, x = x, y = y),
+    server = srv_cross_table,
+    ui = ui_cross_table,
+    server_args = list(x = x, y = y),
     ui_args = args,
-    filters = dataname
+    filters = "all"
   )
 }
 
 
-ui_table <- function(id,
+ui_cross_table <- function(id,
                      label,
-                     dataname,
                      x,
                      y,
                      useNA, # nolint
@@ -178,7 +115,7 @@ ui_table <- function(id,
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      helpText("Analysis data:", tags$code(dataname)),
+      datanames_input(list(x, y)),
       data_extract_input(ns("x"), label = "Row values", x),
       tags$hr(),
       data_extract_input(ns("y"), label = "Column values", y),
@@ -199,12 +136,8 @@ ui_table <- function(id,
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 #' @importFrom stats addmargins
-srv_table <- function(input, output, session, datasets, dataname, x, y) {
-  stopifnot(all(dataname %in% datasets$datanames()))
-
+srv_cross_table <- function(input, output, session, datasets, x, y) {
   init_chunks()
-
-  dataname <- get_extract_datanames(list(x, y))
 
   merged_data <- data_merge_module(
     datasets = datasets,
@@ -220,8 +153,8 @@ srv_table <- function(input, output, session, datasets, dataname, x, y) {
     x_name <- unname(merged_data()$columns_source$x)
     y_name <- unname(merged_data()$columns_source$y)
 
-    validate(need(x_name != "", "Please define a column that is not empty."))
-    validate(need(y_name != "", "Please define a column that is not empty."))
+    validate(need(!is.character.empty(x_name), "Please define column for x variable that is not empty."))
+    validate(need(!is.character.empty(y_name), "Please define column for y variable that is not empty."))
 
     validate_has_data(ANL, 10)
 

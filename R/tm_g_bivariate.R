@@ -40,7 +40,6 @@ NULL
 #'
 #'
 #' @examples
-#' # datasets: single wide
 #' # Bivariate plot of selected variable (AGE) against selected (SEX)
 #' library(random.cdisc.data)
 #' ADSL <- cadsl
@@ -98,535 +97,6 @@ NULL
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-#'
-#' # datasets: different wide
-#' # Bivariate plot with RACE (factor) plotted over AGE (numeric)
-#' library(random.cdisc.data)
-#' library(dplyr)
-#'
-#' ADSL <- cadsl
-#' ADSL_2 <- ADSL
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-#'     code = 'ADSL <- cadsl
-#'             ADSL_2 <- ADSL',
-#'     check = FALSE #TODO
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       label = "Association plots",
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = c("AGE", "SEX", "STRATA1", "RACE"),
-#'           selected = c("AGE"),
-#'           multiple = FALSE
-#'         )),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL_2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("COUNTRY", "AGE", "RACE"),
-#'           selected = "RACE",
-#'           multiple = FALSE
-#'         )),
-#'       # Row facetting by first data set
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'          label = "Select variable:",
-#'          choices = names(ADSL),
-#'          selected = NULL,
-#'          multiple = FALSE,
-#'          fixed = FALSE
-#'         )
-#'       ),
-#'       # Col facetting by second data set
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADSL_2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = names(ADSL),
-#'           selected = NULL,
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: multiple long datasets
-#' # Bivariate plot of different parameters from ADRS or ADTTE datasets
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADRS <- cadrs
-#' ADTTE <- cadtte
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADRS", ADRS),
-#'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       label = "Bivariate Plots of two long datasets",
-#'       x = data_extract_spec(
-#'         dataname = "ADRS",
-#'         filter = filter_spec(
-#'           label = "Select endpoints:",
-#'           vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
-#'                           1, paste, collapse = " - "),
-#'           selected = "OVRINV - Screening",
-#'           multiple = TRUE
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADTTE",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = c("AVAL", "CNSR"),
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         ),
-#'         filter = filter_spec(
-#'           label = "Select endpoint:",
-#'           vars = c("PARAMCD"),
-#'           choices = unique(ADTTE$PARAMCD),
-#'           selected = "OS",
-#'           multiple = FALSE
-#'         )
-#'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADRS",
-#'         filter = filter_spec(
-#'           label = "Select endpoints:",
-#'           vars = c("PARAMCD", "AVISIT"),
-#'           choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
-#'                           1, paste, collapse = " - "),
-#'           selected = "OVRINV - Screening",
-#'           multiple = TRUE
-#'         ),
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = c("AVAL", "AVISIT"),
-#'           selected = "AVISIT",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("SEX", "RACE"),
-#'           selected = NULL,
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       expert_settings = TRUE,
-#'       plot_height = c(600, 200, 2000),
-#'       ggtheme = "grey"
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: wide, long
-#' # Bivariate plot with biomarker measurement (ADSL$BMRKR1) plotted over
-#' # date of response (ADRS$AVAL)
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADRS <- cadrs
-#'
-#' app <- init(
-#'  data = cdisc_data(
-#'    cdisc_dataset("ADSL", ADSL),
-#'    cdisc_dataset("ADRS", ADRS),
-#'    code = "ADSL <- cadsl; ADRS <- cadrs",
-#'    check = TRUE
-#'  ),
-#'  modules = root_modules(
-#'    tm_g_bivariate(
-#'      label = "Association Plots",
-#'      x = data_extract_spec(
-#'        dataname = "ADRS",
-#'        filter = list(
-#'          filter_spec(
-#'            vars = "PARAM",
-#'            choices = levels(ADRS$PARAM),
-#'            selected = levels(ADRS$PARAM)[1],
-#'            multiple = FALSE,
-#'            label = "Select response:"
-#'          ),
-#'          filter_spec(
-#'            vars = "AVISIT",
-#'            choices = levels(ADRS$AVISIT),
-#'            selected = levels(ADRS$AVISIT)[1],
-#'            multiple = FALSE,
-#'            label = "Select visit:"
-#'          )
-#'        ),
-#'        select = select_spec(
-#'          choices = "AVAL",
-#'          selected = "AVAL",
-#'          multiple = FALSE,
-#'          label = "Select variable:",
-#'          fixed = TRUE
-#'        )
-#'     ),
-#'      y = data_extract_spec(
-#'        dataname = "ADSL",
-#'        select = select_spec(
-#'          choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
-#'          selected = "BMRKR1",
-#'          multiple = FALSE,
-#'          label = "Select variable:",
-#'          fixed = FALSE
-#'        )
-#'      ),
-#'      row_facet = data_extract_spec(
-#'        dataname = "ADRS",
-#'        select = select_spec(
-#'           choices = "PARAMCD",
-#'           selected = "PARAMCD",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'      ),
-#'      col_facet = data_extract_spec(
-#'        dataname = "ADRS",
-#'        select = select_spec(
-#'           choices = "AVISIT",
-#'           selected = "AVISIT",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: wide, long, long
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADRS <- cadrs
-#' ADLB <- cadlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADRS", ADRS),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs; ADLB <- cadlb",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       label = "Association Plots",
-#'       x = data_extract_spec(
-#'         dataname = "ADRS",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADRS$PARAMCD),
-#'             selected = levels(ADRS$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select response:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADRS$AVISIT),
-#'             selected = levels(ADRS$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAM",
-#'             choices = levels(ADLB$PARAM),
-#'             selected = levels(ADLB$PARAM)[1],
-#'             multiple = FALSE,
-#'             label = "Select measurement:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "ARMCD",
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("SEX", "AGE", "RACE", "COUNTRY"),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       expert_settings = TRUE,
-#'       plot_height = c(600, 200, 2000),
-#'       ggtheme = "grey"
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: same dataset long
-#' # Bivariate plot of AVAL vs biomarker value split by PARAMCD and AVISIT
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADRS <- cadrs
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADRS", ADRS),
-#'     code = "ADSL <- cadsl; ADRS <- cadrs",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       x = data_extract_spec(
-#'         dataname = "ADRS",
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADRS",
-#'         select = select_spec(
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADRS",
-#'         select = select_spec(
-#'           choices = "PARAMCD",
-#'           selected = "PARAMCD",
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Select variables:"
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADRS",
-#'         select = select_spec(
-#'           choices = "AVISIT",
-#'           selected = "AVISIT",
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Select variables:"
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: different subsets of long dataset
-#' # Bivariate plot of one lab measurement versus another, optionally split by additional variables
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADLB <- cadlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_bivariate(
-#'       x = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[2],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       use_density = FALSE,
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select category:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = c("RACE", "SEX", "ARMCD", "ACTARMCD"),
-#'           selected = NULL,
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[3],
-#'             multiple = FALSE,
-#'             label = "Select category:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = c("RACE", "SEX", "ARMCD", "ACTARMCD"),
-#'           selected = NULL,
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Select variables:"
-#'         )
-#'       ),
-#'       expert_settings = TRUE,
-#'       plot_height = c(600, 200, 2000),
-#'       ggtheme = "grey"
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            x,
                            y,
@@ -640,7 +110,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
-                           ggtheme = "minimal",
+                           ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                                       "classic", "void", "test"),
                            with_show_r_code = TRUE,
                            pre_output = NULL,
                            post_output = NULL) {
@@ -672,8 +143,9 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is.logical.single(free_y_scales))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
-  stopifnot(is.character.single(ggtheme))
   stopifnot(is.logical.single(with_show_r_code))
+  ggtheme <- match.arg(ggtheme)
+  stopifnot(is.character.single(ggtheme))
 
   if (expert_settings) {
     if (is.null(colour)) {
@@ -828,7 +300,6 @@ srv_g_bivariate <- function(input,
                             fill,
                             size) {
   init_chunks(session)
-  dataname <- get_extract_datanames(list(x, y, row_facet, col_facet, colour, fill, size))
   data_extract <- if (expert_settings) {
     setNames(
       list(x, y, row_facet, col_facet, colour, fill, size),
@@ -872,7 +343,7 @@ srv_g_bivariate <- function(input,
     ggtheme <- input$ggtheme
 
     validate(
-      need(!is.character.empty(x_name) || !is.character.empty(y_name),
+      need(!is.character.empty(x_name) || !is.empty(y_name),
            "x-variable and y-variable isn't correcly specified. At least one should be valid."))
 
     cl <- bivariate_plot_call(
@@ -891,7 +362,6 @@ srv_g_bivariate <- function(input,
         cl <- call("+", cl, facet_cl)
       }
     }
-
     expert_cl <- NULL
     if (expert_settings) {
       if (input$expert) {
@@ -909,7 +379,6 @@ srv_g_bivariate <- function(input,
       cl <- call("+", cl, as.call(parse(text = paste0("theme_", ggtheme))))
     }
 
-    chunks_reset() #todo: why are you calling chunks_reset twice?
     chunks_push(expression = cl, id = "plotCall")
     chunks_safe_eval()
   })
@@ -942,7 +411,6 @@ bivariate_plot_call <- function(data_name,
                                 x_class,
                                 y_class,
                                 freq = TRUE) {
-
   cl <- bivariate_ggplot_call(x_class = x_class, y_class = y_class, freq = freq)
 
   if (is.character.empty(x)) {

@@ -4,14 +4,14 @@
 \alias{tm_g_scatterplotmatrix}
 \title{Create a scatterplot matrix}
 \usage{
-tm_g_scatterplotmatrix(label = "Scatterplot matrix", selected,
+tm_g_scatterplotmatrix(label = "Scatterplot matrix", variables,
   plot_height = c(600, 200, 2000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
 
-\item{selected}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 
 \item{plot_height}{(\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
@@ -29,11 +29,9 @@ output to put the output into context. For example the
 The module allows to add and remove dataset selectors (data extract inputs) and it will create
 the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
 The available datasets to choose from for each dataset selector is the same and
-determined by the argument \code{selected}.
+determined by the argument \code{variables}.
 }
 \examples{
-
-# datasets: single wide dataset
 # Scatterplot matrix of variables from ADSL dataset
 library(random.cdisc.data)
 
@@ -49,7 +47,7 @@ app <- init(
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      selected = data_extract_spec(
+      variables = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variables:",
@@ -62,215 +60,6 @@ app <- init(
     )
   )
 )
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-# datasets: different wide
-# Scatterplot matrix with AGE, ACTARM, SEX, COUNTRY and STRATA2
-library(random.cdisc.data)
-
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADSL_3 <- cadsl
-
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
-    dataset("ADSL_3", ADSL_2, keys = get_cdisc_keys("ADSL")),
-    code = 'ADSL <- cadsl; ADSL_2 <- cadsl; ADSL_3 <- cadsl',
-    check = TRUE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      label = "Scatterplot matrix",
-      selected = list(
-        data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = colnames(ADSL),
-            selected = c("AGE", "ACTARM", "SEX"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADSL_2",
-          select = select_spec(
-            label = "Select variables:",
-            choices = colnames(ADSL_2),
-            selected = c("COUNTRY", "ACTARM", "STRATA2"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADSL_3",
-          select = select_spec(
-            label = "Select variables:",
-            choices = colnames(ADSL_3),
-            selected = c("AGE", "ACTARM", "SEX"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        )
-      )
-    )
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: same long
-# Display scatterplots of multiple continuous variables from ADTTE dataset
-
-library(random.cdisc.data)
-
-ADSL <- cadsl
-ADTTE <- cadtte
-
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl; ADTTE <- cadtte",
-    check = TRUE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      "Scatterplot matrix for same long dataset",
-      selected = data_extract_spec(
-        dataname = "ADTTE",
-        select = select_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2"),
-          selected = c("AVAL", "BMRKR1", "BMRKR2"),
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "Select variables:"
-        )
-      )
-    )
-  )
-)
-\dontrun{
-  shinyApp(app$ui, app$server)
-}
-
-# datasets: multiple long datasets
-# Scatterplot matrix of parameters from ADTTE and ADRS datasets.
-library(random.cdisc.data)
-
-ADSL <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADRS", ADRS),
-    cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl; ADRS <- cadrs; ADTTE <- cadtte",
-    check = TRUE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      label = "Scatterplot matrix on two long datasets",
-      selected = list(
-        data_extract_spec(
-          dataname = "ADRS",
-          select = select_spec(
-            label = "Select variables:",
-            choices = names(ADRS),
-            selected = c("AVAL", "AVALC"),
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            label = "Select endpoints:",
-            vars = c("PARAMCD", "AVISIT"),
-            choices = apply(as.matrix(expand.grid(
-              levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
-            selected = "OVRINV - Screening",
-            multiple = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADTTE",
-          select = select_spec(
-            label = "Select variables:",
-            choices = names(ADTTE),
-            selected = c("AVAL", "CNSR"),
-            multiple = TRUE,
-            fixed = FALSE
-          ),
-          filter = filter_spec(
-            label = "Select parameters:",
-            vars = "PARAMCD",
-            choices = unique(ADTTE$PARAMCD),
-            selected = "OS",
-            multiple = TRUE
-          )
-        )
-      )
-    )
-  )
-)
-
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: different subsets of long dataset
-# Display scatterplots of multiple continuous variables from ADLB dataset
-
-library(random.cdisc.data)
-
-ADSL <- cadsl
-ADLB <- cadlb
-ADRS <- cadrs
-
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADRS", ADRS),
-    code = "ADSL <- cadsl; ADRS <- cadrs",
-    check = TRUE
-  ),
-  modules = root_modules(
-    tm_g_scatterplotmatrix(
-      label = "Scatterplot matrix on two long datasets with subsets",
-      selected = data_extract_spec(
-        dataname = "ADRS",
-        filter = list(
-          filter_spec(
-            vars = "PARAMCD",
-            choices = levels(ADRS$PARAMCD),
-            selected = levels(ADRS$PARAMCD)[1],
-            multiple = FALSE,
-            label = "Select lab:"
-          ),
-          filter_spec(
-            vars = "AVISIT",
-            choices = levels(ADRS$AVISIT),
-            selected = levels(ADRS$AVISIT)[1],
-            multiple = FALSE,
-            label = "Select visit:"
-          )
-        ),
-        select = select_spec(
-          choices = c("AVAL", "BMRKR1", "BMRKR2", "AGE"),
-          selected = c("AVAL", "AGE"),
-          multiple = TRUE,
-          fixed = FALSE,
-          label = "Select variables:"
-        )
-      )
-    )
-  )
-)
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }

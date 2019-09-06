@@ -15,7 +15,6 @@ NULL
 #' @export
 #'
 #' @examples
-#' # datasets: same wide
 #' # Regression graphs from selected response variable (BMRKR1) and
 #' # selected regressors (AGE)
 #' library(random.cdisc.data)
@@ -49,376 +48,6 @@ NULL
 #'           selected = "AGE",
 #'           multiple = TRUE,
 #'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: different wide
-#' # Regression of BMRKR1 by AGE + RACE
-#' library(random.cdisc.data)
-#' library(dplyr)
-#'
-#' ADSL <- cadsl
-#' ADSL_1 <- ADSL %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                           "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-#' ADSL_2 <- ADSL %>%
-#'   select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL_1),
-#'     dataset("ADSL_2", ADSL_2, keys = list(primary = c("STUDYID", "USUBJID"),
-#'                                           foreign = NULL,
-#'                                           parent = NULL)),
-#'     code = 'ADSL <- cadsl
-#'             ADSL_1 <- ADSL %>% select("ARM", "ACTARM", "ACTARMCD",
-#'                                      "SEX", "AGE", "USUBJID", "STUDYID", "BMRKR1", "BMRKR2")
-#'             ADSL_2 <- ADSL %>%
-#'               select("ACTARM", "AGE", "RACE", "STRATA2", "COUNTRY", "USUBJID", "STUDYID")',
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL_2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("AGE", "RACE", "COUNTRY"),
-#'           selected = c("AGE", "RACE"),
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: same long
-#' # Examine linear relationship between responses of different parameters
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- cadsl",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("AGE", "BMRKR1"),
-#'           selected = c("AGE"),
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("AGE", "BMRKR1"),
-#'           selected = c("BMRKR1"),
-#'           multiple = TRUE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: multiple long datasets
-#' # Regression plots from model of different parameters from ADSL or ADTTE datasets
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADTTE <- cadtte
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- cadsl; ADTTE <- cadtte",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression Analysis on two long datasets",
-#'       response = data_extract_spec(
-#'         dataname = "ADTTE",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = c("AVAL", "CNSR"),
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         ),
-#'         filter = filter_spec(
-#'           label = "Select parameter:",
-#'           vars = c("PARAMCD"),
-#'           choices = unique(ADTTE$PARAMCD),
-#'           selected = "OS",
-#'           multiple = FALSE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = "BMRKR1",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: wide and long
-#' # Regression of lab measurement (ADLB$AVAL) by
-#' #   patient age (ADSL$AGE)
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADLB <- cadlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAM",
-#'             choices = levels(ADLB$PARAM),
-#'             selected = levels(ADLB$PARAM)[1],
-#'             multiple = FALSE,
-#'             label = "Select measurement:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = c("BMRKR1", "BMRKR2", "AGE"),
-#'           selected = "AGE",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: wide, long, long
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADLB <- cadlb
-#' ADRS <- cadrs
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     cdisc_dataset("ADRS", ADRS),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb; ADRS <- cadrs",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       response = list(data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAM",
-#'             choices = levels(ADLB$PARAM),
-#'             selected = levels(ADLB$PARAM)[1],
-#'             multiple = FALSE,
-#'             label = "Select measurement:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE,
-#'           label = "Select variable:"
-#'         )
-#'       ),
-#'       data_extract_spec(
-#'         dataname = "ADRS",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "ARMCD",
-#'             choices = levels(ADRS$ARMCD),
-#'             selected = levels(ADRS$ARMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select ARM:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADRS$AVISIT),
-#'             selected = levels(ADRS$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       )),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("BMRKR1", "BMRKR2"),
-#'           selected = c("BMRKR1"),
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
-#'
-#' # datasets: different subsets of long dataset
-#' # Examine linear relationship between different lab measurements
-#'
-#' library(random.cdisc.data)
-#'
-#' ADSL <- cadsl
-#' ADLB <- cadlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- cadsl; ADLB <- cadlb",
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_g_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[1],
-#'             multiple = FALSE,
-#'             label = "Select lab:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADLB",
-#'         filter = list(
-#'           filter_spec(
-#'             vars = "PARAMCD",
-#'             choices = levels(ADLB$PARAMCD),
-#'             selected = levels(ADLB$PARAMCD)[2:3],
-#'             multiple = TRUE,
-#'             label = "Select labs:"
-#'           ),
-#'           filter_spec(
-#'             vars = "AVISIT",
-#'             choices = levels(ADLB$AVISIT),
-#'             selected = levels(ADLB$AVISIT)[1],
-#'             multiple = FALSE,
-#'             label = "Select visit:"
-#'           )
-#'         ),
-#'         select = select_spec(
-#'           choices = "AVAL",
-#'           selected = "AVAL",
-#'           multiple = FALSE,
-#'           fixed = TRUE
 #'         )
 #'       )
 #'     )
@@ -530,7 +159,6 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
 
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
-    # we need to call it ANL rather than data because ANL statement is added to chunks automatically
     ANL <- merged_data()$data()
     chunks_reset()
     response_var <- merged_data()$columns_source$response
@@ -538,6 +166,7 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
 
     # validation
     validate_has_data(ANL, 10)
+    validate(need(length(regressor_var) > 0, "At least one regressor should be selected"))
     validate(need(length(response_var) == 1, "Response variable should be of length one."))
     if (input$plot_type == "Response vs Regressor") {
       validate(need(length(regressor_var) == 1, "Response vs Regressor is only provided for exactly one regressor"))
@@ -568,16 +197,14 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
       fit <- chunks_get_var("fit") # chunk already evaluated
 
       if (ncol(fit$model) > 1) {
-        stopifnot(ncol(fit$model) == 2) # already validated in fit() function
+        stopifnot(ncol(fit$model) == 2)
         chunks_push(quote(plot(fit$model[, 2:1])))
       } else {
         ANL <- chunks_get_var("ANL")
-        # what is this supposed to be doing??
         chunks_push(quote({
           plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
           names(plot_data) <- rep(names(fit$model), 2)
           plot <- plot(plot_data)
-          #todo: not working currently: Unknown or uninitialised column: 'coefficients'. (execute code from Show R Code)
           abline(ANL)
         }))
       }
@@ -590,7 +217,7 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
         "Residuals vs Leverage",
         "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
       ))
-      chunks_push(bquote(plot(fit, which = .(i), id.n = NULL))) # bquote to substitute .(i)
+      chunks_push(bquote(plot(fit, which = .(i), id.n = NULL)))
     }
 
     chunks_safe_eval()
