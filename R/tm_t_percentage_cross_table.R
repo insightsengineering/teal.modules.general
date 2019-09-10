@@ -140,12 +140,12 @@ srv_percentage_cross_table <- function(input, output, session, datasets, label, 
       rtables::rtablel(header = colnames(data_table), rows, format = "xx (xx.xx%)")
     }))
 
-    tbl <- chunks_safe_eval()
-    div(
-      as_html(tbl),
-      h3("using t_summary"),
-      as_html(eval(bquote(t_summary(ANL[[.(x_var)]], col_by = as.factor(ANL[[.(y_var)]]), total = "Sum"))))
+    chunks_push(
+      bquote(t_summary(ANL[[.(x_var)]], col_by = as.factor(ANL[[.(y_var)]]), total = "Sum"))
     )
+
+    tbl <- chunks_safe_eval()
+    as_html(tbl)
   })
 
   observeEvent(input$show_rcode, {
