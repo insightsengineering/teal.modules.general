@@ -158,8 +158,8 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAM",
-              choices = levels(ADRS$PARAM),
-              selected = levels(ADRS$PARAM),
+              choices = levels(ADRS$PARAMCD),
+              selected = levels(ADRS$PARAMCD),
               multiple = TRUE,
               label = "Select response"
             ),
