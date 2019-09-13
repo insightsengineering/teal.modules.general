@@ -9,9 +9,6 @@ navbar:
     - icon: fa-github
       href: https://github.roche.com/NEST/teal.modules.general
 
-development:
-  mode: devel
-
 reference:
   - title:
     contents:
@@ -24,5 +21,15 @@ reference:
 
   - title: Modules for tables
     contents:
+      - tm_cross_table
       - tm_t_percentage_cross_table
+
+  - title: Modules for plots
+    contents:
+      - tm_g_association
+      - tm_g_bivariate
+      - tm_g_regression
+      - tm_g_response
+      - tm_g_scatterplotmatrix
+      - tm_scatterplot
 
