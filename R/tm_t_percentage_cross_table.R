@@ -141,7 +141,7 @@ srv_percentage_cross_table <- function(input, output, session, datasets, label, 
     }))
 
     chunks_push(
-      bquote(t_summary(ANL[[.(x_var)]], col_by = as.factor(ANL[[.(y_var)]]), total = "Sum"))
+      bquote(tern::t_summary(ANL[[.(x_var)]], col_by = as.factor(ANL[[.(y_var)]]), total = "Sum"))
     )
 
     tbl <- chunks_safe_eval()
