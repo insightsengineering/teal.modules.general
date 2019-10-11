@@ -19,15 +19,18 @@ A data table viewer shows the data using a paginated table.
 \examples{
 library(random.cdisc.data)
 
-ASL <- cadsl
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    code = "ASL <- cadsl",
-    check = FALSE),
+    cdisc_dataset("ADSL", ADSL),
+    code = "ADSL <- radsl(cached = TRUE)",
+    check = TRUE
+  ),
   modules = root_modules(
-    tm_data_table()
+    tm_data_table(
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+    )
   )
 )
 \dontrun{
@@ -37,22 +40,51 @@ app <- init(
 # two-datasets example
 library(random.cdisc.data)
 
-ASL <- cadsl
-ADTE <- cadaette
+ADSL <- radsl(cached = TRUE)
+ADTTE <- radaette(cached = TRUE)
+
 
 app <- init(
   data = cdisc_data(
-    ASL = ASL,
-    ADTE = ADTE,
-    code = "ASL <- cadsl; ADTE <- cadaette",
-    check = FALSE),
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADTTE", ADTTE),
+    code = "ADSL <- radsl(cached = TRUE); ADTTE <- radaette(cached = TRUE)",
+    check = TRUE
+  ),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
-                                ADTE = c("STUDYID","AGE")))
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADTTE = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+                                          "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR")))
   )
 )
 \dontrun{
-shinyApp(app$ui, app$server)
+  shinyApp(app$ui, app$server)
 }
+
+# datasets: different subsets of long dataset
+library(random.cdisc.data)
+
+ADSL <- radsl(cached = TRUE)
+ADLB <- radlb(cached = TRUE)
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE)",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADLB = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+                                         "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
+  )
+)
+
+\dontrun{
+  shinyApp(app$ui, app$server)
+}
+
 }

@@ -1,0 +1,308 @@
+---
+title: "Using association plot"
+author: "Dawid Kałędkowski"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+runtime: shiny
+vignette: >
+  %\VignetteIndexEntry{Association plot app construction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Teal application to use association plots with various datasets types
+
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an association plot module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+## Loading libraries
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
+  mutate(CHGC = as.factor(case_when(
+    CHG < 1 ~ "N",
+    CHG > 1 ~ "P",
+    TRUE ~ "-"
+  )))
+```
+
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_g_association` using different
+combinations of data sets.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
+    cdisc_dataset("ADRS", ADRS),
+    cdisc_dataset("ADTTE", ADTTE),
+    cdisc_dataset("ADLB", ADLB),
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
+            mutate(CHGC = as.factor(case_when(
+            CHG < 1 ~ 'N',
+            CHG > 1 ~ 'P',
+            TRUE ~ '-'
+            )))",
+    check = TRUE
+  ),
+    modules = root_modules(
+    # tm_g_association ----
+    modules(
+      label = "Association plot",
+
+      tm_g_association(
+        label = "Single wide dataset",
+        ref = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(ADSL),
+            selected = "AGE",
+            fixed = FALSE
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(ADSL),
+            selected = "BMRKR1",
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        )
+      ),
+
+      tm_g_association(
+        label = "Two wide datasets",
+        ref = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(ADSL, c("AGE", "SEX", "STRATA1", "RACE")),
+            selected = "STRATA1",
+            multiple = FALSE,
+            fixed = FALSE
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADSL_2",
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(ADSL_2, c("AGE", "SEX", "RACE", "COUNTRY")),
+            selected = c("AGE", "COUNTRY", "RACE"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        )
+      ),
+
+      tm_g_association(
+        label = "Multiple different long datasets",
+        ref = data_extract_spec(
+          dataname = "ADTTE",
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(ADTTE),
+            selected = "AVAL",
+            multiple = FALSE,
+            fixed = FALSE
+          ),
+          filter = filter_spec(
+            label = "Select endpoint:",
+            vars = "PARAMCD",
+            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
+            selected = c("PFS", "EFS"),
+            multiple = TRUE
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADRS",
+          reshape = TRUE,
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(ADRS, c("AVALC", "BMRKR1", "BMRKR2", "ARM")),
+            selected = "AVALC",
+            multiple = TRUE,
+            fixed = FALSE
+          ),
+          filter = list(
+            filter_spec(
+              label = "Select endpoints:",
+              vars = "PARAMCD",
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
+              selected = "BESRSPI",
+              multiple = TRUE
+            ),
+            filter_spec(
+              label = "Select endpoints:",
+              vars = "AVISIT",
+              choices = levels(ADRS$AVISIT),
+              selected = "SCREENING",
+              multiple = TRUE
+            )
+          )
+        )
+      ),
+
+      tm_g_association(
+        label = "Wide and long datasets",
+        ref = data_extract_spec(
+          dataname = "ADRS",
+          select = select_spec(
+            choices = variable_choices(ADRS, c("AVAL", "AVALC")),
+            selected = "AVALC",
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Selected variable:"
+          ),
+          filter = list(
+            filter_spec(
+              vars = "PARAM",
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
+              selected = levels(ADRS$PARAMCD),
+              multiple = TRUE,
+              label = "Select response"
+            ),
+            filter_spec(
+              vars = "AVISIT",
+              choices = levels(ADRS$AVISIT),
+              selected = levels(ADRS$AVISIT),
+              multiple = TRUE,
+              label = "Select visit:"
+            )
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
+            selected = "AGE",
+            multiple = TRUE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        )
+      ),
+
+      tm_g_association(
+        label = "Same long datasets (same subsets)",
+        ref = data_extract_spec(
+          dataname = "ADRS",
+          select = select_spec(
+            choices = variable_choices(ADRS),
+            selected = "AVALC",
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADRS",
+          select = select_spec(
+            choices = variable_choices(ADRS),
+            selected = "PARAMCD",
+            multiple = TRUE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        )
+      ),
+
+      tm_g_association(
+        label = "Same long datasets (different subsets)",
+        ref = data_extract_spec(
+          dataname = "ADLB",
+          filter = list(
+            filter_spec(
+              vars = "PARAMCD",
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
+              selected = levels(ADLB$PARAMCD)[1],
+              multiple = FALSE,
+              label = "Select lab:"
+            ),
+            filter_spec(
+              vars = "AVISIT",
+              choices = levels(ADLB$AVISIT),
+              selected = levels(ADLB$AVISIT)[1],
+              multiple = FALSE,
+              label = "Select visit:"
+            )
+          ),
+          select = select_spec(
+            choices = variable_choices(ADLB, c("AVAL", "CHG2", "PCHG2")),
+            selected = "AVAL",
+            multiple = FALSE
+          )
+        ),
+        vars = data_extract_spec(
+          dataname = "ADLB",
+          filter = list(
+            filter_spec(
+              vars = "PARAMCD",
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
+              selected = levels(ADLB$PARAMCD)[2],
+              multiple = FALSE,
+              label = "Select labs:"
+            ),
+            filter_spec(
+              vars = "AVISIT",
+              choices = levels(ADLB$AVISIT),
+              selected = levels(ADLB$AVISIT)[2],
+              multiple = FALSE,
+              label = "Select visit:"
+            )
+          ),
+          select = select_spec(
+            choices = variable_choices(ADLB),
+            selected = "STRATA1",
+            multiple = TRUE
+          )
+        )
+      )
+    )
+  )
+)
+```
+
+## Run the app
+
+A simple `shiny::shinyApp` call will let you run the app. 
+
+```{r echo=TRUE}
+shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
+```
+

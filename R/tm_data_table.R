@@ -12,15 +12,18 @@
 #' @examples
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
+#' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     code = "ASL <- cadsl",
-#'     check = FALSE),
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = "ADSL <- radsl(cached = TRUE)",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
-#'     tm_data_table()
+#'     tm_data_table(
+#'       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+#'     )
 #'   )
 #' )
 #' \dontrun{
@@ -30,24 +33,53 @@
 #' # two-datasets example
 #' library(random.cdisc.data)
 #'
-#' ASL <- cadsl
-#' ADTE <- cadaette
+#' ADSL <- radsl(cached = TRUE)
+#' ADTTE <- radaette(cached = TRUE)
+#'
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     ASL = ASL,
-#'     ADTE = ADTE,
-#'     code = "ASL <- cadsl; ADTE <- cadaette",
-#'     check = FALSE),
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADTTE", ADTTE),
+#'     code = "ADSL <- radsl(cached = TRUE); ADTTE <- radaette(cached = TRUE)",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_data_table(
-#'       variables_selected = list(ASL  = c("SEX", "AGE","RACE"),
-#'                                 ADTE = c("STUDYID","AGE")))
+#'       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+#'                                 ADTTE = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+#'                                           "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR")))
 #'   )
 #' )
 #' \dontrun{
-#' shinyApp(app$ui, app$server)
+#'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' # datasets: different subsets of long dataset
+#' library(random.cdisc.data)
+#'
+#' ADSL <- radsl(cached = TRUE)
+#' ADLB <- radlb(cached = TRUE)
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADLB", ADLB),
+#'     code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE)",
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_data_table(
+#'       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+#'                                 ADLB = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+#'                                          "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
+#'   )
+#' )
+#'
+#' \dontrun{
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
 tm_data_table <- function(label = "Data table",
                           variables_selected = list()) {
   stopifnot(
@@ -70,7 +102,7 @@ tm_data_table <- function(label = "Data table",
     server = srv_page_data_table,
     ui = ui_page_data_table,
     filters = "all",
-    ui_args = list(datasets = "teal_datasets", selected = variables_selected)
+    ui_args = list(selected = variables_selected)
   )
 }
 
@@ -83,7 +115,6 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- datasets$datanames()
-
   tagList(
     fluidRow(
       column(
@@ -100,7 +131,7 @@ ui_page_data_table <- function(id,
         width = 6,
         checkboxInput(
           ns("if_distinct"),
-          "show only distinct rows",
+          "Show only distinct rows:",
           value = FALSE
         )
       )
@@ -147,8 +178,8 @@ srv_page_data_table <- function(input,
                                 session,
                                 datasets) {
 
-  if_filtered <- reactive(input$if_filtered)
-  if_distinct <- reactive(input$if_distinct)
+  if_filtered <- reactive(as.logical(input$if_filtered))
+  if_distinct <- reactive(as.logical(input$if_distinct))
 
   lapply(
     datasets$datanames(),
@@ -174,7 +205,7 @@ ui_data_table <- function(id,
     fluidRow(
       selectInput(
         ns("variables"),
-        "select variables",
+        "Select variables:",
         choices = choices,
         selected = selected,
         multiple = TRUE,

@@ -1,73 +1,73 @@
-context("expert_ggplot_call")
+context("coloring_ggplot_call")
 
-test_that("expert_ggplot_call can work with all combinations", {
+test_that("coloring_ggplot_call can work with all combinations", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, FALSE),
+    coloring_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
   )
 
   expect_equal(
-    expert_ggplot_call("ASL", NULL, NULL, FALSE) %>% deparse(),
-    "aes(colour = ASL)"
+    coloring_ggplot_call("ADSL", character(0), character(0), FALSE) %>% deparse(),
+    "aes(colour = ADSL)"
   )
 
   expect_equal(
-    expert_ggplot_call("ASL", "ASL", NULL, FALSE) %>% deparse(),
-    "aes(colour = ASL, fill = ASL)"
+    coloring_ggplot_call("ADSL", "ADSL", character(0), FALSE) %>% deparse(),
+    "aes(colour = ADSL, fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call("ASL", "ASL", "ASL", FALSE) %>% deparse(),
-    "aes(colour = ASL, fill = ASL)"
+    coloring_ggplot_call("ADSL", "ADSL", "ADSL", FALSE) %>% deparse(),
+    "aes(colour = ADSL, fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call("ASL", "ASL", NULL, TRUE) %>% deparse(),
-    "aes(colour = ASL, fill = ASL)"
+    coloring_ggplot_call("ADSL", "ADSL", character(0), TRUE) %>% deparse(),
+    "aes(colour = ADSL, fill = ADSL)"
   )
 
   expect_equal(
-    expert_ggplot_call("ASL", "ASL", "ASL", TRUE) %>% deparse(),
-    "aes(colour = ASL, fill = ASL, size = ASL)"
+    coloring_ggplot_call("ADSL", "ADSL", "ADSL", TRUE) %>% deparse(),
+    "aes(colour = ADSL, fill = ADSL, size = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call("ASL", NULL, "ASL", TRUE) %>% deparse(),
-    "aes(colour = ASL, size = ASL)"
+    coloring_ggplot_call("ADSL", character(0), "ADSL", TRUE) %>% deparse(),
+    "aes(colour = ADSL, size = ADSL)"
   )
 })
-test_that("expert_ggplot_call can work with all combinations without colour_var", {
+test_that("coloring_ggplot_call can work with all combinations without colour_var", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, FALSE),
+    coloring_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
   )
 
   expect_equal(
-    expert_ggplot_call(NULL, "ASL", NULL, FALSE) %>% deparse(),
-    "aes(fill = ASL)"
+    coloring_ggplot_call(character(0), "ADSL", character(0), FALSE) %>% deparse(),
+    "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ASL", "ASL", FALSE) %>% deparse(),
-    "aes(fill = ASL)"
+    coloring_ggplot_call(character(0), "ADSL", "ADSL", FALSE) %>% deparse(),
+    "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ASL", NULL, TRUE) %>% deparse(),
-    "aes(fill = ASL)"
+    coloring_ggplot_call(character(0), "ADSL", character(0), TRUE) %>% deparse(),
+    "aes(fill = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, "ASL", "ASL", TRUE) %>% deparse(),
-    "aes(fill = ASL, size = ASL)"
+    coloring_ggplot_call(character(0), "ADSL", "ADSL", TRUE) %>% deparse(),
+    "aes(fill = ADSL, size = ADSL)"
   )
 })
 
-test_that("expert_ggplot_call can work size_var", {
+test_that("coloring_ggplot_call can work size_var", {
   expect_equal(
-    expert_ggplot_call(NULL, NULL, "ASL", TRUE) %>% deparse(),
-    "aes(size = ASL)"
+    coloring_ggplot_call(character(0), character(0), "ADSL", TRUE) %>% deparse(),
+    "aes(size = ADSL)"
   )
   expect_equal(
-    expert_ggplot_call(NULL, NULL, NULL, TRUE),
+    coloring_ggplot_call(character(0), character(0), character(0), TRUE),
     NULL
   )
   expect_equal(
-    expert_ggplot_call(NULL, NULL, "ASL", FALSE),
+    coloring_ggplot_call(character(0), character(0), "ADSL", FALSE),
     NULL
   )
 })

@@ -6,6 +6,26 @@
 #' @inheritParams teal::module
 #'
 #' @export
+#'
+#' @examples
+#' library(random.cdisc.data)
+#'
+#' ADSL <- radsl(cached = TRUE)
+#' ADTTE <- radtte(cached = TRUE)
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL),
+#'     cdisc_dataset("ADTTE", ADTTE)
+#'   ),
+#'   root_modules(
+#'     tm_variable_browser(label = "Variable browser")
+#'   )
+#' )
+#'
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_variable_browser <- function(label = "variable browser") {
   stopifnot(is.character.single(label))
 
@@ -14,7 +34,7 @@ tm_variable_browser <- function(label = "variable browser") {
     server = srv_page_variable_browser,
     ui = ui_page_variable_browser,
     filters = "all",
-    ui_args = list(datasets = "teal_datasets")
+    ui_args = list()
   )
 }
 
@@ -43,7 +63,7 @@ ui_page_variable_browser <- function(id, datasets) {
             }), NULL))
           )
         ),
-        checkboxInput(ns("show_asl_vars"), "Show ASL variables datasets other than ASL", value = FALSE)
+        checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
       )
     ),
     div(
@@ -61,7 +81,8 @@ ui_page_variable_browser <- function(id, datasets) {
                          choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
                          selected = "filtered", inline = TRUE)
           ),
-          actionLink(ns("add_filter_variable"), "add as filter variable", class = "pull-right")
+          uiOutput(ns("action_link"))
+
         ),
         uiOutput(ns("warning"))
       )
@@ -74,11 +95,13 @@ ui_page_variable_browser <- function(id, datasets) {
 #' @importFrom utils capture.output str
 srv_page_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
-  plot_var <- reactiveValues(data = NULL, variable = NULL)
+  plot_var <- reactiveValues(data = NULL, variable = list())
 
-  current_rows <- new.env()
+  action_link <- reactiveValues(vars = list())
 
-  asl_vars <- names(datasets$get_data("ASL"))
+  current_rows <- new.env() # nolint
+
+  adsl_vars <- names(datasets$get_data("ADSL"))
 
 
   lapply(datasets$datanames(), function(name) {
@@ -89,20 +112,20 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     output[[ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
 
-      show_asl_vars <- input$show_asl_vars
+      show_adsl_vars <- input$show_adsl_vars
 
       if (is.null(df)) {
         current_rows[[name]] <- character(0)
         data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
       } else {
-        labels <- unlist(lapply(df, function(x) {
+        labels <- setNames(unlist(lapply(df, function(x) {
           lab <- attr(x, "label")
           if (is.null(lab)) "" else lab
-        }))
+        }), use.names = FALSE), names(df))
 
-        if (!show_asl_vars && name != "ASL") {
-          asl_vars <- names(datasets$get_data("ASL", filtered = FALSE, reactive = FALSE))
-          labels <- labels[!(names(labels) %in% asl_vars)]
+        if (!show_adsl_vars && name != "ADSL") {
+          adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE, reactive = FALSE))
+          labels <- labels[!(names(labels) %in% adsl_vars)]
         }
 
         current_rows[[name]] <- names(labels)
@@ -114,17 +137,13 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     ui_id_sel <- paste0(ui_id, "_rows_selected")
     observeEvent(input[[ui_id_sel]], {
       plot_var$data <- name
-      plot_var$variable <- current_rows[[name]][input[[ui_id_sel]]]
+      plot_var$variable[[name]] <- current_rows[[name]][input[[ui_id_sel]]]
     })
   })
 
-  observe({
-    plot_var$active <- tolower(input$tsp)
-  })
-
   output$variable_plot <- renderPlot({
-    data <- plot_var$data
-    varname <- plot_var$variable
+    data <- input$tsp
+    varname <- plot_var$variable[[input$tsp]]
     active <- input$tsp
     type <- input$raw_or_filtered
 
@@ -137,9 +156,8 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
 
     .log("plot variable", varname, "for data", data, "(", type, ")", " | active:", active)
 
-    validate(need(tolower(active) == tolower(data), "select a variable"))
-
     df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
+    varlabel <- as.list(datasets$get_data_attr(dataname = data, attr = "labels")$column_labels)[[varname]]
 
     if (is.null(varname)) {
       validate(need(NULL, "no valid variable was selected"))
@@ -147,7 +165,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       validate(need(datasets$has_variable(data, varname), "variable not available"))
 
       var <- df[[varname]]
-      d_var_name <- paste0(data, ".", varname)
+      d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
       grid::grid.newpage()
 
@@ -184,30 +202,46 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
   warning_messages <- reactiveValues(varinfo = "", i = 0)
 
   observeEvent(input$add_filter_variable, {
-    dataname <- plot_var$data
-    varname <- plot_var$variable
-    active <- plot_var$active
 
-    .log("add filter variable", dataname, "and", varname, "and active:", active)
+    dataname <- input$tsp
+    varname <- plot_var$variable[[input$tsp]]
 
-    if (!is.null(dataname) && identical(dataname, active)) {
+    .log("add filter variable", dataname, "and", varname)
+
+    if (!is.null(dataname)) {
       if (!is.null(varname)) {
-        if (dataname != "ASL" && varname %in% asl_vars) {
-          warning_messages$varinfo <- paste("You can not add an ASL variable from any dataset other than ASL.
-                                            Switch to the ASL data and add the variable from there.")
+        if (dataname != "ADSL" && varname %in% adsl_vars) {
+          warning_messages$varinfo <- paste("You can not add an ADSL variable from any dataset other than ADSL.
+                                            Switch to the ADSL data and add the variable from there.")
         } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
           warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
                                             "can currently not be used as a filter variable.")
         } else {
-          datasets$set_default_filter_state(dataname, varname)
+          if (!is.null(datasets$get_filter_execution(dataname, varname))) {
+            datasets$remove_filter(dataname, varname)
+            .log("filter removed:", varname)
+            action_link$vars[[dataname]][[varname]] <- FALSE
+          } else {
+            datasets$set_default_filter_state(dataname, varname)
+            .log("filter added:", varname)
+            action_link$vars[[dataname]] <- list(varname = TRUE)
+          }
           warning_messages$varinfo <- ""
-          .log("filter added:", varname)
         }
         warning_messages$i <- warning_messages$i + 1
       }
     }
   })
 
+  output$action_link <- renderUI({
+    varname <- plot_var$variable[[input$tsp]]
+    dataname <- input$tsp
+    if (!is.null(action_link$vars[[dataname]][[varname]]) && action_link$vars[[dataname]][[varname]]) {
+      actionLink(session$ns("add_filter_variable"), "remove as filter variable", class = "pull-right")
+    } else {
+      actionLink(session$ns("add_filter_variable"), "add as filter variable", class = "pull-right")
+    }
+  })
 
   output$warning <- renderUI({
     warning_messages$i

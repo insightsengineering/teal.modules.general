@@ -1,81 +1,62 @@
 #' Create a scatterplot matrix
 #'
+#' The module allows to add and remove dataset selectors (data extract inputs) and it will create
+#' the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
+#' The available datasets to choose from for each dataset selector is the same and
+#' determined by the argument \code{variables}.
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param dataname Name of datasets used to generate the regression plot (just used for labeling).
-#' @param select_col (\code{list}) Output of \code{teal.devel::data_extract_spec}
-#'  to define the plotting variables from an incoming dataset with filtering and selecting.
+#' @param variables (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  Plotting variables from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
-#'
-#' @noRd
-#'
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
+#' @export
+#' @importFrom stats na.omit
 #' @examples
+#' # Scatterplot matrix of variables from ADSL dataset
 #' library(random.cdisc.data)
-#' library(tern)
 #'
-#' ASL <- cadsl
-#' ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#'
-#' keys(ASL) <- c("STUDYID", "USUBJID")
-#' keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-#'
-#' adte_filters <- filter_spec(
-#'   vars = c("PARAMCD"), #'  only key variables are allowed
-#'   sep = " - ",
-#'   choices = c("OS", "PFS", "EFS"),
-#'   selected = "OS",
-#'   multiple = TRUE, #'  if multiple, then a spread is needed
-#'   label = "Choose endpoint"
-#' )
-#'
-#' adte_prep <- data_extract_spec(
-#'   dataname = "ADTE",
-#'   filter = adte_filters,
-#'   columns = columns_spec(
-#'     choices = colnames(ADTE),
-#'     selected = if (all(c('AGE', 'SEX') %in% colnames(ADTE))) {
-#'      c('AGE', 'SEX')
-#'     } else {
-#'      colnames(ADTE)[1:2]
-#'     },
-#'     multiple = TRUE,
-#'     fixed = FALSE, #'  Whether the user can select the item
-#'     label = "" #'  Label the column select dropdown (optional)
-#'   )
-#' )
+#' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'        ASL = ASL,
-#'        ADTE = ADTE,
-#'        code = 'ASL <- cadsl
-#'                ADTE <- radtte(ASL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
-#'                keys(ASL) <- c("STUDYID", "USUBJID")
-#'                keys(ADTE) <- c("STUDYID", "USUBJID", "PARAMCD")
-#'                ',
-#'        check = FALSE),
+#'     cdisc_dataset("ADSL", ADSL),
+#'     code = "ADSL <- radsl(cached = TRUE)",
+#'     check = TRUE
+#'   ),
 #'   modules = root_modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
-#'       dataname = c("ASL","ADTE"),
-#'       select_col = list(adte_prep)
+#'       variables = data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           label = "Select variables:",
+#'           choices = variable_choices(ADSL),
+#'           selected = c("AGE", "RACE", "SEX"),
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
-                                   dataname,
-                                   select_col,
+                                   variables,
                                    plot_height = c(600, 200, 2000),
                                    pre_output = NULL,
                                    post_output = NULL) {
+  if (!is.class.list("data_extract_spec")(variables)) {
+    variables <- list(variables)
+  }
+
   stopifnot(is.character.single(label))
-  stopifnot(is.character.vector(dataname))
-  stopifnot(is.list(select_col))
+  stopifnot(is.class.list("data_extract_spec")(variables))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
@@ -86,7 +67,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(select_col = select_col, dataname = dataname),
+    server_args = list(variables = variables),
     filters = "all"
   )
 }
@@ -98,26 +79,56 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   ns <- NS(id)
   standard_layout(
     output = white_small_well(
-      tags$div(
-        plot_height_output(ns("myplot")))
+      plot_height_output(ns("myplot"))
     ),
     encoding = div(
-      helpText("Datasets: ", lapply(args$dataname, tags$code)),
-      data_extract_input(
-        id = ns("select_col"),
-        label = "Selected columns",
-        data_extract_spec = args$select_col
-      ),
-      sliderInput(ns("alpha"), "Opacity",
-                  min = 0, max = 1, step = .05, value = .5, ticks = FALSE),
-      sliderInput(ns("cex"), "Point Size",
-                  min = 0.2, max = 3, step = .05, value = .65, ticks = FALSE),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(args$variables),
+      actionLink(ns("add_selector"), "Add Selector"),
+      hr(),
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
+      panel_group(
+        panel_item(
+          title = "Plot settings",
+          sliderInput(
+            ns("alpha"), "Opacity:", min = 0, max = 1,
+            step = .05, value = .5, ticks = FALSE
+          ),
+          sliderInput(
+            ns("cex"), "Points size:", min = 0.2, max = 3,
+            step = .05, value = .65, ticks = FALSE
+          )
+        )
+      )
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R Code", width = "100%")
+    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
   )
+}
+
+#' HTML id of the UI element that contains the extract input
+#' @param idx index or identifier of the data extract UI that contains the input element
+#' @param session shiny session object
+#' @return the html id of the element given the idx
+extract_ui_id <- function(idx, session) {
+  session$ns(paste0("extract_ui_", idx))
+}
+
+#' HTML id of the extract input contained within another UI
+#' @param idx index or identifier of the data extract input element
+#' @param session shiny session object
+#' @return the html id of the element given the idx
+extract_input_id <- function(idx, session) {
+  session$ns(paste0("extract_input_", idx))
+}
+
+#' HTML id of the element to remove the whole extract UI
+#' @param idx index or identifier of the button to remove the data extract ui
+#' @param session shiny session object
+#' @return the html id of the element given the idx
+extract_remove_id <- function(idx, session) {
+  session$ns(paste0("extract_remove_", idx))
 }
 
 
@@ -128,100 +139,104 @@ srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
                                     datasets,
-                                    dataname,
-                                    select_col) {
-  stopifnot(all(dataname %in% datasets$datanames()))
+                                    variables) {
 
-  # setup to use chunks
-  init_chunks()
+  init_chunks(session)
 
-  # data extraction
-  col_extract <- callModule(
-    data_extract_module,
-    id = "select_col",
-    datasets = datasets,
-    data_extract_spec = select_col
-  )
+  extract_ui_indices <- reactiveVal(value = NULL)
 
-  # set plot output
+  add_ui <- reactive({
+    # index of new data extract UI
+    idx <- max(extract_ui_indices(), 0) + 1
+    insertUI(
+      selector = paste0("#", session$ns("add_selector")),
+      where = "beforeBegin",
+      ui = div(
+        id = extract_ui_id(idx, session),
+        data_extract_input(
+          id = session$ns(extract_input_id(idx, session)),
+          label = paste0("Selector (", idx, ")"),
+          data_extract_spec = variables
+        ),
+        div(
+          actionLink(session$ns(extract_remove_id(idx, session)), "Remove"),
+          align = "right"
+        )
+      )
+    )
+    extract_ui_indices(c(extract_ui_indices(), idx))
+
+    # bind remove event
+    observeEvent(input[[isolate(extract_remove_id(idx, session))]], {
+      # please use the same condition in the "once" argument
+      if (length(extract_ui_indices()) <= 1) {
+        print("need at least one data extract to select from")
+      }
+      req(length(extract_ui_indices()) > 1)
+      removeUI(selector = paste0("#", extract_ui_id(idx, session)))
+      extract_ui_indices(extract_ui_indices()[extract_ui_indices() != idx])
+    }, once = !(length(isolate(extract_ui_indices())) <= 1), ignoreInit = TRUE)
+  })
+
+  # add two data extracts initially
+  init_observe <- observe({
+    add_ui()
+    add_ui()
+  })
+  init_observe$suspend()
+
+  observeEvent(input$add_selector, add_ui())
+
+  merged_data <- reactive({
+    validate(need(length(extract_ui_indices()) > 0, "Need at least 1 input."))
+    data_merge_module(
+      datasets = datasets,
+      data_extract = replicate(length(extract_ui_indices()), variables, simplify = FALSE),
+      input_id = vapply(extract_ui_indices(), function(idx) extract_input_id(idx, session), character(1))
+    )()
+  })
+
+  # Insert the plot into a plot_height module
   callModule(
     plot_with_height,
     id = "myplot",
     plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot"))
+    plot_id = session$ns("plot")
+  )
 
   # plot
   output$plot <- renderPlot({
-    # get inputs
-    alpha <- input$alpha
-    cex <- input$cex
-
-    # get selected columns
-    cols <- get_dataset_prefixed_col_names(col_extract())
-
-    # merge datasets
-    merged_ds <- merge_datasets(list(col_extract()))
-
-    # check columns selected
-    validate(need(cols, "Please select columns first."))
-
-    # lattice need at least 2 columns for the plot
-    validate(need(length(cols) >= 2, "Please select at least two columns."))
-
-
-    # check that data are available
-    validate(need(nrow(merged_ds) > 0, "There are zero observations in the (filtered) dataset."))
-
-    # check proper input values
-    validate(need(cex, "Need a proper cex value."))
-
-    # check proper input values
-    validate(need(alpha, "Need a proper alpha value."))
-
-    # reset chunks on every user-input change
+    ANL <- merged_data()$data() # nolint
+    validate_has_data(ANL, 3)
     chunks_reset()
 
-    # set up expression chunk - lattice graph
-    chunks_push(
-      expression = quote(
-        merged_ds <- dplyr::mutate_if(merged_ds, is.character, as.factor)
-      )
-    )
+    alpha <- input$alpha # nolint
+    cex <- input$cex # nolint
+    cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
+    validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 
-    # set up expression chunk - lattice graph
-    chunks_push(
-      substituteDirect(
-        object = quote(
-          lattice::splom(merged_ds[, .cols], pch = 16, alpha = .alpha, cex = .cex)
-        ),
-        frame = list(.cols = cols, .alpha = alpha, .cex = cex)
-      )
-    )
+    # create plot
+    chunks_push(bquote({
+      lattice::splom(ANL[, .(cols_names)], pch = 16, alpha = .(alpha), cex = .(cex))
+    }))
 
-    p <- chunks_eval()
-
-    chunks_validate_is_ok()
-
-    p
+    chunks_safe_eval()
   })
 
   # show r code
   observeEvent(input$show_rcode, {
-
-    title <- paste0("Scatterplotmatrix of ",
-                    paste(get_dataset_prefixed_col_names(col_extract()),
-                          collapse = ", "))
+    title <- paste0(
+      "Scatterplotmatrix of ",
+      paste(merged_data()$cols, collapse = ", ")
+    )
 
     show_rcode_modal(
       title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merged_dataname = "merged_ds",
-        merged_datasets = list(col_extract()),
-        title = title,
-        description = ""
+        merge_expression = merged_data()$expr,
+        title = title
       )
     )
   })
-
 }

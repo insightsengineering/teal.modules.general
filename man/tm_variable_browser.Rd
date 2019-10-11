@@ -13,3 +13,23 @@ tm_variable_browser(label = "variable browser")
 The variable browser provides a table with variable names and labels and a
 plot the visualizes the content of a particular variable.
 }
+\examples{
+library(random.cdisc.data)
+
+ADSL <- radsl(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADTTE", ADTTE)
+  ),
+  root_modules(
+    tm_variable_browser(label = "Variable browser")
+  )
+)
+
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+}
