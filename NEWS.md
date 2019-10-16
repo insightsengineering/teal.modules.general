@@ -1,3 +1,7 @@
+# teal.modules.general 0.2.1
+
+* fix `magrittr` loading in reproducible code
+
 # teal.modules.general 0.2.0
 
 * Refactor functions with data extract and data merge
