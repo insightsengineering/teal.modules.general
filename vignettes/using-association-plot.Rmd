@@ -1,30 +1,64 @@
 ---
-title: "Using Association plot"
+title: "Using association plot"
 author: "Dawid Kałędkowski"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Association plot examples}
+  %\VignetteIndexEntry{Association plot app construction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+Teal application to use association plots with various datasets types
+
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an association plot module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+## Loading libraries
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-library(teal.modules.general)
-library(random.cdisc.data)
-library(dplyr)
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-ADLB <- cadlb %>%
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+```
 
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_g_association` using different
+combinations of data sets.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
@@ -32,11 +66,11 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl
-            ADSL_2 <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte
-            ADLB <- cadlb %>%
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
@@ -48,14 +82,14 @@ app <- init(
     # tm_g_association ----
     modules(
       label = "Association plot",
-      
+
       tm_g_association(
         label = "Single wide dataset",
         ref = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = "AGE",
             fixed = FALSE
           )
@@ -64,7 +98,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = "BMRKR1",
             multiple = TRUE,
             fixed = FALSE
@@ -78,7 +112,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AGE", "SEX", "STRATA1", "RACE"),
+            choices = variable_choices(ADSL, c("AGE", "SEX", "STRATA1", "RACE")),
             selected = "STRATA1",
             multiple = FALSE,
             fixed = FALSE
@@ -88,7 +122,7 @@ app <- init(
           dataname = "ADSL_2",
           select = select_spec(
             label = "Select variables:",
-            choices = c("COUNTRY", "AGE", "RACE"),
+            choices = variable_choices(ADSL_2, c("AGE", "SEX", "RACE", "COUNTRY")),
             selected = c("AGE", "COUNTRY", "RACE"),
             multiple = TRUE,
             fixed = FALSE
@@ -102,7 +136,7 @@ app <- init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADTTE),
+            choices = variable_choices(ADTTE),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -110,7 +144,7 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoint:",
             vars = "PARAMCD",
-            choices = levels(ADTTE$PARAMCD),
+            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
             selected = c("PFS", "EFS"),
             multiple = TRUE
           )
@@ -120,7 +154,7 @@ app <- init(
           reshape = TRUE,
           select = select_spec(
             label = "Select variable:",
-            choices = c("AVALC", "BMRKR1", "BMRKR2", "ARM"),
+            choices = variable_choices(ADRS, c("AVALC", "BMRKR1", "BMRKR2", "ARM")),
             selected = "AVALC",
             multiple = TRUE,
             fixed = FALSE
@@ -129,7 +163,7 @@ app <- init(
             filter_spec(
               label = "Select endpoints:",
               vars = "PARAMCD",
-              choices = levels(ADRS$PARAMCD),
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
               selected = "BESRSPI",
               multiple = TRUE
             ),
@@ -149,7 +183,7 @@ app <- init(
         ref = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVAL", "AVALC"),
+            choices = variable_choices(ADRS, c("AVAL", "AVALC")),
             selected = "AVALC",
             multiple = FALSE,
             fixed = FALSE,
@@ -158,7 +192,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAM",
-              choices = levels(ADRS$PARAMCD),
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
               selected = levels(ADRS$PARAMCD),
               multiple = TRUE,
               label = "Select response"
@@ -175,7 +209,7 @@ app <- init(
         vars = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM"),
+            choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
             selected = "AGE",
             multiple = TRUE,
             fixed = FALSE,
@@ -189,7 +223,7 @@ app <- init(
         ref = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = names(ADRS),
+            choices = variable_choices(ADRS),
             selected = "AVALC",
             multiple = FALSE,
             fixed = FALSE,
@@ -199,7 +233,7 @@ app <- init(
         vars = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = names(ADRS),
+            choices = variable_choices(ADRS),
             selected = "PARAMCD",
             multiple = TRUE,
             fixed = FALSE,
@@ -215,7 +249,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -229,7 +263,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("AVAL", "CHG2", "PCHG2"),
+            choices = variable_choices(ADLB, c("AVAL", "CHG2", "PCHG2")),
             selected = "AVAL",
             multiple = FALSE
           )
@@ -239,7 +273,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[2],
               multiple = FALSE,
               label = "Select labs:"
@@ -253,7 +287,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = names(ADLB),
+            choices = variable_choices(ADLB),
             selected = "STRATA1",
             multiple = TRUE
           )
@@ -264,7 +298,11 @@ app <- init(
 )
 ```
 
+## Run the app
 
-```{r echo=FALSE}
+A simple `shiny::shinyApp` call will let you run the app. 
+
+```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
+

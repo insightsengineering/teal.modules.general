@@ -5,8 +5,8 @@
 \title{Response Plots}
 \usage{
 tm_g_response(label = "Response Plot", response, x, row_facet = NULL,
-  col_facet = NULL, coord_flip = TRUE, freq = FALSE,
-  plot_height = c(600, 400, 5000), pre_output = NULL,
+  col_facet = NULL, coord_flip = TRUE, rotate_xaxis_labels = FALSE,
+  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
   post_output = NULL)
 }
 \arguments{
@@ -28,6 +28,8 @@ Which data to use for faceting columns. Just allow single columns by \code{multi
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
+\item{rotate_xaxis_labels}{(\code{logical}) Wheater to rotate plot X axis labels}
+
 \item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
 
 \item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
@@ -47,12 +49,12 @@ Response Plots
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    code = "ADSL <- radsl(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
@@ -62,7 +64,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("BMRKR2", "COUNTRY"),
+          choices = variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
           selected = "BMRKR2",
           multiple = FALSE,
           fixed = FALSE
@@ -72,7 +74,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = c("SEX", "RACE"),
+          choices = variable_choices(ADSL, c("SEX", "RACE")),
           selected = "RACE",
           multiple = FALSE,
           fixed = FALSE

@@ -12,6 +12,7 @@
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
+#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @inheritParams teal::module
@@ -21,12 +22,12 @@
 #' # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 #' library(random.cdisc.data)
 #'
-#' ADSL <- cadsl
+#' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- cadsl",
+#'     code = "ADSL <- radsl(cached = TRUE)",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -36,7 +37,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("BMRKR2", "COUNTRY"),
+#'           choices = variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
 #'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -46,7 +47,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("SEX", "RACE"),
+#'           choices = variable_choices(ADSL, c("SEX", "RACE")),
 #'           selected = "RACE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -64,6 +65,7 @@ tm_g_response <- function(label = "Response Plot",
                           row_facet = NULL,
                           col_facet = NULL,
                           coord_flip = TRUE,
+                          rotate_xaxis_labels = FALSE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
@@ -95,6 +97,7 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet))
   stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet))
   stopifnot(is.logical.single(coord_flip))
+  stopifnot(is.logical.single(rotate_xaxis_labels))
   stopifnot(is.logical.single(freq))
   stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -151,15 +154,21 @@ ui_g_response <- function(id, ...) {
           data_extract_spec = args$col_facet
         )
       },
-      radioButtons(
-        ns("freq"),
-        NULL,
+      radioGroupButtons(
+        inputId = ns("freq"),
+        label = NULL,
         choices = c("frequency", "density"),
         selected = ifelse(args$freq, "frequency", "density"),
-        inline = TRUE
+        justified = TRUE
       ),
-      checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
+      panel_group(
+        panel_item(
+          title = "Plot settings",
+          checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
+          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
+        )
+      )
     ),
     forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
     pre_output = args$pre_output,
@@ -206,13 +215,14 @@ srv_g_response <- function(input,
 
   output$plot <- renderPlot({
     ANL <- merged_data()$data() # nolint
+    validate_has_data(ANL, 3)
     chunks_reset()
 
-    resp_var <- merged_data()$columns_source$response
-    x <- merged_data()$columns_source$x
+    resp_var <- unname(merged_data()$columns_source$response)
+    x <- unname(merged_data()$columns_source$x)
 
-    row_facet_name <- if_empty(merged_data()$columns_source$col_facet, character(0))
-    col_facet_name <- if_empty(merged_data()$columns_source$row_facet, character(0))
+    row_facet_name <- unname(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    col_facet_name <- unname(if_empty(merged_data()$columns_source$row_facet, character(0)))
 
 
     validate(
@@ -225,10 +235,9 @@ srv_g_response <- function(input,
     )
     validate_has_data(ANL, 10)
 
-
-
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
+    rotate_xaxis_labels <- input$rotate_xaxis_labels
 
     arg_position <- if (freq) "stack" else "fill" # nolint
     cl_arg_x <- if (is.null(x)) {
@@ -249,50 +258,46 @@ srv_g_response <- function(input,
       }
     }
 
-
-
-
     plot_call <- bquote(
       ANL %>%
         ggplot() +
         aes(x = .(cl_arg_x)) +
-        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position))
+        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position)) +
+        xlab(.(paste0(attr(ANL[[x]], "label"), " [", x, "]"))) +
+        ylab(.(paste0("Proportion of ", attr(ANL[[resp_var]], "label"), " [", resp_var, "]")))
     )
 
     if (!freq) {
-      if (swap_axes) {
-        tmp_cl1 <- quote(xlab(label)) %>%
-          substituteDirect(list(label = tmp_cl %>%
-                                  deparse()))
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.4)))
-      } else {
-        tmp_cl1 <- quote(geom_text(stat = "count", aes(label = ..count.., vjust = -1), position = "fill")) # nolint
-        tmp_cl2 <- quote(expand_limits(y = c(0, 1.2)))
-      }
+      plot_call <- if (swap_axes) {
+        bquote(
+          .(plot_call) +
+            expand_limits(y = c(0, 1.05)) +
+            geom_text(stat = "count", aes(label = ..count..), hjust = "left", position = "fill"))
 
-      plot_call <- call("+", call("+", plot_call, tmp_cl1), tmp_cl2)
-    } else {
-      # Change Y-Axis Label in case of Swap
-      tmp_cl1 <- quote(xlab(label)) %>%
-        substituteDirect(list(label = tmp_cl %>%
-                                deparse()))
-      plot_call <- call("+", plot_call, tmp_cl1)
+      } else {
+        bquote(
+          .(plot_call) +
+            expand_limits(y = c(0, 1.05)) +
+            geom_text(stat = "count", aes(label = ..count..), vjust = -1, position = "fill"))
+      }
     }
 
     if (swap_axes) {
-      plot_call <- call("+", plot_call, quote(coord_flip()))
+      plot_call <- bquote(.(plot_call) + coord_flip())
+    }
+
+    if (rotate_xaxis_labels) {
+      plot_call <- bquote(.(plot_call) + theme(axis.text.x = element_text(angle = 45, hjust = 1)))
     }
 
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
-      plot_call <- call("+", plot_call, facet_cl)
+      plot_call <- bquote(.(plot_call) + .(facet_cl))
     }
 
     chunks_push(expression = plot_call, id = "plotCall")
-
     p <- chunks_eval()
-
     chunks_validate_is_ok()
 
     p

@@ -5,27 +5,60 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Response plot examples}
+  %\VignetteIndexEntry{Response plot app construction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+Teal application to use response plots with various datasets types
+
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an response plot module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+## Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-library(teal.modules.general)
-library(random.cdisc.data)
-library(dplyr)
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-ADLB <- cadlb %>%
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+```
 
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_g_response` using different
+combinations of data sets.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
@@ -33,16 +66,15 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl
-            ADSL_2 <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte
-            ADLB <- cadlb %>%
-            mutate(CHGC = as.factor(case_when(
-            CHG < 1 ~ 'N',
-            CHG > 1 ~ 'P',
-            TRUE ~ '-'
-            )))",
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
+              mutate(CHGC = as.factor(case_when(
+                    CHG < 1 ~ 'N',
+                    CHG > 1 ~ 'P',
+                    TRUE ~ '-')))",
     check = TRUE
   ),
   modules = root_modules(
@@ -54,7 +86,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("BMRKR2", "ITTFL", "BEP01FL"),
+            choices = variable_choices(ADSL, c("BMRKR2", "ITTFL", "BEP01FL")),
             selected = "BMRKR2",
             multiple = FALSE,
             fixed = FALSE
@@ -64,7 +96,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX", "RACE", "COUNTRY", "ARMCD", "STRATA1"),
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY", "ARMCD", "STRATA1")),
             selected = "ARMCD",
             multiple = FALSE,
             fixed = FALSE
@@ -78,7 +110,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("BMRKR2", "ITTFL", "BEP01FL"),
+            choices = variable_choices(ADSL, c("BMRKR2", "ITTFL", "BEP01FL")),
             selected = "BMRKR2",
             multiple = FALSE
           )
@@ -116,8 +148,8 @@ app <- init(
           ),
           select = select_spec(
             label = "Select variable:",
-            choices = c("CHGC", "BMRKR2", "ITTFL", "BEP01FL"),
-            selected = "CHGC",
+            choices = variable_choices(ADLB, c("BMRKR2", "ITTFL", "BEP01FL")),
+            selected = "BMRKR2",
             multiple = FALSE
           )
         ),
@@ -150,7 +182,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX"),
+            choices = "SEX",
             selected = NULL,
             multiple = FALSE
           )
@@ -159,7 +191,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX", "COUNTRY"),
+            choices = variable_choices(ADSL, c("SEX", "COUNTRY")),
             selected = NULL,
             multiple = FALSE
           )
@@ -172,9 +204,9 @@ app <- init(
           dataname = "ADLB",
           filter = list(
             filter_spec(
-              vars = "PARAM",
-              choices = levels(ADLB$PARAM),
-              selected = levels(ADLB$PARAM)[2],
+              vars = "PARAMCD",
+              choices = levels(ADLB$PARAMCD),
+              selected = levels(ADLB$PARAMCD)[2],
               multiple = TRUE,
               label = "Select measurement:"
             ),
@@ -187,8 +219,8 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("CHGC", "BMRKR2", "ITTFL", "BEP01FL"),
-            selected = "CHGC",
+            choices = variable_choices(ADLB, c("BMRKR2", "ITTFL", "BEP01FL")),
+            selected = "BMRKR2",
             multiple = FALSE,
             fixed = FALSE,
             label = "Select variable:"
@@ -197,7 +229,7 @@ app <- init(
         x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = c("ARMCD", "BMRKR1", "BMRKR2", "BEP01FL"),
+            choices = variable_choices(ADSL, c("ARMCD", "BMRKR1", "BMRKR2", "BEP01FL")),
             selected = "BMRKR2",
             multiple = FALSE,
             fixed = FALSE
@@ -210,7 +242,7 @@ app <- init(
         response = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("BMRKR2", "AVALC", "BMRKR2", "BEP01FL"),
+            choices = variable_choices(ADRS, c("BMRKR2", "AVALC", "BMRKR2", "BEP01FL")),
             selected = "AVALC",
             multiple = FALSE,
             fixed = TRUE,
@@ -220,7 +252,7 @@ app <- init(
         x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVALC", "AGE", "SEX", "ARMCD", "STRATA1"),
+            choices = variable_choices(ADRS, c("AVALC", "AGE", "SEX", "ARMCD", "STRATA1")),
             selected = "ARMCD",
             multiple = FALSE,
             fixed = FALSE,
@@ -261,8 +293,8 @@ app <- init(
             label = "Select lab:"
           ),
           select = select_spec(
-            choices = "CHGC",
-            selected = "CHGC",
+            choices = "BMRKR2",
+            selected = "BMRKR2",
             multiple = FALSE,
             fixed = TRUE
           )
@@ -277,7 +309,7 @@ app <- init(
             label = "Select lab:"
           ),
           select = select_spec(
-            choices = c("AVISIT", "PARAMCD", "BEP01FL"),
+            choices = variable_choices(ADLB, c("AVISIT", "PARAMCD", "BEP01FL")),
             selected = "AVISIT",
             multiple = FALSE,
             fixed = TRUE
@@ -302,7 +334,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("SEX", "RACE", "ARMCD"),
+            choices = variable_choices(ADLB, c("SEX", "RACE", "ARMCD")),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE,
@@ -328,7 +360,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("SEX", "RACE", "ARMCD"),
+            choices = variable_choices(ADLB, c("SEX", "RACE", "ARMCD")),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE,
@@ -339,10 +371,16 @@ app <- init(
     )
   )
 )
-      
+
+
 ```
 
+## Run the app
 
-```{r echo=FALSE}
+A simple `shiny::shinyApp` call will let you run the app. 
+
+```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
+
+

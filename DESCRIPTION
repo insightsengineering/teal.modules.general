@@ -1,7 +1,8 @@
 Package: teal.modules.general
 Type: Package
 Title: General modules to add to a teal application
-Version: 0.1.9000
+Date: 2019-10-11
+Version: 0.2.0.9000
 Authors@R: c(
     person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
     person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = "aut"),
@@ -21,7 +22,7 @@ Depends:
   ggmosaic,
   graphics,
   shiny,
-  teal (>= 0.7.0)
+  teal (>= 0.8.0)
 Imports:
   grid,
   dplyr,
@@ -30,28 +31,27 @@ Imports:
   lattice,
   magrittr,
   methods,
-  rtables (>= 0.1.2),
+  rtables (>= 0.1.3),
   shinyWidgets,
-  teal.devel (>= 0.1.0),
-  tern (>= 0.6.2),
-  utils.nest (>= 0.1.0)
+  teal.devel (>= 0.2.0),
+  tern (>= 0.6.3),
+  utils.nest (>= 0.2.0)
 Suggests:
   knitr,
-  random.cdisc.data (>= 0.1.2.1),
-  test.nest (>= 0.1.0),
+  random.cdisc.data (>= 0.3.0),
+  test.nest (>= 0.2.0),
   testthat
 RoxygenNote: 6.1.1
 Collate: 
     'teal.modules.general-package.R'
-    'tm_cross_table.R'
+    'utils.R'
+    'tm_a_regression.R'
     'tm_data_table.R'
     'tm_g_association.R'
-    'utils.R'
     'tm_g_bivariate.R'
-    'tm_g_regression.R'
     'tm_g_response.R'
+    'tm_g_scatterplot.R'
     'tm_g_scatterplotmatrix.R'
-    'tm_scatterplot.R'
-    'tm_t_percentage_cross_table.R'
+    'tm_t_crosstable.R'
     'tm_variable_browser.R'
 VignetteBuilder: knitr

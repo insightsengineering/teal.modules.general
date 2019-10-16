@@ -26,3 +26,101 @@ list_or_null <- function(obj) {
     list(obj)
   }
 }
+
+#' Add axis labels that show facetting variable
+#'
+#' # todo: put into teal or teal.devel
+#'
+#' @param p ggplot2 object to add facet labels to
+#' @param xfacet_label label of facet along x axis (nothing created if NULL),
+#'   if vector, will be concatenated with " & "
+#' @param yfacet_label label of facet along y axis (nothing created if NULL),
+#'   if vector, will be concatenated with " & "
+#'
+#' @return grid grob object (to be drawn with \code{grid.draw})
+#'
+#' @export
+#'
+#' @examples
+#' # we put donttest to avoid strictr error with seq along.with argument
+#' \donttest{
+#' library(ggplot2)
+#' library(grid)
+#'
+#' p <- ggplot(mtcars) +
+#' aes(x = mpg, y = disp) +
+#'   geom_point() +
+#'   facet_grid(gear ~ cyl)
+#' p
+#' xfacet_label <- "cylinders"
+#' yfacet_label <- "gear"
+#' res <- add_facet_labels(p, xfacet_label, yfacet_label)
+#' grid.newpage()
+#' grid.draw(res)
+#'
+#' # todo: include grid.newpage() and grid.draw() in function?
+#' grid.newpage()
+#' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label))
+#' grid.newpage()
+#' grid.draw(add_facet_labels(p, xfacet_label, yfacet_label = NULL))
+#' grid.newpage()
+#' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL))
+#' }
+#'
+#' @importFrom grid grid.newpage grid.draw pushViewport upViewport plotViewport viewport grid.grabExpr
+#' @importFrom ggplot2 ggplotGrob
+add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
+  stopifnot(
+    is.null(xfacet_label) || is.character.vector(xfacet_label, min_length = 1),
+    is.null(yfacet_label) || is.character.vector(yfacet_label, min_length = 1),
+    is(p, "ggplot")
+  )
+  if (is.null(xfacet_label) && is.null(yfacet_label)) {
+    return(ggplotGrob(p))
+  }
+  # todo: can optionally remove grid.grabExpr and only use *Grob functions instead of grid.*
+  grid.grabExpr({
+    g <- ggplotGrob(p)
+
+    # we are going to replace these, so we make sure they have nothing in them
+    stopifnot(is(g$grobs[[grep("xlab-t", g$layout$name, fixed = TRUE)]], "zeroGrob"))
+    stopifnot(is(g$grobs[[grep("ylab-r", g$layout$name, fixed = TRUE)]], "zeroGrob"))
+
+    xaxis_label_grob <- g$grobs[[grep("xlab-b", g$layout$name, fixed = TRUE)]]
+    xaxis_label_grob$children[[1]]$label <- paste(xfacet_label, collapse = " & ")
+    yaxis_label_grob <- g$grobs[[grep("ylab-l", g$layout$name, fixed = TRUE)]]
+    yaxis_label_grob$children[[1]]$label <- paste(yfacet_label, collapse = " & ")
+
+    # todo: compute width
+    # does not work because these elements are not yet drawn at the time they are required
+    # top_height <- unit(1, "grobheight", "xlab-b") # nolintr
+    # right_width <- unit(1, "grobwidth", "ylab-l") # nolintr
+    top_height <- if (is.null(xfacet_label)) 0 else unit(2, "line")
+    right_width <- if (is.null(yfacet_label)) 0 else unit(2, "line")
+
+    grid.newpage()
+    pushViewport(plotViewport(margins = c(0, 0, top_height, right_width), name = "ggplot"))
+    grid.draw(g)
+    upViewport(1)
+
+    # draw x facet
+    if (!is.null(xfacet_label)) {
+      pushViewport(viewport(
+        x = 0, y = unit(1, "npc") - top_height, width = unit(1, "npc"),
+        height = top_height, just = c("left", "bottom"), name = "topxaxis"
+      ))
+      grid.draw(xaxis_label_grob)
+      upViewport(1)
+    }
+
+    # draw y facet
+    if (!is.null(yfacet_label)) {
+      pushViewport(viewport(
+        x = unit(1, "npc") - right_width, y = 0, width = right_width,
+        height = unit(1, "npc"), just = c("left", "bottom"), name = "rightyaxis"
+      ))
+      grid.draw(yaxis_label_grob)
+      upViewport(1)
+    }
+  })
+}

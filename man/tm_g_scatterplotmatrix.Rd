@@ -35,13 +35,12 @@ determined by the argument \code{variables}.
 # Scatterplot matrix of variables from ADSL dataset
 library(random.cdisc.data)
 
-ADSL <- cadsl
-ADTTE <- radtte(ADSL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    code = "ADSL <- radsl(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
@@ -51,7 +50,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variables:",
-          choices = colnames(ADSL),
+          choices = variable_choices(ADSL),
           selected = c("AGE", "RACE", "SEX"),
           multiple = TRUE,
           fixed = FALSE

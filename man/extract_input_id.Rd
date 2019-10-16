@@ -4,10 +4,12 @@
 \alias{extract_input_id}
 \title{HTML id of the extract input contained within another UI}
 \usage{
-extract_input_id(idx)
+extract_input_id(idx, session)
 }
 \arguments{
 \item{idx}{index or identifier of the data extract input element}
+
+\item{session}{shiny session object}
 }
 \value{
 the html id of the element given the idx

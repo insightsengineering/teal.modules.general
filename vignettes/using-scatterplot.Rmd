@@ -5,21 +5,69 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Scatterplot examples}
+  %\VignetteIndexEntry{Scatterplot app construction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
+Teal application to use scatter plot with various datasets types
+
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an scatter plot module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+## Loading libraries
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
+  mutate(CHGC = as.factor(case_when(
+    CHG < 1 ~ "N",
+    CHG > 1 ~ "P",
+    TRUE ~ "-"
+  )))
+```
+
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_g_scatterplot` using different
+combinations of data sets.
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general)
 library(random.cdisc.data)
 library(dplyr)
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-ADLB <- cadlb %>%
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
@@ -33,11 +81,11 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl
-            ADSL_2 <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte
-            ADLB <- cadlb %>%
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
@@ -47,14 +95,14 @@ app <- init(
   ),
   modules = root_modules(
     modules(
- label = "Scatterplot",
-      tm_scatterplot(
+      label = "Scatterplot",
+      tm_g_scatterplot(
         label = "Single wide dataset",
         x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AGE", "BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
@@ -64,7 +112,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AGE", "BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE
@@ -74,7 +122,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = c("RACE", "SEX"),
+            choices = variable_choices(ADSL, c("RACE", "SEX")),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
@@ -82,13 +130,13 @@ app <- init(
         )
       ),
       # .. Two wide -----
-      tm_scatterplot(
+      tm_g_scatterplot(
         label = "Two wide datasets",
         x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADSL, c("BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE
@@ -97,7 +145,7 @@ app <- init(
           dataname = "ADSL_2",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AGE", "RACE"),
+            choices = variable_choices(ADSL_2, c("AGE", "SEX")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
@@ -106,7 +154,7 @@ app <- init(
           dataname = "ADSL_2",
           select = select_spec(
             label = "Select variable:",
-            choices = c("COUNTRY", "AGE", "RACE"),
+            choices = variable_choices(ADSL_2, c("COUNTRY", "AGE", "RACE")),
             selected = "COUNTRY",
             multiple = FALSE,
             fixed = FALSE
@@ -114,13 +162,13 @@ app <- init(
         )
       ),
 
-      tm_scatterplot(
+      tm_g_scatterplot(
         label = "Different long datasets",
         x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADRS),
+            choices = variable_choices(ADRS),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -128,8 +176,7 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoint:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(as.matrix(expand.grid(
-              levels(ADRS$PARAMCD), levels(ADRS$AVISIT))), 1, paste, collapse = " - "),
+            choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
             selected = "OVRINV - SCREENING",
             multiple = FALSE
           )
@@ -138,7 +185,7 @@ app <- init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADTTE),
+            choices = variable_choices(ADTTE),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -146,7 +193,7 @@ app <- init(
           filter = filter_spec(
             label = "Select parameters:",
             vars = c("PARAMCD"),
-            choices = levels(ADTTE$PARAMCD),
+            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
             selected = "OS",
             multiple = TRUE
           )
@@ -155,7 +202,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AGE", "SEX"),
+            choices = variable_choices(ADSL, c("AGE", "SEX")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
@@ -163,32 +210,32 @@ app <- init(
         )
       ),
 
-      tm_scatterplot(
+      tm_g_scatterplot(
         label = "Wide and long datasets",
         x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+            choices = variable_choices(ADSL, c("SEX", "AGE", "BMRKR1", "COUNTRY")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
           )
         ),
         y = data_extract_spec(
-          dataname = "ADRS",
+          dataname = "ADLB",
           filter = list(
             filter_spec(
-              vars = "PARAM",
-              choices = levels(ADRS$PARAMCD),
-              selected = levels(ADRS$PARAMCD)[1],
+              vars = "PARAMCD",
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
+              selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
-              label = "Select response:"
+              label = "Select measurement:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[1],
+              choices = levels(ADLB$AVISIT),
+              selected = levels(ADLB$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
@@ -205,7 +252,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+            choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY")),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE
@@ -213,12 +260,12 @@ app <- init(
         )
       ),
 
-      tm_scatterplot(
+      tm_g_scatterplot(
         label = "Same long datasets (same subsets)",
         x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVAL", "BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADRS, c("AVAL", "BMRKR1", "BMRKR2")),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE,
@@ -228,7 +275,7 @@ app <- init(
         y = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVAL", "BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADRS, c("AVAL", "BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE,
@@ -238,7 +285,7 @@ app <- init(
         color_by = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AGE", "SEX", "RACE"),
+            choices = variable_choices(ADRS, c("AGE", "SEX", "RACE")),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE,
@@ -247,14 +294,14 @@ app <- init(
         )
       ),
 
-      tm_scatterplot(
+      tm_g_scatterplot(
         label = "Same long datasets (different subsets)",
         x = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -279,7 +326,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[2],
               multiple = FALSE,
               label = "Select lab:"
@@ -304,7 +351,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -318,7 +365,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("RACE", "SEX"),
+            choices = variable_choices(ADLB, c("RACE", "SEX")),
             selected = "SEX",
             multiple = FALSE,
             fixed = FALSE,
@@ -329,11 +376,13 @@ app <- init(
     )
   )
 )
-      
+
 ```
 
+## Run the app
 
+A simple `shiny::shinyApp` call will let you run the app. 
 
-```{r echo=FALSE}
+```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```

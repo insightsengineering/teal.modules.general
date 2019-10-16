@@ -21,15 +21,14 @@ reference:
 
   - title: Modules for tables
     contents:
-      - tm_cross_table
-      - tm_t_percentage_cross_table
+      - tm_t_crosstable
 
   - title: Modules for plots
     contents:
       - tm_g_association
       - tm_g_bivariate
-      - tm_g_regression
+      - tm_a_regression
       - tm_g_response
       - tm_g_scatterplotmatrix
-      - tm_scatterplot
+      - tm_g_scatterplot
 

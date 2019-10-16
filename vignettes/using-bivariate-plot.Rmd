@@ -5,28 +5,63 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Bivariate plot examples}
+  %\VignetteIndexEntry{Bivariate plot app constructions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+Teal application to use bivariate plots with various datasets types
 
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an bivariate plot module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+
+
+## Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-library(teal.modules.general)
-library(random.cdisc.data)
-library(dplyr)
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-ADLB <- cadlb %>%
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+```
 
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_g_bivariate` using different
+combinations of data sets.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
@@ -34,11 +69,11 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl
-            ADSL_2 <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte
-            ADLB <- cadlb %>%
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
@@ -56,7 +91,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = "BMRKR1",
             fixed = FALSE
           )
@@ -65,7 +100,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = "SEX",
             multiple = FALSE,
             fixed = FALSE
@@ -75,7 +110,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
@@ -85,7 +120,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
@@ -99,7 +134,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = c("BMRKR1", "AGE", "SEX", "STRATA1", "RACE"),
+            choices = variable_choices(ADSL, c("BMRKR1", "AGE", "SEX", "STRATA1", "RACE")),
             selected = c("BMRKR1"),
             multiple = FALSE
           )
@@ -108,7 +143,7 @@ app <- init(
           dataname = "ADSL_2",
           select = select_spec(
             label = "Select variables:",
-            choices = c("COUNTRY", "AGE", "RACE"),
+            choices = variable_choices(ADSL_2, c("COUNTRY", "AGE", "RACE")),
             selected = "RACE",
             multiple = FALSE
           )
@@ -117,7 +152,7 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE
@@ -127,7 +162,7 @@ app <- init(
           dataname = "ADSL_2",
           select = select_spec(
             label = "Select variables:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL_2),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
@@ -142,13 +177,12 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
-                            1, paste, collapse = " - "),
+            choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
             selected = "OVRINV - END OF INDUCTION",
             multiple = TRUE
           ),
           select = select_spec(
-            choices = c("AVALC", "AVAL"),
+            choices = variable_choices(ADRS, c("AVALC", "AVAL")),
             selected = "AVALC",
             multiple = FALSE
           )
@@ -157,7 +191,7 @@ app <- init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
-            choices = c("AVAL", "CNSR"),
+            choices = variable_choices(ADTTE, c("AVAL", "CNSR")),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -165,7 +199,7 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoint:",
             vars = c("PARAMCD"),
-            choices = levels(ADTTE$PARAMCD),
+            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
             selected = "OS",
             multiple = FALSE
           )
@@ -175,14 +209,13 @@ app <- init(
           filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = apply(as.matrix(expand.grid(levels(ADRS$PARAMCD), levels(ADRS$AVISIT))),
-                            1, paste, collapse = " - "),
+            choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
             selected = "OVRINV - SCREENING",
             multiple = TRUE
           ),
           select = select_spec(
             label = "Select variable:",
-            choices = c("SEX", "RACE", "COUNTRY", "ARM", "PARAMCD", "AVISIT"),
+            choices = variable_choices(ADRS, c("SEX", "RACE", "COUNTRY", "ARM", "PARAMCD", "AVISIT")),
             selected = "SEX",
             multiple = FALSE,
             fixed = FALSE
@@ -192,25 +225,55 @@ app <- init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = c("SEX", "RACE"),
+            choices = variable_choices(ADSL, c("SEX", "RACE")),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE
           )
         ),
-        expert_settings = TRUE,
+        color_settings = TRUE,
+        color = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        fill = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        size = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
         plot_height = c(600, 200, 2000),
         ggtheme = "grey"
       ),
-
+      
       tm_g_bivariate(
         label = "Wide and long datasets",
         x = data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
-              vars = "PARAM",
-              choices = levels(ADRS$PARAMCD),
+              vars = "PARAMCD",
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
               selected = levels(ADRS$PARAMCD)[2],
               multiple = FALSE,
               label = "Select response:"
@@ -224,7 +287,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("AVALC", "AVAL"),
+            choices = variable_choices(ADRS, c("AVALC", "AVAL")),
             selected = "AVALC",
             multiple = FALSE,
             label = "Select variable:"
@@ -233,7 +296,7 @@ app <- init(
         y = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
+            choices = variable_choices(ADSL, c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY")),
             selected = "BMRKR1",
             multiple = FALSE,
             label = "Select variable:",
@@ -243,7 +306,7 @@ app <- init(
         row_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("SEX", "RACE", "ARMCD", "PARAMCD"),
+            choices = variable_choices(ADRS, c("SEX", "RACE", "ARMCD", "PARAMCD")),
             selected = "SEX",
             multiple = FALSE,
             label = "Select variable:"
@@ -252,7 +315,7 @@ app <- init(
         col_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("SEX", "RACE", "ARMCD", "PARAMCD", "AVISIT"),
+            choices = variable_choices(ADRS, c("SEX", "RACE", "ARMCD", "PARAMCD", "AVISIT")),
             selected = "ARMCD",
             multiple = FALSE,
             fixed = FALSE,
@@ -268,7 +331,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADRS$PARAMCD),
+              choices = value_choices(ADRS, "PARAMCD", "PARAM"),
               selected = levels(ADRS$PARAMCD)[2],
               multiple = FALSE,
               label = "Select response:"
@@ -282,7 +345,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("AVALC", "AVAL"),
+            choices = variable_choices(ADRS, c("AVALC", "AVAL")),
             selected = "AVALC",
             multiple = FALSE,
             label = "Select variable:"
@@ -291,7 +354,7 @@ app <- init(
         y = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY"),
+            choices = variable_choices(ADSL, c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE
@@ -301,9 +364,9 @@ app <- init(
           dataname = "ADLB",
           filter = list(
             filter_spec(
-              vars = "PARAM",
-              choices = levels(ADLB$PARAM),
-              selected = levels(ADLB$PARAM)[1],
+              vars = "PARAMCD",
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
+              selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select measurement:"
             ),
@@ -326,14 +389,44 @@ app <- init(
         col_facet = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = c("SEX", "AGE", "RACE", "COUNTRY"),
+            choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY")),
             selected = NULL,
             multiple = FALSE,
             fixed = FALSE,
             label = "Select variable:"
           )
         ),
-        expert_settings = TRUE,
+        color_settings = TRUE,
+        color = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        fill = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        size = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
         plot_height = c(600, 200, 2000),
         ggtheme = "grey"
       ),
@@ -343,7 +436,7 @@ app <- init(
         x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVALC", "AVAL"),
+            choices = variable_choices(ADRS, c("AVALC", "AVAL")),
             selected = "AVALC",
             multiple = FALSE,
             fixed = FALSE,
@@ -353,7 +446,7 @@ app <- init(
         y = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("SEX", "RACE", "COUNTRY", "ARMCD", "BMRKR1", "BMRKR2"),
+            choices = variable_choices(ADRS, c("SEX", "RACE", "COUNTRY", "ARMCD", "BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE,
@@ -363,7 +456,7 @@ app <- init(
         row_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVISIT", "PARAMCD"),
+            choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
             selected = "PARAMCD",
             multiple = TRUE,
             label = "Select variables:"
@@ -372,7 +465,7 @@ app <- init(
         col_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = c("AVISIT", "PARAMCD"),
+            choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
             selected = "AVISIT",
             multiple = TRUE,
             label = "Select variables:"
@@ -387,7 +480,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -412,7 +505,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -438,7 +531,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -452,7 +545,7 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("RACE", "SEX", "ARMCD", "ACTARMCD"),
+            choices = variable_choices(ADLB, c("RACE", "SEX", "ARMCD", "ACTARMCD")),
             selected = NULL,
             multiple = TRUE,
             fixed = FALSE,
@@ -464,7 +557,7 @@ app <- init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = levels(ADLB$PARAMCD),
+              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
               selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
@@ -478,14 +571,44 @@ app <- init(
             )
           ),
           select = select_spec(
-            choices = c("RACE", "SEX", "ARMCD", "ACTARMCD"),
+            choices = variable_choices(ADLB, c("RACE", "SEX", "ARMCD", "ACTARMCD")),
             selected = "ARMCD",
             multiple = TRUE,
             fixed = FALSE,
             label = "Select variables:"
           )
         ),
-        expert_settings = TRUE,
+        color_settings = TRUE,
+        color = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        fill = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
+        size = data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+            selected = NULL,
+            multiple = FALSE,
+            fixed = FALSE,
+            label = "Select variable:"
+          )
+        ),
         plot_height = c(600, 200, 2000),
         ggtheme = "grey"
       )
@@ -495,6 +618,10 @@ app <- init(
 ```
 
 
-```{r echo=FALSE}
+## Run the app
+
+A simple `shiny::shinyApp` call will let you run the app. 
+
+```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```

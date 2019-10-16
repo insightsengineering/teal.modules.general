@@ -19,16 +19,18 @@ A data table viewer shows the data using a paginated table.
 \examples{
 library(random.cdisc.data)
 
-ADSL <- cadsl
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    code = "ADSL <- radsl(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
-    tm_data_table()
+    tm_data_table(
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+    )
   )
 )
 \dontrun{
@@ -38,51 +40,51 @@ app <- init(
 # two-datasets example
 library(random.cdisc.data)
 
-ADSL <- cadsl
-ADTTE <- cadaette
+ADSL <- radsl(cached = TRUE)
+ADTTE <- radaette(cached = TRUE)
 
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- cadsl; ADTTE <- cadaette",
-    check = TRUE
-  ),
-  modules = root_modules(
-    tm_data_table(
-      variables_selected = list(ADSL  = c("SEX", "AGE","RACE"),
-                                ADTTE = c("STUDYID","AGE")))
-  )
-)
-\dontrun{
-shinyApp(app$ui, app$server)
-}
-
-# datasets: different subsets of long dataset
-
-library(random.cdisc.data)
-
-ADSL <- cadsl
-ADLB <- cadlb
-
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl; ADLB <- cadlb",
+    code = "ADSL <- radsl(cached = TRUE); ADTTE <- radaette(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
     tm_data_table(
       variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-                                ADLB = c("STUDYID", "USUBJID", "PARAM", "PARAMCD",
-                                "AVISIT", "AVISITN", "AVAL", "CHG")))
+                                ADTTE = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+                                          "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR")))
+  )
+)
+\dontrun{
+  shinyApp(app$ui, app$server)
+}
+
+# datasets: different subsets of long dataset
+library(random.cdisc.data)
+
+ADSL <- radsl(cached = TRUE)
+ADLB <- radlb(cached = TRUE)
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE)",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+                                ADLB = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
+                                         "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
   )
 )
 
 \dontrun{
-shinyApp(app$ui, app$server)
+  shinyApp(app$ui, app$server)
 }
 
 }

@@ -19,13 +19,12 @@
 #' # Scatterplot matrix of variables from ADSL dataset
 #' library(random.cdisc.data)
 #'
-#' ADSL <- cadsl
-#' ADTTE <- radtte(ADSL, seed = 1, event.descr = c("STUDYID", "USUBJID", "PARAMCD"))
+#' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- cadsl",
+#'     code = "ADSL <- radsl(cached = TRUE)",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -35,7 +34,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variables:",
-#'           choices = colnames(ADSL),
+#'           choices = variable_choices(ADSL),
 #'           selected = c("AGE", "RACE", "SEX"),
 #'           multiple = TRUE,
 #'           fixed = FALSE
@@ -87,15 +86,20 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       datanames_input(args$variables),
       actionLink(ns("add_selector"), "Add Selector"),
       hr(),
-      sliderInput(
-        ns("alpha"), "Opacity:", min = 0, max = 1,
-        step = .05, value = .5, ticks = FALSE
-      ),
-      sliderInput(
-        ns("cex"), "Points size:", min = 0.2, max = 3,
-        step = .05, value = .65, ticks = FALSE
-      ),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      plot_height_input(id = ns("myplot"), value = args$plot_height),
+      panel_group(
+        panel_item(
+          title = "Plot settings",
+          sliderInput(
+            ns("alpha"), "Opacity:", min = 0, max = 1,
+            step = .05, value = .5, ticks = FALSE
+          ),
+          sliderInput(
+            ns("cex"), "Points size:", min = 0.2, max = 3,
+            step = .05, value = .65, ticks = FALSE
+          )
+        )
+      )
     ),
     pre_output = args$pre_output,
     post_output = args$post_output,
@@ -105,23 +109,26 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 
 #' HTML id of the UI element that contains the extract input
 #' @param idx index or identifier of the data extract UI that contains the input element
+#' @param session shiny session object
 #' @return the html id of the element given the idx
-extract_ui_id <- function(idx) {
-  paste0("extract_ui_", idx)
+extract_ui_id <- function(idx, session) {
+  session$ns(paste0("extract_ui_", idx))
 }
 
 #' HTML id of the extract input contained within another UI
 #' @param idx index or identifier of the data extract input element
+#' @param session shiny session object
 #' @return the html id of the element given the idx
-extract_input_id <- function(idx) {
-  paste0("extract_input_", idx)
+extract_input_id <- function(idx, session) {
+  session$ns(paste0("extract_input_", idx))
 }
 
 #' HTML id of the element to remove the whole extract UI
 #' @param idx index or identifier of the button to remove the data extract ui
+#' @param session shiny session object
 #' @return the html id of the element given the idx
-remove_extract_ui_id <- function(idx) {
-  paste0("remove_extract_ui_", idx)
+extract_remove_id <- function(idx, session) {
+  session$ns(paste0("extract_remove_", idx))
 }
 
 
@@ -145,14 +152,14 @@ srv_g_scatterplotmatrix <- function(input,
       selector = paste0("#", session$ns("add_selector")),
       where = "beforeBegin",
       ui = div(
-        id = extract_ui_id(idx),
+        id = extract_ui_id(idx, session),
         data_extract_input(
-          id = session$ns(paste0("extract_input_", idx)),
+          id = session$ns(extract_input_id(idx, session)),
           label = paste0("Selector (", idx, ")"),
           data_extract_spec = variables
         ),
         div(
-          actionLink(session$ns(remove_extract_ui_id(idx)), "Remove"),
+          actionLink(session$ns(extract_remove_id(idx, session)), "Remove"),
           align = "right"
         )
       )
@@ -160,33 +167,32 @@ srv_g_scatterplotmatrix <- function(input,
     extract_ui_indices(c(extract_ui_indices(), idx))
 
     # bind remove event
-    observeEvent(
-      input[[remove_extract_ui_id(idx)]],
-      {
-        if (length(extract_ui_indices()) <= 1) {
-          print("need at least one data extract to select from")
-        }
-        req(length(extract_ui_indices()) > 1)
-        removeUI(selector = paste0("#", extract_ui_id(idx)))
-        extract_ui_indices(extract_ui_indices()[extract_ui_indices() != idx])
+    observeEvent(input[[isolate(extract_remove_id(idx, session))]], {
+      # please use the same condition in the "once" argument
+      if (length(extract_ui_indices()) <= 1) {
+        print("need at least one data extract to select from")
       }
-    )
+      req(length(extract_ui_indices()) > 1)
+      removeUI(selector = paste0("#", extract_ui_id(idx, session)))
+      extract_ui_indices(extract_ui_indices()[extract_ui_indices() != idx])
+    }, once = !(length(isolate(extract_ui_indices())) <= 1), ignoreInit = TRUE)
   })
 
-  observeEvent(input$add_selector, add_ui())
-  observeEvent(extract_ui_indices(), ignoreNULL = FALSE, {
-    req(is.null(extract_ui_indices()))
-    # add two data extracts initially
+  # add two data extracts initially
+  init_observe <- observe({
     add_ui()
     add_ui()
   })
+  init_observe$suspend()
+
+  observeEvent(input$add_selector, add_ui())
 
   merged_data <- reactive({
     validate(need(length(extract_ui_indices()) > 0, "Need at least 1 input."))
     data_merge_module(
       datasets = datasets,
       data_extract = replicate(length(extract_ui_indices()), variables, simplify = FALSE),
-      input_id = vapply(extract_ui_indices(), function(idx) extract_input_id(idx), character(1))
+      input_id = vapply(extract_ui_indices(), function(idx) extract_input_id(idx, session), character(1))
     )()
   })
 
@@ -200,11 +206,12 @@ srv_g_scatterplotmatrix <- function(input,
 
   # plot
   output$plot <- renderPlot({
-    ANL <- merged_data()$data()
+    ANL <- merged_data()$data() # nolint
+    validate_has_data(ANL, 3)
     chunks_reset()
 
-    alpha <- input$alpha
-    cex <- input$cex
+    alpha <- input$alpha # nolint
+    cex <- input$cex # nolint
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 

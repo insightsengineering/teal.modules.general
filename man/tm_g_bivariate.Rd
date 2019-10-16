@@ -4,13 +4,13 @@
 \alias{tm_g_bivariate}
 \title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Bivariate Plots", x, y, row_facet, col_facet,
-  colour = NULL, fill = NULL, size = NULL, use_density = FALSE,
-  expert_settings = TRUE, free_x_scales = FALSE,
+tm_g_bivariate(label = "Bivariate Plots", x, y, row_facet = NULL,
+  col_facet = NULL, color = NULL, fill = NULL, size = NULL,
+  use_density = FALSE, color_settings = FALSE, free_x_scales = FALSE,
   free_y_scales = FALSE, plot_height = c(600, 200, 2000),
-  ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark",
-  "minimal", "classic", "void", "test"), with_show_r_code = TRUE,
-  pre_output = NULL, post_output = NULL)
+  rotate_xaxis_labels = FALSE, swap_axes = FALSE, ggtheme = c("grey",
+  "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+  "test"), pre_output = NULL, post_output = NULL)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the module}
@@ -28,18 +28,18 @@ Variable for row facetting}
 \item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable for col facetting}
 
-\item{colour}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the colouring inside the expert settings}
+\item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable selection for the coloring inside the coloring settings}
 
 \item{fill}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the filling inside the expert settings}
+Variable selection for the filling inside the coloring settings}
 
 \item{size}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the size of \code{geom_point} plots inside the expert settings}
+Variable selection for the size of \code{geom_point} plots inside the coloring settings}
 
 \item{use_density}{(\code{logical}) value for whether density (\code{TRUE}) is plotted or frequency (\code{FALSE})}
 
-\item{expert_settings}{(\code{logical}) Whether coloring, filling and size should be chosen
+\item{color_settings}{(\code{logical}) Whether coloring, filling and size should be chosen
 by the user}
 
 \item{free_x_scales}{(\code{logical}) If X scaling shall be changeable}
@@ -48,9 +48,11 @@ by the user}
 
 \item{plot_height}{(\code{numeric}) \code{c(value, min and max)} of plot height slider}
 
-\item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
+\item{rotate_xaxis_labels}{(\code{logical}) Wheater to rotate plot X axis labels}
 
-\item{with_show_r_code}{(\code{logical}) Whether show R code button shall be shown}
+\item{swap_axes}{(\code{logical}) Wheather to swap X an Y axes}
+
+\item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
@@ -68,13 +70,14 @@ This is a general module to visualize 1 & 2 dimensional data.
 }
 \examples{
 # Bivariate plot of selected variable (AGE) against selected (SEX)
+library(teal.modules.general)
 library(random.cdisc.data)
-ADSL <- cadsl
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    code = "ADSL <- radsl(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
@@ -83,7 +86,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = names(ADSL),
+          choices = variable_choices(ADSL),
           selected = "AGE",
           fixed = FALSE
         )
@@ -92,29 +95,9 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = names(ADSL),
+          choices = variable_choices(ADSL),
           selected = "SEX",
           multiple = FALSE,
-          fixed = FALSE
-        )
-      ),
-      row_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = names(ADSL),
-          selected = NULL,
-          multiple = TRUE,
-          fixed = FALSE
-        )
-      ),
-      col_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = names(ADSL),
-          selected = NULL,
-          multiple = TRUE,
           fixed = FALSE
         )
       )

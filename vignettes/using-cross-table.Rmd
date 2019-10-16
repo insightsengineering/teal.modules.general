@@ -5,28 +5,60 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Cross table examples}
+  %\VignetteIndexEntry{Cross table app construction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+Teal application to use cross table with various datasets types
 
+This vignette will guide you through 4 parts to create a teal application using
+various types of datasets inside an cross table module:
+
+1. Load Libraries
+2. Create data sets
+3. Create an `app` variable
+4. Run the App
+
+## Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-library(teal.modules.general)
-library(random.cdisc.data)
-library(dplyr)
-ADSL <- cadsl
-ADSL_2 <- cadsl
-ADRS <- cadrs
-ADTTE <- cadtte
-ADLB <- cadlb %>%
+library(teal.modules.general) # used to create the app
+library(random.cdisc.data) # used to create data sets
+library(dplyr) # used to modify data sets
+```
+
+## Create data sets
+
+Inside this app 5 datasets will be used
+
+1. `ADSL` A wide data set with subject data
+2. `ADSL_2` A wide data set with subject data
+3. `ADRS` A long data set with response data for subjects at different time points of the study
+4. `ADTTE` A long data set with time to event data
+5. `ADLB` A long data set with lab measurements for each subject
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+ADSL <- radsl(cached = TRUE)
+ADSL_2 <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+ADLB <- radlb(cached = TRUE) %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+```
 
+## Create an `app` variable
+
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal::cdisc_data`. The app
+itself will be constructed by multiple calls of `tm_t_crosstable` using different
+combinations of data sets.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
@@ -34,11 +66,11 @@ app <- init(
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- cadsl
-            ADSL_2 <- cadsl
-            ADRS <- cadrs
-            ADTTE <- cadtte
-            ADLB <- cadlb %>%
+    code = "ADSL <- radsl(cached = TRUE)
+            ADSL_2 <- radsl(cached = TRUE)
+            ADRS <- radrs(cached = TRUE)
+            ADTTE <- radtte(cached = TRUE)
+            ADLB <- radlb(cached = TRUE) %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
@@ -49,13 +81,13 @@ app <- init(
   modules = root_modules(
     modules(
       label = "Cross table",
-      tm_cross_table(
+      tm_t_crosstable(
         label = "Single wide dataset",
         x = data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = names(ADSL)[5],
             multiple = FALSE,
             fixed = FALSE
@@ -65,7 +97,7 @@ app <- init(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = names(ADSL),
+            choices = variable_choices(ADSL),
             selected = names(ADSL)[6],
             multiple = FALSE,
             fixed = FALSE
@@ -73,18 +105,18 @@ app <- init(
         )
       ),
 
-      tm_cross_table(
+      tm_t_crosstable(
         label = "Same long datasets (different subsets)",
         x = data_extract_spec(
           dataname = "ADLB",
           filter = filter_spec(
             vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
+            choices = value_choices(ADLB, "PARAMCD", "PARAM"),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = names(ADLB),
+            choices = variable_choices(ADLB),
             selected = "AVISIT",
             multiple = FALSE,
             fixed = FALSE,
@@ -95,12 +127,12 @@ app <- init(
           dataname = "ADLB",
           filter = filter_spec(
             vars = "PARAMCD",
-            choices = levels(ADLB$PARAMCD),
+            choices = value_choices(ADLB, "PARAMCD", "PARAM"),
             selected = levels(ADLB$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = names(ADLB),
+            choices = variable_choices(ADLB),
             selected = "LOQFL",
             multiple = FALSE,
             fixed = FALSE,
@@ -111,10 +143,12 @@ app <- init(
     )
   )
 )
-      
 ```
 
+## Run the app
 
-```{r echo=FALSE}
+A simple `shiny::shinyApp` call will let you run the app. 
+
+```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```

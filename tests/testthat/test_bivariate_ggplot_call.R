@@ -2,20 +2,20 @@ context("bivariate_ggplot_call")
 
 test_that("bivariate_ggplot_call with numerics", {
   expect_match(
-    bivariate_ggplot_call("numeric", "numeric") %>% deparse(),
-    "geom_point"
+    bivariate_ggplot_call("numeric", "numeric") %>% deparse(width.cutoff = 300),
+    "geom_point()"
   )
   expect_match(
-    bivariate_ggplot_call("numeric", "factor") %>% deparse(),
-    "geom_boxplot"
+    bivariate_ggplot_call("numeric", "factor") %>% deparse(width.cutoff = 300),
+    "geom_boxplot()"
   )
   expect_match(
-    bivariate_ggplot_call("factor", "numeric") %>% deparse(),
-    "geom_boxplot"
+    bivariate_ggplot_call("numeric", "factor") %>% deparse(width.cutoff = 300),
+    "coord_flip()"
   )
   expect_match(
-    bivariate_ggplot_call("numeric", "factor") %>% deparse(),
-    "coord_flip"
+    bivariate_ggplot_call("factor", "numeric") %>% deparse(width.cutoff = 300),
+    "geom_boxplot()"
   )
 })
 
@@ -65,16 +65,16 @@ test_that("bivariate_ggplot_call with single data numeric", {
   )
 
   expect_match(
+    bivariate_ggplot_call("NULL", "numeric") %>% deparse(width.cutoff = 300),
+    "geom\\_histogram"
+  )
+  expect_match(
     bivariate_ggplot_call("NULL", "numeric", TRUE) %>% deparse(width.cutoff = 300),
     "Frequency"
   )
   expect_match(
     bivariate_ggplot_call("NULL", "numeric", FALSE) %>% deparse(width.cutoff = 300),
     "Density"
-  )
-  expect_match(
-    bivariate_ggplot_call("NULL", "numeric") %>% deparse(width.cutoff = 300),
-    "coord_flip"
   )
 })
 test_that("bivariate_ggplot_call with single data factor", {
@@ -89,10 +89,6 @@ test_that("bivariate_ggplot_call with single data factor", {
   expect_match(
     bivariate_ggplot_call("NULL", "factor") %>% deparse(width.cutoff = 300),
     "geom\\_bar"
-  )
-  expect_match(
-    bivariate_ggplot_call("NULL", "factor") %>% deparse(width.cutoff = 300),
-    "coord_flip"
   )
   expect_match(
     bivariate_ggplot_call("NULL", "factor", FALSE) %>% deparse(width.cutoff = 300),

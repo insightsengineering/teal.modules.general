@@ -10,6 +10,16 @@ NULL
 #'  response variable from an incoming dataset with filtering and selecting.
 #' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
 #'  encoding the plot height.
+#' @param default_plot_type (\code{numeric})
+#' \itemize{
+#'  \item{1 }{Response vs Regressor}
+#'  \item{2 }{Residuals vs Fitted}
+#'  \item{3 }{Normal Q-Q}
+#'  \item{4 }{Scale-Location}
+#'  \item{5 }{Cooks distance}
+#'  \item{6 }{Residuals vs Leverage}
+#'  \item{7 }{Cooks dist vs Leverage}
+#' }
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @export
@@ -19,32 +29,32 @@ NULL
 #' # selected regressors (AGE)
 #' library(random.cdisc.data)
 #'
-#' ADSL <- cadsl
+#' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- cadsl",
+#'     code = "ADSL <- radsl(cached = TRUE)",
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     tm_g_regression(
+#'     tm_a_regression(
 #'       label = "Regression",
 #'       response = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = c("BMRKR1", "BMRKR2"),
+#'           choices = "BMRKR1",
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
-#'           fixed = FALSE
+#'           fixed = TRUE
 #'         )
 #'       ),
 #'       regressor = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variables:",
-#'           choices = c("AGE", "SEX", "RACE"),
+#'           choices = variable_choices(ADSL, c("AGE", "SEX", "RACE")),
 #'           selected = "AGE",
 #'           multiple = TRUE,
 #'           fixed = FALSE
@@ -56,12 +66,14 @@ NULL
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_g_regression <- function(label = "Regression Analysis",
+tm_a_regression <- function(label = "Regression Analysis",
                             regressor,
                             response,
                             plot_height = c(600, 200, 2000),
                             pre_output = NULL,
-                            post_output = NULL) {
+                            post_output = NULL,
+                            default_plot_type = 1
+                            ) {
   if (!is.class.list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
   }
@@ -83,8 +95,8 @@ tm_g_regression <- function(label = "Regression Analysis",
 
   module(
     label = label,
-    server = srv_g_regression,
-    ui = ui_g_regression,
+    server = srv_a_regression,
+    ui = ui_a_regression,
     ui_args = args,
     server_args = list(regressor = regressor, response = response),
     filters = "all"
@@ -92,9 +104,16 @@ tm_g_regression <- function(label = "Regression Analysis",
 }
 
 
-ui_g_regression <- function(id, ...) {
+ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
+
+  plot_choices <- c(
+      "Response vs Regressor",
+      "Residuals vs Fitted",
+      "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+      "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+  )
 
   standard_layout(
     output = white_small_well(
@@ -119,13 +138,8 @@ ui_g_regression <- function(id, ...) {
       radioButtons(
         ns("plot_type"),
         label = "Plot type:",
-        choices = c(
-          "Response vs Regressor",
-          "Residuals vs Fitted",
-          "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-          "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-        ),
-        selected = "Response vs Regressor"
+        choices = plot_choices,
+        selected = plot_choices[args$default_plot_type]
       ),
       plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
@@ -140,7 +154,7 @@ ui_g_regression <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
-srv_g_regression <- function(input, output, session, datasets, response, regressor) {
+srv_a_regression <- function(input, output, session, datasets, response, regressor) {
   init_chunks(session)
 
   merged_data <- data_merge_module(
@@ -159,15 +173,16 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
 
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
-    ANL <- merged_data()$data()
+    ANL <- merged_data()$data() # nolint
+    validate_has_data(ANL, 10)
     chunks_reset()
-    response_var <- merged_data()$columns_source$response
-    regressor_var <- merged_data()$columns_source$regressor
+    response_var <- unname(merged_data()$columns_source$response)
+    regressor_var <- unname(merged_data()$columns_source$regressor)
 
     # validation
-    validate_has_data(ANL, 10)
-    validate(need(length(regressor_var) > 0, "At least one regressor should be selected"))
+    validate(need(length(regressor_var) > 0, "At least one regressor should be selected."))
     validate(need(length(response_var) == 1, "Response variable should be of length one."))
+    validate(need(is.numeric(ANL[response_var][[1]]), "Response variable should be numeric."))
     if (input$plot_type == "Response vs Regressor") {
       validate(need(length(regressor_var) == 1, "Response vs Regressor is only provided for exactly one regressor"))
     }
@@ -198,13 +213,17 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
 
       if (ncol(fit$model) > 1) {
         stopifnot(ncol(fit$model) == 2)
-        chunks_push(quote(plot(fit$model[, 2:1])))
+        chunks_push(quote(plot(fit$model[, 2:1], main = "Response vs Regressor")))
+        regressor_var <- merged_data()$columns_source$regressor
+        if (is.numeric(chunks_get_var("ANL")[[regressor_var]])) {
+          chunks_push(quote(abline(fit, col = "red", lwd = 2L)))
+        }
       } else {
-        ANL <- chunks_get_var("ANL")
+        ANL <- chunks_get_var("ANL") # nolint
         chunks_push(quote({
           plot_data <- data.frame(fit$model[, 1], fit$model[, 1])
           names(plot_data) <- rep(names(fit$model), 2)
-          plot <- plot(plot_data)
+          plot <- plot(plot_data, main = "Response vs Regressor")
           abline(ANL)
         }))
       }
@@ -245,4 +264,3 @@ srv_g_regression <- function(input, output, session, datasets, response, regress
     )
   })
 }
-

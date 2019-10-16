@@ -6,7 +6,7 @@
 \usage{
 tm_g_association(label = "Association", ref, vars,
   show_association = TRUE, plot_height = c(600, 400, 5000),
-  pre_output = NULL, post_output = NULL, with_show_r_code = TRUE)
+  pre_output = NULL, post_output = NULL)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
@@ -28,8 +28,6 @@ output to put the output into context. For example the
 \item{post_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{with_show_r_code}{(\code{logical}) Whether show R Code button shall be enabled}
 }
 \description{
 Stack Plots of variables and show association with reference variable
@@ -38,12 +36,12 @@ Stack Plots of variables and show association with reference variable
 # Association plot of selected reference variable (SEX)
 # against other selected variables (BMRKR1)
 library(random.cdisc.data)
-ADSL <- cadsl
+ADSL <- radsl(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- cadsl",
+    code = "ADSL <- radsl(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
@@ -52,8 +50,11 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = names(ADSL),
-          selected = "AGE",
+          choices = variable_choices(
+            ADSL,
+            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+          ),
+          selected = "RACE",
           fixed = FALSE
         )
       ),
@@ -61,8 +62,11 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variables:",
-          choices = names(ADSL),
-          selected = "BMRKR1",
+          choices = variable_choices(
+            ADSL,
+            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+          ),
+          selected = "BMRKR2",
           multiple = TRUE,
           fixed = FALSE
         )
