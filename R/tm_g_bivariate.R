@@ -100,15 +100,15 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ),
                            pre_output = NULL,
                            post_output = NULL) {
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
-  stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
-  stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"))
-  stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"))
-  stopifnot(is.null(color) || is.class.list("data_extract_spec")(color) || is(color, "data_extract_spec"))
-  stopifnot(is.null(fill) || is.class.list("data_extract_spec")(fill) || is(fill, "data_extract_spec"))
-  stopifnot(is.null(size) || is.class.list("data_extract_spec")(size) || is(size, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(x)) {
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"))
+  stopifnot(is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"))
+  stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"))
+  stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"))
+  stopifnot(is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"))
+  stopifnot(is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"))
+  stopifnot(is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"))
+  if (is_class_list("data_extract_spec")(x)) {
     stop_if_not(list(
       all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1))),
       "x variable should not allow multiple selection"
@@ -119,7 +119,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       "x variable should not allow multiple selection"
     ))
   }
-  if (is.class.list("data_extract_spec")(y)) {
+  if (is_class_list("data_extract_spec")(y)) {
     stop_if_not(list(
       all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
       "y variable should not allow multiple selection"
@@ -130,16 +130,16 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       "y variable should not allow multiple selection"
     ))
   }
-  stopifnot(is.logical.single(use_density))
-  stopifnot(is.logical.single(color_settings))
-  stopifnot(is.logical.single(free_x_scales))
-  stopifnot(is.logical.single(free_y_scales))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_logical_single(use_density))
+  stopifnot(is_logical_single(color_settings))
+  stopifnot(is_logical_single(free_x_scales))
+  stopifnot(is_logical_single(free_y_scales))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
-  stopifnot(is.logical.single(rotate_xaxis_labels))
-  stopifnot(is.logical.single(swap_axes))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
+  stopifnot(is_logical_single(swap_axes))
   ggtheme <- match.arg(ggtheme)
-  stopifnot(is.character.single(ggtheme))
+  stopifnot(is_character_single(ggtheme))
 
   if (color_settings) {
     if (is.null(color)) {
@@ -371,7 +371,7 @@ srv_g_bivariate <- function(input,
 
     validate(
       need(
-        !is.character.empty(x_name) || !is.empty(y_name),
+        !is_character_empty(x_name) || !is_empty(y_name),
         "x-variable and y-variable isn't correcly specified. At least one should be valid."
       )
     )
@@ -380,8 +380,8 @@ srv_g_bivariate <- function(input,
       data_name = "ANL",
       x = x_name,
       y = y_name,
-      x_class = ifelse(!is.character.empty(x_name), class(ANL[[x_name]]), "NULL"),
-      y_class = ifelse(!is.character.empty(y_name), class(ANL[[y_name]]), "NULL"),
+      x_class = ifelse(!is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
+      y_class = ifelse(!is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
       x_label = attr(ANL[[x_name]], "label"),
       y_label = attr(ANL[[y_name]], "label"),
       freq = !use_density,
@@ -473,12 +473,12 @@ bivariate_plot_call <- function(data_name,
     swap_axes = swap_axes
   )
 
-  if (is.character.empty(x)) {
+  if (is_character_empty(x)) {
     x <- x_label <- "-"
   } else {
     x_label <- ifelse(is.null(x_label), paste0("[", deparse(x), "]"), paste0(x_label, " [", deparse(x), "]"))
   }
-  if (is.character.empty(y)) {
+  if (is_character_empty(y)) {
     y <- y_label <- "-"
   } else {
     y_label <- ifelse(is.null(y_label), paste0("[", deparse(y), "]"), paste0(y_label, " [", deparse(y), "]"))
@@ -720,17 +720,17 @@ facet_ggplot_call <- function(row_facet = character(0),
     "fixed"
   }
 
-  if (is.character.empty(row_facet) && is.character.empty(col_facet)) {
+  if (is_character_empty(row_facet) && is_character_empty(col_facet)) {
     NULL
-  } else if (!is.character.empty(row_facet) && !is.character.empty(col_facet)) {
+  } else if (!is_character_empty(row_facet) && !is_character_empty(col_facet)) {
     call("facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
-  } else if (is.character.empty(row_facet) && !is.character.empty(col_facet)) {
+  } else if (is_character_empty(row_facet) && !is_character_empty(col_facet)) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-  } else if (!is.character.empty(row_facet) && is.character.empty(col_facet)) {
+  } else if (!is_character_empty(row_facet) && is_character_empty(col_facet)) {
     call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
@@ -739,42 +739,42 @@ coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
                                  is_point = FALSE) {
-  if (!is.character.empty(colour) && !is.character.empty(fill) &&
-    is_point && !is.character.empty(size)) {
+  if (!is_character_empty(colour) && !is_character_empty(fill) &&
+    is_point && !is_character_empty(size)) {
     bquote(aes(
       colour = .(as.name(colour)),
       fill = .(as.name(fill)),
       size = .(as.name(size))
     ))
-  } else if (!is.character.empty(colour) && !is.character.empty(fill) &&
-    (!is_point || is.character.empty(size))) {
+  } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
+    (!is_point || is_character_empty(size))) {
     bquote(aes(
       colour = .(as.name(colour)),
       fill = .(as.name(fill))
     ))
-  } else if (!is.character.empty(colour) && is.character.empty(fill) &&
-    (!is_point || is.character.empty(size))) {
+  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
+    (!is_point || is_character_empty(size))) {
     bquote(aes(
       colour = .(as.name(colour))
     ))
-  } else if (is.character.empty(colour) && !is.character.empty(fill) &&
-    (!is_point || is.character.empty(size))) {
+  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
+    (!is_point || is_character_empty(size))) {
     bquote(aes(
       fill = .(as.name(fill))
     ))
-  } else if (is.character.empty(colour) && is.character.empty(fill) &&
-    is_point && !is.character.empty(size)) {
+  } else if (is_character_empty(colour) && is_character_empty(fill) &&
+    is_point && !is_character_empty(size)) {
     bquote(aes(
       size = .(as.name(size))
     ))
-  } else if (!is.character.empty(colour) && is.character.empty(fill) &&
-    is_point && !is.character.empty(size)) {
+  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
+    is_point && !is_character_empty(size)) {
     bquote(aes(
       colour = .(as.name(colour)),
       size = .(as.name(size))
     ))
-  } else if (is.character.empty(colour) && !is.character.empty(fill) &&
-    is_point && !is.character.empty(size)) {
+  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
+    is_point && !is_character_empty(size)) {
     bquote(aes(
       fill = .(as.name(fill)),
       size = .(as.name(size))

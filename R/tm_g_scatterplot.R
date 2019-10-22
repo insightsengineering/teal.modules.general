@@ -80,27 +80,27 @@ tm_g_scatterplot <- function(label,
                            rotate_xaxis_labels = FALSE,
                            pre_output = NULL,
                            post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(x)) {
+  if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is.class.list("data_extract_spec")(y)) {
+  if (!is_class_list("data_extract_spec")(y)) {
     y <- list(y)
   }
-  if (!is.class.list("data_extract_spec")(color_by)) {
+  if (!is_class_list("data_extract_spec")(color_by)) {
     color_by <- list_or_null(color_by)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(x))
-  stopifnot(is.class.list("data_extract_spec")(y))
-  stopifnot(is.class.list("data_extract_spec")(color_by) | is.null(color_by))
-  stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(x))
+  stopifnot(is_class_list("data_extract_spec")(y))
+  stopifnot(is_class_list("data_extract_spec")(color_by) | is.null(color_by))
+  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
   stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
-  stopifnot(is.numeric.vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
   stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
-  stopifnot(is.numeric.vector(size) && (length(size) == 3 || length(size) == 1))
+  stopifnot(is_numeric_vector(size) && (length(size) == 3 || length(size) == 1))
   stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
-  stopifnot(is.logical.single(rotate_xaxis_labels))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
 
   args <- as.list(environment())
 
@@ -210,7 +210,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     }
 
     plot_call <- quote(ANL %>% ggplot())
-    plot_call <- if (is.null(color_by_var) || is.character.empty(color_by_var)) {
+    plot_call <- if (is.null(color_by_var) || is_character_empty(color_by_var)) {
       bquote(
         .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)))
       )

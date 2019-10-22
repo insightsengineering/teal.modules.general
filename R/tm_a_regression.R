@@ -74,19 +74,19 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1
                             ) {
-  if (!is.class.list("data_extract_spec")(regressor)) {
+  if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
   }
-  if (!is.class.list("data_extract_spec")(response)) {
+  if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(response))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(response))
   stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
                    "Response variable should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(regressor))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_class_list("data_extract_spec")(regressor))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
   # No check necessary for regressor and response, as checked in data_extract_input
 

@@ -63,20 +63,20 @@ tm_g_association <- function(label = "Association",
                              plot_height = c(600, 400, 5000),
                              pre_output = NULL,
                              post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(ref)) {
+  if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
   }
-  if (!is.class.list("data_extract_spec")(vars)) {
+  if (!is_class_list("data_extract_spec")(vars)) {
     vars <- list(vars)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(ref))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(ref))
   stop_if_not(list(all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
                    "'ref' should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(vars))
-  stopifnot(is.logical.single(show_association))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_class_list("data_extract_spec")(vars))
+  stopifnot(is_logical_single(show_association))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   args <- as.list(environment())

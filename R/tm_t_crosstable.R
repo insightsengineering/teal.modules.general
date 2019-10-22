@@ -63,25 +63,25 @@ tm_t_crosstable <- function(label = "Cross Table",
                            show_total = TRUE,
                            pre_output = NULL,
                            post_output = NULL) {
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(x) || is(x, "data_extract_spec"))
-  stopifnot(is.class.list("data_extract_spec")(y) || is(y, "data_extract_spec"))
-  if (is.class.list("data_extract_spec")(x)) {
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"))
+  stopifnot(is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"))
+  if (is_class_list("data_extract_spec")(x)) {
     stop_if_not(list(all(vapply(x, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "x variable should not allow multiple selection"))
   } else if (is(x, "data_extract_spec")) {
     stop_if_not(list(!isTRUE(x$select$multiple),
                      "x variable should not allow multiple selection"))
   }
-  if (is.class.list("data_extract_spec")(y)) {
+  if (is_class_list("data_extract_spec")(y)) {
     stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
                      "y variable should not allow multiple selection"))
   } else if (is(y, "data_extract_spec")) {
     stop_if_not(list(!isTRUE(y$select$multiple),
                      "y variable should not allow multiple selection"))
   }
-  stopifnot(is.logical.single(show_percentage))
-  stopifnot(is.logical.single(show_total))
+  stopifnot(is_logical_single(show_percentage))
+  stopifnot(is_logical_single(show_total))
   args <- as.list(environment())
 
   module(
@@ -143,8 +143,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     x_name <- unname(merged_data()$columns_source$x)
     y_name <- unname(merged_data()$columns_source$y)
 
-    validate(need(!is.character.empty(x_name), "Please define column for x variable that is not empty."))
-    validate(need(!is.character.empty(y_name), "Please define column for y variable that is not empty."))
+    validate(need(!is_character_empty(x_name), "Please define column for x variable that is not empty."))
+    validate(need(!is_character_empty(y_name), "Please define column for y variable that is not empty."))
 
     plot_title <- paste(
       "Cross-Table of",

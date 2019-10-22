@@ -71,8 +71,8 @@ list_or_null <- function(obj) {
 #' @importFrom ggplot2 ggplotGrob
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
-    is.null(xfacet_label) || is.character.vector(xfacet_label, min_length = 1),
-    is.null(yfacet_label) || is.character.vector(yfacet_label, min_length = 1),
+    is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),
+    is.null(yfacet_label) || is_character_vector(yfacet_label, min_length = 1),
     is(p, "ggplot")
   )
   if (is.null(xfacet_label) && is.null(yfacet_label)) {

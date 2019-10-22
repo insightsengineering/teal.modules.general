@@ -70,36 +70,36 @@ tm_g_response <- function(label = "Response Plot",
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
                           post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(response)) {
+  if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
-  if (!is.class.list("data_extract_spec")(x)) {
+  if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is.class.list("data_extract_spec")(row_facet)) {
+  if (!is_class_list("data_extract_spec")(row_facet)) {
     row_facet <- list_or_null(row_facet)
   }
-  if (!is.class.list("data_extract_spec")(col_facet)) {
+  if (!is_class_list("data_extract_spec")(col_facet)) {
     col_facet <- list_or_null(col_facet)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(response))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(response))
   stop_if_not(list(all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
                    "'response' should not allow empty values"))
   stop_if_not(list(all(vapply(response, function(x) !(x$select$multiple), logical(1))),
                    "'response' should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(x))
+  stopifnot(is_class_list("data_extract_spec")(x))
   stop_if_not(list(all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
                    "'x' should not allow empty values"))
   stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
                    "'x' should not allow multiple selection"))
-  stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet))
-  stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet))
-  stopifnot(is.logical.single(coord_flip))
-  stopifnot(is.logical.single(rotate_xaxis_labels))
-  stopifnot(is.logical.single(freq))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet))
+  stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet))
+  stopifnot(is_logical_single(coord_flip))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
+  stopifnot(is_logical_single(freq))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
 

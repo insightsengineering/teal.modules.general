@@ -27,7 +27,7 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "variable browser") {
-  stopifnot(is.character.single(label))
+  stopifnot(is_character_single(label))
 
   module(
     label,
