@@ -29,8 +29,6 @@ list_or_null <- function(obj) {
 
 #' Add axis labels that show facetting variable
 #'
-#' # todo: put into teal or teal.devel
-#'
 #' @param p ggplot2 object to add facet labels to
 #' @param xfacet_label label of facet along x axis (nothing created if NULL),
 #'   if vector, will be concatenated with " & "
@@ -58,7 +56,6 @@ list_or_null <- function(obj) {
 #' grid.newpage()
 #' grid.draw(res)
 #'
-#' # todo: include grid.newpage() and grid.draw() in function?
 #' grid.newpage()
 #' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label))
 #' grid.newpage()
@@ -78,7 +75,6 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }
-  # todo: can optionally remove grid.grabExpr and only use *Grob functions instead of grid.*
   grid.grabExpr({
     g <- ggplotGrob(p)
 
@@ -91,10 +87,6 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     yaxis_label_grob <- g$grobs[[grep("ylab-l", g$layout$name, fixed = TRUE)]]
     yaxis_label_grob$children[[1]]$label <- paste(yfacet_label, collapse = " & ")
 
-    # todo: compute width
-    # does not work because these elements are not yet drawn at the time they are required
-    # top_height <- unit(1, "grobheight", "xlab-b") # nolintr
-    # right_width <- unit(1, "grobwidth", "ylab-l") # nolintr
     top_height <- if (is.null(xfacet_label)) 0 else unit(2, "line")
     right_width <- if (is.null(yfacet_label)) 0 else unit(2, "line")
 

@@ -12,7 +12,7 @@ extract_ui_id(idx, session)
 \item{session}{shiny session object}
 }
 \value{
-the html id of the element given the idx
+the html id of the element given the \code{idx}
 }
 \description{
 HTML id of the UI element that contains the extract input

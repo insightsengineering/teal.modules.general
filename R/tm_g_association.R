@@ -6,7 +6,7 @@
 #'   reference variable, must set \code{multiple = FALSE}
 #' @param vars (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   associated variables
-#' @param show_association (\code{logical}) wheater show association of \code{vars} with refference variable
+#' @param show_association (\code{logical}) whether show association of \code{vars} with reference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout

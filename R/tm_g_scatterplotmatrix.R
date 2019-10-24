@@ -110,7 +110,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' HTML id of the UI element that contains the extract input
 #' @param idx index or identifier of the data extract UI that contains the input element
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_ui_id <- function(idx, session) {
   session$ns(paste0("extract_ui_", idx))
 }
@@ -118,7 +118,7 @@ extract_ui_id <- function(idx, session) {
 #' HTML id of the extract input contained within another UI
 #' @param idx index or identifier of the data extract input element
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_input_id <- function(idx, session) {
   session$ns(paste0("extract_input_", idx))
 }
@@ -126,7 +126,7 @@ extract_input_id <- function(idx, session) {
 #' HTML id of the element to remove the whole extract UI
 #' @param idx index or identifier of the button to remove the data extract ui
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_remove_id <- function(idx, session) {
   session$ns(paste0("extract_remove_", idx))
 }

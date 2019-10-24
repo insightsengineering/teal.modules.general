@@ -27,8 +27,8 @@ NULL
 #' @param free_x_scales (\code{logical}) If X scaling shall be changeable
 #' @param free_y_scales (\code{logical}) If Y scaling shall be changeable
 #' @param plot_height (\code{numeric}) \code{c(value, min and max)} of plot height slider
-#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
-#' @param swap_axes (\code{logical}) Wheather to swap X an Y axes
+#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
+#' @param swap_axes (\code{logical}) Whether to swap X an Y axes
 #' @param ggtheme (\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.
 #'
 #'
@@ -656,8 +656,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       quote(xlab(.ylab))
     )
 
-    # have to do coord flip on default
-    # when user decides to do additional flip then do nothing (i.e. flip twice)
+    # perform coord flip on default
+    # when user decides to flip additionally then do nothing (i.e. flip twice)
     if (swap_axes) {
       swap_axes <- FALSE
     } else {

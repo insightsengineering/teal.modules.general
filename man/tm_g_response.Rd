@@ -28,7 +28,7 @@ Which data to use for faceting columns. Just allow single columns by \code{multi
 
 \item{coord_flip}{(\code{logical}) Whether to flip coordinates}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Wheater to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
 
 \item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
 

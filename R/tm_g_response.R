@@ -12,7 +12,7 @@
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
-#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
+#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @inheritParams teal::module

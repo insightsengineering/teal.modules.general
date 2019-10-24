@@ -20,11 +20,11 @@ NULL
 #'   can be a vector of length three with \code{c(value, min and max)}.
 #' @param alpha if scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically
-#'   then it can be a vector of length three with vlaue, min and max.
+#'   then it can be a vector of length three with value, min and max.
 #' @param size if scalar then the plot points sizes will have a fixed opacity.
 #'   If a slider should be presented to adjust the plot point sizes dynamically
-#'   then it can be a vector of length three with vlaue, min and max.
-#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
+#'   then it can be a vector of length three with value, min and max.
+#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
