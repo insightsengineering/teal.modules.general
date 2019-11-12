@@ -139,7 +139,7 @@ ui_tm_g_association <- function(id, ...) {
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -266,14 +266,12 @@ srv_tm_g_association <- function(input,
     chunks_get_var("title")
   })
 
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "R Code for the Association Plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "Association Plot"
-      )
-    )
-  })
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R Code for the Association Plot",
+    code_header = "Association Plot"
+  )
 }

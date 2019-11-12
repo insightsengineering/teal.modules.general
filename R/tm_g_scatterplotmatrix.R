@@ -101,9 +101,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
-    post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
+    post_output = args$post_output
   )
 }
 
@@ -239,4 +239,20 @@ srv_g_scatterplotmatrix <- function(input,
       )
     )
   })
+
+  show_r_code_title <- reactive(
+    paste0(
+      "Scatterplotmatrix of ",
+      paste(merged_data()$cols, collapse = ", ")
+    )
+  )
+
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = show_r_code_title(),
+    code_header = show_r_code_title()
+  )
 }

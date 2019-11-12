@@ -118,7 +118,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = pre_output,
     post_output = post_output
   )
@@ -178,18 +178,21 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     as_html(create_table())
   })
 
-  observeEvent(input$show_rcode, {
-    x_name <- merged_data()$columns_source$x
-    y_name <- merged_data()$columns_source$y # no unname
-    title <- paste("Cross-Table of", x_name, "vs.", y_name)
-
-    show_rcode_modal(
-      title = "R Code for the Current Table",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = title
-      )
+  show_r_code_title <- reactive(
+    paste(
+      "Cross-Table of",
+      merged_data()$columns_source$x,
+      "vs.",
+      merged_data()$columns_source$y
     )
-  })
+  )
+
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = show_r_code_title(),
+    code_header = show_r_code_title()
+  )
 }

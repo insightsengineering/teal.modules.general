@@ -143,9 +143,9 @@ ui_a_regression <- function(id, ...) {
       ),
       plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
-    post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
+    post_output = args$post_output
   )
 }
 
@@ -248,19 +248,15 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     chunks_safe_eval()
   })
 
-  observeEvent(input$show_rcode, {
-    regr_formula <- fit()
-    title <- paste0(
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R code for the regression plot",
+    code_header = paste0(
       "Regression plot of ",
-      format(regr_formula)
+      format(fit())
     )
-    show_rcode_modal(
-      title = "R code for the regression plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = title
-      )
-    )
-  })
+  )
 }

@@ -170,7 +170,7 @@ ui_g_response <- function(id, ...) {
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -303,15 +303,11 @@ srv_g_response <- function(input,
     p
   })
 
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "R Code for a Scatterplotmatrix",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "",
-        description = ""
-      )
-    )
-  })
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R Code for a Scatterplotmatrix"
+  )
 }
