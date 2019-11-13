@@ -354,13 +354,13 @@ srv_g_bivariate <- function(input,
     validate_has_data(ANL, 3)
     chunks_reset()
 
-    x_name <- unname(merged_data()$columns_source$x)
-    y_name <- unname(merged_data()$columns_source$y)
-    row_facet_name <- unname(merged_data()$columns_source$row_facet)
-    col_facet_name <- unname(merged_data()$columns_source$col_facet)
-    color_name <- unname(merged_data()$columns_source$color)
-    fill_name <- unname(merged_data()$columns_source$fill)
-    size_name <- unname(merged_data()$columns_source$size)
+    x_name <- as.vector(merged_data()$columns_source$x)
+    y_name <- as.vector(merged_data()$columns_source$y)
+    row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
+    col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
+    color_name <- as.vector(merged_data()$columns_source$color)
+    fill_name <- as.vector(merged_data()$columns_source$fill)
+    size_name <- as.vector(merged_data()$columns_source$size)
 
     use_density <- input$use_density == "density"
     free_x_scales <- input$free_x_scales
@@ -403,7 +403,9 @@ srv_g_bivariate <- function(input,
     if (color_settings) {
       if (input$coloring) {
         coloring_cl <- coloring_ggplot_call(
-          colour = color_name, fill = fill_name, size = size_name,
+          colour = color_name,
+          fill = fill_name,
+          size = size_name,
           is_point = any(grepl("geom_point", cl %>% deparse()))
         )
       }
@@ -472,21 +474,34 @@ bivariate_plot_call <- function(data_name,
   if (is_character_empty(x)) {
     x <- x_label <- "-"
   } else {
-    x_label <- ifelse(is.null(x_label), paste0("[", deparse(x), "]"), paste0(x_label, " [", deparse(x), "]"))
+    x <- if (is.call(x)) x else as.name(x)
+    x_label <- ifelse(
+      is.null(x_label),
+      paste0("[", deparse(x), "]"),
+      paste0(x_label, " [", deparse(x), "]")
+    )
   }
   if (is_character_empty(y)) {
     y <- y_label <- "-"
   } else {
-    y_label <- ifelse(is.null(y_label), paste0("[", deparse(y), "]"), paste0(y_label, " [", deparse(y), "]"))
+    y <- if (is.call(y)) y else as.name(y)
+    y_label <- ifelse(
+      is.null(y_label),
+      paste0("[", deparse(y), "]"),
+      paste0(y_label, " [", deparse(y), "]")
+    )
   }
 
-  cl_plot <- substitute_q(cl, list(
-    .ggplotcall = bquote(ggplot(.(as.name(data_name)))),
-    .x = if (is.call(x)) x else as.name(x),
-    .y = if (is.call(y)) y else as.name(y),
-    .xlab = x_label,
-    .ylab = y_label
-  ))
+  cl_plot <- substitute_q(
+    cl,
+    list(
+      .ggplotcall = bquote(ggplot(.(as.name(data_name)))),
+      .x = x,
+      .y = y,
+      .xlab = x_label,
+      .ylab = y_label
+    )
+  )
 
   cl_plot
 }

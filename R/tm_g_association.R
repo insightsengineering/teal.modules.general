@@ -175,8 +175,8 @@ srv_tm_g_association <- function(input,
     validate_has_data(ANL, 3)
     chunks_reset()
 
-    ref_name <- unname(merged_data()$columns_source$ref)
-    vars_names <- unname(merged_data()$columns_source$vars)
+    ref_name <- as.vector(merged_data()$columns_source$ref)
+    vars_names <- as.vector(merged_data()$columns_source$vars)
 
     association <- input$association
     show_dist <- input$show_dist

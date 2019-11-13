@@ -218,11 +218,11 @@ srv_g_response <- function(input,
     validate_has_data(ANL, 3)
     chunks_reset()
 
-    resp_var <- unname(merged_data()$columns_source$response)
-    x <- unname(merged_data()$columns_source$x)
+    resp_var <- as.vector(merged_data()$columns_source$response)
+    x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- unname(if_empty(merged_data()$columns_source$col_facet, character(0)))
-    col_facet_name <- unname(if_empty(merged_data()$columns_source$row_facet, character(0)))
+    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
 
 
     validate(

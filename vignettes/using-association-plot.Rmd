@@ -191,7 +191,7 @@ app <- init(
           ),
           filter = list(
             filter_spec(
-              vars = "PARAM",
+              vars = "PARAMCD",
               choices = value_choices(ADRS, "PARAMCD", "PARAM"),
               selected = levels(ADRS$PARAMCD),
               multiple = TRUE,

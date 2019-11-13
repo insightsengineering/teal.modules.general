@@ -195,9 +195,9 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     ANL <- merged_data()$data() # nolint
     validate_has_data(ANL, 10)
     chunks_reset()
-    x_var <- unname(merged_data()$columns_source$x)
-    y_var <- unname(merged_data()$columns_source$y)
-    color_by_var <- unname(merged_data()$columns_source$color_by)
+    x_var <- as.vector(merged_data()$columns_source$x)
+    y_var <- as.vector(merged_data()$columns_source$y)
+    color_by_var <- as.vector(merged_data()$columns_source$color_by)
     alpha <- input$alpha
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels

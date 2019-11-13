@@ -176,8 +176,8 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     ANL <- merged_data()$data() # nolint
     validate_has_data(ANL, 10)
     chunks_reset()
-    response_var <- unname(merged_data()$columns_source$response)
-    regressor_var <- unname(merged_data()$columns_source$regressor)
+    response_var <- as.vector(merged_data()$columns_source$response)
+    regressor_var <- as.vector(merged_data()$columns_source$regressor)
 
     # validation
     validate(need(length(regressor_var) > 0, "At least one regressor should be selected."))
