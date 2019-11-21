@@ -187,7 +187,7 @@ srv_g_response <- function(input,
                            x,
                            row_facet,
                            col_facet) {
-  init_chunks(session)
+  init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]

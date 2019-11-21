@@ -141,7 +141,7 @@ srv_g_scatterplotmatrix <- function(input,
                                     datasets,
                                     variables) {
 
-  init_chunks(session)
+  init_chunks()
 
   extract_ui_indices <- reactiveVal(value = NULL)
 

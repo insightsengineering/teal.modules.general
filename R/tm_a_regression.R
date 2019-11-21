@@ -155,7 +155,7 @@ ui_a_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 srv_a_regression <- function(input, output, session, datasets, response, regressor) {
-  init_chunks(session)
+  init_chunks()
 
   merged_data <- data_merge_module(
     datasets = datasets,

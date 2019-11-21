@@ -300,7 +300,7 @@ srv_g_bivariate <- function(input,
                             color,
                             fill,
                             size) {
-  init_chunks(session)
+  init_chunks()
   data_extract <- setNames(
     list(x, y),
     c("x", "y")

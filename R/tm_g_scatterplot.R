@@ -165,7 +165,7 @@ ui_g_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
-  init_chunks(session)
+  init_chunks()
 
   # Insert the plot into a plot_height module from teal.devel
   callModule(

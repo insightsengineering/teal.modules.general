@@ -127,7 +127,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 #' @importFrom tern t_summary
 #' @importFrom rtables rrowl rtablel as_html
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
-  init_chunks(session)
+  init_chunks()
 
   merged_data <- data_merge_module(
     datasets = datasets,
