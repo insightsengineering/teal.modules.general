@@ -200,12 +200,17 @@ ui_g_bivariate <- function(id, ...) {
         label = "Y variable",
         data_extract_spec = args$y
       ),
-      radioGroupButtons(
-        inputId = ns("use_density"),
-        label = NULL,
-        choices = c("frequency", "density"),
-        selected = ifelse(args$use_density, "density", "frequency"),
-        justified = TRUE
+      conditionalPanel(
+        condition =
+        "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
+         $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
+        radioGroupButtons(
+          inputId = ns("use_density"),
+          label = NULL,
+          choices = c("frequency", "density"),
+          selected = ifelse(args$use_density, "density", "frequency"),
+          justified = TRUE
+        )
       ),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         div(
@@ -589,6 +594,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       plot_call <- reduce_plot_call(
         plot_call,
         quote(geom_histogram(bins = 30, aes(y = ..density..))),
+        quote(geom_density(aes(y = ..density..))),
         quote(ylab("Density"))
       )
     }
@@ -607,6 +613,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       plot_call <- reduce_plot_call(
         plot_call,
         quote(geom_histogram(bins = 30, aes(y = ..density..))),
+        quote(geom_density(aes(y = ..density..))),
         quote(ylab("Density"))
       )
     }
