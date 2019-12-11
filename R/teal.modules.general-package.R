@@ -12,6 +12,7 @@
 #' @import teal.devel
 #' @import utils.nest
 #'
+#' @importFrom stats IQR
 #' @importFrom utils tail
 #'
 #' @docType package
