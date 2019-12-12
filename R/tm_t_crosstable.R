@@ -82,15 +82,22 @@ tm_t_crosstable <- function(label = "Cross Table",
   }
   stopifnot(is_logical_single(show_percentage))
   stopifnot(is_logical_single(show_total))
+
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    label = label,
+    x = x,
+    y = y
+  )
 
   module(
     label = label,
     server = srv_t_crosstable,
     ui = ui_t_crosstable,
     ui_args = args,
-    server_args = list(label = label, x = x, y = y),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

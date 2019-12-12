@@ -93,13 +93,18 @@ tm_a_regression <- function(label = "Regression Analysis",
   # Send ui args
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    regressor = regressor,
+    response = response
+  )
+
   module(
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
     ui_args = args,
-    server_args = list(regressor = regressor, response = response),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

@@ -62,13 +62,17 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    variables = variables
+  )
+
   module(
     label = label,
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

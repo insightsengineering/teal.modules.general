@@ -102,20 +102,22 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
-
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    response = response,
+    x = x,
+    row_facet = row_facet,
+    col_facet = col_facet
+  )
+
   module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
-    server_args = list(
-      response = response,
-      x = x,
-      row_facet = row_facet,
-      col_facet = col_facet
-    ),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

@@ -81,16 +81,18 @@ tm_g_association <- function(label = "Association",
 
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    ref = ref,
+    vars = vars
+  )
+
   module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = list(
-      ref = ref,
-      vars = vars
-    ),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

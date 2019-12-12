@@ -158,22 +158,24 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    x = x,
+    y = y,
+    row_facet = row_facet,
+    col_facet = col_facet,
+    color_settings = color_settings,
+    color = color,
+    fill = fill,
+    size = size
+  )
+
   module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
-    server_args = list(
-      x = x,
-      y = y,
-      row_facet = row_facet,
-      col_facet = col_facet,
-      color_settings = color_settings,
-      color = color,
-      fill = fill,
-      size = size
-    ),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 

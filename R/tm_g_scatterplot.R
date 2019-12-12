@@ -104,13 +104,19 @@ tm_g_scatterplot <- function(label,
 
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    x = x,
+    y = y,
+    color_by = color_by
+  )
+
   module(
     label = label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
     ui_args = args,
-    server_args = list(x = x, y = y, color_by = color_by),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
