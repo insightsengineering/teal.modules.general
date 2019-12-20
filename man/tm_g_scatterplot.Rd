@@ -28,13 +28,13 @@ can be a vector of length three with \code{c(value, min and max)}.}
 
 \item{alpha}{if scalar then the plot points will have a fixed opacity. If a
 slider should be presented to adjust the plot point opacity dynamically
-then it can be a vector of length three with vlaue, min and max.}
+then it can be a vector of length three with value, min and max.}
 
 \item{size}{if scalar then the plot points sizes will have a fixed opacity.
 If a slider should be presented to adjust the plot point sizes dynamically
-then it can be a vector of length three with vlaue, min and max.}
+then it can be a vector of length three with value, min and max.}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Wheater to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the

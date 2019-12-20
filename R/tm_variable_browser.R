@@ -5,6 +5,8 @@
 #'
 #' @inheritParams teal::module
 #'
+#' @importFrom stats quantile sd
+#'
 #' @export
 #'
 #' @examples
@@ -27,12 +29,12 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "variable browser") {
-  stopifnot(is.character.single(label))
+  stopifnot(is_character_single(label))
 
   module(
     label,
-    server = srv_page_variable_browser,
-    ui = ui_page_variable_browser,
+    server = srv_variable_browser,
+    ui = ui_variable_browser,
     filters = "all",
     ui_args = list()
   )
@@ -40,25 +42,26 @@ tm_variable_browser <- function(label = "variable browser") {
 
 # ui function
 #' @importFrom stats setNames
-ui_page_variable_browser <- function(id, datasets) {
+ui_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
-  div(
-    class = "row",
-    div(
-      class = "col-md-6",
+  fluidRow(
+    column(6,
       # variable browser
-      div(
-        class = "well", style = "background: transparent;",
+      white_small_well(
         do.call(
           tabsetPanel,
           c(
             id = ns("tsp"),
-            do.call(tagList, setNames(lapply(datasets$datanames(), function(domain) {
-              ui_id <- paste0("variable_browser_", domain)
-              tabPanel(domain, div(
-                style = "margin-top: 15px;",
-                DT::dataTableOutput(ns(ui_id), width = "100%")
+            do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
+              tabPanel(
+                dataname,
+                div(
+                  style = "margin-top: 15px;",
+                  textOutput(ns(paste0("dataset_summary_", dataname)))),
+                div(
+                  style = "margin-top: 15px;",
+                  DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
               ))
             }), NULL))
           )
@@ -66,25 +69,24 @@ ui_page_variable_browser <- function(id, datasets) {
         checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
       )
     ),
-    div(
-      class = "col-md-6",
-      div(
-        class = "well",
-        style = "padding-bottom: 0px",
-        plotOutput(ns("variable_plot"), height = "500px"),
+    column(6,
+      white_small_well(
         div(
           class = "clearfix",
-          style = "margin-top: 15px;",
+          style = "margin: 15px 15px 15px 15px;",
           div(
             class = "pull-left",
             radioButtons(ns("raw_or_filtered"), NULL,
                          choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
                          selected = "filtered", inline = TRUE)
           ),
-          uiOutput(ns("action_link"))
-
+          uiOutput(ns("add_filter_var"))
         ),
-        uiOutput(ns("warning"))
+        plotOutput(ns("variable_plot"), height = "500px"),
+        uiOutput(ns("warning")),
+        br(),
+        renderUI(ns("variable_summary_text")),
+        DT::dataTableOutput(ns("variable_summary_table"))
       )
     )
   )
@@ -93,7 +95,7 @@ ui_page_variable_browser <- function(id, datasets) {
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
-srv_page_variable_browser <- function(input, output, session, datasets) {
+srv_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = list())
 
@@ -103,16 +105,26 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
 
   adsl_vars <- names(datasets$get_data("ADSL"))
 
-
   lapply(datasets$datanames(), function(name) {
     .log("variable label table:", name)
 
-    ui_id <- paste0("variable_browser_", name)
-
-    output[[ui_id]] <- DT::renderDataTable({
+    dataset_ui_id <- paste0("dataset_summary_", name)
+    output[[dataset_ui_id]] <- renderText({
       df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
+      sprintf("Dataset with %s unique subjects IDs and %s variables",
+              length(unique(df$USUBJID)),
+              ncol(df))
+    })
 
+    table_ui_id <- paste0("variable_browser_", name)
+    output[[table_ui_id]] <- DT::renderDataTable({
+      df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
       show_adsl_vars <- input$show_adsl_vars
+
+      if (!show_adsl_vars && name != "ADSL") {
+        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE, reactive = FALSE))
+        df <- df[!(names(df) %in% adsl_vars)]
+      }
 
       if (is.null(df)) {
         current_rows[[name]] <- character(0)
@@ -123,80 +135,87 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
           if (is.null(lab)) "" else lab
         }), use.names = FALSE), names(df))
 
-        if (!show_adsl_vars && name != "ADSL") {
-          adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE, reactive = FALSE))
-          labels <- labels[!(names(labels) %in% adsl_vars)]
-        }
+
 
         current_rows[[name]] <- names(labels)
-        data.frame(Variable = names(labels), Label = labels, stringsAsFactors = FALSE)
+        missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
+        icons <- vapply(
+          df,
+          function(x) teal:::variable_type_icons(class(x)[1]),
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
+
+        dt <- DT::datatable(
+          data.frame(Variable = paste(icons, names(labels)),
+                     Label = labels,
+                     Missings = missings,
+                     stringsAsFactors = FALSE),
+          escape = FALSE,
+          rownames = FALSE,
+          selection = list(mode = "single", target = "row", selected = 1),
+          options = list(
+            columnDefs = list(
+              list(orderable = FALSE, className = "details-control", targets = 0)
+            )
+          )
+        )
+
+
       }
-    }, rownames = FALSE, selection = list(mode = "single", target = "row", selected = 1), server = TRUE)
 
+      }, server = TRUE)
 
-    ui_id_sel <- paste0(ui_id, "_rows_selected")
-    observeEvent(input[[ui_id_sel]], {
+    table_id_sel <- paste0(table_ui_id, "_rows_selected")
+    observeEvent(input[[table_id_sel]], {
       plot_var$data <- name
-      plot_var$variable[[name]] <- current_rows[[name]][input[[ui_id_sel]]]
+      plot_var$variable[[name]] <- current_rows[[name]][input[[table_id_sel]]]
     })
   })
 
   output$variable_plot <- renderPlot({
     data <- input$tsp
     varname <- plot_var$variable[[input$tsp]]
-    active <- input$tsp
     type <- input$raw_or_filtered
 
     validate(
       need(data, "no data selected"),
       need(varname, "no variable selected"),
-      need(active, "no tab active"),
       need(type, "select what type of data to plot")
     )
 
-    .log("plot variable", varname, "for data", data, "(", type, ")", " | active:", active)
+    .log("plot variable", varname, "for data", data, "(", type, ")")
 
-    df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
-    varlabel <- as.list(datasets$get_data_attr(dataname = data, attr = "labels")$column_labels)[[varname]]
 
     if (is.null(varname)) {
       validate(need(NULL, "no valid variable was selected"))
     } else {
-      validate(need(datasets$has_variable(data, varname), "variable not available"))
+      df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
 
+      validate_has_variable(varname = varname, data = df, "variable not available")
+
+      varlabel <- as.list(datasets$get_data_attr(dataname = data, attr = "labels")$column_labels)[[varname]]
       var <- df[[varname]]
       d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
-      grid::grid.newpage()
-
-      plot_grob <- if (is.factor(var) || is.character(var)) {
-        groups <- unique(as.character(var))
-        if (length(groups) > 30) {
-          grid::textGrob(
-            paste0(d_var_name, ":\n  ", paste(groups[1:min(10, length(groups))], collapse = "\n  "), "\n   ..."),
-            x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"),
-            just = c("left", "top")
-          )
-        } else {
-          p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
-          ggplotGrob(p)
-        }
-      } else if (is.numeric(var)) {
-        ## histogram
-        p <- qplot(var) + xlab(d_var_name) + theme_light() + coord_flip()
-        ggplotGrob(p)
-      } else {
-        grid::textGrob(
-          paste(strwrap(
-            utils::capture.output(utils::str(var)),
-            width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
-          ), collapse = "\n"),
-          x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
-        )
-      }
-
-      grid::grid.draw(plot_grob)
+      plot_var_summary(var = var, var_lab = d_var_name)
     }
+  })
+
+  output$variable_summary_table <- DT::renderDataTable({
+    data <- input$tsp
+    varname <- plot_var$variable[[input$tsp]]
+    type <- input$raw_or_filtered
+
+    validate(
+      need(data, "no data selected"),
+      need(varname, "no variable selected"),
+      need(type, "select what type of data to plot")
+    )
+
+    df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
+    x <- df[[varname]]
+    var_summary_table(x)
   })
 
   warning_messages <- reactiveValues(varinfo = "", i = 0)
@@ -233,7 +252,7 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
     }
   })
 
-  output$action_link <- renderUI({
+  output$add_filter_var <- renderUI({
     varname <- plot_var$variable[[input$tsp]]
     dataname <- input$tsp
     if (!is.null(action_link$vars[[dataname]][[varname]]) && action_link$vars[[dataname]][[varname]]) {
@@ -253,4 +272,126 @@ srv_page_variable_browser <- function(input, output, session, datasets) {
       div(class = "text-warning", style = "margin-bottom: 15px;", msg)
     }
   })
+}
+
+#' Summarizes missings occurrence
+#'
+#' Summarizes missings occurrence in vector
+#' @param x vector of any type and length
+#' @return text describing \code{NA} occurrence.
+var_missings_info <- function(x) {
+  return(sprintf("%s [%s%%]", sum(is.na(x)), mean(is.na(x))))
+}
+
+#' Summarizes variable
+#'
+#' Creates html summary with statistics relevant to data type. For numeric values it returns central
+#' tendency measures, for factor returns level counts, for Date  date range, for other just
+#' number of levels.
+#' @param x vector of any type
+#' @return text with simple statistics.
+var_summary_table <- function(x) {
+  if (is.numeric(x)) {
+    qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75)), 2)
+    # classical central tendency mmeasures
+
+    summary <-
+      data.frame(
+        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd"),
+        Value = c(
+          round(min(x, na.rm = TRUE), 2),
+          qvals[1],
+          qvals[2],
+          round(mean(x, na.rm = TRUE), 2),
+          qvals[3],
+          round(max(x, na.rm = TRUE), 2),
+          round(sd(x, na.rm = TRUE), 2)
+        )
+      )
+
+    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
+
+  } else if (is.factor(x) || is.character(x)) {
+    level_counts <- table(x)
+    max_levels_signif <- nchar(level_counts)
+
+    summary <- data.frame(
+      Level = names(level_counts),
+      `Count` = sprintf("%s [%.2f%%]",
+                      format(level_counts, width = max_levels_signif),
+                      prop.table(level_counts) * 100),
+      stringsAsFactors = FALSE
+    )
+
+    dom_opts <- if (nrow(summary) <= 10) {
+      "<t>"
+    } else {
+      "<lf<t>ip>"
+    }
+    DT::datatable(summary, rownames = FALSE, options = list(dom = dom_opts))
+  } else {
+    NULL
+  }
+}
+
+
+#' Plot variable
+#'
+#' Creates summary plot with statistics relevant to data type.
+#' @param var vector of any type to be plotted. For numeric variables it produces histogram with
+#' density line, for factors it creates frequency plot
+#' @param var_lab text describing selected variable to be displayed on the plot
+#' @return plot
+plot_var_summary <- function(var, var_lab) {
+  grid::grid.newpage()
+
+  plot_grob <- if (is.factor(var) || is.character(var)) {
+    groups <- unique(as.character(var))
+
+    if (length(groups) > 30) {
+      grid::textGrob(
+        sprintf("%s:\n  %s\n   ... other %s values",
+                var_lab,
+                paste(groups[1:10], collapse = "\n  "),
+                length(groups) - 10),
+        x = grid::unit(1, "line"),
+        y = grid::unit(1, "npc") - grid::unit(1, "line"),
+        just = c("left", "top")
+      )
+    } else {
+      p <- qplot(var) +
+        xlab(var_lab) +
+        theme_light() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+      ggplotGrob(p)
+    }
+  } else if (is.numeric(var)) {
+    ## histogram
+    binwidth <- 2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3)
+
+    p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
+      geom_histogram(binwidth = binwidth) +
+      geom_density(aes_string(y = "..count.. * binwidth")) +
+      scale_y_continuous(
+        sec.axis = sec_axis(trans = ~. / sum(.),
+                            labels = scales::percent,
+                            name = "proportion (in %)")
+      ) +
+      xlab(var_lab) +
+      theme_light()
+
+    ggplotGrob(p)
+  } else {
+    grid::textGrob(
+      paste(strwrap(
+        utils::capture.output(utils::str(var)),
+        width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
+      ), collapse = "\n"),
+      x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
+    )
+  }
+
+  grid::grid.draw(plot_grob)
+
 }

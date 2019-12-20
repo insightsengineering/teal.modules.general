@@ -17,7 +17,7 @@ reference variable, must set \code{multiple = FALSE}}
 \item{vars}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 associated variables}
 
-\item{show_association}{(\code{logical}) wheater show association of \code{vars} with refference variable}
+\item{show_association}{(\code{logical}) whether show association of \code{vars} with reference variable}
 
 \item{plot_height}{(\code{numeric}) vector with three elements defining selected, min and max plot height}
 

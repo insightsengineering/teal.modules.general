@@ -20,11 +20,11 @@ NULL
 #'   can be a vector of length three with \code{c(value, min and max)}.
 #' @param alpha if scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically
-#'   then it can be a vector of length three with vlaue, min and max.
+#'   then it can be a vector of length three with value, min and max.
 #' @param size if scalar then the plot points sizes will have a fixed opacity.
 #'   If a slider should be presented to adjust the plot point sizes dynamically
-#'   then it can be a vector of length three with vlaue, min and max.
-#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
+#'   then it can be a vector of length three with value, min and max.
+#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
@@ -80,37 +80,43 @@ tm_g_scatterplot <- function(label,
                            rotate_xaxis_labels = FALSE,
                            pre_output = NULL,
                            post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(x)) {
+  if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is.class.list("data_extract_spec")(y)) {
+  if (!is_class_list("data_extract_spec")(y)) {
     y <- list(y)
   }
-  if (!is.class.list("data_extract_spec")(color_by)) {
+  if (!is_class_list("data_extract_spec")(color_by)) {
     color_by <- list_or_null(color_by)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(x))
-  stopifnot(is.class.list("data_extract_spec")(y))
-  stopifnot(is.class.list("data_extract_spec")(color_by) | is.null(color_by))
-  stopifnot(is.numeric.vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(x))
+  stopifnot(is_class_list("data_extract_spec")(y))
+  stopifnot(is_class_list("data_extract_spec")(color_by) | is.null(color_by))
+  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
   stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
-  stopifnot(is.numeric.vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
   stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
-  stopifnot(is.numeric.vector(size) && (length(size) == 3 || length(size) == 1))
+  stopifnot(is_numeric_vector(size) && (length(size) == 3 || length(size) == 1))
   stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
-  stopifnot(is.logical.single(rotate_xaxis_labels))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
 
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    x = x,
+    y = y,
+    color_by = color_by
+  )
 
   module(
     label = label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
     ui_args = args,
-    server_args = list(x = x, y = y, color_by = color_by),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
@@ -156,7 +162,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -165,7 +171,7 @@ ui_g_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods substituteDirect
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
-  init_chunks(session)
+  init_chunks()
 
   # Insert the plot into a plot_height module from teal.devel
   callModule(
@@ -195,9 +201,9 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     ANL <- merged_data()$data() # nolint
     validate_has_data(ANL, 10)
     chunks_reset()
-    x_var <- unname(merged_data()$columns_source$x)
-    y_var <- unname(merged_data()$columns_source$y)
-    color_by_var <- unname(merged_data()$columns_source$color_by)
+    x_var <- as.vector(merged_data()$columns_source$x)
+    y_var <- as.vector(merged_data()$columns_source$y)
+    color_by_var <- as.vector(merged_data()$columns_source$color_by)
     alpha <- input$alpha
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels
@@ -210,7 +216,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     }
 
     plot_call <- quote(ANL %>% ggplot())
-    plot_call <- if (is.null(color_by_var) || is.character.empty(color_by_var)) {
+    plot_call <- if (is.null(color_by_var) || is_character_empty(color_by_var)) {
       bquote(
         .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)))
       )
@@ -240,14 +246,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     chunks_safe_eval()
   })
 
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "R Code for a scatterplot matrix",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "Scatterplot matrix"
-      )
-    )
-  })
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R Code for a scatterplot matrix",
+    code_header = "Scatterplot matrix"
+  )
 }

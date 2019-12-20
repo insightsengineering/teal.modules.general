@@ -12,7 +12,7 @@
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.
 #' @param coord_flip (\code{logical}) Whether to flip coordinates
-#' @param rotate_xaxis_labels (\code{logical}) Wheater to rotate plot X axis labels
+#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
 #' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #' @inheritParams teal::module
@@ -70,52 +70,54 @@ tm_g_response <- function(label = "Response Plot",
                           plot_height = c(600, 400, 5000),
                           pre_output = NULL,
                           post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(response)) {
+  if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
-  if (!is.class.list("data_extract_spec")(x)) {
+  if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is.class.list("data_extract_spec")(row_facet)) {
+  if (!is_class_list("data_extract_spec")(row_facet)) {
     row_facet <- list_or_null(row_facet)
   }
-  if (!is.class.list("data_extract_spec")(col_facet)) {
+  if (!is_class_list("data_extract_spec")(col_facet)) {
     col_facet <- list_or_null(col_facet)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(response))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(response))
   stop_if_not(list(all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
                    "'response' should not allow empty values"))
   stop_if_not(list(all(vapply(response, function(x) !(x$select$multiple), logical(1))),
                    "'response' should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(x))
+  stopifnot(is_class_list("data_extract_spec")(x))
   stop_if_not(list(all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
                    "'x' should not allow empty values"))
   stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
                    "'x' should not allow multiple selection"))
-  stopifnot(is.null(row_facet) || is.class.list("data_extract_spec")(row_facet))
-  stopifnot(is.null(col_facet) || is.class.list("data_extract_spec")(col_facet))
-  stopifnot(is.logical.single(coord_flip))
-  stopifnot(is.logical.single(rotate_xaxis_labels))
-  stopifnot(is.logical.single(freq))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet))
+  stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet))
+  stopifnot(is_logical_single(coord_flip))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
+  stopifnot(is_logical_single(freq))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
-
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    response = response,
+    x = x,
+    row_facet = row_facet,
+    col_facet = col_facet
+  )
+
   module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
-    server_args = list(
-      response = response,
-      x = x,
-      row_facet = row_facet,
-      col_facet = col_facet
-    ),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
@@ -170,7 +172,7 @@ ui_g_response <- function(id, ...) {
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -187,7 +189,7 @@ srv_g_response <- function(input,
                            x,
                            row_facet,
                            col_facet) {
-  init_chunks(session)
+  init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
@@ -218,11 +220,11 @@ srv_g_response <- function(input,
     validate_has_data(ANL, 3)
     chunks_reset()
 
-    resp_var <- unname(merged_data()$columns_source$response)
-    x <- unname(merged_data()$columns_source$x)
+    resp_var <- as.vector(merged_data()$columns_source$response)
+    x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- unname(if_empty(merged_data()$columns_source$col_facet, character(0)))
-    col_facet_name <- unname(if_empty(merged_data()$columns_source$row_facet, character(0)))
+    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
 
 
     validate(
@@ -303,15 +305,11 @@ srv_g_response <- function(input,
     p
   })
 
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "R Code for a Scatterplotmatrix",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "",
-        description = ""
-      )
-    )
-  })
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R Code for a Scatterplotmatrix"
+  )
 }

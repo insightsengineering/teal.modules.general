@@ -19,7 +19,7 @@ if vector, will be concatenated with " & "}
 grid grob object (to be drawn with \code{grid.draw})
 }
 \description{
-# todo: put into teal or teal.devel
+Add axis labels that show facetting variable
 }
 \examples{
 # we put donttest to avoid strictr error with seq along.with argument
@@ -38,7 +38,6 @@ res <- add_facet_labels(p, xfacet_label, yfacet_label)
 grid.newpage()
 grid.draw(res)
 
-# todo: include grid.newpage() and grid.draw() in function?
 grid.newpage()
 grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label))
 grid.newpage()

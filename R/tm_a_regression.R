@@ -74,32 +74,37 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1
                             ) {
-  if (!is.class.list("data_extract_spec")(regressor)) {
+  if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
   }
-  if (!is.class.list("data_extract_spec")(response)) {
+  if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(response))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(response))
   stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
                    "Response variable should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(regressor))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_class_list("data_extract_spec")(regressor))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
   # No check necessary for regressor and response, as checked in data_extract_input
 
   # Send ui args
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    regressor = regressor,
+    response = response
+  )
+
   module(
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
     ui_args = args,
-    server_args = list(regressor = regressor, response = response),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
@@ -143,9 +148,9 @@ ui_a_regression <- function(id, ...) {
       ),
       plot_height_input(id = ns("myplot"), value = args$plot_height)
     ),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
-    post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
+    post_output = args$post_output
   )
 }
 
@@ -155,7 +160,7 @@ ui_a_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 srv_a_regression <- function(input, output, session, datasets, response, regressor) {
-  init_chunks(session)
+  init_chunks()
 
   merged_data <- data_merge_module(
     datasets = datasets,
@@ -176,8 +181,8 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     ANL <- merged_data()$data() # nolint
     validate_has_data(ANL, 10)
     chunks_reset()
-    response_var <- unname(merged_data()$columns_source$response)
-    regressor_var <- unname(merged_data()$columns_source$regressor)
+    response_var <- as.vector(merged_data()$columns_source$response)
+    regressor_var <- as.vector(merged_data()$columns_source$regressor)
 
     # validation
     validate(need(length(regressor_var) > 0, "At least one regressor should be selected."))
@@ -248,19 +253,15 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     chunks_safe_eval()
   })
 
-  observeEvent(input$show_rcode, {
-    regr_formula <- fit()
-    title <- paste0(
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R code for the regression plot",
+    code_header = paste0(
       "Regression plot of ",
-      format(regr_formula)
+      format(fit())
     )
-    show_rcode_modal(
-      title = "R code for the regression plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = title
-      )
-    )
-  })
+  )
 }

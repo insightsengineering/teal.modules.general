@@ -29,8 +29,6 @@ list_or_null <- function(obj) {
 
 #' Add axis labels that show facetting variable
 #'
-#' # todo: put into teal or teal.devel
-#'
 #' @param p ggplot2 object to add facet labels to
 #' @param xfacet_label label of facet along x axis (nothing created if NULL),
 #'   if vector, will be concatenated with " & "
@@ -58,7 +56,6 @@ list_or_null <- function(obj) {
 #' grid.newpage()
 #' grid.draw(res)
 #'
-#' # todo: include grid.newpage() and grid.draw() in function?
 #' grid.newpage()
 #' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label))
 #' grid.newpage()
@@ -71,14 +68,13 @@ list_or_null <- function(obj) {
 #' @importFrom ggplot2 ggplotGrob
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
-    is.null(xfacet_label) || is.character.vector(xfacet_label, min_length = 1),
-    is.null(yfacet_label) || is.character.vector(yfacet_label, min_length = 1),
+    is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),
+    is.null(yfacet_label) || is_character_vector(yfacet_label, min_length = 1),
     is(p, "ggplot")
   )
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }
-  # todo: can optionally remove grid.grabExpr and only use *Grob functions instead of grid.*
   grid.grabExpr({
     g <- ggplotGrob(p)
 
@@ -91,10 +87,6 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     yaxis_label_grob <- g$grobs[[grep("ylab-l", g$layout$name, fixed = TRUE)]]
     yaxis_label_grob$children[[1]]$label <- paste(yfacet_label, collapse = " & ")
 
-    # todo: compute width
-    # does not work because these elements are not yet drawn at the time they are required
-    # top_height <- unit(1, "grobheight", "xlab-b") # nolintr
-    # right_width <- unit(1, "grobwidth", "ylab-l") # nolintr
     top_height <- if (is.null(xfacet_label)) 0 else unit(2, "line")
     right_width <- if (is.null(yfacet_label)) 0 else unit(2, "line")
 
@@ -123,4 +115,35 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
       upViewport(1)
     }
   })
+}
+
+#' Create simple HTML table
+#'
+#' Turns data.frame into simple non-styled HTML table
+#' @param x two dimensional object (data.frame, matrix, array)
+#' @param colnames \code{logical} whether colnames should be displayed
+#' @param rownames \code{logical} whether rownames should be displayed
+#' @return \code{shiny.tag} table object
+#' @examples
+#' teal.modules.general:::to_html_table(iris[1:5, ], rownames = FALSE)
+to_html_table <- function(x, colnames = TRUE, rownames = TRUE) {
+
+  tags$div(
+    tags$table(
+      if (colnames && !is.null(colnames(x))) {
+        tags$thead(
+          tags$tr(
+            lapply(colnames(x), tags$th)
+          )
+        )
+      },
+      tags$tbody(
+        lapply(seq_len(nrow(x)), function(i) {
+          tags$tr(
+            if (rownames && !is.null(rownames(x))) tags$td(rownames(x)[i], style = "font-weight: bold;"),
+            lapply(x[i, ], tags$td)
+          )
+        })
+      ))
+  )
 }

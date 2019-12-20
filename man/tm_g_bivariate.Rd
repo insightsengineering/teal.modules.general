@@ -48,9 +48,9 @@ by the user}
 
 \item{plot_height}{(\code{numeric}) \code{c(value, min and max)} of plot height slider}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Wheater to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
 
-\item{swap_axes}{(\code{logical}) Wheather to swap X an Y axes}
+\item{swap_axes}{(\code{logical}) Whether to swap X an Y axes}
 
 \item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
 

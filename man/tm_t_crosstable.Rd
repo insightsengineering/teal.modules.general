@@ -11,10 +11,10 @@ tm_t_crosstable(label = "Cross Table", x, y, show_percentage = TRUE,
 \item{label}{(\code{character}) Label of the app in the teal menu}
 
 \item{x}{(\code{choices_selected}) object with all available
-choices with preselected option for variable X}
+choices with pre-selected option for variable X}
 
 \item{y}{(\code{choices_selected}) object with all available
-choices with preselected option for variable Y}
+choices with pre-selected option for variable Y}
 
 \item{show_percentage}{whether to show percentages (relevant only when \code{x} is a \code{factor})}
 

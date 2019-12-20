@@ -6,7 +6,7 @@
 #'   reference variable, must set \code{multiple = FALSE}
 #' @param vars (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   associated variables
-#' @param show_association (\code{logical}) wheater show association of \code{vars} with refference variable
+#' @param show_association (\code{logical}) whether show association of \code{vars} with reference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
@@ -63,34 +63,36 @@ tm_g_association <- function(label = "Association",
                              plot_height = c(600, 400, 5000),
                              pre_output = NULL,
                              post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(ref)) {
+  if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
   }
-  if (!is.class.list("data_extract_spec")(vars)) {
+  if (!is_class_list("data_extract_spec")(vars)) {
     vars <- list(vars)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(ref))
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(ref))
   stop_if_not(list(all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
                    "'ref' should not allow multiple selection"))
-  stopifnot(is.class.list("data_extract_spec")(vars))
-  stopifnot(is.logical.single(show_association))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_class_list("data_extract_spec")(vars))
+  stopifnot(is_logical_single(show_association))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    ref = ref,
+    vars = vars
+  )
 
   module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = list(
-      ref = ref,
-      vars = vars
-    ),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
@@ -139,7 +141,7 @@ ui_tm_g_association <- function(id, ...) {
         )
       )
     ),
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%"),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -175,8 +177,8 @@ srv_tm_g_association <- function(input,
     validate_has_data(ANL, 3)
     chunks_reset()
 
-    ref_name <- unname(merged_data()$columns_source$ref)
-    vars_names <- unname(merged_data()$columns_source$vars)
+    ref_name <- as.vector(merged_data()$columns_source$ref)
+    vars_names <- as.vector(merged_data()$columns_source$vars)
 
     association <- input$association
     show_dist <- input$show_dist
@@ -266,14 +268,12 @@ srv_tm_g_association <- function(input,
     chunks_get_var("title")
   })
 
-  observeEvent(input$show_rcode, {
-    show_rcode_modal(
-      title = "R Code for the Association Plot",
-      rcode = get_rcode(
-        datasets = datasets,
-        merge_expression = merged_data()$expr,
-        title = "Association Plot"
-      )
-    )
-  })
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = "R Code for the Association Plot",
+    code_header = "Association Plot"
+  )
 }

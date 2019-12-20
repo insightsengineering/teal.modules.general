@@ -1,3 +1,9 @@
+# teal.modules.general 0.2.2
+
+* new module to summarise missing data
+* refactor of variable browser module
+* correct display of density / frequency option in bivariate plot
+
 # teal.modules.general 0.2.1
 
 * fix `magrittr` loading in reproducible code

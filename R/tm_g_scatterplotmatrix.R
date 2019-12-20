@@ -51,24 +51,28 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
                                    plot_height = c(600, 200, 2000),
                                    pre_output = NULL,
                                    post_output = NULL) {
-  if (!is.class.list("data_extract_spec")(variables)) {
+  if (!is_class_list("data_extract_spec")(variables)) {
     variables <- list(variables)
   }
 
-  stopifnot(is.character.single(label))
-  stopifnot(is.class.list("data_extract_spec")(variables))
-  stopifnot(is.numeric.vector(plot_height) && length(plot_height) == 3)
+  stopifnot(is_character_single(label))
+  stopifnot(is_class_list("data_extract_spec")(variables))
+  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    variables = variables
+  )
 
   module(
     label = label,
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables),
-    filters = "all"
+    server_args = data_extract_list,
+    filters = get_extract_datanames(data_extract_list)
   )
 }
 
@@ -101,16 +105,16 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
+    forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
-    post_output = args$post_output,
-    forms = actionButton(ns("show_rcode"), "Show R code", width = "100%")
+    post_output = args$post_output
   )
 }
 
 #' HTML id of the UI element that contains the extract input
 #' @param idx index or identifier of the data extract UI that contains the input element
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_ui_id <- function(idx, session) {
   session$ns(paste0("extract_ui_", idx))
 }
@@ -118,7 +122,7 @@ extract_ui_id <- function(idx, session) {
 #' HTML id of the extract input contained within another UI
 #' @param idx index or identifier of the data extract input element
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_input_id <- function(idx, session) {
   session$ns(paste0("extract_input_", idx))
 }
@@ -126,7 +130,7 @@ extract_input_id <- function(idx, session) {
 #' HTML id of the element to remove the whole extract UI
 #' @param idx index or identifier of the button to remove the data extract ui
 #' @param session shiny session object
-#' @return the html id of the element given the idx
+#' @return the html id of the element given the \code{idx}
 extract_remove_id <- function(idx, session) {
   session$ns(paste0("extract_remove_", idx))
 }
@@ -141,7 +145,7 @@ srv_g_scatterplotmatrix <- function(input,
                                     datasets,
                                     variables) {
 
-  init_chunks(session)
+  init_chunks()
 
   extract_ui_indices <- reactiveVal(value = NULL)
 
@@ -239,4 +243,20 @@ srv_g_scatterplotmatrix <- function(input,
       )
     )
   })
+
+  show_r_code_title <- reactive(
+    paste0(
+      "Scatterplotmatrix of ",
+      paste(merged_data()$cols, collapse = ", ")
+    )
+  )
+
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    merge_expression = merged_data()$expr,
+    modal_title = show_r_code_title(),
+    code_header = show_r_code_title()
+  )
 }
