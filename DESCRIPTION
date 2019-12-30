@@ -1,7 +1,7 @@
 Package: teal.modules.general
 Type: Package
 Title: General modules to add to a teal application
-Date: 2019-12-20
+Date: 2019-12-30
 Version: 0.2.2
 Authors@R: c(
     person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
