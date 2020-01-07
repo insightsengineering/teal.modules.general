@@ -444,7 +444,7 @@ srv_g_bivariate <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
+    merge_expression = merged_data()$expr,
     modal_title = "R Code for a Bivariate plot"
   )
 }
