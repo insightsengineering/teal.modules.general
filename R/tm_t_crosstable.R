@@ -198,7 +198,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merged_data()$expr,
+    merge_expression = reactive(merged_data()$expr),
     modal_title = show_r_code_title(),
     code_header = show_r_code_title()
   )

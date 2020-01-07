@@ -309,7 +309,7 @@ srv_g_response <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merged_data()$expr,
+    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a Scatterplotmatrix"
   )
 }

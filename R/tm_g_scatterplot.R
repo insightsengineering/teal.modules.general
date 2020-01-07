@@ -250,7 +250,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merged_data()$expr,
+    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a scatterplot matrix",
     code_header = "Scatterplot matrix"
   )
