@@ -16,19 +16,14 @@ reference:
 
   - title: General functionality modules
     contents:
-      - tm_data_table
-      - tm_variable_browser
+      - matches('tm_[a-z][a-z]')
 
   - title: Modules for tables
     contents:
-      - tm_t_crosstable
+      - starts_with('tm_t_')
 
   - title: Modules for plots
     contents:
-      - tm_g_association
-      - tm_g_bivariate
-      - tm_a_regression
-      - tm_g_response
-      - tm_g_scatterplotmatrix
-      - tm_g_scatterplot
+      - starts_with('tm_g_')
+      - starts_with('tm_a_')
 

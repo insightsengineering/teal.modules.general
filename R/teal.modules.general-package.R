@@ -17,4 +17,4 @@
 #'
 #' @docType package
 #' @name teal.modules.general
-NULL
+"_PACKAGE"
