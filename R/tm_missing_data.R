@@ -3,6 +3,7 @@
 #' Present analysis of missing observations and patients.
 #'
 #' @inheritParams teal::module
+#' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
 #'
 #' @export
 #'
@@ -26,18 +27,21 @@
 #' \dontrun{
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_missing_data <- function(label = "Missing data") {
+tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 5000)) {
   stopifnot(is_character_single(label))
+  stopifnot(is_numeric_vector(plot_height, 3, 3))
+  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
 
   module(
     label,
     server = srv_page_missing_data,
     ui = ui_page_missing_data,
+    ui_args = list(plot_height = plot_height),
     filters = "all"
   )
 }
 
-ui_page_missing_data <- function(id, datasets) {
+ui_page_missing_data <- function(id, datasets, plot_height) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -80,7 +84,7 @@ ui_page_missing_data <- function(id, datasets) {
           function(x) {
             conditionalPanel(
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(id = ns(x))
+              encoding_missing_data(id = ns(x), plot_height = plot_height)
             )
           }
         )
@@ -113,11 +117,11 @@ ui_missing_data <- function(id) {
     id = ns("summary_type"),
     tabPanel(
       "Summary",
-      plotOutput(ns("summary_plot"))
+      plot_height_output(id = ns("summary_plot"))
     ),
     tabPanel(
       "Combinations",
-      plotOutput(ns("combination_plot"))
+      plot_height_output(id = ns("combination_plot"))
     ),
     tabPanel(
       "By variable levels",
@@ -126,13 +130,22 @@ ui_missing_data <- function(id) {
   )
 }
 
-encoding_missing_data <- function(id) {
+encoding_missing_data <- function(id, plot_height) {
   ns <- NS(id)
 
   tagList(
     uiOutput(ns("variables")),
     actionButton(ns("filter_na"), "Select only NA vars", width = "100%"),
     checkboxInput(ns("any_na"), "Add any_NA variable", value = TRUE),
+    conditionalPanel(
+      sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
+      plot_height_input(id = ns("plot_height_summary"), value = plot_height)
+    ),
+    conditionalPanel(
+      sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
+      optionalSliderInputValMinMax(ns("combination_cutoff"), "Combination cut-off", c(0, 0, 100)),
+      plot_height_input(id = ns("plot_height_combinations"), value = plot_height)
+    ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"By variable levels\"", ns("summary_type")),
       tagList(
@@ -167,6 +180,20 @@ srv_missing_data <- function(input,
                              session,
                              datasets,
                              dataname) {
+
+  callModule(
+    plot_with_height,
+    id = "summary_plot",
+    plot_height = reactive(input$plot_height_summary),
+    plot_id = session$ns("summary_plot")
+  )
+  callModule(
+    plot_with_height,
+    id = "combination_plot",
+    plot_height = reactive(input$plot_height_combinations),
+    plot_id = session$ns("combination_plot")
+  )
+
   data <- reactive({
     datasets$get_data(dataname, filtered = FALSE, reactive = FALSE)
   })
@@ -348,6 +375,7 @@ srv_missing_data <- function(input,
       group_by_all() %>%
       tally() %>%
       ungroup() %>%
+      filter(.data$n >= input$combination_cutoff) %>%
       arrange(.data$n) %>%
       mutate(id = row_number()) %>%
       gather("key", "value", -.data$n, -.data$id)
@@ -357,6 +385,7 @@ srv_missing_data <- function(input,
     labels <- data_combination_plot() %>%
       group_by(.data$key) %>%
       nest() %>%
+      ungroup() %>%
       slice(1) %>%
       unnest(cols = c(data)) %>%
       transmute(paste0("N=", .data$n)) %>%
@@ -415,7 +444,7 @@ srv_missing_data <- function(input,
       filter(!!sym(group_var) %in% group_vals) %>%
       summarise_all(cell_values) %>%
       gather("Variable", "out", -!!sym(group_var)) %>%
-      mutate(`Variable label` = vapply(datasets$get_data_labels(dataname, .data$Variable),
+      mutate(`Variable label` = vapply(if_empty(datasets$get_data_labels(dataname, .data$Variable), ""),
                                        if_empty,
                                        character(1),
                                        "")) %>%
