@@ -4,13 +4,27 @@
 \alias{tm_g_bivariate}
 \title{Univariate and bivariate visualizations.}
 \usage{
-tm_g_bivariate(label = "Bivariate Plots", x, y, row_facet = NULL,
-  col_facet = NULL, color = NULL, fill = NULL, size = NULL,
-  use_density = FALSE, color_settings = FALSE, free_x_scales = FALSE,
-  free_y_scales = FALSE, plot_height = c(600, 200, 2000),
-  rotate_xaxis_labels = FALSE, swap_axes = FALSE, ggtheme = c("grey",
-  "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-  "test"), pre_output = NULL, post_output = NULL)
+tm_g_bivariate(
+  label = "Bivariate Plots",
+  x,
+  y,
+  row_facet = NULL,
+  col_facet = NULL,
+  color = NULL,
+  fill = NULL,
+  size = NULL,
+  use_density = FALSE,
+  color_settings = FALSE,
+  free_x_scales = FALSE,
+  free_y_scales = FALSE,
+  plot_height = c(600, 200, 2000),
+  rotate_xaxis_labels = FALSE,
+  swap_axes = FALSE,
+  ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
+    "void", "test"),
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the module}

@@ -37,6 +37,7 @@ Imports:
   rlang,
   rtables (>= 0.1.4),
   scales,
+  shinyjs,
   shinyWidgets,
   stats,
   teal.devel (>= 0.2.3),
