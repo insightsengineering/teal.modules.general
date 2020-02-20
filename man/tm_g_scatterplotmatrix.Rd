@@ -4,9 +4,13 @@
 \alias{tm_g_scatterplotmatrix}
 \title{Create a scatterplot matrix}
 \usage{
-tm_g_scatterplotmatrix(label = "Scatterplot matrix", variables,
-  plot_height = c(600, 200, 2000), pre_output = NULL,
-  post_output = NULL)
+tm_g_scatterplotmatrix(
+  label = "Scatterplot matrix",
+  variables,
+  plot_height = c(600, 200, 2000),
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}

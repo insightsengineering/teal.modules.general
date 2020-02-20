@@ -20,6 +20,7 @@ CMD
 covr
 dataname
 datanames
+DOM
 facetting
 funder
 Gabe
@@ -30,6 +31,7 @@ https
 inputId
 javascript
 Kaplan
+lexicographically
 liaoc
 linters
 lintr
@@ -48,9 +50,9 @@ shinyServer
 songy
 SREPs
 STUDYID
-swimlane
-summarize
 summarise
+summarize
+swimlane
 teal
 testthat
 TLG

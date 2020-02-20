@@ -40,6 +40,7 @@ Imports:
   shinyjs,
   shinyWidgets,
   stats,
+  stringr,
   teal.devel (>= 0.2.3),
   tern (>= 0.6.4),
   tidyr,

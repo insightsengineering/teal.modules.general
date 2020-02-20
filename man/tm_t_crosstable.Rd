@@ -4,8 +4,15 @@
 \alias{tm_t_crosstable}
 \title{Create a simple cross-table}
 \usage{
-tm_t_crosstable(label = "Cross Table", x, y, show_percentage = TRUE,
-  show_total = TRUE, pre_output = NULL, post_output = NULL)
+tm_t_crosstable(
+  label = "Cross Table",
+  x,
+  y,
+  show_percentage = TRUE,
+  show_total = TRUE,
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}
@@ -28,15 +35,11 @@ output to put the output into context. For example the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{...}{Arguments passed on to \code{teal.devel::standard_layout}
-\describe{
-  \item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-  \item{post_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[teal.devel:standard_layout]{teal.devel::standard_layout}}
+  \describe{
+    \item{\code{}}{}
+  }}
 }
 \description{
 Create a simple cross-table
