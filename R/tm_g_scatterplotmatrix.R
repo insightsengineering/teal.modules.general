@@ -1,8 +1,6 @@
 #' Create a scatterplot matrix
 #'
 
-#' The module allows to add and remove dataset selectors (data extract inputs) and it will create
-#' the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
 #' The available datasets to choose from for each dataset selector is the same and
 #' determined by the argument \code{variables}.
 #'
@@ -98,9 +96,16 @@ ui_g_scatterplotmatrix <- function(id, ...) {
           sliderInput(
             ns("cex"), "Points size:", min = 0.2, max = 3,
             step = .05, value = .65, ticks = FALSE
+          ),
+          checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
+          radioButtons(ns("cor_method"), "Select Correlation Method",
+                       choiceNames = c("Pearson", "Kendall", "Spearman"),
+                       choiceValues = c("pearson", "kendall", "spearman"),
+                       inline = TRUE),
+          checkboxInput(ns("cor_na_omit"), "Omit Missing Values",
+                        value = TRUE)
           )
         )
-      )
     ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
@@ -110,8 +115,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 
 
 #' @importFrom dplyr mutate_if
-#' @importFrom lattice splom
+#' @importFrom lattice splom panel.splom panel.text current.panel.limits
 #' @importFrom methods substituteDirect
+#' @importFrom stats cor.test
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
@@ -226,17 +232,53 @@ srv_g_scatterplotmatrix <- function(input,
 
     alpha <- input$alpha # nolint
     cex <- input$cex # nolint
+    add_cor <- input$cor # nolint
+    cor_method <- input$cor_method # nolint
+    cor_na_omit <- input$cor_na_omit # nolint
+
+    cor_na_action <- if (cor_na_omit){
+      "na.omit"
+    } else {
+      "na.fail"
+    }
+
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 
     # create plot
-    chunks_push(bquote({
-      lattice::splom(ANL[, .(cols_names)], pch = 16, alpha = .(alpha), cex = .(cex))
-    }))
+    if (add_cor){
+      shinyjs::show("cor_method")
+      shinyjs::show("cor_use")
+      shinyjs::show("cor_na_omit")
 
+      chunks_push(bquote({
+        lattice::splom(ANL[, .(cols_names)],
+                       panel = function(x, y, ...){
+                         lattice::panel.splom(x = x, y = y, ...)
+                         cpl <- lattice::current.panel.limits()
+                         lattice::panel.text(mean(cpl$xlim),
+                                             mean(cpl$ylim),
+                                             get_scatterplotmatrix_stats(x, y, .f = cor.test,
+                                                                         .f_args = list(method = .(cor_method),
+                                                                                        na.action = .(cor_na_action))),
+                                             alpha = 0.6,
+                                             fontsize = 18,
+                                             fontface = "bold")
+                       },
+                       pch = 16,
+                       alpha = .(alpha),
+                       cex = .(cex))
+      }))
+    } else {
+      shinyjs::hide("cor_method")
+      shinyjs::hide("cor_use")
+      shinyjs::hide("cor_na_omit")
+      chunks_push(bquote({
+        lattice::splom(ANL[, .(cols_names)], pch = 16, alpha = .(alpha), cex = .(cex))
+      }))
+    }
     chunks_safe_eval()
   })
-
   # show r code
   observeEvent(input$show_rcode, {
     title <- paste0(
@@ -514,4 +556,70 @@ current_extract_selectors <- function(input) {
   selectors <- append(filtered_selectors, non_filtered_selectors)
 
   return(unique(selectors))
+}
+
+#' Get stats for x-y pairs in scatterplot matrix
+#' @description uses cor.test per default for all numerical input variables and converts results
+#'  to character vector. Could be extended if different stats for different variable
+#'  types are needed. Meant to be called from \code{lattice::panel.text}.
+#' @param x \code{numeric}
+#' @param y \code{numeric}
+#' @param .f \code{function}, function that accepts x and y as formula input \code{~ x + y}.
+#' Default \code{cor.test}
+#' @param .f_args \code{list} of arguments to be passed to \code{.f}
+#' @param round_stat \code{integer}
+#' @param round_pval \code{integer}
+#' @details presently we need to use a formula input for \code{cor.test} because
+#' \code{na.fail} only gets evaluated when a formula is passed (see below).
+#' \preformatted{
+#' x = c(1,3,5,7,NA)
+#' y = c(3,6,7,8,1)
+#' cor.test(x, y, na.action = "na.fail")
+#' cor.test(~ x + y,  na.action = "na.fail")
+#' }
+#' @return \code{character} with stats. For \code{cor.test} correlation coefficient and p-value.
+#' @export
+#' @examples
+#' set.seed(1)
+#' x <- runif(25, 0, 1)
+#' y <- runif(25, 0, 1)
+#' x[c(3,10,18)] <- NA
+#'
+#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson"))
+#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson", na.action = na.fail))
+get_scatterplotmatrix_stats <- function(x, y,
+                                        .f = cor.test,
+                                        .f_args = list(),
+                                        round_stat = 2,
+                                        round_pval = 4){
+  if (is.numeric(x) && is.numeric(y)){
+
+    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)),
+              error = function(e) NA)
+
+    if (anyNA(stat)){
+      return("NA")
+    }else if (all(c("estimate", "p.value") %in% names(stat))){
+      return(paste(c(paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
+                     paste0("P:", round(stat$p.value, round_pval))),
+                   collapse = "\n"))
+    } else {
+      stop("function not supported")
+    }
+
+  } else {
+    if ("method" %in% names(.f_args)){
+      if (.f_args$method == "pearson"){
+        return("cor:-")
+      }
+      if (.f_args$method == "kendall"){
+        return("tau:-")
+      }
+      if (.f_args$method == "spearman"){
+        return("rho:-")
+      }
+    }
+    return("-")
+  }
+
 }
