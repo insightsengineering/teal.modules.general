@@ -280,7 +280,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 #' @param x vector of any type and length
 #' @return text describing \code{NA} occurrence.
 var_missings_info <- function(x) {
-  return(sprintf("%s [%s%%]", sum(is.na(x)), mean(is.na(x))))
+  return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x)), 2)))
 }
 
 #' Summarizes variable
