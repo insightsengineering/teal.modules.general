@@ -471,7 +471,7 @@ srv_missing_data <- function(input,
       filter(!!sym(group_var) %in% group_vals) %>%
       summarise_all(cell_values) %>%
       gather("Variable", "out", -!!sym(group_var)) %>%
-      mutate(`Variable label` = vapply(if_empty(datasets$get_data_labels(dataname, .data$Variable), ""),
+      mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
                                        if_empty,
                                        character(1),
                                        "")) %>%

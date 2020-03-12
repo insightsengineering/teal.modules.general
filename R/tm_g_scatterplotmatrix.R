@@ -236,7 +236,7 @@ srv_g_scatterplotmatrix <- function(input,
     cor_method <- input$cor_method # nolint
     cor_na_omit <- input$cor_na_omit # nolint
 
-    cor_na_action <- if (cor_na_omit){
+    cor_na_action <- if (cor_na_omit) {
       "na.omit"
     } else {
       "na.fail"
@@ -246,14 +246,14 @@ srv_g_scatterplotmatrix <- function(input,
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 
     # create plot
-    if (add_cor){
+    if (add_cor) {
       shinyjs::show("cor_method")
       shinyjs::show("cor_use")
       shinyjs::show("cor_na_omit")
 
       chunks_push(bquote({
         lattice::splom(ANL[, .(cols_names)],
-                       panel = function(x, y, ...){
+                       panel = function(x, y, ...) {
                          lattice::panel.splom(x = x, y = y, ...)
                          cpl <- lattice::current.panel.limits()
                          lattice::panel.text(mean(cpl$xlim),
@@ -591,15 +591,15 @@ get_scatterplotmatrix_stats <- function(x, y,
                                         .f = cor.test,
                                         .f_args = list(),
                                         round_stat = 2,
-                                        round_pval = 4){
-  if (is.numeric(x) && is.numeric(y)){
+                                        round_pval = 4) {
+  if (is.numeric(x) && is.numeric(y)) {
 
     stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)),
               error = function(e) NA)
 
-    if (anyNA(stat)){
+    if (anyNA(stat)) {
       return("NA")
-    }else if (all(c("estimate", "p.value") %in% names(stat))){
+    } else if (all(c("estimate", "p.value") %in% names(stat))) {
       return(paste(c(paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
                      paste0("P:", round(stat$p.value, round_pval))),
                    collapse = "\n"))
@@ -608,14 +608,14 @@ get_scatterplotmatrix_stats <- function(x, y,
     }
 
   } else {
-    if ("method" %in% names(.f_args)){
-      if (.f_args$method == "pearson"){
+    if ("method" %in% names(.f_args)) {
+      if (.f_args$method == "pearson") {
         return("cor:-")
       }
-      if (.f_args$method == "kendall"){
+      if (.f_args$method == "kendall") {
         return("tau:-")
       }
-      if (.f_args$method == "spearman"){
+      if (.f_args$method == "spearman") {
         return("rho:-")
       }
     }

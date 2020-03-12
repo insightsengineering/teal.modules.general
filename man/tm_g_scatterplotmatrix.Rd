@@ -30,8 +30,6 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-The module allows to add and remove dataset selectors (data extract inputs) and it will create
-the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
 The available datasets to choose from for each dataset selector is the same and
 determined by the argument \code{variables}.
 }
