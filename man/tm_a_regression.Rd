@@ -4,9 +4,15 @@
 \alias{tm_a_regression}
 \title{Scatterplot and Regression Model}
 \usage{
-tm_a_regression(label = "Regression Analysis", regressor, response,
-  plot_height = c(600, 200, 2000), pre_output = NULL,
-  post_output = NULL, default_plot_type = 1)
+tm_a_regression(
+  label = "Regression Analysis",
+  regressor,
+  response,
+  plot_height = c(600, 200, 2000),
+  pre_output = NULL,
+  post_output = NULL,
+  default_plot_type = 1
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}

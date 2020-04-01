@@ -4,10 +4,19 @@
 \alias{tm_g_response}
 \title{Response Plots}
 \usage{
-tm_g_response(label = "Response Plot", response, x, row_facet = NULL,
-  col_facet = NULL, coord_flip = TRUE, rotate_xaxis_labels = FALSE,
-  freq = FALSE, plot_height = c(600, 400, 5000), pre_output = NULL,
-  post_output = NULL)
+tm_g_response(
+  label = "Response Plot",
+  response,
+  x,
+  row_facet = NULL,
+  col_facet = NULL,
+  coord_flip = TRUE,
+  rotate_xaxis_labels = FALSE,
+  freq = FALSE,
+  plot_height = c(600, 400, 5000),
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}

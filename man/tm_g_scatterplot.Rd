@@ -4,9 +4,18 @@
 \alias{tm_g_scatterplot}
 \title{Create a simple scatterplot}
 \usage{
-tm_g_scatterplot(label, x, y, color_by = NULL, plot_height = c(600,
-  200, 2000), alpha = c(1, 0, 1), size = c(4, 1, 12),
-  rotate_xaxis_labels = FALSE, pre_output = NULL, post_output = NULL)
+tm_g_scatterplot(
+  label,
+  x,
+  y,
+  color_by = NULL,
+  plot_height = c(600, 200, 2000),
+  alpha = c(1, 0, 1),
+  size = c(4, 1, 12),
+  rotate_xaxis_labels = FALSE,
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}

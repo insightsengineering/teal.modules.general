@@ -10,3 +10,23 @@ The modules in this package are generic modules that should work with any data s
 (not necessarily for clinical trials data). We are prototyping these modules and they are not
 meant for wide adoption at the moment.
 }
+\author{
+\strong{Maintainer}: NEST \email{nestcicd@roche.com}
+
+Authors:
+\itemize{
+  \item Adrian Waddell \email{adrian.waddell@roche.com}
+  \item Pawel Rucki \email{pawel.rucki@contractors.roche.com}
+  \item Dawid Kaledkowski \email{dawid.kaledkowski@contractors.roche.com}
+  \item Sebastian Wolf \email{sebastian.wolf.sw1@roche.com}
+  \item Maximilian Mordig \email{maximilian_oliver.mordig@roche.com}
+  \item Bartosz Baranowski \email{bartosz.baranowski@roche.com}
+  \item Ondrej Slama \email{ondrej.slama@roche.com}
+}
+
+Other contributors:
+\itemize{
+  \item Roche [copyright holder, funder]
+}
+
+}

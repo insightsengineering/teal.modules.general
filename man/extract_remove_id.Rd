@@ -7,7 +7,7 @@
 extract_remove_id(idx, session)
 }
 \arguments{
-\item{idx}{index or identifier of the button to remove the data extract ui}
+\item{idx}{index of the selector}
 
 \item{session}{shiny session object}
 }

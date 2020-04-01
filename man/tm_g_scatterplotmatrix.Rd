@@ -4,9 +4,13 @@
 \alias{tm_g_scatterplotmatrix}
 \title{Create a scatterplot matrix}
 \usage{
-tm_g_scatterplotmatrix(label = "Scatterplot matrix", variables,
-  plot_height = c(600, 200, 2000), pre_output = NULL,
-  post_output = NULL)
+tm_g_scatterplotmatrix(
+  label = "Scatterplot matrix",
+  variables,
+  plot_height = c(600, 200, 2000),
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
@@ -26,8 +30,6 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-The module allows to add and remove dataset selectors (data extract inputs) and it will create
-the scatterplot matrix for a combination of the selected columns in the merge of all such datasets.
 The available datasets to choose from for each dataset selector is the same and
 determined by the argument \code{variables}.
 }

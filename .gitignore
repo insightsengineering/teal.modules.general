@@ -7,3 +7,9 @@
 /teal.modules.general_0.0.2.tar.gz
 /.project
 docs/
+vignettes/*.html
+vignettes/*.md
+vignettes/*.R
+devel/*
+temp/*
+man/*

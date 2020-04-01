@@ -282,6 +282,10 @@ ui_g_bivariate <- function(id, ...) {
             choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
+          ),
+          sliderInput(
+            ns("alpha"), "Opacity Scatterplot:", min = 0, max = 1,
+            step = .05, value = .5, ticks = FALSE
           )
         )
       )
@@ -295,6 +299,7 @@ ui_g_bivariate <- function(id, ...) {
 
 #' @importFrom magrittr %>%
 #' @importFrom methods is
+#' @importFrom shinyjs show hide
 srv_g_bivariate <- function(input,
                             output,
                             session,
@@ -376,6 +381,15 @@ srv_g_bivariate <- function(input,
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
 
+    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1)))
+    alpha <- if (is_scatterplot) {
+      shinyjs::show("alpha")
+      input$alpha
+    } else {
+      shinyjs::hide("alpha")
+      1
+    }
+
     validate(
       need(
         !is_character_empty(x_name) || !is_empty(y_name),
@@ -394,7 +408,8 @@ srv_g_bivariate <- function(input,
       freq = !use_density,
       theme = as.call(parse(text = paste0("theme_", ggtheme))),
       rotate_xaxis_labels = rotate_xaxis_labels,
-      swap_axes = swap_axes
+      swap_axes = swap_axes,
+      alpha = alpha
     )
 
     facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
@@ -444,7 +459,7 @@ srv_g_bivariate <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merged_data()$expr,
+    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a Bivariate plot"
   )
 }
@@ -468,14 +483,16 @@ bivariate_plot_call <- function(data_name,
                                 freq = TRUE,
                                 theme = quote(theme_gray()),
                                 rotate_xaxis_labels = FALSE,
-                                swap_axes = FALSE) {
+                                swap_axes = FALSE,
+                                alpha = double(0)) {
   cl <- bivariate_ggplot_call(
     x_class = x_class,
     y_class = y_class,
     freq = freq,
     theme = theme,
     rotate_xaxis_labels = rotate_xaxis_labels,
-    swap_axes = swap_axes
+    swap_axes = swap_axes,
+    alpha = alpha
   )
 
   if (is_character_empty(x)) {
@@ -506,7 +523,8 @@ bivariate_plot_call <- function(data_name,
       .x = x,
       .y = y,
       .xlab = x_label,
-      .ylab = y_label
+      .ylab = y_label,
+      .alpha = alpha
     )
   )
 
@@ -548,7 +566,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
                                   freq = TRUE,
                                   theme = quote(theme_grey()),
                                   rotate_xaxis_labels = FALSE,
-                                  swap_axes = FALSE) {
+                                  swap_axes = FALSE,
+                                  alpha = alpha) {
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
 
@@ -663,7 +682,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     plot_call <- reduce_plot_call(
       plot_call,
       quote(aes(x = .x, y = .y)),
-      quote(geom_point()),
+      quote(geom_point(alpha = .alpha)),
       quote(ylab(.ylab)),
       quote(xlab(.xlab))
     )

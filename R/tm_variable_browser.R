@@ -194,7 +194,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
       validate_has_variable(varname = varname, data = df, "variable not available")
 
-      varlabel <- as.list(datasets$get_data_attr(dataname = data, attr = "labels")$column_labels)[[varname]]
+      varlabel <- datasets$get_column_labels(dataname = data, varname)
       var <- df[[varname]]
       d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
@@ -280,7 +280,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 #' @param x vector of any type and length
 #' @return text describing \code{NA} occurrence.
 var_missings_info <- function(x) {
-  return(sprintf("%s [%s%%]", sum(is.na(x)), mean(is.na(x))))
+  return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x)), 2)))
 }
 
 #' Summarizes variable

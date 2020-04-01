@@ -201,6 +201,10 @@ ui_data_table <- function(id,
                           selected) {
   ns <- NS(id)
 
+  if (!is.null(selected)) {
+    choices <- c(selected, setdiff(choices, selected))
+  }
+
   tagList(
     fluidRow(
       selectInput(

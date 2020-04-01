@@ -71,15 +71,15 @@ NULL
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplot <- function(label,
-                           x,
-                           y,
-                           color_by = NULL,
-                           plot_height = c(600, 200, 2000),
-                           alpha = c(1, 0, 1),
-                           size = c(4, 1, 12),
-                           rotate_xaxis_labels = FALSE,
-                           pre_output = NULL,
-                           post_output = NULL) {
+                             x,
+                             y,
+                             color_by = NULL,
+                             plot_height = c(600, 200, 2000),
+                             alpha = c(1, 0, 1),
+                             size = c(4, 1, 12),
+                             rotate_xaxis_labels = FALSE,
+                             pre_output = NULL,
+                             post_output = NULL) {
   if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
@@ -123,10 +123,6 @@ tm_g_scatterplot <- function(label,
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-
-  if (args$plot_height < 200 || args$plot_height > 2000) {
-    stop("plot_height must be between 200 and 2000")
-  }
 
   standard_layout(
     output = white_small_well(
@@ -250,7 +246,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merged_data()$expr,
+    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a scatterplot matrix",
     code_header = "Scatterplot matrix"
   )

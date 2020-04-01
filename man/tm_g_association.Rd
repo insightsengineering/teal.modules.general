@@ -4,9 +4,15 @@
 \alias{tm_g_association}
 \title{Stack Plots of variables and show association with reference variable}
 \usage{
-tm_g_association(label = "Association", ref, vars,
-  show_association = TRUE, plot_height = c(600, 400, 5000),
-  pre_output = NULL, post_output = NULL)
+tm_g_association(
+  label = "Association",
+  ref,
+  vars,
+  show_association = TRUE,
+  plot_height = c(600, 400, 5000),
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{label shown in the navigation for the item}
