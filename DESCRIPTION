@@ -49,7 +49,7 @@ Suggests:
   knitr,
   random.cdisc.data (>= 0.3.2),
   test.nest (>= 0.2.2),
-  testthat
+  testthat (>= 2.0)
 RoxygenNote: 7.0.2
 Collate: 
     'teal.modules.general-package.R'
