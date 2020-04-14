@@ -367,6 +367,12 @@ plot_var_summary <- function(var, var_lab) {
       ggplotGrob(p)
     }
   } else if (is.numeric(var)) {
+
+    validate(need(any(!is.na(var)), "No data left to visualize."))
+
+    # Filter out NA
+    var <- var[which(!is.na(var))]
+
     ## histogram
     binwidth <- 2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3)
 
