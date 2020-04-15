@@ -243,7 +243,8 @@ srv_tm_g_association <- function(input,
         y_label = attr(ANL[[var_i]], "label"),
         freq = !show_dist,
         rotate_xaxis_labels = rotate_xaxis_labels,
-        swap_axes = swap_axes
+        swap_axes = swap_axes,
+        alpha = 1
       )
     })
 
