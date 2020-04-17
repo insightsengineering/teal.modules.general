@@ -586,7 +586,8 @@ current_extract_selectors <- function(input) {
 #' x[c(3,10,18)] <- NA
 #'
 #' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson", na.action = na.fail))
+#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson",
+#'   na.action = na.fail))
 get_scatterplotmatrix_stats <- function(x, y,
                                         .f = cor.test,
                                         .f_args = list(),

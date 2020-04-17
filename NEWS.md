@@ -1,4 +1,14 @@
-# teal.modules.general 0.2.2.9000
+# teal.modules.general 0.2.3.9000
+
+
+# teal.modules.general 0.2.3
+
+* fixed naming in tm_variable_browser
+* correlation added to Scatter Plot Matrix
+* opacity slider added to tm_bivariate
+* fixes due to bug in teal.devel#313
+* performance enhancements to missing data module
+* fix bug with reactivity in scatterplot matrix module
 
 # teal.modules.general 0.2.2
 
