@@ -53,6 +53,7 @@ Suggests:
 RoxygenNote: 7.0.2
 Collate: 
     'teal.modules.general-package.R'
+    'tm_a_pca.R'
     'utils.R'
     'tm_a_regression.R'
     'tm_data_table.R'
