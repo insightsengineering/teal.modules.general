@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.3.9000
 
+* new PCA module
 
 # teal.modules.general 0.2.3
 

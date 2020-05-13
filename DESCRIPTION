@@ -43,6 +43,7 @@ Imports:
   stringr,
   teal.devel (>= 0.2.4),
   tern (>= 0.6.5),
+  tibble,
   tidyr,
   utils.nest (>= 0.2.2)
 Suggests:

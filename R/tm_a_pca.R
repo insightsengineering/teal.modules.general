@@ -82,7 +82,9 @@ ui_a_pca <- function(id, ...) {
   standard_layout(
     output = white_small_well(
       tags$div(
-        div(tableOutput(ns("table")), align = "center"),
+        div(tableOutput(ns("tbl_importance")), align = "center"),
+        hr(),
+        div(tableOutput(ns("tbl_eigenvector")), align = "center"),
         hr(),
         plot_height_output(id = ns("pca_plot"))
       )
@@ -95,21 +97,39 @@ ui_a_pca <- function(id, ...) {
         label = "Data selection",
         data_extract_spec = args$dat
       ),
-      radioButtons(ns("preprocess"), "Preprocessing",
-                   choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
-                   selected = "center_scale"),
-      radioButtons(ns("na_action"), "NA action",
-                   choices = c("None" = "none", "Drop" = "drop"),
-                   selected = "none"),
-      plot_height_input(id = ns("pca_plot"), value = args$plot_height),
-      radioButtons(
-        ns("plot_type"),
-        label = "Plot type",
-        choices = plot_choices,
-        selected = plot_choices["Elbow plot"]
-      ),
-      tags$b("Plot arguments"),
-      uiOutput(ns("plot_args"))
+      panel_group(
+        panel_item(
+          title = "Display",
+          collapsed = FALSE,
+          checkboxGroupInput(
+            ns("tables_display"),
+            "Tables display",
+            choices = c("PCA importance" = "importance", "Eigenvector" = "eigenvector"),
+            selected = c("importance", "eigenvector")
+          ),
+          radioButtons(
+            ns("plot_type"),
+            label = "Plot type",
+            choices = plot_choices,
+            selected = plot_choices["Elbow plot"]
+          )
+        ),
+        panel_item(
+          title = "Pre-processing",
+          radioButtons(ns("standardization"), "Standardization",
+                       choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
+                       selected = "center_scale"),
+          radioButtons(ns("na_action"), "NA action",
+                       choices = c("None" = "none", "Drop" = "drop"),
+                       selected = "none")
+        ),
+        panel_item(
+          title = "Plot settings",
+          collapsed = FALSE,
+          plot_height_input(id = ns("pca_plot"), value = args$plot_height),
+          uiOutput(ns("plot_settings"))
+        )
+      )
     ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
@@ -117,12 +137,12 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-#' @importFrom rlang sym
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_sort
-#' @importFrom dplyr as_tibble mutate
+#' @importFrom dplyr as_tibble filter mutate mutate_at
+#' @importFrom tibble column_to_rownames rownames_to_column
 #' @importFrom tidyr gather drop_na
-#' @importFrom rlang !! !!! sym syms
+#' @importFrom rlang !! !!! quo sym syms
 srv_a_pca <- function(input, output, session, datasets, dat) {
 
   response <- dat
@@ -130,13 +150,10 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     response[[i]]$select$multiple <- FALSE
     response[[i]]$select$always_selected <- NULL
     response[[i]]$select$selected <- NULL
-    response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname,
-                                                                 "column_labels"))
+    response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
     response[[1]]$select$choices <- setdiff(response[[1]]$select$choices,
                                             datasets$get_data_attrs(response[[i]]$dataname)$keys$primary)
   }
-
-  rv <- reactiveValues(response_data_expr = NULL)
 
   init_chunks()
 
@@ -152,25 +169,33 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     input_id = c("response")
   )
 
-  merge_expr <- reactive({
-    md <- merged_data()
-    if (is.null(rv$response_data_expr)) {
-      md$expr
+  response_data_expr <- reactive({
+    if (input$plot_type == "biplot" && length(response_data()$columns_source$response) > 0) {
+      gsub("ANL", "RP", response_data()$expr)
     } else {
-      paste(md$expr, rv$response_data_expr, sep = "\n")
+      NULL
     }
   })
 
-  computation <- reactive({
+  merge_expr <- reactive({
+    md <- merged_data()
+    if (is.null(response_data_expr())) {
+      md$expr
+    } else {
+      paste(md$expr, response_data_expr(), sep = "\n")
+    }
+  })
 
+  # computation ----
+  computation <- reactive({
     md <- merged_data()
     ANL <- md$data() #nolint
     keep_cols <- as.character(md$columns_source$dat)
 
     na_action <- input$na_action #nolint
-    preprocess <- input$preprocess
-    center <- preprocess %in% c("center", "center_scale") #nolint
-    scale <- preprocess == "center_scale" #nolint
+    standardization <- input$standardization
+    center <- standardization %in% c("center", "center_scale") #nolint
+    scale <- standardization == "center_scale" #nolint
 
     validate_has_data(ANL, 10)
     validate_has_elements(keep_cols, "Please select columns")
@@ -209,34 +234,47 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       })
     )
 
-    chunks_push(
-      id = "pca_tbl",
-      expression = bquote({
-        tbl <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-        tbl
-      })
-    )
+    if ("importance" %in% input$tables_display) {
+      chunks_push(
+        id = "pca_tbl_importance",
+        expression = bquote({
+          tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+          tbl_importance
+        })
+      )
+    }
+
+    if ("eigenvector" %in% input$tables_display) {
+      chunks_push(
+        id = "pca_tbl_eigenvector",
+        expression = bquote({
+          tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
+          tbl_eigenvector
+        })
+      )
+    }
 
     chunks_safe_eval()
-    ch <- teal.devel:::get_chunks_object()
 
-    return(ch)
+    teal.devel:::get_chunks_object()
   })
 
-
-  output$plot_args <- renderUI({
+  # plot args ----
+  output$plot_settings <- renderUI({
+    # reactivity triggers
+    computation()
 
     ns <- session$ns
-    pca <- chunks_get_var("pca", computation())
+
+    pca <- chunks_get_var("pca")
     chcs_pcs <- colnames(pca$rotation)
     chcs_vars <- chunks_get_var("keep_cols")
 
-    if (input$plot_type == "elbow") {
-      out <- helpText("No additional plot settings available.")
+    out <- if (input$plot_type == "elbow") {
+      helpText("No additional plot settings available.")
 
     } else if (input$plot_type == "circle") {
-
-      out <- list(
+      list(
         optionalSelectInput(ns("x_axis"), "X axis",
                             choices = chcs_pcs, selected = chcs_pcs[1]),
         optionalSelectInput(ns("y_axis"), "Y axis",
@@ -247,8 +285,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       )
 
     } else if (input$plot_type == "biplot") {
-
-      out <- list(
+      list(
         optionalSelectInput(ns("x_axis"), "X axis",
                             choices = chcs_pcs, selected = chcs_pcs[1]),
         optionalSelectInput(ns("y_axis"), "Y axis",
@@ -264,8 +301,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       )
 
     } else if (input$plot_type == "pc_var") {
-
-      out <- list(
+      list(
         optionalSelectInput(ns("pc"), "PC",
                             choices = chcs_pcs, selected = chcs_pcs[1])
       )
@@ -286,266 +322,286 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
   )
 
 
-  output$plot <- renderPlot({
+  # plot elbow ----
+  plot_elbow <- function() {
+    chunks_push(
+      id = "pca_plot",
+      expression = bquote({
+        elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
+          dplyr::as_tibble(rownames = "metric") %>%
+          tidyr::gather("component", "value", -metric) %>%
+          dplyr::mutate(component = factor(component,
+                                           levels = unique(stringr::str_sort(component, numeric = T))))
 
+        g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
+          geom_bar(
+            aes(fill = "Single variance"),
+            data = filter(elb_dat, metric == "Proportion of Variance"),
+            color = "black",
+            stat = "identity") +
+          geom_point(
+            aes(color = "Cumulative variance"),
+            data = filter(elb_dat, metric == "Cumulative Proportion")) +
+          geom_line(
+            aes(group = 1, color = "Cumulative variance"),
+            data = filter(elb_dat, metric == "Cumulative Proportion")) +
+          theme_bw() +
+          labs(x = "Principal component",
+               y = "Proportion of variance explained",
+               color = "",
+               fill = "Legend") +
+          scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
+          scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
+          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"),
+                legend.title = element_text(vjust = 8))
+        g
+      })
+    )
+
+    invisible(NULL)
+  }
+
+  # plot circle ----
+  plot_circle <- function() {
+    validate(
+      need(input$x_axis, "Need additional plot settings - x axis"),
+      need(input$y_axis, "Need additional plot settings - y axis"),
+      need(input$variables, "Need additional plot settings - variables"),
+      need(input$x_axis != input$y_axis, "Please choose different axis.")
+    )
+
+    x_axis <- input$x_axis #nolint
+    y_axis <- input$y_axis #nolint
+    variables <- input$variables #nolint
+
+    chunks_push(
+      id = "pca_plot",
+      expression = bquote({
+        pca_rot <- pca$rotation[, c(.(x_axis), .(y_axis))] %>%
+          dplyr::as_tibble(rownames = "label") %>%
+          dplyr::filter(label %in% .(variables))
+
+        circle_data <- data.frame(
+          x = cos(seq(0, 2 * pi, length.out = 100)),
+          y = sin(seq(0, 2 * pi, length.out = 100))
+        )
+
+        g <- ggplot(pca_rot) +
+          geom_point(aes_string(x = .(x_axis), y = .(y_axis))) +
+          geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
+                     nudge_x = 0.1, nudge_y = 0.05,
+                     fontface = "bold") +
+          geom_path(aes(x, y, group = 1), data = circle_data) +
+          geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
+          theme_bw()
+        g
+      })
+    )
+
+    invisible(NULL)
+  }
+
+  # plot biplot ----
+  plot_biplot <- function() {
+    validate(
+      need(input$x_axis, "Need additional plot settings - x axis"),
+      need(input$y_axis, "Need additional plot settings - y axis"),
+      need(input$x_axis != input$y_axis, "Please choose different axis.")
+    )
+
+    rd <- response_data()
+    resp_col <- as.character(rd$columns_source$response)
+    x_axis <- input$x_axis #nolint
+    y_axis <- input$y_axis #nolint
+    variables <- input$variables #nolint
+    pca <- chunks_get_var("pca")
+
+    chunks_push(
+      id = "pca_plot_data_rot",
+      expression = bquote({
+        pca_rot <- dplyr::as_tibble(pca$x[, c(.(x_axis), .(y_axis))])
+      })
+    )
+
+    # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
+    if (!is.null(input$variables)) {
+
+      chunks_push(
+        id = "pca_plot_vars_rot_1",
+        expression = bquote({
+          r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
+          v_scale <- rowSums(pca$rotation ^ 2)
+
+          rot_vars <- pca$rotation[, c(.(x_axis), .(y_axis))] %>%
+            dplyr::as_tibble(rownames = "label") %>%
+            dplyr::mutate_at(vars(c(.(x_axis), .(y_axis))), function(x) r * x / sqrt(max(v_scale)))
+        })
+      )
+
+      # determine start of arrows
+      chunks_push(
+        id = "pca_plot_vars_rot_2",
+        expression = if (is.logical(pca$center) && !pca$center) {
+          bquote({
+            rot_vars <- rot_vars %>%
+              tibble::column_to_rownames("label") %>%
+              sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
+              tibble::rownames_to_column("label") %>%
+              dplyr::mutate(xstart = mean(pca$x[, .(x_axis)], na.rm = TRUE),
+                            ystart = mean(pca$x[, .(y_axis)], na.rm = TRUE))
+          })
+        } else {
+          bquote({
+            rot_vars <- rot_vars %>% mutate(xstart = 0, ystart = 0)
+          })
+        }
+      )
+
+      chunks_push(
+        id = "pca_plot_vars_rot_3",
+        expression = bquote({
+          rot_vars <- rot_vars %>%
+            dplyr::filter(label %in% .(variables))
+        })
+      )
+    }
+
+    if (length(resp_col) == 0) {
+
+      chunks_push(
+        id = "pca_plot_biplot",
+        bquote({
+          g <- ggplot() +
+            geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot) +
+            theme_bw() +
+            labs(color = "Legend")
+        })
+      )
+
+    } else {
+
+      ANL <- chunks_get_var("ANL") #nolint
+      validate(need(!resp_col %in% colnames(ANL),
+                    paste("Response column must be different from the original variables",
+                          "(that were used for PCA).")))
+
+      ch <- computation()
+      RP <- rd$data() #nolint
+      ch$.__enclos_env__$private$envir$RP <- RP #nolint
+      rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source)))
+
+      response <- merge(ANL, RP, by = rp_keys)[[resp_col]]
+
+      chunks_push(
+        id = "pca_plot_response",
+        expression = if (is.character(response) ||
+                         is.factor(response) ||
+                         (is.numeric(response) && length(unique(response)) <= 6)) {
+          bquote({
+            response <- merge(ANL, RP, by = .(rp_keys))[[.(resp_col)]]
+            pca_rot$response <- as.factor(response)
+            scale_colors <- scale_color_brewer(palette = "Dark2")
+            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
+          })
+        } else {
+          bquote({
+            response <- RP[[.(resp_col)]]
+            pca_rot$response <- response
+            scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
+            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
+          })
+        }
+      )
+
+      chunks_push(
+        id = "pca_plot_biplot",
+        expression = bquote({
+          g <- ggplot() +
+            geom_point(aes_biplot, data = pca_rot) +
+            scale_colors +
+            theme_bw() +
+            labs(color = "Legend")
+        })
+      )
+    }
+
+    if (!is.null(input$variables)) {
+      chunks_push(
+        id = "pca_plot_arrow_plot",
+        expression = bquote({
+          g <- g +
+            geom_segment(aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
+                         data = rot_vars,
+                         lineend = "round", linejoin = "round",
+                         arrow = arrow(length = unit(0.5, "cm"))) +
+            geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
+                       data = rot_vars,
+                       nudge_y = 0.1,
+                       fontface = "bold") +
+            geom_point(aes(x = xstart, y = ystart),
+                       data = rot_vars,
+                       shape = "x",
+                       size = 5)
+        })
+      )
+    }
+
+    chunks_push(
+      id = "pca_plot_final",
+      expression = bquote({
+        g
+      })
+    )
+
+    invisible(NULL)
+  }
+
+  # plot pc_var ----
+  plot_pc_var <- function() {
+    validate(need(input$pc, "Need additional plot settigns - PC"))
+
+    pc <- input$pc #nolint
+
+    chunks_push(
+      id = "pca_plot",
+      expression = bquote({
+        pca_rot <- pca$rotation[, .(pc), drop = FALSE] %>%
+          dplyr::as_tibble(rownames = "Variable")
+
+        g <- ggplot(pca_rot) +
+          geom_bar(aes_string(x = "Variable", y = .(pc)),
+                   stat = "identity",
+                   color = "black",
+                   fill = "lightblue") +
+          geom_text(
+            aes_q(x = quote(Variable),
+                  y = as.name(.(pc)),
+                  label = quo(round(!!sym(.(pc)), 3)),
+                  vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
+          theme_bw()
+        g
+      })
+    )
+
+    invisible(NULL)
+  }
+
+  # plot final ----
+  output$plot <- renderPlot({
     ch <- computation()
     overwrite_chunks(ch$clone())
 
     if (input$plot_type == "elbow") {
-
-      rv$response_data_expr <- NULL
-
-      chunks_push(
-        id = "pca_plot",
-        expression = bquote({
-          elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
-            dplyr::as_tibble(rownames = "metric") %>%
-            tidyr::gather("component", "value", -.data$metric) %>%
-            dplyr::mutate(component = factor(component,
-                                             levels = unique(stringr::str_sort(.data$component,
-                                                                               numeric = T))))
-
-          g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
-            geom_bar(
-              aes(fill = "Single variance"),
-              data = filter(elb_dat, metric == "Proportion of Variance"),
-              color = "black",
-              stat = "identity") +
-            geom_point(
-              aes(color = "Cumulative variance"),
-              data = filter(elb_dat, metric == "Cumulative Proportion")) +
-            geom_line(
-              aes(group = 1, color = "Cumulative variance"),
-              data = filter(elb_dat, metric == "Cumulative Proportion")) +
-            theme_bw() +
-            labs(x = "Principal component",
-                 y = "Proportion of variance explained",
-                 color = "",
-                 fill = "Legend") +
-            scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
-            scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-            theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"),
-                  legend.title = element_text(vjust = 8))
-          g
-        }))
+      plot_elbow()
 
     } else if (input$plot_type == "circle") {
-
-      req(input$x_axis, input$y_axis, input$variables)
-      validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
-
-      x_axis <- input$x_axis #nolint
-      y_axis <- input$y_axis #nolint
-      variables <- input$variables #nolint
-      rv$response_data_expr <- NULL
-
-      chunks_push(
-        id = "pca_plot",
-        expression = bquote({
-          pca_rot <- as.data.frame(pca$rotation[, c(.(x_axis), .(y_axis))])
-          pca_rot$label <- rownames(pca_rot)
-          pca_rot <- filter(pca_rot, .data$label %in% .(variables))
-
-          circle_data <- data.frame(
-            x = cos(seq(0, 2 * pi, length.out = 100)),
-            y = sin(seq(0, 2 * pi, length.out = 100))
-          )
-
-          g <- ggplot(pca_rot) +
-            geom_point(aes_string(x = .(x_axis), y = .(y_axis))) +
-            geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-                       nudge_x = 0.1, nudge_y = 0.05,
-                       fontface = "bold") +
-            geom_path(aes(x, y, group = 1), data = circle_data) +
-            geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
-            theme_bw()
-          g
-        })
-      )
+      plot_circle()
 
     } else if (input$plot_type == "biplot") {
-
-      req(input$x_axis, input$y_axis)
-      validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
-
-      rd <- response_data()
-      resp_col <- as.character(rd$columns_source$response)
-      x_axis <- input$x_axis #nolint
-      y_axis <- input$y_axis #nolint
-      variables <- input$variables #nolint
-      pca <- chunks_get_var("pca")
-
-      chunks_push(
-        id = "pca_plot_data_rot",
-        expression = bquote({
-          pca_rot <- as.data.frame(pca$x[, c(.(x_axis), .(y_axis))])
-        })
-      )
-
-      # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
-      if (!is.null(input$variables)) {
-
-        chunks_push(
-          id = "pca_plot_vars_rot_1",
-          expression = bquote({
-            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
-            v_scale <- rowSums(pca$rotation ^ 2)
-
-            rot_vars <- pca$rotation[, c(.(x_axis), .(y_axis))]
-            rot_vars <- as.data.frame(r * rot_vars / sqrt(max(v_scale)))
-          })
-        )
-
-        # determine start of arrows
-        if (is.logical(pca$center) && !pca$center) {
-          chunks_push(
-            id = "pca_plot_vars_rot_2",
-            expression = bquote({
-              rot_vars <- sweep(rot_vars, 1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE))
-              rot_vars$xstart <- mean(pca$x[, .(x_axis)], na.rm = TRUE)
-              rot_vars$ystart <- mean(pca$x[, .(y_axis)], na.rm = TRUE)
-            })
-          )
-        } else {
-          chunks_push(
-            id = "pca_plot_vars_rot_2",
-            expression = bquote({
-              rot_vars$xstart <- 0
-              rot_vars$ystart <- 0
-            })
-          )
-        }
-
-        chunks_push(
-          id = "pca_plot_vars_rot_3",
-          expression = bquote({
-            rot_vars$label <- rownames(pca$rotation)
-            rot_vars <- filter(rot_vars, .data$label %in% .(variables))
-          })
-        )
-      }
-
-      if (length(resp_col) == 0) {
-
-        rv$response_data_expr <- NULL
-        chunks_push(
-          id = "pca_plot_biplot",
-          bquote({
-            g <- ggplot() +
-              geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot) +
-              theme_bw() +
-              labs(color = "Legend")
-          })
-        )
-
-      } else {
-
-        ANL <- chunks_get_var("ANL") #nolint
-        validate(need(!resp_col %in% colnames(ANL),
-                      paste("Response column must be different from the original variables",
-                            "(that were used for PCA).")))
-
-        RP <- rd$data() #nolint
-        ch$.__enclos_env__$private$envir$RP <- RP #nolint
-        rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source)))
-        rv$response_data_expr <- gsub("ANL", "RP", rd$expr)
-
-        response <- merge(ANL, RP, by = rp_keys)[[resp_col]]
-
-        if (is.character(response) ||
-            is.factor(response) ||
-            (is.numeric(response) && length(unique(response)) <= 6)) {
-
-          chunks_push(
-            id = "pca_plot_response",
-            expression = bquote({
-              response <- merge(ANL, RP, by = .(rp_keys))[[.(resp_col)]]
-              pca_rot$response <- as.factor(response)
-              scale_colors <- scale_color_brewer(palette = "Dark2")
-              aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
-            })
-          )
-
-        } else {
-
-          chunks_push(
-            id = "pca_plot_response",
-            expression = bquote({
-              response <- RP[[.(resp_col)]]
-              pca_rot$response <- response
-              scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
-              aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
-            })
-          )
-        }
-
-        chunks_push(
-          id = "pca_plot_biplot",
-          expression = bquote({
-            g <- ggplot() +
-              geom_point(aes_biplot, data = pca_rot) +
-              scale_colors +
-              theme_bw() +
-              labs(color = "Legend")
-          })
-        )
-      }
-
-      if (!is.null(input$variables)) {
-        chunks_push(
-          id = "pca_plot_arrow_plot",
-          expression = bquote({
-            g <- g +
-              geom_segment(aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
-                           data = rot_vars,
-                           lineend = "round", linejoin = "round",
-                           arrow = arrow(length = unit(0.5, "cm"))) +
-              geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-                         data = rot_vars,
-                         nudge_y = 0.1,
-                         fontface = "bold") +
-              geom_point(aes(x = xstart, y = ystart),
-                         data = rot_vars,
-                         shape = "x",
-                         size = 5)
-          })
-        )
-      }
-
-      chunks_push(
-        id = "pca_plot_final",
-        expression = bquote({
-          g
-        })
-      )
+      plot_biplot()
 
     } else if (input$plot_type == "pc_var") {
-
-      req(input$pc)
-
-      rv$response_data_expr <- NULL
-      pc <- input$pc #nolint
-
-      chunks_push(
-        id = "pca_plot",
-        expression = bquote({
-          pca_rot <- pca$rotation[, .(pc), drop = FALSE] %>%
-            dplyr::as_tibble(rownames = "Variable")
-
-          g <- ggplot(pca_rot) +
-            geom_bar(aes_string(x = "Variable", y = .(pc)),
-                     stat = "identity",
-                     color = "black",
-                     fill = "lightblue") +
-            geom_text(
-              aes_q(x = quote(Variable),
-                    y = as.name(.(pc)),
-                    label = quo(round(!!sym(.(pc)), 3)),
-                    vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
-            theme_bw()
-          g
-        })
-      )
+      plot_pc_var()
 
     } else {
       stop("Unknown plot")
@@ -554,9 +610,17 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     chunks_safe_eval()
   })
 
+  # tables ----
+  output$tbl_importance <- renderTable({
+    req(("importance" %in% input$tables_display))
+    computation()
+    chunks_get_var("tbl_importance")
+  }, bordered = TRUE, align = "c", digits = 3)
 
-  output$table <- renderTable({
-    chunks_get_var("tbl", computation())
+  output$tbl_eigenvector <- renderTable({
+    req(("eigenvector" %in% input$tables_display))
+    computation()
+    chunks_get_var("tbl_eigenvector")
   }, bordered = TRUE, align = "c", digits = 3)
 
 
