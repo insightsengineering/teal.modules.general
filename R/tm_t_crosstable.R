@@ -2,10 +2,10 @@
 #'
 #' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
 #' @param label (\code{character}) Label of the app in the teal menu
-#' @param x (\code{choices_selected}) object with all available
-#'   choices with pre-selected option for variable X
-#' @param y (\code{choices_selected}) object with all available
-#'   choices with pre-selected option for variable Y
+#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  object with all available choices with pre-selected option for variable X
+#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  object with all available choices with pre-selected option for variable Y
 #' @param show_percentage whether to show percentages (relevant only when \code{x} is a \code{factor})
 #' @param show_total whether to show total column
 #' @inheritParams teal::module

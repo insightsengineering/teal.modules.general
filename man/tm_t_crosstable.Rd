@@ -17,11 +17,11 @@ tm_t_crosstable(
 \arguments{
 \item{label}{(\code{character}) Label of the app in the teal menu}
 
-\item{x}{(\code{choices_selected}) object with all available
-choices with pre-selected option for variable X}
+\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+object with all available choices with pre-selected option for variable X}
 
-\item{y}{(\code{choices_selected}) object with all available
-choices with pre-selected option for variable Y}
+\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+object with all available choices with pre-selected option for variable Y}
 
 \item{show_percentage}{whether to show percentages (relevant only when \code{x} is a \code{factor})}
 
