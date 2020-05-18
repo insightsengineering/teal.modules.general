@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.3.9000
 
 * new PCA module
+* Display variable labels in drop-down menu of data table (#393)
 
 # teal.modules.general 0.2.3
 

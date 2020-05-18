@@ -144,7 +144,18 @@ ui_page_data_table <- function(id,
           lapply(
             datanames,
             function(x) {
-              choices <- names(datasets$get_data(x, filtered = FALSE, reactive = FALSE))
+              dataset <- datasets$get_data(x, filtered = FALSE, reactive = FALSE)
+              choices <- names(dataset)
+              labels <- vapply(
+                dataset,
+                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                character(1)
+              )
+              names(choices) <- ifelse(
+                is.na(labels) | labels == "",
+                choices,
+                paste(choices, labels, sep = ": ")
+              )
               selected <- if (!is.null(selected[[x]])) {
                 selected[[x]]
               } else {
@@ -202,7 +213,9 @@ ui_data_table <- function(id,
   ns <- NS(id)
 
   if (!is.null(selected)) {
+    all_choices <- choices
     choices <- c(selected, setdiff(choices, selected))
+    names(choices) <- names(all_choices)[match(choices, all_choices)]
   }
 
   tagList(
