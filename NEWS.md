@@ -3,7 +3,7 @@
 * new PCA module
 * documentation fix for cross table module
 * Display variable labels in drop-down menu of data table (#393)
-
+* optional subsetting and ordering datasets for tm_data_table
 
 # teal.modules.general 0.2.3
 
