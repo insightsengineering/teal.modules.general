@@ -82,9 +82,9 @@ ui_a_pca <- function(id, ...) {
   standard_layout(
     output = white_small_well(
       tags$div(
-        div(tableOutput(ns("tbl_importance")), align = "center"),
+        uiOutput(ns("tbl_importance_ui")),
         hr(),
-        div(tableOutput(ns("tbl_eigenvector")), align = "center"),
+        uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
         plot_height_output(id = ns("pca_plot"))
       )
@@ -104,7 +104,7 @@ ui_a_pca <- function(id, ...) {
           checkboxGroupInput(
             ns("tables_display"),
             "Tables display",
-            choices = c("PCA importance" = "importance", "Eigenvector" = "eigenvector"),
+            choices = c("PC importance" = "importance", "Eigenvectors" = "eigenvector"),
             selected = c("importance", "eigenvector")
           ),
           radioButtons(
@@ -157,7 +157,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
 
   init_chunks()
 
-  merged_data <- data_merge_module(
+  anl_data <- data_merge_module(
     datasets = datasets,
     data_extract = list(dat),
     input_id = c("dat")
@@ -166,36 +166,24 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
   response_data <- data_merge_module(
     datasets = datasets,
     data_extract = list(response),
-    input_id = c("response")
+    input_id = c("response"),
+    anl_name = "RP"
   )
-
-  response_data_expr <- reactive({
-    if (input$plot_type == "biplot" && length(response_data()$columns_source$response) > 0) {
-      gsub("ANL", "RP", response_data()$expr)
-    } else {
-      NULL
-    }
-  })
-
-  merge_expr <- reactive({
-    md <- merged_data()
-    if (is.null(response_data_expr())) {
-      md$expr
-    } else {
-      paste(md$expr, response_data_expr(), sep = "\n")
-    }
-  })
 
   # computation ----
   computation <- reactive({
-    md <- merged_data()
-    ANL <- md$data() #nolint
-    keep_cols <- as.character(md$columns_source$dat)
+    chunks_stack <- chunks$new()
 
+    keep_cols <- as.character(anl_data()$columns_source$dat)
     na_action <- input$na_action #nolint
     standardization <- input$standardization
     center <- standardization %in% c("center", "center_scale") #nolint
     scale <- standardization == "center_scale" #nolint
+
+    chunks_reset(chunks = chunks_stack)
+    chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
+
+    ANL <- anl_data()$data() #nolint
 
     validate_has_data(ANL, 10)
     validate_has_elements(keep_cols, "Please select columns")
@@ -209,13 +197,13 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
             'or select "Drop" in the NA actions inside the encodings panel (left).')
     ))
 
-    chunks_reset()
 
     chunks_push(
       id = "pca_1",
       expression = bquote({
         keep_columns <- .(keep_cols)
-      })
+      }),
+      chunks = chunks_stack
     )
 
     if (na_action == "drop") {
@@ -223,7 +211,8 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
         id = "pca_2",
         expression = bquote({
           ANL <- tidyr::drop_na(ANL, !!!syms(keep_columns)) # nolint
-        })
+        }),
+        chunks = chunks_stack
       )
     }
 
@@ -231,44 +220,43 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       id = "pca_3",
       expression = bquote({
         pca <- summary(prcomp(ANL[keep_columns], center = .(center), scale. = .(scale), retx = TRUE))
-      })
+      }),
+      chunks = chunks_stack
     )
 
-    if ("importance" %in% input$tables_display) {
-      chunks_push(
-        id = "pca_tbl_importance",
-        expression = bquote({
-          tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-          tbl_importance
-        })
-      )
-    }
+    chunks_push(
+      id = "pca_tbl_importance",
+      expression = bquote({
+        tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+        tbl_importance
+      }),
+      chunks = chunks_stack
+    )
 
-    if ("eigenvector" %in% input$tables_display) {
-      chunks_push(
-        id = "pca_tbl_eigenvector",
-        expression = bquote({
-          tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
-          tbl_eigenvector
-        })
-      )
-    }
+    chunks_push(
+      id = "pca_tbl_eigenvector",
+      expression = bquote({
+        tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
+        tbl_eigenvector
+      }),
+      chunks = chunks_stack
+    )
 
-    chunks_safe_eval()
+    chunks_safe_eval(chunks = chunks_stack)
 
-    teal.devel:::get_chunks_object()
+    chunks_stack
   })
 
   # plot args ----
   output$plot_settings <- renderUI({
     # reactivity triggers
-    computation()
+    chunks_stack <- computation()
 
     ns <- session$ns
 
-    pca <- chunks_get_var("pca")
+    pca <- chunks_get_var("pca", chunks = chunks_stack)
     chcs_pcs <- colnames(pca$rotation)
-    chcs_vars <- chunks_get_var("keep_cols")
+    chcs_vars <- chunks_get_var("keep_cols", chunks = chunks_stack)
 
     out <- if (input$plot_type == "elbow") {
       helpText("No additional plot settings available.")
@@ -480,17 +468,15 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
 
     } else {
 
-      ANL <- chunks_get_var("ANL") #nolint
+      ANL <- chunks_get_var("ANL") # nolint
       validate(need(!resp_col %in% colnames(ANL),
                     paste("Response column must be different from the original variables",
                           "(that were used for PCA).")))
 
-      ch <- computation()
-      RP <- rd$data() #nolint
-      ch$.__enclos_env__$private$envir$RP <- RP #nolint
-      rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source)))
+      RP <- chunks_get_var("RP") # nolint
+      rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source))) # nolint
 
-      response <- merge(ANL, RP, by = rp_keys)[[resp_col]]
+      response <- RP[[resp_col]]
 
       chunks_push(
         id = "pca_plot_response",
@@ -588,8 +574,8 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
 
   # plot final ----
   output$plot <- renderPlot({
-    ch <- computation()
-    overwrite_chunks(ch$clone())
+    chunks_reset()
+    chunks_push_chunks(computation())
 
     if (input$plot_type == "elbow") {
       plot_elbow()
@@ -598,6 +584,10 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       plot_circle()
 
     } else if (input$plot_type == "biplot") {
+      if (length(response_data()$columns_source$response) > 0) {
+        chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
+      }
+
       plot_biplot()
 
     } else if (input$plot_type == "pc_var") {
@@ -612,23 +602,40 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
 
   # tables ----
   output$tbl_importance <- renderTable({
-    req(("importance" %in% input$tables_display))
-    computation()
-    chunks_get_var("tbl_importance")
+    req("importance" %in% input$tables_display)
+    chunks_stack <- computation()
+    chunks_get_var("tbl_importance", chunks = chunks_stack)
   }, bordered = TRUE, align = "c", digits = 3)
 
+  output$tbl_importance_ui <- renderUI({
+    req("importance" %in% input$tables_display)
+    div(
+      tags$h4("Principal components importance"),
+      tableOutput(session$ns("tbl_importance")),
+      align = "center"
+    )
+  })
+
   output$tbl_eigenvector <- renderTable({
-    req(("eigenvector" %in% input$tables_display))
-    computation()
-    chunks_get_var("tbl_eigenvector")
+    req("eigenvector" %in% input$tables_display)
+    chunks_stack <- computation()
+    chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
   }, bordered = TRUE, align = "c", digits = 3)
+
+  output$tbl_eigenvector_ui <- renderUI({
+    req("eigenvector" %in% input$tables_display)
+    div(
+      tags$h4("Eigenvectors"),
+      tableOutput(session$ns("tbl_eigenvector")),
+      align = "center"
+    )
+  })
 
 
   callModule(
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = merge_expr,
     modal_title = "R code for PCA"
   )
 }
