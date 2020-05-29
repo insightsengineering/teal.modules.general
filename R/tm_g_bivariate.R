@@ -362,9 +362,11 @@ srv_g_bivariate <- function(input,
   )
 
   output$plot <- renderPlot({
-    ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 3)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 3)
 
     x_name <- as.vector(merged_data()$columns_source$x)
     y_name <- as.vector(merged_data()$columns_source$y)
@@ -459,7 +461,6 @@ srv_g_bivariate <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a Bivariate plot"
   )
 }

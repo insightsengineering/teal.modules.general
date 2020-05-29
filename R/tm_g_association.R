@@ -173,9 +173,11 @@ srv_tm_g_association <- function(input,
   )
 
   chunks_reactive <- reactive({
-    ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 3)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 3)
 
     ref_name <- as.vector(merged_data()$columns_source$ref)
     vars_names <- as.vector(merged_data()$columns_source$vars)
@@ -273,7 +275,6 @@ srv_tm_g_association <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for the Association Plot",
     code_header = "Association Plot"
   )

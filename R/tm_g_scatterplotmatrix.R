@@ -225,10 +225,10 @@ srv_g_scatterplotmatrix <- function(input,
 
   # plot
   output$plot <- renderPlot({
-    ANL <- merged_data()$data() # nolint
-
-    validate_has_data(ANL, 3)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    validate_has_data(chunks_get_var("ANL"), 3)
 
     alpha <- input$alpha # nolint
     cex <- input$cex # nolint
@@ -290,7 +290,6 @@ srv_g_scatterplotmatrix <- function(input,
       title = "R Code for a Scatterplotmatrix",
       rcode = get_rcode(
         datasets = datasets,
-        merge_expression = reactive(merged_data()$expr),
         title = title
       )
     )

@@ -178,9 +178,12 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
 
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
-    ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 10)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 10)
+
     response_var <- as.vector(merged_data()$columns_source$response)
     regressor_var <- as.vector(merged_data()$columns_source$regressor)
 
@@ -257,7 +260,6 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
     modal_title = "R code for the regression plot",
     code_header = paste0(
       "Regression plot of ",

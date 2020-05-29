@@ -216,9 +216,11 @@ srv_g_response <- function(input,
   })
 
   output$plot <- renderPlot({
-    ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 3)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 3)
 
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
@@ -313,7 +315,6 @@ srv_g_response <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a Scatterplotmatrix"
   )
 }

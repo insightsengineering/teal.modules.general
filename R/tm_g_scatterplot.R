@@ -194,9 +194,11 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
 
 
   output$plot <- renderPlot({
-    ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 10)
     chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    validate_has_data(chunks_get_var("ANL"), 10)
+
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
@@ -226,8 +228,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     plot_call <- bquote(
       .(plot_call) +
       geom_point(alpha = .(alpha), size = .(size)) +
-      ylab(.(paste0(attr(ANL[[y_var]], "label"), " [", y_var, "]"))) +
-      xlab(.(paste0(attr(ANL[[x_var]], "label"), " [", x_var, "]")))
+      ylab(.(paste0(attr(chunks_get_var("ANL")[[y_var]], "label"), " [", y_var, "]"))) +
+      xlab(.(paste0(attr(chunks_get_var("ANL")[[x_var]], "label"), " [", x_var, "]")))
     )
 
 
@@ -246,7 +248,6 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    merge_expression = reactive(merged_data()$expr),
     modal_title = "R Code for a scatterplot matrix",
     code_header = "Scatterplot matrix"
   )
