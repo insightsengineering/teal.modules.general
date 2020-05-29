@@ -4,7 +4,11 @@
 \alias{tm_data_table}
 \title{Data Table Viewer Teal Module}
 \usage{
-tm_data_table(label = "Data table", variables_selected = list())
+tm_data_table(
+  label = "Data table",
+  variables_selected = list(),
+  datasets_selected = character(0)
+)
 }
 \arguments{
 \item{label}{(\code{character})}
@@ -12,6 +16,9 @@ tm_data_table(label = "Data table", variables_selected = list())
 \item{variables_selected}{(\code{list}) a named list that says which variables should be
 initially shown for particular dataset. Names in list should correspond with names provided in list `data()`.
 If not specified for any dataset - first six variables from dataset will be shown.}
+
+\item{datasets_selected}{(\code{character}) a character vector that says which datasets should be
+shown and in what order. Names in a vector have to correspond with datasets names.}
 }
 \description{
 A data table viewer shows the data using a paginated table.
@@ -29,12 +36,12 @@ app <- init(
   ),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+      variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
     )
   )
 )
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 }
 
 # two-datasets example
@@ -53,13 +60,18 @@ app <- init(
   ),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-                                ADTTE = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
-                                          "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR")))
+      variables_selected = list(
+        ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+        ADTTE = c(
+          "STUDYID", "USUBJID", "SUBJID", "SITEID",
+          "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
+        )
+      )
+    )
   )
 )
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 }
 
 # datasets: different subsets of long dataset
@@ -77,14 +89,49 @@ app <- init(
   ),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ADSL  = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-                                ADLB = c("STUDYID", "USUBJID", "SUBJID", "SITEID",
-                                         "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG")))
+      variables_selected = list(
+        ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+        ADLB = c(
+          "STUDYID", "USUBJID", "SUBJID", "SITEID",
+          "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
+        )
+      )
+    )
   )
 )
-
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
+}
+# datasets: subsetting or changing order of datasets inside tm_data_table
+library(random.cdisc.data)
+
+ADSL <- radsl(cached = TRUE)
+ADLB <- radlb(cached = TRUE)
+ADTTE <- radtte(cached = TRUE)
+
+app <- init(
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL),
+    cdisc_dataset("ADLB", ADLB),
+    cdisc_dataset("ADTTE", ADTTE),
+    code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE); ADTTE <- radtte(cached = TRUE);",
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_data_table(
+      variables_selected = list(
+        ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+        ADLB = c(
+          "STUDYID", "USUBJID", "SUBJID", "SITEID",
+          "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
+        )
+      ),
+      datasets_selected = c("ADLB", "ADSL")
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
 }
 
 }
