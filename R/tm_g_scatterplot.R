@@ -1,12 +1,7 @@
-#' @include utils.R
-NULL
-
 #' Create a simple scatterplot
 #'
-#' Create a plot with the \code{\link{plot}[base]} function
+#' Create a plot with the \code{\link{ggplot2}[geom_point]} function
 #'
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   x variable
 #' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -17,13 +12,13 @@ NULL
 #'   \code{_none_} is a keyword and means that no color encoding should be used.
 #' @param plot_height if scalar then the plot will have a fixed height. If a
 #'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min and max)}.
+#'   can be a vector of length three with \code{c(value, min, max)}.
 #' @param alpha if scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically
 #'   then it can be a vector of length three with value, min and max.
-#' @param size if scalar then the plot points sizes will have a fixed opacity.
+#' @param size if scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically
-#'   then it can be a vector of length three with value, min and max.
+#'   then it can be a vector of length three with \code{c(value, min, max)}.
 #' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
@@ -248,7 +243,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    modal_title = "R Code for a scatterplot matrix",
-    code_header = "Scatterplot matrix"
+    modal_title = "R Code for a scatterplot",
+    code_header = "Scatterplot"
   )
 }

@@ -33,15 +33,15 @@ Defines the color encoding. If
 
 \item{plot_height}{if scalar then the plot will have a fixed height. If a
 slider should be presented to adjust the plot height dynamically then it
-can be a vector of length three with \code{c(value, min and max)}.}
+can be a vector of length three with \code{c(value, min, max)}.}
 
 \item{alpha}{if scalar then the plot points will have a fixed opacity. If a
 slider should be presented to adjust the plot point opacity dynamically
 then it can be a vector of length three with value, min and max.}
 
-\item{size}{if scalar then the plot points sizes will have a fixed opacity.
+\item{size}{if scalar then the plot point sizes will have a fixed size
 If a slider should be presented to adjust the plot point sizes dynamically
-then it can be a vector of length three with value, min and max.}
+then it can be a vector of length three with \code{c(value, min, max)}.}
 
 \item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
 
@@ -54,7 +54,7 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-Create a plot with the \code{\link{plot}[base]} function
+Create a plot with the \code{\link{ggplot2}[geom_point]} function
 }
 \examples{
 # Scatterplot of variables from ADSL dataset
