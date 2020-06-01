@@ -95,6 +95,6 @@ app <- init(
   )
 )
 \dontrun{
-  shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 }
 }

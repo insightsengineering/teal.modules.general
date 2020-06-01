@@ -22,9 +22,9 @@ Call a function with a character vector for the \code{...} argument
 }
 \examples{
 \dontrun{
-  a <- 1
-  b <- 2
-  call_fun_dots("sum", c("a", "b"))
-  eval(call_fun_dots("sum", c("a", "b")))
+a <- 1
+b <- 2
+call_fun_dots("sum", c("a", "b"))
+eval(call_fun_dots("sum", c("a", "b")))
 }
 }

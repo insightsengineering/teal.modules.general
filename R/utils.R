@@ -10,10 +10,10 @@
 #'
 #' @examples
 #' \dontrun{
-#'   a <- 1
-#'   b <- 2
-#'   call_fun_dots("sum", c("a", "b"))
-#'   eval(call_fun_dots("sum", c("a", "b")))
+#' a <- 1
+#' b <- 2
+#' call_fun_dots("sum", c("a", "b"))
+#' eval(call_fun_dots("sum", c("a", "b")))
 #' }
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)

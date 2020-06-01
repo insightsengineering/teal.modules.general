@@ -25,7 +25,7 @@
 #'   )
 #' )
 #' \dontrun{
-#'   shinyApp(app$ui, app$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 5000)) {
   stopifnot(is_character_single(label))

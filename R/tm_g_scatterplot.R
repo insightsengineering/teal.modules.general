@@ -68,7 +68,7 @@ NULL
 #'   )
 #' )
 #' \dontrun{
-#'   shinyApp(app$ui, app$server)
+#' shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplot <- function(label,
                              x,
