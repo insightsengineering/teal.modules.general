@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.3.9000
+# teal.modules.general 0.2.4
 
 * new PCA module
 * documentation fix for cross table module
