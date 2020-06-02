@@ -23,9 +23,10 @@
 #'              data_extract_spec(
 #'                dataname = "ADSL",
 #'                select = select_spec(
-#'                  choices = colnames(ADSL),
+#'                  choices = variable_choices(data = ADSL),
 #'                  selected = c("BMRKR1", "AGE"),
-#'                  multiple = TRUE),
+#'                  multiple = TRUE
+#'                ),
 #'                filter = NULL
 #'              )
 #'     )

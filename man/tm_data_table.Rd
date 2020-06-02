@@ -114,7 +114,9 @@ app <- init(
     cdisc_dataset("ADSL", ADSL),
     cdisc_dataset("ADLB", ADLB),
     cdisc_dataset("ADTTE", ADTTE),
-    code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE); ADTTE <- radtte(cached = TRUE);",
+    code = "ADSL <- radsl(cached = TRUE);
+            ADLB <- radlb(cached = TRUE);
+            ADTTE <- radtte(cached = TRUE);",
     check = TRUE
   ),
   modules = root_modules(
