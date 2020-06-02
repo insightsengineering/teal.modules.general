@@ -88,14 +88,17 @@ tm_g_scatterplot <- function(label,
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(x))
   stopifnot(is_class_list("data_extract_spec")(y))
-  stopifnot(is_class_list("data_extract_spec")(color_by) | is.null(color_by))
+  stopifnot(is_class_list("data_extract_spec")(color_by) || is.null(color_by))
   stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
   stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
+  stopifnot(all(plot_height >= 0))
   stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
+  stopifnot(all(c(alpha >= 0, alpha <= 1)))
   stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
   stopifnot(is_numeric_vector(size) && (length(size) == 3 || length(size) == 1))
   stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
   stopifnot(is_logical_single(rotate_xaxis_labels))
+  stopifnot(all(size >= 0))
 
   args <- as.list(environment())
 
