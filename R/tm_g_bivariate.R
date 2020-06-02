@@ -486,6 +486,10 @@ bivariate_plot_call <- function(data_name,
                                 rotate_xaxis_labels = FALSE,
                                 swap_axes = FALSE,
                                 alpha = double(0)) {
+  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+  validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
+  validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
+
   cl <- bivariate_ggplot_call(
     x_class = x_class,
     y_class = y_class,

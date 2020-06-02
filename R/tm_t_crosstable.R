@@ -162,6 +162,13 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       paste(attr(ANL[[y_name]], "label"), paste0("[", y_name, "]")),
       "(columns)"
     )
+
+    supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+    validate(need(class(chunks_get_var("ANL")[[x_name]]) %in% supported_types,
+                  "Selected x-variable has an unsupported data type."))
+    validate(need(class(chunks_get_var("ANL")[[y_name]]) %in% supported_types,
+                  "Selected y-variable has an unsupported data type."))
+
     chunks_push(bquote({
       title <- .(plot_title)
       print(title)
