@@ -19,9 +19,9 @@ NULL
 #' @param color_settings (\code{logical}) Whether coloring, filling and size should be chosen
 #'   by the user
 #' @param color optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable selection for the coloring inside the coloring settings
+#'   Variable selection for the outline color inside the coloring settings
 #' @param fill optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable selection for the filling inside the coloring settings
+#'   Variable selection for the fill color inside the coloring settings
 #' @param size optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variable selection for the size of \code{geom_point} plots inside the coloring settings
 #' @param free_x_scales (\code{logical}) If X scaling shall be changeable
@@ -253,7 +253,7 @@ ui_g_bivariate <- function(id, ...) {
             div(
               data_extract_input(
                 id = ns("color"),
-                label = "Color by variable",
+                label = "Outline color by variable",
                 data_extract_spec = args$color
               ),
               data_extract_input(
@@ -687,7 +687,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     plot_call <- reduce_plot_call(
       plot_call,
       quote(aes(x = .x, y = .y)),
-      quote(geom_point(alpha = .alpha)),
+      # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
+      quote(geom_point(alpha = .alpha, pch = 21)),
       quote(ylab(.ylab)),
       quote(xlab(.xlab))
     )
@@ -790,7 +791,13 @@ coloring_ggplot_call <- function(colour,
       fill = .(as.name(fill)),
       size = .(as.name(size))
     ))
-  } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
+  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
+             is_point && is_character_empty(size)) {
+    bquote(aes(
+      colour = .(as.name(fill)),
+      fill = .(as.name(fill))
+    ))
+  }  else if (!is_character_empty(colour) && !is_character_empty(fill) &&
     (!is_point || is_character_empty(size))) {
     bquote(aes(
       colour = .(as.name(colour)),
@@ -820,6 +827,7 @@ coloring_ggplot_call <- function(colour,
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
     is_point && !is_character_empty(size)) {
     bquote(aes(
+      color = .(as.name(fill)),
       fill = .(as.name(fill)),
       size = .(as.name(size))
     ))

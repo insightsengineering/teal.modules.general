@@ -43,7 +43,7 @@ Variable for row facetting}
 Variable for col facetting}
 
 \item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the coloring inside the coloring settings}
+Variable selection for the outline inside the coloring settings}
 
 \item{fill}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable selection for the filling inside the coloring settings}
