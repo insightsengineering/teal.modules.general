@@ -325,15 +325,15 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
         g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
           geom_bar(
             aes(fill = "Single variance"),
-            data = filter(elb_dat, metric == "Proportion of Variance"),
+            data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
             color = "black",
             stat = "identity") +
           geom_point(
             aes(color = "Cumulative variance"),
-            data = filter(elb_dat, metric == "Cumulative Proportion")) +
+            data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
           geom_line(
             aes(group = 1, color = "Cumulative variance"),
-            data = filter(elb_dat, metric == "Cumulative Proportion")) +
+            data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
           theme_bw() +
           labs(x = "Principal component",
                y = "Proportion of variance explained",
@@ -441,7 +441,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
           })
         } else {
           bquote({
-            rot_vars <- rot_vars %>% mutate(xstart = 0, ystart = 0)
+            rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0)
           })
         }
       )
