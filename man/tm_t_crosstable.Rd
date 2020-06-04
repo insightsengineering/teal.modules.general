@@ -18,10 +18,12 @@ tm_t_crosstable(
 \item{label}{(\code{character}) Label of the app in the teal menu}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-object with all available choices with pre-selected option for variable X}
+object with all available choices with pre-selected option for variable X - row values.
+\code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-object with all available choices with pre-selected option for variable Y}
+object with all available choices with pre-selected option for variable Y - column values
+\code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{show_percentage}{whether to show percentages (relevant only when \code{x} is a \code{factor})}
 
