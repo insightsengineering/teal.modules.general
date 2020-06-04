@@ -697,6 +697,14 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       quote(xlab(.xlab))
     )
   } else if (x_class == "numeric" && y_class == "factor") {
+    # ggplot2 boxplot does not create a proper boxplot if the x-axis variable is not a factor
+    # we circumvent this by exchanging `x` and `y` and then flipping the coordinates
+    # nolint start
+    # ggplot(mtcars) + geom_boxplot(aes(x = hp, y = as.factor(cyl))) does not create proper boxplot
+    # ggplot(mtcars) + geom_boxplot(aes(x = as.factor(cyl), y = hp)) + coord_flip() this works
+    # nolint end
+    # we invert it because we automatically swap it and may need to flip it back
+    swap_axes <- !swap_axes
     plot_call <- reduce_plot_call(
       plot_call,
       quote(aes(x = .y, y = .x)),
@@ -704,15 +712,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       quote(ylab(.xlab)),
       quote(xlab(.ylab))
     )
-
-    # perform coord flip on default
-    # when user decides to flip additionally then do nothing (i.e. flip twice)
-    if (swap_axes) {
-      swap_axes <- FALSE
-    } else {
-      plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
-    }
-
   } else if (x_class == "factor" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
