@@ -13,6 +13,9 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
+#' @note For more examples, please see the vignette "Using cross table" via
+#'   \code{vignette("using-cross-table", package = "teal.modules.general")}.
+#'
 #' @export
 #'
 #' @author wolfs25 waddella

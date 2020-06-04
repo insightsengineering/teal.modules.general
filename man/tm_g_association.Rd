@@ -38,6 +38,10 @@ output to put the output into context. For example the
 \description{
 Stack Plots of variables and show association with reference variable
 }
+\note{
+For more examples, please see the vignette "Using association plot" via
+  \code{vignette("using-association-plot", package = "teal.modules.general")}.
+}
 \examples{
 # Association plot of selected reference variable (SEX)
 # against other selected variables (BMRKR1)

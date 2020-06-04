@@ -22,20 +22,23 @@ tm_g_response(
 \item{label}{label shown in the navigation for the item}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use as the response. You can define one fixed column by using the
-setting \code{fixed = TRUE} inside the \code{select_spec}.}
+ Which variable to use as the response. You can define one fixed column by using the
+ setting \code{fixed = TRUE} inside the \code{select_spec}.
+\code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-columns from the \code{data} allowed in teal. Just allow single columns by \code{multiple = FALSE}.}
+ Which variable to use on the X-axis of the response plot. Allow the user to select multiple
+ columns from the \code{data} allowed in teal.
+\code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data columns to use for faceting rows.  Just allow single columns by \code{multiple = FALSE}.}
+Which data columns to use for faceting rows.}
 
 \item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data to use for faceting columns. Just allow single columns by \code{multiple = FALSE}.}
+Which data to use for faceting columns.}
 
-\item{coord_flip}{(\code{logical}) Whether to flip coordinates}
+\item{coord_flip}{(\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
+Defaults to \code{TRUE}.}
 
 \item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
 
@@ -53,6 +56,10 @@ output to put the output into context. For example the
 }
 \description{
 Response Plots
+}
+\note{
+For more examples, please see the vignette "Using response plot" via
+  \code{vignette("using-response-plot", package = "teal.modules.general")}.
 }
 \examples{
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)

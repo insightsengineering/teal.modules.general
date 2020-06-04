@@ -10,6 +10,8 @@
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @note For more examples, please see the vignette "Using association plot" via
+#'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
 #' @export
 #' @examples
 #' # Association plot of selected reference variable (SEX)

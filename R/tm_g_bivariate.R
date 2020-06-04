@@ -36,6 +36,10 @@ NULL
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
+#' @note
+#' For more examples, please see the vignette "Using bivariate plot" via
+#'   \code{vignette("using-bivariate-plot", package = "teal.modules.general")}.
+#'
 #' @importFrom methods is
 #' @export
 #'

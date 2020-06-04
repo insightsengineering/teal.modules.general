@@ -22,6 +22,8 @@ NULL
 #' }
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @note For more examples, please see the vignette "Using regression plots" via
+#'   \code{vignette("using-regression-plots", package = "teal.modules.general")}.
 #' @export
 #'
 #' @examples

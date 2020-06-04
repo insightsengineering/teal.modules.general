@@ -48,6 +48,10 @@ output to put the output into context. For example the
 \description{
 Scatterplot and Regression Model
 }
+\note{
+For more examples, please see the vignette "Using regression plots" via
+  \code{vignette("using-regression-plots", package = "teal.modules.general")}.
+}
 \examples{
 # Regression graphs from selected response variable (BMRKR1) and
 # selected regressors (AGE)

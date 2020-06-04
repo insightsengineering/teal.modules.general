@@ -10,6 +10,9 @@
 #'
 #' @param variables (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Plotting variables from an incoming dataset with filtering and selecting.
+#'
+#' @note For more examples, please see the vignette "Using scatterplot matrix" via
+#'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 #' @export
 #' @importFrom stats na.omit
 #' @importFrom shinyjs show hide

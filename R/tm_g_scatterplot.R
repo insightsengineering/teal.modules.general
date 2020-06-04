@@ -23,6 +23,9 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #'
+#' @note For more examples, please see the vignette "Using scatterplot" via
+#'   \code{vignette("using-scatterplot", package = "teal.modules.general")}.
+#'
 #' @export
 #' @examples
 #' # Scatterplot of variables from ADSL dataset

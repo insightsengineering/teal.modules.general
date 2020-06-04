@@ -56,6 +56,10 @@ output to put the output into context. For example the
 \description{
 Create a plot with the \code{\link{ggplot2}[geom_point]} function
 }
+\note{
+For more examples, please see the vignette "Using scatterplot" via
+  \code{vignette("using-scatterplot", package = "teal.modules.general")}.
+}
 \examples{
 # Scatterplot of variables from ADSL dataset
 library(random.cdisc.data)

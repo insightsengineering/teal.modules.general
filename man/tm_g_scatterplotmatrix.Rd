@@ -34,6 +34,10 @@ output to put the output into context. For example the
 The available datasets to choose from for each dataset selector is the same and
 determined by the argument \code{variables}.
 }
+\note{
+For more examples, please see the vignette "Using scatterplot matrix" via
+  \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
+}
 \examples{
 # Scatterplot matrix of variables from ADSL dataset
 library(random.cdisc.data)
