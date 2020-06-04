@@ -113,6 +113,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 }
 
 
+#' @importFrom magrittr %>%
 #' @importFrom dplyr mutate_if
 #' @importFrom lattice splom panel.splom panel.text current.panel.limits
 #' @importFrom methods substituteDirect
@@ -251,7 +252,7 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::show("cor_na_omit")
 
       chunks_push(bquote({
-        lattice::splom(ANL[, .(cols_names)],
+        lattice::splom(ANL[, .(cols_names)] %>% droplevels(),
                        panel = function(x, y, ...) {
                          lattice::panel.splom(x = x, y = y, ...)
                          cpl <- lattice::current.panel.limits()
@@ -273,7 +274,7 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::hide("cor_use")
       shinyjs::hide("cor_na_omit")
       chunks_push(bquote({
-        lattice::splom(ANL[, .(cols_names)], pch = 16, alpha = .(alpha), cex = .(cex))
+        lattice::splom(ANL[, .(cols_names)] %>% droplevels(), pch = 16, alpha = .(alpha), cex = .(cex))
       }))
     }
     chunks_safe_eval()
