@@ -18,8 +18,9 @@ tm_g_scatterplotmatrix(
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{(\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
-encoding the plot height.}
+\item{plot_height}{if scalar then the plot will have a fixed height. If a
+slider should be presented to adjust the plot height dynamically then it
+can be a vector of length three with \code{c(value, min, max)}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the

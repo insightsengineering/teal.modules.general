@@ -6,12 +6,10 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritParams tm_g_scatterplot
+#'
 #' @param variables (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Plotting variables from an incoming dataset with filtering and selecting.
-#' @param plot_height (\code{numeric}) A vector of length three with \code{c(value, min and max)} for a slider
-#'  encoding the plot height.
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @export
 #' @importFrom stats na.omit
 #' @importFrom shinyjs show hide
@@ -57,8 +55,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(variables))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
+  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
+  stopifnot(all(plot_height >= 0))
 
   args <- as.list(environment())
   module(
@@ -298,7 +297,7 @@ srv_g_scatterplotmatrix <- function(input,
   show_r_code_title <- reactive(
     paste0(
       "Scatterplotmatrix of ",
-      paste(merged_data()$cols, collapse = ", ")
+      paste(unlist(merged_data()$columns_source), collapse = ", ")
     )
   )
 
