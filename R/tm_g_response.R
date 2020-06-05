@@ -280,6 +280,13 @@ srv_g_response <- function(input,
         ylab(.(paste0("Proportion of ", attr(ANL[[resp_var]], "label"), " [", resp_var, "]")))
     )
 
+    # add fill label if existing
+    fill_lbl <- attr(ANL[[resp_var]], "label")
+    if (length(fill_lbl) == 1 && !is.na(fill_lbl) && !identical(fill_lbl, "")) {
+      fill_lbl <- paste0(fill_lbl, " [", resp_var, "]")
+      plot_call <- bquote(.(plot_call) + labs(fill = .(fill_lbl)) + theme(legend.position = "bottom"))
+    }
+
     if (!freq) {
       plot_call <- if (swap_axes) {
         bquote(
