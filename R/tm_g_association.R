@@ -8,8 +8,6 @@
 #'   associated variables
 #' @param show_association (\code{logical}) whether show association of \code{vars} with reference variable
 #' @param plot_height (\code{numeric}) vector with three elements defining selected, min and max plot height
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @note For more examples, please see the vignette "Using association plot" via
 #'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
 #' @export
@@ -80,6 +78,7 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_logical_single(show_association))
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  stopifnot(all(plot_height > 0))
 
   args <- as.list(environment())
 
