@@ -121,6 +121,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' @importFrom lattice splom panel.splom panel.text current.panel.limits
 #' @importFrom methods substituteDirect
 #' @importFrom stats cor.test
+#' @importFrom stringr str_wrap
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
@@ -231,7 +232,8 @@ srv_g_scatterplotmatrix <- function(input,
     chunks_reset()
     chunks_push_data_merge(merged_data())
 
-    validate_has_data(chunks_get_var("ANL"), 3)
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 3)
 
     alpha <- input$alpha # nolint
     cex <- input$cex # nolint
@@ -248,6 +250,11 @@ srv_g_scatterplotmatrix <- function(input,
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 
+    # get labels and proper variable names
+    labels <- vapply(ANL[cols_names], function(x) attr(x, "label"), character(1))
+    varnames <- paste0(labels, " [", cols_names, "]")
+    varnames <- stringr::str_wrap(varnames, 20)
+
     # create plot
     if (add_cor) {
       shinyjs::show("cor_method")
@@ -256,6 +263,7 @@ srv_g_scatterplotmatrix <- function(input,
 
       chunks_push(bquote({
         lattice::splom(ANL[, .(cols_names)] %>% droplevels(),
+                       varnames = .(varnames),
                        panel = function(x, y, ...) {
                          lattice::panel.splom(x = x, y = y, ...)
                          cpl <- lattice::current.panel.limits()
@@ -277,7 +285,8 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::hide("cor_use")
       shinyjs::hide("cor_na_omit")
       chunks_push(bquote({
-        lattice::splom(ANL[, .(cols_names)] %>% droplevels(), pch = 16, alpha = .(alpha), cex = .(cex))
+        lattice::splom(ANL[, .(cols_names)] %>% droplevels(), varnames = .(varnames),
+                       pch = 16, alpha = .(alpha), cex = .(cex))
       }))
     }
     chunks_safe_eval()
