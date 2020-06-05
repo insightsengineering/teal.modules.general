@@ -442,8 +442,18 @@ srv_g_bivariate <- function(input,
       }
     }
 
-    nulled_row_facet_name <- if (identical(row_facet_name, character(0))) NULL else row_facet_name
-    nulled_col_facet_name <- if (identical(col_facet_name, character(0))) NULL else col_facet_name
+    nulled_row_facet_name <- if (length(row_facet_name) < 1) {
+      NULL
+    } else {
+      paste0(vapply(ANL[row_facet_name], function(x) attr(x, "label"), character(1)), " [", row_facet_name, "]")
+    }
+
+    nulled_col_facet_name <- if (length(col_facet_name) < 1) {
+      NULL
+    } else {
+      paste0(vapply(ANL[col_facet_name], function(x) attr(x, "label"), character(1)), " [", col_facet_name, "]")
+    }
+
     if (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) {
       chunks_push(expression = cl, id = "plotCall")
     } else {

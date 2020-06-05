@@ -86,6 +86,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     xaxis_label_grob$children[[1]]$label <- paste(xfacet_label, collapse = " & ")
     yaxis_label_grob <- g$grobs[[grep("ylab-l", g$layout$name, fixed = TRUE)]]
     yaxis_label_grob$children[[1]]$label <- paste(yfacet_label, collapse = " & ")
+    yaxis_label_grob$children[[1]]$rot <- 270
 
     top_height <- if (is.null(xfacet_label)) 0 else unit(2, "line")
     right_width <- if (is.null(yfacet_label)) 0 else unit(2, "line")
@@ -108,7 +109,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     # draw y facet
     if (!is.null(yfacet_label)) {
       pushViewport(viewport(
-        x = unit(1, "npc") - right_width, y = 0, width = right_width,
+        x = unit(1, "npc") - unit(as.numeric(right_width) / 2, "line"), y = 0, width = right_width,
         height = unit(1, "npc"), just = c("left", "bottom"), name = "rightyaxis"
       ))
       grid.draw(yaxis_label_grob)
