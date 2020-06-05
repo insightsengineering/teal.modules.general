@@ -198,7 +198,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     chunks_reset()
     chunks_push_data_merge(merged_data())
 
-    validate_has_data(chunks_get_var("ANL"), 10)
+    ANL <- chunks_get_var("ANL") # nolint
+    validate_has_data(ANL, 10)
 
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
@@ -232,6 +233,15 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
       ylab(.(paste0(attr(chunks_get_var("ANL")[[y_var]], "label"), " [", y_var, "]"))) +
       xlab(.(paste0(attr(chunks_get_var("ANL")[[x_var]], "label"), " [", x_var, "]")))
     )
+
+    # add color label if existing
+    if (!is.null(color_by_var) && !is_character_empty(color_by_var)) {
+      col_lbl <- attr(ANL[[color_by_var]], "label")
+      if (length(col_lbl) == 1 && !is.na(col_lbl) && !identical(col_lbl, "")) {
+        col_lbl <- paste0(col_lbl, " [", color_by_var, "]")
+        plot_call <- bquote(.(plot_call) + labs(color = .(col_lbl)) + theme(legend.position = "bottom"))
+      }
+    }
 
 
     if (rotate_xaxis_labels) {
