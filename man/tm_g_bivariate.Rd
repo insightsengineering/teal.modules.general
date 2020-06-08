@@ -69,9 +69,10 @@ by the user}
 \item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
@@ -87,7 +88,6 @@ For more examples, please see the vignette "Using bivariate plot" via
 }
 \examples{
 # Bivariate plot of selected variable (AGE) against selected (SEX)
-library(teal.modules.general)
 library(random.cdisc.data)
 ADSL <- radsl(cached = TRUE)
 

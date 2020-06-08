@@ -46,7 +46,6 @@ NULL
 #'
 #' @examples
 #' # Bivariate plot of selected variable (AGE) against selected (SEX)
-#' library(teal.modules.general)
 #' library(random.cdisc.data)
 #' ADSL <- radsl(cached = TRUE)
 #'

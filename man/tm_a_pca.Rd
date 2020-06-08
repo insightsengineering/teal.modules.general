@@ -21,9 +21,10 @@ Dataset used to compute PCA.}
 \item{plot_height}{(\code{numeric}) \code{c(value, min and max)} of plot height slider}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
+\item{post_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
@@ -35,7 +36,6 @@ Principal component analysis module
 # ADSL example
 
 library(random.cdisc.data)
-library(teal)
 ADSL <- radsl(cached = TRUE)
 
 app <- teal::init(

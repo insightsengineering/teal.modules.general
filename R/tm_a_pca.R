@@ -13,7 +13,6 @@
 #' # ADSL example
 #'
 #' library(random.cdisc.data)
-#' library(teal)
 #' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- teal::init(
