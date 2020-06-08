@@ -1,7 +1,7 @@
 Package: teal.modules.general
 Type: Package
 Title: General modules to add to a teal application
-Date: 2020-03-31
+Date: 2020-06-04
 Version: 0.2.4
 Authors@R: c(
     person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
@@ -24,7 +24,7 @@ Depends:
   graphics,
   magrittr,
   shiny,
-  teal (>= 0.8.3)
+  teal (>= 0.8.4)
 Imports:
   grid,
   gridExtra,
@@ -35,21 +35,21 @@ Imports:
   lattice,
   methods,
   rlang,
-  rtables (>= 0.1.5),
+  rtables (>= 0.1.6),
   scales,
   shinyjs,
   shinyWidgets,
   stats,
   stringr,
-  teal.devel (>= 0.2.4),
-  tern (>= 0.6.5),
+  teal.devel (>= 0.2.5),
+  tern (>= 0.6.7),
   tibble,
   tidyr,
-  utils.nest (>= 0.2.2)
+  utils.nest (>= 0.2.4)
 Suggests:
   knitr,
-  random.cdisc.data (>= 0.3.2),
-  test.nest (>= 0.2.2),
+  random.cdisc.data (>= 0.3.4),
+  test.nest (>= 0.2.3),
   testthat (>= 2.0)
 RoxygenNote: 7.0.2
 Collate: 
