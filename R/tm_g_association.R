@@ -196,9 +196,12 @@ srv_tm_g_association <- function(input,
 
     # reference
     ref_class <- class(ANL[[ref_name]])
-    ref_cl_name <- if (ref_class == "numeric" && log_transformation) {
+    ref_cl_name <- if (is.numeric(ANL[[ref_name]]) && log_transformation) {
+      # works for both integers and doubles
       call("log", as.name(ref_name))
     } else {
+      # silently ignore when non-numeric even if `log` is selected because some
+      # variables may be numeric and others not
       as.name(ref_name)
     }
     ref_call <- bivariate_plot_call(
@@ -231,9 +234,12 @@ srv_tm_g_association <- function(input,
 
     var_calls <- lapply(vars_names, function(var_i) {
       var_class <- class(ANL[[var_i]])
-      var_cl_name <- if (var_class == "numeric" && log_transformation) {
+      var_cl_name <- if (is.numeric(ANL[[var_i]]) && log_transformation) {
+        # works for both integers and doubles
         call("log", as.name(var_i))
       } else {
+        # silently ignore when non-numeric even if `log` is selected because some
+        # variables may be numeric and others not
         as.name(var_i)
       }
       bivariate_plot_call(
