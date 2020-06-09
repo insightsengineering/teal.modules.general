@@ -42,6 +42,7 @@ tm_variable_browser <- function(label = "variable browser") {
 
 # ui function
 #' @importFrom stats setNames
+#' @importFrom shinyWidgets radioGroupButtons
 ui_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
@@ -73,14 +74,25 @@ ui_variable_browser <- function(id, datasets) {
       white_small_well(
         div(
           class = "clearfix",
-          style = "margin: 15px 15px 15px 15px;",
+          style = "margin: 15px 15px 0px 15px;",
           div(
             class = "pull-left",
-            radioButtons(ns("raw_or_filtered"), NULL,
-                         choices = c("unfiltered data" = "raw", "filtered data" = "filtered"),
-                         selected = "filtered", inline = TRUE)
+            shinyWidgets::switchInput(
+              inputId = ns("raw_or_filtered"),
+              label = "Use filtered data",
+              labelWidth = "120px",
+              value = TRUE
+            )
           ),
-          uiOutput(ns("add_filter_var"))
+          div(
+            class = "pull-right",
+            actionLink(ns("add_filter_variable"), "Add as filter variable")
+          ),
+        ),
+        div(
+          class = "clearfix;",
+          style = "margin: 0px 15px 15px 15px;",
+          uiOutput(ns("ui_density_display"))
         ),
         plotOutput(ns("variable_plot"), height = "500px"),
         uiOutput(ns("warning")),
@@ -95,11 +107,10 @@ ui_variable_browser <- function(id, datasets) {
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
+#' @importFrom shinyWidgets radioGroupButtons
 srv_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = list())
-
-  action_link <- reactiveValues(vars = list())
 
   current_rows <- new.env() # nolint
 
@@ -173,32 +184,72 @@ srv_variable_browser <- function(input, output, session, datasets) {
     })
   })
 
+  output$ui_density_display <- renderUI({
+    data <- input$tsp
+    varname <- plot_var$variable[[input$tsp]]
+    type <- input$raw_or_filtered
+    req(data, varname, is.logical(type))
+
+    df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+
+    if (is.numeric(df[[varname]])) {
+      list(
+        shinyWidgets::switchInput(
+          inputId = session$ns("display_density"),
+          label = "Show density",
+          labelWidth = "120px",
+          value = TRUE
+        ),
+        div(style = "margin-left: 15px;",
+            uiOutput(session$ns("ui_density_help"))
+        )
+      )
+    } else {
+      NULL
+    }
+  })
+
+  output$ui_density_help <- renderUI({
+    req(is.logical(input$display_density))
+    if (input$display_density) {
+      tags$small(helpText(paste(
+        "Kernel density estimation with gaussian kernel",
+        "and bandwidth function bw.nrd0 (R default)"
+      )))
+    } else {
+      NULL
+    }
+  })
+
   output$variable_plot <- renderPlot({
     data <- input$tsp
     varname <- plot_var$variable[[input$tsp]]
     type <- input$raw_or_filtered
+    display_density <- input$display_density
 
     validate(
       need(data, "no data selected"),
       need(varname, "no variable selected"),
-      need(type, "select what type of data to plot")
+      need(is.logical(type), "select what type of data to plot")
     )
 
-    .log("plot variable", varname, "for data", data, "(", type, ")")
+    .log("plot variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
 
 
     if (is.null(varname)) {
       validate(need(NULL, "no valid variable was selected"))
     } else {
-      df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
+      df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+      display_density <- if_null(display_density, FALSE)
 
+      validate_has_data(df, 1)
       validate_has_variable(varname = varname, data = df, "variable not available")
 
       varlabel <- datasets$get_column_labels(dataname = data, varname)
       var <- df[[varname]]
       d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
-      plot_var_summary(var = var, var_lab = d_var_name)
+      plot_var_summary(var = var, var_lab = d_var_name, display_density)
     }
   })
 
@@ -210,10 +261,12 @@ srv_variable_browser <- function(input, output, session, datasets) {
     validate(
       need(data, "no data selected"),
       need(varname, "no variable selected"),
-      need(type, "select what type of data to plot")
+      need(is.logical(type), "select what type of data to plot")
     )
 
-    df <- datasets$get_data(data, filtered = (type == "filtered"), reactive = TRUE)
+    df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+    validate_has_data(df, 1)
+
     x <- df[[varname]]
     var_summary_table(x)
   })
@@ -225,8 +278,6 @@ srv_variable_browser <- function(input, output, session, datasets) {
     dataname <- input$tsp
     varname <- plot_var$variable[[input$tsp]]
 
-    .log("add filter variable", dataname, "and", varname)
-
     if (!is.null(dataname)) {
       if (!is.null(varname)) {
         if (dataname != "ADSL" && varname %in% adsl_vars) {
@@ -236,29 +287,14 @@ srv_variable_browser <- function(input, output, session, datasets) {
           warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
                                             "can currently not be used as a filter variable.")
         } else {
-          if (!is.null(datasets$get_filter_execution(dataname, varname))) {
-            datasets$remove_filter(dataname, varname)
-            .log("filter removed:", varname)
-            action_link$vars[[dataname]][[varname]] <- FALSE
-          } else {
+          if (is.null(datasets$get_filter_execution(dataname, varname))) {
             datasets$set_default_filter_state(dataname, varname)
-            .log("filter added:", varname)
-            action_link$vars[[dataname]] <- list(varname = TRUE)
+            .log("add filter variable", dataname, "and", varname)
           }
           warning_messages$varinfo <- ""
         }
         warning_messages$i <- warning_messages$i + 1
       }
-    }
-  })
-
-  output$add_filter_var <- renderUI({
-    varname <- plot_var$variable[[input$tsp]]
-    dataname <- input$tsp
-    if (!is.null(action_link$vars[[dataname]][[varname]]) && action_link$vars[[dataname]][[varname]]) {
-      actionLink(session$ns("add_filter_variable"), "remove as filter variable", class = "pull-right")
-    } else {
-      actionLink(session$ns("add_filter_variable"), "add as filter variable", class = "pull-right")
     }
   })
 
@@ -341,8 +377,11 @@ var_summary_table <- function(x) {
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
+#' @param display_density \code{logical} Should density estimation be displayed for numeric values?
 #' @return plot
-plot_var_summary <- function(var, var_lab) {
+plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
+  stopifnot(is_logical_single(display_density))
+
   grid::grid.newpage()
 
   plot_grob <- if (is.factor(var) || is.character(var)) {
@@ -378,7 +417,6 @@ plot_var_summary <- function(var, var_lab) {
 
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
       geom_histogram(binwidth = binwidth) +
-      geom_density(aes_string(y = "..count.. * binwidth")) +
       scale_y_continuous(
         sec.axis = sec_axis(trans = ~. / sum(.),
                             labels = scales::percent,
@@ -386,6 +424,10 @@ plot_var_summary <- function(var, var_lab) {
       ) +
       xlab(var_lab) +
       theme_light()
+
+    if (display_density) {
+      p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
+    }
 
     ggplotGrob(p)
   } else {

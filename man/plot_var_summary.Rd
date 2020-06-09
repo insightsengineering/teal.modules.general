@@ -4,13 +4,15 @@
 \alias{plot_var_summary}
 \title{Plot variable}
 \usage{
-plot_var_summary(var, var_lab)
+plot_var_summary(var, var_lab, display_density = is.numeric(var))
 }
 \arguments{
 \item{var}{vector of any type to be plotted. For numeric variables it produces histogram with
 density line, for factors it creates frequency plot}
 
 \item{var_lab}{text describing selected variable to be displayed on the plot}
+
+\item{display_density}{\code{logical} Should density estimation be displayed for numeric values?}
 }
 \value{
 plot
