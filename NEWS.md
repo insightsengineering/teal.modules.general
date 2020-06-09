@@ -7,6 +7,7 @@
 * Use `teal.devel::chunks_push_data_merge` to include merge code into reproducibility code.
 * More consistent coloring behavior between bivariate plots.
 * Updates to missing data module.
+* Updated graph axis labels for the following modules: bivariate plot, missing data, response plot, regression module, scatterplot, scatterplot matrix.
 
 # teal.modules.general 0.2.3
 

@@ -370,20 +370,22 @@ srv_missing_data <- function(input,
 
   output$summary_plot <- renderPlot({
 
-    # x axis ordering according to number of missing values
+    # x axis ordering according to number of missing values and alphabet
     x_levels <- filter(data_summary_plot_obs(), .data$isna) %>%
       arrange(.data$n_pct, desc(.data$col)) %>%
-      pull(.data$col)
+      pull(.data$col) %>%
+      create_cols_labels(datasets, dataname)
 
-    # set **anyna** as the first level
+    # always set "**anyna**" level as the last one
     if (isolate(input$any_na)) {
       x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")
     }
 
     p1 <- data_summary_plot_obs() %>%
-      mutate(col = factor(col, levels = x_levels)) %>%
       ggplot() +
-      aes_(x = ~factor(col, levels = x_levels), y = ~n_pct, fill = ~isna) +
+      aes_(x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
+           y = ~n_pct,
+           fill = ~isna) +
       geom_bar(position = "fill", stat = "identity") +
       scale_fill_manual(
         name = "",
@@ -403,7 +405,7 @@ srv_missing_data <- function(input,
     p2 <- if (input$if_patients_plot) {
       data_summary_plot_patients() %>%
         ggplot() +
-        aes_(x = ~factor(col, levels = x_levels),
+        aes_(x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
              y = ~reorder(id, order(-count_na)),
              fill = ~isna) +
         geom_raster(alpha = 1) +
@@ -481,7 +483,7 @@ srv_missing_data <- function(input,
 
     p <- data_combination_plot_cutoff() %>%
       ggplot() +
-      aes_string(x = "key", y = "id", fill = "value") +
+      aes_(x = ~create_cols_labels(key, datasets, dataname), y = ~id, fill = ~value) +
       geom_tile(alpha = 0.85) +
       scale_y_continuous(breaks = seq_along(labels), labels = labels) +
       scale_fill_manual(
@@ -561,4 +563,10 @@ srv_missing_data <- function(input,
   output$levels_table <- DT::renderDataTable({
     data_plot3()
   })
+}
+
+# create axis labels as a conjunction of column labels and column names
+create_cols_labels <- function(cols, datasets, dataname) {
+  column_labels <- c(datasets$get_column_labels(dataname), "**anyna**" = "**anyna**")
+  ifelse(cols == "**anyna**", cols, paste0(column_labels[cols], " [", cols, "]"))
 }
