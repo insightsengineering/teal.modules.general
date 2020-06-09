@@ -15,17 +15,19 @@ tm_g_association(
 )
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{ref}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-reference variable, must set \code{multiple = FALSE}}
+reference variable, must set \code{multiple = FALSE}.}
 
 \item{vars}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-associated variables}
+associated variables.}
 
-\item{show_association}{(\code{logical}) whether show association of \code{vars} with reference variable}
+\item{show_association}{optional, (\code{logical}) Whether show association of \code{vars}
+with reference variable. Defaults to \code{TRUE}.}
 
-\item{plot_height}{(\code{numeric}) vector with three elements defining selected, min and max plot height}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

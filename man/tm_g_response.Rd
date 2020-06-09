@@ -19,7 +19,7 @@ tm_g_response(
 )
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
  Which variable to use as the response. You can define one fixed column by using the
@@ -37,14 +37,17 @@ Which data columns to use for faceting rows.}
 \item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which data to use for faceting columns.}
 
-\item{coord_flip}{(\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
+\item{coord_flip}{optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
 Defaults to \code{TRUE}.}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+rotate by default (\code{FALSE}).}
 
-\item{freq}{(\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).}
+\item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+Defaults to density (\code{FALSE}).}
 
-\item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

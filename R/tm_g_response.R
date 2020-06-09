@@ -1,6 +1,8 @@
 #' Response Plots
 #'
-#'
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which variable to use as the response. You can define one fixed column by using the
 #'   setting \code{fixed = TRUE} inside the \code{select_spec}.
@@ -13,13 +15,11 @@
 #'   Which data columns to use for faceting rows.
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns.
-#' @param coord_flip (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
-#' Defaults to \code{TRUE}.
-#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
-#' @param freq (\code{logical}) Display frequency (\code{TRUE}) or density (\code{FALSE}).
-#' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
+#' @param coord_flip optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
+#'   Defaults to \code{TRUE}.
+#' @param freq optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+#'   Defaults to density (\code{FALSE}).
+#'
 #' @note For more examples, please see the vignette "Using response plot" via
 #'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
 #' @export

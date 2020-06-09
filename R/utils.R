@@ -1,3 +1,16 @@
+#' Shared Parameters
+#'
+#' @description Contains arguments that are shared between multiple functions
+#'   in the package to avoid repetition using \code{inheritParams}.
+#'
+#' @param plot_height optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+#'   for a slider encoding the plot height.
+#' @param rotate_xaxis_labels optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+#'   rotate by default (\code{FALSE}).
+#'
+#' @name shared_params
+NULL
+
 #' Call a function with a character vector for the \code{...} argument
 #'
 #' @param fun (\code{character}) Name of a function where the \code{...} argument

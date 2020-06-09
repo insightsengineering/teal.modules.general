@@ -11,14 +11,14 @@ tm_data_table(
 )
 }
 \arguments{
-\item{label}{(\code{character})}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{variables_selected}{(\code{list}) a named list that says which variables should be
-initially shown for particular dataset. Names in list should correspond with names provided in list `data()`.
-If not specified for any dataset - first six variables from dataset will be shown.}
+\item{variables_selected}{(\code{list}) A named list of variables which should be
+initially shown for particular dataset. Names in list should correspond with names provided in list \code{data()}.
+If not specified for any dataset, the first six variables from the dataset will be shown.}
 
-\item{datasets_selected}{(\code{character}) a character vector that says which datasets should be
-shown and in what order. Names in a vector have to correspond with datasets names.}
+\item{datasets_selected}{(\code{character}) A vector of datasets which should be
+shown and in what order. Names in the vector have to correspond with datasets names.}
 }
 \description{
 A data table viewer shows the data using a paginated table.

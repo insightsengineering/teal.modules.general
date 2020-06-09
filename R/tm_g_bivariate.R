@@ -5,33 +5,33 @@ NULL
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param label (\code{character}) Label of the module
+#' @inheritParams shared_params
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
+#'   Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 #'   No empty selections are allowed!
 #' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.
-#' @param use_density (\code{logical}) value for whether density (\code{TRUE}) is plotted or frequency (\code{FALSE})
-#' @param row_facet (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable for row facetting
-#' @param col_facet (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable for col facetting
+#'   Variable names selected to plot along the y-axis by default. Variable can be numeric, factor or character.
+#' @param use_density optional, (\code{logical}) value for whether density (\code{TRUE}) is plotted or
+#'   frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).
+#' @param row_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variables for row facetting.
+#' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Variables for col facetting.
 #' @param color_settings (\code{logical}) Whether coloring, filling and size should be chosen
-#'   by the user
+#'   by the user.
 #' @param color optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable selection for the outline color inside the coloring settings
+#'   Variables selected for the outline color inside the coloring settings.
 #' @param fill optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable selection for the fill color inside the coloring settings
+#'   Variables selected for the fill color inside the coloring settings.
 #' @param size optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variable selection for the size of \code{geom_point} plots inside the coloring settings
-#' @param free_x_scales (\code{logical}) If X scaling shall be changeable
-#' @param free_y_scales (\code{logical}) If Y scaling shall be changeable
-#' @param plot_height (\code{numeric}) \code{c(value, min and max)} of plot height slider
-#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
-#' @param swap_axes (\code{logical}) Whether to swap X an Y axes
-#' @param ggtheme (\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.
-#'
-#'
+#'   Variables selected for the size of \code{geom_point} plots inside the coloring settings.
+#' @param free_x_scales optional, (\code{logical}) Whether X scaling shall be changeable.
+#'   Does not allow scaling to be changed by default (\code{FALSE}).
+#' @param free_y_scales optional, (\code{logical}) Whether Y scaling shall be changeable.
+#'   Does not allow scaling to be changed by default (\code{FALSE}).
+#' @param swap_axes optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to \code{grey}.
 #'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
@@ -42,7 +42,6 @@ NULL
 #'
 #' @importFrom methods is
 #' @export
-#'
 #'
 #' @examples
 #' # Bivariate plot of selected variable (AGE) against selected (SEX)

@@ -15,19 +15,20 @@ tm_t_crosstable(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label of the app in the teal menu}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-object with all available choices with pre-selected option for variable X - row values.
+Object with all available choices with pre-selected option for variable X - row values.
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-object with all available choices with pre-selected option for variable Y - column values
+Object with all available choices with pre-selected option for variable Y - column values
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{show_percentage}{whether to show percentages (relevant only when \code{x} is a \code{factor})}
+\item{show_percentage}{optional, (\code{logical}) Whether to show percentages
+(relevant only when \code{x} is a \code{factor}). Defaults to \code{TRUE}.}
 
-\item{show_total}{whether to show total column}
+\item{show_total}{optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

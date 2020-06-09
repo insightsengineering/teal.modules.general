@@ -1,17 +1,17 @@
 #' Create a simple cross-table
 #'
-#' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
-#' @param label (\code{character}) Label of the app in the teal menu
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'  object with all available choices with pre-selected option for variable X - row values.
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'  object with all available choices with pre-selected option for variable Y - column values
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param show_percentage whether to show percentages (relevant only when \code{x} is a \code{factor})
-#' @param show_total whether to show total column
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
+#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  Object with all available choices with pre-selected option for variable X - row values.
+#'  \code{data_extract_spec} must not allow multiple selection in this case.
+#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'  Object with all available choices with pre-selected option for variable Y - column values
+#'  \code{data_extract_spec} must not allow multiple selection in this case.
+#' @param show_percentage optional, (\code{logical}) Whether to show percentages
+#'   (relevant only when \code{x} is a \code{factor}). Defaults to \code{TRUE}.
+#' @param show_total optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
 #'   \code{vignette("using-cross-table", package = "teal.modules.general")}.

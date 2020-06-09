@@ -45,6 +45,7 @@ Imports:
   tern (>= 0.6.7),
   tibble,
   tidyr,
+  utils,
   utils.nest (>= 0.2.4)
 Suggests:
   knitr,

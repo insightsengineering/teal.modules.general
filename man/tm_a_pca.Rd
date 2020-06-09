@@ -13,12 +13,13 @@ tm_a_pca(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label of the module}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}).
-Dataset used to compute PCA.}
+\item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Datasets used to compute PCA.}
 
-\item{plot_height}{(\code{numeric}) \code{c(value, min and max)} of plot height slider}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

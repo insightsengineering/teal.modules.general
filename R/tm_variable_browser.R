@@ -1,7 +1,7 @@
 #' Variable Browser Teal Module
 #'
 #' The variable browser provides a table with variable names and labels and a
-#' plot the visualizes the content of a particular variable.
+#' plot that visualizes the content of a particular variable.
 #'
 #' @inheritParams teal::module
 #'

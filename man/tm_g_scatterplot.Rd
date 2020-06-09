@@ -18,32 +18,32 @@ tm_g_scatterplot(
 )
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-x variable}
+\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+names selected to plot along the x-axis by default.}
 
-\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-y variable}
+\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+names selected to plot along the y-axis by default.}
 
-\item{color_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Defines the color encoding. If
-\code{NULL} then no color encoding option will be displayed. Note
-\code{_none_} is a keyword and means that no color encoding should be used.}
+\item{color_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
+Note \code{_none_} is a keyword and means that no color encoding should be used.}
 
-\item{plot_height}{if scalar then the plot will have a fixed height. If a
+\item{plot_height}{optional, (\code{numeric} If scalar then the plot will have a fixed height. If a
 slider should be presented to adjust the plot height dynamically then it
 can be a vector of length three with \code{c(value, min, max)}.}
 
-\item{alpha}{if scalar then the plot points will have a fixed opacity. If a
-slider should be presented to adjust the plot point opacity dynamically
-then it can be a vector of length three with value, min and max.}
+\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
+length three with \code{c(value, min, max)}.}
 
-\item{size}{if scalar then the plot point sizes will have a fixed size
-If a slider should be presented to adjust the plot point sizes dynamically
-then it can be a vector of length three with \code{c(value, min, max)}.}
+\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+If a slider should be presented to adjust the plot point sizes dynamically then it can be a
+vector of length three with \code{c(value, min, max)}.}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+rotate by default (\code{FALSE}).}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

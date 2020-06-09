@@ -27,46 +27,52 @@ tm_g_bivariate(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label of the module}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable name selected to plot along the x-axis by default. Variable can be numeric, factor or character.
+Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 No empty selections are allowed!}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable name selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
+Variable names selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
 
-\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable for row facetting}
+\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variables for row facetting.}
 
-\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable for col facetting}
+\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variables for col facetting.}
 
 \item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the outline color inside the coloring settings}
+Variables selected for the outline color inside the coloring settings.}
 
 \item{fill}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the fill color inside the coloring settings}
+Variables selected for the fill color inside the coloring settings.}
 
 \item{size}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable selection for the size of \code{geom_point} plots inside the coloring settings}
+Variables selected for the size of \code{geom_point} plots inside the coloring settings.}
 
-\item{use_density}{(\code{logical}) value for whether density (\code{TRUE}) is plotted or frequency (\code{FALSE})}
+\item{use_density}{optional, (\code{logical}) value for whether density (\code{TRUE}) is plotted or
+frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).}
 
 \item{color_settings}{(\code{logical}) Whether coloring, filling and size should be chosen
-by the user}
+by the user.}
 
-\item{free_x_scales}{(\code{logical}) If X scaling shall be changeable}
+\item{free_x_scales}{optional, (\code{logical}) Whether X scaling shall be changeable.
+Does not allow scaling to be changed by default (\code{FALSE}).}
 
-\item{free_y_scales}{(\code{logical}) If Y scaling shall be changeable}
+\item{free_y_scales}{optional, (\code{logical}) Whether Y scaling shall be changeable.
+Does not allow scaling to be changed by default (\code{FALSE}).}
 
-\item{plot_height}{(\code{numeric}) \code{c(value, min and max)} of plot height slider}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 
-\item{rotate_xaxis_labels}{(\code{logical}) Whether to rotate plot X axis labels}
+\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+rotate by default (\code{FALSE}).}
 
-\item{swap_axes}{(\code{logical}) Whether to swap X an Y axes}
+\item{swap_axes}{optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.}
 
-\item{ggtheme}{(\code{character}) ggplot theme to be used by default. All themes can be chosen by the user.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+All themes can be chosen by the user. Defaults to \code{grey}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

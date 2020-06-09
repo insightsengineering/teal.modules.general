@@ -2,26 +2,25 @@
 #'
 #' Create a plot with the \code{\link{ggplot2}[geom_point]} function
 #'
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   x variable
-#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   y variable
-#' @param color_by (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Defines the color encoding. If
-#'   \code{NULL} then no color encoding option will be displayed. Note
-#'   \code{_none_} is a keyword and means that no color encoding should be used.
-#' @param plot_height if scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min, max)}.
-#' @param alpha if scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically
-#'   then it can be a vector of length three with value, min and max.
-#' @param size if scalar then the plot point sizes will have a fixed size
-#'   If a slider should be presented to adjust the plot point sizes dynamically
-#'   then it can be a vector of length three with \code{c(value, min, max)}.
-#' @param rotate_xaxis_labels (\code{logical}) Whether to rotate plot X axis labels
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
+#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+#'   names selected to plot along the x-axis by default.
+#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+#'   names selected to plot along the y-axis by default.
+#' @param color_by optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
+#'   Note \code{_none_} is a keyword and means that no color encoding should be used.
+#' @param plot_height optional, (\code{numeric} If scalar then the plot will have a fixed height. If a
+#'   slider should be presented to adjust the plot height dynamically then it
+#'   can be a vector of length three with \code{c(value, min, max)}.
+#' @param alpha optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
+#'   length three with \code{c(value, min, max)}.
+#' @param size optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
+#'   vector of length three with \code{c(value, min, max)}.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   \code{vignette("using-scatterplot", package = "teal.modules.general")}.

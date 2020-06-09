@@ -1,10 +1,10 @@
 #' Principal component analysis module
 #'
+#' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param label (\code{character}) Label of the module
-#' @param dat (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}).
-#' Dataset used to compute PCA.
-#' @param plot_height (\code{numeric}) \code{c(value, min and max)} of plot height slider
+#' @inheritParams shared_params
+#' @param dat (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   Datasets used to compute PCA.
 #'
 #' @export
 #'

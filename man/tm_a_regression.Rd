@@ -15,16 +15,16 @@ tm_a_regression(
 )
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-regressor variable from an incoming dataset with filtering and selecting.}
+Regressor variables from an incoming dataset with filtering and selecting.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-response variable from an incoming dataset with filtering and selecting.}
+Response variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{(\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
-encoding the plot height.}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
@@ -33,7 +33,7 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{default_plot_type}{(\code{numeric})
+\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
 \itemize{
  \item{1 }{Response vs Regressor}
  \item{2 }{Residuals vs Fitted}

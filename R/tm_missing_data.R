@@ -3,7 +3,7 @@
 #' Present analysis of missing observations and patients.
 #'
 #' @inheritParams teal::module
-#' @param plot_height (\code{numeric}) Vector of length three with \code{c(value, min and max)}.
+#' @inheritParams shared_params
 #'
 #' @export
 #'

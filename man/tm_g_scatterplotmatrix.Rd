@@ -13,12 +13,12 @@ tm_g_scatterplotmatrix(
 )
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{if scalar then the plot will have a fixed height. If a
+\item{plot_height}{optional, (\code{numeric} If scalar then the plot will have a fixed height. If a
 slider should be presented to adjust the plot height dynamically then it
 can be a vector of length three with \code{c(value, min, max)}.}
 

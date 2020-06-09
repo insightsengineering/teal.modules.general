@@ -7,9 +7,10 @@
 tm_missing_data(label = "Missing data", plot_height = c(600, 400, 5000))
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{plot_height}{(\code{numeric}) Vector of length three with \code{c(value, min and max)}.}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
 }
 \description{
 Present analysis of missing observations and patients.

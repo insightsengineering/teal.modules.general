@@ -3,14 +3,14 @@ NULL
 
 #' Scatterplot and Regression Model
 #'
-#'
+#' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param regressor (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'  regressor variable from an incoming dataset with filtering and selecting.
+#'  Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'  response variable from an incoming dataset with filtering and selecting.
-#' @param plot_height (\code{numeric}) a vector of length three with \code{c(value, min and max)} for a slider
-#'  encoding the plot height.
-#' @param default_plot_type (\code{numeric})
+#'  Response variables from an incoming dataset with filtering and selecting.
+#' @param default_plot_type optional, (\code{numeric}) Defaults to Response vs Regressor.
 #' \itemize{
 #'  \item{1 }{Response vs Regressor}
 #'  \item{2 }{Residuals vs Fitted}
@@ -20,8 +20,7 @@ NULL
 #'  \item{6 }{Residuals vs Leverage}
 #'  \item{7 }{Cooks dist vs Leverage}
 #' }
-#' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
+#'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   \code{vignette("using-regression-plots", package = "teal.modules.general")}.
 #' @export

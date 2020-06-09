@@ -7,11 +7,11 @@
 tm_variable_browser(label = "variable browser")
 }
 \arguments{
-\item{label}{label shown in the navigation for the item}
+\item{label}{(\code{character}) Label shown in the navigation item for the module.}
 }
 \description{
 The variable browser provides a table with variable names and labels and a
-plot the visualizes the content of a particular variable.
+plot that visualizes the content of a particular variable.
 }
 \examples{
 library(random.cdisc.data)
