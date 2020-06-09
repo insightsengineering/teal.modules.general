@@ -220,12 +220,19 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
 
     if (input$plot_type == "Response vs Regressor") {
       fit <- chunks_get_var("fit") # chunk already evaluated
+      response_var <- as.vector(merged_data()$columns_source$response)
+      regressor_var <- as.vector(merged_data()$columns_source$regressor)
+      ANL <- chunks_get_var("ANL") # nolint
 
       if (ncol(fit$model) > 1) {
         stopifnot(ncol(fit$model) == 2)
-        chunks_push(quote(plot(fit$model[, 2:1], main = "Response vs Regressor")))
-        regressor_var <- merged_data()$columns_source$regressor
-        if (is.numeric(chunks_get_var("ANL")[[regressor_var]])) {
+        chunks_push(bquote({
+          plot(fit$model[, 2:1],
+                               main = "Response vs Regressor",
+                               xlab = paste0(attr(ANL[[.(regressor_var)]], "label"), " [", .(regressor_var), "]"),
+                               ylab = paste0(attr(ANL[[.(response_var)]], "label"), " [", .(response_var), "]"))
+        }))
+        if (is.numeric(ANL[[regressor_var]])) {
           chunks_push(quote(abline(fit, col = "red", lwd = 2L)))
         }
       } else {
