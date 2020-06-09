@@ -42,7 +42,7 @@ tm_variable_browser <- function(label = "variable browser") {
 
 # ui function
 #' @importFrom stats setNames
-#' @importFrom shinyWidgets radioGroupButtons
+#' @importFrom shinyWidgets switchInput
 ui_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
@@ -107,7 +107,7 @@ ui_variable_browser <- function(id, datasets) {
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
-#' @importFrom shinyWidgets radioGroupButtons
+#' @importFrom shinyWidgets switchInput
 srv_variable_browser <- function(input, output, session, datasets) {
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = list())
