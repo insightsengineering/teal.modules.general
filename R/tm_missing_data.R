@@ -117,11 +117,38 @@ ui_missing_data <- function(id) {
     id = ns("summary_type"),
     tabPanel(
       "Summary",
-      plot_height_output(id = ns("summary_plot"))
+      plot_height_output(id = ns("summary_plot")),
+      helpText(
+        p(paste(
+          'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
+          "sorted by magnitude."
+        )),
+        p(paste(
+          'The "**anyna**" variable (if checked) describes the number of observations',
+          "having at least one missing value in any variable."
+        )),
+        p(paste(
+          'The "Summary per patients" graph (if checked) displays number of missing values per observation,',
+          "where x-axis is sorted by observation appearance in the table."
+        ))
+      )
     ),
     tabPanel(
       "Combinations",
-      plot_height_output(id = ns("combination_plot"))
+      plot_height_output(id = ns("combination_plot")),
+      helpText(
+        p(paste(
+        'The "Combinations" graph is used to explore the relationship between the missing data within',
+        "different columns of the dataset.",
+        "It shows the different patterns of missingness in the rows of the data.",
+        'For example, suppose that 70 rows of the dataset had missing data in columns "A" and "B" (in each column).',
+        'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded black.'
+        )),
+        p(paste(
+          "Due to the large number of missing data patterns possible, only those with a large set of observations",
+          'are shown in the graph and the "Combination cut-off" slider can be used to adjust the number shown.'
+        ))
+      )
     ),
     tabPanel(
       "By variable levels",
@@ -136,9 +163,9 @@ encoding_missing_data <- function(id, plot_height) {
   tagList(
     uiOutput(ns("variables")),
     actionButton(ns("filter_na"), "Select only vars with missings", width = "100%"),
-    checkboxInput(ns("any_na"), "Add any_NA variable", value = FALSE),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
+      checkboxInput(ns("any_na"), "Add any_NA variable", value = FALSE),
       checkboxInput(ns("if_patients_plot"), "Add summary per patients", value = FALSE),
       plot_height_input(id = ns("plot_height_summary"), value = plot_height)
     ),
@@ -166,8 +193,8 @@ encoding_missing_data <- function(id, plot_height) {
 }
 
 #' @importFrom digest sha1
-#' @importFrom dplyr arrange arrange_at desc filter group_by group_by_all group_by_at if_else mutate mutate_all
-#'   n select summarise_all sym row_number ungroup tally tibble transmute
+#' @importFrom dplyr arrange arrange_at desc filter group_by group_by_all group_by_at mutate mutate_all
+#'   n pull select summarise_all sym row_number ungroup tally tibble transmute
 #' @import ggplot2
 #' @importFrom grid grid.newpage grid.draw unit.pmax
 #' @importFrom gridExtra gtable_cbind
@@ -181,6 +208,8 @@ srv_missing_data <- function(input,
                              session,
                              datasets,
                              dataname) {
+
+  prev_group_by_var <- reactiveVal("")
 
   callModule(
     plot_with_height,
@@ -196,7 +225,7 @@ srv_missing_data <- function(input,
   )
 
   data <- reactive({
-    datasets$get_data(dataname, filtered = FALSE, reactive = FALSE)
+    datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
   })
 
   data_keys <- reactive({
@@ -253,7 +282,7 @@ srv_missing_data <- function(input,
       session$ns("group_by_var"),
       label = "Group by variable",
       choices = variable_choices(data()),
-      selected = names(data())[!sapply(data(), is.numeric)][1],
+      selected = if_null(isolate(input$group_by_var), names(data())[!sapply(data(), is.numeric)][1]),
       multiple = FALSE,
       label_help = paste0("Dataset: ", dataname)
     )
@@ -261,9 +290,28 @@ srv_missing_data <- function(input,
 
   output$group_by_vals_ui <- renderUI({
     req(input$group_by_var)
+    validate_has_data(data(), 1)
 
-    choices <- selected <- value_choices(data(), input$group_by_var, input$group_by_var)
+    choices <- value_choices(data(), input$group_by_var, input$group_by_var)
+    prev_choices <- isolate(input$group_by_vals)
 
+    # determine selected value based on filtered data
+    # display those previously selected values that are still available
+    selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
+      prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
+    } else if (!is.null(prev_choices) &&
+               !any(prev_choices %in% choices) &&
+               isolate(prev_group_by_var()) == input$group_by_var) {
+      # if not any previously selected value is available and the grouping variable is the same,
+      # then display NULL
+      NULL
+    } else {
+      # if new grouping variable (i.e. not any previously selected value is available),
+      # then display all choices
+      choices
+    }
+
+    prev_group_by_var(input$group_by_var) # set current group_by_var
     validate(need(length(choices) < 100, "Please select variable with no more than 100 unique values"))
 
     optionalSelectInput(
@@ -321,9 +369,21 @@ srv_missing_data <- function(input,
   })
 
   output$summary_plot <- renderPlot({
+
+    # x axis ordering according to number of missing values
+    x_levels <- filter(data_summary_plot_obs(), .data$isna) %>%
+      arrange(.data$n_pct, desc(.data$col)) %>%
+      pull(.data$col)
+
+    # set **anyna** as the first level
+    if (isolate(input$any_na)) {
+      x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")
+    }
+
     p1 <- data_summary_plot_obs() %>%
+      mutate(col = factor(col, levels = x_levels)) %>%
       ggplot() +
-      aes_(x = ~reorder(col, desc(if_else(isna == TRUE, -n_pct, 0))), y = ~n_pct, fill = ~isna) +
+      aes_(x = ~factor(col, levels = x_levels), y = ~n_pct, fill = ~isna) +
       geom_bar(position = "fill", stat = "identity") +
       scale_fill_manual(
         name = "",
@@ -343,7 +403,7 @@ srv_missing_data <- function(input,
     p2 <- if (input$if_patients_plot) {
       data_summary_plot_patients() %>%
         ggplot() +
-        aes_(x = ~reorder(col, desc(-isna)),
+        aes_(x = ~factor(col, levels = x_levels),
              y = ~reorder(id, order(-count_na)),
              fill = ~isna) +
         geom_raster(alpha = 1) +
@@ -395,7 +455,10 @@ srv_missing_data <- function(input,
     # select 10-th from the top
     n <- length(x)
     idx <- max(1, n - 10)
-    value <- sort(x, partial = idx)[idx]
+    prev_value <- isolate(input$combination_cutoff)
+    value <- `if`(is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
+                  sort(x, partial = idx)[idx],
+                  prev_value)
 
     optionalSliderInputValMinMax(session$ns("combination_cutoff"), "Combination cut-off", c(value, range(x)))
   })
@@ -404,7 +467,7 @@ srv_missing_data <- function(input,
     req(input$combination_cutoff)
     res <- data_combination_plot() %>%
       filter(.data$n >= input$combination_cutoff) %>%
-      mutate(id = order(.data$n)) %>%
+      mutate(id = rank(.data$n, ties.method = "first")) %>%
       gather("key", "value", -.data$n, -.data$id) %>%
       arrange(.data$n)
     res
@@ -419,7 +482,7 @@ srv_missing_data <- function(input,
     p <- data_combination_plot_cutoff() %>%
       ggplot() +
       aes_string(x = "key", y = "id", fill = "value") +
-      geom_tile(alpha = 1) +
+      geom_tile(alpha = 0.85) +
       scale_y_continuous(breaks = seq_along(labels), labels = labels) +
       scale_fill_manual(
         name = "",
@@ -436,18 +499,21 @@ srv_missing_data <- function(input,
       theme_classic() +
       theme(
         legend.position = "bottom",
-        axis.text.x = element_text(angle = 90, hjust = 1)
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        panel.grid.major = element_line(colour = "black", linetype = "dotted", size = 0.5)
       )
     p
   })
 
   data_plot3 <- reactive({
-    validate(need(input$group_by_var, "Please select groupping variable"))
-    validate(need(input$group_by_vals, "Please select groupping variable values"))
     validate(need(input$count_type, "Please select type of counts"))
+    if (!is.null(input$group_by_var)) {
+      validate(need(input$group_by_vals, "Please select grouping variable values"))
+    }
 
     group_var <- input$group_by_var
-    validate(need(group_var %in% names(data_selected()), "Groupping variable has been already filtered out"))
+    validate(need(is.null(group_var) || group_var %in% names(data_selected()),
+                  "Groupping variable has been already filtered out"))
 
     group_vals <- input$group_by_vals
 
@@ -466,17 +532,30 @@ srv_missing_data <- function(input,
       )
     }
 
-    data_selected() %>%
-      group_by_at(group_var) %>%
-      filter(!!sym(group_var) %in% group_vals) %>%
-      summarise_all(cell_values) %>%
-      gather("Variable", "out", -!!sym(group_var)) %>%
-      mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
-                                       if_empty,
-                                       character(1),
-                                       "")) %>%
-      select(!!sym(group_var), .data$Variable, .data$`Variable label`, .data$out) %>%
-      spread(!!sym(group_var), .data$out)
+    if (!is.null(group_var)) {
+      data_selected() %>%
+        group_by_at(group_var) %>%
+        filter(!!sym(group_var) %in% group_vals) %>%
+        summarise_all(cell_values) %>%
+        gather("Variable", "out", -!!sym(group_var)) %>%
+        mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
+                                         if_empty,
+                                         character(1),
+                                         "")) %>%
+        select(!!sym(group_var), .data$Variable, .data$`Variable label`, .data$out) %>%
+        spread(!!sym(group_var), .data$out)
+    } else {
+      data_selected() %>%
+        summarise_all(cell_values) %>%
+        gather("Variable", "out") %>%
+        mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
+                                         if_empty,
+                                         character(1),
+                                         "")) %>%
+        select(.data$Variable, .data$`Variable label`, `Overall missing` = .data$out)
+    }
+
+
   })
 
   output$levels_table <- DT::renderDataTable({

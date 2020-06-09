@@ -6,6 +6,7 @@
 * Optional subsetting and ordering datasets for tm_data_table.
 * Use `teal.devel::chunks_push_data_merge` to include merge code into reproducibility code.
 * More consistent coloring behavior between bivariate plots.
+* Updates to missing data module.
 
 # teal.modules.general 0.2.3
 
