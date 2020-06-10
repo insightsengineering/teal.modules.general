@@ -461,8 +461,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
         bquote({
           g <- ggplot() +
             geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot) +
-            theme_bw() +
-            labs(color = "Legend")
+            theme_bw()
         })
       )
 
@@ -477,6 +476,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source))) # nolint
 
       response <- RP[[resp_col]]
+      col_lbl <- paste0(attr(response, "label"), " [", resp_col, "]") #nolint
 
       chunks_push(
         id = "pca_plot_response",
@@ -506,7 +506,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
             geom_point(aes_biplot, data = pca_rot) +
             scale_colors +
             theme_bw() +
-            labs(color = "Legend")
+            labs(color = .(col_lbl))
         })
       )
     }
