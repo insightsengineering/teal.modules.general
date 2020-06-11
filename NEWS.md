@@ -8,6 +8,7 @@
 * More consistent coloring behavior between bivariate plots.
 * Updates to missing data module.
 * Updated graph axis labels for the following modules: bivariate plot, missing data, response plot, regression module, scatterplot, scatterplot matrix.
+* Simplify scatterplot matrix to display plot within one dataset only.
 
 # teal.modules.general 0.2.3
 
