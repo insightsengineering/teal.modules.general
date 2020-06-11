@@ -40,6 +40,28 @@ list_or_null <- function(obj) {
   }
 }
 
+#' Get variable name with label
+#'
+#' @param var_name (\code{character}) Name of variable to extract labels from.
+#' @param dataset (\code{dataset}) Name of analysis dataset.
+#'
+#' @return (\code{character}) String with variable name and label.
+#'
+#' @examples
+#' \dontrun{
+#' library(random.cdisc.data)
+#' ADSL <- radsl(cached = TRUE)
+#'
+#' varname_w_label("AGE", ADSL)
+#' }
+varname_w_label <- function(var_name, dataset) {
+  if (length(var_name) < 1) {
+    NULL
+  } else {
+    paste0(vapply(dataset[var_name], function(x) attr(x, "label"), character(1)), " [", var_name, "]")
+  }
+}
+
 #' Add axis labels that show facetting variable
 #'
 #' @param p ggplot2 object to add facet labels to

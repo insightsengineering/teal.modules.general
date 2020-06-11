@@ -434,23 +434,20 @@ srv_g_bivariate <- function(input,
           size = size_name,
           is_point = any(grepl("geom_point", cl %>% deparse()))
         )
+        legend_lbls <- bquote(labs(color = .(varname_w_label(color_name, ANL)),
+                                   fill = .(varname_w_label(fill_name, ANL)),
+                                   size = .(varname_w_label(size_name, ANL))
+                                   )
+                              )
       }
       if (!is.null(coloring_cl)) {
-        cl <- call("+", cl, coloring_cl)
+        cl <- call("+", call("+", cl, coloring_cl), legend_lbls)
       }
     }
 
-    nulled_row_facet_name <- if (length(row_facet_name) < 1) {
-      NULL
-    } else {
-      paste0(vapply(ANL[row_facet_name], function(x) attr(x, "label"), character(1)), " [", row_facet_name, "]")
-    }
-
-    nulled_col_facet_name <- if (length(col_facet_name) < 1) {
-      NULL
-    } else {
-      paste0(vapply(ANL[col_facet_name], function(x) attr(x, "label"), character(1)), " [", col_facet_name, "]")
-    }
+    # Add labels to facets
+    nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
+    nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) {
       chunks_push(expression = cl, id = "plotCall")
