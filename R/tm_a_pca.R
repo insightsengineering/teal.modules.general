@@ -489,6 +489,14 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
             scale_colors <- scale_color_brewer(palette = "Dark2")
             aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
           })
+        } else if (class(response) == "Date") {
+          bquote({
+            response <- RP[[.(resp_col)]]
+            pca_rot$response <- as.numeric(response)
+            scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue",
+                                                 labels = function(x) as.Date(x, origin = "1970-01-01"))
+            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
+          })
         } else {
           bquote({
             response <- RP[[.(resp_col)]]
