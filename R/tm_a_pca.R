@@ -196,6 +196,8 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     center <- standardization %in% c("center", "center_scale") #nolint
     scale <- standardization == "center_scale" #nolint
 
+    validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
+
     chunks_reset(chunks = chunks_stack)
     chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
 
