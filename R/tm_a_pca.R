@@ -72,6 +72,13 @@ ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
+  color_selector <- args$dat
+  for (i in seq_along(color_selector)) {
+    color_selector[[i]]$select$multiple <- FALSE
+    color_selector[[i]]$select$always_selected <- NULL
+    color_selector[[i]]$select$selected <- NULL
+  }
+
   plot_choices <- c(
     "Elbow plot" = "elbow",
     "Circle plot" = "circle",
@@ -127,7 +134,15 @@ ui_a_pca <- function(id, ...) {
           title = "Plot settings",
           collapsed = FALSE,
           plot_height_input(id = ns("pca_plot"), value = args$plot_height),
-          uiOutput(ns("plot_settings"))
+          uiOutput(ns("plot_settings")),
+          conditionalPanel(
+            condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
+            data_extract_input(
+              id = ns("response"),
+              label = "Color by",
+              data_extract_spec = color_selector
+            )
+          )
         )
       )
     ),
@@ -146,6 +161,7 @@ ui_a_pca <- function(id, ...) {
 srv_a_pca <- function(input, output, session, datasets, dat) {
 
   response <- dat
+
   for (i in seq_along(response)) {
     response[[i]]$select$multiple <- FALSE
     response[[i]]$select$always_selected <- NULL
@@ -280,12 +296,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
                             choices = chcs_pcs, selected = chcs_pcs[2]),
         optionalSelectInput(ns("variables"), "Original coordinates",
                             choices = chcs_vars, selected = chcs_vars,
-                            multiple = TRUE),
-        data_extract_input(
-          id = ns("response"),
-          label = "Color by",
-          data_extract_spec = response
-        )
+                            multiple = TRUE)
       )
 
     } else if (input$plot_type == "pc_var") {
