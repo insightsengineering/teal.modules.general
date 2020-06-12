@@ -162,10 +162,11 @@ encoding_missing_data <- function(id, plot_height) {
 
   tagList(
     uiOutput(ns("variables")),
-    actionButton(ns("filter_na"), "Select only vars with missings", width = "100%"),
+    actionButton(ns("filter_na"), span(style = "white-space: normal;",
+                                       HTML("Select only vars with missings")), width = "100%"), # nolint
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
-      checkboxInput(ns("any_na"), "Add any_NA variable", value = FALSE),
+      checkboxInput(ns("any_na"), "Add **anyna** variable", value = FALSE),
       checkboxInput(ns("if_patients_plot"), "Add summary per patients", value = FALSE),
       plot_height_input(id = ns("plot_height_summary"), value = plot_height)
     ),
@@ -399,7 +400,7 @@ srv_missing_data <- function(input,
         y = "Missing observations"
       ) +
       theme_classic() +
-      theme(legend.position = "bottom") +
+      theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
       coord_flip()
 
     p2 <- if (input$if_patients_plot) {
