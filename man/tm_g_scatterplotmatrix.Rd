@@ -42,24 +42,45 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 library(random.cdisc.data)
 
 ADSL <- radsl(cached = TRUE)
+ADRS <- radrs(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- radsl(cached = TRUE)",
+    cdisc_dataset("ADRS", ADRS),
+    code = "ADSL <- radsl(cached = TRUE); ADRS <- radrs(cached = TRUE)",
     check = TRUE
   ),
   modules = root_modules(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
-      variables = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(ADSL),
-          selected = c("AGE", "RACE", "SEX"),
-          multiple = TRUE,
-          fixed = FALSE
+      variables = list(
+        data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(ADSL),
+            selected = c("AGE", "RACE", "SEX"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADRS",
+          filter = filter_spec(
+            label = "Select endpoints:",
+            vars = c("PARAMCD", "AVISIT"),
+            choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+            selected = "INVET - BASELINE",
+            multiple = TRUE
+          ),
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(ADRS),
+            selected = c("AGE", "AVAL", "ADY"),
+            multiple = TRUE,
+            fixed = FALSE
+          )
         )
       )
     )
