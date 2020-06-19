@@ -226,7 +226,7 @@ srv_missing_data <- function(input,
   )
 
   data <- reactive({
-    datasets$get_data(dataname, filtered = TRUE, reactive = TRUE)
+    datasets$get_data(dataname, filtered = TRUE)
   })
 
   data_keys <- reactive({
@@ -541,7 +541,7 @@ srv_missing_data <- function(input,
         filter(!!sym(group_var) %in% group_vals) %>%
         summarise_all(cell_values) %>%
         gather("Variable", "out", -!!sym(group_var)) %>%
-        mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
+        mutate(`Variable label` = vapply(if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
                                          if_empty,
                                          character(1),
                                          "")) %>%
@@ -551,7 +551,7 @@ srv_missing_data <- function(input,
       data_selected() %>%
         summarise_all(cell_values) %>%
         gather("Variable", "out") %>%
-        mutate(`Variable label` = vapply(if_empty(datasets$get_column_labels(dataname, .data$Variable), ""),
+        mutate(`Variable label` = vapply(if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
                                          if_empty,
                                          character(1),
                                          "")) %>%
@@ -568,6 +568,6 @@ srv_missing_data <- function(input,
 
 # create axis labels as a conjunction of column labels and column names
 create_cols_labels <- function(cols, datasets, dataname) {
-  column_labels <- c(datasets$get_column_labels(dataname), "**anyna**" = "**anyna**")
+  column_labels <- c(datasets$get_variable_labels(dataname), "**anyna**" = "**anyna**")
   ifelse(cols == "**anyna**", cols, paste0(column_labels[cols], " [", cols, "]"))
 }

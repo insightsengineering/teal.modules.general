@@ -216,7 +216,7 @@ ui_page_data_table <- function(id,
           lapply(
             datanames,
             function(x) {
-              dataset <- datasets$get_data(x, filtered = FALSE, reactive = FALSE)
+              dataset <- datasets$get_data(x, filtered = FALSE)
               choices <- names(dataset)
               labels <- vapply(
                 dataset,
@@ -327,8 +327,7 @@ srv_data_table <- function(input,
 
     df <- datasets$get_data(
       dataname,
-      filtered = if_filtered(),
-      reactive = TRUE
+      filtered = if_filtered()
     )
 
     validate(need(df, paste("data", dataname, "is empty")))

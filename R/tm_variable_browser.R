@@ -114,14 +114,14 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
   current_rows <- new.env() # nolint
 
-  adsl_vars <- names(datasets$get_data("ADSL"))
+  adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
 
   lapply(datasets$datanames(), function(name) {
     .log("variable label table:", name)
 
     dataset_ui_id <- paste0("dataset_summary_", name)
     output[[dataset_ui_id]] <- renderText({
-      df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
+      df <- datasets$get_data(name, filtered = FALSE)
       sprintf("Dataset with %s unique subjects IDs and %s variables",
               length(unique(df$USUBJID)),
               ncol(df))
@@ -129,11 +129,11 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     table_ui_id <- paste0("variable_browser_", name)
     output[[table_ui_id]] <- DT::renderDataTable({
-      df <- datasets$get_data(name, filtered = FALSE, reactive = TRUE)
+      df <- datasets$get_data(name, filtered = FALSE)
       show_adsl_vars <- input$show_adsl_vars
 
       if (!show_adsl_vars && name != "ADSL") {
-        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE, reactive = FALSE))
+        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
         df <- df[!(names(df) %in% adsl_vars)]
       }
 
@@ -190,7 +190,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     type <- input$raw_or_filtered
     req(data, varname, is.logical(type))
 
-    df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+    df <- datasets$get_data(data, filtered = type)
 
     if (is.numeric(df[[varname]])) {
       list(
@@ -239,13 +239,13 @@ srv_variable_browser <- function(input, output, session, datasets) {
     if (is.null(varname)) {
       validate(need(NULL, "no valid variable was selected"))
     } else {
-      df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+      df <- datasets$get_data(data, filtered = type)
       display_density <- if_null(display_density, FALSE)
 
       validate_has_data(df, 1)
       validate_has_variable(varname = varname, data = df, "variable not available")
 
-      varlabel <- datasets$get_column_labels(dataname = data, varname)
+      varlabel <- datasets$get_variable_labels(dataname = data, varname)
       var <- df[[varname]]
       d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
@@ -264,7 +264,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
       need(is.logical(type), "select what type of data to plot")
     )
 
-    df <- datasets$get_data(data, filtered = type, reactive = TRUE)
+    df <- datasets$get_data(data, filtered = type)
     validate_has_data(df, 1)
 
     x <- df[[varname]]
