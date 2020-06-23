@@ -143,7 +143,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' @importFrom lattice splom panel.splom panel.text current.panel.limits
 #' @importFrom methods substituteDirect
 #' @importFrom stats cor.test
-#' @importFrom stringr str_wrap
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
@@ -190,9 +189,7 @@ srv_g_scatterplotmatrix <- function(input,
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
 
     # get labels and proper variable names
-    labels <- vapply(ANL[cols_names], function(x) attr(x, "label"), character(1))
-    varnames <- paste0(labels, " [", cols_names, "]")
-    varnames <- stringr::str_wrap(varnames, 20)
+    varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
 
     # create plot
     if (add_cor) {

@@ -198,19 +198,21 @@ srv_tm_g_association <- function(input,
 
     # reference
     ref_class <- class(ANL[[ref_name]])
-    ref_cl_name <- if (is.numeric(ANL[[ref_name]]) && log_transformation) {
+    if (is.numeric(ANL[[ref_name]]) && log_transformation) {
       # works for both integers and doubles
-      call("log", as.name(ref_name))
+      ref_cl_name <- call("log", as.name(ref_name))
+      ref_cl_lbl <- varname_w_label(ref_name, ANL, prefix = "Log of ")
     } else {
       # silently ignore when non-numeric even if `log` is selected because some
       # variables may be numeric and others not
-      as.name(ref_name)
+      ref_cl_name <- as.name(ref_name)
+      ref_cl_lbl <- varname_w_label(ref_name, ANL)
     }
     ref_call <- bivariate_plot_call(
       data_name = "ANL",
       x = ref_cl_name,
       x_class = ref_class,
-      x_label = attr(ANL[[ref_name]], "label"),
+      x_label = ref_cl_lbl,
       freq = !show_dist,
       theme = quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip"))),
       rotate_xaxis_labels = rotate_xaxis_labels,
@@ -223,12 +225,16 @@ srv_tm_g_association <- function(input,
     chunks_push(bquote(title <- .(paste(
       "Association",
       ifelse(ref_class_cov == "NULL", "for", "between"),
-      paste(
-        vapply(vars_names, function(x) paste(attr(ANL[[x]], "label"), paste0("[", x, "]")), character(1)),
-        collapse = " / "
-      ),
-      ifelse(ref_class_cov == "NULL", "", paste("and", attr(ANL[[ref_name]], "label"), paste0("[", ref_cl_name, "]")))
-    ))))
+      paste(lapply(vars_names, function(x) {
+        if (is.numeric(ANL[[x]]) && log_transformation) {
+          varname_w_label(x, ANL, prefix = "Log of ")
+        } else {
+          varname_w_label(x, ANL)
+        }
+        }), collapse = " / "),
+      ifelse(ref_class_cov == "NULL", "",
+             paste("and", ref_cl_lbl)))
+    )))
 
     chunks_push(quote(print(title)))
 
@@ -236,13 +242,15 @@ srv_tm_g_association <- function(input,
 
     var_calls <- lapply(vars_names, function(var_i) {
       var_class <- class(ANL[[var_i]])
-      var_cl_name <- if (is.numeric(ANL[[var_i]]) && log_transformation) {
+      if (is.numeric(ANL[[var_i]]) && log_transformation) {
         # works for both integers and doubles
-        call("log", as.name(var_i))
+        var_cl_name <- call("log", as.name(var_i))
+        var_cl_lbl <- varname_w_label(var_i, ANL, prefix = "Log of ")
       } else {
         # silently ignore when non-numeric even if `log` is selected because some
         # variables may be numeric and others not
-        as.name(var_i)
+        var_cl_name <- as.name(var_i)
+        var_cl_lbl <- varname_w_label(var_i, ANL)
       }
       bivariate_plot_call(
         data_name = "ANL",
@@ -250,8 +258,8 @@ srv_tm_g_association <- function(input,
         y = var_cl_name,
         x_class = ref_class_cov,
         y_class = var_class,
-        x_label = attr(ANL[[ref_name]], "label"),
-        y_label = attr(ANL[[var_i]], "label"),
+        x_label = ref_cl_lbl,
+        y_label = var_cl_lbl,
         freq = !show_dist,
         rotate_xaxis_labels = rotate_xaxis_labels,
         swap_axes = swap_axes,

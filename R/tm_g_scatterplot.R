@@ -228,20 +228,17 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
 
     plot_call <- bquote(
       .(plot_call) +
-      geom_point(alpha = .(alpha), size = .(size)) +
-      ylab(.(paste0(attr(chunks_get_var("ANL")[[y_var]], "label"), " [", y_var, "]"))) +
-      xlab(.(paste0(attr(chunks_get_var("ANL")[[x_var]], "label"), " [", x_var, "]")))
+        geom_point(alpha = .(alpha), size = .(size)) +
+        ylab(.(varname_w_label(y_var, ANL))) +
+        xlab(.(varname_w_label(x_var, ANL)))
     )
 
     # add color label if existing
     if (!is.null(color_by_var) && !is_character_empty(color_by_var)) {
-      col_lbl <- attr(ANL[[color_by_var]], "label")
-      if (length(col_lbl) == 1 && !is.na(col_lbl) && !identical(col_lbl, "")) {
-        col_lbl <- paste0(col_lbl, " [", color_by_var, "]")
-        plot_call <- bquote(.(plot_call) + labs(color = .(col_lbl)) + theme(legend.position = "bottom"))
-      }
+      plot_call <- bquote(.(plot_call) +
+                            labs(color = .(varname_w_label(color_by_var, ANL))) +
+                            theme(legend.position = "bottom"))
     }
-
 
     if (rotate_xaxis_labels) {
       plot_call <- bquote(

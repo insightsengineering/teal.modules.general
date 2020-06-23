@@ -489,7 +489,6 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
       rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source))) # nolint
 
       response <- RP[[resp_col]]
-      col_lbl <- paste0(attr(response, "label"), " [", resp_col, "]") #nolint
 
       chunks_push(
         id = "pca_plot_response",
@@ -527,7 +526,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
             geom_point(aes_biplot, data = pca_rot) +
             scale_colors +
             theme_bw() +
-            labs(color = .(col_lbl))
+            labs(color = .(varname_w_label(resp_col, RP)))
         })
       )
     }

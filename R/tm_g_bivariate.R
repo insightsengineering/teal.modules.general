@@ -407,8 +407,8 @@ srv_g_bivariate <- function(input,
       y = y_name,
       x_class = ifelse(!is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
       y_class = ifelse(!is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
-      x_label = attr(ANL[[x_name]], "label"),
-      y_label = attr(ANL[[y_name]], "label"),
+      x_label = varname_w_label(x_name, ANL),
+      y_label = varname_w_label(y_name, ANL),
       freq = !use_density,
       theme = as.call(parse(text = paste0("theme_", ggtheme))),
       rotate_xaxis_labels = rotate_xaxis_labels,
@@ -513,21 +513,11 @@ bivariate_plot_call <- function(data_name,
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
-    x_label <- ifelse(
-      is.null(x_label),
-      paste0("[", deparse(x), "]"),
-      paste0(x_label, " [", deparse(x), "]")
-    )
   }
   if (is_character_empty(y)) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)
-    y_label <- ifelse(
-      is.null(y_label),
-      paste0("[", deparse(y), "]"),
-      paste0(y_label, " [", deparse(y), "]")
-    )
   }
 
   cl_plot <- substitute_q(
@@ -802,7 +792,6 @@ coloring_ggplot_call <- function(colour,
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
              is_point && is_character_empty(size)) {
     bquote(aes(
-      colour = .(as.name(fill)),
       fill = .(as.name(fill))
     ))
   }  else if (!is_character_empty(colour) && !is_character_empty(fill) &&

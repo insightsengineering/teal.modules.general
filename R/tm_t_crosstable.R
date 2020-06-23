@@ -162,9 +162,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     plot_title <- paste(
       "Cross-Table of",
-      paste(attr(ANL[[x_name]], "label"), paste0("[", x_name, "]")),
+      varname_w_label(x_name, ANL),
       "(rows)", "vs.",
-      paste(attr(ANL[[y_name]], "label"), paste0("[", y_name, "]")),
+      varname_w_label(y_name, ANL),
       "(columns)"
     )
 

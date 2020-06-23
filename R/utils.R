@@ -42,8 +42,14 @@ list_or_null <- function(obj) {
 
 #' Get variable name with label
 #'
-#' @param var_name (\code{character}) Name of variable to extract labels from.
+#' @param var_names (\code{character}) Name of variable to extract labels from.
 #' @param dataset (\code{dataset}) Name of analysis dataset.
+#' @param prefix (\code{character}) String to paste to the beginning of the
+#'   variable name with label.
+#' @param suffix (\code{character}) String to paste to the end of the variable
+#'   name with label.
+#' @param wrap_width (\code{numeric}) Number of characters to wrap original
+#'   label to. Defaults to 80.
 #'
 #' @return (\code{character}) String with variable name and label.
 #'
@@ -54,11 +60,33 @@ list_or_null <- function(obj) {
 #'
 #' varname_w_label("AGE", ADSL)
 #' }
-varname_w_label <- function(var_name, dataset) {
-  if (length(var_name) < 1) {
+#' @importFrom stringr str_wrap
+varname_w_label <- function(var_names,
+                            dataset,
+                            wrap_width = 80,
+                            prefix = NULL,
+                            suffix = NULL) {
+
+  add_label <- function(var_names) {
+
+    label <- vapply(dataset[var_names], function(x) attr(x, "label"), character(1))
+
+    if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
+      paste0(prefix, label, " [", var_names, "]", suffix)
+
+    } else {
+      var_names
+    }
+  }
+
+  if (length(var_names) < 1) {
     NULL
-  } else {
-    paste0(vapply(dataset[var_name], function(x) attr(x, "label"), character(1)), " [", var_name, "]")
+
+  } else if (length(var_names) == 1) {
+    stringr::str_wrap(add_label(var_names), width = wrap_width)
+
+  } else if (length(var_names) > 1) {
+    stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
   }
 }
 

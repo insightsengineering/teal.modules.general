@@ -276,16 +276,13 @@ srv_g_response <- function(input,
         ggplot() +
         aes(x = .(cl_arg_x)) +
         geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position)) +
-        xlab(.(paste0(attr(ANL[[x]], "label"), " [", x, "]"))) +
-        ylab(.(paste0("Proportion of ", attr(ANL[[resp_var]], "label"), " [", resp_var, "]")))
+        xlab(.(varname_w_label(x, ANL))) +
+        ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of ")))
     )
 
-    # add fill label if existing
-    fill_lbl <- attr(ANL[[resp_var]], "label")
-    if (length(fill_lbl) == 1 && !is.na(fill_lbl) && !identical(fill_lbl, "")) {
-      fill_lbl <- paste0(fill_lbl, " [", resp_var, "]")
-      plot_call <- bquote(.(plot_call) + labs(fill = .(fill_lbl)) + theme(legend.position = "bottom"))
-    }
+    plot_call <- bquote(.(plot_call) +
+                          labs(fill = .(varname_w_label(resp_var, ANL))) +
+                          theme(legend.position = "bottom"))
 
     if (!freq) {
       plot_call <- if (swap_axes) {

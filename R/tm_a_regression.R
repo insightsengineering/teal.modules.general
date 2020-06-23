@@ -228,8 +228,8 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
         chunks_push(bquote({
           plot(fit$model[, 2:1],
                                main = "Response vs Regressor",
-                               xlab = paste0(attr(ANL[[.(regressor_var)]], "label"), " [", .(regressor_var), "]"),
-                               ylab = paste0(attr(ANL[[.(response_var)]], "label"), " [", .(response_var), "]"))
+                               xlab = .(varname_w_label(regressor_var, ANL)),
+                               ylab = .(varname_w_label(response_var, ANL)))
         }))
         if (is.numeric(ANL[[regressor_var]])) {
           chunks_push(quote(abline(fit, col = "red", lwd = 2L)))

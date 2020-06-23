@@ -4,12 +4,27 @@
 \alias{varname_w_label}
 \title{Get variable name with label}
 \usage{
-varname_w_label(var_name, dataset)
+varname_w_label(
+  var_names,
+  dataset,
+  wrap_width = 80,
+  prefix = NULL,
+  suffix = NULL
+)
 }
 \arguments{
-\item{var_name}{(\code{character}) Name of variable to extract labels from.}
+\item{var_names}{(\code{character}) Name of variable to extract labels from.}
 
 \item{dataset}{(\code{dataset}) Name of analysis dataset.}
+
+\item{wrap_width}{(\code{numeric}) Number of characters to wrap original
+label to. Defaults to 80.}
+
+\item{prefix}{(\code{character}) String to paste to the beginning of the
+variable name with label.}
+
+\item{suffix}{(\code{character}) String to paste to the end of the variable
+name with label.}
 }
 \value{
 (\code{character}) String with variable name and label.
