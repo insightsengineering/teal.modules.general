@@ -168,7 +168,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     response[[i]]$select$selected <- NULL
     response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
     response[[1]]$select$choices <- setdiff(response[[1]]$select$choices,
-                                            datasets$get_data_attrs(response[[i]]$dataname)$keys$primary)
+                                            datasets$get_keys(response[[i]]$dataname)$primary)
   }
 
   init_chunks()
