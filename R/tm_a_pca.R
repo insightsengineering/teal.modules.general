@@ -656,6 +656,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(dat)),
     modal_title = "R code for PCA"
   )
 }

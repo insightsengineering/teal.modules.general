@@ -292,6 +292,7 @@ srv_tm_g_association <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(ref, vars)),
     modal_title = "R Code for the Association Plot",
     code_header = "Association Plot"
   )

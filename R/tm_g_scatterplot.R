@@ -255,6 +255,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(x, y, color_by)),
     modal_title = "R Code for a scatterplot",
     code_header = "Scatterplot"
   )

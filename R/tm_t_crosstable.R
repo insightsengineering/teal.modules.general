@@ -212,6 +212,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(x, y)),
     modal_title = show_r_code_title(),
     code_header = show_r_code_title()
   )

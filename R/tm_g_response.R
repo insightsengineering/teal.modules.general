@@ -324,6 +324,7 @@ srv_g_response <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(response, x, row_facet, col_facet)),
     modal_title = "R Code for a Scatterplotmatrix"
   )
 }

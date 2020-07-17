@@ -268,6 +268,7 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(response, regressor)),
     modal_title = "R code for the regression plot",
     code_header = paste0(
       "Regression plot of ",

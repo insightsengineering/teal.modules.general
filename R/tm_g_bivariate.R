@@ -470,6 +470,7 @@ srv_g_bivariate <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
+    datanames = get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
     modal_title = "R Code for a Bivariate plot"
   )
 }
