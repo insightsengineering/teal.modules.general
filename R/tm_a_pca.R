@@ -16,7 +16,8 @@
 #' ADSL <- radsl(cached = TRUE)
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(cdisc_dataset("ADSL", ADSL)),
+#'   data = cdisc_data(cdisc_dataset("ADSL", ADSL),
+#'                    code = "ADSL <- radsl(cached = TRUE)", check = TRUE),
 #'   modules = root_modules(
 #'     tm_a_pca("PCA",
 #'              data_extract_spec(
@@ -355,7 +356,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
           scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
           theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"),
                 legend.title = element_text(vjust = 8))
-        g
+        print(g)
       })
     )
 
@@ -395,7 +396,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
           geom_path(aes(x, y, group = 1), data = circle_data) +
           geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
           theme_bw()
-        g
+        print(g)
       })
     )
 
@@ -555,7 +556,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
     chunks_push(
       id = "pca_plot_final",
       expression = bquote({
-        g
+        print(g)
       })
     )
 
@@ -585,7 +586,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
                   label = quo(round(!!sym(.(pc)), 3)),
                   vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
           theme_bw()
-        g
+        print(g)
       })
     )
 

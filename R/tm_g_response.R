@@ -313,11 +313,16 @@ srv_g_response <- function(input,
       plot_call <- bquote(.(plot_call) + .(facet_cl))
     }
 
-    chunks_push(expression = plot_call, id = "plotCall")
-    p <- chunks_eval()
-    chunks_validate_is_ok()
+    plot_call <- bquote(p <- .(plot_call))
 
-    p
+    chunks_push(expression = plot_call, id = "plotCall")
+
+    #explicitly calling print on the plot inside the chunk evaluates
+    #the ggplot call and therefore catches errors
+    plot_print_call <- quote(print(p))
+    chunks_push(plot_print_call)
+
+    chunks_safe_eval()
   })
 
   callModule(

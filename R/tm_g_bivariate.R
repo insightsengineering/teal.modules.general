@@ -450,6 +450,7 @@ srv_g_bivariate <- function(input,
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) {
+      cl <- bquote(p <- .(cl))
       chunks_push(expression = cl, id = "plotCall")
     } else {
       chunks_push(bquote({
@@ -462,6 +463,10 @@ srv_g_bivariate <- function(input,
         )
       }))
     }
+    #explicitly calling print on the plot inside the chunk evaluates
+    #the ggplot call and therefore catches errors
+    plot_print_call <- quote(print(p))
+    chunks_push(plot_print_call)
 
     chunks_safe_eval()
   })
