@@ -1,6 +1,8 @@
-# teal.modules.general 0.2.4.9000
+# teal.modules.general 0.2.5
 
-* issues with no comments: 
+* ggplot call in chunks in modules 
+* pass on dataname to get_rcode_srv
+* uses utils function to standardize plot label generation
 
 # teal.modules.general 0.2.4
 
