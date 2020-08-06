@@ -36,12 +36,6 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{...}{
-  Arguments passed on to \code{\link[teal.devel:standard_layout]{teal.devel::standard_layout}}
-  \describe{
-    \item{\code{}}{}
-  }}
 }
 \description{
 Create a simple cross-table

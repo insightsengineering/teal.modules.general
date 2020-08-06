@@ -2,7 +2,6 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @inheritDotParams teal.devel::standard_layout -output -encoding -forms
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Object with all available choices with pre-selected option for variable X - row values.
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
@@ -137,7 +136,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 }
 
 #' @importFrom tern t_summary
-#' @importFrom rtables rrowl rtablel as_html
+#' @importFrom rtables as_html
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
