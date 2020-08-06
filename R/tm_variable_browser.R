@@ -83,11 +83,7 @@ ui_variable_browser <- function(id, datasets) {
               labelWidth = "120px",
               value = TRUE
             )
-          ),
-          div(
-            class = "pull-right",
-            actionLink(ns("add_filter_variable"), "Add as filter variable")
-          ),
+          )
         ),
         div(
           class = "clearfix;",
@@ -95,9 +91,7 @@ ui_variable_browser <- function(id, datasets) {
           uiOutput(ns("ui_density_display"))
         ),
         plotOutput(ns("variable_plot"), height = "500px"),
-        uiOutput(ns("warning")),
         br(),
-        renderUI(ns("variable_summary_text")),
         DT::dataTableOutput(ns("variable_summary_table"))
       )
     )
@@ -113,8 +107,6 @@ srv_variable_browser <- function(input, output, session, datasets) {
   plot_var <- reactiveValues(data = NULL, variable = list())
 
   current_rows <- new.env() # nolint
-
-  adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
 
   lapply(datasets$datanames(), function(name) {
     .log("variable label table:", name)
@@ -271,43 +263,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     var_summary_table(x)
   })
 
-  warning_messages <- reactiveValues(varinfo = "", i = 0)
 
-  observeEvent(input$add_filter_variable, {
-
-    dataname <- input$tsp
-    varname <- plot_var$variable[[input$tsp]]
-
-    if (!is.null(dataname)) {
-      if (!is.null(varname)) {
-        if (dataname != "ADSL" && varname %in% adsl_vars) {
-          warning_messages$varinfo <- paste("You can not add an ADSL variable from any dataset other than ADSL.
-                                            Switch to the ADSL data and add the variable from there.")
-        } else if (datasets$get_filter_type(dataname, varname) == "unknown") {
-          warning_messages$varinfo <- paste("variable", paste(dataname, varname, sep = "."),
-                                            "can currently not be used as a filter variable.")
-        } else {
-          if (is.null(datasets$get_filter_execution(dataname, varname))) {
-            datasets$set_default_filter_state(dataname, varname)
-            .log("add filter variable", dataname, "and", varname)
-          }
-          warning_messages$varinfo <- ""
-        }
-        warning_messages$i <- warning_messages$i + 1
-      }
-    }
-  })
-
-  output$warning <- renderUI({
-    warning_messages$i
-    msg <- warning_messages$varinfo
-
-    if (is.null(msg) || msg == "") {
-      div(style = "display: none;")
-    } else {
-      div(class = "text-warning", style = "margin-bottom: 15px;", msg)
-    }
-  })
 }
 
 #' Summarizes missings occurrence
