@@ -34,14 +34,15 @@ library(dplyr) # used to modify data sets
 Inside this app 5 datasets will be used
 
 1. `ADSL` A wide data set with subject data
-2. `ADSL_2` A wide data set with subject data
+2. `ADSL2` A wide data set with subject data
 3. `ADRS` A long data set with response data for subjects at different time points of the study
 4. `ADTTE` A long data set with time to event data
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 ADSL <- radsl(cached = TRUE)
-ADSL_2 <- radsl(cached = TRUE)
+ADSL2 <- radsl(cached = TRUE) %>% 
+  mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
 ADRS <- radrs(cached = TRUE)
 ADTTE <- radtte(cached = TRUE)
 ADLB <- radlb(cached = TRUE) %>%
@@ -64,7 +65,8 @@ library(teal.modules.general)
 library(random.cdisc.data)
 library(dplyr)
 ADSL <- radsl(cached = TRUE)
-ADSL_2 <- radsl(cached = TRUE)
+ADSL2 <- radsl(cached = TRUE) %>% 
+  mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
 ADRS <- radrs(cached = TRUE)
 ADTTE <- radtte(cached = TRUE)
 ADLB <- radlb(cached = TRUE) %>%
@@ -77,12 +79,13 @@ ADLB <- radlb(cached = TRUE) %>%
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL_2", ADSL_2, keys = get_cdisc_keys("ADSL")),
+    dataset("ADSL2", ADSL2, keys = get_cdisc_keys("ADSL")),
     cdisc_dataset("ADRS", ADRS),
     cdisc_dataset("ADTTE", ADTTE),
     cdisc_dataset("ADLB", ADLB),
     code = "ADSL <- radsl(cached = TRUE)
-            ADSL_2 <- radsl(cached = TRUE)
+            ADSL2 <- radsl(cached = TRUE) %>% 
+            mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
             ADRS <- radrs(cached = TRUE)
             ADTTE <- radtte(cached = TRUE)
             ADLB <- radlb(cached = TRUE) %>%
@@ -142,19 +145,19 @@ app <- init(
             fixed = FALSE
           )),
         y = data_extract_spec(
-          dataname = "ADSL_2",
+          dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL_2, c("AGE", "SEX")),
+            choices = variable_choices(ADSL2, c("AGE", "SEX")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
           )),
         color_by = data_extract_spec(
-          dataname = "ADSL_2",
+          dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL_2, c("COUNTRY", "AGE", "RACE")),
+            choices = variable_choices(ADSL2, c("COUNTRY", "AGE", "RACE")),
             selected = "COUNTRY",
             multiple = FALSE,
             fixed = FALSE
