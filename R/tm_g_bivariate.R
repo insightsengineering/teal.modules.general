@@ -463,10 +463,6 @@ srv_g_bivariate <- function(input,
         )
       }))
     }
-    #explicitly calling print on the plot inside the chunk evaluates
-    #the ggplot call and therefore catches errors
-    plot_print_call <- quote(print(p))
-    chunks_push(plot_print_call)
 
     chunks_safe_eval()
   })
