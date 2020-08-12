@@ -43,19 +43,22 @@ Variables for row facetting.}
 Variables for col facetting.}
 
 \item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the outline color inside the coloring settings.}
+Variables selected for the outline color inside the coloring settings.
+It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
 \item{fill}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the fill color inside the coloring settings.}
+Variables selected for the fill color inside the coloring settings.
+It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
 \item{size}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the size of \code{geom_point} plots inside the coloring settings.}
+Variables selected for the size of \code{geom_point} plots inside the coloring settings.
+It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
 \item{use_density}{optional, (\code{logical}) value for whether density (\code{TRUE}) is plotted or
 frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).}
 
-\item{color_settings}{(\code{logical}) Whether coloring, filling and size should be chosen
-by the user.}
+\item{color_settings}{(\code{logical}) Whether coloring, filling and size should be applied
+and UI tool offered to the user.}
 
 \item{free_x_scales}{optional, (\code{logical}) Whether X scaling shall be changeable.
 Does not allow scaling to be changed by default (\code{FALSE}).}

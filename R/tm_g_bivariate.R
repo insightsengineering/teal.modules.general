@@ -17,14 +17,17 @@ NULL
 #'   Variables for row facetting.
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variables for col facetting.
-#' @param color_settings (\code{logical}) Whether coloring, filling and size should be chosen
-#'   by the user.
+#' @param color_settings (\code{logical}) Whether coloring, filling and size should be applied
+#' and UI tool offered to the user.
 #' @param color optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variables selected for the outline color inside the coloring settings.
+#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
 #' @param fill optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variables selected for the fill color inside the coloring settings.
+#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
 #' @param size optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variables selected for the size of \code{geom_point} plots inside the coloring settings.
+#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
 #' @param free_x_scales optional, (\code{logical}) Whether X scaling shall be changeable.
 #'   Does not allow scaling to be changed by default (\code{FALSE}).
 #' @param free_y_scales optional, (\code{logical}) Whether Y scaling shall be changeable.
