@@ -408,7 +408,7 @@ srv_missing_data <- function(input,
         aes_(x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
              y = ~reorder(id, order(-count_na)),
              fill = ~isna) +
-        geom_raster(alpha = 1) +
+        geom_bar(alpha = 1, stat = "identity") +
         scale_fill_manual(
           name = "",
           values = c("grey", "black"),
