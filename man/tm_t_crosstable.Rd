@@ -86,6 +86,3 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 }
-\author{
-wolfs25 waddella
-}

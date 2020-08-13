@@ -3,6 +3,8 @@ NULL
 
 #' Scatterplot and Regression Model
 #'
+#' Scatterplot and Regression Model
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params

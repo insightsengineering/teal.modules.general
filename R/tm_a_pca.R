@@ -1,5 +1,7 @@
 #' Principal component analysis module
 #'
+#' Principal component analysis module
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params

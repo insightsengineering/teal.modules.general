@@ -1,5 +1,7 @@
 #' Response Plots
 #'
+#' Response Plots
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
@@ -185,7 +187,6 @@ ui_g_response <- function(id, ...) {
 
 #' @importFrom forcats fct_rev
 #' @importFrom magrittr %>%
-#' @importFrom methods substituteDirect
 srv_g_response <- function(input,
                            output,
                            session,

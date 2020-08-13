@@ -1,6 +1,6 @@
 #' Create a scatterplot matrix
 #'
-
+#'
 #' The available datasets to choose from for each dataset selector is the same and
 #' determined by the argument \code{variables}.
 #'
@@ -141,7 +141,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate_if
 #' @importFrom lattice splom panel.splom panel.text current.panel.limits
-#' @importFrom methods substituteDirect
 #' @importFrom stats cor.test
 srv_g_scatterplotmatrix <- function(input,
                                     output,

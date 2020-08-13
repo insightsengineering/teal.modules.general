@@ -28,7 +28,6 @@ Depends:
 Imports:
   grid,
   gridExtra,
-  digest,
   dplyr,
   DT,
   forcats,
@@ -52,7 +51,7 @@ Suggests:
   random.cdisc.data (>= 0.3.4),
   test.nest (>= 0.2.3),
   testthat (>= 2.0)
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Collate: 
     'teal.modules.general-package.R'
     'tm_a_pca.R'

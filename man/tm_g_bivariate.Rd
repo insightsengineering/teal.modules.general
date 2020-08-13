@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_bivariate.R
 \name{tm_g_bivariate}
 \alias{tm_g_bivariate}
-\title{Univariate and bivariate visualizations.}
+\title{Univariate and bivariate visualizations}
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",
@@ -85,7 +85,7 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
-Univariate and bivariate visualizations.
+Univariate and bivariate visualizations
 }
 \details{
 This is a general module to visualize 1 & 2 dimensional data.

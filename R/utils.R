@@ -92,6 +92,8 @@ varname_w_label <- function(var_names,
 
 #' Add axis labels that show facetting variable
 #'
+#' Add axis labels that show facetting variable
+#'
 #' @param p ggplot2 object to add facet labels to
 #' @param xfacet_label label of facet along x axis (nothing created if NULL),
 #'   if vector, will be concatenated with " & "

@@ -165,7 +165,6 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 #' @importFrom magrittr %>%
-#' @importFrom methods substituteDirect
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
   init_chunks()
 

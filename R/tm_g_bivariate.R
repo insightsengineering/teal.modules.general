@@ -1,7 +1,9 @@
 #' @include utils.R
 NULL
 
-#' Univariate and bivariate visualizations.
+#' Univariate and bivariate visualizations
+#'
+#' Univariate and bivariate visualizations
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout

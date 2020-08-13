@@ -193,16 +193,15 @@ encoding_missing_data <- function(id, plot_height) {
   )
 }
 
-#' @importFrom digest sha1
 #' @importFrom dplyr arrange arrange_at desc filter group_by group_by_all group_by_at mutate mutate_all
-#'   n pull select summarise_all sym row_number ungroup tally tibble transmute
+#'   n pull select summarise_all row_number ungroup tally tibble transmute
 #' @import ggplot2
 #' @importFrom grid grid.newpage grid.draw unit.pmax
 #' @importFrom gridExtra gtable_cbind
 #' @importFrom magrittr %>% extract2
 #' @importFrom scales percent_format
 #' @importFrom stats reorder
-#' @importFrom rlang .data !!
+#' @importFrom rlang .data !! sym
 #' @importFrom tidyr gather spread
 srv_missing_data <- function(input,
                              output,

@@ -1,5 +1,7 @@
 #' Create a simple cross-table
 #'
+#' Create a simple cross-table
+#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -16,8 +18,6 @@
 #'   \code{vignette("using-cross-table", package = "teal.modules.general")}.
 #'
 #' @export
-#'
-#' @author wolfs25 waddella
 #'
 #' @examples
 #' # Percentage cross table of variables from ADSL dataset

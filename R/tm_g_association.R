@@ -1,5 +1,7 @@
 #' Stack Plots of variables and show association with reference variable
 #'
+#' Stack Plots of variables and show association with reference variable
+#'
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @inheritParams shared_params
