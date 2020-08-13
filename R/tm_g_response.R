@@ -225,7 +225,7 @@ srv_g_response <- function(input,
     chunks_push_data_merge(merged_data())
 
     ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 3)
+    validate_has_data(ANL, 10)
 
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
@@ -246,7 +246,7 @@ srv_g_response <- function(input,
     )
 
 
-    validate_has_data(ANL, 10)
+    validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE)
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip

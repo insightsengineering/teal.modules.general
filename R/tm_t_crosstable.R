@@ -159,6 +159,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     validate(need(!is_character_empty(x_name), "Please define column for x variable that is not empty."))
     validate(need(!is_character_empty(y_name), "Please define column for y variable that is not empty."))
 
+    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
+
     plot_title <- paste(
       "Cross-Table of",
       varname_w_label(x_name, ANL),

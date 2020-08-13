@@ -214,6 +214,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
       validate(need(length(color_by_var) <= 1, "There must be at most 1 coloring variable."))
     }
 
+    validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE)
+
     plot_call <- quote(ANL %>% ggplot())
     plot_call <- if (is.null(color_by_var) || is_character_empty(color_by_var)) {
       bquote(

@@ -375,6 +375,7 @@ srv_g_bivariate <- function(input,
 
     x_name <- as.vector(merged_data()$columns_source$x)
     y_name <- as.vector(merged_data()$columns_source$y)
+
     row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
     col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
     color_name <- as.vector(merged_data()$columns_source$color)
@@ -403,6 +404,8 @@ srv_g_bivariate <- function(input,
         "x-variable and y-variable isn't correcly specified. At least one should be valid."
       )
     )
+
+    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
 
     cl <- bivariate_plot_call(
       data_name = "ANL",

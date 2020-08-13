@@ -196,6 +196,8 @@ srv_tm_g_association <- function(input,
       need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap")
     )
 
+    validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE)
+
     # reference
     ref_class <- class(ANL[[ref_name]])
     if (is.numeric(ANL[[ref_name]]) && log_transformation) {

@@ -196,6 +196,8 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
       validate(need(length(regressor_var) == 1, "Response vs Regressor is only provided for exactly one regressor"))
     }
 
+    validate_has_data(ANL[, c(response_var, regressor_var)], 10, complete = TRUE)
+
     form <- stats::as.formula(
       paste(
         response_var,

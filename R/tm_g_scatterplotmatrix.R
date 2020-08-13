@@ -171,7 +171,7 @@ srv_g_scatterplotmatrix <- function(input,
     chunks_push_data_merge(merged_data())
 
     ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 3)
+    validate_has_data(ANL, 10)
 
     alpha <- input$alpha # nolint
     cex <- input$cex # nolint
@@ -187,6 +187,7 @@ srv_g_scatterplotmatrix <- function(input,
 
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
+    validate_has_data(ANL[, cols_names], 10, complete = TRUE)
 
     # get labels and proper variable names
     varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
