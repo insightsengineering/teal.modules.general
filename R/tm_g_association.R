@@ -283,6 +283,7 @@ srv_tm_g_association <- function(input,
   })
 
   output$plot <- renderPlot({
+    chunks_uneval()
     chunks_reactive()
     chunks_safe_eval()
   })
