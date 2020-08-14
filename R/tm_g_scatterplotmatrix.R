@@ -99,7 +99,11 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
   standard_layout(
-    output = white_small_well(plot_height_output(ns("myplot"))),
+    output = white_small_well(
+      textOutput(ns("message")),
+      br(),
+      plot_height_output(ns("myplot"))
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args$variables),
@@ -191,6 +195,21 @@ srv_g_scatterplotmatrix <- function(input,
     # get labels and proper variable names
     varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
 
+    # check character columns. If any, then those are converted to factors
+    check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+    if (any(check_char)) {
+      chunks_push(bquote({
+        ANL <- ANL[, .(cols_names)] %>%
+          dplyr::mutate_if(is.character, as.factor) %>%
+          droplevels()
+      }))
+    } else {
+      chunks_push(bquote({
+        ANL <- ANL[, .(cols_names)] %>%
+          droplevels()
+      }))
+    }
+
     # create plot
     if (add_cor) {
       shinyjs::show("cor_method")
@@ -198,35 +217,58 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::show("cor_na_omit")
 
       chunks_push(bquote({
-        lattice::splom(ANL[, .(cols_names)] %>% droplevels(),
-                       varnames = .(varnames),
-                       panel = function(x, y, ...) {
-                         lattice::panel.splom(x = x, y = y, ...)
-                         cpl <- lattice::current.panel.limits()
-                         lattice::panel.text(mean(cpl$xlim),
-                                             mean(cpl$ylim),
-                                             get_scatterplotmatrix_stats(x, y, .f = cor.test,
-                                                                         .f_args = list(method = .(cor_method),
-                                                                                        na.action = .(cor_na_action))),
-                                             alpha = 0.6,
-                                             fontsize = 18,
-                                             fontface = "bold")
-                       },
-                       pch = 16,
-                       alpha = .(alpha),
-                       cex = .(cex))
+        lattice::splom(
+          ANL,
+          varnames = .(varnames),
+          panel = function(x, y, ...) {
+            lattice::panel.splom(x = x, y = y, ...)
+            cpl <- lattice::current.panel.limits()
+            lattice::panel.text(
+              mean(cpl$xlim),
+              mean(cpl$ylim),
+              get_scatterplotmatrix_stats(x, y, .f = cor.test,
+                                          .f_args = list(method = .(cor_method),
+                                                         na.action = .(cor_na_action))),
+              alpha = 0.6,
+              fontsize = 18,
+              fontface = "bold")
+          },
+          pch = 16,
+          alpha = .(alpha),
+          cex = .(cex))
       }))
     } else {
       shinyjs::hide("cor_method")
       shinyjs::hide("cor_use")
       shinyjs::hide("cor_na_omit")
       chunks_push(bquote({
-        lattice::splom(ANL[, .(cols_names)] %>% droplevels(), varnames = .(varnames),
+        lattice::splom(ANL, varnames = .(varnames),
                        pch = 16, alpha = .(alpha), cex = .(cex))
       }))
     }
     chunks_safe_eval()
   })
+
+  # show a message if conversion to factors took place
+  output$message <- renderText({
+    ANL <- merged_data()$data()
+    cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
+    check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+    if (any(check_char)) {
+      is_single <- sum(check_char) == 1
+      paste(
+        "Character",
+        ifelse(is_single, "variable", "variables"),
+        paste0("(", paste(cols_names[check_char], collapse = ", "), ")"),
+        ifelse(is_single, "was", "were"),
+        "converted to",
+        ifelse(is_single, "factor.", "factors.")
+      )
+    } else {
+      ""
+    }
+  })
+
   # show r code
   observeEvent(input$show_rcode, {
     title <- paste0(
