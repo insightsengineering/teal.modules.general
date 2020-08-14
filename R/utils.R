@@ -61,6 +61,7 @@ list_or_null <- function(obj) {
 #' varname_w_label("AGE", ADSL)
 #' }
 #' @importFrom stringr str_wrap
+#' @importFrom utils.nest if_null
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -69,7 +70,7 @@ varname_w_label <- function(var_names,
 
   add_label <- function(var_names) {
 
-    label <- vapply(dataset[var_names], function(x) attr(x, "label"), character(1))
+    label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
       paste0(prefix, label, " [", var_names, "]", suffix)
