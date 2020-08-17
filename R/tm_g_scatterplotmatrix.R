@@ -199,13 +199,13 @@ srv_g_scatterplotmatrix <- function(input,
     check_char <- vapply(ANL[, cols_names], is.character, logical(1))
     if (any(check_char)) {
       chunks_push(bquote({
-        ANL <- ANL[, .(cols_names)] %>%
+        ANL <- ANL[, .(cols_names)] %>% # nolint
           dplyr::mutate_if(is.character, as.factor) %>%
           droplevels()
       }))
     } else {
       chunks_push(bquote({
-        ANL <- ANL[, .(cols_names)] %>%
+        ANL <- ANL[, .(cols_names)] %>% # nolint
           droplevels()
       }))
     }
@@ -251,7 +251,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   # show a message if conversion to factors took place
   output$message <- renderText({
-    ANL <- merged_data()$data()
+    ANL <- merged_data()$data() # nolint
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     check_char <- vapply(ANL[, cols_names], is.character, logical(1))
     if (any(check_char)) {
