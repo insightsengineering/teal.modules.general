@@ -48,7 +48,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, c("SEX","RACE")),
+#'           choices = variable_choices(ADSL, c("SEX", "RACE")),
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -61,36 +61,45 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_t_crosstable <- function(label = "Cross Table",
-                           x,
-                           y,
-                           show_percentage = TRUE,
-                           show_total = TRUE,
-                           pre_output = NULL,
-                           post_output = NULL) {
+                            x,
+                            y,
+                            show_percentage = TRUE,
+                            show_total = TRUE,
+                            pre_output = NULL,
+                            post_output = NULL) {
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"))
   stopifnot(is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"))
   if (is_class_list("data_extract_spec")(x)) {
-    stop_if_not(list(all(vapply(x, function(x) !isTRUE(x$select$multiple), logical(1))),
-                     "x variable should not allow multiple selection"))
+    stop_if_not(list(
+      all(vapply(x, function(x) !isTRUE(x$select$multiple), logical(1))),
+      "x variable should not allow multiple selection"
+    ))
   } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(x$select$multiple),
-                     "x variable should not allow multiple selection"))
+    stop_if_not(list(
+      !isTRUE(x$select$multiple),
+      "x variable should not allow multiple selection"
+    ))
   }
   if (is_class_list("data_extract_spec")(y)) {
-    stop_if_not(list(all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
-                     "y variable should not allow multiple selection"))
+    stop_if_not(list(
+      all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
+      "y variable should not allow multiple selection"
+    ))
   } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(!isTRUE(y$select$multiple),
-                     "y variable should not allow multiple selection"))
+    stop_if_not(list(
+      !isTRUE(y$select$multiple),
+      "y variable should not allow multiple selection"
+    ))
   }
   stopifnot(is_logical_single(show_percentage))
   stopifnot(is_logical_single(show_total))
 
-  args <- as.list(environment())
+  ui_args <- as.list(environment())
 
-  data_extract_list <- list(
+  server_args <- list(
     label = label,
+    show_percentage = show_percentage,
     x = x,
     y = y
   )
@@ -99,13 +108,13 @@ tm_t_crosstable <- function(label = "Cross Table",
     label = label,
     server = srv_t_crosstable,
     ui = ui_t_crosstable,
-    ui_args = args,
-    server_args = data_extract_list,
-    filters = get_extract_datanames(data_extract_list)
+    ui_args = ui_args,
+    server_args = server_args,
+    filters = get_extract_datanames(list(x = x, y = y))
   )
 }
 
-ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+ui_t_crosstable <- function(id, datasets, x, y, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
 
   standard_layout(
@@ -124,7 +133,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
       panel_group(
         panel_item(
           title = "Table settings",
-          checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage),
+          uiOutput(ns("show_percentage_ui")),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       )
@@ -137,7 +146,8 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 
 #' @importFrom tern t_summary
 #' @importFrom rtables as_html
-srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
+srv_t_crosstable <- function(input, output, session, datasets, label, show_percentage, x, y) {
+  ns <- session$ns
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -145,6 +155,17 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     data_extract = list(x, y),
     input_id = c("x", "y")
   )
+
+  output$show_percentage_ui <- renderUI({
+    ANL <- merged_data()$chunks$get("ANL")
+    x_name <- merged_data()$columns_source$x
+
+    if (inherits(ANL[[x_name]], "factor")) {
+      checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage)
+    }
+  })
+
+  vals <- reactiveValues(show_percentage = show_percentage)
 
   create_table <- reactive({
     chunks_reset()
@@ -161,6 +182,17 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
 
+
+    supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+    validate(need(
+      class(ANL[[x_name]]) %in% supported_types,
+      "Selected x-variable has an unsupported data type."
+    ))
+    validate(need(
+      class(ANL[[y_name]]) %in% supported_types,
+      "Selected y-variable has an unsupported data type."
+    ))
+
     plot_title <- paste(
       "Cross-Table of",
       varname_w_label(x_name, ANL),
@@ -169,11 +201,10 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       "(columns)"
     )
 
-    supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
-    validate(need(class(chunks_get_var("ANL")[[x_name]]) %in% supported_types,
-                  "Selected x-variable has an unsupported data type."))
-    validate(need(class(chunks_get_var("ANL")[[y_name]]) %in% supported_types,
-                  "Selected y-variable has an unsupported data type."))
+    observeEvent(
+      input$show_percentage,
+      vals$show_percentage <- input$show_percentage
+    )
 
     chunks_push(bquote({
       title <- .(plot_title)
@@ -182,8 +213,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       tbl <- tern::t_summary(
         ANL[[.(x_name)]],
         col_by = ANL[[.(y_name)]],
-        total = .(if (input$show_total) "Sum" else NULL),
-        denominator = .(if (input$show_percentage) "n" else "omit")
+        total = .(if (input$show_total) "Total" else NULL),
+        denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit")
       )
       tbl
     }))

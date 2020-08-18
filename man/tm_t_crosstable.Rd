@@ -73,7 +73,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("SEX","RACE")),
+          choices = variable_choices(ADSL, c("SEX", "RACE")),
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
