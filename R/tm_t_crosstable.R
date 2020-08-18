@@ -157,7 +157,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
   )
 
   output$show_percentage_ui <- renderUI({
-    ANL <- merged_data()$chunks$get("ANL")
+    ANL <- merged_data()$chunks$get("ANL") # nolint
     x_name <- merged_data()$columns_source$x
 
     if (inherits(ANL[[x_name]], "factor")) {
