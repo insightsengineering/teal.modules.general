@@ -71,7 +71,7 @@ app <- init(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-            selected = "INVET - BASELINE",
+            selected = "INVET - END OF INDUCTION",
             multiple = TRUE
           ),
           select = select_spec(
