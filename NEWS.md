@@ -3,9 +3,9 @@
 * Adds `ggplot` call inside chunks in modules.
 * Pass on dataname to `get_rcode_srv`.
 * Uses utils function to standardize plot label generation.
-* Improved handling of variable labels
-* Removed "Add as filter variable" button from variable browser module
-* Scatterplot matrix module now automatically converts characters to factors with a message
+* Improved handling of variable labels.
+* Removed "Add as filter variable" button from variable browser module.
+* Scatterplot matrix module now automatically converts characters to factors with a message.
 
 # teal.modules.general 0.2.4
 
