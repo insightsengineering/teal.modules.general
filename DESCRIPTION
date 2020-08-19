@@ -24,7 +24,7 @@ Depends:
   graphics,
   magrittr,
   shiny,
-  teal (>= 0.8.4)
+  teal (>= 0.9.0)
 Imports:
   grid,
   gridExtra,
@@ -34,22 +34,22 @@ Imports:
   lattice,
   methods,
   rlang,
-  rtables (>= 0.1.6),
+  rtables (>= 0.1.7),
   scales,
   shinyjs,
   shinyWidgets,
   stats,
   stringr,
-  teal.devel (>= 0.2.5),
-  tern (>= 0.6.7),
+  teal.devel (>= 0.2.6),
+  tern (>= 0.6.8),
   tibble,
   tidyr,
   utils,
-  utils.nest (>= 0.2.4)
+  utils.nest (>= 0.2.5)
 Suggests:
   knitr,
-  random.cdisc.data (>= 0.3.4),
-  test.nest (>= 0.2.3),
+  random.cdisc.data (>= 0.3.5),
+  test.nest (>= 0.2.4),
   testthat (>= 2.0)
 RoxygenNote: 7.1.1
 Collate: 
