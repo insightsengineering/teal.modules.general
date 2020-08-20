@@ -1,3 +1,7 @@
+# teal.modules.general 0.2.5.9000
+
+* issues with no news:
+
 # teal.modules.general 0.2.5
 
 * Adds `ggplot` call inside chunks in modules.
