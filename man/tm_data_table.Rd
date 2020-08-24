@@ -7,7 +7,10 @@
 tm_data_table(
   label = "Data table",
   variables_selected = list(),
-  datasets_selected = character(0)
+  datasets_selected = character(0),
+  dt_args = list(),
+  dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
+    scrollX = TRUE)
 )
 }
 \arguments{
@@ -19,6 +22,12 @@ If not specified for any dataset, the first six variables from the dataset will 
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.}
+
+\item{dt_args}{(\code{named list}) Additional arguments to be passed to \code{DT::datatable}
+(must not include \code{data} or \code{options}).}
+
+\item{dt_options}{(\code{name list}) The \code{options} argument to \code{DT::datatable}. By default
+\code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
 }
 \description{
 A data table viewer shows the data using a paginated table.
@@ -36,7 +45,8 @@ app <- init(
   ),
   modules = root_modules(
     tm_data_table(
-      variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+      variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
+      dt_args = list(caption = "ADSL Table Caption")
     )
   )
 )
@@ -66,6 +76,12 @@ app <- init(
           "STUDYID", "USUBJID", "SUBJID", "SITEID",
           "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
         )
+      ),
+      dt_options = list(
+        searching = FALSE,
+        pageLength = 30,
+        lengthMenu = c(5, 15, 30, 100),
+        scrollX = TRUE
       )
     )
   )

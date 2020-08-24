@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.5.9000
 
+* `tm_data_table`: allow developers to pass arguments to `DT::dataTable` and use `pickerInput` to select variables.    
 * issues with no news:
 
 # teal.modules.general 0.2.5

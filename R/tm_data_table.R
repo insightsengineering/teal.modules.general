@@ -8,9 +8,14 @@
 #'   If not specified for any dataset, the first six variables from the dataset will be shown.
 #' @param datasets_selected (\code{character}) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
-#'
+#' @param dt_args (\code{named list}) Additional arguments to be passed to \code{DT::datatable}
+#'   (must not include \code{data} or \code{options}).
+#' @param dt_options (\code{name list}) The \code{options} argument to \code{DT::datatable}. By default
+#'   \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}
 #' @export
-#'
+#' @importFrom utils.nest is_fully_named_list
+#' @importFrom shinyWidgets pickerInput
+#' @importFrom DT datatable
 #' @examples
 #' library(random.cdisc.data)
 #'
@@ -24,7 +29,8 @@
 #'   ),
 #'   modules = root_modules(
 #'     tm_data_table(
-#'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
+#'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
+#'       dt_args = list(caption = "ADSL Table Caption")
 #'     )
 #'   )
 #' )
@@ -54,6 +60,12 @@
 #'           "STUDYID", "USUBJID", "SUBJID", "SITEID",
 #'           "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
 #'         )
+#'       ),
+#'       dt_options = list(
+#'         searching = FALSE,
+#'         pageLength = 30,
+#'         lengthMenu = c(5, 15, 30, 100),
+#'         scrollX = TRUE
 #'       )
 #'     )
 #'   )
@@ -126,11 +138,20 @@
 #'
 tm_data_table <- function(label = "Data table",
                           variables_selected = list(),
-                          datasets_selected = character(0)) {
+                          datasets_selected = character(0),
+                          dt_args = list(),
+                          dt_options = list(
+                            searching = FALSE,
+                            pageLength = 30,
+                            lengthMenu = c(5, 15, 30, 100),
+                            scrollX = TRUE)) {
   stopifnot(
     is_character_single(label),
     is.list(variables_selected),
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
+
+    utils.nest::is_fully_named_list(dt_args),
+    utils.nest::is_fully_named_list(dt_options),
 
     `if`(
       length(variables_selected) > 0,
@@ -163,12 +184,21 @@ tm_data_table <- function(label = "Data table",
     )
   )
 
+  if (!all(names(dt_args) %in% names(formals(DT::datatable)))) {
+    stop("Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))")
+  }
+  if ("data" %in% names(dt_args) || "options" %in% names(dt_args)) {
+    stop("dt_args should not have entries 'data' or 'options'")
+  }
+
   module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
     filters = if_character_empty(datasets_selected, "all"),
-    server_args = list(datasets_selected = datasets_selected),
+    server_args = list(datasets_selected = datasets_selected,
+                       dt_args = dt_args,
+                       dt_options = dt_options),
     ui_args = list(
       selected = variables_selected,
       datasets_selected = datasets_selected
@@ -260,7 +290,9 @@ srv_page_data_table <- function(input,
                                 output,
                                 session,
                                 datasets,
-                                datasets_selected) {
+                                datasets_selected,
+                                dt_args,
+                                dt_options) {
   if_filtered <- reactive(as.logical(input$if_filtered))
   if_distinct <- reactive(as.logical(input$if_distinct))
 
@@ -275,7 +307,9 @@ srv_page_data_table <- function(input,
         datasets = datasets,
         dataname = x,
         if_filtered = if_filtered,
-        if_distinct = if_distinct
+        if_distinct = if_distinct,
+        dt_args = dt_args,
+        dt_options = dt_options
       )
     }
   )
@@ -294,7 +328,7 @@ ui_data_table <- function(id,
 
   tagList(
     fluidRow(
-      selectInput(
+      shinyWidgets::pickerInput(
         ns("variables"),
         "Select variables:",
         choices = choices,
@@ -311,13 +345,16 @@ ui_data_table <- function(id,
 
 
 #' @importFrom dplyr count_
+#' @importFrom DT datatable
 srv_data_table <- function(input,
                            output,
                            session,
                            datasets,
                            dataname,
                            if_filtered,
-                           if_distinct) {
+                           if_distinct,
+                           dt_args,
+                           dt_options) {
   output$data_table <- DT::renderDataTable({
     variables <- input$variables
 
@@ -340,15 +377,11 @@ srv_data_table <- function(input,
       df[variables]
     }
 
-    DT::datatable(
-      dataframe_selected,
-      options = list(
-        searching = FALSE,
-        pageLength = 30,
-        lengthMenu = c(5, 15, 30, 100),
-        scrollX = TRUE
-      )
-    )
+    dt_args$options <- dt_options
+    dt_args$data <- dataframe_selected
+
+    do.call(DT::datatable, dt_args)
+
   })
 }
 
