@@ -389,11 +389,15 @@ srv_missing_data <- function(input,
       geom_bar(position = "fill", stat = "identity") +
       scale_fill_manual(
         name = "",
-        values = c("grey", "black"),
+        values = c("grey90", "#ff2951ff"),
         labels = c("Present", "Missing")
       ) +
       scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
-      geom_text(aes_(label = ~ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1.1), hjust = 1) +
+      geom_text(
+        aes_(label = ~ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+        hjust = 1,
+        color = "black"
+      ) +
       labs(
         x = "Variable",
         y = "Missing observations"
@@ -411,7 +415,7 @@ srv_missing_data <- function(input,
         geom_bar(alpha = 1, stat = "identity") +
         scale_fill_manual(
           name = "",
-          values = c("grey", "black"),
+          values = c("grey90", "#ff2951ff"),
           labels = c("Present", "Missing")
         ) +
         labs(
@@ -488,11 +492,8 @@ srv_missing_data <- function(input,
       scale_y_continuous(breaks = seq_along(labels), labels = labels) +
       scale_fill_manual(
         name = "",
-        values = c("grey", "black"),
-        labels = c(
-          "Present",
-          "Missing"
-        )
+        values = c("grey90", "#ff2951ff"),
+        labels = c("Present", "Missing")
       ) +
       labs(
         x = "Variable",
