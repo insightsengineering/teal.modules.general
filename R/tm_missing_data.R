@@ -122,14 +122,6 @@ ui_missing_data <- function(id) {
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
           "sorted by magnitude."
-        )),
-        p(paste(
-          'The "**anyna**" variable (if checked) describes the number of observations',
-          "having at least one missing value in any variable."
-        )),
-        p(paste(
-          'The "Summary per patients" graph (if checked) displays number of missing values per observation,',
-          "where x-axis is sorted by observation appearance in the table."
         ))
       )
     ),
@@ -166,8 +158,20 @@ encoding_missing_data <- function(id, plot_height) {
                                        HTML("Select only vars with missings")), width = "100%"), # nolint
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
-      checkboxInput(ns("any_na"), "Add **anyna** variable", value = FALSE),
-      checkboxInput(ns("if_patients_plot"), "Add summary per patients", value = FALSE),
+      checkboxInput(ns("any_na"),
+                    div(
+                      "Add **anyna** variable",
+                      title = "Describes the number of observations with at least one missing value in any variable.",
+                      icon("info-circle")
+                      ),
+                    value = FALSE),
+      checkboxInput(ns("if_patients_plot"),
+                    div(
+                      "Add summary per patients",
+                      title = paste("Displays the number of missing values per observation,",
+                                    "where the x-axis is sorted by observation appearance in the table."),
+                      icon("info-circle")
+                    ), value = FALSE),
       plot_height_input(id = ns("plot_height_summary"), value = plot_height)
     ),
     conditionalPanel(
