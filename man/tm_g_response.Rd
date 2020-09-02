@@ -11,6 +11,7 @@ tm_g_response(
   row_facet = NULL,
   col_facet = NULL,
   coord_flip = TRUE,
+  count_labels = TRUE,
   rotate_xaxis_labels = FALSE,
   freq = FALSE,
   plot_height = c(600, 400, 5000),
@@ -37,7 +38,9 @@ Which data columns to use for faceting rows.}
 \item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which data to use for faceting columns.}
 
-\item{coord_flip}{optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
+\item{coord_flip}{optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.}
+
+\item{count_labels}{optional, (\code{logical}) Whether to show count labels.
 Defaults to \code{TRUE}.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not

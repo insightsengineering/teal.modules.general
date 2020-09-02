@@ -18,6 +18,7 @@
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Which data to use for faceting columns.
 #' @param coord_flip optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
+#' @param count_labels optional, (\code{logical}) Whether to show count labels.
 #'   Defaults to \code{TRUE}.
 #' @param freq optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 #'   Defaults to density (\code{FALSE}).
@@ -72,6 +73,7 @@ tm_g_response <- function(label = "Response Plot",
                           row_facet = NULL,
                           col_facet = NULL,
                           coord_flip = TRUE,
+                          count_labels = TRUE,
                           rotate_xaxis_labels = FALSE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
@@ -92,18 +94,27 @@ tm_g_response <- function(label = "Response Plot",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(response))
-  stop_if_not(list(all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-                   "'response' should not allow empty values"))
-  stop_if_not(list(all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-                   "'response' should not allow multiple selection"))
+  stop_if_not(list(
+    all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
+    "'response' should not allow empty values"
+  ))
+  stop_if_not(list(
+    all(vapply(response, function(x) !(x$select$multiple), logical(1))),
+    "'response' should not allow multiple selection"
+  ))
   stopifnot(is_class_list("data_extract_spec")(x))
-  stop_if_not(list(all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-                   "'x' should not allow empty values"))
-  stop_if_not(list(all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-                   "'x' should not allow multiple selection"))
+  stop_if_not(list(
+    all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
+    "'x' should not allow empty values"
+  ))
+  stop_if_not(list(
+    all(vapply(x, function(x) !(x$select$multiple), logical(1))),
+    "'x' should not allow multiple selection"
+  ))
   stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet))
   stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet))
   stopifnot(is_logical_single(coord_flip))
+  stopifnot(is_logical_single(count_labels))
   stopifnot(is_logical_single(rotate_xaxis_labels))
   stopifnot(is_logical_single(freq))
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
@@ -174,6 +185,7 @@ ui_g_response <- function(id, ...) {
       panel_group(
         panel_item(
           title = "Plot settings",
+          checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
         )
@@ -185,6 +197,7 @@ ui_g_response <- function(id, ...) {
   )
 }
 
+#' @importFrom dplyr mutate group_by summarise group_by_at vars
 #' @importFrom forcats fct_rev
 #' @importFrom magrittr %>%
 srv_g_response <- function(input,
@@ -251,53 +264,97 @@ srv_g_response <- function(input,
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
+    counts <- input$count_labels
     rotate_xaxis_labels <- input$rotate_xaxis_labels
 
     arg_position <- if (freq) "stack" else "fill" # nolint
-    cl_arg_x <- if (is.null(x)) {
-      1
-    } else {
-      tmp_cl <- if (length(x) == 1) {
-        as.name(x)
-      } else {
-        tmp <- call_fun_dots("interaction", x)
-        tmp[["sep"]] <- " x "
-        tmp
-      }
 
-      if (swap_axes) {
-        bquote(forcats::fct_rev(.(tmp_cl)))
-      } else {
-        tmp_cl
-      }
+    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name)
+    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name)
+    resp_cl <- as.name(resp_var)
+    x_cl <- as.name(x)
+
+    if (swap_axes) {
+
+    chunks_push(expression = bquote({
+      ANL[[.(x)]] <- with(ANL, forcats::fct_rev(.(x_cl)))
+    }))
+
     }
 
+    chunks_push(expression = bquote({
+      ANL[[.(resp_var)]] <- factor(ANL[[.(resp_var)]])
+    }))
+
+    # rowf and colf will be a NULL if not set by a user
+    chunks_push(expression = bquote({
+      ANL2 <- ANL %>%
+        dplyr::group_by_at(
+          dplyr::vars(
+          .(x_cl),
+          .(resp_cl),
+          .(rowf),
+          .(colf)
+          )
+        ) %>%
+        dplyr::summarise(ns = n()) %>%
+        dplyr::group_by_at(
+          dplyr::vars(
+          .(x_cl),
+          .(rowf),
+          .(colf)
+          )
+        ) %>%
+        dplyr::mutate(
+          sums = sum(ns),
+          percent = round(ns / sums * 100, 1)
+        )
+    }))
+
+
+    chunks_push(expression = bquote({
+      ANL3 <- ANL %>%
+        dplyr::group_by_at(
+          dplyr::vars(
+          .(x_cl),
+          .(rowf),
+          .(colf)
+        )
+        ) %>%
+        dplyr::summarise(ns = n())
+    }))
+
     plot_call <- bquote(
-      ANL %>%
+      ANL2 %>%
         ggplot() +
-        aes(x = .(cl_arg_x)) +
-        geom_bar(aes(fill = .(as.name(resp_var))), position = .(arg_position)) +
+        aes(x = .(x_cl), y = ns) +
+        geom_bar(aes(fill = .(resp_cl)), stat = "identity", position = .(arg_position)) +
         xlab(.(varname_w_label(x, ANL))) +
         ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of ")))
     )
 
     plot_call <- bquote(.(plot_call) +
-                          labs(fill = .(varname_w_label(resp_var, ANL))) +
-                          theme(legend.position = "bottom"))
+      labs(fill = .(varname_w_label(resp_var, ANL))) +
+      theme(legend.position = "bottom"))
 
-    if (!freq) {
-      plot_call <- if (swap_axes) {
-        bquote(
-          .(plot_call) +
-            expand_limits(y = c(0, 1.05)) +
-            geom_text(stat = "count", aes(label = ..count..), hjust = "left", position = "fill"))
+    if (!freq) plot_call <- bquote(.(plot_call) + expand_limits(y = c(0, 1.1)))
 
-      } else {
-        bquote(
-          .(plot_call) +
-            expand_limits(y = c(0, 1.05)) +
-            geom_text(stat = "count", aes(label = ..count..), vjust = -1, position = "fill"))
-      }
+    if (counts) {
+      plot_call <-
+          bquote(.(plot_call) +
+            geom_text(data = ANL2,
+                      aes(label = ns, x = .(x_cl), y = ns, fill = .(resp_cl)),
+                      col = "white",
+                      vjust = "middle",
+                      hjust = "middle",
+                      position = .( if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
+            geom_text(
+              data = ANL3, aes(label = ns, x = .(x_cl), y = .( if (!freq) 1.1 else as.name("ns"))),
+              hjust = .(if (swap_axes) "left" else "middle"),
+              vjust = .(if (swap_axes) "middle" else -1),
+              position = .( if (!freq) "fill" else "stack")
+            )
+          )
     }
 
     if (swap_axes) {
@@ -318,8 +375,8 @@ srv_g_response <- function(input,
 
     chunks_push(expression = plot_call, id = "plotCall")
 
-    #explicitly calling print on the plot inside the chunk evaluates
-    #the ggplot call and therefore catches errors
+    # explicitly calling print on the plot inside the chunk evaluates
+    # the ggplot call and therefore catches errors
     plot_print_call <- quote(print(p))
     chunks_push(plot_print_call)
 
