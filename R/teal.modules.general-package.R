@@ -13,7 +13,6 @@
 #' @import utils.nest
 #'
 #' @importFrom stats IQR
-#' @importFrom utils tail
 #'
 #' @docType package
 #' @name teal.modules.general

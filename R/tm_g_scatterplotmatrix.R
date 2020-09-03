@@ -14,7 +14,6 @@
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 #' @export
-#' @importFrom stats na.omit
 #' @importFrom shinyjs show hide
 #' @examples
 #' # Scatterplot matrix of variables from ADSL dataset
@@ -145,7 +144,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate_if
 #' @importFrom lattice splom panel.splom panel.text current.panel.limits
-#' @importFrom stats cor.test
+#' @importFrom stats cor.test na.omit
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,

@@ -197,7 +197,7 @@ encoding_missing_data <- function(id, plot_height) {
   )
 }
 
-#' @importFrom dplyr arrange arrange_at desc filter group_by group_by_all group_by_at mutate mutate_all
+#' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all
 #'   n pull select summarise_all row_number ungroup tally tibble transmute
 #' @import ggplot2
 #' @importFrom grid grid.newpage grid.draw unit.pmax
