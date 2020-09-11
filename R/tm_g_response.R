@@ -269,10 +269,10 @@ srv_g_response <- function(input,
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name)
-    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name)
-    resp_cl <- as.name(resp_var)
-    x_cl <- as.name(x)
+    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) #nolint
+    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) #nolint
+    resp_cl <- as.name(resp_var) #nolint
+    x_cl <- as.name(x) #nolint
 
     if (swap_axes) {
 
@@ -285,7 +285,7 @@ srv_g_response <- function(input,
     chunks_push(expression = bquote({
       ANL[[.(resp_var)]] <- factor(ANL[[.(resp_var)]])
     }))
-
+    # nolint start
     # rowf and colf will be a NULL if not set by a user
     chunks_push(expression = bquote({
       ANL2 <- ANL %>%
@@ -323,7 +323,7 @@ srv_g_response <- function(input,
         ) %>%
         dplyr::summarise(ns = n())
     }))
-
+    # nolint end
     plot_call <- bquote(
       ANL2 %>%
         ggplot() +
@@ -347,12 +347,12 @@ srv_g_response <- function(input,
                       col = "white",
                       vjust = "middle",
                       hjust = "middle",
-                      position = .( if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
+                      position = .(if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
             geom_text(
-              data = ANL3, aes(label = ns, x = .(x_cl), y = .( if (!freq) 1.1 else as.name("ns"))),
+              data = ANL3, aes(label = ns, x = .(x_cl), y = .(if (!freq) 1.1 else as.name("ns"))),
               hjust = .(if (swap_axes) "left" else "middle"),
               vjust = .(if (swap_axes) "middle" else -1),
-              position = .( if (!freq) "fill" else "stack")
+              position = .(if (!freq) "fill" else "stack")
             )
           )
     }
