@@ -183,34 +183,3 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     }
   })
 }
-
-#' Create simple HTML table
-#'
-#' Turns data.frame into simple non-styled HTML table
-#' @param x two dimensional object (data.frame, matrix, array)
-#' @param colnames \code{logical} whether colnames should be displayed
-#' @param rownames \code{logical} whether rownames should be displayed
-#' @return \code{shiny.tag} table object
-#' @examples
-#' teal.modules.general:::to_html_table(iris[1:5, ], rownames = FALSE)
-to_html_table <- function(x, colnames = TRUE, rownames = TRUE) {
-
-  tags$div(
-    tags$table(
-      if (colnames && !is.null(colnames(x))) {
-        tags$thead(
-          tags$tr(
-            lapply(colnames(x), tags$th)
-          )
-        )
-      },
-      tags$tbody(
-        lapply(seq_len(nrow(x)), function(i) {
-          tags$tr(
-            if (rownames && !is.null(rownames(x))) tags$td(rownames(x)[i], style = "font-weight: bold;"),
-            lapply(x[i, ], tags$td)
-          )
-        })
-      ))
-  )
-}
