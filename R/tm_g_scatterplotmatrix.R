@@ -88,7 +88,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables),
+    server_args = list(variables = variables, plot_height = plot_height),
     filters = get_extract_datanames(variables)
   )
 }
@@ -101,7 +101,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("message")),
       br(),
-      plot_height_output(ns("myplot"))
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -112,7 +112,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         data_extract_spec = args$variables
       ),
       hr(),
-      plot_height_input(id = ns("myplot"), value = args$plot_height),
       panel_group(
         panel_item(
           title = "Plot settings",
@@ -149,7 +148,8 @@ srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
                                     datasets,
-                                    variables) {
+                                    variables,
+                                    plot_height) {
 
   init_chunks()
 
@@ -159,16 +159,16 @@ srv_g_scatterplotmatrix <- function(input,
     input_id = "variables"
   )
 
-  # Insert the plot into a plot_height module
+  # Insert the plot into a plot_with_settings module
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+    plot_r = plot_r,
+    height = plot_height
   )
 
   # plot
-  output$plot <- renderPlot({
+  plot_r <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data())
 

@@ -64,7 +64,7 @@ tm_a_pca <- function(label = "Principal component analysis",
     server = srv_a_pca,
     ui = ui_a_pca,
     ui_args = args,
-    server_args = data_extract_list,
+    server_args = c(data_extract_list, list(plot_height = plot_height)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -96,7 +96,7 @@ ui_a_pca <- function(id, ...) {
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
-        plot_height_output(id = ns("pca_plot"))
+        plot_with_settings_ui(id = ns("pca_plot"), height = args$plot_height)
       )
     ),
     encoding = div(
@@ -136,7 +136,6 @@ ui_a_pca <- function(id, ...) {
         panel_item(
           title = "Plot settings",
           collapsed = FALSE,
-          plot_height_input(id = ns("pca_plot"), value = args$plot_height),
           uiOutput(ns("plot_settings")),
           conditionalPanel(
             condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
@@ -161,7 +160,7 @@ ui_a_pca <- function(id, ...) {
 #' @importFrom tibble column_to_rownames rownames_to_column
 #' @importFrom tidyr gather drop_na
 #' @importFrom rlang !! !!! quo sym syms
-srv_a_pca <- function(input, output, session, datasets, dat) {
+srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
 
   response <- dat
 
@@ -319,10 +318,10 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
 
 
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "pca_plot",
-    plot_height = reactive(input$pca_plot),
-    plot_id = session$ns("plot")
+    plot_r = plot_r,
+    height = plot_height
   )
 
 
@@ -596,7 +595,7 @@ srv_a_pca <- function(input, output, session, datasets, dat) {
   }
 
   # plot final ----
-  output$plot <- renderPlot({
+  plot_r <- reactive({
     chunks_reset()
     chunks_push_chunks(computation())
 

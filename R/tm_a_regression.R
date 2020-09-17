@@ -106,7 +106,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     server = srv_a_regression,
     ui = ui_a_regression,
     ui_args = args,
-    server_args = data_extract_list,
+    server_args = c(data_extract_list, list(plot_height = plot_height)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -126,7 +126,7 @@ ui_a_regression <- function(id, ...) {
   standard_layout(
     output = white_small_well(
       tags$div(
-        plot_height_output(id = ns("myplot")),
+        plot_with_settings_ui(id = ns("myplot"), height = args$plot_height),
         tags$div(verbatimTextOutput(ns("text")))
       )
     ),
@@ -148,8 +148,7 @@ ui_a_regression <- function(id, ...) {
         label = "Plot type:",
         choices = plot_choices,
         selected = plot_choices[args$default_plot_type]
-      ),
-      plot_height_input(id = ns("myplot"), value = args$plot_height)
+      )
     ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
@@ -162,7 +161,7 @@ ui_a_regression <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
-srv_a_regression <- function(input, output, session, datasets, response, regressor) {
+srv_a_regression <- function(input, output, session, datasets, response, regressor, plot_height) {
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -171,12 +170,12 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     input_id = c("response", "regressor")
   )
 
-  # Insert the plot into a plot_height module from teal.devel
+  # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+    plot_r = plot_r,
+    height = plot_height
   )
 
   # sets chunk object and populates it with data merge call and fit expression
@@ -218,7 +217,7 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     return(form)
   })
 
-  output$plot <- renderPlot({
+  plot_r <- reactive({
     fit()
 
     if (input$plot_type == "Response vs Regressor") {

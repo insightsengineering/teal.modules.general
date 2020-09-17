@@ -35,6 +35,7 @@ tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 50
   module(
     label,
     server = srv_page_missing_data,
+    server_args = list(plot_height = plot_height),
     ui = ui_page_missing_data,
     ui_args = list(plot_height = plot_height),
     filters = "all"
@@ -62,7 +63,7 @@ ui_page_missing_data <- function(id, datasets, plot_height) {
                     width = 12,
                     div(style = "height:10px;"),
                     ui_missing_data(
-                      id = ns(x)
+                      id = ns(x), plot_height = plot_height
                     )
                   )
                 )
@@ -84,7 +85,7 @@ ui_page_missing_data <- function(id, datasets, plot_height) {
           function(x) {
             conditionalPanel(
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(id = ns(x), plot_height = plot_height)
+              encoding_missing_data(id = ns(x))
             )
           }
         )
@@ -96,7 +97,8 @@ ui_page_missing_data <- function(id, datasets, plot_height) {
 srv_page_missing_data <- function(input,
                                   output,
                                   session,
-                                  datasets) {
+                                  datasets,
+                                  plot_height) {
 
   lapply(
     datasets$datanames(),
@@ -105,19 +107,20 @@ srv_page_missing_data <- function(input,
         module = srv_missing_data,
         id = x,
         datasets = datasets,
-        dataname = x
+        dataname = x,
+        plot_height = plot_height
       )
     }
   )
 }
 
-ui_missing_data <- function(id) {
+ui_missing_data <- function(id, plot_height) {
   ns <- NS(id)
   tabsetPanel(
     id = ns("summary_type"),
     tabPanel(
       "Summary",
-      plot_height_output(id = ns("summary_plot")),
+      plot_with_settings_ui(id = ns("summary_plot"), height = plot_height),
       helpText(
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
@@ -127,7 +130,7 @@ ui_missing_data <- function(id) {
     ),
     tabPanel(
       "Combinations",
-      plot_height_output(id = ns("combination_plot")),
+      plot_with_settings_ui(id = ns("combination_plot"), height = plot_height),
       helpText(
         p(paste(
         'The "Combinations" graph is used to explore the relationship between the missing data within',
@@ -149,7 +152,7 @@ ui_missing_data <- function(id) {
   )
 }
 
-encoding_missing_data <- function(id, plot_height) {
+encoding_missing_data <- function(id) {
   ns <- NS(id)
 
   tagList(
@@ -171,13 +174,11 @@ encoding_missing_data <- function(id, plot_height) {
                       title = paste("Displays the number of missing values per observation,",
                                     "where the x-axis is sorted by observation appearance in the table."),
                       icon("info-circle")
-                    ), value = FALSE),
-      plot_height_input(id = ns("plot_height_summary"), value = plot_height)
+                    ), value = FALSE)
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
-      uiOutput(ns("cutoff")),
-      plot_height_input(id = ns("plot_height_combinations"), value = plot_height)
+      uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"By variable levels\"", ns("summary_type")),
@@ -211,21 +212,22 @@ srv_missing_data <- function(input,
                              output,
                              session,
                              datasets,
-                             dataname) {
+                             dataname,
+                             plot_height) {
 
   prev_group_by_var <- reactiveVal("")
 
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "summary_plot",
-    plot_height = reactive(input$plot_height_summary),
-    plot_id = session$ns("summary_plot")
+    plot_r = summary_plot_r,
+    height = plot_height
   )
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "combination_plot",
-    plot_height = reactive(input$plot_height_combinations),
-    plot_id = session$ns("combination_plot")
+    plot_r = combination_plot_r,
+    height = plot_height
   )
 
   data <- reactive({
@@ -372,7 +374,7 @@ srv_missing_data <- function(input,
     res
   })
 
-  output$summary_plot <- renderPlot({
+  summary_plot_r <- reactive({
 
     # x axis ordering according to number of missing values and alphabet
     x_levels <- filter(data_summary_plot_obs(), .data$isna) %>%
@@ -483,7 +485,7 @@ srv_missing_data <- function(input,
     res
   })
 
-  output$combination_plot <- renderPlot({
+  combination_plot_r <- reactive({
     labels <- data_combination_plot_cutoff() %>%
       filter(.data$key == .data$key[[1]]) %>%
       transmute(paste0("N=", .data$n)) %>%

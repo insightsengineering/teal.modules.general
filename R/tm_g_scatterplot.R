@@ -115,7 +115,7 @@ tm_g_scatterplot <- function(label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
     ui_args = args,
-    server_args = data_extract_list,
+    server_args = c(data_extract_list, list(plot_height = plot_height)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -126,7 +126,7 @@ ui_g_scatterplot <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_height_output(id = ns("myplot"))
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -148,7 +148,6 @@ ui_g_scatterplot <- function(id, ...) {
           data_extract_spec = args$color_by
         )
       },
-      plot_height_input(id = ns("myplot"), value = args$plot_height),
       panel_group(
         panel_item(
           title = "Plot settings",
@@ -165,15 +164,15 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 #' @importFrom magrittr %>%
-srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) {
+srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height) {
   init_chunks()
 
-  # Insert the plot into a plot_height module from teal.devel
+  # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+    plot_r = plot_r,
+    height = plot_height
   )
 
   merged_data <- if (is.null(color_by)) {
@@ -191,8 +190,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by) 
   }
 
 
-
-  output$plot <- renderPlot({
+  plot_r <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data())
 

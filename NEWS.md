@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.5.9000
 
+* Replace `plot_with_height` module with new `plot_with_settings` module. 
 * New theme for missing data module and new label positioning.
 * `tm_data_table`: allow developers to pass arguments to `DT::dataTable` and use `pickerInput` to select variables.
 * `tm_g_response` a new argument `count_labels`. Counts might be assessed for the frequency plot too.

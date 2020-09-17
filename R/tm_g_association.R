@@ -96,7 +96,7 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = data_extract_list,
+    server_args = c(data_extract_list, list(plot_height = plot_height)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -110,7 +110,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_height_output(id = ns("myplot"))
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -137,7 +137,6 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      plot_height_input(id = ns("myplot"), value = args$plot_height),
       panel_group(
         panel_item(
           title = "Plot settings",
@@ -160,15 +159,16 @@ srv_tm_g_association <- function(input,
                                  session,
                                  datasets,
                                  ref,
-                                 vars) {
+                                 vars,
+                                 plot_height) {
 
   init_chunks()
 
   callModule(
-    plot_with_height,
+    plot_with_settings_srv,
     id = "myplot",
-    plot_height = reactive(input$myplot),
-    plot_id = session$ns("plot")
+    plot_r = plot_r,
+    height = plot_height
   )
 
   merged_data <- data_merge_module(
@@ -282,7 +282,7 @@ srv_tm_g_association <- function(input,
     )
   })
 
-  output$plot <- renderPlot({
+  plot_r <- reactive({
     chunks_uneval()
     chunks_reactive()
     chunks_safe_eval()
