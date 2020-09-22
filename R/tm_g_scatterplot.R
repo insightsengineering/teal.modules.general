@@ -167,14 +167,6 @@ ui_g_scatterplot <- function(id, ...) {
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height) {
   init_chunks()
 
-  # Insert the plot into a plot_with_settings module from teal.devel
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   merged_data <- if (is.null(color_by)) {
     data_merge_module(
       datasets = datasets,
@@ -188,7 +180,6 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       input_id = c("x", "y", "color_by")
     )
   }
-
 
   plot_r <- reactive({
     chunks_reset()
@@ -255,6 +246,14 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     chunks_push(plot_print_call)
     chunks_safe_eval()
   })
+
+  # Insert the plot into a plot_with_settings module from teal.devel
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   callModule(
     get_rcode_srv,

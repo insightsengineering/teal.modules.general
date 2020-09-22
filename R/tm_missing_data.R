@@ -217,19 +217,6 @@ srv_missing_data <- function(input,
 
   prev_group_by_var <- reactiveVal("")
 
-  callModule(
-    plot_with_settings_srv,
-    id = "summary_plot",
-    plot_r = summary_plot_r,
-    height = plot_height
-  )
-  callModule(
-    plot_with_settings_srv,
-    id = "combination_plot",
-    plot_r = combination_plot_r,
-    height = plot_height
-  )
-
   data <- reactive({
     datasets$get_data(dataname, filtered = TRUE)
   })
@@ -513,6 +500,19 @@ srv_missing_data <- function(input,
       )
     p
   })
+
+  callModule(
+    plot_with_settings_srv,
+    id = "summary_plot",
+    plot_r = summary_plot_r,
+    height = plot_height
+  )
+  callModule(
+    plot_with_settings_srv,
+    id = "combination_plot",
+    plot_r = combination_plot_r,
+    height = plot_height
+  )
 
   data_plot3 <- reactive({
     validate(need(input$count_type, "Please select type of counts"))

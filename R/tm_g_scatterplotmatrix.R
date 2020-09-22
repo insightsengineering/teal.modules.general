@@ -159,14 +159,6 @@ srv_g_scatterplotmatrix <- function(input,
     input_id = "variables"
   )
 
-  # Insert the plot into a plot_with_settings module
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   # plot
   plot_r <- reactive({
     chunks_reset()
@@ -247,6 +239,14 @@ srv_g_scatterplotmatrix <- function(input,
     }
     chunks_safe_eval()
   })
+
+  # Insert the plot into a plot_with_settings module
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   # show a message if conversion to factors took place
   output$message <- renderText({

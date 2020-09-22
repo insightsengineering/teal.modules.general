@@ -170,14 +170,6 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
     input_id = c("response", "regressor")
   )
 
-  # Insert the plot into a plot_with_settings module from teal.devel
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
     chunks_reset()
@@ -260,6 +252,14 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
 
     chunks_safe_eval()
   })
+
+  # Insert the plot into a plot_with_settings module from teal.devel
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   output$text <- renderPrint({
     fit()

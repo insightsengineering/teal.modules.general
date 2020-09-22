@@ -219,14 +219,6 @@ srv_g_response <- function(input,
     input_id = names(data_extract)
   )
 
-  # Insert the plot into a plot_with_settings module from teal.devel
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   ## dynamic plot height
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
@@ -382,6 +374,14 @@ srv_g_response <- function(input,
 
     chunks_safe_eval()
   })
+
+  # Insert the plot into a plot_with_settings module from teal.devel
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   callModule(
     get_rcode_srv,

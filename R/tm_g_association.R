@@ -164,13 +164,6 @@ srv_tm_g_association <- function(input,
 
   init_chunks()
 
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   merged_data <- data_merge_module(
     datasets = datasets,
     data_extract = list(ref, vars),
@@ -287,6 +280,13 @@ srv_tm_g_association <- function(input,
     chunks_reactive()
     chunks_safe_eval()
   })
+
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   output$title <- renderText({
     chunks_reactive()

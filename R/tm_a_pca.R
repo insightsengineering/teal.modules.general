@@ -316,15 +316,6 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
     return(out)
   })
 
-
-  callModule(
-    plot_with_settings_srv,
-    id = "pca_plot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
-
   # plot elbow ----
   plot_elbow <- function() {
     chunks_push(
@@ -621,6 +612,13 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
 
     chunks_safe_eval()
   })
+
+  callModule(
+    plot_with_settings_srv,
+    id = "pca_plot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   # tables ----
   output$tbl_importance <- renderTable({
