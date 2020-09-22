@@ -19,6 +19,9 @@ NULL
 #'   Variables for row facetting.
 #' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Variables for col facetting.
+#' @param facet optional, (\code{logical}) to specify whether the facet encodings ui elements are toggled
+#'   on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
+#'   are supplied.
 #' @param color_settings (\code{logical}) Whether coloring, filling and size should be applied
 #' and UI tool offered to the user.
 #' @param color optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -91,6 +94,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            y,
                            row_facet = NULL,
                            col_facet = NULL,
+                           facet = !is.null(row_facet) || !is.null(col_facet),
                            color = NULL,
                            fill = NULL,
                            size = NULL,
@@ -225,7 +229,7 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Facetting"),
-          switchInput(inputId = ns("facetting"), value = TRUE, size = "mini"),
+          switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
             div(
@@ -361,13 +365,6 @@ srv_g_bivariate <- function(input,
     input_id = names(data_extract)
   )
 
-  callModule(
-    plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height
-  )
-
   plot_r <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data())
@@ -474,6 +471,13 @@ srv_g_bivariate <- function(input,
 
     chunks_safe_eval()
   })
+
+  callModule(
+    plot_with_settings_srv,
+    id = "myplot",
+    plot_r = plot_r,
+    height = plot_height
+  )
 
   callModule(
     get_rcode_srv,

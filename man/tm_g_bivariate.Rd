@@ -10,6 +10,7 @@ tm_g_bivariate(
   y,
   row_facet = NULL,
   col_facet = NULL,
+  facet = !is.null(row_facet) || !is.null(col_facet),
   color = NULL,
   fill = NULL,
   size = NULL,
@@ -41,6 +42,10 @@ Variables for row facetting.}
 
 \item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variables for col facetting.}
+
+\item{facet}{optional, (\code{logical}) to specify whether the facet encodings ui elements are toggled
+on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
+are supplied.}
 
 \item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variables selected for the outline color inside the coloring settings.
