@@ -14,7 +14,6 @@
 #'   \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}
 #' @export
 #' @importFrom utils.nest is_fully_named_list
-#' @importFrom shinyWidgets pickerInput
 #' @importFrom DT datatable
 #' @examples
 #' library(random.cdisc.data)
@@ -328,7 +327,7 @@ ui_data_table <- function(id,
 
   tagList(
     fluidRow(
-      shinyWidgets::pickerInput(
+      teal::optionalSelectInput(
         ns("variables"),
         "Select variables:",
         choices = choices,

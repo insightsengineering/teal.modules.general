@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.5.9000
 
+* Replace `pickerInput` with `optionalSelectInput` for `tm_data_table`.
 * Adds new `facet` parameter to `tm_g_bivariate` to specify whether the facet encodings elements should be visible to the user by default.
 * Replace `plot_with_height` module with new `plot_with_settings` module. 
 * New theme for missing data module and new label positioning.
