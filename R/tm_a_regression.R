@@ -86,8 +86,9 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(response))
-  stop_if_not(list(all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
-                   "Response variable should not allow multiple selection"))
+  stop_if_not(list(
+    all(vapply(response, function(x) !isTRUE(x$select$multiple), logical(1))),
+    "Response variable should not allow multiple selection"))
   stopifnot(is_class_list("data_extract_spec")(regressor))
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
@@ -117,10 +118,10 @@ ui_a_regression <- function(id, ...) {
   args <- list(...)
 
   plot_choices <- c(
-      "Response vs Regressor",
-      "Residuals vs Fitted",
-      "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
-      "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+    "Response vs Regressor",
+    "Residuals vs Fitted",
+    "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage",
+    "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
   )
 
   standard_layout(
@@ -221,10 +222,11 @@ srv_a_regression <- function(input, output, session, datasets, response, regress
       if (ncol(fit$model) > 1) {
         stopifnot(ncol(fit$model) == 2)
         chunks_push(bquote({
-          plot(fit$model[, 2:1],
-                               main = "Response vs Regressor",
-                               xlab = .(varname_w_label(regressor_var, ANL)),
-                               ylab = .(varname_w_label(response_var, ANL)))
+          plot(
+            fit$model[, 2:1],
+            main = "Response vs Regressor",
+            xlab = .(varname_w_label(regressor_var, ANL)),
+            ylab = .(varname_w_label(response_var, ANL)))
         }))
         if (is.numeric(ANL[[regressor_var]])) {
           chunks_push(quote(abline(fit, col = "red", lwd = 2L)))

@@ -124,12 +124,12 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             step = .05, value = .65, ticks = FALSE
           ),
           checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
-          radioButtons(ns("cor_method"), "Select Correlation Method",
-                       choiceNames = c("Pearson", "Kendall", "Spearman"),
-                       choiceValues = c("pearson", "kendall", "spearman"),
-                       inline = TRUE),
-          checkboxInput(ns("cor_na_omit"), "Omit Missing Values",
-                        value = TRUE)
+          radioButtons(
+            ns("cor_method"), "Select Correlation Method",
+            choiceNames = c("Pearson", "Kendall", "Spearman"),
+            choiceValues = c("pearson", "kendall", "spearman"),
+            inline = TRUE),
+          checkboxInput(ns("cor_na_omit"), "Omit Missing Values", value = TRUE)
           )
         )
     ),
@@ -217,9 +217,12 @@ srv_g_scatterplotmatrix <- function(input,
             lattice::panel.text(
               mean(cpl$xlim),
               mean(cpl$ylim),
-              get_scatterplotmatrix_stats(x, y, .f = cor.test,
-                                          .f_args = list(method = .(cor_method),
-                                                         na.action = .(cor_na_action))),
+              get_scatterplotmatrix_stats(
+                x,
+                y,
+                .f = cor.test,
+                .f_args = list(method = .(cor_method),
+                na.action = .(cor_na_action))),
               alpha = 0.6,
               fontsize = 18,
               fontface = "bold")
@@ -339,15 +342,15 @@ get_scatterplotmatrix_stats <- function(x, y,
                                         round_pval = 4) {
   if (is.numeric(x) && is.numeric(y)) {
 
-    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)),
-              error = function(e) NA)
+    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
 
     if (anyNA(stat)) {
       return("NA")
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(c(paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-                     paste0("P:", round(stat$p.value, round_pval))),
-                   collapse = "\n"))
+      return(paste(c(
+        paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
+        paste0("P:", round(stat$p.value, round_pval))),
+        collapse = "\n"))
     } else {
       stop("function not supported")
     }

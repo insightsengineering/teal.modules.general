@@ -333,20 +333,21 @@ srv_g_response <- function(input,
 
     if (counts) {
       plot_call <-
-          bquote(.(plot_call) +
-            geom_text(data = ANL2,
-                      aes(label = ns, x = .(x_cl), y = ns, fill = .(resp_cl)),
-                      col = "white",
-                      vjust = "middle",
-                      hjust = "middle",
-                      position = .(if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
-            geom_text(
-              data = ANL3, aes(label = ns, x = .(x_cl), y = .(if (!freq) 1.1 else as.name("ns"))),
-              hjust = .(if (swap_axes) "left" else "middle"),
-              vjust = .(if (swap_axes) "middle" else -1),
-              position = .(if (!freq) "fill" else "stack")
-            )
+        bquote(.(plot_call) +
+          geom_text(
+            data = ANL2,
+            aes(label = ns, x = .(x_cl), y = ns, fill = .(resp_cl)),
+            col = "white",
+            vjust = "middle",
+            hjust = "middle",
+            position = .(if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
+          geom_text(
+            data = ANL3, aes(label = ns, x = .(x_cl), y = .(if (!freq) 1.1 else as.name("ns"))),
+            hjust = .(if (swap_axes) "left" else "middle"),
+            vjust = .(if (swap_axes) "middle" else -1),
+            position = .(if (!freq) "fill" else "stack")
           )
+        )
     }
 
     if (swap_axes) {

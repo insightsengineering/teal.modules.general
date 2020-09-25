@@ -157,24 +157,29 @@ encoding_missing_data <- function(id) {
 
   tagList(
     uiOutput(ns("variables")),
-    actionButton(ns("filter_na"), span(style = "white-space: normal;",
-                                       HTML("Select only vars with missings")), width = "100%"), # nolint
+    actionButton(
+      ns("filter_na"),
+      span(style = "white-space: normal;",
+      HTML("Select only vars with missings")), width = "100%"), # nolint
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
-      checkboxInput(ns("any_na"),
-                    div(
-                      "Add **anyna** variable",
-                      title = "Describes the number of observations with at least one missing value in any variable.",
-                      icon("info-circle")
-                      ),
-                    value = FALSE),
-      checkboxInput(ns("if_patients_plot"),
-                    div(
-                      "Add summary per patients",
-                      title = paste("Displays the number of missing values per observation,",
-                                    "where the x-axis is sorted by observation appearance in the table."),
-                      icon("info-circle")
-                    ), value = FALSE)
+      checkboxInput(
+        ns("any_na"),
+        div(
+          "Add **anyna** variable",
+          title = "Describes the number of observations with at least one missing value in any variable.",
+          icon("info-circle")
+        ),
+        value = FALSE),
+      checkboxInput(
+        ns("if_patients_plot"),
+        div(
+          "Add summary per patients",
+          title = paste(
+            "Displays the number of missing values per observation,",
+            "where the x-axis is sorted by observation appearance in the table."),
+          icon("info-circle")
+        ), value = FALSE)
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
@@ -376,9 +381,10 @@ srv_missing_data <- function(input,
 
     p1 <- data_summary_plot_obs() %>%
       ggplot() +
-      aes_(x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
-           y = ~n_pct,
-           fill = ~isna) +
+      aes_(
+        x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
+        y = ~n_pct,
+        fill = ~isna) +
       geom_bar(position = "fill", stat = "identity") +
       scale_fill_manual(
         name = "",
@@ -402,9 +408,10 @@ srv_missing_data <- function(input,
     p2 <- if (input$if_patients_plot) {
       data_summary_plot_patients() %>%
         ggplot() +
-        aes_(x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
-             y = ~reorder(id, order(-count_na)),
-             fill = ~isna) +
+        aes_(
+          x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
+          y = ~reorder(id, order(-count_na)),
+          fill = ~isna) +
         geom_bar(alpha = 1, stat = "identity") +
         scale_fill_manual(
           name = "",
@@ -455,9 +462,10 @@ srv_missing_data <- function(input,
     n <- length(x)
     idx <- max(1, n - 10)
     prev_value <- isolate(input$combination_cutoff)
-    value <- `if`(is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
-                  sort(x, partial = idx)[idx],
-                  prev_value)
+    value <- `if`(
+      is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
+      sort(x, partial = idx)[idx],
+      prev_value)
 
     optionalSliderInputValMinMax(session$ns("combination_cutoff"), "Combination cut-off", c(value, range(x)))
   })
@@ -521,8 +529,9 @@ srv_missing_data <- function(input,
     }
 
     group_var <- input$group_by_var
-    validate(need(is.null(group_var) || group_var %in% names(data_selected()),
-                  "Groupping variable has been already filtered out"))
+    validate(need(
+      is.null(group_var) || group_var %in% names(data_selected()),
+      "Groupping variable has been already filtered out"))
 
     group_vals <- input$group_by_vals
 
@@ -547,20 +556,22 @@ srv_missing_data <- function(input,
         filter(!!sym(group_var) %in% group_vals) %>%
         summarise_all(cell_values) %>%
         gather("Variable", "out", -!!sym(group_var)) %>%
-        mutate(`Variable label` = vapply(if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
-                                         if_empty,
-                                         character(1),
-                                         "")) %>%
+        mutate(`Variable label` = vapply(
+          if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
+          if_empty,
+          character(1),
+          "")) %>%
         select(!!sym(group_var), .data$Variable, .data$`Variable label`, .data$out) %>%
         spread(!!sym(group_var), .data$out)
     } else {
       data_selected() %>%
         summarise_all(cell_values) %>%
         gather("Variable", "out") %>%
-        mutate(`Variable label` = vapply(if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
-                                         if_empty,
-                                         character(1),
-                                         "")) %>%
+        mutate(`Variable label` = vapply(
+          if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
+          if_empty,
+          character(1),
+          "")) %>%
         select(.data$Variable, .data$`Variable label`, `Overall missing` = .data$out)
     }
 

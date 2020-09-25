@@ -126,12 +126,14 @@ ui_a_pca <- function(id, ...) {
         ),
         panel_item(
           title = "Pre-processing",
-          radioButtons(ns("standardization"), "Standardization",
-                       choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
-                       selected = "center_scale"),
-          radioButtons(ns("na_action"), "NA action",
-                       choices = c("None" = "none", "Drop" = "drop"),
-                       selected = "none")
+          radioButtons(
+            ns("standardization"), "Standardization",
+            choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
+            selected = "center_scale"),
+          radioButtons(
+            ns("na_action"), "NA action",
+            choices = c("None" = "none", "Drop" = "drop"),
+            selected = "none")
         ),
         panel_item(
           title = "Plot settings",
@@ -283,24 +285,23 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
 
     } else if (input$plot_type == "circle") {
       list(
-        optionalSelectInput(ns("x_axis"), "X axis",
-                            choices = chcs_pcs, selected = chcs_pcs[1]),
-        optionalSelectInput(ns("y_axis"), "Y axis",
-                            choices = chcs_pcs, selected = chcs_pcs[2]),
-        optionalSelectInput(ns("variables"), "Original coordinates",
-                            choices = chcs_vars, selected = chcs_vars,
-                            multiple = TRUE)
+        optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
+        optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
+        optionalSelectInput(
+          ns("variables"), "Original coordinates",
+          choices = chcs_vars, selected = chcs_vars,
+          multiple = TRUE)
       )
 
     } else if (input$plot_type == "biplot") {
       list(
-        optionalSelectInput(ns("x_axis"), "X axis",
-                            choices = chcs_pcs, selected = chcs_pcs[1]),
-        optionalSelectInput(ns("y_axis"), "Y axis",
-                            choices = chcs_pcs, selected = chcs_pcs[2]),
-        optionalSelectInput(ns("variables"), "Original coordinates",
-                            choices = chcs_vars, selected = chcs_vars,
-                            multiple = TRUE)
+        optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
+        optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
+        optionalSelectInput(
+          ns("variables"), "
+          Original coordinates",
+          choices = chcs_vars, selected = chcs_vars,
+          multiple = TRUE)
       )
 
     } else if (input$plot_type == "pc_var") {
@@ -324,8 +325,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
         elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
           dplyr::as_tibble(rownames = "metric") %>%
           tidyr::gather("component", "value", -metric) %>%
-          dplyr::mutate(component = factor(component,
-                                           levels = unique(stringr::str_sort(component, numeric = T))))
+          dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = T))))
 
         g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
           geom_bar(
@@ -340,14 +340,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
             aes(group = 1, color = "Cumulative variance"),
             data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
           theme_bw() +
-          labs(x = "Principal component",
-               y = "Proportion of variance explained",
-               color = "",
-               fill = "Legend") +
+          labs(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend") +
           scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
           scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"),
-                legend.title = element_text(vjust = 8))
+          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"), legend.title = element_text(vjust = 8))
         print(g)
       })
     )
@@ -382,9 +378,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
 
         g <- ggplot(pca_rot) +
           geom_point(aes_string(x = .(x_axis), y = .(y_axis))) +
-          geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-                     nudge_x = 0.1, nudge_y = 0.05,
-                     fontface = "bold") +
+          geom_label(
+            aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
+            nudge_x = 0.1, nudge_y = 0.05,
+            fontface = "bold") +
           geom_path(aes(x, y, group = 1), data = circle_data) +
           geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
           theme_bw()
@@ -474,9 +471,9 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
     } else {
 
       ANL <- chunks_get_var("ANL") # nolint
-      validate(need(!resp_col %in% colnames(ANL),
-                    paste("Response column must be different from the original variables",
-                          "(that were used for PCA).")))
+      validate(need(
+        !resp_col %in% colnames(ANL),
+        "Response column must be different from the original variables (that were used for PCA)."))
 
       RP <- chunks_get_var("RP") # nolint
       rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source))) # nolint
@@ -498,8 +495,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
           bquote({
             response <- RP[[.(resp_col)]]
             pca_rot$response <- as.numeric(response)
-            scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue",
-                                                 labels = function(x) as.Date(x, origin = "1970-01-01"))
+            scale_colors <- scale_color_gradient(
+              low = "darkred",
+              high = "lightblue",
+              labels = function(x) as.Date(x, origin = "1970-01-01"))
             aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
           })
         } else {
@@ -529,18 +528,17 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
         id = "pca_plot_arrow_plot",
         expression = bquote({
           g <- g +
-            geom_segment(aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
-                         data = rot_vars,
-                         lineend = "round", linejoin = "round",
-                         arrow = arrow(length = unit(0.5, "cm"))) +
-            geom_label(aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-                       data = rot_vars,
-                       nudge_y = 0.1,
-                       fontface = "bold") +
-            geom_point(aes(x = xstart, y = ystart),
-                       data = rot_vars,
-                       shape = "x",
-                       size = 5)
+            geom_segment(
+              aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
+              data = rot_vars,
+              lineend = "round", linejoin = "round",
+              arrow = arrow(length = unit(0.5, "cm"))) +
+            geom_label(
+              aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
+              data = rot_vars,
+              nudge_y = 0.1,
+              fontface = "bold") +
+            geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5)
         })
       )
     }
@@ -568,15 +566,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
           dplyr::as_tibble(rownames = "Variable")
 
         g <- ggplot(pca_rot) +
-          geom_bar(aes_string(x = "Variable", y = .(pc)),
-                   stat = "identity",
-                   color = "black",
-                   fill = "lightblue") +
-          geom_text(
-            aes_q(x = quote(Variable),
-                  y = as.name(.(pc)),
-                  label = quo(round(!!sym(.(pc)), 3)),
-                  vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
+          geom_bar(aes_string(x = "Variable", y = .(pc)), stat = "identity", color = "black", fill = "lightblue") +
+          geom_text(aes_q(
+            x = quote(Variable),
+            y = as.name(.(pc)),
+            label = quo(round(!!sym(.(pc)), 3)),
+            vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
           theme_bw()
         print(g)
       })

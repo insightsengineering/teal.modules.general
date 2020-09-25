@@ -211,7 +211,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       )
     } else {
       bquote(
-       .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)), color = .(as.name(color_by_var)))
+        .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)), color = .(as.name(color_by_var)))
       )
     }
 
@@ -225,9 +225,10 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
 
     # add color label if existing
     if (!is.null(color_by_var) && !is_character_empty(color_by_var)) {
-      plot_call <- bquote(.(plot_call) +
-                            labs(color = .(varname_w_label(color_by_var, ANL))) +
-                            theme(legend.position = "bottom"))
+      plot_call <- bquote(
+        .(plot_call) +
+        labs(color = .(varname_w_label(color_by_var, ANL))) +
+        theme(legend.position = "bottom"))
     }
 
     if (rotate_xaxis_labels) {

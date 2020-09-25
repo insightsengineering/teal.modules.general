@@ -76,8 +76,9 @@ tm_g_association <- function(label = "Association",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(ref))
-  stop_if_not(list(all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
-                   "'ref' should not allow multiple selection"))
+  stop_if_not(list(
+    all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
+    "'ref' should not allow multiple selection"))
   stopifnot(is_class_list("data_extract_spec")(vars))
   stopifnot(is_logical_single(show_association))
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)

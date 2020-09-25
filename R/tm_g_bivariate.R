@@ -215,8 +215,8 @@ ui_g_bivariate <- function(id, ...) {
       ),
       conditionalPanel(
         condition =
-        "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
-         $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
+          "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
+          $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
         radioGroupButtons(
           inputId = ns("use_density"),
           label = NULL,

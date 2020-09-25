@@ -150,10 +150,11 @@ srv_variable_browser <- function(input, output, session, datasets) {
         )
 
         dt <- DT::datatable(
-          data.frame(Variable = paste(icons, names(labels)),
-                     Label = labels,
-                     Missings = missings,
-                     stringsAsFactors = FALSE),
+          data.frame(
+            Variable = paste(icons, names(labels)),
+            Label = labels,
+            Missings = missings,
+            stringsAsFactors = FALSE),
           escape = FALSE,
           rownames = FALSE,
           selection = list(mode = "single", target = "row", selected = 1),
@@ -309,9 +310,7 @@ var_summary_table <- function(x) {
 
     summary <- data.frame(
       Level = names(level_counts),
-      `Count` = sprintf("%s [%.2f%%]",
-                      format(level_counts, width = max_levels_signif),
-                      prop.table(level_counts) * 100),
+      `Count` = sprintf("%s [%.2f%%]", format(level_counts, width = max_levels_signif), prop.table(level_counts) * 100),
       stringsAsFactors = FALSE
     )
 
@@ -345,10 +344,11 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
 
     if (length(groups) > 30) {
       grid::textGrob(
-        sprintf("%s:\n  %s\n   ... other %s values",
-                var_lab,
-                paste(groups[1:10], collapse = "\n  "),
-                length(groups) - 10),
+        sprintf(
+          "%s:\n  %s\n   ... other %s values",
+          var_lab,
+          paste(groups[1:10], collapse = "\n  "),
+          length(groups) - 10),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),
         just = c("left", "top")
