@@ -1,7 +1,5 @@
 #' Stack Plots of variables and show association with reference variable
 #'
-#' Stack Plots of variables and show association with reference variable
-#'
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @inheritParams shared_params
@@ -11,6 +9,10 @@
 #'   associated variables.
 #' @param show_association optional, (\code{logical}) Whether show association of \code{vars}
 #'   with reference variable. Defaults to \code{TRUE}.
+#' @param distribution_theme optional, (\code{character}) \code{ggplot} Theme to be used by default
+#'   for the distribution plot. All themes can be chosen by the user. Defaults to \code{grey}.
+#' @param association_theme optional, (\code{character}) \code{ggplot} Theme to be used by default
+#'   for the association plots. All themes can be chosen by the user. Defaults to \code{grey}.
 #'
 #' @note For more examples, please see the vignette "Using association plot" via
 #'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
@@ -65,6 +67,14 @@ tm_g_association <- function(label = "Association",
                              vars,
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
+                             distribution_theme = c(
+                               "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                               "classic", "void", "test"
+                             ),
+                             association_theme = c(
+                               "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                               "classic", "void", "test"
+                             ),
                              pre_output = NULL,
                              post_output = NULL) {
   if (!is_class_list("data_extract_spec")(ref)) {
@@ -84,6 +94,10 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
   stopifnot(all(plot_height > 0))
+  distribution_theme <- match.arg(distribution_theme)
+  stopifnot(is_character_single(distribution_theme))
+  association_theme <- match.arg(association_theme)
+  stopifnot(is_character_single(association_theme))
 
   args <- as.list(environment())
 
@@ -141,8 +155,24 @@ ui_tm_g_association <- function(id, ...) {
       panel_group(
         panel_item(
           title = "Plot settings",
+          optionalSliderInputValMinMax(ns("alpha"), "Scatterplot opacity:", c(0.5, 0, 1), ticks = FALSE),
+          optionalSliderInputValMinMax(ns("size"), "Scatterplot points size:", c(2, 1, 8), ticks = FALSE),
           checkboxInput(ns("swap_axes"), "Swap axes", value = FALSE),
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = FALSE)
+          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = FALSE),
+          optionalSelectInput(
+            inputId = ns("distribution_theme"),
+            label = "Distribution theme (by ggplot):",
+            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            selected = args$distribution_theme,
+            multiple = FALSE
+          ),
+          optionalSelectInput(
+            inputId = ns("association_theme"),
+            label = "Association theme (by ggplot):",
+            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            selected = args$association_theme,
+            multiple = FALSE
+          )
         )
       )
     ),
@@ -186,11 +216,27 @@ srv_tm_g_association <- function(input,
     log_transformation <- input$log_transformation
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
+    distribution_theme <- input$distribution_theme
+    association_theme <- input$association_theme
+
+    is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
+    if (is_scatterplot) {
+      shinyjs::show("alpha")
+      shinyjs::show("size")
+      alpha <- input$alpha # nolint
+      size <- input$size
+    } else {
+      shinyjs::hide("alpha")
+      shinyjs::hide("size")
+      alpha <- 0.5
+      size <- 2
+    }
 
     validate(
       need(length(ref_name) > 0, "need at least one variable selected"),
       need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap")
     )
+    validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
     validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE)
 
@@ -212,9 +258,11 @@ srv_tm_g_association <- function(input,
       x_class = ref_class,
       x_label = ref_cl_lbl,
       freq = !show_dist,
-      theme = quote(theme(panel.background = element_rect(fill = "papayawhip", colour = "papayawhip"))),
+      theme = as.call(parse(text = paste0("theme_", distribution_theme))),
       rotate_xaxis_labels = rotate_xaxis_labels,
-      swap_axes = FALSE
+      swap_axes = FALSE,
+      size = size,
+      alpha = alpha
     )
 
     # association
@@ -258,10 +306,12 @@ srv_tm_g_association <- function(input,
         y_class = var_class,
         x_label = ref_cl_lbl,
         y_label = var_cl_lbl,
+        theme = as.call(parse(text = paste0("theme_", association_theme))),
         freq = !show_dist,
         rotate_xaxis_labels = rotate_xaxis_labels,
         swap_axes = swap_axes,
-        alpha = 1
+        alpha = alpha,
+        size = size
       )
     })
 

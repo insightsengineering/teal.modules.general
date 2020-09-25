@@ -22,6 +22,8 @@
 #'   Defaults to \code{TRUE}.
 #' @param freq optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 #'   Defaults to density (\code{FALSE}).
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to \code{grey}.
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
@@ -77,6 +79,10 @@ tm_g_response <- function(label = "Response Plot",
                           rotate_xaxis_labels = FALSE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
+                          ggtheme = c(
+                            "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                            "classic", "void", "test"
+                          ),
                           pre_output = NULL,
                           post_output = NULL) {
   if (!is_class_list("data_extract_spec")(response)) {
@@ -119,6 +125,8 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is_logical_single(freq))
   stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
   stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  ggtheme <- match.arg(ggtheme)
+  stopifnot(is_character_single(ggtheme))
 
   args <- as.list(environment())
 
@@ -186,7 +194,14 @@ ui_g_response <- function(id, ...) {
           title = "Plot settings",
           checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
+          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+          optionalSelectInput(
+            inputId = ns("ggtheme"),
+            label = "Theme (by ggplot):",
+            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            selected = args$ggtheme,
+            multiple = FALSE
+          )
         )
       )
     ),
@@ -258,6 +273,9 @@ srv_g_response <- function(input,
     swap_axes <- input$coord_flip
     counts <- input$count_labels
     rotate_xaxis_labels <- input$rotate_xaxis_labels
+    ggtheme <- input$ggtheme
+
+    validate(need(!is.null(ggtheme), "Please select a theme."))
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
@@ -322,7 +340,8 @@ srv_g_response <- function(input,
         aes(x = .(x_cl), y = ns) +
         geom_bar(aes(fill = .(resp_cl)), stat = "identity", position = .(arg_position)) +
         xlab(.(varname_w_label(x, ANL))) +
-        ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of ")))
+        ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of "))) +
+        .(as.call(parse(text = paste0("theme_", ggtheme))))
     )
 
     plot_call <- bquote(.(plot_call) +

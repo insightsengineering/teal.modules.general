@@ -10,6 +10,10 @@ tm_g_association(
   vars,
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
+  distribution_theme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+    "classic", "void", "test"),
+  association_theme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+    "classic", "void", "test"),
   pre_output = NULL,
   post_output = NULL
 )
@@ -28,6 +32,12 @@ with reference variable. Defaults to \code{TRUE}.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
+for the distribution plot. All themes can be chosen by the user. Defaults to \code{grey}.}
+
+\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
+for the association plots. All themes can be chosen by the user. Defaults to \code{grey}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

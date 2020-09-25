@@ -272,10 +272,13 @@ ui_g_bivariate <- function(id, ...) {
                 label = "Fill color by variable",
                 data_extract_spec = args$fill
               ),
-              data_extract_input(
-                id = ns("size"),
-                label = "Size of points by variable (only if x and y are numeric)",
-                data_extract_spec = args$size
+              div(
+                id = ns("size_settings"),
+                data_extract_input(
+                  id = ns("size"),
+                  label = "Size of points by variable (only if x and y are numeric)",
+                  data_extract_spec = args$size
+                )
               )
             )
           )
@@ -296,6 +299,10 @@ ui_g_bivariate <- function(id, ...) {
           sliderInput(
             ns("alpha"), "Opacity Scatterplot:", min = 0, max = 1,
             step = .05, value = .5, ticks = FALSE
+          ),
+          sliderInput(
+            ns("fixed_size"), "Scatterplot point size:", min = 1, max = 8,
+            step = 1, value = 2, ticks = FALSE
           )
         )
       )
@@ -389,12 +396,24 @@ srv_g_bivariate <- function(input,
     swap_axes <- input$swap_axes
 
     is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1)))
-    alpha <- if (is_scatterplot) {
+    if (is_scatterplot) {
       shinyjs::show("alpha")
-      input$alpha
+      alpha <- input$alpha # nolint
+
+      if (color_settings && input$coloring) {
+        shinyjs::hide("fixed_size")
+        shinyjs::show("size_settings")
+        size <- NULL
+      } else {
+        shinyjs::show("fixed_size")
+        size <- input$fixed_size
+      }
     } else {
       shinyjs::hide("alpha")
-      1
+      shinyjs::hide("fixed_size")
+      shinyjs::hide("size_settings")
+      alpha <- 1
+      size <- NULL
     }
 
     validate(
@@ -405,6 +424,7 @@ srv_g_bivariate <- function(input,
     )
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
+    validate(need(!is.null(ggtheme), "Please select a theme."))
 
     cl <- bivariate_plot_call(
       data_name = "ANL",
@@ -418,7 +438,8 @@ srv_g_bivariate <- function(input,
       theme = as.call(parse(text = paste0("theme_", ggtheme))),
       rotate_xaxis_labels = rotate_xaxis_labels,
       swap_axes = swap_axes,
-      alpha = alpha
+      alpha = alpha,
+      size = size
     )
 
     facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
@@ -455,7 +476,10 @@ srv_g_bivariate <- function(input,
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) {
-      cl <- bquote(p <- .(cl))
+      cl <- bquote({
+        p <- .(cl)
+        print(p)
+        })
       chunks_push(expression = cl, id = "plotCall")
     } else {
       chunks_push(bquote({
@@ -508,7 +532,8 @@ bivariate_plot_call <- function(data_name,
                                 theme = quote(theme_gray()),
                                 rotate_xaxis_labels = FALSE,
                                 swap_axes = FALSE,
-                                alpha = double(0)) {
+                                alpha = double(0),
+                                size = 2) {
   supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
   validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
@@ -520,7 +545,8 @@ bivariate_plot_call <- function(data_name,
     theme = theme,
     rotate_xaxis_labels = rotate_xaxis_labels,
     swap_axes = swap_axes,
-    alpha = alpha
+    alpha = alpha,
+    size = size
   )
 
   if (is_character_empty(x)) {
@@ -542,7 +568,8 @@ bivariate_plot_call <- function(data_name,
       .y = y,
       .xlab = x_label,
       .ylab = y_label,
-      .alpha = alpha
+      .alpha = alpha,
+      .size = size
     )
   )
 
@@ -585,7 +612,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
                                   theme = quote(theme_grey()),
                                   rotate_xaxis_labels = FALSE,
                                   swap_axes = FALSE,
-                                  alpha = alpha) {
+                                  size = double(0),
+                                  alpha = double(0)) {
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
 
@@ -694,14 +722,17 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     }
 
     plot_call <- reduce_plot_call(plot_call, quote(xlab(.ylab)))
-
     # Numeric Plots
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
       quote(aes(x = .x, y = .y)),
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
-      quote(geom_point(alpha = .alpha, pch = 21)),
+      `if`(
+        !is.null(size),
+        quote(geom_point(alpha = .alpha, size = .size, pch = 21)),
+        quote(geom_point(alpha = .alpha, pch = 21))
+        ),
       quote(ylab(.ylab)),
       quote(xlab(.xlab))
     )

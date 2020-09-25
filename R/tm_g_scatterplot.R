@@ -21,6 +21,8 @@
 #' @param size optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with \code{c(value, min, max)}.
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to \code{grey}.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   \code{vignette("using-scatterplot", package = "teal.modules.general")}.
@@ -73,8 +75,12 @@ tm_g_scatterplot <- function(label,
                              color_by = NULL,
                              plot_height = c(600, 200, 2000),
                              alpha = c(1, 0, 1),
-                             size = c(4, 1, 12),
+                             size = c(2, 1, 8),
                              rotate_xaxis_labels = FALSE,
+                             ggtheme = c(
+                               "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                               "classic", "void", "test"
+                             ),
                              pre_output = NULL,
                              post_output = NULL) {
   if (!is_class_list("data_extract_spec")(x)) {
@@ -101,6 +107,8 @@ tm_g_scatterplot <- function(label,
   stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
   stopifnot(is_logical_single(rotate_xaxis_labels))
   stopifnot(all(size >= 0))
+  ggtheme <- match.arg(ggtheme)
+  stopifnot(is_character_single(ggtheme))
 
   args <- as.list(environment())
 
@@ -153,7 +161,14 @@ ui_g_scatterplot <- function(id, ...) {
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
+          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+          optionalSelectInput(
+            inputId = ns("ggtheme"),
+            label = "Theme (by ggplot):",
+            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            selected = args$ggtheme,
+            multiple = FALSE
+          )
         )
       )
     ),
@@ -191,11 +206,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    alpha <- input$alpha
+    alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels
+    ggtheme <- input$ggtheme
 
-    validate(need(alpha, "Need opacity alpha."))
+    validate(need(!is.null(ggtheme), "Please select a theme."))
     validate(need(length(x_var) == 1, "There must be exactly one x var."))
     validate(need(length(y_var) == 1, "There must be exactly one y var."))
     if (!is.null(color_by_var)) {
@@ -220,7 +236,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       .(plot_call) +
         geom_point(alpha = .(alpha), size = .(size)) +
         ylab(.(varname_w_label(y_var, ANL))) +
-        xlab(.(varname_w_label(x_var, ANL)))
+        xlab(.(varname_w_label(x_var, ANL))) +
+        .(as.call(parse(text = paste0("theme_", ggtheme))))
     )
 
     # add color label if existing

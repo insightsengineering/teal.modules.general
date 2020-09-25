@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.5.9000
 
+* Adds additional plot settings such as themes for `tm_g_association`, `tm_g_response`, and `tm_g_scatterplot`, as well as point size and opacity settings for `tm_g_association` and `tm_g_scatterplot`.
 * Replace `pickerInput` with `optionalSelectInput` for `tm_data_table`.
 * Adds new `facet` parameter to `tm_g_bivariate` to specify whether the facet encodings elements should be visible to the user by default.
 * Replace `plot_with_height` module with new `plot_with_settings` module. 
