@@ -21,7 +21,6 @@ LazyData: true
 Depends:
   ggplot2,
   ggmosaic,
-  graphics,
   magrittr,
   shiny,
   teal (>= 0.9.0)

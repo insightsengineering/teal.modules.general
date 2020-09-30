@@ -211,7 +211,7 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-#' @importFrom dplyr mutate summarise group_by_at vars
+#' @importFrom dplyr mutate summarise group_by_at vars n
 #' @importFrom forcats fct_rev
 #' @importFrom magrittr %>%
 srv_g_response <- function(input,

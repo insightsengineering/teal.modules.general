@@ -9,6 +9,7 @@
 * `tm_data_table`: allow developers to pass arguments to `DT::dataTable` and use `pickerInput` to select variables.
 * `tm_g_response` a new argument `count_labels`. Counts might be assessed for the frequency plot too.
 * Moved missing data module summary plot footer elements to tool tip in encodings panels.
+* `ggplot2` instead of `base` in `tm_a_regression`
 * issues with no news:
 
 # teal.modules.general 0.2.5

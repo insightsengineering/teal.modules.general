@@ -9,6 +9,10 @@ tm_a_regression(
   regressor,
   response,
   plot_height = c(600, 200, 2000),
+  alpha = c(1, 0, 1),
+  size = c(2, 1, 8),
+  ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
+    "void", "test"),
   pre_output = NULL,
   post_output = NULL,
   default_plot_type = 1
@@ -26,14 +30,16 @@ Response variables from an incoming dataset with filtering and selecting.}
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
+length three with \code{c(value, min, max)}.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
+\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+If a slider should be presented to adjust the plot point sizes dynamically then it can be a
+vector of length three with \code{c(value, min, max)}.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+  All themes can be chosen by the user. Defaults to \code{grey}.
 \itemize{
  \item{1 }{Response vs Regressor}
  \item{2 }{Residuals vs Fitted}
@@ -43,6 +49,15 @@ output to put the output into context. For example the
  \item{6 }{Residuals vs Leverage}
  \item{7 }{Cooks dist vs Leverage}
 }}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example a title.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed after the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
+
+\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.}
 }
 \description{
 Scatterplot and Regression Model

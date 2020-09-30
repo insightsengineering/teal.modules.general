@@ -6,7 +6,6 @@
 #'
 #' @import ggplot2
 #' @import ggmosaic
-#' @import graphics
 #' @import shiny
 #' @import teal
 #' @import teal.devel
