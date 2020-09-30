@@ -133,11 +133,11 @@ ui_missing_data <- function(id, plot_height) {
       plot_with_settings_ui(id = ns("combination_plot"), height = plot_height),
       helpText(
         p(paste(
-        'The "Combinations" graph is used to explore the relationship between the missing data within',
-        "different columns of the dataset.",
-        "It shows the different patterns of missingness in the rows of the data.",
-        'For example, suppose that 70 rows of the dataset had missing data in columns "A" and "B" (in each column).',
-        'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded black.'
+          'The "Combinations" graph is used to explore the relationship between the missing data within',
+          "different columns of the dataset.",
+          "It shows the different patterns of missingness in the rows of the data.",
+          'For example, suppose that 70 rows of the dataset had missing data in columns "A" and "B" (in each column).',
+          'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded black.'
         )),
         p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
@@ -157,29 +157,24 @@ encoding_missing_data <- function(id) {
 
   tagList(
     uiOutput(ns("variables")),
-    actionButton(
-      ns("filter_na"),
-      span(style = "white-space: normal;",
-      HTML("Select only vars with missings")), width = "100%"), # nolint
+    actionButton(ns("filter_na"), span(style = "white-space: normal;", "Select only vars with missings"), width = "100%"), # nolint
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
-      checkboxInput(
-        ns("any_na"),
+      checkboxInput(ns("any_na"),
         div(
           "Add **anyna** variable",
           title = "Describes the number of observations with at least one missing value in any variable.",
           icon("info-circle")
         ),
         value = FALSE),
-      checkboxInput(
-        ns("if_patients_plot"),
-        div(
-          "Add summary per patients",
-          title = paste(
-            "Displays the number of missing values per observation,",
-            "where the x-axis is sorted by observation appearance in the table."),
-          icon("info-circle")
-        ), value = FALSE)
+      checkboxInput(ns("if_patients_plot"),
+                    div(
+                      "Add summary per patients",
+                      title = paste("Displays the number of missing values per observation,",
+                        "where the x-axis is sorted by observation appearance in the table."),
+                      icon("info-circle")
+                    ),
+                    value = FALSE)
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
@@ -199,19 +194,20 @@ encoding_missing_data <- function(id) {
         )
       )
     ),
-    hr()
+    hr(),
+    get_rcode_ui(ns("rcode"))
   )
 }
 
 #' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all
-#'   n pull select summarise_all row_number ungroup tally tibble transmute
+#'   pull select summarise_all row_number ungroup tally tibble transmute
 #' @import ggplot2
 #' @importFrom grid grid.newpage grid.draw unit.pmax
 #' @importFrom gridExtra gtable_cbind
 #' @importFrom magrittr %>% extract2
 #' @importFrom scales percent_format
 #' @importFrom stats reorder
-#' @importFrom rlang .data !! sym
+#' @importFrom rlang .data sym
 #' @importFrom tidyr gather spread
 srv_missing_data <- function(input,
                              output,
@@ -220,7 +216,15 @@ srv_missing_data <- function(input,
                              dataname,
                              plot_height) {
 
+  init_chunks()
+
+
   prev_group_by_var <- reactiveVal("")
+
+  raw_data <- reactive({
+    # unfiltered data maintains all attributes such as labels
+    datasets$get_data(dataname, filtered = FALSE)
+  })
 
   data <- reactive({
     datasets$get_data(dataname, filtered = TRUE)
@@ -228,6 +232,53 @@ srv_missing_data <- function(input,
 
   data_keys <- reactive({
     datasets$get_data_attr(dataname, "keys")$primary
+  })
+
+  # chunks needed by all three outputs stored here
+  common_code_chunks <- reactive({
+    # Create a private stack for this function only.
+    common_stack <- chunks$new()
+    common_stack_push <- function(...) {
+      chunks_push(..., chunks = common_stack)
+    }
+
+    anl_name <- paste0(dataname, "_FILTERED")
+    anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
+    assign(anl_name, anl_filtered)
+    chunks_reset(chunks = common_stack)
+
+    if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+      common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name))[, .(selected_vars())])) # nolint
+    } else {
+      common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name)))) # nolint
+    }
+
+    new_col_name <- "**anyna**" # nolint variable assigned and used
+
+    common_stack_push(
+      bquote({
+        create_cols_labels <- function(cols, just_label = FALSE){
+          column_labels <- .(c(datasets$get_variable_labels(dataname)[selected_vars()], new_col_name = new_col_name))
+          column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
+          if (just_label) {
+            labels <- column_labels[cols]
+          } else{
+            labels <- ifelse(cols == .(new_col_name) | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
+          }
+          return(labels)
+        }
+      })
+    )
+    chunks_safe_eval(chunks = common_stack)
+    common_stack
+  })
+
+  selected_vars <- reactive({
+    req(input$variables_select)
+    keys <- data_keys()
+    vars <- unique(c(keys, input$variables_select))
+    validate(need(length(setdiff(vars, keys)) >= 1, "Please also select non-key columns."))
+    vars
   })
 
   vars_summary <- reactive({
@@ -250,7 +301,7 @@ srv_missing_data <- function(input,
       session$ns("variables_select"),
       label = "Select variables",
       label_help = paste0("Dataset: ", dataname),
-      choices = variable_choices(data(), choices),
+      choices = variable_choices(raw_data(), choices),
       selected = selected,
       multiple = TRUE
     )
@@ -269,7 +320,7 @@ srv_missing_data <- function(input,
     updateOptionalSelectInput(
       session = session,
       inputId = "variables_select",
-      choices = variable_choices(data()),
+      choices = variable_choices(raw_data()),
       selected = selected
     )
 
@@ -279,8 +330,10 @@ srv_missing_data <- function(input,
     optionalSelectInput(
       session$ns("group_by_var"),
       label = "Group by variable",
-      choices = variable_choices(data()),
-      selected = if_null(isolate(input$group_by_var), names(data())[!sapply(data(), is.numeric)][1]),
+      choices = variable_choices(raw_data()),
+      selected = if_null(
+        isolate(input$group_by_var),
+        names(raw_data())[!sapply(raw_data(), is.numeric)][1]),
       multiple = FALSE,
       label_help = paste0("Dataset: ", dataname)
     )
@@ -290,7 +343,7 @@ srv_missing_data <- function(input,
     req(input$group_by_var)
     validate_has_data(data(), 1)
 
-    choices <- value_choices(data(), input$group_by_var, input$group_by_var)
+    choices <- value_choices(raw_data(), input$group_by_var, input$group_by_var)
     prev_choices <- isolate(input$group_by_vals)
 
     # determine selected value based on filtered data
@@ -322,191 +375,356 @@ srv_missing_data <- function(input,
     )
   })
 
-  data_selected <- reactive({
-    req(input$variables_select)
+  summary_plot_chunks <- reactive({
 
-    keys <- data_keys()
-    vars <- unique(c(keys, input$variables_select))
-
-    data() %>%
-      select(!!vars)
-  })
-
-  data_summary_plot <- reactive({
-    ANL_FILTERED <- data_selected() # nolint
-
-    if (input$any_na) {
-      new_col_name <- "**anyna**"
-      ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE)
+    # Create a private stack for this function only.
+    summary_stack <- chunks$new()
+    summary_stack_push <- function(...) {
+      chunks_push(..., chunks = summary_stack)
     }
 
-    ANL_FILTERED
-  })
+    #Add common code into this chunk
+    chunks_push_chunks(common_code_chunks(), chunks = summary_stack)
 
-  data_summary_plot_obs <- reactive({
-    res <- data_summary_plot() %>%
-      select(-c(data_keys())) %>%
-      summarise_all(list(function(x) sum(is.na(x)))) %>%
-      gather("col", "n_na") %>%
-      mutate(n_not_na = nrow(data_summary_plot()) - .data$n_na) %>%
-      gather("isna", "n", -.data$col) %>%
-      mutate(isna = .data$isna == "n_na", n_pct = n / nrow(data_summary_plot()) * 100)
-    res
-  })
+    if (input$any_na) {
+      new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
+      summary_stack_push(
+        bquote(
+          ANL_FILTERED[[.(new_col_name)]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE)
+        )
+      )
+    }
 
-  data_summary_plot_patients <- reactive({
-    keys <- data_keys()
-    res <- data_summary_plot() %>%
-      mutate(id = row_number()) %>%
-      group_by_at(c(keys, "id")) %>%
-      summarise_all(anyNA) %>%
-      gather("col", "isna", -.data$id, -keys) %>%
-      mutate(count_na = sum(.data$isna)) %>%
-      arrange_at(c("count_na", "col"), .funs = desc)
-    res
-  })
-
-  summary_plot_r <- reactive({
+    summary_stack_push(
+      bquote({
+        summary_plot_obs <- ANL_FILTERED[, setdiff(colnames(ANL_FILTERED), .(data_keys()))] %>%
+          dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+          tidyr::gather("col", "n_na") %>%
+          dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
+          tidyr::gather("isna", "n", -col) %>%
+          dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100)
+      })
+    )
 
     # x axis ordering according to number of missing values and alphabet
-    x_levels <- filter(data_summary_plot_obs(), .data$isna) %>%
-      arrange(.data$n_pct, desc(.data$col)) %>%
-      pull(.data$col) %>%
-      create_cols_labels(datasets, dataname)
+    summary_stack_push(
+      bquote(
+        x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
+          dplyr::arrange(n_pct, dplyr::desc(col)) %>%
+          dplyr::pull(col) %>%
+          create_cols_labels()
+      )
+    )
 
     # always set "**anyna**" level as the last one
     if (isolate(input$any_na)) {
-      x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")
+      summary_stack_push(
+        quote(
+          x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")
+        )
+      )
     }
 
-    p1 <- data_summary_plot_obs() %>%
-      ggplot() +
-      aes_(
-        x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
-        y = ~n_pct,
-        fill = ~isna) +
-      geom_bar(position = "fill", stat = "identity") +
-      scale_fill_manual(
-        name = "",
-        values = c("grey90", "#ff2951ff"),
-        labels = c("Present", "Missing")
-      ) +
-      scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
-      geom_text(
-        aes_(label = ~ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-        hjust = 1,
-        color = "black"
-      ) +
-      labs(
-        x = "Variable",
-        y = "Missing observations"
-      ) +
-      theme_classic() +
-      theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
-      coord_flip()
+    summary_stack_push(
+      bquote(
+        p1 <- summary_plot_obs %>%
+          ggplot() +
+          aes(x = factor(create_cols_labels(col), levels = x_levels),
+            y = n_pct,
+            fill = isna) +
+          geom_bar(position = "fill", stat = "identity") +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing")
+          ) +
+          scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+          geom_text(
+            aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+            hjust = 1,
+            color = "black"
+          ) +
+          labs(
+            x = "Variable",
+            y = "Missing observations"
+          ) +
+          theme_classic() +
+          theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
+          coord_flip()
+      )
+    )
 
-    p2 <- if (input$if_patients_plot) {
-      data_summary_plot_patients() %>%
-        ggplot() +
-        aes_(
-          x = ~factor(create_cols_labels(col, datasets, dataname), levels = x_levels),
-          y = ~reorder(id, order(-count_na)),
-          fill = ~isna) +
-        geom_bar(alpha = 1, stat = "identity") +
-        scale_fill_manual(
-          name = "",
-          values = c("grey90", "#ff2951ff"),
-          labels = c("Present", "Missing")
-        ) +
-        labs(
-          x = "",
-          y = "Missing patients (sorted)"
-        ) +
-        theme_classic() +
-        theme(
-          legend.position = "bottom",
-          axis.text = element_blank(),
-          axis.ticks.x = element_blank()
-        ) +
-        coord_flip()
+    if (input$if_patients_plot) {
+
+      keys <- data_keys()
+      summary_stack_push(
+        bquote(
+          summary_plot_patients <- ANL_FILTERED %>%
+            dplyr::mutate(id = dplyr::row_number()) %>%
+            dplyr::group_by_at(.(c(keys, "id"))) %>%
+            dplyr::summarise_all(anyNA) %>%
+            tidyr::gather("col", "isna", -id, -.(keys)) %>%
+            dplyr::mutate(count_na = sum(isna)) %>%
+            dplyr::arrange_at(c("count_na", "col"), .funs = dplyr::desc)
+        )
+      )
+
+      summary_stack_push(
+        bquote(
+          p2 <- summary_plot_patients %>%
+            ggplot() +
+            aes_(x = ~factor(create_cols_labels(col), levels = x_levels),
+              y = ~reorder(id, order(-count_na)),
+              fill = ~isna) +
+            geom_bar(alpha = 1, stat = "identity") +
+            scale_fill_manual(
+              name = "",
+              values = c("grey90", "#ff2951ff"),
+              labels = c("Present", "Missing")
+            ) +
+            labs(
+              x = "",
+              y = "Missing patients (sorted)"
+            ) +
+            theme_classic() +
+            theme(
+              legend.position = "bottom",
+              axis.text = element_blank(),
+              axis.ticks.x = element_blank()
+            ) +
+            coord_flip()
+        )
+      )
+
+      summary_stack_push(
+        bquote({
+          g1 <- ggplotGrob(p1)
+          g2 <- ggplotGrob(p2)
+          g <- gridExtra::gtable_cbind(g1, g2, size = "first")
+          g$heights <- grid::unit.pmax(g1$heights, g2$heights)
+          grid::grid.newpage()
+        })
+      )
     } else {
-      NULL
+      summary_stack_push(
+        bquote({
+          g <- ggplotGrob(p1)
+          grid::grid.newpage()
+        })
+      )
     }
 
-    if (!is.null(p2)) {
-      g1 <- ggplotGrob(p1)
-      g2 <- ggplotGrob(p2)
-      g <- gridExtra::gtable_cbind(g1, g2, size = "first")
-      g$heights <- grid::unit.pmax(g1$heights, g2$heights)
-      grid::grid.newpage()
-      return(grid::grid.draw(g))
-    } else {
-      return(p1)
-    }
-
+    summary_stack_push(quote(grid::grid.draw(g)))
+    chunks_safe_eval(summary_stack)
+    summary_stack
   })
 
-  data_combination_plot <- reactive({
-    res <- data_selected() %>%
-      mutate_all(is.na) %>%
-      group_by_all() %>%
-      tally() %>%
-      ungroup()
-    res
+  summary_plot_r <- reactive({
+    chunks_reset()
+    chunks_push_chunks(summary_plot_chunks())
+    summary_plot_chunks()
+  })
+
+  combination_cutoff_chunks <- reactive({
+
+    combination_cutoff_stack <- chunks$new()
+
+    #Add common code into this chunk
+    chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
+
+    chunks_push(
+      bquote({
+        combination_cutoff <- ANL_FILTERED %>%
+          dplyr::mutate_all(is.na) %>%
+          dplyr::group_by_all() %>%
+          dplyr::tally() %>%
+          dplyr::ungroup()
+      }), chunks = combination_cutoff_stack
+    )
+
+    chunks_safe_eval(combination_cutoff_stack)
+    combination_cutoff_stack
   })
 
   output$cutoff <- renderUI({
-    x <- data_combination_plot()$n
+    x <- chunks_get_var("combination_cutoff", combination_cutoff_chunks())$n
 
     # select 10-th from the top
     n <- length(x)
     idx <- max(1, n - 10)
     prev_value <- isolate(input$combination_cutoff)
-    value <- `if`(
-      is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
-      sort(x, partial = idx)[idx],
-      prev_value)
+    value <- `if`(is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
+      sort(x, partial = idx)[idx], prev_value)
 
-    optionalSliderInputValMinMax(session$ns("combination_cutoff"), "Combination cut-off", c(value, range(x)))
+    optionalSliderInputValMinMax(session$ns("combination_cutoff"),
+      "Combination cut-off",
+      c(value, range(x))
+    )
   })
 
-  data_combination_plot_cutoff <- reactive({
+  combination_plot_chunks <- reactive({
     req(input$combination_cutoff)
-    res <- data_combination_plot() %>%
-      filter(.data$n >= input$combination_cutoff) %>%
-      mutate(id = rank(.data$n, ties.method = "first")) %>%
-      gather("key", "value", -.data$n, -.data$id) %>%
-      arrange(.data$n)
-    res
+
+    # Create a private stack for this function only.
+    combination_stack <- chunks$new()
+    combination_stack_push <- function(...) {
+      chunks_push(..., chunks = combination_stack)
+    }
+
+    chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
+
+    combination_stack_push(
+      bquote(
+        data_combination_plot_cutoff <- combination_cutoff %>%
+          dplyr::filter(n >= .(input$combination_cutoff)) %>%
+          dplyr::mutate(id = rank(n, ties.method = "first")) %>%
+          tidyr::gather("key", "value", -n, -id) %>%
+          dplyr::arrange(n)
+      )
+    )
+
+    combination_stack_push(
+      bquote(
+        labels <- data_combination_plot_cutoff %>%
+          dplyr::filter(key == key[[1]]) %>%
+          dplyr::transmute(paste0("N=", n)) %>%
+          magrittr::extract2(1)
+      )
+    )
+
+    combination_stack_push(
+      bquote(
+        p <- data_combination_plot_cutoff %>%
+          ggplot() +
+          aes(x = create_cols_labels(key), y = id, fill = value) +
+          geom_tile(alpha = 0.85) +
+          scale_y_continuous(breaks = seq_along(labels), labels = labels) +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing")
+          ) +
+          labs(
+            x = "Variable",
+            y = "Combinations"
+          ) +
+          theme_classic() +
+          theme(
+            legend.position = "bottom",
+            axis.text.x = element_text(angle = 90, hjust = 1),
+            panel.grid.major = element_line(colour = "black", linetype = "dotted", size = 0.5)
+          )
+      )
+    )
+
+    combination_stack_push(bquote({
+      g <- ggplotGrob(p)
+      grid::grid.newpage()
+      grid::grid.draw(g)
+    }))
+
+    chunks_safe_eval(combination_stack)
+    combination_stack
   })
 
   combination_plot_r <- reactive({
-    labels <- data_combination_plot_cutoff() %>%
-      filter(.data$key == .data$key[[1]]) %>%
-      transmute(paste0("N=", .data$n)) %>%
-      extract2(1)
+    chunks_reset()
+    chunks_push_chunks(combination_plot_chunks())
+    combination_plot_chunks()
+  })
 
-    p <- data_combination_plot_cutoff() %>%
-      ggplot() +
-      aes_(x = ~create_cols_labels(key, datasets, dataname), y = ~id, fill = ~value) +
-      geom_tile(alpha = 0.85) +
-      scale_y_continuous(breaks = seq_along(labels), labels = labels) +
-      scale_fill_manual(
-        name = "",
-        values = c("grey90", "#ff2951ff"),
-        labels = c("Present", "Missing")
-      ) +
-      labs(
-        x = "Variable",
-        y = "Combinations"
-      ) +
-      theme_classic() +
-      theme(
-        legend.position = "bottom",
-        axis.text.x = element_text(angle = 90, hjust = 1),
-        panel.grid.major = element_line(colour = "black", linetype = "dotted", size = 0.5)
+  table_chunks <- reactive({
+
+    # Create a private stack for this function only.
+    table_stack <- chunks$new()
+    table_stack_push <- function(...) {
+      chunks_push(..., chunks = table_stack)
+    }
+
+    #Add common code into this stack
+    chunks_push_chunks(common_code_chunks(), chunks = table_stack)
+
+    #extract the ANL_FILTERED dataset for use in further validation
+    anl_filtered <- chunks_get_var("ANL_FILTERED", chunks = table_stack)
+
+    validate(need(input$count_type, "Please select type of counts"))
+    if (!is.null(input$group_by_var)) {
+      validate(need(input$group_by_vals, "Please select grouping variable values"))
+    }
+
+    group_var <- input$group_by_var
+
+    validate(
+      need(is.null(group_var) ||
+        group_var %in% selected_vars(),
+        "Grouping variable has been already filtered out")
+    )
+
+    validate(
+      need(is.null(group_var) ||
+        nrow(unique(anl_filtered[, group_var])) < 100,
+        "Please select variable with no more than 100 unique values")
+    )
+
+    group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
+    variables_select <- input$variables_select
+    vars <- unique(variables_select, group_var)
+    count_type <- input$count_type # nolint (local variable is assigned and used)
+
+    table_stack_push(bquote(cell_values <- function(x) {
+      nas_string <- if ("Missing" %in% .(count_type)) sum(is.na(x)) else ""
+      sum_string <- if ("All" %in% .(count_type)) length(x) else ""
+      fra_string <- if ("Fraction" %in% .(count_type)) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
+
+      trimws(
+        paste(nas_string,
+              if (all(c("Missing", "All") %in% .(count_type))) "/",
+              sum_string,
+              fra_string)
       )
-    p
+    }))
+
+    if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+      variables <- selected_vars() # nolint (local variable is assigned and used)
+    } else {
+      variables <- colnames(anl_filtered)
+    }
+
+    if (!is.null(group_var)) {
+      table_stack_push(
+        bquote(
+          summary_data <- ANL_FILTERED %>%
+            dplyr::group_by_at(.(group_var)) %>%
+            dplyr::filter(.(sym(group_var)) %in% .(group_vals)) %>%
+            dplyr::summarise_all(cell_values) %>%
+            tidyr::gather("Variable", "out", -.(sym(group_var))) %>%
+            dplyr::mutate(`Variable label` = "Placeholder") %>%
+            dplyr::select(.(sym(group_var)), Variable, `Variable label`, out) %>%
+            tidyr::spread(.(sym(group_var)), out) %>%
+            dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label  = TRUE))
+        )
+      )} else {
+        table_stack_push(
+          bquote(
+            summary_data <- ANL_FILTERED %>%
+              dplyr::summarise_all(cell_values) %>%
+              tidyr::gather("Variable", "out") %>%
+              dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
+              dplyr::select(Variable, `Variable label`, `Overall missing` = out)
+          )
+        )
+      }
+    table_stack_push(quote({
+      summary_data
+    }))
+    chunks_safe_eval(table_stack)
+    table_stack
+  })
+
+  output$levels_table <- DT::renderDataTable({
+    chunks_reset()
+    chunks_push_chunks(table_chunks())
+    chunks_get_var("summary_data")
   })
 
   callModule(
@@ -522,69 +740,12 @@ srv_missing_data <- function(input,
     height = plot_height
   )
 
-  data_plot3 <- reactive({
-    validate(need(input$count_type, "Please select type of counts"))
-    if (!is.null(input$group_by_var)) {
-      validate(need(input$group_by_vals, "Please select grouping variable values"))
-    }
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    datanames = dataname,
+    modal_title = "R code for missing data "
+  )
 
-    group_var <- input$group_by_var
-    validate(need(
-      is.null(group_var) || group_var %in% names(data_selected()),
-      "Groupping variable has been already filtered out"))
-
-    group_vals <- input$group_by_vals
-
-    vars <- unique(c(input$variables_select, group_var))
-
-    cell_values <- function(x) {
-      nas_string <- if ("Missing" %in% input$count_type) sum(is.na(x)) else ""
-      sum_string <- if ("All" %in% input$count_type) length(x) else ""
-      fra_string <- if ("Fraction" %in% input$count_type) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
-
-      trimws(
-        paste(nas_string,
-              if (all(c("Missing", "All") %in% input$count_type)) "/",
-              sum_string,
-              fra_string)
-      )
-    }
-
-    if (!is.null(group_var)) {
-      data_selected() %>%
-        group_by_at(group_var) %>%
-        filter(!!sym(group_var) %in% group_vals) %>%
-        summarise_all(cell_values) %>%
-        gather("Variable", "out", -!!sym(group_var)) %>%
-        mutate(`Variable label` = vapply(
-          if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
-          if_empty,
-          character(1),
-          "")) %>%
-        select(!!sym(group_var), .data$Variable, .data$`Variable label`, .data$out) %>%
-        spread(!!sym(group_var), .data$out)
-    } else {
-      data_selected() %>%
-        summarise_all(cell_values) %>%
-        gather("Variable", "out") %>%
-        mutate(`Variable label` = vapply(
-          if_empty(datasets$get_variable_labels(dataname, .data$Variable), ""),
-          if_empty,
-          character(1),
-          "")) %>%
-        select(.data$Variable, .data$`Variable label`, `Overall missing` = .data$out)
-    }
-
-
-  })
-
-  output$levels_table <- DT::renderDataTable({
-    data_plot3()
-  })
-}
-
-# create axis labels as a conjunction of column labels and column names
-create_cols_labels <- function(cols, datasets, dataname) {
-  column_labels <- c(datasets$get_variable_labels(dataname), "**anyna**" = "**anyna**")
-  ifelse(cols == "**anyna**", cols, paste0(column_labels[cols], " [", cols, "]"))
 }
