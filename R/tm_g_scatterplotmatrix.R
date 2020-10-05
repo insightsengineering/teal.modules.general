@@ -7,6 +7,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams tm_g_scatterplot
+#' @inheritParams shared_params
 #'
 #' @param variables (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'  Plotting variables from an incoming dataset with filtering and selecting.
@@ -70,6 +71,7 @@
 tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
                                    variables,
                                    plot_height = c(600, 200, 2000),
+                                   plot_width = NULL,
                                    pre_output = NULL,
                                    post_output = NULL) {
   if (!is_class_list("data_extract_spec")(variables)) {
@@ -78,9 +80,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(variables))
-  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
-  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
-  stopifnot(all(plot_height >= 0))
+  check_height_width(plot_height, plot_width)
 
   args <- as.list(environment())
   module(
@@ -88,7 +88,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables, plot_height = plot_height),
+    server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
     filters = get_extract_datanames(variables)
   )
 }
@@ -101,7 +101,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("message")),
       br(),
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -149,7 +149,8 @@ srv_g_scatterplotmatrix <- function(input,
                                     session,
                                     datasets,
                                     variables,
-                                    plot_height) {
+                                    plot_height,
+                                    plot_width) {
 
   init_chunks()
 
@@ -248,7 +249,8 @@ srv_g_scatterplotmatrix <- function(input,
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   # show a message if conversion to factors took place

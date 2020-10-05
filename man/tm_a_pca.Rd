@@ -8,6 +8,7 @@ tm_a_pca(
   label = "Principal component analysis",
   dat,
   plot_height = c(600, 200, 2000),
+  plot_width = NULL,
   pre_output = NULL,
   post_output = NULL
 )
@@ -20,6 +21,9 @@ Datasets used to compute PCA.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

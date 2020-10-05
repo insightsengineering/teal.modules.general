@@ -12,9 +12,6 @@
 #' @param color_by optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 #'   Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
 #'   Note \code{_none_} is a keyword and means that no color encoding should be used.
-#' @param plot_height optional, (\code{numeric} If scalar then the plot will have a fixed height. If a
-#'   slider should be presented to adjust the plot height dynamically then it
-#'   can be a vector of length three with \code{c(value, min, max)}.
 #' @param alpha optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 #'   length three with \code{c(value, min, max)}.
@@ -74,6 +71,7 @@ tm_g_scatterplot <- function(label,
                              y,
                              color_by = NULL,
                              plot_height = c(600, 200, 2000),
+                             plot_width = NULL,
                              alpha = c(1, 0, 1),
                              size = c(2, 1, 8),
                              rotate_xaxis_labels = FALSE,
@@ -97,9 +95,7 @@ tm_g_scatterplot <- function(label,
   stopifnot(is_class_list("data_extract_spec")(x))
   stopifnot(is_class_list("data_extract_spec")(y))
   stopifnot(is_class_list("data_extract_spec")(color_by) || is.null(color_by))
-  stopifnot(is_numeric_vector(plot_height) && (length(plot_height) == 3 || length(plot_height) == 1))
-  stopifnot(`if`(length(plot_height) == 3, plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3], TRUE))
-  stopifnot(all(plot_height >= 0))
+  check_height_width(plot_height, plot_width)
   stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
   stopifnot(all(c(alpha >= 0, alpha <= 1)))
   stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
@@ -123,7 +119,7 @@ tm_g_scatterplot <- function(label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -134,7 +130,7 @@ ui_g_scatterplot <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -179,7 +175,7 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 #' @importFrom magrittr %>%
-srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height) {
+srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height, plot_width) {
   init_chunks()
 
   merged_data <- if (is.null(color_by)) {
@@ -270,7 +266,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   callModule(

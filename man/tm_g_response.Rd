@@ -15,6 +15,7 @@ tm_g_response(
   rotate_xaxis_labels = FALSE,
   freq = FALSE,
   plot_height = c(600, 400, 5000),
+  plot_width = NULL,
   ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
     "void", "test"),
   pre_output = NULL,
@@ -53,6 +54,9 @@ Defaults to density (\code{FALSE}).}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
 All themes can be chosen by the user. Defaults to \code{grey}.}

@@ -21,6 +21,7 @@ NULL
 #'   vector of length three with \code{c(value, min, max)}.
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
 #'   All themes can be chosen by the user. Defaults to \code{grey}.
+#'
 #' \itemize{
 #'  \item{1 }{Response vs Regressor}
 #'  \item{2 }{Residuals vs Fitted}
@@ -81,6 +82,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             regressor,
                             response,
                             plot_height = c(600, 200, 2000),
+                            plot_width = NULL,
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
                             ggtheme = c(
@@ -114,10 +116,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Response variable should not allow multiple selection"
   ))
   stopifnot(is_class_list("data_extract_spec")(regressor))
-  stopifnot(is_numeric_vector(plot_height) &&
-    length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] &&
-    plot_height[1] <= plot_height[3])
+  check_height_width(plot_height, plot_width)
   # No check necessary for regressor and response, as checked in data_extract_input
   ggtheme <- match.arg(ggtheme)
   stopifnot(is_character_single(ggtheme))
@@ -134,7 +133,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     server = srv_a_regression,
     ui = ui_a_regression,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -155,7 +154,7 @@ ui_a_regression <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(tags$div(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height),
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width),
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = div(
@@ -220,7 +219,8 @@ srv_a_regression <- function(input,
                              datasets,
                              response,
                              regressor,
-                             plot_height) {
+                             plot_height,
+                             plot_width) {
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -518,7 +518,8 @@ srv_a_regression <- function(input,
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   output$text <- renderPrint({

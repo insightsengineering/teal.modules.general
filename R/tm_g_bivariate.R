@@ -103,6 +103,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            free_x_scales = FALSE,
                            free_y_scales = FALSE,
                            plot_height = c(600, 200, 2000),
+                           plot_width = NULL,
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
                            ggtheme = c(
@@ -145,8 +146,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   stopifnot(is_logical_single(color_settings))
   stopifnot(is_logical_single(free_x_scales))
   stopifnot(is_logical_single(free_y_scales))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  check_height_width(plot_height, plot_width)
   stopifnot(is_logical_single(rotate_xaxis_labels))
   stopifnot(is_logical_single(swap_axes))
   ggtheme <- match.arg(ggtheme)
@@ -185,7 +185,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -198,7 +198,7 @@ ui_g_bivariate <- function(id, ...) {
   ns <- NS(id)
   standard_layout(
     output = white_small_well(
-      tags$div(plot_with_settings_ui(id = ns("myplot"), height = args$plot_height))
+      tags$div(plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -329,7 +329,8 @@ srv_g_bivariate <- function(input,
                             color,
                             fill,
                             size,
-                            plot_height) {
+                            plot_height,
+                            plot_width) {
   init_chunks()
   data_extract <- setNames(
     list(x, y),
@@ -500,7 +501,8 @@ srv_g_bivariate <- function(input,
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   callModule(

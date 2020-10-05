@@ -5,6 +5,7 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #'
+#'
 #' @export
 #'
 #' @examples
@@ -27,22 +28,21 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 5000)) {
+tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 5000), plot_width = NULL) {
   stopifnot(is_character_single(label))
-  stopifnot(is_numeric_vector(plot_height, 3, 3))
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  check_height_width(plot_height, plot_width)
 
   module(
     label,
     server = srv_page_missing_data,
-    server_args = list(plot_height = plot_height),
+    server_args = list(plot_height = plot_height, plot_width = plot_width),
     ui = ui_page_missing_data,
-    ui_args = list(plot_height = plot_height),
+    ui_args = list(plot_height = plot_height, plot_width = plot_width),
     filters = "all"
   )
 }
 
-ui_page_missing_data <- function(id, datasets, plot_height) {
+ui_page_missing_data <- function(id, datasets, plot_height, plot_width) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -63,7 +63,7 @@ ui_page_missing_data <- function(id, datasets, plot_height) {
                     width = 12,
                     div(style = "height:10px;"),
                     ui_missing_data(
-                      id = ns(x), plot_height = plot_height
+                      id = ns(x), plot_height = plot_height, plot_width = plot_width
                     )
                   )
                 )
@@ -98,7 +98,8 @@ srv_page_missing_data <- function(input,
                                   output,
                                   session,
                                   datasets,
-                                  plot_height) {
+                                  plot_height,
+                                  plot_width) {
 
   lapply(
     datasets$datanames(),
@@ -108,19 +109,20 @@ srv_page_missing_data <- function(input,
         id = x,
         datasets = datasets,
         dataname = x,
-        plot_height = plot_height
+        plot_height = plot_height,
+        plot_width = plot_width
       )
     }
   )
 }
 
-ui_missing_data <- function(id, plot_height) {
+ui_missing_data <- function(id, plot_height, plot_width) {
   ns <- NS(id)
   tabsetPanel(
     id = ns("summary_type"),
     tabPanel(
       "Summary",
-      plot_with_settings_ui(id = ns("summary_plot"), height = plot_height),
+      plot_with_settings_ui(id = ns("summary_plot"), height = plot_height, width = plot_width),
       helpText(
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
@@ -130,7 +132,7 @@ ui_missing_data <- function(id, plot_height) {
     ),
     tabPanel(
       "Combinations",
-      plot_with_settings_ui(id = ns("combination_plot"), height = plot_height),
+      plot_with_settings_ui(id = ns("combination_plot"), height = plot_height, width = plot_width),
       helpText(
         p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
@@ -214,7 +216,8 @@ srv_missing_data <- function(input,
                              session,
                              datasets,
                              dataname,
-                             plot_height) {
+                             plot_height,
+                             plot_width) {
 
   init_chunks()
 
@@ -731,13 +734,15 @@ srv_missing_data <- function(input,
     plot_with_settings_srv,
     id = "summary_plot",
     plot_r = summary_plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
   callModule(
     plot_with_settings_srv,
     id = "combination_plot",
     plot_r = combination_plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   callModule(

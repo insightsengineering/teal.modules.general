@@ -79,6 +79,7 @@ tm_g_response <- function(label = "Response Plot",
                           rotate_xaxis_labels = FALSE,
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
+                          plot_width = NULL,
                           ggtheme = c(
                             "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
                             "classic", "void", "test"
@@ -123,8 +124,7 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is_logical_single(count_labels))
   stopifnot(is_logical_single(rotate_xaxis_labels))
   stopifnot(is_logical_single(freq))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  check_height_width(plot_height, plot_width)
   ggtheme <- match.arg(ggtheme)
   stopifnot(is_character_single(ggtheme))
 
@@ -142,7 +142,7 @@ tm_g_response <- function(label = "Response Plot",
     server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -153,7 +153,7 @@ ui_g_response <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -222,7 +222,8 @@ srv_g_response <- function(input,
                            x,
                            row_facet,
                            col_facet,
-                           plot_height) {
+                           plot_height,
+                           plot_width) {
   init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
@@ -237,8 +238,9 @@ srv_g_response <- function(input,
   ## dynamic plot height
   output$plot_ui <- renderUI({
     plot_height <- input$plot_height
+    plot_width <- input$plot_width
     validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("plot"), height = plot_height)
+    plotOutput(session$ns("plot"), height = plot_height, width = plot_width)
   })
 
   plot_r <- reactive({
@@ -400,7 +402,8 @@ srv_g_response <- function(input,
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   callModule(

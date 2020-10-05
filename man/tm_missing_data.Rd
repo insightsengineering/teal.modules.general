@@ -4,13 +4,20 @@
 \alias{tm_missing_data}
 \title{Missing data module}
 \usage{
-tm_missing_data(label = "Missing data", plot_height = c(600, 400, 5000))
+tm_missing_data(
+  label = "Missing data",
+  plot_height = c(600, 400, 5000),
+  plot_width = NULL
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 }
 \description{
 Present analysis of missing observations and patients.

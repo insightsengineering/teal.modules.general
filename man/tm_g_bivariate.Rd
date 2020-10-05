@@ -19,6 +19,7 @@ tm_g_bivariate(
   free_x_scales = FALSE,
   free_y_scales = FALSE,
   plot_height = c(600, 200, 2000),
+  plot_width = NULL,
   rotate_xaxis_labels = FALSE,
   swap_axes = FALSE,
   ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
@@ -73,6 +74,9 @@ Does not allow scaling to be changed by default (\code{FALSE}).}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}

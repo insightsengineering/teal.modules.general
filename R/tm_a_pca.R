@@ -42,6 +42,7 @@
 tm_a_pca <- function(label = "Principal component analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
+                     plot_width = NULL,
                      pre_output = NULL,
                      post_output = NULL) {
 
@@ -52,8 +53,7 @@ tm_a_pca <- function(label = "Principal component analysis",
     dat <- list(dat)
   }
 
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
+  check_height_width(plot_height, plot_width)
 
   args <- as.list(environment())
 
@@ -64,7 +64,7 @@ tm_a_pca <- function(label = "Principal component analysis",
     server = srv_a_pca,
     ui = ui_a_pca,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -96,7 +96,7 @@ ui_a_pca <- function(id, ...) {
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
-        plot_with_settings_ui(id = ns("pca_plot"), height = args$plot_height)
+        plot_with_settings_ui(id = ns("pca_plot"), height = args$plot_height, width = args$plot_width)
       )
     ),
     encoding = div(
@@ -162,7 +162,7 @@ ui_a_pca <- function(id, ...) {
 #' @importFrom tibble column_to_rownames rownames_to_column
 #' @importFrom tidyr gather drop_na
 #' @importFrom rlang !! !!! quo sym syms
-srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
+srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width) {
 
   response <- dat
 
@@ -612,7 +612,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height) {
     plot_with_settings_srv,
     id = "pca_plot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   # tables ----

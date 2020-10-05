@@ -10,6 +10,7 @@ tm_g_scatterplot(
   y,
   color_by = NULL,
   plot_height = c(600, 200, 2000),
+  plot_width = NULL,
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
   rotate_xaxis_labels = FALSE,
@@ -32,9 +33,11 @@ names selected to plot along the y-axis by default.}
 Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
 Note \code{_none_} is a keyword and means that no color encoding should be used.}
 
-\item{plot_height}{optional, (\code{numeric} If scalar then the plot will have a fixed height. If a
-slider should be presented to adjust the plot height dynamically then it
-can be a vector of length three with \code{c(value, min, max)}.}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 
 \item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
 slider should be presented to adjust the plot point opacity dynamically then it can be a vector of

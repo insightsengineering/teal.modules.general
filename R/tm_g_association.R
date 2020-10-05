@@ -67,6 +67,7 @@ tm_g_association <- function(label = "Association",
                              vars,
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
+                             plot_width = NULL,
                              distribution_theme = c(
                                "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
                                "classic", "void", "test"
@@ -91,9 +92,7 @@ tm_g_association <- function(label = "Association",
     "'ref' should not allow multiple selection"))
   stopifnot(is_class_list("data_extract_spec")(vars))
   stopifnot(is_logical_single(show_association))
-  stopifnot(is_numeric_vector(plot_height) && length(plot_height) == 3)
-  stopifnot(plot_height[1] >= plot_height[2] && plot_height[1] <= plot_height[3])
-  stopifnot(all(plot_height > 0))
+  check_height_width(plot_height, plot_width)
   distribution_theme <- match.arg(distribution_theme)
   stopifnot(is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)
@@ -111,7 +110,7 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height)),
+    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -125,7 +124,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height)
+      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -191,7 +190,8 @@ srv_tm_g_association <- function(input,
                                  datasets,
                                  ref,
                                  vars,
-                                 plot_height) {
+                                 plot_height,
+                                 plot_width) {
 
   init_chunks()
 
@@ -336,7 +336,8 @@ srv_tm_g_association <- function(input,
     plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
-    height = plot_height
+    height = plot_height,
+    width = plot_width
   )
 
   output$title <- renderText({

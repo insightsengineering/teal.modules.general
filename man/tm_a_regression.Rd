@@ -9,6 +9,7 @@ tm_a_regression(
   regressor,
   response,
   plot_height = c(600, 200, 2000),
+  plot_width = NULL,
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
   ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
@@ -30,6 +31,9 @@ Response variables from an incoming dataset with filtering and selecting.}
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
 
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
+
 \item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
 slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 length three with \code{c(value, min, max)}.}
@@ -40,6 +44,7 @@ vector of length three with \code{c(value, min, max)}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
   All themes can be chosen by the user. Defaults to \code{grey}.
+
 \itemize{
  \item{1 }{Response vs Regressor}
  \item{2 }{Residuals vs Fitted}

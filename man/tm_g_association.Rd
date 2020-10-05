@@ -10,6 +10,7 @@ tm_g_association(
   vars,
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
+  plot_width = NULL,
   distribution_theme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
     "classic", "void", "test"),
   association_theme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
@@ -32,6 +33,9 @@ with reference variable. Defaults to \code{TRUE}.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
+
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+for a slider encoding the plot width.}
 
 \item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
 for the distribution plot. All themes can be chosen by the user. Defaults to \code{grey}.}
