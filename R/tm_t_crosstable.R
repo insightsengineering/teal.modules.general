@@ -144,7 +144,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_total, pre_output, post_out
   )
 }
 
-## REFACTOR @importFrom tern t_summary
+#' @importFrom tern t_summary
 #' @importFrom rtables as_html
 srv_t_crosstable <- function(input, output, session, datasets, label, show_percentage, x, y) {
   ns <- session$ns
@@ -210,19 +210,12 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
       title <- .(plot_title)
       print(title)
 
-      # nolint start
-      # REFACTOR
-      # tbl <- tern::t_summary(
-      #  ANL[[.(x_name)]],
-      #  col_by = ANL[[.(y_name)]],
-      #  total = .(if (input$show_total) "Total" else NULL),
-      #  denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit")
-      # )
-      # nolint end
-
-      tbl <- basic_table() %>%
-        analyze("x", function(x) "To be completed") %>%
-        build_table(data.frame(x = 1))
+      tbl <- tern::t_summary(
+        ANL[[.(x_name)]],
+        col_by = ANL[[.(y_name)]],
+        total = .(if (input$show_total) "Total" else NULL),
+        denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit")
+      )
 
       tbl
     }))
