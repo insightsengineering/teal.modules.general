@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.5.9000
+# teal.modules.general 0.2.6
 
 * Adds additional plot settings such as themes for `tm_g_association`, `tm_g_response`, and `tm_g_scatterplot`, as well as point size and opacity settings for `tm_g_association` and `tm_g_scatterplot`.
 * Replace `pickerInput` with `optionalSelectInput` for `tm_data_table`.
@@ -10,7 +10,7 @@
 * `tm_g_response` a new argument `count_labels`. Counts might be assessed for the frequency plot too.
 * Moved missing data module summary plot footer elements to tool tip in encodings panels.
 * `ggplot2` instead of `base` in `tm_a_regression`
-* issues with no news:
+
 
 # teal.modules.general 0.2.5
 
