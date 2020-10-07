@@ -124,7 +124,8 @@ tm_g_response <- function(label = "Response Plot",
   stopifnot(is_logical_single(count_labels))
   stopifnot(is_logical_single(rotate_xaxis_labels))
   stopifnot(is_logical_single(freq))
-  check_height_width(plot_height, plot_width)
+  check_slider_input(plot_height, allow_null = FALSE)
+  check_slider_input(plot_width)
   ggtheme <- match.arg(ggtheme)
   stopifnot(is_character_single(ggtheme))
 

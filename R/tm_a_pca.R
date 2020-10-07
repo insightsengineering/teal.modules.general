@@ -53,7 +53,8 @@ tm_a_pca <- function(label = "Principal component analysis",
     dat <- list(dat)
   }
 
-  check_height_width(plot_height, plot_width)
+  check_slider_input(plot_height, allow_null = FALSE)
+  check_slider_input(plot_width)
 
   args <- as.list(environment())
 

@@ -116,7 +116,8 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Response variable should not allow multiple selection"
   ))
   stopifnot(is_class_list("data_extract_spec")(regressor))
-  check_height_width(plot_height, plot_width)
+  check_slider_input(plot_height, allow_null = FALSE)
+  check_slider_input(plot_width)
   # No check necessary for regressor and response, as checked in data_extract_input
   ggtheme <- match.arg(ggtheme)
   stopifnot(is_character_single(ggtheme))

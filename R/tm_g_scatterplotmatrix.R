@@ -80,7 +80,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(variables))
-  check_height_width(plot_height, plot_width)
+  check_slider_input(plot_height, allow_null = FALSE)
+  check_slider_input(plot_width)
 
   args <- as.list(environment())
   module(

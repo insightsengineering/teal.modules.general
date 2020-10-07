@@ -185,21 +185,3 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     }
   })
 }
-
-check_height_width <- function(plot_height, plot_width) {
-  check_generic <- function(argument, name_of_argument) {
-    stop_if_not(list(
-      is_numeric_vector(argument) && (length(argument) == 3) && all(argument > 0),
-      paste(name_of_argument, "has to be a numeric vector of length 3 with all positive values")))
-    stop_if_not(list(
-      argument[1] >= argument[2] && argument[1] <= argument[3],
-      paste(
-        "the first value of",
-        name_of_argument,
-        "has to be greater than min and lower than max, the 2nd and 3rd values, respectively")))
-  }
-  check_generic(plot_height, "plot_height")
-  if (!is.null(plot_width)) {
-    check_generic(plot_width, "plot_width")
-  }
-}

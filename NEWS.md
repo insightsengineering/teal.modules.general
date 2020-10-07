@@ -10,6 +10,7 @@
 * `tm_g_response` a new argument `count_labels`. Counts might be assessed for the frequency plot too.
 * Moved missing data module summary plot footer elements to tool tip in encodings panels.
 * `ggplot2` instead of `base` in `tm_a_regression`
+* Added optional slider to adjust `width` in `plot_with_settings`
 
 
 # teal.modules.general 0.2.5
