@@ -261,7 +261,7 @@ srv_missing_data <- function(input,
 
     common_stack_push(
       bquote({
-        create_cols_labels <- function(cols, just_label = FALSE){
+        create_cols_labels <- function(cols, just_label = FALSE) {
           column_labels <- .(c(datasets$get_variable_labels(dataname)[selected_vars()], new_col_name = new_col_name))
           column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
           if (just_label) {

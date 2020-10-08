@@ -28,7 +28,6 @@ app <- init(
     tm_variable_browser(label = "Variable browser")
   )
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }

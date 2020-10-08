@@ -24,7 +24,6 @@
 #'     tm_variable_browser(label = "Variable browser")
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -47,7 +46,8 @@ ui_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
   fluidRow(
-    column(6,
+    column(
+      6,
       # variable browser
       white_small_well(
         do.call(
@@ -59,18 +59,21 @@ ui_variable_browser <- function(id, datasets) {
                 dataname,
                 div(
                   style = "margin-top: 15px;",
-                  textOutput(ns(paste0("dataset_summary_", dataname)))),
+                  textOutput(ns(paste0("dataset_summary_", dataname)))
+                ),
                 div(
                   style = "margin-top: 15px;",
                   DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
-              ))
+                )
+              )
             }), NULL))
           )
         ),
         checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
       )
     ),
-    column(6,
+    column(
+      6,
       white_small_well(
         div(
           class = "clearfix",
@@ -114,61 +117,63 @@ srv_variable_browser <- function(input, output, session, datasets) {
     dataset_ui_id <- paste0("dataset_summary_", name)
     output[[dataset_ui_id]] <- renderText({
       df <- datasets$get_data(name, filtered = FALSE)
-      sprintf("Dataset with %s unique subjects IDs and %s variables",
-              length(unique(df$USUBJID)),
-              ncol(df))
+      sprintf(
+        "Dataset with %s unique subjects IDs and %s variables",
+        length(unique(df$USUBJID)),
+        ncol(df)
+      )
     })
 
     table_ui_id <- paste0("variable_browser_", name)
     output[[table_ui_id]] <- DT::renderDataTable({
-      df <- datasets$get_data(name, filtered = FALSE)
-      show_adsl_vars <- input$show_adsl_vars
+        df <- datasets$get_data(name, filtered = FALSE)
+        show_adsl_vars <- input$show_adsl_vars
 
-      if (!show_adsl_vars && name != "ADSL") {
-        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
-        df <- df[!(names(df) %in% adsl_vars)]
-      }
+        if (!show_adsl_vars && name != "ADSL") {
+          adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
+          df <- df[!(names(df) %in% adsl_vars)]
+        }
 
-      if (is.null(df)) {
-        current_rows[[name]] <- character(0)
-        data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
-      } else {
-        labels <- setNames(unlist(lapply(df, function(x) {
-          lab <- attr(x, "label")
-          if (is.null(lab)) "" else lab
-        }), use.names = FALSE), names(df))
+        if (is.null(df)) {
+          current_rows[[name]] <- character(0)
+          data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
+        } else {
+          labels <- setNames(unlist(lapply(df, function(x) {
+            lab <- attr(x, "label")
+            if (is.null(lab)) "" else lab
+          }), use.names = FALSE), names(df))
 
 
 
-        current_rows[[name]] <- names(labels)
-        missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
-        icons <- vapply(
-          df,
-          function(x) teal:::variable_type_icons(class(x)[1]),
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE
-        )
+          current_rows[[name]] <- names(labels)
+          missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
+          icons <- vapply(
+            df,
+            function(x) teal:::variable_type_icons(class(x)[1]),
+            FUN.VALUE = character(1),
+            USE.NAMES = FALSE
+          )
 
-        dt <- DT::datatable(
-          data.frame(
-            Variable = paste(icons, names(labels)),
-            Label = labels,
-            Missings = missings,
-            stringsAsFactors = FALSE),
-          escape = FALSE,
-          rownames = FALSE,
-          selection = list(mode = "single", target = "row", selected = 1),
-          options = list(
-            columnDefs = list(
-              list(orderable = FALSE, className = "details-control", targets = 0)
+          dt <- DT::datatable(
+            data.frame(
+              Variable = paste(icons, names(labels)),
+              Label = labels,
+              Missings = missings,
+              stringsAsFactors = FALSE
+            ),
+            escape = FALSE,
+            rownames = FALSE,
+            selection = list(mode = "single", target = "row", selected = 1),
+            options = list(
+              columnDefs = list(
+                list(orderable = FALSE, className = "details-control", targets = 0)
+              )
             )
           )
-        )
-
-
-      }
-
-      }, server = TRUE)
+        }
+      },
+      server = TRUE
+    )
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {
@@ -193,8 +198,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
           labelWidth = "120px",
           value = TRUE
         ),
-        div(style = "margin-left: 15px;",
-            uiOutput(session$ns("ui_density_help"))
+        div(
+          style = "margin-left: 15px;",
+          uiOutput(session$ns("ui_density_help"))
         )
       )
     } else {
@@ -263,8 +269,6 @@ srv_variable_browser <- function(input, output, session, datasets) {
     x <- df[[varname]]
     var_summary_table(x)
   })
-
-
 }
 
 #' Summarizes missings occurrence
@@ -273,7 +277,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 #' @param x vector of any type and length
 #' @return text describing \code{NA} occurrence.
 var_missings_info <- function(x) {
-  return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x)), 2)))
+  return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
 }
 
 #' Summarizes variable
@@ -303,7 +307,6 @@ var_summary_table <- function(x) {
       )
 
     DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
-
   } else if (is.factor(x) || is.character(x)) {
     level_counts <- table(x)
     max_levels_signif <- nchar(level_counts)
@@ -348,7 +351,8 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
           "%s:\n  %s\n   ... other %s values",
           var_lab,
           paste(groups[1:10], collapse = "\n  "),
-          length(groups) - 10),
+          length(groups) - 10
+        ),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),
         just = c("left", "top")
@@ -362,7 +366,6 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
       ggplotGrob(p)
     }
   } else if (is.numeric(var)) {
-
     validate(need(any(!is.na(var)), "No data left to visualize."))
 
     # Filter out NA
@@ -374,9 +377,11 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
       geom_histogram(binwidth = binwidth) +
       scale_y_continuous(
-        sec.axis = sec_axis(trans = ~. / sum(.),
-                            labels = scales::percent,
-                            name = "proportion (in %)")
+        sec.axis = sec_axis(
+          trans = ~ . / nrow(data.frame(var = var)),
+          labels = scales::percent,
+          name = "proportion (in %)"
+        )
       ) +
       xlab(var_lab) +
       theme_light()
@@ -397,5 +402,4 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
   }
 
   grid::grid.draw(plot_grob)
-
 }
