@@ -345,7 +345,6 @@ srv_missing_data <- function(input,
 
   output$group_by_vals_ui <- renderUI({
     req(input$group_by_var)
-    validate_has_data(data(), 1)
 
     choices <- value_choices(raw_data(), input$group_by_var, input$group_by_var)
     prev_choices <- isolate(input$group_by_vals)
@@ -380,6 +379,7 @@ srv_missing_data <- function(input,
   })
 
   summary_plot_chunks <- reactive({
+    validate_has_data(data(), 1)
 
     # Create a private stack for this function only.
     summary_stack <- chunks$new()
@@ -567,6 +567,7 @@ srv_missing_data <- function(input,
   })
 
   combination_plot_chunks <- reactive({
+    validate_has_data(data(), 1)
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
@@ -638,6 +639,7 @@ srv_missing_data <- function(input,
   })
 
   table_chunks <- reactive({
+    validate_has_data(data(), 1)
 
     # Create a private stack for this function only.
     table_stack <- chunks$new()
