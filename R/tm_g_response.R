@@ -310,7 +310,7 @@ srv_g_response <- function(input,
           .(colf)
           )
         ) %>%
-        dplyr::summarise(ns = n()) %>%
+        dplyr::summarise(ns = dplyr::n()) %>%
         dplyr::group_by_at(
           dplyr::vars(
           .(x_cl),
@@ -334,7 +334,7 @@ srv_g_response <- function(input,
           .(colf)
         )
         ) %>%
-        dplyr::summarise(ns = n())
+        dplyr::summarise(ns = dplyr::n())
     }))
     # nolint end
     plot_call <- bquote(
