@@ -140,7 +140,7 @@ ui_missing_data <- function(id, plot_height, plot_width) {
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
           'For example, suppose that 70 rows of the dataset had missing data in columns "A" and "B" (in each column).',
-          'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded black.'
+          'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded red.'
         )),
         p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
