@@ -477,7 +477,7 @@ srv_g_bivariate <- function(input,
     nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
-    if (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) {
+    if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
       cl <- bquote({
         p <- .(cl)
         print(p)
