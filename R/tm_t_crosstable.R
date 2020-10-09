@@ -183,13 +183,13 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
 
 
-    supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+    supported_types <- c("numeric", "integer", "factor", "character", "logical")
     validate(need(
       class(ANL[[x_name]]) %in% supported_types,
       "Selected x-variable has an unsupported data type."
     ))
     validate(need(
-      class(ANL[[y_name]]) %in% supported_types,
+      class(ANL[[y_name]]) %in% setdiff(supported_types, "character"),
       "Selected y-variable has an unsupported data type."
     ))
 
