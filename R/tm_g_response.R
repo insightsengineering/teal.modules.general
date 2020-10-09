@@ -236,14 +236,6 @@ srv_g_response <- function(input,
     input_id = names(data_extract)
   )
 
-  ## dynamic plot height
-  output$plot_ui <- renderUI({
-    plot_height <- input$plot_height
-    plot_width <- input$plot_width
-    validate(need(plot_height, "need valid plot height"))
-    plotOutput(session$ns("plot"), height = plot_height, width = plot_width)
-  })
-
   plot_r <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data())

@@ -276,6 +276,8 @@ srv_a_regression <- function(input,
       )
     )
 
+    chunks_push_new_line(chunks = chunks_stack)
+
     chunks_push(
       id = "form",
       expression = bquote(form <- .(form)),
@@ -288,10 +290,13 @@ srv_a_regression <- function(input,
       chunks = chunks_stack
     )
 
+    chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
+
     chunks_safe_eval(chunks = chunks_stack)
 
     chunks_stack
   })
+
 
   plot_r <- reactive({
     alpha <- input$alpha # nolint
@@ -523,11 +528,10 @@ srv_a_regression <- function(input,
     width = plot_width
   )
 
+  fitted <- reactive(chunks_get_var("fit", chunks = fit()))
+
   output$text <- renderPrint({
-    chunks_reset()
-    chunks_push_chunks(fit())
-    chunks_push(expression = quote(summary(fit)), id = "summary")
-    chunks_safe_eval()
+    summary(fitted())
   })
 
   callModule(
