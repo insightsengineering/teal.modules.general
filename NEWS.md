@@ -11,6 +11,7 @@
 * Moved missing data module summary plot footer elements to tool tip in encodings panels.
 * `ggplot2` instead of `base` in `tm_a_regression`
 * Added optional slider to adjust `width` in `plot_with_settings`
+* Handle `Inf` in data gracefully.
 
 
 # teal.modules.general 0.2.5

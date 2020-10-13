@@ -172,6 +172,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
     chunks_push_data_merge(merged_data())
 
     ANL <- chunks_get_var("ANL") # nolint
+
+    # As this is a summary
     validate_has_data(ANL, 3)
 
     x_name <- as.vector(merged_data()$columns_source$x)
@@ -180,7 +182,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
     validate(need(!is_character_empty(x_name), "Please define column for x variable that is not empty."))
     validate(need(!is_character_empty(y_name), "Please define column for y variable that is not empty."))
 
-    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
+    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
 
     supported_types <- c("numeric", "integer", "factor", "character", "logical")

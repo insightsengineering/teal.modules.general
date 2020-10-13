@@ -239,7 +239,7 @@ srv_tm_g_association <- function(input,
     )
     validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
-    validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE)
+    validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
     # reference
     ref_class <- class(ANL[[ref_name]])

@@ -262,7 +262,7 @@ srv_g_response <- function(input,
     )
 
 
-    validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE)
+    validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip

@@ -289,8 +289,11 @@ var_missings_info <- function(x) {
 #' @return text with simple statistics.
 var_summary_table <- function(x) {
   if (is.numeric(x)) {
+
+    req(!any(is.infinite(x)))
+
     qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75)), 2)
-    # classical central tendency mmeasures
+    # classical central tendency measures
 
     summary <-
       data.frame(
@@ -370,6 +373,8 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
 
     # Filter out NA
     var <- var[which(!is.na(var))]
+
+    validate(need(!any(is.infinite(var)), "Cannot display graph when data includes infinite values"))
 
     ## histogram
     binwidth <- max(

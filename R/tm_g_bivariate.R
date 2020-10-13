@@ -425,7 +425,7 @@ srv_g_bivariate <- function(input,
       )
     )
 
-    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE)
+    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
     cl <- bivariate_plot_call(

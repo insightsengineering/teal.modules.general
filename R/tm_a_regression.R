@@ -261,7 +261,7 @@ srv_a_regression <- function(input,
       )
     }
 
-    validate_has_data(ANL[, c(response_var, regressor_var)], 10, complete = TRUE)
+    validate_has_data(ANL[, c(response_var, regressor_var)], 10, complete = TRUE, allow_inf = FALSE)
 
     form <- stats::as.formula(
       paste(

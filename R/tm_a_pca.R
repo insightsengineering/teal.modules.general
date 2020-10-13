@@ -211,15 +211,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     validate_has_data(ANL, 10)
     validate_has_elements(keep_cols, "Please select columns")
     validate(need(
-      all(vapply(ANL[keep_cols], is.numeric, logical(1))),
-      "PCA is only defined for numeric columns."
+      all(vapply(ANL[keep_cols], function(x) is.numeric(x) && !is.infinite(x), logical(1))),
+      "PCA is only defined for (finite) numeric columns."
     ))
     validate(need(
       na_action != "none" | !anyNA(ANL[keep_cols]),
       paste("There are NAs in the dataset. Please deal with them in preprocessing",
             'or select "Drop" in the NA actions inside the encodings panel (left).')
     ))
-
 
     chunks_push(
       id = "pca_1",
