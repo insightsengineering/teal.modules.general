@@ -196,7 +196,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
           inputId = session$ns("display_density"),
           label = "Show density",
           labelWidth = "120px",
-          value = TRUE
+          value = if_null(isolate(input$display_density), TRUE)
         ),
         div(
           style = "margin-left: 15px;",
