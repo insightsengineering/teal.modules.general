@@ -12,8 +12,8 @@ tm_a_regression(
   plot_width = NULL,
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
-  ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
-    "void", "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   pre_output = NULL,
   post_output = NULL,
   default_plot_type = 1
@@ -43,7 +43,7 @@ If a slider should be presented to adjust the plot point sizes dynamically then 
 vector of length three with \code{c(value, min, max)}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-  All themes can be chosen by the user. Defaults to \code{grey}.
+  All themes can be chosen by the user. Defaults to \code{gray}.
 
 \itemize{
  \item{1 }{Response vs Regressor}

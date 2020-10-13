@@ -16,8 +16,8 @@ tm_g_response(
   freq = FALSE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  ggtheme = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic",
-    "void", "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   pre_output = NULL,
   post_output = NULL
 )
@@ -59,7 +59,7 @@ for a slider encoding the plot height.}
 for a slider encoding the plot width.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-All themes can be chosen by the user. Defaults to \code{grey}.}
+All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

@@ -23,7 +23,7 @@
 #' @param freq optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 #'   Defaults to density (\code{FALSE}).
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{grey}.
+#'   All themes can be chosen by the user. Defaults to \code{gray}.
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
@@ -81,7 +81,7 @@ tm_g_response <- function(label = "Response Plot",
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
                           ggtheme = c(
-                            "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                            "gray", "bw", "linedraw", "light", "dark", "minimal",
                             "classic", "void", "test"
                           ),
                           pre_output = NULL,
@@ -199,7 +199,7 @@ ui_g_response <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
           )
@@ -350,7 +350,7 @@ srv_g_response <- function(input,
         bquote(.(plot_call) +
           geom_text(
             data = ANL2,
-            aes(label = ns, x = .(x_cl), y = ns, fill = .(resp_cl)),
+            aes(label = ns, x = .(x_cl), y = ns, group = .(resp_cl)),
             col = "white",
             vjust = "middle",
             hjust = "middle",

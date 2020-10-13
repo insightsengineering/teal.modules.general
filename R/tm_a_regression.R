@@ -20,7 +20,7 @@ NULL
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with \code{c(value, min, max)}.
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{grey}.
+#'   All themes can be chosen by the user. Defaults to \code{gray}.
 #'
 #' \itemize{
 #'  \item{1 }{Response vs Regressor}
@@ -86,7 +86,6 @@ tm_a_regression <- function(label = "Regression Analysis",
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
                             ggtheme = c(
-                              "grey",
                               "gray",
                               "bw",
                               "linedraw",
@@ -186,7 +185,6 @@ ui_a_regression <- function(id, ...) {
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = c(
-              "grey",
               "gray",
               "bw",
               "linedraw",

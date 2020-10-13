@@ -39,7 +39,7 @@ NULL
 #'   Does not allow scaling to be changed by default (\code{FALSE}).
 #' @param swap_axes optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{grey}.
+#'   All themes can be chosen by the user. Defaults to \code{gray}.
 #'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
@@ -107,7 +107,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
                            ggtheme = c(
-                             "grey", "gray", "bw", "linedraw", "light", "dark", "minimal",
+                             "gray", "bw", "linedraw", "light", "dark", "minimal",
                              "classic", "void", "test"
                            ),
                            pre_output = NULL,
@@ -293,7 +293,7 @@ ui_g_bivariate <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("grey", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
           ),
@@ -610,7 +610,7 @@ substitute_q <- function(x, env) {
 bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE,
-                                  theme = quote(theme_grey()),
+                                  theme = quote(theme_gray()),
                                   rotate_xaxis_labels = FALSE,
                                   swap_axes = FALSE,
                                   size = double(0),
