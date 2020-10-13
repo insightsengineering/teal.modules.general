@@ -331,6 +331,7 @@ srv_tm_g_association <- function(input,
     chunks_uneval()
     chunks_reactive()
     chunks_safe_eval()
+    chunks_get_var(var = "p")
   })
 
   callModule(

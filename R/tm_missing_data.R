@@ -526,7 +526,7 @@ srv_missing_data <- function(input,
   summary_plot_r <- reactive({
     chunks_reset()
     chunks_push_chunks(summary_plot_chunks())
-    summary_plot_chunks()
+    chunks_get_var(var = "g", chunks = summary_plot_chunks())
   })
 
   combination_cutoff_chunks <- reactive({
@@ -635,7 +635,7 @@ srv_missing_data <- function(input,
   combination_plot_r <- reactive({
     chunks_reset()
     chunks_push_chunks(combination_plot_chunks())
-    combination_plot_chunks()
+    chunks_get_var(var = "g", chunks = combination_plot_chunks())
   })
 
   table_chunks <- reactive({

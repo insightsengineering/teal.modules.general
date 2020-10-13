@@ -473,29 +473,27 @@ srv_g_bivariate <- function(input,
       }
     }
 
+    chunks_push(bquote({
+      p <- .(cl)
+    }))
+
     # Add labels to facets
     nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-      cl <- bquote({
-        p <- .(cl)
-        print(p)
-        })
-      chunks_push(expression = cl, id = "plotCall")
+      chunks_push(quote(print(p)))
+      chunks_safe_eval()
     } else {
       chunks_push(bquote({
-        p <- .(cl)
-
         # Add facetting labels
         # optional: grid.newpage() #nolintr
-        grid::grid.draw(
-          add_facet_labels(p, xfacet_label = .(nulled_col_facet_name), yfacet_label = .(nulled_row_facet_name))
-        )
+        g <- add_facet_labels(p, xfacet_label = .(nulled_col_facet_name), yfacet_label = .(nulled_row_facet_name))
+        grid::grid.draw(g)
       }))
+      chunks_safe_eval()
+      chunks_get_var("g")
     }
-
-    chunks_safe_eval()
   })
 
   callModule(
