@@ -372,7 +372,11 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
     var <- var[which(!is.na(var))]
 
     ## histogram
-    binwidth <- 2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3)
+    binwidth <- max(
+      2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3),
+      sqrt(quantile(var, 0.9) - quantile(var, 0.1))
+    )
+    binwidth <- ifelse(binwidth == 0, 1, binwidth)
 
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
       geom_histogram(binwidth = binwidth) +
