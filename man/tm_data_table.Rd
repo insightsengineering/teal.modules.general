@@ -16,12 +16,14 @@ tm_data_table(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{variables_selected}{(\code{list}) A named list of variables which should be
-initially shown for particular dataset. Names in list should correspond with names provided in list \code{data()}.
-If not specified for any dataset, the first six variables from the dataset will be shown.}
+\item{variables_selected}{(\code{list}) A named list of character vectors of the variables (i.e. columns)
+which should be initially shown for each dataset. Names of list elements should correspond to the names
+of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
+dataset will initially be shown.}
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.}
+shown and in what order. Names in the vector have to correspond with datasets names.
+If vector of length zero (default) then all datasets are shown.}
 
 \item{dt_args}{(\code{named list}) Additional arguments to be passed to \code{DT::datatable}
 (must not include \code{data} or \code{options}).}
