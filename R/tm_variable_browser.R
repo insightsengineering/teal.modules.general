@@ -83,8 +83,10 @@ ui_variable_browser <- function(id, datasets) {
             shinyWidgets::switchInput(
               inputId = ns("raw_or_filtered"),
               label = "Use filtered data",
-              labelWidth = "120px",
-              value = TRUE
+              value = TRUE,
+              width = "100%",
+              labelWidth = "130px",
+              handleWidth = "50px"
             )
           )
         ),
@@ -195,8 +197,10 @@ srv_variable_browser <- function(input, output, session, datasets) {
         shinyWidgets::switchInput(
           inputId = session$ns("display_density"),
           label = "Show density",
-          labelWidth = "120px",
-          value = if_null(isolate(input$display_density), TRUE)
+          value = if_null(isolate(input$display_density), TRUE),
+          width = "100%",
+          labelWidth = "130px",
+          handleWidth = "50px"
         ),
         div(
           style = "margin-left: 15px;",
