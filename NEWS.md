@@ -12,6 +12,7 @@
 * `ggplot2` instead of `base` in `tm_a_regression`
 * Added optional slider to adjust `width` in `plot_with_settings`
 * Handle `Inf` in data gracefully.
+* `tm_variable_browser` now outputs the summary table for factors with all missing values
 
 
 # teal.modules.general 0.2.5

@@ -315,12 +315,24 @@ var_summary_table <- function(x) {
 
     DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
   } else if (is.factor(x) || is.character(x)) {
+
     level_counts <- table(x)
     max_levels_signif <- nchar(level_counts)
 
+    if (!all(is.na(x))) {
+      levels <- names(level_counts)
+      counts <- sprintf(
+        "%s [%.2f%%]",
+        format(level_counts, width = max_levels_signif), prop.table(level_counts) * 100
+      )
+    } else {
+      levels <- character(0)
+      counts <- numeric(0)
+    }
+
     summary <- data.frame(
-      Level = names(level_counts),
-      `Count` = sprintf("%s [%.2f%%]", format(level_counts, width = max_levels_signif), prop.table(level_counts) * 100),
+      Level = levels,
+      Count = counts,
       stringsAsFactors = FALSE
     )
 
