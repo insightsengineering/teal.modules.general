@@ -246,8 +246,8 @@ srv_g_response <- function(input,
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
+    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
+    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
 
     validate(
       need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"),
