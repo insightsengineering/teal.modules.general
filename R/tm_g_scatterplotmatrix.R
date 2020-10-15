@@ -1,15 +1,15 @@
 #' Create a scatterplot matrix
 #'
-#'
 #' The available datasets to choose from for each dataset selector is the same and
-#' determined by the argument \code{variables}.
+#' determined by the argument `variables`.
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'
-#' @param variables (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Plotting variables from an incoming dataset with filtering and selecting.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via

@@ -38,7 +38,7 @@ determined by the argument \code{variables}.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
-  \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
+\code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
 \examples{
 # Scatterplot matrix of variables from ADSL dataset

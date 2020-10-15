@@ -4,16 +4,15 @@
 * Replace `pickerInput` with `optionalSelectInput` for `tm_data_table`.
 * Adds new `facet` parameter to `tm_g_bivariate` to specify whether the facet encodings elements should be visible to the user by default.
 * Replace `plot_with_height` module with new `plot_with_settings` module. 
-* Missing data module now uses chunks so can get R code for it.
+* Missing data module now uses chunks to get reproducible R code.
 * New theme for missing data module and new label positioning.
 * `tm_data_table`: allow developers to pass arguments to `DT::dataTable` and use `pickerInput` to select variables.
 * `tm_g_response` a new argument `count_labels`. Counts might be assessed for the frequency plot too.
 * Moved missing data module summary plot footer elements to tool tip in encodings panels.
-* `ggplot2` instead of `base` in `tm_a_regression`
-* Added optional slider to adjust `width` in `plot_with_settings`
+* Replaced `base` plots in `tm_a_regression` with `ggplot2`.
+* Added optional slider to adjust `width` in `plot_with_settings`.
 * Handle `Inf` in data gracefully.
 * `tm_variable_browser` now outputs the summary table for factors with all missing values
-
 
 # teal.modules.general 0.2.5
 

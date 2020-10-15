@@ -1,28 +1,29 @@
 #' Create a simple scatterplot
 #'
 #' Create a plot with the \code{\link{ggplot2}[geom_point]} function
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Variable
 #'   names selected to plot along the x-axis by default.
-#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
+#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Variable
 #'   names selected to plot along the y-axis by default.
-#' @param color_by optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
-#'   Note \code{_none_} is a keyword and means that no color encoding should be used.
-#' @param alpha optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+#' @param color_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#'   Defines the color encoding. If `NULL` then no color encoding option will be displayed.
+#'   Note `_none_` is a keyword and means that no color encoding should be used.
+#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with \code{c(value, min, max)}.
-#' @param size optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+#'   length three with `c(value, min, max)`.
+#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with \code{c(value, min, max)}.
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{gray}.
+#'   vector of length three with `c(value, min, max)`.
+#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
-#'   \code{vignette("using-scatterplot", package = "teal.modules.general")}.
+#'   `vignette("using-scatterplot", package = "teal.modules.general")`.
 #'
 #' @export
 #' @examples
@@ -91,21 +92,25 @@ tm_g_scatterplot <- function(label,
     color_by <- list_or_null(color_by)
   }
 
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(x))
-  stopifnot(is_class_list("data_extract_spec")(y))
-  stopifnot(is_class_list("data_extract_spec")(color_by) || is.null(color_by))
+  ggtheme <- match.arg(ggtheme)
+
+  stop_if_not(
+    is_character_single(label),
+    is_class_list("data_extract_spec")(x),
+    is_class_list("data_extract_spec")(y),
+    is_class_list("data_extract_spec")(color_by) || is.null(color_by),
+    is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1),
+    all(c(alpha >= 0, alpha <= 1)),
+    `if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE),
+    is_numeric_vector(size) && (length(size) == 3 || length(size) == 1),
+    `if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE),
+    is_logical_single(rotate_xaxis_labels),
+    all(size >= 0),
+    is_character_single(ggtheme)
+    )
+
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
-  stopifnot(is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1))
-  stopifnot(all(c(alpha >= 0, alpha <= 1)))
-  stopifnot(`if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE))
-  stopifnot(is_numeric_vector(size) && (length(size) == 3 || length(size) == 1))
-  stopifnot(`if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE))
-  stopifnot(is_logical_single(rotate_xaxis_labels))
-  stopifnot(all(size >= 0))
-  ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
 
   args <- as.list(environment())
 

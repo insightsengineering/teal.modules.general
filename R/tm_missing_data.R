@@ -117,6 +117,7 @@ srv_page_missing_data <- function(input,
   )
 }
 
+#' @importFrom shinyWidgets checkboxGroupButtons
 ui_missing_data <- function(id, plot_height, plot_width) {
   ns <- NS(id)
   tabsetPanel(
@@ -367,7 +368,7 @@ srv_missing_data <- function(input,
     }
 
     prev_group_by_var(input$group_by_var) # set current group_by_var
-    validate(need(length(choices) < 100, "Please select variable with no more than 100 unique values"))
+    validate(need(length(choices) < 100, "Please select variable with fewer than 100 unique values"))
 
     optionalSelectInput(
       session$ns("group_by_vals"),
@@ -664,13 +665,10 @@ srv_missing_data <- function(input,
     validate(
       need(is.null(group_var) ||
         group_var %in% selected_vars(),
-        "Grouping variable has been already filtered out")
-    )
-
-    validate(
+        "Grouping variable has been already filtered out"),
       need(is.null(group_var) ||
         nrow(unique(anl_filtered[, group_var])) < 100,
-        "Please select variable with no more than 100 unique values")
+        "Please select variable with fewer than 100 unique values")
     )
 
     group_vals <- input$group_by_vals # nolint (local variable is assigned and used)

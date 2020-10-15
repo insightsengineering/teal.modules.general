@@ -1,11 +1,10 @@
 #' Principal component analysis module
-#'
-#' Principal component analysis module
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @param dat (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Datasets used to compute PCA.
 #'
 #' @export

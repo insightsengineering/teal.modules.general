@@ -1,52 +1,48 @@
-#' @include utils.R
-NULL
-
 #' Univariate and bivariate visualizations
-#'
-#' Univariate and bivariate visualizations
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 #'   No empty selections are allowed!
-#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variable names selected to plot along the y-axis by default. Variable can be numeric, factor or character.
-#' @param use_density optional, (\code{logical}) value for whether density (\code{TRUE}) is plotted or
-#'   frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).
-#' @param row_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param use_density optional, (`logical`) value for whether density (`TRUE`) is plotted or
+#'   frequency (`FALSE`). Defaults to frequency (`FALSE`).
+#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables for row facetting.
-#' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables for col facetting.
-#' @param facet optional, (\code{logical}) to specify whether the facet encodings ui elements are toggled
-#'   on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
+#' @param facet optional, (`logical`) to specify whether the facet encodings ui elements are toggled
+#'   on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #'   are supplied.
-#' @param color_settings (\code{logical}) Whether coloring, filling and size should be applied
+#' @param color_settings (`logical`) Whether coloring, filling and size should be applied
 #' and UI tool offered to the user.
-#' @param color optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param color optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables selected for the outline color inside the coloring settings.
-#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
-#' @param fill optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   It will be applied when `color_settings` is set to `TRUE`.
+#' @param fill optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables selected for the fill color inside the coloring settings.
-#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
-#' @param size optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-#'   Variables selected for the size of \code{geom_point} plots inside the coloring settings.
-#'   It will be applied when \code{color_settings} is set to \code{TRUE}.
-#' @param free_x_scales optional, (\code{logical}) Whether X scaling shall be changeable.
-#'   Does not allow scaling to be changed by default (\code{FALSE}).
-#' @param free_y_scales optional, (\code{logical}) Whether Y scaling shall be changeable.
-#'   Does not allow scaling to be changed by default (\code{FALSE}).
-#' @param swap_axes optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{gray}.
+#'   It will be applied when `color_settings` is set to `TRUE`.
+#' @param size optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#'   Variables selected for the size of `geom_point` plots inside the coloring settings.
+#'   It will be applied when `color_settings` is set to `TRUE`.
+#' @param free_x_scales optional, (`logical`) Whether X scaling shall be changeable.
+#'   Does not allow scaling to be changed by default (`FALSE`).
+#' @param free_y_scales optional, (`logical`) Whether Y scaling shall be changeable.
+#'   Does not allow scaling to be changed by default (`FALSE`).
+#' @param swap_axes optional, (`logical`) Whether to swap X and Y axes. Defaults to `FALSE`.
+#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
 #' @note
 #' For more examples, please see the vignette "Using bivariate plot" via
-#'   \code{vignette("using-bivariate-plot", package = "teal.modules.general")}.
+#'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
 #' @importFrom methods is
 #' @export
@@ -112,46 +108,39 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ),
                            pre_output = NULL,
                            post_output = NULL) {
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"))
-  stopifnot(is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"))
-  stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"))
-  stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"))
-  stopifnot(is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"))
-  stopifnot(is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"))
-  stopifnot(is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"))
-  if (is_class_list("data_extract_spec")(x)) {
-    stop_if_not(list(
-      all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1))),
+
+  ggtheme <- match.arg(ggtheme)
+
+  stop_if_not(
+    is_character_single(label),
+    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
+    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
+    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"),
+    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"),
+    is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"),
+    is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"),
+    is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"),
+    is_logical_single(use_density),
+    is_logical_single(color_settings),
+    is_logical_single(free_x_scales),
+    is_logical_single(free_y_scales),
+    is_logical_single(rotate_xaxis_labels),
+    is_logical_single(swap_axes),
+    is_character_single(ggtheme),
+    list(
+      (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
+      (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
-    ))
-  } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(
-      !isTRUE(x$select$multiple),
-      "x variable should not allow multiple selection"
-    ))
-  }
-  if (is_class_list("data_extract_spec")(y)) {
-    stop_if_not(list(
-      all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
+      ),
+    list(
+      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-    ))
-  } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(
-      !isTRUE(y$select$multiple),
-      "y variable should not allow multiple selection"
-    ))
-  }
-  stopifnot(is_logical_single(use_density))
-  stopifnot(is_logical_single(color_settings))
-  stopifnot(is_logical_single(free_x_scales))
-  stopifnot(is_logical_single(free_y_scales))
+      )
+    )
+
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
-  stopifnot(is_logical_single(rotate_xaxis_labels))
-  stopifnot(is_logical_single(swap_axes))
-  ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
 
   if (color_settings) {
     if (is.null(color)) {

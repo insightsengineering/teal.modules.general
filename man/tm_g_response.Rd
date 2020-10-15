@@ -26,13 +26,13 @@ tm_g_response(
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
- Which variable to use as the response. You can define one fixed column by using the
- setting \code{fixed = TRUE} inside the \code{select_spec}.
+Which variable to use as the response. You can define one fixed column by using the
+setting \code{fixed = TRUE} inside the \code{select_spec}.
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
- Which variable to use on the X-axis of the response plot. Allow the user to select multiple
- columns from the \code{data} allowed in teal.
+Which variable to use on the X-axis of the response plot. Allow the user to select multiple
+columns from the \code{data} allowed in teal.
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
@@ -73,7 +73,7 @@ Response Plots
 }
 \note{
 For more examples, please see the vignette "Using response plot" via
-  \code{vignette("using-response-plot", package = "teal.modules.general")}.
+\code{vignette("using-response-plot", package = "teal.modules.general")}.
 }
 \examples{
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)

@@ -1,39 +1,33 @@
-#' @include utils.R
-NULL
-
 #' Scatterplot and Regression Model
-#'
-#' Scatterplot and Regression Model
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @param regressor (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Regressor variables from an incoming dataset with filtering and selecting.
-#' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Response variables from an incoming dataset with filtering and selecting.
-#' @param default_plot_type optional, (\code{numeric}) Defaults to Response vs Regressor.
-#' @param alpha optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with \code{c(value, min, max)}.
-#' @param size optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+#'   length three with `c(value, min, max)`.
+#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with \code{c(value, min, max)}.
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{gray}.
+#'   vector of length three with `c(value, min, max)`.
+#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to `gray`.
+#' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
 #'
-#' \itemize{
-#'  \item{1 }{Response vs Regressor}
-#'  \item{2 }{Residuals vs Fitted}
-#'  \item{3 }{Normal Q-Q}
-#'  \item{4 }{Scale-Location}
-#'  \item{5 }{Cooks distance}
-#'  \item{6 }{Residuals vs Leverage}
-#'  \item{7 }{Cooks dist vs Leverage}
-#' }
+#' 1. Response vs Regressor
+#' 2. Residuals vs Fitted
+#' 3. Normal Q-Q
+#' 4. Scale-Location
+#' 5. Cooks distance
+#' 6. Residuals vs Leverage
+#' 7. Cooks dist vs Leverage
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
-#'   \code{vignette("using-regression-plots", package = "teal.modules.general")}.
+#'   `vignette("using-regression-plots", package = "teal.modules.general")`.
 #' @export
 #'
 #' @examples
@@ -106,20 +100,24 @@ tm_a_regression <- function(label = "Regression Analysis",
     response <- list(response)
   }
 
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(response))
-  stop_if_not(list(
-    all(vapply(response, function(x) {
-      !isTRUE(x$select$multiple)
-    }, logical(1))),
-    "Response variable should not allow multiple selection"
-  ))
-  stopifnot(is_class_list("data_extract_spec")(regressor))
+  ggtheme <- match.arg(ggtheme)
+
+  stop_if_not(
+    is_character_single(label),
+    is_class_list("data_extract_spec")(response),
+    list(
+      all(vapply(response, function(x) {
+        !isTRUE(x$select$multiple)
+        }, logical(1))),
+      "Response variable should not allow multiple selection"
+      ),
+    is_class_list("data_extract_spec")(regressor),
+    # No check necessary for regressor and response, as checked in data_extract_input
+    is_character_single(ggtheme)
+    )
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
-  # No check necessary for regressor and response, as checked in data_extract_input
-  ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
+
   # Send ui args
   args <- as.list(environment())
 
@@ -212,6 +210,7 @@ ui_a_regression <- function(id, ...) {
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 #' @importFrom stats lowess
+#' @importFrom shinyjs show hide
 srv_a_regression <- function(input,
                              output,
                              session,
@@ -243,23 +242,21 @@ srv_a_regression <- function(input,
     regressor_var <- as.vector(merged_data()$columns_source$regressor)
 
     # validation
-    validate(need(
-      length(regressor_var) > 0,
-      "At least one regressor should be selected."
-    ))
-    validate(need(
-      length(response_var) == 1,
-      "Response variable should be of length one."
-    ))
-    validate(need(is.numeric(ANL[response_var][[1]]), "Response variable should be numeric."))
-    if (input$plot_type == "Response vs Regressor") {
-      validate(
-        need(
-          length(regressor_var) == 1,
-          "Response vs Regressor is only provided for exactly one regressor"
+    validate(
+      need(
+        length(regressor_var) > 0,
+        "At least one regressor should be selected."
+        ),
+      need(
+        length(response_var) == 1,
+        "Response variable should be of length one."
+        ),
+      need(is.numeric(ANL[response_var][[1]]), "Response variable should be numeric."),
+      need(
+        input$plot_type != "Response vs Regressor" || length(regressor_var) == 1,
+        "Response vs Regressor is only provided for exactly one regressor"
         )
       )
-    }
 
     validate_has_data(ANL[, c(response_var, regressor_var)], 10, complete = TRUE, allow_inf = FALSE)
 

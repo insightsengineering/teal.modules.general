@@ -63,7 +63,6 @@ list_or_null <- function(obj) {
 #' varname_w_label("AGE", ADSL)
 #' }
 #' @importFrom stringr str_wrap
-#' @importFrom utils.nest if_null
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -133,7 +132,6 @@ varname_w_label <- function(var_names,
 #' }
 #'
 #' @importFrom grid grid.newpage grid.draw pushViewport upViewport plotViewport viewport grid.grabExpr
-#' @importFrom ggplot2 ggplotGrob
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
     is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),

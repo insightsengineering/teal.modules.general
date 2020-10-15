@@ -42,7 +42,7 @@ Create a simple cross-table
 }
 \note{
 For more examples, please see the vignette "Using cross table" via
-  \code{vignette("using-cross-table", package = "teal.modules.general")}.
+\code{vignette("using-cross-table", package = "teal.modules.general")}.
 }
 \examples{
 # Percentage cross table of variables from ADSL dataset

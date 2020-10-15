@@ -43,17 +43,7 @@ If a slider should be presented to adjust the plot point sizes dynamically then 
 vector of length three with \code{c(value, min, max)}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-  All themes can be chosen by the user. Defaults to \code{gray}.
-
-\itemize{
- \item{1 }{Response vs Regressor}
- \item{2 }{Residuals vs Fitted}
- \item{3 }{Normal Q-Q}
- \item{4 }{Scale-Location}
- \item{5 }{Cooks distance}
- \item{6 }{Residuals vs Leverage}
- \item{7 }{Cooks dist vs Leverage}
-}}
+All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
@@ -62,14 +52,23 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.}
+\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
+\enumerate{
+\item Response vs Regressor
+\item Residuals vs Fitted
+\item Normal Q-Q
+\item Scale-Location
+\item Cooks distance
+\item Residuals vs Leverage
+\item Cooks dist vs Leverage
+}}
 }
 \description{
 Scatterplot and Regression Model
 }
 \note{
 For more examples, please see the vignette "Using regression plots" via
-  \code{vignette("using-regression-plots", package = "teal.modules.general")}.
+\code{vignette("using-regression-plots", package = "teal.modules.general")}.
 }
 \examples{
 # Regression graphs from selected response variable (BMRKR1) and

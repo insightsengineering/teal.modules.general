@@ -1,29 +1,28 @@
 #' Response Plots
-#'
-#' Response Plots
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @param response (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which variable to use as the response. You can define one fixed column by using the
-#'   setting \code{fixed = TRUE} inside the \code{select_spec}.
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   setting `fixed = TRUE` inside the `select_spec`.
+#'  `data_extract_spec` must not allow multiple selection in this case.
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-#'   columns from the \code{data} allowed in teal.
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param row_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#'   columns from the `data` allowed in teal.
+#'  `data_extract_spec` must not allow multiple selection in this case.
+#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which data columns to use for faceting rows.
-#' @param col_facet optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which data to use for faceting columns.
-#' @param coord_flip optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.
-#' @param count_labels optional, (\code{logical}) Whether to show count labels.
-#'   Defaults to \code{TRUE}.
-#' @param freq optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
-#'   Defaults to density (\code{FALSE}).
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{gray}.
+#' @param coord_flip optional, (`logical`) Whether to flip coordinates between `x` and `response`.
+#' @param count_labels optional, (`logical`) Whether to show count labels.
+#'   Defaults to `TRUE`.
+#' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
+#'   Defaults to density (`FALSE`).
+#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
@@ -99,35 +98,35 @@ tm_g_response <- function(label = "Response Plot",
     col_facet <- list_or_null(col_facet)
   }
 
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(response))
-  stop_if_not(list(
-    all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-    "'response' should not allow empty values"
-  ))
-  stop_if_not(list(
-    all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-    "'response' should not allow multiple selection"
-  ))
-  stopifnot(is_class_list("data_extract_spec")(x))
-  stop_if_not(list(
-    all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-    "'x' should not allow empty values"
-  ))
-  stop_if_not(list(
-    all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-    "'x' should not allow multiple selection"
-  ))
-  stopifnot(is.null(row_facet) || is_class_list("data_extract_spec")(row_facet))
-  stopifnot(is.null(col_facet) || is_class_list("data_extract_spec")(col_facet))
-  stopifnot(is_logical_single(coord_flip))
-  stopifnot(is_logical_single(count_labels))
-  stopifnot(is_logical_single(rotate_xaxis_labels))
-  stopifnot(is_logical_single(freq))
+  ggtheme <- match.arg(ggtheme)
+
+  stop_if_not(
+    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
+    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
+    is_character_single(label),
+    is_class_list("data_extract_spec")(response),
+    is_class_list("data_extract_spec")(x),
+    is_logical_single(coord_flip),
+    is_logical_single(count_labels),
+    is_logical_single(rotate_xaxis_labels),
+    is_logical_single(freq),
+    is_character_single(ggtheme),
+    list(
+      all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
+      "'response' should not allow empty values"),
+    list(
+      all(vapply(response, function(x) !(x$select$multiple), logical(1))),
+      "'response' should not allow multiple selection"),
+    list(
+      all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
+      "'x' should not allow empty values"),
+    list(
+      all(vapply(x, function(x) !(x$select$multiple), logical(1))),
+      "'x' should not allow multiple selection")
+    )
+
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
-  ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
 
   args <- as.list(environment())
 
@@ -253,10 +252,7 @@ srv_g_response <- function(input,
       need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"),
       need(!identical(x, character(0)), "Please define a valid column for the X-variable"),
       need(length(resp_var) == 1, "Please define a column for Response variable"),
-      need(length(x) == 1, "Please define a column for X variable")
-    )
-
-    validate(
+      need(length(x) == 1, "Please define a column for X variable"),
       need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."),
       need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable.")
     )

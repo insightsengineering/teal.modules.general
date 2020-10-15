@@ -31,7 +31,7 @@ names selected to plot along the y-axis by default.}
 
 \item{color_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
-Note \code{_none_} is a keyword and means that no color encoding should be used.}
+Note \verb{_none_} is a keyword and means that no color encoding should be used.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -65,7 +65,7 @@ Create a plot with the \code{\link{ggplot2}[geom_point]} function
 }
 \note{
 For more examples, please see the vignette "Using scatterplot" via
-  \code{vignette("using-scatterplot", package = "teal.modules.general")}.
+\code{vignette("using-scatterplot", package = "teal.modules.general")}.
 }
 \examples{
 # Scatterplot of variables from ADSL dataset

@@ -19,18 +19,18 @@ Encoding: UTF-8
 License: file LICENSE
 LazyData: true
 Depends:
-  ggplot2,
-  ggmosaic,
-  magrittr,
   shiny,
   teal (>= 0.9.1)
 Imports:
+  ggplot2,
+  ggmosaic,
   grid,
   gridExtra,
   dplyr,
   DT,
   forcats,
   lattice,
+  magrittr,
   methods,
   rlang,
   rtables (>= 0.1.7),
@@ -51,18 +51,4 @@ Suggests:
   test.nest (>= 0.2.5),
   testthat (>= 2.0)
 RoxygenNote: 7.1.1
-Collate: 
-    'teal.modules.general-package.R'
-    'tm_a_pca.R'
-    'utils.R'
-    'tm_a_regression.R'
-    'tm_data_table.R'
-    'tm_g_association.R'
-    'tm_g_bivariate.R'
-    'tm_g_response.R'
-    'tm_g_scatterplot.R'
-    'tm_g_scatterplotmatrix.R'
-    'tm_missing_data.R'
-    'tm_t_crosstable.R'
-    'tm_variable_browser.R'
 VignetteBuilder: knitr

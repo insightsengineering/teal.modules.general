@@ -25,10 +25,10 @@ dataset will initially be shown.}
 shown and in what order. Names in the vector have to correspond with datasets names.
 If vector of length zero (default) then all datasets are shown.}
 
-\item{dt_args}{(\code{named list}) Additional arguments to be passed to \code{DT::datatable}
+\item{dt_args}{(named \code{list}) Additional arguments to be passed to \code{DT::datatable}
 (must not include \code{data} or \code{options}).}
 
-\item{dt_options}{(\code{name list}) The \code{options} argument to \code{DT::datatable}. By default
+\item{dt_options}{(named \code{list}) The \code{options} argument to \code{DT::datatable}. By default
 \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
 }
 \description{

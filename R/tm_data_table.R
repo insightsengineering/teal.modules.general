@@ -1,21 +1,21 @@
 #' Data Table Viewer Teal Module
 #'
 #' A data table viewer shows the data using a paginated table.
+#' @md
 #'
 #' @inheritParams teal::module
-#' @param variables_selected (\code{list}) A named list of character vectors of the variables (i.e. columns)
+#' @param variables_selected (`list`) A named list of character vectors of the variables (i.e. columns)
 #'   which should be initially shown for each dataset. Names of list elements should correspond to the names
 #'   of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
 #'   dataset will initially be shown.
-#' @param datasets_selected (\code{character}) A vector of datasets which should be
+#' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
-#' @param dt_args (\code{named list}) Additional arguments to be passed to \code{DT::datatable}
-#'   (must not include \code{data} or \code{options}).
-#' @param dt_options (\code{name list}) The \code{options} argument to \code{DT::datatable}. By default
-#'   \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}
+#' @param dt_args (named `list`) Additional arguments to be passed to `DT::datatable`
+#'   (must not include `data` or `options`).
+#' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
+#'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @export
-#' @importFrom utils.nest is_fully_named_list
 #' @importFrom DT datatable
 #' @examples
 #' library(random.cdisc.data)
@@ -146,7 +146,7 @@ tm_data_table <- function(label = "Data table",
                             pageLength = 30,
                             lengthMenu = c(5, 15, 30, 100),
                             scrollX = TRUE)) {
-  stopifnot(
+  stop_if_not(
     is_character_single(label),
     is.list(variables_selected),
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
@@ -154,43 +154,21 @@ tm_data_table <- function(label = "Data table",
     utils.nest::is_fully_named_list(dt_args),
     utils.nest::is_fully_named_list(dt_options),
 
-    `if`(
-      length(variables_selected) > 0,
-      !is.null(names(variables_selected)), TRUE
-    ),
-    `if`(
-      length(variables_selected) > 0,
-      all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))), TRUE
-    ),
-    `if`(
-      length(variables_selected) > 0,
-      all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0), TRUE
-    ),
-    `if`(
-      length(variables_selected) > 0,
-      all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))), TRUE
-    ),
-    `if`(
-      length(variables_selected) > 0,
-      all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0), TRUE
-    ),
+    is_empty(variables_selected) ||
+      (!is.null(names(variables_selected)) &&
+      all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
+      all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
+      all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
+      all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
 
-    `if`(
-      length(datasets_selected) > 0,
-      all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0), TRUE
-    ),
-    `if`(
-      length(datasets_selected) > 0,
-      all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1))), TRUE
-    )
+    is_empty(datasets_selected) ||
+      (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
+      all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
+
+    list(
+      is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
+      "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))")
   )
-
-  if (!all(names(dt_args) %in% names(formals(DT::datatable)))) {
-    stop("Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))")
-  }
-  if ("data" %in% names(dt_args) || "options" %in% names(dt_args)) {
-    stop("dt_args should not have entries 'data' or 'options'")
-  }
 
   module(
     label,

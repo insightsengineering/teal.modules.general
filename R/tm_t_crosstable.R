@@ -1,21 +1,20 @@
 #' Create a simple cross-table
-#'
-#' Create a simple cross-table
+#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param x (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable X - row values.
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param y (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param show_percentage optional, (\code{logical}) Whether to show percentages
-#'   (relevant only when \code{x} is a \code{factor}). Defaults to \code{TRUE}.
-#' @param show_total optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.
+#' @param show_percentage optional, (`logical`) Whether to show percentages
+#'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
+#' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
-#'   \code{vignette("using-cross-table", package = "teal.modules.general")}.
+#'   `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
 #' @export
 #'
@@ -67,33 +66,23 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL) {
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"))
-  stopifnot(is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"))
-  if (is_class_list("data_extract_spec")(x)) {
-    stop_if_not(list(
-      all(vapply(x, function(x) !isTRUE(x$select$multiple), logical(1))),
+  stop_if_not(
+    is_character_single(label),
+    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
+    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
+    is_logical_single(show_percentage),
+    is_logical_single(show_total),
+    list(
+      (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
+        (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
-    ))
-  } else if (is(x, "data_extract_spec")) {
-    stop_if_not(list(
-      !isTRUE(x$select$multiple),
-      "x variable should not allow multiple selection"
-    ))
-  }
-  if (is_class_list("data_extract_spec")(y)) {
-    stop_if_not(list(
-      all(vapply(y, function(x) !isTRUE(x$select$multiple), logical(1))),
+    ),
+    list(
+      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-    ))
-  } else if (is(y, "data_extract_spec")) {
-    stop_if_not(list(
-      !isTRUE(y$select$multiple),
-      "y variable should not allow multiple selection"
-    ))
-  }
-  stopifnot(is_logical_single(show_percentage))
-  stopifnot(is_logical_single(show_total))
+    )
+  )
 
   ui_args <- as.list(environment())
 
