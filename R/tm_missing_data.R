@@ -139,8 +139,9 @@ ui_missing_data <- function(id, plot_height, plot_width) {
           'The "Combinations" graph is used to explore the relationship between the missing data within',
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
-          'For example, suppose that 70 rows of the dataset had missing data in columns "A" and "B" (in each column).',
-          'In this case, at N=70 on the y-axis and columns "A" and "B" on the x-axis, the cells would be shaded red.'
+          'For example, suppose that column "A" and "B" have missing data on the same 70 rows.',
+          'In this case, at the intersection of the N=70 row on the y-axis and columns "A" and "B" on the x-axis,',
+          "the cells would be shaded red."
         )),
         p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
