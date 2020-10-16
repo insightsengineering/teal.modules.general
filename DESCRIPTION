@@ -27,6 +27,7 @@ Imports:
   grid,
   gridExtra,
   dplyr,
+  tidyselect,
   DT,
   forcats,
   lattice,
