@@ -248,14 +248,12 @@ srv_g_response <- function(input,
     row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
     col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
 
-    validate(
-      need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"),
-      need(!identical(x, character(0)), "Please define a valid column for the X-variable"),
-      need(length(resp_var) == 1, "Please define a column for Response variable"),
-      need(length(x) == 1, "Please define a column for X variable"),
-      need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."),
-      need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable.")
-    )
+    validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
+    validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
+    validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
+    validate(need(length(x) == 1, "Please define a column for X variable"))
+    validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
+    validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
 
 
     validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)

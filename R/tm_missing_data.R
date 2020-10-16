@@ -692,7 +692,9 @@ srv_missing_data <- function(input,
     validate(
       need(is.null(group_var) ||
         group_var %in% selected_vars(),
-        "Grouping variable has been already filtered out"),
+        "Grouping variable has been already filtered out")
+      )
+    validate(
       need(is.null(group_var) ||
         nrow(unique(anl_filtered[, group_var])) < 100,
         "Please select variable with fewer than 100 unique values")

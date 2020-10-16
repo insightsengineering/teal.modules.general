@@ -246,12 +246,16 @@ srv_a_regression <- function(input,
       need(
         length(regressor_var) > 0,
         "At least one regressor should be selected."
-        ),
+        )
+      )
+    validate(
       need(
         length(response_var) == 1,
         "Response variable should be of length one."
-        ),
-      need(is.numeric(ANL[response_var][[1]]), "Response variable should be numeric."),
+        )
+      )
+    validate(need(is.numeric(ANL[response_var][[1]]), "Response variable should be numeric."))
+    validate(
       need(
         input$plot_type != "Response vs Regressor" || length(regressor_var) == 1,
         "Response vs Regressor is only provided for exactly one regressor"

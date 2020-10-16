@@ -230,11 +230,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
     type <- input$raw_or_filtered
     display_density <- input$display_density
 
-    validate(
-      need(data, "no data selected"),
-      need(varname, "no variable selected"),
-      need(is.logical(type), "select what type of data to plot")
-    )
+    validate(need(data, "no data selected"))
+    validate(need(varname, "no variable selected"))
+    validate(need(is.logical(type), "select what type of data to plot"))
 
     .log("plot variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
 
@@ -261,11 +259,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
     varname <- plot_var$variable[[input$tsp]]
     type <- input$raw_or_filtered
 
-    validate(
-      need(data, "no data selected"),
-      need(varname, "no variable selected"),
-      need(is.logical(type), "select what type of data to plot")
-    )
+    validate(need(data, "no data selected"))
+    validate(need(varname, "no variable selected"))
+    validate(need(is.logical(type), "select what type of data to plot"))
 
     df <- datasets$get_data(data, filtered = type)
     validate_has_data(df, 1)

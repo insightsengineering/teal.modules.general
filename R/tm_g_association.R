@@ -222,6 +222,8 @@ srv_tm_g_association <- function(input,
     distribution_theme <- input$distribution_theme
     association_theme <- input$association_theme
 
+    validate(need(ref_name, "need at least one variable selected"))
+
     is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
     if (is_scatterplot) {
       shinyjs::show("alpha")
@@ -235,10 +237,7 @@ srv_tm_g_association <- function(input,
       size <- 2
     }
 
-    validate(
-      need(length(ref_name) > 0, "need at least one variable selected"),
-      need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap")
-    )
+    validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
     validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
     validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)

@@ -352,12 +352,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot circle ----
   plot_circle <- function() {
-    validate(
-      need(input$x_axis, "Need additional plot settings - x axis"),
-      need(input$y_axis, "Need additional plot settings - y axis"),
-      need(input$variables, "Need additional plot settings - variables"),
-      need(input$x_axis != input$y_axis, "Please choose different axis.")
-    )
+    validate(need(input$x_axis, "Need additional plot settings - x axis"))
+    validate(need(input$y_axis, "Need additional plot settings - y axis"))
+    validate(need(input$variables, "Need additional plot settings - variables"))
+    validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
 
     x_axis <- input$x_axis #nolint
     y_axis <- input$y_axis #nolint
@@ -393,11 +391,9 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot biplot ----
   plot_biplot <- function() {
-    validate(
-      need(input$x_axis, "Need additional plot settings - x axis"),
-      need(input$y_axis, "Need additional plot settings - y axis"),
-      need(input$x_axis != input$y_axis, "Please choose different axis.")
-    )
+    validate(need(input$x_axis, "Need additional plot settings - x axis"))
+    validate(need(input$y_axis, "Need additional plot settings - y axis"))
+    validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
 
     rd <- response_data()
     resp_col <- as.character(rd$columns_source$response)
