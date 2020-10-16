@@ -19,11 +19,12 @@ Encoding: UTF-8
 License: file LICENSE
 LazyData: true
 Depends:
+  ggmosaic,
+  ggplot2,
+  magrittr,
   shiny,
   teal (>= 0.9.1)
 Imports:
-  ggplot2,
-  ggmosaic,
   grid,
   gridExtra,
   dplyr,
@@ -31,7 +32,6 @@ Imports:
   DT,
   forcats,
   lattice,
-  magrittr,
   methods,
   rlang,
   rtables (>= 0.1.7),
