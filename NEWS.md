@@ -1,3 +1,7 @@
+# teal.modules.general 0.2.6.9000
+
+* issues with no news:
+
 # teal.modules.general 0.2.6
 
 * Adds additional plot settings such as themes for `tm_g_association`, `tm_g_response`, and `tm_g_scatterplot`, as well as point size and opacity settings for `tm_g_association` and `tm_g_scatterplot`.
