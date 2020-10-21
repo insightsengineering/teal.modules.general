@@ -292,7 +292,8 @@ ui_g_bivariate <- function(id, ...) {
           sliderInput(
             ns("fixed_size"), "Scatterplot point size:", min = 1, max = 8,
             step = 1, value = 2, ticks = FALSE
-          )
+          ),
+          checkboxInput(ns("add_lines"), "Add lines"),
         )
       )
     ),
@@ -389,6 +390,7 @@ srv_g_bivariate <- function(input,
     if (is_scatterplot) {
       shinyjs::show("alpha")
       alpha <- input$alpha # nolint
+      shinyjs::show("add_lines")
 
       if (color_settings && input$coloring) {
         shinyjs::hide("fixed_size")
@@ -399,6 +401,8 @@ srv_g_bivariate <- function(input,
         size <- input$fixed_size
       }
     } else {
+      shinyjs::hide("add_lines")
+      updateCheckboxInput(session, "add_lines", value = FALSE)
       shinyjs::hide("alpha")
       shinyjs::hide("fixed_size")
       shinyjs::hide("size_settings")
@@ -441,6 +445,11 @@ srv_g_bivariate <- function(input,
         cl <- call("+", cl, facet_cl)
       }
     }
+
+    if (input$add_lines) {
+      cl <- call("+", cl, quote(geom_line(size = 1)))
+    }
+
     coloring_cl <- NULL
     if (color_settings) {
       if (input$coloring) {
