@@ -185,7 +185,6 @@ ui_tm_g_association <- function(id, ...) {
 
 
 #' @importFrom grid grid.newpage grid.draw
-#' @importFrom tern stack_grobs
 #' @importFrom shinyjs show hide
 srv_tm_g_association <- function(input,
                                  output,
@@ -320,7 +319,8 @@ srv_tm_g_association <- function(input,
     chunks_push(
       expression = bquote({
         plots <- .(do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+        #p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+        p <- ggplotGrob(plots[[1]])
         grid::grid.newpage()
         grid::grid.draw(p)
       }),
@@ -357,3 +357,4 @@ srv_tm_g_association <- function(input,
     code_header = "Association Plot"
   )
 }
+
