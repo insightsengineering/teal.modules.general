@@ -62,22 +62,19 @@ combinations of data sets.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    dataset("ADSL2", ADSL2, keys = get_cdisc_keys("ADSL")),
-    cdisc_dataset("ADRS", ADRS),
-    cdisc_dataset("ADTTE", ADTTE),
-    cdisc_dataset("ADLB", ADLB),
-    code = "ADSL <- radsl(cached = TRUE)
-            ADSL2 <- radsl(cached = TRUE) %>% 
-            mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-            ADRS <- radrs(cached = TRUE)
-            ADTTE <- radtte(cached = TRUE)
-            ADLB <- radlb(cached = TRUE) %>%
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+    dataset("ADSL2", ADSL2, keys = get_cdisc_keys("ADSL"), 
+      code = "ADSL2 <- radsl(cached = TRUE) %>% 
+              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"),
+    cdisc_dataset("ADRS", ADRS, code = "ADRS <- radrs(cached = TRUE)"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+    cdisc_dataset("ADLB", ADLB, 
+    code = "ADLB <- radlb(cached = TRUE) %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
             TRUE ~ '-'
-            )))",
+            )))"),
     check = TRUE
   ),
     modules = root_modules(

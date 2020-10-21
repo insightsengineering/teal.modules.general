@@ -49,9 +49,8 @@ ADRS <- radrs(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADRS", ADRS),
-    code = "ADSL <- radsl(cached = TRUE); ADRS <- radrs(cached = TRUE)",
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+    cdisc_dataset("ADRS", ADRS, code = "ADRS <- radrs(cached = TRUE)"),
     check = TRUE
   ),
   modules = root_modules(

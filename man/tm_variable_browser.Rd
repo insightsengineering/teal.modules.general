@@ -21,8 +21,9 @@ ADTTE <- radtte(cached = TRUE)
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    cdisc_dataset("ADTTE", ADTTE)
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+    check = TRUE
   ),
   root_modules(
     tm_variable_browser(label = "Variable browser")

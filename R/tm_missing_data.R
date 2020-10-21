@@ -16,9 +16,8 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADRS", ADRS),
-#'     code = "ADSL <- radsl(cached = TRUE); ADRS <- radrs(cached = TRUE)",
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADRS", ADRS, code = "ADRS <- radrs(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -130,7 +129,7 @@ ui_missing_data <- function(id, plot_height, plot_width) {
           "sorted by magnitude."
         )),
         p('The "summary per patients" graph is showing how many subjects have at least one missing observation',
-          "for each variable. It will be most usefull for panel datasets.")
+          "for each variable. It will be most useful for panel datasets.")
       )
     ),
     tabPanel(

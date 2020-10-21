@@ -1,5 +1,7 @@
 # teal.modules.general 0.2.6.9000
 
+* Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
+
 * issues with no news:
 
 # teal.modules.general 0.2.6

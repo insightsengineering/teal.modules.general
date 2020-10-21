@@ -24,8 +24,7 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- radsl(cached = TRUE)",
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -43,14 +42,13 @@
 #' library(random.cdisc.data)
 #'
 #' ADSL <- radsl(cached = TRUE)
-#' ADTTE <- radaette(cached = TRUE)
+#' ADTTE <- radtte(cached = TRUE)
 #'
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- radsl(cached = TRUE); ADTTE <- radaette(cached = TRUE)",
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -83,9 +81,8 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     code = "ADSL <- radsl(cached = TRUE); ADLB <- radlb(cached = TRUE)",
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -112,12 +109,9 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL),
-#'     cdisc_dataset("ADLB", ADLB),
-#'     cdisc_dataset("ADTTE", ADTTE),
-#'     code = "ADSL <- radsl(cached = TRUE);
-#'             ADLB <- radlb(cached = TRUE);
-#'             ADTTE <- radtte(cached = TRUE);",
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
+#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
