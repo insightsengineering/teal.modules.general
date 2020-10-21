@@ -171,6 +171,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
+    validate(need(!any(is.na(ANL[[y_name]])), "NAs in the chosen variable, please choose another column variable"))
 
     supported_types <- c("numeric", "integer", "factor", "character", "logical")
     validate(need(
