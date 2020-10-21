@@ -201,11 +201,11 @@ srv_t_crosstable <- function(input, output, session, datasets, label, show_perce
       print(title)
 
       tbl <- data.frame(x = 1, y = 1)
-      #tbl <- tern::t_summary(
-      #  ANL[[.(x_name)]],
-      #  col_by = ANL[[.(y_name)]],
-      #  total = .(if (input$show_total) "Total" else NULL),
-      #  denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit")
+      #tbl <- tern::t_summary( # nolint
+      #  ANL[[.(x_name)]],     # nolint
+      #  col_by = ANL[[.(y_name)]], # nolint
+      #  total = .(if (input$show_total) "Total" else NULL), # nolint
+      #  denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit") # nolint
       #)
 
       tbl
