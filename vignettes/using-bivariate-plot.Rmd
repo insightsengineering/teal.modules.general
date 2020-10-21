@@ -273,14 +273,14 @@ app <- init(
             filter_spec(
               vars = "PARAMCD",
               choices = value_choices(ADRS, "PARAMCD", "PARAM"),
-              selected = levels(ADRS$PARAMCD)[2],
+              selected = levels(ADRS$PARAMCD)[1],
               multiple = FALSE,
               label = "Select response:"
             ),
             filter_spec(
               vars = "AVISIT",
               choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[2],
+              selected = levels(ADRS$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
@@ -331,14 +331,14 @@ app <- init(
             filter_spec(
               vars = "PARAMCD",
               choices = value_choices(ADRS, "PARAMCD", "PARAM"),
-              selected = levels(ADRS$PARAMCD)[2],
+              selected = levels(ADRS$PARAMCD)[1],
               multiple = FALSE,
               label = "Select response:"
             ),
             filter_spec(
               vars = "AVISIT",
               choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[2],
+              selected = levels(ADRS$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )

@@ -160,14 +160,14 @@ app <- init(
               label = "Select parameter:",
               vars = "PARAMCD",
               choices = levels(ADRS$PARAMCD),
-              selected = levels(ADRS$PARAMCD)[1],
+              selected = levels(ADRS$PARAMCD)[3],
               multiple = FALSE
             ),
             filter_spec(
               label = "Select visit:",
               vars = "AVISIT",
               choices = levels(ADRS$AVISIT),
-              selected = levels(ADRS$AVISIT)[1],
+              selected = levels(ADRS$AVISIT)[3],
               multiple = FALSE
             )
           ),
