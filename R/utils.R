@@ -13,85 +13,6 @@
 #' @name shared_params
 NULL
 
-#' Call a function with a character vector for the \code{...} argument
-#'
-#' @param fun (\code{character}) Name of a function where the \code{...} argument
-#'   shall be replaced by values from \code{str_args}.
-#' @param str_args (\code{character}) A character vector that the function shall
-#'  be executed with
-#'
-#' @return: call (i.e. expression) of the function provided by \code{fun}
-#'  with arguments provided by \code{str_args}.
-#'
-#' @examples
-#' \dontrun{
-#' a <- 1
-#' b <- 2
-#' call_fun_dots("sum", c("a", "b"))
-#' eval(call_fun_dots("sum", c("a", "b")))
-#' }
-call_fun_dots <- function(fun, str_args) {
-  do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
-}
-
-list_or_null <- function(obj) {
-  if (is.null(obj)) {
-    NULL
-  } else {
-    list(obj)
-  }
-}
-
-#' Get variable name with label
-#'
-#' @param var_names (\code{character}) Name of variable to extract labels from.
-#' @param dataset (\code{dataset}) Name of analysis dataset.
-#' @param prefix (\code{character}) String to paste to the beginning of the
-#'   variable name with label.
-#' @param suffix (\code{character}) String to paste to the end of the variable
-#'   name with label.
-#' @param wrap_width (\code{numeric}) Number of characters to wrap original
-#'   label to. Defaults to 80.
-#'
-#' @return (\code{character}) String with variable name and label.
-#'
-#' @examples
-#' \dontrun{
-#' library(random.cdisc.data)
-#' ADSL <- radsl(cached = TRUE)
-#'
-#' varname_w_label("AGE", ADSL)
-#' }
-#' @importFrom stringr str_wrap
-varname_w_label <- function(var_names,
-                            dataset,
-                            wrap_width = 80,
-                            prefix = NULL,
-                            suffix = NULL) {
-
-  add_label <- function(var_names) {
-
-    label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
-
-    if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
-      paste0(prefix, label, " [", var_names, "]", suffix)
-
-    } else {
-      var_names
-    }
-  }
-
-  if (length(var_names) < 1) {
-    NULL
-
-  } else if (length(var_names) == 1) {
-    stringr::str_wrap(add_label(var_names), width = wrap_width)
-
-  } else if (length(var_names) > 1) {
-    stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
-  }
-}
-
 #' Add axis labels that show facetting variable
 #'
 #' Add axis labels that show facetting variable
@@ -182,4 +103,178 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
       upViewport(1)
     }
   })
+}
+
+#' Call a function with a character vector for the \code{...} argument
+#'
+#' @param fun (\code{character}) Name of a function where the \code{...} argument
+#'   shall be replaced by values from \code{str_args}.
+#' @param str_args (\code{character}) A character vector that the function shall
+#'  be executed with
+#'
+#' @return: call (i.e. expression) of the function provided by \code{fun}
+#'  with arguments provided by \code{str_args}.
+#'
+#' @examples
+#' \dontrun{
+#' a <- 1
+#' b <- 2
+#' call_fun_dots("sum", c("a", "b"))
+#' eval(call_fun_dots("sum", c("a", "b")))
+#' }
+call_fun_dots <- function(fun, str_args) {
+  do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
+}
+
+#' Returns NULL or an argument coerced to a list
+#'
+#' @param obj object to be tested for NULL
+#'
+#' @return: NULL if obj is NULL, list(obj) otherwise
+#'
+#' @examples
+#' \dontrun{
+#' a <- NULL
+#' b <- c(1, 2)
+#' list_or_null(a) # returns NULL
+#' l <- list_or_null(b) # return list(b)
+#' print(l)
+#' }
+list_or_null <- function(obj) {
+  if (is.null(obj)) {
+    NULL
+  } else {
+    list(obj)
+  }
+}
+
+#' Stack Multiple Grobs
+#'
+#' Stack grobs as a new grob with 1 column and multiple rows layout.
+#'
+#' @param ... grobs.
+#' @param grobs list of grobs.
+#' @param padding unit of length 1, space between each grob.
+#' @param vp a \code{\link{viewport}} object (or \code{NULL}).
+#' @param name a character identifier for the grob.
+#' @param gp A \code{\link{gpar}} object.
+#'
+#' @export
+#'
+#' @examples
+#' library(grid)
+#' g1 <- circleGrob(gp = gpar(col = "blue"))
+#' g2 <- circleGrob(gp = gpar(col = "red"))
+#' g3 <- textGrob("TEST TEXT")
+#' grid.newpage()
+#' grid.draw(stack_grobs(g1, g2, g3))
+#'
+#' showViewport()
+#'
+#' grid.newpage()
+#' pushViewport(viewport(layout = grid.layout(1,2)))
+#' vp1 <- viewport(layout.pos.row = 1, layout.pos.col = 2)
+#' grid.draw(stack_grobs(g1, g2, g3, vp = vp1, name = "test"))
+#'
+#' showViewport()
+#' grid.ls(grobs = TRUE, viewports = TRUE)
+#'
+#' @importFrom grid is.grob viewport grid.layout gList gTree unit.c
+stack_grobs <- function(...,
+                        grobs = list(...),
+                        padding = unit(2, "line"),
+                        vp = NULL,
+                        gp = NULL,
+                        name = NULL) {
+  stopifnot(all(vapply(grobs, is.grob, logical(1))))
+
+  if (length(grobs) == 1) {
+    return(grobs[[1]])
+  }
+
+  n_layout <- 2 * length(grobs) - 1
+  hts <- lapply(
+    seq(1, n_layout),
+    function(i) {
+      if (i %% 2 != 0) {
+        unit(1, "null")
+      } else {
+        padding
+      }
+    }
+  )
+  hts <- do.call("unit.c", hts)
+
+  main_vp <- viewport(
+    layout = grid.layout(nrow = n_layout, ncol = 1, heights = hts)
+  )
+
+  nested_grobs <- Map(function(g, i) {
+    gTree(
+      children = gList(g),
+      vp = viewport(layout.pos.row = i, layout.pos.col = 1)
+    )
+  }, grobs, seq_along(grobs) * 2 - 1)
+
+  grobs_mainvp <-   gTree(
+    children = do.call("gList", nested_grobs),
+    vp = main_vp
+  )
+
+  gTree(
+    children = gList(grobs_mainvp),
+    vp = vp,
+    gp = gp,
+    name = name
+  )
+}
+
+#' Get variable name with label
+#'
+#' @param var_names (\code{character}) Name of variable to extract labels from.
+#' @param dataset (\code{dataset}) Name of analysis dataset.
+#' @param prefix (\code{character}) String to paste to the beginning of the
+#'   variable name with label.
+#' @param suffix (\code{character}) String to paste to the end of the variable
+#'   name with label.
+#' @param wrap_width (\code{numeric}) Number of characters to wrap original
+#'   label to. Defaults to 80.
+#'
+#' @return (\code{character}) String with variable name and label.
+#'
+#' @examples
+#' \dontrun{
+#' library(random.cdisc.data)
+#' ADSL <- radsl(cached = TRUE)
+#'
+#' varname_w_label("AGE", ADSL)
+#' }
+#' @importFrom stringr str_wrap
+varname_w_label <- function(var_names,
+                            dataset,
+                            wrap_width = 80,
+                            prefix = NULL,
+                            suffix = NULL) {
+
+  add_label <- function(var_names) {
+
+    label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
+
+    if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
+      paste0(prefix, label, " [", var_names, "]", suffix)
+
+    } else {
+      var_names
+    }
+  }
+
+  if (length(var_names) < 1) {
+    NULL
+
+  } else if (length(var_names) == 1) {
+    stringr::str_wrap(add_label(var_names), width = wrap_width)
+
+  } else if (length(var_names) > 1) {
+    stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
+  }
 }

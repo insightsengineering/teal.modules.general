@@ -318,8 +318,7 @@ srv_tm_g_association <- function(input,
     chunks_push(
       expression = bquote({
         plots <- .(do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        #p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob)) # nolint
-        p <- ggplotGrob(plots[[1]])
+        p <- stack_grobs(grobs = lapply(plots, ggplotGrob))
         grid::grid.newpage()
         grid::grid.draw(p)
       }),
