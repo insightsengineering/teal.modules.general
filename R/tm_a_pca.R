@@ -279,41 +279,27 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chcs_pcs <- colnames(pca$rotation)
     chcs_vars <- chunks_get_var("keep_cols", chunks = chunks_stack)
 
-    out <- if (input$plot_type == "elbow") {
-      helpText("No additional plot settings available.")
-
-    } else if (input$plot_type == "circle") {
-      list(
-        optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
-        optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
-        optionalSelectInput(
-          ns("variables"), "Original coordinates",
-          choices = chcs_vars, selected = chcs_vars,
-          multiple = TRUE)
+    tagList(
+      conditionalPanel(
+        condition = paste0("input['", ns("plot_type"), "'] == 'biplot' || input['", ns("plot_type"), "'] == 'circle'"),
+        list(
+          optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
+          optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
+          optionalSelectInput(
+            ns("variables"), "Original coordinates",
+            choices = chcs_vars, selected = chcs_vars,
+            multiple = TRUE)
+        )
+      ),
+      conditionalPanel(
+        condition = paste0("input['", ns("plot_type"), "'] == 'elbow'"),
+        helpText("No additional plot settings available.")
+      ),
+      conditionalPanel(
+        condition = paste0("input['", ns("plot_type"), "'] == 'pc_var'"),
+        optionalSelectInput(ns("pc"), "PC", choices = chcs_pcs, selected = chcs_pcs[1])
       )
-
-    } else if (input$plot_type == "biplot") {
-      list(
-        optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
-        optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
-        optionalSelectInput(
-          ns("variables"), "
-          Original coordinates",
-          choices = chcs_vars, selected = chcs_vars,
-          multiple = TRUE)
-      )
-
-    } else if (input$plot_type == "pc_var") {
-      list(
-        optionalSelectInput(ns("pc"), "PC",
-                            choices = chcs_pcs, selected = chcs_pcs[1])
-      )
-
-    } else {
-      stop("Unknown plot")
-    }
-
-    return(out)
+    )
   })
 
   # plot elbow ----
@@ -352,10 +338,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot circle ----
   plot_circle <- function() {
-    validate(need(input$x_axis, "Need additional plot settings - x axis"))
-    validate(need(input$y_axis, "Need additional plot settings - y axis"))
-    validate(need(input$variables, "Need additional plot settings - variables"))
-    validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
+    validate(
+      need(input$x_axis, "Need additional plot settings - x axis"),
+      need(input$y_axis, "Need additional plot settings - y axis"),
+      need(input$variables, "Need additional plot settings - variables"))
+    validate(need(input$x_axis != input$y_axis, "Please choose different X and Y axes."))
 
     x_axis <- input$x_axis #nolint
     y_axis <- input$y_axis #nolint
@@ -391,9 +378,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot biplot ----
   plot_biplot <- function() {
-    validate(need(input$x_axis, "Need additional plot settings - x axis"))
-    validate(need(input$y_axis, "Need additional plot settings - y axis"))
-    validate(need(input$x_axis != input$y_axis, "Please choose different axis."))
+    validate(
+      need(input$x_axis, "Need additional plot settings - x axis"),
+      need(input$y_axis, "Need additional plot settings - y axis"))
+    validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
 
     rd <- response_data()
     resp_col <- as.character(rd$columns_source$response)
@@ -550,7 +538,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot pc_var ----
   plot_pc_var <- function() {
-    validate(need(input$pc, "Need additional plot settigns - PC"))
+    validate(need(input$pc, "Need additional plot settings - PC"))
 
     pc <- input$pc #nolint
 
