@@ -19,8 +19,6 @@
 #' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
-#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
@@ -75,10 +73,7 @@ tm_g_scatterplot <- function(label,
                              alpha = c(1, 0, 1),
                              size = c(2, 1, 8),
                              rotate_xaxis_labels = FALSE,
-                             ggtheme = c(
-                               "gray", "bw", "linedraw", "light", "dark", "minimal",
-                               "classic", "void", "test"
-                             ),
+                             ggtheme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL) {
   if (!is_class_list("data_extract_spec")(x)) {
@@ -166,7 +161,7 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = gg_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )

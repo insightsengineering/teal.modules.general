@@ -11,10 +11,8 @@ tm_g_association(
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal",
-    "classic", "void", "test"),
-  association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal",
-    "classic", "void", "test"),
+  distribution_theme = gg_themes,
+  association_theme = gg_themes,
   pre_output = NULL,
   post_output = NULL
 )
@@ -38,10 +36,14 @@ for a slider encoding the plot height.}
 for a slider encoding the plot width.}
 
 \item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the distribution plot. All themes can be chosen by the user. Defaults to \code{gray}.}
+for the distribution plot. All themes can be chosen by the user. Defaults to \code{gray}.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
 
 \item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the association plots. All themes can be chosen by the user. Defaults to \code{gray}.}
+for the association plots. All themes can be chosen by the user. Defaults to \code{gray}.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

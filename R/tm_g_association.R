@@ -12,8 +12,12 @@
 #'   with reference variable. Defaults to `TRUE`.
 #' @param distribution_theme optional, (`character`) `ggplot` Theme to be used by default
 #'   for the distribution plot. All themes can be chosen by the user. Defaults to `gray`.
+#'   `gg_themes` is defined internally as
+#'   `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`
 #' @param association_theme optional, (`character`) `ggplot` Theme to be used by default
 #'   for the association plots. All themes can be chosen by the user. Defaults to `gray`.
+#'   `gg_themes` is defined internally as
+#'   `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`
 #'
 #' @note For more examples, please see the vignette "Using association plot" via
 #'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
@@ -68,14 +72,8 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c(
-                               "gray", "bw", "linedraw", "light", "dark", "minimal",
-                               "classic", "void", "test"
-                             ),
-                             association_theme = c(
-                               "gray", "bw", "linedraw", "light", "dark", "minimal",
-                               "classic", "void", "test"
-                             ),
+                             distribution_theme = gg_themes,
+                             association_theme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL) {
   if (!is_class_list("data_extract_spec")(ref)) {
@@ -162,14 +160,14 @@ ui_tm_g_association <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("distribution_theme"),
             label = "Distribution theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = gg_themes,
             selected = args$distribution_theme,
             multiple = FALSE
           ),
           optionalSelectInput(
             inputId = ns("association_theme"),
             label = "Association theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = gg_themes,
             selected = args$association_theme,
             multiple = FALSE
           )

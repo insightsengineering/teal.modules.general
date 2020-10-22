@@ -22,8 +22,7 @@ tm_g_bivariate(
   plot_width = NULL,
   rotate_xaxis_labels = FALSE,
   swap_axes = FALSE,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = gg_themes,
   pre_output = NULL,
   post_output = NULL
 )
@@ -84,6 +83,8 @@ rotate by default (\code{FALSE}).}
 \item{swap_axes}{optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the

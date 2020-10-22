@@ -21,8 +21,6 @@
 #'   Defaults to `TRUE`.
 #' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
 #'   Defaults to density (`FALSE`).
-#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
@@ -78,10 +76,7 @@ tm_g_response <- function(label = "Response Plot",
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
-                          ggtheme = c(
-                            "gray", "bw", "linedraw", "light", "dark", "minimal",
-                            "classic", "void", "test"
-                          ),
+                          ggtheme = gg_themes,
                           pre_output = NULL,
                           post_output = NULL) {
   if (!is_class_list("data_extract_spec")(response)) {
@@ -197,7 +192,7 @@ ui_g_response <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = gg_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )

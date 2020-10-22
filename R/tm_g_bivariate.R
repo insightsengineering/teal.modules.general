@@ -34,8 +34,6 @@
 #' @param free_y_scales optional, (`logical`) Whether Y scaling shall be changeable.
 #'   Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes optional, (`logical`) Whether to swap X and Y axes. Defaults to `FALSE`.
-#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to `gray`.
 #'
 #' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
@@ -101,10 +99,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            plot_width = NULL,
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
-                           ggtheme = c(
-                             "gray", "bw", "linedraw", "light", "dark", "minimal",
-                             "classic", "void", "test"
-                           ),
+                           ggtheme = gg_themes,
                            pre_output = NULL,
                            post_output = NULL) {
 
@@ -281,7 +276,7 @@ ui_g_bivariate <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = gg_themes,
             selected = args$ggtheme,
             multiple = FALSE
           ),

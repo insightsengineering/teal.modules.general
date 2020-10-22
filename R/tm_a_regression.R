@@ -14,8 +14,6 @@
 #' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
-#' @param ggtheme optional, (`character`) `ggplot` Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to `gray`.
 #' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
 #'
 #' 1. Response vs Regressor
@@ -78,17 +76,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             plot_width = NULL,
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
-                            ggtheme = c(
-                              "gray",
-                              "bw",
-                              "linedraw",
-                              "light",
-                              "dark",
-                              "minimal",
-                              "classic",
-                              "void",
-                              "test"
-                            ),
+                            ggtheme = gg_themes,
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1) {
@@ -181,17 +169,7 @@ ui_a_regression <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c(
-              "gray",
-              "bw",
-              "linedraw",
-              "light",
-              "dark",
-              "minimal",
-              "classic",
-              "void",
-              "test"
-            ),
+            choices = gg_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )

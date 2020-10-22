@@ -16,8 +16,7 @@ tm_g_response(
   freq = FALSE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = gg_themes,
   pre_output = NULL,
   post_output = NULL
 )
@@ -59,6 +58,8 @@ for a slider encoding the plot height.}
 for a slider encoding the plot width.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the

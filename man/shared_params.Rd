@@ -12,6 +12,11 @@ for a slider encoding the plot width.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+All themes can be chosen by the user. Defaults to \code{gray}.}
 }
 \description{
 Contains arguments that are shared between multiple functions

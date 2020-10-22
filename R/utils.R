@@ -9,6 +9,10 @@
 #'   for a slider encoding the plot width.
 #' @param rotate_xaxis_labels optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 #'   rotate by default (\code{FALSE}).
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   \code{gg_themes} is defined internally as
+#'   \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+#'   All themes can be chosen by the user. Defaults to \code{gray}.
 #'
 #' @name shared_params
 NULL
@@ -278,3 +282,6 @@ varname_w_label <- function(var_names,
     stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
   }
 }
+
+
+gg_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")
