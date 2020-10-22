@@ -45,6 +45,8 @@ lexicographically
 liaoc
 linters
 lintr
+multisessions
+multithreaded
 npaszty
 pre
 rcode
@@ -62,5 +64,3 @@ testthat
 tm
 ui
 waddella
-multisessions
-multithreaded

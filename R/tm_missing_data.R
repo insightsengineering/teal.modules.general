@@ -683,7 +683,7 @@ srv_missing_data <- function(input,
 
     validate(need(input$count_type, "Please select type of counts"))
     if (!is.null(input$group_by_var)) {
-      validate(need(input$group_by_vals, "Please select grouping variable values"))
+      validate(need(!is.null(input$group_by_vals), "Please select grouping variable values"))
     }
 
     group_var <- input$group_by_var
@@ -733,9 +733,13 @@ srv_missing_data <- function(input,
             dplyr::filter(.(as.name(group_var)) %in% .(group_vals)) %>%
             dplyr::summarise_all(cell_values) %>%
             tidyr::pivot_longer(!tidyselect::all_of(.(group_var)), names_to = "Variable", values_to = "out") %>%
-            dplyr::mutate(`Variable label` = "Placeholder") %>%
-            dplyr::select(.(group_var), Variable, `Variable label`, out) %>%
-            tidyr::pivot_wider(names_from = tidyselect::all_of(.(group_var)), values_from = out) %>%
+            dplyr::mutate(
+              `Variable label` = "Placeholder",
+              altered_group_var = dplyr::if_else(
+                .(as.name(group_var)) == "", "''", as.character(.(as.name(group_var))))
+              ) %>%
+            dplyr::select(altered_group_var, Variable, `Variable label`, out) %>%
+            tidyr::pivot_wider(names_from = altered_group_var, values_from = out) %>%
             dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE))
         )
       )
