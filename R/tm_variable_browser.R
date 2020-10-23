@@ -136,7 +136,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
       if (!show_adsl_vars && name != "ADSL") {
         adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
         df <- df[!(names(df) %in% adsl_vars)]
-      }
+        }
 
       if (is.null(df)) {
         current_rows[[name]] <- character(0)
@@ -145,7 +145,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
         labels <- setNames(unlist(lapply(df, function(x) {
           lab <- attr(x, "label")
           if (is.null(lab)) "" else lab
-        }), use.names = FALSE), names(df))
+          }), use.names = FALSE), names(df))
 
         current_rows[[name]] <- names(labels)
         missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
@@ -154,7 +154,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
           function(x) teal:::variable_type_icons(class(x)[1]),
           FUN.VALUE = character(1),
           USE.NAMES = FALSE
-        )
+          )
 
         dt <- DT::datatable(
           data.frame(
@@ -162,20 +162,20 @@ srv_variable_browser <- function(input, output, session, datasets) {
             Label = labels,
             Missings = missings,
             stringsAsFactors = FALSE
-          ),
+            ),
           escape = FALSE,
           rownames = FALSE,
           selection = list(mode = "single", target = "row", selected = 1),
           options = list(
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
+              )
             )
           )
-        )
-      }
-    },
+        }
+      },
       server = TRUE
-    )
+      )
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {
@@ -416,15 +416,17 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var), ou
 
   plot_grob <- if (is.factor(var) || is.character(var)) {
     groups <- unique(as.character(var))
-
-    if (length(groups) > 30) {
+    len_groups <- length(groups)
+    if (len_groups > 30) {
+      len_groups_even <- ifelse(!len_groups %% 2, len_groups, len_groups - 1)
+      groups_df <- apply(matrix(groups[1:min(50, len_groups_even)], nrow = 2), 2, paste, collapse = ",  ")
       grid::textGrob(
         sprintf(
           "%s:\n  %s\n   ... other %s values",
           var_lab,
-          paste(groups[1:10], collapse = "\n  "),
-          length(groups) - 10
-        ),
+          paste(groups_df, collapse = ",\n  "),
+          len_groups - min(50, len_groups_even)
+          ),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),
         just = c("left", "top")

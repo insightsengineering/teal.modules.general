@@ -3,6 +3,7 @@
 * Add remove outliers option to `tm_variable_browser`.
 * Bivariate plots with two continuous variables now allow adding lines.
 * Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
+* `tm_variable_browser` shows 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
 * issues with no news:
 
 # teal.modules.general 0.2.6
@@ -19,7 +20,7 @@
 * Replaced `base` plots in `tm_a_regression` with `ggplot2`.
 * Added optional slider to adjust `width` in `plot_with_settings`.
 * Handle `Inf` in data gracefully.
-* `tm_variable_browser` now outputs the summary table for factors with all missing values
+* `tm_variable_browser` now outputs the summary table for factors with all missing values.
 
 # teal.modules.general 0.2.5
 
