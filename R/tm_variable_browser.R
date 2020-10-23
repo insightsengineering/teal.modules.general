@@ -94,7 +94,7 @@ ui_variable_browser <- function(id, datasets) {
         div(
           class = "clearfix;",
           style = "margin: 0px 15px 15px 15px;",
-          uiOutput(ns("ui_density_display"))
+          uiOutput(ns("ui_numeric_display"))
         ),
         plotOutput(ns("variable_plot"), height = "500px"),
         br(),
@@ -128,53 +128,52 @@ srv_variable_browser <- function(input, output, session, datasets) {
     })
 
     table_ui_id <- paste0("variable_browser_", name)
+
     output[[table_ui_id]] <- DT::renderDataTable({
-        df <- datasets$get_data(name, filtered = FALSE)
-        show_adsl_vars <- input$show_adsl_vars
+      df <- datasets$get_data(name, filtered = FALSE)
+      show_adsl_vars <- input$show_adsl_vars
 
-        if (!show_adsl_vars && name != "ADSL") {
-          adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
-          df <- df[!(names(df) %in% adsl_vars)]
-        }
+      if (!show_adsl_vars && name != "ADSL") {
+        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
+        df <- df[!(names(df) %in% adsl_vars)]
+      }
 
-        if (is.null(df)) {
-          current_rows[[name]] <- character(0)
-          data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
-        } else {
-          labels <- setNames(unlist(lapply(df, function(x) {
-            lab <- attr(x, "label")
-            if (is.null(lab)) "" else lab
-          }), use.names = FALSE), names(df))
+      if (is.null(df)) {
+        current_rows[[name]] <- character(0)
+        data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
+      } else {
+        labels <- setNames(unlist(lapply(df, function(x) {
+          lab <- attr(x, "label")
+          if (is.null(lab)) "" else lab
+        }), use.names = FALSE), names(df))
 
+        current_rows[[name]] <- names(labels)
+        missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
+        icons <- vapply(
+          df,
+          function(x) teal:::variable_type_icons(class(x)[1]),
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
 
-
-          current_rows[[name]] <- names(labels)
-          missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
-          icons <- vapply(
-            df,
-            function(x) teal:::variable_type_icons(class(x)[1]),
-            FUN.VALUE = character(1),
-            USE.NAMES = FALSE
-          )
-
-          dt <- DT::datatable(
-            data.frame(
-              Variable = paste(icons, names(labels)),
-              Label = labels,
-              Missings = missings,
-              stringsAsFactors = FALSE
-            ),
-            escape = FALSE,
-            rownames = FALSE,
-            selection = list(mode = "single", target = "row", selected = 1),
-            options = list(
-              columnDefs = list(
-                list(orderable = FALSE, className = "details-control", targets = 0)
-              )
+        dt <- DT::datatable(
+          data.frame(
+            Variable = paste(icons, names(labels)),
+            Label = labels,
+            Missings = missings,
+            stringsAsFactors = FALSE
+          ),
+          escape = FALSE,
+          rownames = FALSE,
+          selection = list(mode = "single", target = "row", selected = 1),
+          options = list(
+            columnDefs = list(
+              list(orderable = FALSE, className = "details-control", targets = 0)
             )
           )
-        }
-      },
+        )
+      }
+    },
       server = TRUE
     )
 
@@ -185,7 +184,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     })
   })
 
-  output$ui_density_display <- renderUI({
+  output$ui_numeric_display <- renderUI({
     data <- input$tsp
     varname <- plot_var$variable[[input$tsp]]
     type <- input$raw_or_filtered
@@ -195,22 +194,55 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     if (is.numeric(df[[varname]])) {
       list(
-        shinyWidgets::switchInput(
-          inputId = session$ns("display_density"),
-          label = "Show density",
-          value = if_null(isolate(input$display_density), TRUE),
-          width = "100%",
-          labelWidth = "130px",
-          handleWidth = "50px"
+        fluidRow(
+          column(4,
+            shinyWidgets::switchInput(
+              inputId = session$ns("display_density"),
+              label = "Show density",
+              value = if_null(isolate(input$display_density), TRUE),
+              width = "100%",
+              labelWidth = "130px",
+              handleWidth = "50px"
+            )
+          ),
+          column(4,
+            shinyWidgets::switchInput(
+              inputId = session$ns("remove_outliers"),
+              label = "Remove outliers",
+              value = if_null(isolate(input$remove_outliers), FALSE),
+              width = "100%",
+              labelWidth = "130px",
+              handleWidth = "50px"
+            )
+          ),
+          column(4,
+            uiOutput(session$ns("outlier_definition_slider_ui"))
+          )
         ),
         div(
           style = "margin-left: 15px;",
-          uiOutput(session$ns("ui_density_help"))
+          uiOutput(session$ns("ui_density_help")),
+          uiOutput(session$ns("ui_outlier_help"))
         )
       )
     } else {
       NULL
     }
+  })
+
+  output$outlier_definition_slider_ui <- renderUI({
+    req(input$remove_outliers)
+    sliderInput(inputId = session$ns("outlier_definition_slider"),
+      div(
+        "Outlier definition:",
+        title = paste("Use the slider to choose the cut-off value to define outliers;\nthe larger the value the",
+          "further below Q1/above Q3 points have\nto be in order to be classed as outliers"),
+        icon("info-circle")
+      ),
+      min = 1,
+      max = 5,
+      value = 3,
+      step = 0.5)
   })
 
   output$ui_density_help <- renderUI({
@@ -225,11 +257,33 @@ srv_variable_browser <- function(input, output, session, datasets) {
     }
   })
 
+  output$ui_outlier_help <- renderUI({
+    req(is.logical(input$remove_outliers), input$outlier_definition_slider)
+    if (input$remove_outliers) {
+      tags$small(helpText(paste0(
+        "Outlier data points (those less than Q1 -", input$outlier_definition_slider,
+        "*IQR and those greater than Q3 + ", input$outlier_definition_slider, "*IQR) ",
+        "have not been displayed on the graph and will not be used for any kernel density estimations, ",
+        "although their values remain in the statisics table below"
+      )))
+    } else {
+      NULL
+    }
+  })
+
   output$variable_plot <- renderPlot({
     data <- input$tsp
     varname <- plot_var$variable[[input$tsp]]
     type <- input$raw_or_filtered
     display_density <- input$display_density
+    remove_outliers <- if_null(input$remove_outliers, FALSE)
+
+    if (remove_outliers) {
+      req(input$outlier_definition_slider)
+      outlier_definition <- as.numeric(input$outlier_definition_slider)
+    } else {
+      outlier_definition <- 0
+    }
 
     validate(need(data, "no data selected"))
     validate(need(varname, "no variable selected"))
@@ -251,7 +305,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
       var <- df[[varname]]
       d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
 
-      plot_var_summary(var = var, var_lab = d_var_name, display_density)
+      plot_var_summary(var = var, var_lab = d_var_name, display_density, outlier_definition = outlier_definition)
     }
   })
 
@@ -352,8 +406,10 @@ var_summary_table <- function(x) {
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
 #' @param display_density \code{logical} Should density estimation be displayed for numeric values?
+#' @param outlier_definition If 0 no outliers are removed, otherwise
+#'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @return plot
-plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
+plot_var_summary <- function(var, var_lab, display_density = is.numeric(var), outlier_definition) {
   stopifnot(is_logical_single(display_density))
 
   grid::grid.newpage()
@@ -389,11 +445,27 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
 
     validate(need(!any(is.infinite(var)), "Cannot display graph when data includes infinite values"))
 
+    # remove outliers
+    if (outlier_definition != 0) {
+      q1_q3 <- quantile(var, probs = c(0.25, 0.75))
+      iqr <- q1_q3[2] - q1_q3[1]
+      number_records <- length(var)
+      var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+      number_outliers <- number_records - length(var)
+      outlier_text <- paste0(number_outliers, " outliers (",
+        round(number_outliers / number_records * 100, 2),
+        "% of non-missing records) not shown")
+      validate(need(length(var) > 1,
+        "At least two data points must remain after removing outliers for this graph to be displayed"))
+    }
+
+
     ## histogram
     binwidth <- max(
       2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3),
       sqrt(quantile(var, 0.9) - quantile(var, 0.1))
     )
+
     binwidth <- ifelse(binwidth == 0, 1, binwidth)
 
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
@@ -410,6 +482,16 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var)) {
 
     if (display_density) {
       p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
+    }
+
+    if (outlier_definition != 0) {
+      p <- p + annotate(
+        geom = "text",
+        label = outlier_text,
+        x = Inf, y = Inf,
+        hjust = 1.02, vjust = 1.2,
+        color = "black"
+      )
     }
 
     ggplotGrob(p)

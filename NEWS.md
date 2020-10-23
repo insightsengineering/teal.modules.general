@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.6.9000
 
+* Add remove outliers option to `tm_variable_browser`.
 * Bivariate plots with two continuous variables now allow adding lines.
 * Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * issues with no news:
