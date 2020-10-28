@@ -47,6 +47,7 @@ ui_variable_browser <- function(id, datasets) {
   ns <- NS(id)
 
   fluidRow(
+    htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
     column(
       6,
       # variable browser
@@ -142,13 +143,23 @@ srv_variable_browser <- function(input, output, session, datasets) {
         current_rows[[name]] <- character(0)
         data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
       } else {
+        # extract data variable labels
         labels <- setNames(unlist(lapply(df, function(x) {
           lab <- attr(x, "label")
           if (is.null(lab)) "" else lab
           }), use.names = FALSE), names(df))
 
         current_rows[[name]] <- names(labels)
-        missings <- vapply(df, var_missings_info, FUN.VALUE = character(1), USE.NAMES = FALSE)
+
+        # calculate number of missing values
+        missings <- vapply(
+          df,
+          var_missings_info,
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+          )
+
+        # get icons proper for the data types
         icons <- vapply(
           df,
           function(x) teal:::variable_type_icons(class(x)[1]),
@@ -156,11 +167,21 @@ srv_variable_browser <- function(input, output, session, datasets) {
           USE.NAMES = FALSE
           )
 
+        # generate sparklines
+        sparklines_html <- vapply(
+          df,
+          create_sparklines,
+          FUN.VALUE = character(1),
+          width = 100,
+          USE.NAMES = FALSE)
+
+        # join labels, missings and icons
         dt <- DT::datatable(
           data.frame(
             Variable = paste(icons, names(labels)),
             Label = labels,
             Missings = missings,
+            Sparklines = sparklines_html,
             stringsAsFactors = FALSE
             ),
           escape = FALSE,
@@ -169,7 +190,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
           options = list(
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
-              )
+              ),
+            fnDrawCallback = htmlwidgets::JS("function(){ HTMLWidgets.staticRender();}")
             )
           )
         }
@@ -333,6 +355,120 @@ srv_variable_browser <- function(input, output, session, datasets) {
 #' @return text describing \code{NA} occurrence.
 var_missings_info <- function(x) {
   return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
+}
+
+#' S3 generic for \code{sparkline} widget HTML
+#'
+#' Generates the \code{sparkline} HTML code corresponding to the input array.
+#' For numeric variables creates a box plot, for character and factors - bar plot.
+#' Produces an empty string for variables of other types.
+#'
+#' @param arr vector of any type and length
+#' @param width \code{numeric} the width of the \code{sparkline} widget
+#' @param ... \code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
+#' \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}
+#'
+#' @return character variable containing the HTML code of the \code{sparkline} HTML widget
+#'
+#' @importFrom sparkline spk_chr
+create_sparklines <- function(arr, width = 100, ...) {
+  if (all(is.null(arr))) {
+    return("")
+  }
+  UseMethod("create_sparklines")
+}
+
+create_sparklines.default <- function(arr, ...) { # nousage # nolint
+  return("")
+}
+
+#' Generates the HTML code for the \code{sparkline} widget
+#'
+#' Coerces character vector to factor and delegates to the \code{create_sparklines.factor}
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.character <- function(arr, width = 100, ...) { # nousage # nolint
+  arr <- as.factor(arr)
+  return(create_sparklines(arr))
+}
+
+#' Generates the \code{sparkline} HTML code
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @importFrom sparkline spk_chr
+#' @importFrom jsonlite toJSON
+#' @importFrom htmlwidgets JS
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.factor <- function(arr, width = 100, ...) { # nousage # nolint
+  decreasing_order <- TRUE
+
+  counts <- table(droplevels(arr))
+  if (length(counts) >= 100 | length(counts) == 0) {
+    return("")
+  }
+
+  # Summarize the occurences of different levels
+  # and get the maximum and minimum number of occurences
+  # This is needed for the sparkline to correctly display the bar plots
+  # Otherwise they are cropped
+  counts <- sort(counts, decreasing = decreasing_order)
+  max_value <- if (decreasing_order) counts[1] else counts[length[counts]]
+  max_value <- unname(max_value)
+
+  custom_formatter <- function(labels, counts) {
+    htmlwidgets::JS(
+      sprintf(
+        "function(sparkline, options, field) {
+        return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
+        }",
+        jsonlite::toJSON(labels),
+        jsonlite::toJSON(counts)
+      )
+    )
+  }
+
+  res <- do.call(
+    spk_chr,
+    c(
+      list(
+        unname(counts),
+        type = "bar",
+        chartRangeMin = 0,
+        chartRangeMax = max_value,
+        width = width,
+        tooltipFormatter = custom_formatter(names(counts), as.vector(counts))
+      ),
+      ...
+    )
+  )
+  return(res)
+}
+
+#' Generates the \code{sparkline} HTML code
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @importFrom sparkline spk_chr
+#'
+#' @seealso \code{\link{create_sparklines}}
+
+create_sparklines.numeric <- function(arr, width = 100, ...) { # nousage # nolint
+  if (any(is.infinite(arr))) {
+    return("")
+  }
+
+  res <- sparkline::spk_chr(arr, type = "box", width = width, ...)
+  return(res)
 }
 
 #' Summarizes variable
