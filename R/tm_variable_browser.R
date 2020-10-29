@@ -3,6 +3,11 @@
 #' The variable browser provides a table with variable names and labels and a
 #' plot that visualizes the content of a particular variable.
 #'
+#' @details Numeric columns with fewer than 30 distinct values can be treated as either factors
+#' or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
+#' then the default is categorical, otherwise it is numeric).
+#'
+#'
 #' @inheritParams teal::module
 #'
 #' @importFrom stats quantile sd
@@ -110,8 +115,50 @@ ui_variable_browser <- function(id, datasets) {
 #' @importFrom utils capture.output str
 #' @importFrom shinyWidgets switchInput
 srv_variable_browser <- function(input, output, session, datasets) {
+
+  # if there are < this number of unique records then a numeric
+  # variable can be treated as a factor and all factors with < this groups
+  # have their values plotted
+  .unique_records_for_factor <- 30
+  # if there are < this number of unique records then a numeric
+  # variable is by default treated as a factor
+  .unique_records_default_as_factor <- 6 # nolint
+
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = list())
+
+
+  # reactive contain list of the column of data to be analyzed (data) and
+  # the variable label for this column (d_var_name)
+  data_for_analysis <- reactive({
+    data <- input$tsp
+    varname <- plot_var$variable[[input$tsp]]
+    type <- input$raw_or_filtered
+
+    validate(need(data, "no data selected"))
+    validate(need(varname, "no variable selected"))
+    validate(need(is.logical(type), "select what type of data to plot"))
+
+    df <- datasets$get_data(data, filtered = type)
+    validate_has_data(df, 1)
+    validate_has_variable(varname = varname, data = df, "variable not available")
+    .log("plot/summarize variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
+
+    varlabel <- datasets$get_variable_labels(dataname = data, varname)
+    d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
+    list(data = df[[varname]], d_var_name = d_var_name)
+  })
+
+
+  treat_numeric_as_factor <- reactive({
+    if (length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)) {
+      numeric_as_factor <- input$numeric_as_factor
+    } else {
+      numeric_as_factor <- FALSE
+    }
+    numeric_as_factor
+  })
+
 
   current_rows <- new.env() # nolint
 
@@ -214,39 +261,54 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     df <- datasets$get_data(data, filtered = type)
 
-    if (is.numeric(df[[varname]])) {
-      list(
-        fluidRow(
-          column(4,
-            shinyWidgets::switchInput(
-              inputId = session$ns("display_density"),
-              label = "Show density",
-              value = if_null(isolate(input$display_density), TRUE),
-              width = "100%",
-              labelWidth = "130px",
-              handleWidth = "50px"
-            )
-          ),
-          column(4,
-            shinyWidgets::switchInput(
-              inputId = session$ns("remove_outliers"),
-              label = "Remove outliers",
-              value = if_null(isolate(input$remove_outliers), FALSE),
-              width = "100%",
-              labelWidth = "130px",
-              handleWidth = "50px"
-            )
-          ),
-          column(4,
-            uiOutput(session$ns("outlier_definition_slider_ui"))
+    numeric_ui <- tagList(
+      fluidRow(
+        div(
+          class = "col-md-4",
+          shinyWidgets::switchInput(
+            inputId = session$ns("display_density"),
+            label = "Show density",
+            value = if_null(isolate(input$display_density), TRUE),
+            width = "50%",
+            labelWidth = "100px",
+            handleWidth = "50px"
           )
         ),
         div(
-          style = "margin-left: 15px;",
-          uiOutput(session$ns("ui_density_help")),
-          uiOutput(session$ns("ui_outlier_help"))
+          class = "col-md-4",
+          shinyWidgets::switchInput(
+            inputId = session$ns("remove_outliers"),
+            label = "Remove outliers",
+            value = if_null(isolate(input$remove_outliers), FALSE),
+            width = "50%",
+            labelWidth = "100px",
+            handleWidth = "50px"
+          )
+        ),
+        div(
+          class = "col-md-4",
+          uiOutput(session$ns("outlier_definition_slider_ui"))
         )
+      ),
+      div(
+        style = "margin-left: 15px;",
+        uiOutput(session$ns("ui_density_help")),
+        uiOutput(session$ns("ui_outlier_help"))
       )
+    )
+
+    if (is.numeric(df[[varname]])) {
+      unique_entries <- length(unique(df[[varname]]))
+      if (unique_entries < .unique_records_for_factor){
+        list(
+          checkboxInput(session$ns("numeric_as_factor"),
+            "Treat variable as factor",
+            value = if_null(isolate(input$numeric_as_factor), unique_entries < .unique_records_default_as_factor)),
+          conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
+        )
+      } else {
+        numeric_ui
+      }
     } else {
       NULL
     }
@@ -294,10 +356,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
   })
 
   output$variable_plot <- renderPlot({
-    data <- input$tsp
-    varname <- plot_var$variable[[input$tsp]]
-    type <- input$raw_or_filtered
-    display_density <- input$display_density
+    display_density <- if_null(input$display_density, FALSE)
     remove_outliers <- if_null(input$remove_outliers, FALSE)
 
     if (remove_outliers) {
@@ -307,44 +366,18 @@ srv_variable_browser <- function(input, output, session, datasets) {
       outlier_definition <- 0
     }
 
-    validate(need(data, "no data selected"))
-    validate(need(varname, "no variable selected"))
-    validate(need(is.logical(type), "select what type of data to plot"))
+    plot_var_summary(var = data_for_analysis()$data,
+      var_lab = data_for_analysis()$d_var_name,
+      numeric_as_factor = treat_numeric_as_factor(),
+      display_density = display_density,
+      outlier_definition = outlier_definition,
+      records_for_factor = .unique_records_for_factor
+    )
 
-    .log("plot variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
-
-
-    if (is.null(varname)) {
-      validate(need(NULL, "no valid variable was selected"))
-    } else {
-      df <- datasets$get_data(data, filtered = type)
-      display_density <- if_null(display_density, FALSE)
-
-      validate_has_data(df, 1)
-      validate_has_variable(varname = varname, data = df, "variable not available")
-
-      varlabel <- datasets$get_variable_labels(dataname = data, varname)
-      var <- df[[varname]]
-      d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
-
-      plot_var_summary(var = var, var_lab = d_var_name, display_density, outlier_definition = outlier_definition)
-    }
   })
 
   output$variable_summary_table <- DT::renderDataTable({
-    data <- input$tsp
-    varname <- plot_var$variable[[input$tsp]]
-    type <- input$raw_or_filtered
-
-    validate(need(data, "no data selected"))
-    validate(need(varname, "no variable selected"))
-    validate(need(is.logical(type), "select what type of data to plot"))
-
-    df <- datasets$get_data(data, filtered = type)
-    validate_has_data(df, 1)
-
-    x <- df[[varname]]
-    var_summary_table(x)
+    var_summary_table(data_for_analysis()$data, treat_numeric_as_factor())
   })
 }
 
@@ -477,9 +510,10 @@ create_sparklines.numeric <- function(arr, width = 100, ...) { # nousage # nolin
 #' tendency measures, for factor returns level counts, for Date  date range, for other just
 #' number of levels.
 #' @param x vector of any type
+#' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @return text with simple statistics.
-var_summary_table <- function(x) {
-  if (is.numeric(x)) {
+var_summary_table <- function(x, numeric_as_factor) {
+  if (is.numeric(x) && !numeric_as_factor) {
 
     req(!any(is.infinite(x)))
 
@@ -488,7 +522,7 @@ var_summary_table <- function(x) {
 
     summary <-
       data.frame(
-        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd"),
+        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd", "n"),
         Value = c(
           round(min(x, na.rm = TRUE), 2),
           qvals[1],
@@ -496,12 +530,18 @@ var_summary_table <- function(x) {
           round(mean(x, na.rm = TRUE), 2),
           qvals[3],
           round(max(x, na.rm = TRUE), 2),
-          round(sd(x, na.rm = TRUE), 2)
+          round(sd(x, na.rm = TRUE), 2),
+          length(x[!is.na(x)])
         )
       )
 
     DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
-  } else if (is.factor(x) || is.character(x)) {
+  } else if (is.factor(x) || is.character(x) || (is.numeric(x) && numeric_as_factor)) {
+
+    # make sure factor is ordered numeric
+    if (is.numeric(x)) {
+      x <- factor(x, levels = sort(unique(x)))
+    }
 
     level_counts <- table(x)
     max_levels_signif <- nchar(level_counts)
@@ -541,11 +581,20 @@ var_summary_table <- function(x) {
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
+#' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @param display_density \code{logical} Should density estimation be displayed for numeric values?
 #' @param outlier_definition If 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
+#' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
+#'   a graph of the factors isn't shown, only a list of values.
 #' @return plot
-plot_var_summary <- function(var, var_lab, display_density = is.numeric(var), outlier_definition) {
+plot_var_summary <- function(var,
+  var_lab,
+  numeric_as_factor,
+  display_density = is.numeric(var),
+  outlier_definition,
+  records_for_factor) {
+
   stopifnot(is_logical_single(display_density))
 
   grid::grid.newpage()
@@ -553,7 +602,7 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var), ou
   plot_grob <- if (is.factor(var) || is.character(var)) {
     groups <- unique(as.character(var))
     len_groups <- length(groups)
-    if (len_groups > 30) {
+    if (len_groups >= records_for_factor) {
       len_groups_even <- ifelse(!len_groups %% 2, len_groups, len_groups - 1)
       groups_df <- apply(matrix(groups[1:min(50, len_groups_even)], nrow = 2), 2, paste, collapse = ",  ")
       grid::textGrob(
@@ -583,55 +632,63 @@ plot_var_summary <- function(var, var_lab, display_density = is.numeric(var), ou
 
     validate(need(!any(is.infinite(var)), "Cannot display graph when data includes infinite values"))
 
-    # remove outliers
-    if (outlier_definition != 0) {
-      q1_q3 <- quantile(var, probs = c(0.25, 0.75))
-      iqr <- q1_q3[2] - q1_q3[1]
-      number_records <- length(var)
-      var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
-      number_outliers <- number_records - length(var)
-      outlier_text <- paste0(number_outliers, " outliers (",
-        round(number_outliers / number_records * 100, 2),
-        "% of non-missing records) not shown")
-      validate(need(length(var) > 1,
-        "At least two data points must remain after removing outliers for this graph to be displayed"))
+    if (numeric_as_factor) {
+      var <- factor(var, levels = sort(unique(var)))
+      p <- qplot(var) +
+        xlab(var_lab) +
+        theme_light() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
     }
+    else {
+      # remove outliers
+      if (outlier_definition != 0) {
+        q1_q3 <- quantile(var, probs = c(0.25, 0.75))
+        iqr <- q1_q3[2] - q1_q3[1]
+        number_records <- length(var)
+        var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+        number_outliers <- number_records - length(var)
+        outlier_text <- paste0(number_outliers, " outliers (",
+          round(number_outliers / number_records * 100, 2),
+          "% of non-missing records) not shown")
+        validate(need(length(var) > 1,
+          "At least two data points must remain after removing outliers for this graph to be displayed"))
+      }
 
 
-    ## histogram
-    binwidth <- max(
-      2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3),
-      sqrt(quantile(var, 0.9) - quantile(var, 0.1))
-    )
-
-    binwidth <- ifelse(binwidth == 0, 1, binwidth)
-
-    p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
-      geom_histogram(binwidth = binwidth) +
-      scale_y_continuous(
-        sec.axis = sec_axis(
-          trans = ~ . / nrow(data.frame(var = var)),
-          labels = scales::percent,
-          name = "proportion (in %)"
-        )
-      ) +
-      xlab(var_lab) +
-      theme_light()
-
-    if (display_density) {
-      p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
-    }
-
-    if (outlier_definition != 0) {
-      p <- p + annotate(
-        geom = "text",
-        label = outlier_text,
-        x = Inf, y = Inf,
-        hjust = 1.02, vjust = 1.2,
-        color = "black"
+      ## histogram
+      binwidth <- max(
+        2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3),
+        sqrt(quantile(var, 0.9) - quantile(var, 0.1))
       )
-    }
 
+      binwidth <- ifelse(binwidth == 0, 1, binwidth)
+
+      p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
+        geom_histogram(binwidth = binwidth) +
+        scale_y_continuous(
+          sec.axis = sec_axis(
+            trans = ~ . / nrow(data.frame(var = var)),
+            labels = scales::percent,
+            name = "proportion (in %)"
+          )
+        ) +
+        xlab(var_lab) +
+        theme_light()
+
+      if (display_density) {
+        p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
+      }
+
+      if (outlier_definition != 0) {
+        p <- p + annotate(
+          geom = "text",
+          label = outlier_text,
+          x = Inf, y = Inf,
+          hjust = 1.02, vjust = 1.2,
+          color = "black"
+        )
+      }
+    }
     ggplotGrob(p)
   } else {
     grid::textGrob(

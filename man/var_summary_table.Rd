@@ -4,10 +4,12 @@
 \alias{var_summary_table}
 \title{Summarizes variable}
 \usage{
-var_summary_table(x)
+var_summary_table(x, numeric_as_factor)
 }
 \arguments{
 \item{x}{vector of any type}
+
+\item{numeric_as_factor}{\code{logical} should the numeric variable be treated as a factor}
 }
 \value{
 text with simple statistics.

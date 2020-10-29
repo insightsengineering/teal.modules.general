@@ -13,6 +13,11 @@ tm_variable_browser(label = "variable browser")
 The variable browser provides a table with variable names and labels and a
 plot that visualizes the content of a particular variable.
 }
+\details{
+Numeric columns with fewer than 30 distinct values can be treated as either factors
+or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
+then the default is categorical, otherwise it is numeric).
+}
 \examples{
 library(random.cdisc.data)
 

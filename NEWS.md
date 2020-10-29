@@ -1,6 +1,8 @@
 # teal.modules.general 0.2.6.9000
 
 * Add remove outliers option to `tm_variable_browser`.
+* Display number of non-missing rows `n` in statistics table for numeric variables in `tm_variable_browser`.
+* In `tm_variable_browser` numeric variables can now be treated as categorical.  
 * Bivariate plots with two continuous variables now allow adding lines.
 * Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * `tm_variable_browser` shows 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
