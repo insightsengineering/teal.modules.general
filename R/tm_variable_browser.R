@@ -563,6 +563,9 @@ var_summary_table <- function(x, numeric_as_factor) {
       stringsAsFactors = FALSE
     )
 
+    # sort the dataset in decreasing order of counts (needed as character variables default to alphabetical)
+    summary <- summary[order(summary$Count, decreasing = TRUE), ]
+
     dom_opts <- if (nrow(summary) <= 10) {
       "<t>"
     } else {
