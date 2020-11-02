@@ -219,7 +219,6 @@ srv_variable_browser <- function(input, output, session, datasets) {
           df,
           create_sparklines,
           FUN.VALUE = character(1),
-          width = 100,
           USE.NAMES = FALSE)
 
         # join labels, missings and icons
@@ -397,21 +396,30 @@ var_missings_info <- function(x) {
 #' Produces an empty string for variables of other types.
 #'
 #' @param arr vector of any type and length
-#' @param width \code{numeric} the width of the \code{sparkline} widget
+#' @param width \code{numeric} the width of the \code{sparkline} widget (pixels)
 #' @param ... \code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 #' \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}
 #'
 #' @return character variable containing the HTML code of the \code{sparkline} HTML widget
 #'
+#' @export
+#'
 #' @importFrom sparkline spk_chr
-create_sparklines <- function(arr, width = 100, ...) {
+create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
   }
   UseMethod("create_sparklines")
 }
 
-create_sparklines.default <- function(arr, ...) { # nousage # nolint
+#' Default method for \code{\link{create_sparklines}}
+#'
+#' @inheritParams create_sparklines
+#'
+#' @export
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.default <- function(arr, width = 150, ...) { # nousage # nolint
   return("")
 }
 
@@ -423,8 +431,10 @@ create_sparklines.default <- function(arr, ...) { # nousage # nolint
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
+#' @export
+#'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.character <- function(arr, width = 100, ...) { # nousage # nolint
+create_sparklines.character <- function(arr, ...) { # nousage # nolint
   arr <- as.factor(arr)
   return(create_sparklines(arr))
 }
@@ -432,6 +442,8 @@ create_sparklines.character <- function(arr, width = 100, ...) { # nousage # nol
 #' Generates the \code{sparkline} HTML code
 #'
 #' @inheritParams create_sparklines
+#' @param bar_spacing \code{numeric} spacing between the bars (in pixels)
+#' @param bar_width \code{numeric} width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
@@ -439,8 +451,10 @@ create_sparklines.character <- function(arr, width = 100, ...) { # nousage # nol
 #' @importFrom jsonlite toJSON
 #' @importFrom htmlwidgets JS
 #'
+#' @export
+#'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.factor <- function(arr, width = 100, ...) { # nousage # nolint
+create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
   decreasing_order <- TRUE
 
   counts <- table(droplevels(arr))
@@ -477,6 +491,8 @@ create_sparklines.factor <- function(arr, width = 100, ...) { # nousage # nolint
         chartRangeMin = 0,
         chartRangeMax = max_value,
         width = width,
+        barWidth = bar_width,
+        barSpacing = bar_spacing,
         tooltipFormatter = custom_formatter(names(counts), as.vector(counts))
       ),
       ...
@@ -493,9 +509,11 @@ create_sparklines.factor <- function(arr, width = 100, ...) { # nousage # nolint
 #'
 #' @importFrom sparkline spk_chr
 #'
+#' @export
+#'
 #' @seealso \code{\link{create_sparklines}}
 
-create_sparklines.numeric <- function(arr, width = 100, ...) { # nousage # nolint
+create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolint
   if (any(is.infinite(arr))) {
     return("")
   }

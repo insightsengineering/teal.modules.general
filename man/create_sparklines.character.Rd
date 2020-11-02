@@ -4,12 +4,10 @@
 \alias{create_sparklines.character}
 \title{Generates the HTML code for the \code{sparkline} widget}
 \usage{
-\method{create_sparklines}{character}(arr, width = 100, ...)
+\method{create_sparklines}{character}(arr, ...)
 }
 \arguments{
 \item{arr}{vector of any type and length}
-
-\item{width}{\code{numeric} the width of the \code{sparkline} widget}
 
 \item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}

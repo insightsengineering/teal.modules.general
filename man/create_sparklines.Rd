@@ -4,12 +4,12 @@
 \alias{create_sparklines}
 \title{S3 generic for \code{sparkline} widget HTML}
 \usage{
-create_sparklines(arr, width = 100, ...)
+create_sparklines(arr, width = 150, ...)
 }
 \arguments{
 \item{arr}{vector of any type and length}
 
-\item{width}{\code{numeric} the width of the \code{sparkline} widget}
+\item{width}{\code{numeric} the width of the \code{sparkline} widget (pixels)}
 
 \item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
