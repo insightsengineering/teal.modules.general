@@ -420,7 +420,48 @@ create_sparklines <- function(arr, width = 150, ...) {
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.default <- function(arr, width = 150, ...) { # nousage # nolint
-  return("")
+  return(as.character(tags$code("unsupported variable type", style = "color:blue")))
+}
+
+#' Generates the HTML code for the \code{sparkline} widget
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @export
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.Date <- function(arr, ...) { # nousage # nolint
+  return(as.character(tags$code("Date variable", style = "color:blue")))
+}
+
+#' Generates the HTML code for the \code{sparkline} widget
+#'
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @export
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.POSIXct <- function(arr, ...) { # nousage # nolint
+  return(as.character(tags$code("POSIXct variable", style = "color:blue")))
+}
+
+#' Generates the HTML code for the \code{sparkline} widget
+#'
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @export
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.POSIXt <- function(arr, ...) { # nousage # nolint
+  return(as.character(tags$code("POSIXt variable", style = "color:blue")))
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
@@ -458,8 +499,12 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
   decreasing_order <- TRUE
 
   counts <- table(droplevels(arr))
-  if (length(counts) >= 100 | length(counts) == 0) {
-    return("")
+  if (length(counts) >= 100) {
+    return(as.character(tags$code("> 99 levels", style = "color:blue")))
+  } else if (length(counts) == 0) {
+    return(as.character(tags$code("no levels", style = "color:blue")))
+  } else if (length(counts) == 1) {
+    return(as.character(tags$code("one level", style = "color:blue")))
   }
 
   # Summarize the occurences of different levels
@@ -515,7 +560,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolint
   if (any(is.infinite(arr))) {
-    return("")
+    return(as.character(tags$code("infinite values", style = "color:blue")))
   }
 
   res <- sparkline::spk_chr(arr, type = "box", width = width, ...)
