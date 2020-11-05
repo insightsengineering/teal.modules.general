@@ -184,11 +184,16 @@ srv_variable_browser <- function(input, output, session, datasets) {
       if (!show_adsl_vars && name != "ADSL") {
         adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
         df <- df[!(names(df) %in% adsl_vars)]
-        }
+      }
 
-      if (is.null(df)) {
+      if (is.null(df) || ncol(df) == 0) {
         current_rows[[name]] <- character(0)
-        data.frame(Variable = character(0), Label = character(0), stringsAsFactors = FALSE)
+        data.frame(
+          Variable = character(0),
+          Label = character(0),
+          Missings = character(0),
+          Sparklines = character(0),
+          stringsAsFactors = FALSE)
       } else {
         # extract data variable labels
         labels <- setNames(unlist(lapply(df, function(x) {
