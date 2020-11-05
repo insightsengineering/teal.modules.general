@@ -118,6 +118,7 @@ tm_g_association <- function(label = "Association",
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(args$ref, args$vars)
 
   standard_layout(
     output = white_small_well(
@@ -131,12 +132,14 @@ ui_tm_g_association <- function(id, ...) {
       data_extract_input(
         id = ns("ref"),
         label = "Reference variable",
-        data_extract_spec = args$ref
+        data_extract_spec = args$ref,
+        is_single_dataset = is_single_dataset_value
       ),
       data_extract_input(
         id = ns("vars"),
         label = "Associated variables",
-        data_extract_spec = args$vars
+        data_extract_spec = args$vars,
+        is_single_dataset = is_single_dataset_value
       ),
       checkboxInput(ns("association"),
         "Association with the reference variable",

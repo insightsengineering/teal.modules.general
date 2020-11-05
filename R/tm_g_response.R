@@ -144,6 +144,7 @@ tm_g_response <- function(label = "Response Plot",
 ui_g_response <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
 
   standard_layout(
     output = white_small_well(
@@ -155,25 +156,29 @@ ui_g_response <- function(id, ...) {
       data_extract_input(
         id = ns("response"),
         label = "Response variable",
-        data_extract_spec = args$response
+        data_extract_spec = args$response,
+        is_single_dataset = is_single_dataset_value
       ),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = args$x
+        data_extract_spec = args$x,
+        is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$row_facet)) {
         data_extract_input(
           id = ns("row_facet"),
           label = "Row facetting",
-          data_extract_spec = args$row_facet
+          data_extract_spec = args$row_facet,
+          is_single_dataset = is_single_dataset_value
         )
       },
       if (!is.null(args$col_facet)) {
         data_extract_input(
           id = ns("col_facet"),
           label = "Column facetting",
-          data_extract_spec = args$col_facet
+          data_extract_spec = args$col_facet,
+          is_single_dataset = is_single_dataset_value
         )
       },
       radioGroupButtons(

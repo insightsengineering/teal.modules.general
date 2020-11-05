@@ -74,6 +74,7 @@ ui_a_pca <- function(id, ...) {
 
   ns <- NS(id)
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(args$dat)
 
   color_selector <- args$dat
   for (i in seq_along(color_selector)) {
@@ -105,7 +106,8 @@ ui_a_pca <- function(id, ...) {
       data_extract_input(
         id = ns("dat"),
         label = "Data selection",
-        data_extract_spec = args$dat
+        data_extract_spec = args$dat,
+        is_single_dataset = is_single_dataset_value
       ),
       panel_group(
         panel_item(
@@ -144,7 +146,8 @@ ui_a_pca <- function(id, ...) {
             data_extract_input(
               id = ns("response"),
               label = "Color by",
-              data_extract_spec = color_selector
+              data_extract_spec = color_selector,
+              is_single_dataset = is_single_dataset_value
             )
           )
         )

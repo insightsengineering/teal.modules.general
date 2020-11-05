@@ -126,6 +126,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(args$regressor, args$response)
 
   plot_choices <- c(
     "Response vs Regressor",
@@ -148,12 +149,14 @@ ui_a_regression <- function(id, ...) {
       data_extract_input(
         id = ns("response"),
         label = "Response variable",
-        data_extract_spec = args$response
+        data_extract_spec = args$response,
+        is_single_dataset = is_single_dataset_value
       ),
       data_extract_input(
         id = ns("regressor"),
         label = "Regressor variables",
-        data_extract_spec = args$regressor
+        data_extract_spec = args$regressor,
+        is_single_dataset = is_single_dataset_value
       ),
       radioButtons(
         ns("plot_type"),

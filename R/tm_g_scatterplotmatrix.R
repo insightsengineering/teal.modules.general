@@ -96,6 +96,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
 
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(args$variables)
   ns <- NS(id)
   standard_layout(
     output = white_small_well(
@@ -109,7 +110,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       data_extract_input(
         id = ns("variables"),
         label = "Variables",
-        data_extract_spec = args$variables
+        data_extract_spec = args$variables,
+        is_single_dataset = is_single_dataset_value
       ),
       hr(),
       panel_group(

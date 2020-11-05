@@ -178,6 +178,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 #' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
+  is_single_dataset_value <- is_single_dataset(
+    args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size)
 
   ns <- NS(id)
   standard_layout(
@@ -190,12 +192,14 @@ ui_g_bivariate <- function(id, ...) {
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = args$x
+        data_extract_spec = args$x,
+        is_single_dataset = is_single_dataset_value
       ),
       data_extract_input(
         id = ns("y"),
         label = "Y variable",
-        data_extract_spec = args$y
+        data_extract_spec = args$y,
+        is_single_dataset = is_single_dataset_value
       ),
       conditionalPanel(
         condition =
@@ -221,14 +225,16 @@ ui_g_bivariate <- function(id, ...) {
                 data_extract_input(
                   id = ns("row_facet"),
                   label = "Row facetting variable",
-                  data_extract_spec = args$row_facet
+                  data_extract_spec = args$row_facet,
+                  is_single_dataset = is_single_dataset_value
                 )
               },
               if (!is.null(args$col_facet)) {
                 data_extract_input(
                   id = ns("col_facet"),
                   label = "Column facetting variable",
-                  data_extract_spec = args$col_facet
+                  data_extract_spec = args$col_facet,
+                  is_single_dataset = is_single_dataset_value
                 )
               },
               checkboxInput(ns("free_x_scales"), "free x scales", value = args$free_x_scales),
@@ -249,19 +255,22 @@ ui_g_bivariate <- function(id, ...) {
               data_extract_input(
                 id = ns("color"),
                 label = "Outline color by variable",
-                data_extract_spec = args$color
+                data_extract_spec = args$color,
+                is_single_dataset = is_single_dataset_value
               ),
               data_extract_input(
                 id = ns("fill"),
                 label = "Fill color by variable",
-                data_extract_spec = args$fill
+                data_extract_spec = args$fill,
+                is_single_dataset = is_single_dataset_value
               ),
               div(
                 id = ns("size_settings"),
                 data_extract_input(
                   id = ns("size"),
                   label = "Size of points by variable (only if x and y are numeric)",
-                  data_extract_spec = args$size
+                  data_extract_spec = args$size,
+                  is_single_dataset = is_single_dataset_value
                 )
               )
             )

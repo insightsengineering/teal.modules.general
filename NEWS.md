@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.6.9000
 
+* Integrated `is_single_dataset` argument for `data_extract_input` function calls.
 * Add remove outliers option to `tm_variable_browser`.
 * Display number of non-missing rows `n` in statistics table for numeric variables in `tm_variable_browser`.
 * In `tm_variable_browser` numeric variables can now be treated as categorical.  

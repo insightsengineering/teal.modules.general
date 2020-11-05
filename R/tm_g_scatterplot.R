@@ -127,6 +127,7 @@ tm_g_scatterplot <- function(label,
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
+  is_single_dataset_value <- is_single_dataset(args$x, args$y, args$color_by)
 
   standard_layout(
     output = white_small_well(
@@ -138,18 +139,21 @@ ui_g_scatterplot <- function(id, ...) {
       data_extract_input(
         id = ns("x"),
         label = "X variable",
-        data_extract_spec = args$x
+        data_extract_spec = args$x,
+        is_single_dataset = is_single_dataset_value
       ),
       data_extract_input(
         id = ns("y"),
         label = "Y variable",
-        data_extract_spec = args$y
+        data_extract_spec = args$y,
+        is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$color_by)) {
         data_extract_input(
           id = ns("color_by"),
           label = "Color by variable",
-          data_extract_spec = args$color_by
+          data_extract_spec = args$color_by,
+          is_single_dataset = is_single_dataset_value
         )
       },
       panel_group(
