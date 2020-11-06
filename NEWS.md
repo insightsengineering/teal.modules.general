@@ -7,6 +7,7 @@
 * Bivariate plots with two continuous variables now allow adding lines.
 * Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * `tm_variable_browser` shows 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
+* `tm_a_pca` updated to include `Plot settings` and `Plot specific settings`
 * `tm_variable_browser` now display character variable summary statistics table in decreasing order of occurrences instead of alphabetical. 
 * issues with no news:
 

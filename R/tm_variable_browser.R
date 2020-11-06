@@ -242,7 +242,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
               ),
-            fnDrawCallback = htmlwidgets::JS("function(){ HTMLWidgets.staticRender();}")
+            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender();}")
             )
           )
         }
@@ -303,7 +303,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     if (is.numeric(df[[varname]])) {
       unique_entries <- length(unique(df[[varname]]))
-      if (unique_entries < .unique_records_for_factor){
+      if (unique_entries < .unique_records_for_factor) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
             "Treat variable as factor",

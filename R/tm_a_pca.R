@@ -6,6 +6,16 @@
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Datasets used to compute PCA.
+#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
+#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
+#'   length three with `c(value, min, max)`.
+#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
+#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
+#'   vector of length three with `c(value, min, max)`.
+#' @param font_size optional, (`numeric`) font size control for title, x-axis label, y-axis label and legend.
+#'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
+#'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
+#'
 #'
 #' @export
 #'
@@ -42,18 +52,31 @@ tm_a_pca <- function(label = "Principal component analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
+                     ggtheme = gg_themes,
+                     rotate_xaxis_labels = FALSE,
+                     font_size = c(12, 8, 20),
+                     alpha = c(1, 0, 1),
+                     size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL) {
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
 
-  if (!is_class_list("data_extract_spec")(dat)) {
-    dat <- list(dat)
-  }
+  ggtheme <- match.arg(ggtheme)
+  stopifnot(is_character_single(ggtheme))
+  stopifnot(is_logical_single(rotate_xaxis_labels))
+
+  check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE, min = 0, max = 1)
+  check_slider_input(size, allow_null = FALSE, allow_single = TRUE, min = 1, max = 8)
+  check_slider_input(font_size, allow_null = FALSE, allow_single = TRUE, min = 8, max = 20)
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
+
+  if (!is_class_list("data_extract_spec")(dat)) {
+    dat <- list(dat)
+  }
 
   args <- as.list(environment())
 
@@ -138,18 +161,41 @@ ui_a_pca <- function(id, ...) {
             selected = "none")
         ),
         panel_item(
-          title = "Plot settings",
+          title = "Selected plot specific settings",
           collapsed = FALSE,
           uiOutput(ns("plot_settings")),
           conditionalPanel(
             condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
-            data_extract_input(
-              id = ns("response"),
-              label = "Color by",
-              data_extract_spec = color_selector,
-              is_single_dataset = is_single_dataset_value
+            list(
+              data_extract_input(
+                id = ns("response"),
+                label = "Color by",
+                data_extract_spec = color_selector,
+                is_single_dataset = is_single_dataset_value
+              ),
+              optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+              optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
             )
           )
+        ),
+        panel_item(
+          title = "Plot settings",
+          collapsed = TRUE,
+          conditionalPanel(
+            condition =
+              paste0("input['", ns("plot_type"), "'] == 'elbow' || input['", ns("plot_type"), "'] == 'pc_var'"),
+            list(
+              checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
+              )
+            ),
+          optionalSelectInput(
+            inputId = ns("ggtheme"),
+            label = "Theme (by ggplot):",
+            choices = gg_themes,
+            selected = gg_themes[1],
+            multiple = FALSE
+          ),
+          optionalSliderInputValMinMax(ns("font_size"),  "Font Size", args$font_size, ticks = FALSE)
         )
       )
     ),
@@ -296,7 +342,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       ),
       conditionalPanel(
         condition = paste0("input['", ns("plot_type"), "'] == 'elbow'"),
-        helpText("No additional plot settings available.")
+        helpText("No plot specific settings available.")
       ),
       conditionalPanel(
         condition = paste0("input['", ns("plot_type"), "'] == 'pc_var'"),
@@ -307,6 +353,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # plot elbow ----
   plot_elbow <- function() {
+    ggtheme <- input$ggtheme
+    validate(need(ggtheme, "Please select a theme."))
+    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
+    font_size <- input$font_size #nolint
+
     chunks_push(
       id = "pca_plot",
       expression = bquote({
@@ -327,11 +378,16 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           geom_line(
             aes(group = 1, color = "Cumulative variance"),
             data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
-          theme_bw() +
+          .(call(paste0("theme_", ggtheme))) +
           labs(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend") +
           scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
           scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"), legend.title = element_text(vjust = 8))
+          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"), legend.title = element_text(vjust = 8)) +
+          theme(axis.text.x = element_text(
+            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
+            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
+          theme(text = element_text(size = .(font_size)))
+
         print(g)
       })
     )
@@ -350,6 +406,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     x_axis <- input$x_axis #nolint
     y_axis <- input$y_axis #nolint
     variables <- input$variables #nolint
+
+    ggtheme <- input$ggtheme
+    validate(need(ggtheme, "Please select a theme."))
+
+    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
+    font_size <- input$font_size #nolint
 
     chunks_push(
       id = "pca_plot",
@@ -371,7 +433,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
             fontface = "bold") +
           geom_path(aes(x, y, group = 1), data = circle_data) +
           geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
-          theme_bw()
+          .(call(paste0("theme_", ggtheme))) +
+          theme(axis.text.x = element_text(
+            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
+            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
+          theme(text = element_text(size = .(font_size)))
         print(g)
       })
     )
@@ -392,6 +458,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     y_axis <- input$y_axis #nolint
     variables <- input$variables #nolint
     pca <- chunks_get_var("pca")
+
+    ggtheme <- input$ggtheme
+    validate(need(ggtheme, "Please select a theme."))
+
+    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
+    alpha <- input$alpha # nolint
+    size <- input$size # nolint
+    font_size <- input$font_size #nolint
 
     chunks_push(
       id = "pca_plot_data_rot",
@@ -449,8 +523,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         id = "pca_plot_biplot",
         bquote({
           g <- ggplot() +
-            geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot) +
-            theme_bw()
+            geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot, alpha = .(alpha), size = .(size)) +
+            .(call(paste0("theme_", ggtheme))) +
+            theme(axis.text.x = element_text(
+              angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
+              hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
+            theme(text = element_text(size = .(font_size)))
         })
       )
 
@@ -501,13 +579,17 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         id = "pca_plot_biplot",
         expression = bquote({
           g <- ggplot() +
-            geom_point(aes_biplot, data = pca_rot) +
+            geom_point(aes_biplot, data = pca_rot, alpha = .(alpha), size = .(size)) +
             scale_colors +
-            theme_bw() +
-            labs(color = .(varname_w_label(resp_col, RP)))
-        })
+            .(call(paste0("theme_", ggtheme))) +
+            labs(color = .(varname_w_label(resp_col, RP))) +
+            theme(axis.text.x = element_text(
+              angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
+              hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
+            theme(text = element_text(size = .(font_size)))
+          })
       )
-    }
+      }
 
     if (!is.null(input$variables)) {
       chunks_push(
@@ -545,6 +627,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     pc <- input$pc #nolint
 
+    ggtheme <- input$ggtheme
+    validate(need(ggtheme, "Please select a theme."))
+
+    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
+    font_size <- input$font_size #nolint
+
     chunks_push(
       id = "pca_plot",
       expression = bquote({
@@ -558,7 +646,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
             y = as.name(.(pc)),
             label = quo(round(!!sym(.(pc)), 3)),
             vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
-          theme_bw()
+          .(call(paste0("theme_", ggtheme))) +
+          theme(axis.text.x = element_text(
+            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
+            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
+          theme(text = element_text(size = .(font_size)))
+
         print(g)
       })
     )

@@ -9,6 +9,11 @@ tm_a_pca(
   dat,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
+  ggtheme = gg_themes,
+  rotate_xaxis_labels = FALSE,
+  font_size = c(12, 8, 20),
+  alpha = c(1, 0, 1),
+  size = c(2, 1, 8),
   pre_output = NULL,
   post_output = NULL
 )
@@ -24,6 +29,26 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+All themes can be chosen by the user. Defaults to \code{gray}.}
+
+\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+rotate by default (\code{FALSE}).}
+
+\item{font_size}{optional, (\code{numeric}) font size control for title, x-axis label, y-axis label and legend.
+If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
+point sizes dynamically then it can be a vector of length three with \code{c(value, min, max)}.}
+
+\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
+slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
+length three with \code{c(value, min, max)}.}
+
+\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+If a slider should be presented to adjust the plot point sizes dynamically then it can be a
+vector of length three with \code{c(value, min, max)}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
