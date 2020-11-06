@@ -242,7 +242,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
               ),
-            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender();}")
+            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }")
             )
           )
         }
@@ -640,6 +640,17 @@ var_summary_table <- function(x, numeric_as_factor) {
       "<lf<t>ip>"
     }
     DT::datatable(summary, rownames = FALSE, options = list(dom = dom_opts))
+  } else if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")) {
+    summary <-
+      data.frame(
+        Statistic = c("min", "median", "max"),
+        Value = c(
+          min(x, na.rm = TRUE),
+          median(x, na.rm = TRUE),
+          max(x, na.rm = TRUE)
+        )
+      )
+    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
   } else {
     NULL
   }
@@ -667,6 +678,15 @@ plot_var_summary <- function(var,
   records_for_factor) {
 
   stopifnot(is_logical_single(display_density))
+
+  get_bin_width <- function(x, scaling_factor = 2) {
+    x <- x[!is.na(x)]
+    binwidth <- max(
+      scaling_factor * IQR(x) / length(x) ^ (1 / 3),
+      sqrt(quantile(x, 0.9) - quantile(x, 0.1))
+    )
+    binwidth <- ifelse(binwidth == 0, 1, binwidth)
+  }
 
   grid::grid.newpage()
 
@@ -727,13 +747,7 @@ plot_var_summary <- function(var,
 
 
       ## histogram
-      binwidth <- max(
-        2 * IQR(var, na.rm = TRUE) / length(var) ^ (1 / 3),
-        sqrt(quantile(var, 0.9) - quantile(var, 0.1))
-      )
-
-      binwidth <- ifelse(binwidth == 0, 1, binwidth)
-
+      binwidth <- get_bin_width(var)
       p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
         geom_histogram(binwidth = binwidth) +
         scale_y_continuous(
@@ -760,6 +774,18 @@ plot_var_summary <- function(var,
         )
       }
     }
+    ggplotGrob(p)
+  } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
+
+    var_num <- as.numeric(var)
+    binwidth <- get_bin_width(var_num, 1)
+
+    p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
+      geom_histogram(binwidth = binwidth) +
+      xlab(var_lab) +
+      theme_light() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
     ggplotGrob(p)
   } else {
     grid::textGrob(

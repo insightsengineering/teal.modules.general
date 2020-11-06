@@ -9,6 +9,7 @@
 * `tm_variable_browser` shows 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
 * `tm_a_pca` updated to include `Plot settings` and `Plot specific settings`
 * `tm_variable_browser` now display character variable summary statistics table in decreasing order of occurrences instead of alphabetical. 
+* `tm_variable_browser` displays histograms and statistics table for variables of type `Date`, `POSIXct` and `POSIXlt`.
 * issues with no news:
 
 # teal.modules.general 0.2.6
