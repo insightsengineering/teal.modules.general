@@ -10,6 +10,7 @@
 * `tm_a_pca` updated to include `Plot settings` and `Plot specific settings`
 * `tm_variable_browser` now display character variable summary statistics table in decreasing order of occurrences instead of alphabetical. 
 * `tm_variable_browser` displays histograms and statistics table for variables of type `Date`, `POSIXct` and `POSIXlt`.
+* Remove keys from missing data combinations plot in `tm_missing_data` when they have not been selected. 
 * issues with no news:
 
 # teal.modules.general 0.2.6

@@ -616,6 +616,17 @@ srv_missing_data <- function(input,
       )
     )
 
+    # find keys in dataset not selected in the UI and remove them from dataset
+    keys_not_selected <- setdiff(data_keys(), input$variables_select)
+    if (length(keys_not_selected) > 0) {
+      combination_stack_push(
+        bquote(
+          data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
+            dplyr::filter(!key %in% .(keys_not_selected))
+        )
+      )
+    }
+
     combination_stack_push(
       bquote(
         labels <- data_combination_plot_cutoff %>%
