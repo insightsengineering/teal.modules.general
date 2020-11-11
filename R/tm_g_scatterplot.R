@@ -237,7 +237,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         geom_point(alpha = .(alpha), size = .(size)) +
         ylab(.(varname_w_label(y_var, ANL))) +
         xlab(.(varname_w_label(x_var, ANL))) +
-        .(as.call(parse(text = paste0("theme_", ggtheme))))
+        .(call(paste0("theme_", ggtheme)))
     )
 
     # add color label if existing

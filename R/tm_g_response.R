@@ -329,7 +329,7 @@ srv_g_response <- function(input,
         geom_bar(aes(fill = .(resp_cl)), stat = "identity", position = .(arg_position)) +
         xlab(.(varname_w_label(x, ANL))) +
         ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of "))) +
-        .(as.call(parse(text = paste0("theme_", ggtheme))))
+        .(call(paste0("theme_", ggtheme)))
     )
 
     plot_call <- bquote(.(plot_call) +
