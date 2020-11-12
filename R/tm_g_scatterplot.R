@@ -19,6 +19,7 @@
 #' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
+#' @param rug_plot optional, (`logical`) should a rug plot be displayed on both axis of the scatter plot.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
@@ -75,7 +76,8 @@ tm_g_scatterplot <- function(label,
                              rotate_xaxis_labels = FALSE,
                              ggtheme = gg_themes,
                              pre_output = NULL,
-                             post_output = NULL) {
+                             post_output = NULL,
+                             rug_plot = FALSE) {
   if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
@@ -99,6 +101,7 @@ tm_g_scatterplot <- function(label,
     is_numeric_vector(size) && (length(size) == 3 || length(size) == 1),
     `if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE),
     is_logical_single(rotate_xaxis_labels),
+    is_logical_single(rug_plot),
     all(size >= 0),
     is_character_single(ggtheme)
     )
@@ -162,6 +165,7 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+          checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -210,6 +214,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     ggtheme <- input$ggtheme
+    rug_plot <- input$rug_plot
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
     validate(need(length(x_var) == 1, "There must be exactly one x var."))
@@ -252,6 +257,13 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       plot_call <- bquote(
         .(plot_call) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      )
+    }
+
+    if (rug_plot) {
+      plot_call <- bquote(
+        .(plot_call) +
+          geom_rug()
       )
     }
 
