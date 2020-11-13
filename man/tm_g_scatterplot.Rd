@@ -16,8 +16,7 @@ tm_g_scatterplot(
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
-  post_output = NULL,
-  rug_plot = FALSE
+  post_output = NULL
 )
 }
 \arguments{
@@ -61,8 +60,6 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{rug_plot}{optional, (\code{logical}) should a rug plot be displayed on both axis of the scatter plot.}
 }
 \description{
 Create a plot with the \code{\link{ggplot2}[geom_point]} function
