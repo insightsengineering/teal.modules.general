@@ -286,6 +286,16 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       )
     }
 
+    if (scale) {
+      chunks_validate_custom(
+        bquote(vapply(ANL[.(keep_cols)], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))),
+        msg = paste0(
+          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
+          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"),
+        chunks = chunks_stack
+      )
+    }
+
     chunks_push(
       id = "pca_3",
       expression = bquote({
