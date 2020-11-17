@@ -12,6 +12,7 @@
 * `tm_variable_browser` displays histograms and statistics table for variables of type `Date`, `POSIXct` and `POSIXlt`.
 * Remove keys from missing data combinations plot in `tm_missing_data` when they have not been selected. 
 * Add rug plot option to both axis in `tm_g_scatterplot`.
+* Require `ggmosaic` version >= 0.3.0.
 * Show labels on x axis when selecting a categorical variable in the `tm_g_bivariate` module and fixed issues when deselecting variables and datasets in the encoding panel (added meaningful warnings).
 * issues with no news:
 

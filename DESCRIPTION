@@ -19,7 +19,7 @@ Encoding: UTF-8
 License: file LICENSE
 LazyData: true
 Depends:
-  ggmosaic,
+  ggmosaic (>= 0.3.0),
   ggplot2,
   magrittr,
   shiny,
