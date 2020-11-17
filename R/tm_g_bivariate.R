@@ -374,8 +374,15 @@ srv_g_bivariate <- function(input,
     ANL <- chunks_get_var("ANL") # nolint
     validate_has_data(ANL, 3)
 
-    x_name <- as.vector(merged_data()$columns_source$x)
-    y_name <- as.vector(merged_data()$columns_source$y)
+    x_name <- if_null(as.vector(merged_data()$columns_source$x), character(0))
+    y_name <- if_null(as.vector(merged_data()$columns_source$y), character(0))
+
+    validate(
+      need(
+        !is_character_empty(x_name) || !is_character_empty(y_name),
+        "x-variable and y-variable aren't correcly specified. At least one should be valid."
+      )
+    )
 
     row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
     col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
@@ -391,6 +398,8 @@ srv_g_bivariate <- function(input,
     swap_axes <- input$swap_axes
 
     is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1)))
+
+
     if (is_scatterplot) {
       shinyjs::show("alpha")
       alpha <- input$alpha # nolint
@@ -414,12 +423,6 @@ srv_g_bivariate <- function(input,
       size <- NULL
     }
 
-    validate(
-      need(
-        !is_character_empty(x_name) || !is_empty(y_name),
-        "x-variable and y-variable isn't correcly specified. At least one should be valid."
-      )
-    )
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
     validate(need(!is.null(ggtheme), "Please select a theme."))
