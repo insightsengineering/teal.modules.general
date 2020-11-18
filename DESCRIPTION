@@ -25,6 +25,7 @@ Depends:
   shiny,
   teal (>= 0.9.1)
 Imports:
+  ggExtra,
   grid,
   gridExtra,
   dplyr,

@@ -162,6 +162,7 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+          checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
           checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
           optionalSelectInput(
             inputId = ns("ggtheme"),
@@ -180,6 +181,7 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 #' @importFrom magrittr %>%
+#' @importFrom ggExtra ggMarginal
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height, plot_width) {
   init_chunks()
 
@@ -210,6 +212,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels
+    add_density <- input$add_density
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
 
@@ -219,6 +222,21 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     if (!is.null(color_by_var)) {
       validate(need(length(color_by_var) <= 1, "There must be at most 1 coloring variable."))
     }
+
+    if (add_density && !is_character_empty(color_by_var)) {
+      validate(need(
+        !is.numeric(ANL[[color_by_var]]),
+        "Marginal plots cannot be produced when the points are colored by numeric variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
+      validate(need(
+        !(inherits(ANL[[color_by_var]], "Date") ||
+          inherits(ANL[[color_by_var]], "POSIXct") ||
+          inherits(ANL[[color_by_var]], "POSIXlt")),
+        "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
+      }
 
     validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
@@ -264,6 +282,17 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       )
     }
 
+    if (add_density) {
+      plot_call <- bquote(
+        ggExtra::ggMarginal(
+          .(plot_call),
+          type = "density",
+          groupColour = .(if (!is_character_empty(color_by_var) && !is.null(color_by_var)) TRUE else FALSE)
+        )
+      )
+    }
+
+
     plot_call <- bquote(p <- .(plot_call))
     chunks_push(plot_call)
 
@@ -272,6 +301,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     plot_print_call <- quote(print(p))
     chunks_push(plot_print_call)
     chunks_safe_eval()
+    chunks_get_var(var = "p")
   })
 
   # Insert the plot into a plot_with_settings module from teal.devel
