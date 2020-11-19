@@ -20,6 +20,8 @@
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
 #'
+#' @importFrom shinyjs show hide hidden
+#'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
 #'
@@ -92,17 +94,10 @@ tm_g_scatterplot <- function(label,
     is_character_single(label),
     is_class_list("data_extract_spec")(x),
     is_class_list("data_extract_spec")(y),
-    is_class_list("data_extract_spec")(color_by) || is.null(color_by),
-    is_numeric_vector(alpha) && (length(alpha) == 3 || length(alpha) == 1),
-    all(c(alpha >= 0, alpha <= 1)),
-    `if`(length(alpha) == 3, alpha[1] >= alpha[2] && alpha[1] <= alpha[3], TRUE),
-    is_numeric_vector(size) && (length(size) == 3 || length(size) == 1),
-    `if`(length(size) == 3, size[1] >= size[2] && size[1] <= size[3], TRUE),
-    is_logical_single(rotate_xaxis_labels),
-    all(size >= 0),
-    is_character_single(ggtheme)
-    )
+    is.null(color_by) || is_class_list("data_extract_spec")(color_by))
 
+  check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
+  check_slider_input(size, allow_null = FALSE, allow_single = TRUE)
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
@@ -158,6 +153,19 @@ ui_g_scatterplot <- function(id, ...) {
       },
       panel_group(
         panel_item(
+          title = "Add trend line",
+          shinyjs::hidden(helpText(id = ns("line_msg"), "first select numeric X and Y variables")),
+          optionalSelectInput(ns("formula"), "Formula", c("Linear" = 1, "2nd Deg Polynomial" = 2)),
+          optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
+          shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
+          shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
+          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R square", value = TRUE)),
+          shinyjs::hidden(optionalSliderInput(
+            ns("pos"), "left <- stat position -> right", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+        )
+      ),
+      panel_group(
+        panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
@@ -199,6 +207,55 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     )
   }
 
+  if (!is.null(color_by)) {
+    cur_color <- reactiveValues(var = "", choices = "")
+    observe({
+      selected <- if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% cur_color$choices], NULL)
+      updateOptionalSelectInput(
+        session = session,
+        inputId = "color_sub",
+        label = cur_color$var,
+        choices = cur_color$choices,
+        selected = selected)
+    })
+  }
+
+  plot_r_line <- reactive({
+    ANL <- merged_data()$data() # nolint
+    formula <- input$formula
+    color_sub <- input$color_sub
+    color_by_var <- as.vector(merged_data()$columns_source$color_by)
+    x_var <- as.vector(merged_data()$columns_source$x)
+    y_var <- as.vector(merged_data()$columns_source$y)
+
+    if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]]) && !is.null(formula)) {
+      if (!is.null(color_sub) &&
+          !is.null(color_by_var)  &&
+          !is_character_empty(color_by_var) &&
+          !is.numeric(ANL[[color_by_var]])) {
+        ANL <- ANL[ANL[[color_by_var]] %in% color_sub, ] # nolint
+      }
+      if (formula == 1) {
+        m <- lm(ANL[[y_var]] ~ ANL[[x_var]], ANL)
+        form <- paste0(y_var, " = ", round(coef(m)[1], 4), " + ", round(coef(m)[2], 4), "*", x_var)
+        r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
+      } else if (formula == 2) {
+        validate(need(
+          length(unique(ANL[[x_var]])) > 2, "number of unique values in x variable is less than or equal to 2"))
+        m <- lm(ANL[[y_var]] ~ poly(ANL[[x_var]], 2), ANL)
+        form <- paste0(
+          y_var, " = ",
+          round(coef(m)[1], 4), " + ",
+          round(coef(m)[2], 4),
+          "*", x_var, " + ",
+          round(coef(m)[3], 4),
+          "*", x_var, "^2")
+        r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
+      }
+      list(form = form, r_2 = r_2)
+    }
+  })
+
   plot_r <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data())
@@ -215,6 +272,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     add_density <- input$add_density
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
+    formula <- input$formula
+    ci <- input$ci # nolint
+    color_sub <- input$color_sub
+    show_form <- input$show_form
+    show_r2 <- input$show_r2
+    pos <- input$pos # nolint
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
     validate(need(length(x_var) == 1, "There must be exactly one x var."))
@@ -282,6 +345,71 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       )
     }
 
+
+    if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])) {
+      shinyjs::hide("line_msg")
+      shinyjs::show("formula")
+      if (is.null(formula)) {
+        shinyjs::hide("ci")
+        shinyjs::hide("color_sub")
+        shinyjs::hide("show_form")
+        shinyjs::hide("show_r2")
+        shinyjs::hide("pos")
+      } else {
+        shinyjs::show("ci")
+        shinyjs::show("show_form")
+        shinyjs::show("show_r2")
+        if (show_form || show_r2) shinyjs::show("pos") else shinyjs::hide("pos")
+        msg <- if (!is.null(color_by_var) && !is_character_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
+          cur_color$var <- color_by_var
+          cur_color$choices <- opts <- value_choices(ANL, color_by_var)
+          shinyjs::show("color_sub")
+          if (length(opts) > 1) {
+            if (!is.null(color_sub)) {
+              chunks_push(bquote(ANL <- dplyr::filter(ANL, .(as.name(color_by_var)) %in% .(color_sub)))) # nolint
+              if (length(color_sub) > 1) "stats from combined selected color groups"
+            } else {
+              "stats from entire dataset, i.e. disregarding color groups"
+            }
+          }
+        } else {
+          shinyjs::hide("color_sub")
+          NULL
+        }
+        line <- if (formula == 1) {
+          bquote(geom_smooth(formula = y ~ x, se = TRUE, level = .(ci), method = "lm"))
+        } else if (formula == 2) {
+          bquote(geom_smooth(formula = y ~ poly(x, 2), se = TRUE, level = .(ci), method = "lm"))
+        }
+        label <- paste0(
+          if (show_form) paste0(plot_r_line()$form, "\n"),
+          if (show_r2) paste0(plot_r_line()$r_2, "\n"),
+          if (show_form || show_r2) msg
+        )
+        plot_call <- bquote(
+          .(plot_call) +
+            .(line) +
+            annotate(
+              "text",
+              x = min(ANL[[.(x_var)]]) + (max(ANL[[.(x_var)]]) - min(ANL[[.(x_var)]])) * .(pos),
+              hjust = .(if (pos > .5) 1 else if (pos == .5) .5 else 0),
+              y = max(ANL[[.(y_var)]]),
+              vjust = 1,
+              label =  .(label),
+              size = 5
+            )
+        )
+      }
+    } else {
+      shinyjs::hide("formula")
+      shinyjs::hide("ci")
+      shinyjs::hide("color_sub")
+      shinyjs::hide("show_form")
+      shinyjs::hide("show_r2")
+      shinyjs::hide("pos")
+      shinyjs::show("line_msg")
+    }
+
     if (add_density) {
       plot_call <- bquote(
         ggExtra::ggMarginal(
@@ -291,7 +419,6 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         )
       )
     }
-
 
     plot_call <- bquote(p <- .(plot_call))
     chunks_push(plot_call)
