@@ -223,7 +223,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       validate(need(length(color_by_var) <= 1, "There must be at most 1 coloring variable."))
     }
 
-    if (add_density && !is_character_empty(color_by_var)) {
+    if (add_density && !is_character_empty(color_by_var) && !is.null(color_by_var)) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
