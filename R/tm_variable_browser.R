@@ -580,6 +580,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
 #' @param x vector of any type
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @return text with simple statistics.
+#' @importFrom stats median
 var_summary_table <- function(x, numeric_as_factor) {
   if (is.numeric(x) && !numeric_as_factor) {
 
