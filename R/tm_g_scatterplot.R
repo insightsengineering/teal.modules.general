@@ -13,6 +13,8 @@
 #' @param color_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Defines the color encoding. If `NULL` then no color encoding option will be displayed.
 #'   Note `_none_` is a keyword and means that no color encoding should be used.
+#' @param size_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#'   Defines the point size encoding. If `NULL` then no size encoding option will be displayed.
 #' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 #'   length three with `c(value, min, max)`.
@@ -70,10 +72,11 @@ tm_g_scatterplot <- function(label,
                              x,
                              y,
                              color_by = NULL,
+                             size_by = NULL,
                              plot_height = c(600, 200, 2000),
                              plot_width = NULL,
                              alpha = c(1, 0, 1),
-                             size = c(2, 1, 8),
+                             size = c(5, 0, 15),
                              rotate_xaxis_labels = FALSE,
                              ggtheme = gg_themes,
                              pre_output = NULL,
@@ -87,6 +90,9 @@ tm_g_scatterplot <- function(label,
   if (!is_class_list("data_extract_spec")(color_by)) {
     color_by <- list_or_null(color_by)
   }
+  if (!is_class_list("data_extract_spec")(size_by)) {
+    size_by <- list_or_null(size_by)
+  }
 
   ggtheme <- match.arg(ggtheme)
 
@@ -94,7 +100,10 @@ tm_g_scatterplot <- function(label,
     is_character_single(label),
     is_class_list("data_extract_spec")(x),
     is_class_list("data_extract_spec")(y),
-    is.null(color_by) || is_class_list("data_extract_spec")(color_by))
+    is.null(size_by) || is_class_list("data_extract_spec")(size_by),
+    is.null(color_by) || is_class_list("data_extract_spec")(color_by),
+    is_character_single(ggtheme)
+    )
 
   check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
   check_slider_input(size, allow_null = FALSE, allow_single = TRUE)
@@ -106,7 +115,8 @@ tm_g_scatterplot <- function(label,
   data_extract_list <- list(
     x = x,
     y = y,
-    color_by = color_by
+    color_by = color_by,
+    size_by = size_by
   )
 
   module(
@@ -122,7 +132,7 @@ tm_g_scatterplot <- function(label,
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-  is_single_dataset_value <- is_single_dataset(args$x, args$y, args$color_by)
+  is_single_dataset_value <- is_single_dataset(args$x, args$y, args$color_by, args$size_by)
 
   standard_layout(
     output = white_small_well(
@@ -130,7 +140,7 @@ ui_g_scatterplot <- function(id, ...) {
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("x", "y", "color_by")]),
+      datanames_input(args[c("x", "y", "color_by", "size_by")]),
       data_extract_input(
         id = ns("x"),
         label = "X variable",
@@ -151,6 +161,14 @@ ui_g_scatterplot <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         )
       },
+      if (!is.null(args$size_by)) {
+        data_extract_input(
+          id = ns("size_by"),
+          label = "Size by variable",
+          data_extract_spec = args$size_by,
+          is_single_dataset = is_single_dataset_value
+        )
+      },
       panel_group(
         panel_item(
           title = "Add trend line",
@@ -168,7 +186,7 @@ ui_g_scatterplot <- function(id, ...) {
         panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
-          optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
+          optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE, step = .1),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
           checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
@@ -190,22 +208,14 @@ ui_g_scatterplot <- function(id, ...) {
 
 #' @importFrom magrittr %>%
 #' @importFrom ggExtra ggMarginal
-srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, plot_height, plot_width) {
+srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, size_by, plot_height, plot_width) {
   init_chunks()
 
-  merged_data <- if (is.null(color_by)) {
-    data_merge_module(
-      datasets = datasets,
-      data_extract = list(x, y),
-      input_id = c("x", "y")
-    )
-  } else {
-    data_merge_module(
-      datasets = datasets,
-      data_extract = list(x, y, color_by),
-      input_id = c("x", "y", "color_by")
-    )
-  }
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = append(append(list(x, y), color_by), size_by),
+    input_id = c("x", "y", if_not_null(color_by, "color_by"), if_not_null(size_by, "size_by"))
+  )
 
   if (!is.null(color_by)) {
     cur_color <- reactiveValues(var = "", choices = "")
@@ -229,10 +239,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     y_var <- as.vector(merged_data()$columns_source$y)
 
     if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]]) && !is.null(formula)) {
-      if (!is.null(color_sub) &&
-          !is.null(color_by_var)  &&
-          !is_character_empty(color_by_var) &&
-          !is.numeric(ANL[[color_by_var]])) {
+      if (!is_empty(color_sub) && !is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
         ANL <- ANL[ANL[[color_by_var]] %in% color_sub, ] # nolint
       }
       if (formula == 1) {
@@ -266,6 +273,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
+    size_by_var <- as.vector(merged_data()$columns_source$size_by)
     alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels
@@ -282,11 +290,10 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     validate(need(!is.null(ggtheme), "Please select a theme."))
     validate(need(length(x_var) == 1, "There must be exactly one x var."))
     validate(need(length(y_var) == 1, "There must be exactly one y var."))
-    if (!is.null(color_by_var)) {
-      validate(need(length(color_by_var) <= 1, "There must be at most 1 coloring variable."))
-    }
+    validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
+    validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
 
-    if (add_density && !is_character_empty(color_by_var) && !is.null(color_by_var)) {
+    if (add_density && !is_empty(color_by_var)) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
@@ -303,28 +310,31 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
 
     validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
-    plot_call <- quote(ANL %>% ggplot())
-    plot_call <- if (is.null(color_by_var) || is_character_empty(color_by_var)) {
-      bquote(
-        .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)))
-      )
+    point_sizes <- if (!is_empty(size_by_var)) {
+      chunks_validate_custom(bquote(is.numeric(ANL[[.(size_by_var)]])), msg = "Variable to size by must be numeric")
+      bquote(.(size) * ANL[[.(size_by_var)]] / max(ANL[[.(size_by_var)]]))
     } else {
-      bquote(
-        .(plot_call) + aes(x = .(as.name(x_var)), y = .(as.name(y_var)), color = .(as.name(color_by_var)))
-      )
+      size
     }
 
+    plot_call <- quote(ANL %>% ggplot())
+    plot_call <- bquote(
+      .(plot_call) + aes(
+        x = .(as.name(x_var)),
+        y = .(as.name(y_var)),
+        color = .(if (!is_empty(color_by_var)) as.name(color_by_var)))
+    )
 
     plot_call <- bquote(
       .(plot_call) +
-        geom_point(alpha = .(alpha), size = .(size)) +
+        geom_point(alpha = .(alpha), size = .(point_sizes)) +
         ylab(.(varname_w_label(y_var, ANL))) +
         xlab(.(varname_w_label(x_var, ANL))) +
         .(call(paste0("theme_", ggtheme)))
     )
 
     # add color label if existing
-    if (!is.null(color_by_var) && !is_character_empty(color_by_var)) {
+    if (!is_empty(color_by_var)) {
       plot_call <- bquote(
         .(plot_call) +
         labs(color = .(varname_w_label(color_by_var, ANL))) +
@@ -360,7 +370,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
         if (show_form || show_r2) shinyjs::show("pos") else shinyjs::hide("pos")
-        msg <- if (!is.null(color_by_var) && !is_character_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
+        msg <- if (!is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
           cur_color$var <- color_by_var
           cur_color$choices <- opts <- value_choices(ANL, color_by_var)
           shinyjs::show("color_sub")
@@ -415,7 +425,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         ggExtra::ggMarginal(
           .(plot_call),
           type = "density",
-          groupColour = .(if (!is_character_empty(color_by_var) && !is.null(color_by_var)) TRUE else FALSE)
+          groupColour = .(if (!is_empty(color_by_var)) TRUE else FALSE)
         )
       )
     }
@@ -444,7 +454,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(x, y, color_by)),
+    datanames = get_extract_datanames(list(x, y, color_by, size_by)),
     modal_title = "R Code for a scatterplot",
     code_header = "Scatterplot"
   )

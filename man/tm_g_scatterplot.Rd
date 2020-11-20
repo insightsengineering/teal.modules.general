@@ -9,10 +9,11 @@ tm_g_scatterplot(
   x,
   y,
   color_by = NULL,
+  size_by = NULL,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
-  size = c(2, 1, 8),
+  size = c(5, 0, 15),
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
@@ -31,6 +32,9 @@ names selected to plot along the y-axis by default.}
 \item{color_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
 Note \verb{_none_} is a keyword and means that no color encoding should be used.}
+
+\item{size_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}

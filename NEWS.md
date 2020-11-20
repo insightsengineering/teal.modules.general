@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.6.9000
 
+* Added `size_by` variable to scatterplot to size points by a numeric variable.
 * Implemented trend line for scatterplot.
 * Integrated `is_single_dataset` argument for `data_extract_input` function calls.
 * Add remove outliers option to `tm_variable_browser`.
