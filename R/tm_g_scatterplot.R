@@ -12,7 +12,6 @@
 #'   names selected to plot along the y-axis by default.
 #' @param color_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#'   Note `_none_` is a keyword and means that no color encoding should be used.
 #' @param size_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Defines the point size encoding. If `NULL` then no size encoding option will be displayed.
 #' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
@@ -21,6 +20,9 @@
 #' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
+#' @param shape optional, (`character`) A character vector with the English names of the
+#'   shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
+#'   `vignette("ggplot2-specs", package="ggplot2")`.
 #'
 #' @importFrom shinyjs show hide hidden
 #'
@@ -76,7 +78,8 @@ tm_g_scatterplot <- function(label,
                              plot_height = c(600, 200, 2000),
                              plot_width = NULL,
                              alpha = c(1, 0, 1),
-                             size = c(5, 0, 15),
+                             shape = shape_names,
+                             size = c(5, 1, 15),
                              rotate_xaxis_labels = FALSE,
                              ggtheme = gg_themes,
                              pre_output = NULL,
@@ -100,6 +103,7 @@ tm_g_scatterplot <- function(label,
     is_character_single(label),
     is_class_list("data_extract_spec")(x),
     is_class_list("data_extract_spec")(y),
+    list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),
     is.null(size_by) || is_class_list("data_extract_spec")(size_by),
     is.null(color_by) || is_class_list("data_extract_spec")(color_by),
     is_character_single(ggtheme)
@@ -129,6 +133,7 @@ tm_g_scatterplot <- function(label,
   )
 }
 
+#' @importFrom colourpicker colourInput
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -186,6 +191,14 @@ ui_g_scatterplot <- function(id, ...) {
         panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+          optionalSelectInput(
+            inputId = ns("shape"),
+            label = "Points shape:",
+            choices = args$shape,
+            selected = args$shape[1],
+            multiple = FALSE
+          ),
+          colourpicker::colourInput(ns("color"), "Points color:", "black"),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE, step = .1),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
@@ -208,6 +221,7 @@ ui_g_scatterplot <- function(id, ...) {
 
 #' @importFrom magrittr %>%
 #' @importFrom ggExtra ggMarginal
+#' @importFrom shinyjs hide show
 srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, size_by, plot_height, plot_width) {
   init_chunks()
 
@@ -216,6 +230,15 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     data_extract = append(append(list(x, y), color_by), size_by),
     input_id = c("x", "y", if_not_null(color_by, "color_by"), if_not_null(size_by, "size_by"))
   )
+
+  observe({
+    color_by_var <- as.vector(merged_data()$columns_source$color_by)
+    if (!is_empty(color_by_var)) {
+      shinyjs::hide("color")
+    } else {
+      shinyjs::show("color")
+    }
+  })
 
   if (!is.null(color_by)) {
     cur_color <- reactiveValues(var = "", choices = "")
@@ -238,7 +261,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
 
-    if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]]) && !is.null(formula)) {
+    if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]]) && !is_empty(formula)) {
       if (!is_empty(color_sub) && !is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
         ANL <- ANL[ANL[[color_by_var]] %in% color_sub, ] # nolint
       }
@@ -276,10 +299,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     size_by_var <- as.vector(merged_data()$columns_source$size_by)
     alpha <- input$alpha # nolint
     size <- input$size # nolint
-    rotate_xaxis_labels <- input$rotate_xaxis_labels
+    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
     add_density <- input$add_density
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
+    color <- input$color # nolint
+    shape <- if_empty_string(if_null(input$shape, "circle"), "circle") # nolint
     formula <- input$formula
     ci <- input$ci # nolint
     color_sub <- input$color_sub
@@ -318,35 +343,30 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     }
 
     plot_call <- quote(ANL %>% ggplot())
-    plot_call <- bquote(
-      .(plot_call) + aes(
-        x = .(as.name(x_var)),
-        y = .(as.name(y_var)),
-        color = .(if (!is_empty(color_by_var)) as.name(color_by_var)))
-    )
+    plot_call <- if (is_empty(color_by_var)) {
+      bquote(
+        .(plot_call) +
+          aes(x = .(as.name(x_var)), y = .(as.name(y_var))) +
+          geom_point(alpha = .(alpha), size = .(point_sizes), shape = .(shape), color = .(color))
+      )
+    } else {
+      bquote(
+        .(plot_call) +
+          aes(x = .(as.name(x_var)), y = .(as.name(y_var)), color = .(as.name(color_by_var))) +
+          geom_point(alpha = .(alpha), size = .(point_sizes), shape = .(shape)) +
+          labs(color = .(varname_w_label(color_by_var, ANL)))
+      )
+    }
 
     plot_call <- bquote(
       .(plot_call) +
-        geom_point(alpha = .(alpha), size = .(point_sizes)) +
         ylab(.(varname_w_label(y_var, ANL))) +
         xlab(.(varname_w_label(x_var, ANL))) +
-        .(call(paste0("theme_", ggtheme)))
+        .(call(paste0("theme_", ggtheme))) +
+        theme(
+          legend.position = "bottom",
+          axis.text.x = .(if (rotate_xaxis_labels) quote(element_text(angle = 45, hjust = 1))))
     )
-
-    # add color label if existing
-    if (!is_empty(color_by_var)) {
-      plot_call <- bquote(
-        .(plot_call) +
-        labs(color = .(varname_w_label(color_by_var, ANL))) +
-        theme(legend.position = "bottom"))
-    }
-
-    if (rotate_xaxis_labels) {
-      plot_call <- bquote(
-        .(plot_call) +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-      )
-    }
 
     if (rug_plot) {
       plot_call <- bquote(
@@ -386,11 +406,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
           shinyjs::hide("color_sub")
           NULL
         }
-        line <- if (formula == 1) {
-          bquote(geom_smooth(formula = y ~ x, se = TRUE, level = .(ci), method = "lm"))
-        } else if (formula == 2) {
-          bquote(geom_smooth(formula = y ~ poly(x, 2), se = TRUE, level = .(ci), method = "lm"))
-        }
+        equation <- if (formula == 1) quote(y ~ x) else if (formula == 2) quote(y ~ poly(x, 2)) # nolint
         label <- paste0(
           if (show_form) paste0(plot_r_line()$form, "\n"),
           if (show_r2) paste0(plot_r_line()$r_2, "\n"),
@@ -398,10 +414,10 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         )
         plot_call <- bquote(
           .(plot_call) +
-            .(line) +
+            geom_smooth(formula = .(equation), se = TRUE, level = .(ci), method = "lm") +
             annotate(
               "text",
-              x = min(ANL[[.(x_var)]]) + (max(ANL[[.(x_var)]]) - min(ANL[[.(x_var)]])) * .(pos),
+              x = min(ANL[[.(x_var)]]) * (1 - .(pos)) + max(ANL[[.(x_var)]]) * .(pos),
               hjust = .(if (pos > .5) 1 else if (pos == .5) .5 else 0),
               y = max(ANL[[.(y_var)]]),
               vjust = 1,

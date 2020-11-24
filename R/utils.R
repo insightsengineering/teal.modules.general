@@ -285,3 +285,13 @@ varname_w_label <- function(var_names,
 
 
 gg_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")
+
+# see vignette("ggplot2-specs", package="ggplot2")
+shape_names <- c(
+  "circle", paste("circle", c("open", "filled", "cross", "plus", "small")), "bullet",
+  "square", paste("square", c("open", "filled", "cross", "plus", "triangle")),
+  "diamond", paste("diamond", c("open", "filled", "plus")),
+  "triangle", paste("triangle", c("open", "filled", "square")),
+  paste("triangle down", c("open", "filled")),
+  "plus", "cross", "asterisk"
+)

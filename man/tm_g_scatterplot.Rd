@@ -13,7 +13,8 @@ tm_g_scatterplot(
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
-  size = c(5, 0, 15),
+  shape = shape_names,
+  size = c(5, 1, 15),
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
@@ -30,8 +31,7 @@ names selected to plot along the x-axis by default.}
 names selected to plot along the y-axis by default.}
 
 \item{color_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.
-Note \verb{_none_} is a keyword and means that no color encoding should be used.}
+Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.}
 
 \item{size_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
@@ -45,6 +45,10 @@ for a slider encoding the plot width.}
 \item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
 slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 length three with \code{c(value, min, max)}.}
+
+\item{shape}{optional, (\code{character}) A character vector with the English names of the
+shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape_names}. This is a complete list from
+\code{vignette("ggplot2-specs", package="ggplot2")}.}
 
 \item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
 If a slider should be presented to adjust the plot point sizes dynamically then it can be a
