@@ -140,9 +140,9 @@ ui_missing_data <- function(id, plot_height, plot_width) {
           'The "Combinations" graph is used to explore the relationship between the missing data within',
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
-          'For example, suppose that column "A" and "B" have missing data on the same 70 rows.',
-          'In this case, at the intersection of the N=70 row on the y-axis and columns "A" and "B" on the x-axis,',
-          "the cells would be shaded red."
+          'For example, suppose that 70 rows of the data have exactly columns "A" and "B" missing.',
+          "In this case there would be a bar of height 70 in the top graph and",
+          'the column below this in the second graph would have rows "A" and "B" cells shaded red.'
         )),
         p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
@@ -209,10 +209,10 @@ encoding_missing_data <- function(id) {
 }
 
 #' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all
-#'   pull select summarise_all ungroup tally tibble transmute n_distinct
+#'   pull select summarise_all ungroup tally tibble distinct n_distinct
 #' @import ggplot2
-#' @importFrom grid grid.newpage grid.draw unit.pmax
-#' @importFrom gridExtra gtable_cbind
+#' @importFrom grid grid.newpage grid.draw unit.pmax unit
+#' @importFrom gridExtra gtable_cbind gtable_rbind
 #' @importFrom magrittr %>% extract2
 #' @importFrom scales percent_format
 #' @importFrom rlang .data
@@ -631,41 +631,53 @@ srv_missing_data <- function(input,
       bquote(
         labels <- data_combination_plot_cutoff %>%
           dplyr::filter(key == key[[1]]) %>%
-          dplyr::transmute(paste0("N=", n)) %>%
           magrittr::extract2(1)
       )
     )
 
     combination_stack_push(
-      bquote(
-        p <- data_combination_plot_cutoff %>%
-          ggplot() +
-          aes(x = create_cols_labels(key), y = id, fill = value) +
-          geom_tile(alpha = 0.85) +
-          scale_y_continuous(breaks = seq_along(labels), labels = labels) +
+      bquote({
+        p1 <- data_combination_plot_cutoff %>%
+          dplyr::select(id, n) %>%
+          dplyr::distinct() %>%
+          ggplot(aes(x = id, y = n)) +
+          geom_bar(stat = "identity", fill = "#ff2951ff") +
+          ylab("") + xlab("") + theme_void() +
+          theme(axis.text.x = element_blank()) +
+          geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
+          ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))
+
+        graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
+        graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
+
+        p2 <- data_combination_plot_cutoff %>% ggplot() +
+          aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+          geom_tile(alpha = 0.85, height = 0.95) +
           scale_fill_manual(
             name = "",
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing")
           ) +
-          labs(
-            x = "Variable",
-            y = "Combinations"
-          ) +
+          labs(x = "", y = "") +
           theme_classic() +
           theme(
             legend.position = "bottom",
-            axis.text.x = element_text(angle = 90, hjust = 1),
-            panel.grid.major = element_line(colour = "black", linetype = "dotted", size = 0.5)
-          )
-      )
-    )
+            axis.text.x = element_blank(),
+            axis.ticks = element_blank(),
+            panel.grid.major = element_blank()
+          ) +
+          geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+          geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+          coord_flip()
 
-    combination_stack_push(bquote({
-      g <- ggplotGrob(p)
-      grid::grid.newpage()
-      grid::grid.draw(g)
-    }))
+        g1 <- ggplotGrob(p1)
+        g2 <- ggplotGrob(p2)
+
+        g <- gridExtra::gtable_rbind(g1, g2, size = "last")
+        g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
+        grid::grid.draw(g)
+      })
+    )
 
     chunks_safe_eval(combination_stack)
     combination_stack

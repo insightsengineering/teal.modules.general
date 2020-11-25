@@ -18,6 +18,7 @@
 * Add rug plot to both axis option in `tm_g_scatterplot`.
 * Require `ggmosaic` version >= 0.3.0.
 * Show labels on x axis when selecting a categorical variable in the `tm_g_bivariate` module and fixed issues when deselecting variables and datasets in the encoding panel (added meaningful warnings).
+* Add bar chart to missing data combination plot.
 * issues with no news:
 
 # teal.modules.general 0.2.6
