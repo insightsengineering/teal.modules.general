@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.6.9000
 
+* Added outlier labels to `tm_a_regression`. It now has an additional optional argument, `default_outlier_label`.
 * Added `shape` arguments to scatterplot and point color input via `colourpicker::colourInput`.
 * Added `size_by` variable to scatterplot to size points by a numeric variable.
 * Implemented trend line for scatterplot.

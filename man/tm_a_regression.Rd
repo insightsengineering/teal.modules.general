@@ -15,7 +15,8 @@ tm_a_regression(
   ggtheme = gg_themes,
   pre_output = NULL,
   post_output = NULL,
-  default_plot_type = 1
+  default_plot_type = 1,
+  default_outlier_label = "USUBJID"
 )
 }
 \arguments{
@@ -63,6 +64,8 @@ output to put the output into context. For example the
 \item Residuals vs Leverage
 \item Cooks dist vs Leverage
 }}
+
+\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 }
 \description{
 Scatterplot and Regression Model
