@@ -25,6 +25,7 @@
 #'   `vignette("ggplot2-specs", package="ggplot2")`.
 #'
 #' @importFrom shinyjs show hide hidden
+#' @importFrom stats coef lm
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.

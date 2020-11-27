@@ -16,6 +16,9 @@
 #' @note For more examples, please see the vignette "Using cross table" via
 #'   `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
+#' @importFrom rtables add_colcounts add_overall_level as_html basic_table build_table split_cols_by
+#' @importFrom tern summarize_vars
+#'
 #' @export
 #'
 #' @examples
@@ -36,9 +39,12 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, c("COUNTRY", "STUDYID")),
+#'           choices = variable_choices(ADSL, subset = function(data) {
+#'             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
+#'             return(names(data)[idx])
+#'           }),
 #'           selected = "COUNTRY",
-#'           multiple = FALSE,
+#'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -46,7 +52,10 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, c("SEX", "RACE")),
+#'           choices = variable_choices(ADSL, subset = function(data) {
+#'             idx <- vapply(data, is.factor, logical(1))
+#'             return(names(data)[idx])
+#'           }),
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -65,209 +74,188 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL) {
+  stop_if_not(
+    is_character_single(label),
+    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
+    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
+    is_logical_single(show_percentage),
+    is_logical_single(show_total),
+    list(
+      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+      "y variable should not allow multiple selection"
+    )
+  )
+
+  ui_args <- as.list(environment())
+
+  server_args <- list(
+    label = label,
+    x = x,
+    y = y
+  )
+
   module(
     label = label,
-    ui = function(id, datasets) {
-      ns <- NS(id)
-      htmlOutput(ns("tbd"))
-    },
-    server = function(input, output, session, datasets) {
-      output$tbd <- renderUI({
-        p("Module is currently refactored")
-      })
-    },
-    filters = "ADSL"
+    server = srv_t_crosstable,
+    ui = ui_t_crosstable,
+    ui_args = ui_args,
+    server_args = server_args,
+    filters = get_extract_datanames(list(x = x, y = y))
   )
 }
 
+ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+  ns <- NS(id)
 
-#' REFACTOR
-#' nolint start
-#' tm_t_crosstable <- function(label = "Cross Table",
-#'                             x,
-#'                             y,
-#'                             show_percentage = TRUE,
-#'                             show_total = TRUE,
-#'                             pre_output = NULL,
-#'                             post_output = NULL) {
-#'   stop_if_not(
-#'     is_character_single(label),
-#'     is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-#'     is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
-#'     is_logical_single(show_percentage),
-#'     is_logical_single(show_total),
-#'     list(
-#'       (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-#'         (is_class_list("data_extract_spec")(x) &&
-#'          all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
-#'       "x variable should not allow multiple selection"
-#'     ),
-#'     list(
-#'       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-#'         (is_class_list("data_extract_spec")(y) &&
-#'          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
-#'       "y variable should not allow multiple selection"
-#'     )
-#'   )
-#'
-#'   ui_args <- as.list(environment())
-#'
-#'   server_args <- list(
-#'     label = label,
-#'     show_percentage = show_percentage,
-#'     x = x,
-#'     y = y
-#'   )
-#'
-#'   module(
-#'     label = label,
-#'     server = srv_t_crosstable,
-#'     ui = ui_t_crosstable,
-#'     ui_args = ui_args,
-#'     server_args = server_args,
-#'     filters = get_extract_datanames(list(x = x, y = y))
-#'   )
-#' }
-#'
-#' ui_t_crosstable <- function(id, datasets, x, y, show_total, pre_output, post_output, ...) {
-#'   ns <- NS(id)
-#'
-#'   standard_layout(
-#'     output = white_small_well(
-#'       textOutput(ns("title")),
-#'       tags$br(),
-#'       uiOutput(ns("table"))
-#'     ),
-#'     encoding = div(
-#'       tags$label("Encodings", class = "text-primary"),
-#'       datanames_input(list(x, y)),
-#'       data_extract_input(ns("x"), label = "Row values", x),
-#'       tags$hr(),
-#'       data_extract_input(ns("y"), label = "Column values", y),
-#'       tags$hr(),
-#'       panel_group(
-#'         panel_item(
-#'           title = "Table settings",
-#'           uiOutput(ns("show_percentage_ui")),
-#'           checkboxInput(ns("show_total"), "Show total column", value = show_total)
-#'         )
-#'       )
-#'     ),
-#'     forms = get_rcode_ui(ns("rcode")),
-#'     pre_output = pre_output,
-#'     post_output = post_output
-#'   )
-#' }
-#'
-#' #' @importFrom rtables as_html
-#' srv_t_crosstable <- function(input, output, session, datasets, label, show_percentage, x, y) {
-#'   ns <- session$ns
-#'   init_chunks()
-#'
-#'   merged_data <- data_merge_module(
-#'     datasets = datasets,
-#'     data_extract = list(x, y),
-#'     input_id = c("x", "y")
-#'   )
-#'
-#'   output$show_percentage_ui <- renderUI({
-#'     ANL <- merged_data()$chunks$get("ANL") # nolint
-#'     x_name <- merged_data()$columns_source$x
-#'
-#'     if (inherits(ANL[[x_name]], "factor")) {
-#'       checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage)
-#'     }
-#'   })
-#'
-#'   vals <- reactiveValues(show_percentage = show_percentage)
-#'
-#'   create_table <- reactive({
-#'     chunks_reset()
-#'     chunks_push_data_merge(merged_data())
-#'
-#'     ANL <- chunks_get_var("ANL") # nolint
-#'
-#'     # As this is a summary
-#'     validate_has_data(ANL, 3)
-#'
-#'     x_name <- as.vector(merged_data()$columns_source$x)
-#'     y_name <- as.vector(merged_data()$columns_source$y)
-#'
-#'     validate(need(!is_character_empty(x_name), "Please define column for x variable that is not empty."))
-#'     validate(need(!is_character_empty(y_name), "Please define column for y variable that is not empty."))
-#'
-#'     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
-#'
-#'     validate(need(!any(is.na(ANL[[y_name]])), "NAs in the chosen variable, please choose another column variable"))
-#'
-#'     supported_types <- c("numeric", "integer", "factor", "character", "logical")
-#'     validate(need(
-#'       class(ANL[[x_name]]) %in% supported_types,
-#'       "Selected x-variable has an unsupported data type."
-#'     ))
-#'     validate(need(
-#'       class(ANL[[y_name]]) %in% setdiff(supported_types, "character"),
-#'       "Selected y-variable has an unsupported data type."
-#'     ))
-#'
-#'     plot_title <- paste(
-#'       "Cross-Table of",
-#'       varname_w_label(x_name, ANL),
-#'       "(rows)", "vs.",
-#'       varname_w_label(y_name, ANL),
-#'       "(columns)"
-#'     )
-#'
-#'     observeEvent(
-#'       input$show_percentage,
-#'       vals$show_percentage <- input$show_percentage
-#'     )
-#'
-#'     chunks_push(bquote({
-#'       title <- .(plot_title)
-#'       print(title)
-#'
-#'       browser()
-#'
-#'       # tbl <- data.frame(x = 1, y = 1)
-#'       tbl <- t_summary( # nolint
-#'        ANL[[.(x_name)]],     # nolint
-#'        col_by = ANL[[.(y_name)]], # nolint
-#'        total = .(if (input$show_total) "Total" else NULL), # nolint
-#'        denominator = .(if (inherits(ANL[[x_name]], "factor") && vals$show_percentage) "n" else "omit") # nolint
-#'       )
-#'
-#'       tbl
-#'     }))
-#'
-#'     chunks_safe_eval()
-#'   })
-#'
-#'   output$title <- renderText({
-#'     create_table()
-#'     chunks_get_var("title")
-#'   })
-#'
-#'   output$table <- renderUI({
-#'     as_html(create_table())
-#'   })
-#'
-#'   show_r_code_title <- reactive(
-#'     paste(
-#'       "Cross-Table of",
-#'       merged_data()$columns_source$x,
-#'       "vs.",
-#'       merged_data()$columns_source$y
-#'     )
-#'   )
-#'
-#'   callModule(
-#'     get_rcode_srv,
-#'     id = "rcode",
-#'     datasets = datasets,
-#'     datanames = get_extract_datanames(list(x, y)),
-#'     modal_title = show_r_code_title(),
-#'     code_header = show_r_code_title()
-#'   )
-#' }
-#' nolint end
+  standard_layout(
+    output = white_small_well(
+      textOutput(ns("title")),
+      tags$br(),
+      uiOutput(ns("table"))
+    ),
+    encoding = div(
+      tags$label("Encodings", class = "text-primary"),
+      datanames_input(list(x, y)),
+      data_extract_input(ns("x"), label = "Row values", x),
+      tags$hr(),
+      data_extract_input(ns("y"), label = "Column values", y),
+      tags$hr(),
+      panel_group(
+        panel_item(
+          title = "Table settings",
+          checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage),
+          checkboxInput(ns("show_total"), "Show total column", value = show_total)
+        )
+      )
+    ),
+    forms = get_rcode_ui(ns("rcode")),
+    pre_output = pre_output,
+    post_output = post_output
+  )
+}
+
+#' @importFrom rtables as_html
+srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
+  init_chunks()
+
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = list(x, y),
+    input_id = c("x", "y")
+  )
+
+  create_table <- reactive({
+    chunks_reset()
+    chunks_push_data_merge(merged_data())
+
+    ANL <- chunks_get_var("ANL") # nolint
+
+    # As this is a summary
+    validate_has_data(ANL, 3)
+
+    x_name <- as.vector(merged_data()$columns_source$x)
+    y_name <- as.vector(merged_data()$columns_source$y)
+
+    validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
+    validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
+
+    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+
+    validate(need(!any(is.na(ANL[[y_name]])), "NAs in the chosen variable, please choose another column variable"))
+
+    is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
+    validate(need(
+      all(vapply(ANL[x_name], is_allowed_class, logical(1))),
+      "Selected row variable has an unsupported data type."
+    ))
+    validate(need(
+      is_allowed_class(ANL[[y_name]]),
+      "Selected column variable has an unsupported data type."
+    ))
+
+    show_percentage <- input$show_percentage # nolint
+    show_total <- input$show_total # nolint
+
+    plot_title <- paste(
+      "Cross-Table of",
+      paste0(varname_w_label(x_name, ANL), collapse = ", "),
+      "(rows)", "vs.",
+      varname_w_label(y_name, ANL),
+      "(columns)"
+    )
+
+    chunks_push(bquote({
+      title <- .(plot_title)
+      print(title)
+    }))
+
+    labels_vec <- vapply( # nolint
+      as.vector(merged_data()$columns_source$x),
+      function(x) varname_w_label(x, ANL),
+      character(1)
+    )
+
+    chunks_push(bquote({
+      lyt <- rtables::basic_table() %>%
+        .(
+          if (show_total) {
+            bquote(
+              rtables::split_cols_by(
+                .(y_name),
+                split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+              )
+            )
+          } else {
+            bquote(
+              rtables::split_cols_by(
+                .(y_name)
+              )
+            )
+          }
+        ) %>%
+        rtables::add_colcounts() %>%
+        tern::summarize_vars(
+          vars = .(x_name),
+          var_labels = .(labels_vec),
+          na.rm = FALSE,
+          denom = "N_col",
+          .stats = c("n", "mean_sd", "median", "range", .(ifelse(show_percentage, "count_fraction", "count")))
+        )
+    }))
+
+    chunks_push(bquote({
+      tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[.(y_name)]]), ])
+    }))
+
+    chunks_safe_eval()
+  })
+
+  output$title <- renderText({
+    create_table()
+    chunks_get_var("title")
+  })
+
+  output$table <- renderUI({
+    create_table()
+    as_html(chunks_get_var("tbl"))
+  })
+
+  show_r_code_title <- reactive(
+    paste(
+      "Cross-Table of",
+      paste0(merged_data()$columns_source$x, collapse = ", "),
+      "vs.",
+      merged_data()$columns_source$y
+    )
+  )
+
+  callModule(
+    get_rcode_srv,
+    id = "rcode",
+    datasets = datasets,
+    datanames = get_extract_datanames(list(x, y)),
+    modal_title = show_r_code_title(),
+    code_header = show_r_code_title()
+  )
+}

@@ -62,9 +62,12 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("COUNTRY", "STUDYID")),
+          choices = variable_choices(ADSL, subset = function(data) {
+            idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
+            return(names(data)[idx])
+          }),
           selected = "COUNTRY",
-          multiple = FALSE,
+          multiple = TRUE,
           fixed = FALSE
         )
       ),
@@ -72,7 +75,10 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("SEX", "RACE")),
+          choices = variable_choices(ADSL, subset = function(data) {
+            idx <- vapply(data, is.factor, logical(1))
+            return(names(data)[idx])
+          }),
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
