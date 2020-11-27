@@ -212,12 +212,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
           )
 
         # get icons proper for the data types
-        icons <- vapply(
-          df,
-          function(x) teal:::variable_type_icons(class(x)[1]),
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE
-          )
+        icons <- setNames(teal:::variable_types(df), colnames(df))
+        icons[intersect(datasets$get_keys(name)$primary, colnames(df))] <- "primary_key"
+        icons <- teal:::variable_type_icons(icons)
 
         # generate sparklines
         sparklines_html <- vapply(
