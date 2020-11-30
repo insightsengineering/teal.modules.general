@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.6.9000
+# teal.modules.general 0.2.7
 
 * Added outlier labels to `tm_a_regression`. It now has an additional optional argument, `default_outlier_label`.
 * Added `shape` arguments to scatterplot and point color input via `colourpicker::colourInput`.
@@ -20,7 +20,6 @@
 * Require `ggmosaic` version >= 0.3.0.
 * Show labels on x axis when selecting a categorical variable in the `tm_g_bivariate` module and fixed issues when deselecting variables and datasets in the encoding panel (added meaningful warnings).
 * Add bar chart to missing data combination plot.
-* issues with no news:
 
 # teal.modules.general 0.2.6
 
