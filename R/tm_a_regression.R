@@ -207,7 +207,7 @@ ui_a_regression <- function(id, ...) {
 
 
 #' @importFrom magrittr %>%
-#' @importFrom dplyr if_else
+#' @importFrom dplyr if_else filter
 #' @importFrom methods is substituteDirect
 #' @importFrom stats as.formula
 #' @importFrom stats lowess
@@ -478,7 +478,10 @@ srv_a_regression <- function(input,
           .(plot) +
             stat_qq(
               geom = "text",
-              label = .(label_col()) %>% `[`(. != "cooksd == NaN"),
+              label = .(label_col()) %>%
+                data.frame(label = .) %>%
+                dplyr::filter(label != "cooksd == NaN") %>%
+                unlist(),
               hjust = 0,
               vjust = 1,
               color = "red"
