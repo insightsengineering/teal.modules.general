@@ -183,9 +183,15 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R square", value = TRUE)),
-          shinyjs::hidden(optionalSliderInput(
-            ns("pos"), "left <- stat position -> right", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R Squared", value = TRUE)),
+          div(
+            id = ns("label_pos"),
+            div(style = "display: inline-block; width: 10%", helpText("Left")),
+            div(
+              style = "display: inline-block; width: 70%",
+              optionalSliderInput(ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+            div(style = "display: inline-block; width: 10%", helpText("Right"))
+          )
         )
       ),
       panel_group(
@@ -385,12 +391,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         shinyjs::hide("color_sub")
         shinyjs::hide("show_form")
         shinyjs::hide("show_r2")
-        shinyjs::hide("pos")
+        shinyjs::hide("label_pos")
       } else {
         shinyjs::show("ci")
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
-        if (show_form || show_r2) shinyjs::show("pos") else shinyjs::hide("pos")
+        if (show_form || show_r2) shinyjs::show("label_pos") else shinyjs::hide("label_pos")
         msg <- if (!is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
           cur_color$var <- color_by_var
           cur_color$choices <- opts <- value_choices(ANL, color_by_var)
@@ -433,7 +439,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       shinyjs::hide("color_sub")
       shinyjs::hide("show_form")
       shinyjs::hide("show_r2")
-      shinyjs::hide("pos")
+      shinyjs::hide("label_pos")
       shinyjs::show("line_msg")
     }
 
