@@ -246,18 +246,6 @@ srv_a_regression <- function(input,
     ANL <- chunks_get_var("ANL", chunks = chunks_stack) # nolint
     validate_has_data(ANL, 10)
 
-    opts <- variable_choices(ANL)
-    selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
-      isolate(input$label_var)
-      } else {
-        if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
-      }
-    updateOptionalSelectInput(
-      session = session,
-      inputId = "label_var",
-      choices = opts,
-      selected = selected)
-
     # validation
     validate(
       need(
@@ -311,18 +299,31 @@ srv_a_regression <- function(input,
 
     chunks_safe_eval(chunks = chunks_stack)
 
-    data <- fortify(lm(form, data = ANL))
+    if (input$show_outlier) {
+      opts <- variable_choices(ANL)
+      selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
+        isolate(input$label_var)
+      } else {
+        if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
+      }
+      updateOptionalSelectInput(
+        session = session,
+        inputId = "label_var",
+        choices = opts,
+        selected = selected
+      )
 
-    cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
-    max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
-
-    cur_outlier <- isolate(input$outlier)
-    updateSliderInput(
-      session = session,
-      inputId = "outlier",
-      min = 1,
-      max = max_outlier,
-      value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
+      data <- fortify(lm(form, data = ANL))
+      cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
+      max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
+      cur_outlier <- isolate(input$outlier)
+      updateSliderInput(
+        session = session,
+        inputId = "outlier",
+        min = 1,
+        max = max_outlier,
+        value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
+    }
 
     chunks_stack
   })
