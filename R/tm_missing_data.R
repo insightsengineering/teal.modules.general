@@ -383,6 +383,7 @@ srv_missing_data <- function(input,
   })
 
   summary_plot_chunks <- reactive({
+    req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
 
     # Create a private stack for this function only.
@@ -551,7 +552,7 @@ srv_missing_data <- function(input,
   summary_plot_r <- reactive({
     chunks_reset()
     chunks_push_chunks(summary_plot_chunks())
-    chunks_get_var(var = "g", chunks = summary_plot_chunks())
+    chunks_get_var(var = "g")
   })
 
   combination_cutoff_chunks <- reactive({
@@ -595,6 +596,7 @@ srv_missing_data <- function(input,
   })
 
   combination_plot_chunks <- reactive({
+    req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
     req(input$combination_cutoff)
 
@@ -675,6 +677,7 @@ srv_missing_data <- function(input,
 
         g <- gridExtra::gtable_rbind(g1, g2, size = "last")
         g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
+        grid::grid.newpage()
         grid::grid.draw(g)
       })
     )
@@ -686,10 +689,11 @@ srv_missing_data <- function(input,
   combination_plot_r <- reactive({
     chunks_reset()
     chunks_push_chunks(combination_plot_chunks())
-    chunks_get_var(var = "g", chunks = combination_plot_chunks())
+    chunks_get_var(var = "g")
   })
 
   table_chunks <- reactive({
+    req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
 
     # Create a private stack for this function only.
