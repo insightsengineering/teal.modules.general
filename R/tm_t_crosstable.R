@@ -107,6 +107,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 
 ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
+  is_single_dataset <- is_single_dataset(x, y)
 
   standard_layout(
     output = white_small_well(
@@ -117,9 +118,9 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
-      data_extract_input(ns("x"), label = "Row values", x),
+      data_extract_input(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
       tags$hr(),
-      data_extract_input(ns("y"), label = "Column values", y),
+      data_extract_input(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
       tags$hr(),
       panel_group(
         panel_item(
