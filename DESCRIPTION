@@ -45,7 +45,7 @@ Imports:
   stats,
   stringr,
   teal.devel (>= 0.2.8),
-  tern (>= 0.6.10),
+  tern (>= 0.7.0),
   tibble,
   tidyr,
   utils,
