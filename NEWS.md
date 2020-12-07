@@ -1,22 +1,22 @@
 # teal.modules.general 0.2.7
 
-* Added outlier labels to `tm_a_regression`. It now has an additional optional argument, `default_outlier_label`.
-* Added `shape` arguments to scatterplot and point color input via `colourpicker::colourInput`.
-* Added `size_by` variable to scatterplot to size points by a numeric variable.
+* Added outlier labels to `tm_a_regression`. It now has an additional optional argument: `default_outlier_label`.
+* Added `shape` and `point color` arguments to scatterplot. The latter users `colourpicker::colourInput`.
+* Added `size_by` variable to scatterplot allowing point size to depend on a numeric variable.
 * Implemented trend line for scatterplot.
-* Integrated `is_single_dataset` argument for `data_extract_input` function calls.
+* Integrated `is_single_dataset` argument for `data_extract_input` function calls to simplify encoding panel UI.
 * Add remove outliers option to `tm_variable_browser`.
 * Display number of non-missing rows `n` in statistics table for numeric variables in `tm_variable_browser`.
-* In `tm_variable_browser` numeric variables can now be treated as categorical.  
+* Add ability to treat numeric variables as categorical in `tm_variable_browser`.  
 * Bivariate plots with two continuous variables now allow adding lines.
 * Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * `tm_variable_browser` shows 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
-* `tm_a_pca` updated to include `Plot settings` and `Plot specific settings`
-* `tm_variable_browser` now display character variable summary statistics table in decreasing order of occurrences instead of alphabetical. 
+* `tm_a_pca` updated to include `Plot settings` and `Plot specific settings`.
+* `tm_variable_browser` now displays character variable summary statistics table in decreasing order of occurrences instead of alphabetical. 
 * `tm_variable_browser` displays histograms and statistics table for variables of type `Date`, `POSIXct` and `POSIXlt`.
 * Remove keys from missing data combinations plot in `tm_missing_data` when they have not been selected. 
 * Add marginal density plots to `tm_g_scatterplot`.
-* Add rug plot to both axis option in `tm_g_scatterplot`.
+* Add option to display rug plot to both axis in `tm_g_scatterplot`.
 * Require `ggmosaic` version >= 0.3.0.
 * Show labels on x axis when selecting a categorical variable in the `tm_g_bivariate` module and fixed issues when deselecting variables and datasets in the encoding panel (added meaningful warnings).
 * Add bar chart to missing data combination plot.
