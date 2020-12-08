@@ -112,7 +112,6 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   standard_layout(
     output = white_small_well(
       textOutput(ns("title")),
-      tags$br(),
       uiOutput(ns("table"))
     ),
     encoding = div(
