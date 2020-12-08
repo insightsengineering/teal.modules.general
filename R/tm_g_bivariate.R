@@ -380,7 +380,7 @@ srv_g_bivariate <- function(input,
     validate(
       need(
         !is_character_empty(x_name) || !is_character_empty(y_name),
-        "x-variable and y-variable aren't correcly specified. At least one should be valid."
+        "x-variable and y-variable aren't correctly specified. At least one should be valid."
       )
     )
 
