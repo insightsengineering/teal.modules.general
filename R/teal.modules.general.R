@@ -1,8 +1,7 @@
 #' teal.modules.general: General modules to add to a teal application
 #'
 #' The modules in this package are generic modules that should work with any data set
-#' (not necessarily for clinical trials data). We are prototyping these modules and they are not
-#' meant for wide adoption at the moment.
+#' (not necessarily for clinical trials data).
 #'
 #' @import ggplot2
 #' @import ggmosaic
@@ -11,8 +10,7 @@
 #' @import teal.devel
 #' @import utils.nest
 #'
-#' @importFrom stats IQR
 #'
 #' @docType package
 #' @name teal.modules.general
-"_PACKAGE"
+NULL

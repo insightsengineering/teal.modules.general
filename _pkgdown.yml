@@ -12,7 +12,7 @@ navbar:
 reference:
   - title:
     contents:
-      - teal.modules.general-package
+      - teal.modules.general
 
   - title: General functionality modules
     contents:

@@ -668,6 +668,8 @@ var_summary_table <- function(x, numeric_as_factor) {
 #' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values.
 #' @return plot
+#'
+#' @importFrom stats IQR
 plot_var_summary <- function(var,
   var_lab,
   numeric_as_factor,
