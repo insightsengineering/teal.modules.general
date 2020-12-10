@@ -170,6 +170,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       size <- `if`(inherits(x, "list"), x, list(x))
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
+  } else {
+    stop_if_not(list(
+      is.null(color) && is.null(fill) && is.null(size),
+      "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."))
   }
 
   args <- as.list(environment())
