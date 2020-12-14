@@ -4,21 +4,21 @@
 #### `tm_variable_browser` 
 * Introduced `sparklines` for quick, inline variable summaries.
 * Added option to remove outliers.
-* Displays histograms and statistics tables for variables of type `Date`, `POSIXct` and `POSIXlt`.
+* Histograms and statistics tables are now displayed for variables of type `Date`, `POSIXct` and `POSIXlt`.
 * Character variable summary statistics tables are now displayed in decreasing order of occurrences instead of alphabetical. 
 * Display number of non-missing rows `n` in statistics table for numeric variables.
 * Added ability to treat numeric variables as categorical.
 * `tm_variable_browser` shows from 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
 
 #### `tm_a_regression`
-* Added support for outlier labels to `tm_a_regression` and provide an additional optional argument, `default_outlier_label` which can be used to specify the default column used to label outliers.
+* Added support for outlier labels to `tm_a_regression` and provided an additional optional argument, `default_outlier_label` which can be used to specify the default column used to label outliers.
 
 #### `tm_g_scatterplot`
 * Implemented trend line.
 * Added marginal density plots.
 * Added option to display rug plot to both axes.
 * Added `shape` and `point color` arguments. The latter users `colourpicker::colourInput`.
-* Added `size_by` variable to scatterplot and allow point size to be mapped to a numeric variable.
+* Added `size_by` variable to scatterplot and allowed for point size to be mapped to a numeric variable.
 
 #### `tm_missing_data`
 * Added bar chart to missing data combination plot.
@@ -33,7 +33,7 @@
 
 ### Miscellaneous
 * Integrated `is_single_dataset` argument for `data_extract_input` function calls to simplify encodings panel UI.
-* Move `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
+* Moved `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * Require `ggmosaic` version >= 0.3.0.
 
 # teal.modules.general 0.2.6
