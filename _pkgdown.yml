@@ -27,3 +27,27 @@ reference:
       - starts_with('tm_g_')
       - starts_with('tm_a_')
 
+  - title: Utilities functions
+    contents:
+      - add_facet_labels
+      - create_sparklines
+      - get_scatterplotmatrix_stats
+      - stack_grobs
+
+  - title: Unexported functions
+    contents:
+      - call_fun_dots
+      - create_sparklines.Date
+      - create_sparklines.POSIXct
+      - create_sparklines.POSIXt
+      - create_sparklines.character
+      - create_sparklines.default
+      - create_sparklines.factor
+      - create_sparklines.numeric
+      - get_datanames_selected
+      - list_or_null
+      - plot_var_summary
+      - shared_params
+      - var_missings_info
+      - var_summary_table
+      - varname_w_label

@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Scatterplot matrix app construction}
+  %\VignetteIndexEntry{Using scatterplot matrix}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

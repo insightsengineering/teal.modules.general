@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Cross table app construction}
+  %\VignetteIndexEntry{Using cross table}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

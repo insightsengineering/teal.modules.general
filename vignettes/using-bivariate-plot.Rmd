@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Bivariate plot app constructions}
+  %\VignetteIndexEntry{Using bivariate plots}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
