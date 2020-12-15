@@ -226,6 +226,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     chunks_push(bquote({
       tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[.(y_name)]]), ])
+      tbl
     }))
 
     chunks_safe_eval()
