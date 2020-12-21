@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
-  %\VignetteIndexEntry{Association plot app construction}
+  %\VignetteIndexEntry{Using association plot}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

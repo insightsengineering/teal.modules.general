@@ -107,19 +107,19 @@ tm_t_crosstable <- function(label = "Cross Table",
 
 ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
+  is_single_dataset <- is_single_dataset(x, y)
 
   standard_layout(
     output = white_small_well(
       textOutput(ns("title")),
-      tags$br(),
       uiOutput(ns("table"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
-      data_extract_input(ns("x"), label = "Row values", x),
+      data_extract_input(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
       tags$hr(),
-      data_extract_input(ns("y"), label = "Column values", y),
+      data_extract_input(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
       tags$hr(),
       panel_group(
         panel_item(
@@ -226,6 +226,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     chunks_push(bquote({
       tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[.(y_name)]]), ])
+      tbl
     }))
 
     chunks_safe_eval()

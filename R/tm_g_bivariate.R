@@ -130,8 +130,29 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
       (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-      )
+      ),
+    list(
+      is.null(color) ||
+      ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
+      (is_class_list("data_extract_spec")(color) &&
+        all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
+      "color variable should not allow multiple selection"
+    ),
+    list(
+      is.null(fill) ||
+      ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
+      (is_class_list("data_extract_spec")(fill) &&
+        all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
+      "fill variable should not allow multiple selection"
+    ),
+    list(
+      is.null(size) ||
+      ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
+      (is_class_list("data_extract_spec")(size) &&
+        all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
+      "size variable should not allow multiple selection"
     )
+  )
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -149,6 +170,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       size <- `if`(inherits(x, "list"), x, list(x))
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
+  } else {
+    stop_if_not(list(
+      is.null(color) && is.null(fill) && is.null(size),
+      "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."))
   }
 
   args <- as.list(environment())
@@ -380,7 +405,7 @@ srv_g_bivariate <- function(input,
     validate(
       need(
         !is_character_empty(x_name) || !is_character_empty(y_name),
-        "x-variable and y-variable aren't correcly specified. At least one should be valid."
+        "x-variable and y-variable aren't correctly specified. At least one should be valid."
       )
     )
 

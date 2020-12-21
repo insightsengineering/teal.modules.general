@@ -211,7 +211,7 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::show("cor_na_omit")
 
       chunks_push(bquote({
-        lattice::splom(
+        plot <- lattice::splom(
           ANL,
           varnames = .(varnames),
           panel = function(x, y, ...) {
@@ -233,6 +233,7 @@ srv_g_scatterplotmatrix <- function(input,
           pch = 16,
           alpha = .(alpha),
           cex = .(cex))
+        print(plot)
       }))
     } else {
       shinyjs::hide("cor_method")

@@ -179,13 +179,20 @@ ui_g_scatterplot <- function(id, ...) {
         panel_item(
           title = "Add trend line",
           shinyjs::hidden(helpText(id = ns("line_msg"), "first select numeric X and Y variables")),
-          optionalSelectInput(ns("formula"), "Formula", c("Linear" = 1, "2nd Deg Polynomial" = 2)),
+          optionalSelectInput(ns("formula"), "Smoothing degree", c("1" = 1, "2" = 2)),
           optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R square", value = TRUE)),
-          shinyjs::hidden(optionalSliderInput(
-            ns("pos"), "left <- stat position -> right", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R Squared", value = TRUE)),
+          shinyjs::hidden(checkboxInput(ns("show_warn"), "", value = TRUE)),
+          div(
+            id = ns("label_pos"),
+            div(style = "display: inline-block; width: 10%", helpText("Left")),
+            div(
+              style = "display: inline-block; width: 70%",
+              optionalSliderInput(ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+            div(style = "display: inline-block; width: 10%", helpText("Right"))
+          )
         )
       ),
       panel_group(
@@ -242,15 +249,19 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
   })
 
   if (!is.null(color_by)) {
-    cur_color <- reactiveValues(var = "", choices = "")
     observe({
-      selected <- if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% cur_color$choices], NULL)
+
+      ANL <- merged_data()$data() # nolint
+      color_by_var <- as.vector(merged_data()$columns_source$color_by)
+
+      choices <- value_choices(ANL, color_by_var)
+
       updateOptionalSelectInput(
         session = session,
         inputId = "color_sub",
-        label = cur_color$var,
-        choices = cur_color$choices,
-        selected = selected)
+        label = color_by_var,
+        choices = choices,
+        selected = if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% choices], NULL))
     })
   }
 
@@ -261,19 +272,24 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
+    # prevents temporary error when color_sub isn't updated
+    validate(
+      need(is.null(color_sub) || color_sub %in% value_choices(ANL, color_by_var), "processing..."))
 
     if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]]) && !is_empty(formula)) {
       if (!is_empty(color_sub) && !is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
         ANL <- ANL[ANL[[color_by_var]] %in% color_sub, ] # nolint
       }
+      ANL_no_NA <- ANL[!is.na(ANL[[x_var]]) & !is.na(ANL[[y_var]]), ] # nolint
       if (formula == 1) {
-        m <- lm(ANL[[y_var]] ~ ANL[[x_var]], ANL)
+        m <- lm(ANL_no_NA[[y_var]] ~ ANL_no_NA[[x_var]], ANL_no_NA)
         form <- paste0(y_var, " = ", round(coef(m)[1], 4), " + ", round(coef(m)[2], 4), "*", x_var)
         r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
       } else if (formula == 2) {
         validate(need(
-          length(unique(ANL[[x_var]])) > 2, "number of unique values in x variable is less than or equal to 2"))
-        m <- lm(ANL[[y_var]] ~ poly(ANL[[x_var]], 2), ANL)
+          length(unique(ANL_no_NA[[x_var]])) > 2,
+          "Number of unique values in X variable is less than or equal to 2 (the degree of the polynomial)"))
+        m <- lm(ANL_no_NA[[y_var]] ~ poly(ANL_no_NA[[x_var]], 2), ANL_no_NA)
         form <- paste0(
           y_var, " = ",
           round(coef(m)[1], 4), " + ",
@@ -283,7 +299,19 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
           "*", x_var, "^2")
         r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
       }
-      list(form = form, r_2 = r_2)
+
+      if (nrow(ANL_no_NA) < nrow(ANL)) {
+        warn_NA <- paste(nrow(ANL) - nrow(ANL_no_NA), "row(s) with NA got removed") # nolint
+        updateCheckboxInput(session, "show_warn", label = warn_NA)
+        shinyjs::show("show_warn")
+      } else {
+        shinyjs::hide("show_warn")
+        warn_NA <- NULL # nolint
+      }
+      list(form = form, r_2 = r_2, warn_NA = warn_NA)
+    } else {
+      shinyjs::hide("show_warn")
+      NULL
     }
   })
 
@@ -311,6 +339,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     color_sub <- input$color_sub
     show_form <- input$show_form
     show_r2 <- input$show_r2
+    show_warn <- input$show_warn
     pos <- input$pos # nolint
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
@@ -376,6 +405,9 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       )
     }
 
+    # order matters here.
+    # this dependancy should be declared after all validations and outside of the following and all if statements
+    plot_labels <- plot_r_line()
 
     if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])) {
       shinyjs::hide("line_msg")
@@ -385,17 +417,19 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         shinyjs::hide("color_sub")
         shinyjs::hide("show_form")
         shinyjs::hide("show_r2")
-        shinyjs::hide("pos")
+        shinyjs::hide("label_pos")
       } else {
         shinyjs::show("ci")
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
-        if (show_form || show_r2) shinyjs::show("pos") else shinyjs::hide("pos")
+        if (show_form || show_r2 || (!is.null(plot_labels$warn_NA) && show_warn)) {
+          shinyjs::show("label_pos")
+        } else {
+          shinyjs::hide("label_pos")
+        }
         msg <- if (!is_empty(color_by_var) && !is.numeric(ANL[[color_by_var]])) {
-          cur_color$var <- color_by_var
-          cur_color$choices <- opts <- value_choices(ANL, color_by_var)
           shinyjs::show("color_sub")
-          if (length(opts) > 1) {
+          if (length(value_choices(ANL, color_by_var)) > 1) {
             if (!is.null(color_sub)) {
               chunks_push(bquote(ANL <- dplyr::filter(ANL, .(as.name(color_by_var)) %in% .(color_sub)))) # nolint
               if (length(color_sub) > 1) "stats from combined selected color groups"
@@ -409,10 +443,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         }
         equation <- if (formula == 1) quote(y ~ x) else if (formula == 2) quote(y ~ poly(x, 2)) # nolint
         label <- paste0(
-          if (show_form) paste0(plot_r_line()$form, "\n"),
-          if (show_r2) paste0(plot_r_line()$r_2, "\n"),
-          if (show_form || show_r2) msg
+          if (show_form) paste0(plot_labels$form, "\n"),
+          if (show_r2) paste0(plot_labels$r_2, "\n"),
+          if ((show_form || show_r2) && !is.null(msg)) paste0(msg, "\n"),
+          if (show_warn) plot_labels$warn_NA
         )
+        chunks_push(bquote(ANL <- dplyr::filter(ANL, !is.na(.(as.name(x_var))) & !is.na(.(as.name(y_var)))))) # nolint
         plot_call <- bquote(
           .(plot_call) +
             geom_smooth(formula = .(equation), se = TRUE, level = .(ci), method = "lm") +
@@ -433,7 +469,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
       shinyjs::hide("color_sub")
       shinyjs::hide("show_form")
       shinyjs::hide("show_r2")
-      shinyjs::hide("pos")
+      shinyjs::hide("label_pos")
       shinyjs::show("line_msg")
     }
 
