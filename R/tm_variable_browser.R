@@ -345,12 +345,16 @@ srv_variable_browser <- function(input, output, session, datasets) {
   output$ui_outlier_help <- renderUI({
     req(is.logical(input$remove_outliers), input$outlier_definition_slider)
     if (input$remove_outliers) {
-      tags$small(helpText(paste0(
-        "Outlier data points (those less than Q1 -", input$outlier_definition_slider,
-        "*IQR and those greater than Q3 + ", input$outlier_definition_slider, "*IQR) ",
-        "have not been displayed on the graph and will not be used for any kernel density estimations, ",
-        "although their values remain in the statisics table below"
-      )))
+      tags$small(
+        helpText(
+          withMathJax(paste0(
+            "Outlier data points (\\(Q1 - ", input$outlier_definition_slider, "\\times IQR \\gt X\\ and\\
+            Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
+            have not been displayed on the graph and will not be used for any kernel density estimations, ",
+            "although their values remain in the statisics table below."
+          ))
+        )
+      )
     } else {
       NULL
     }
