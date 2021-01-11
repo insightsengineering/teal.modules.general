@@ -23,6 +23,7 @@
 #' @param shape optional, (`character`) A character vector with the English names of the
 #'   shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
 #'   `vignette("ggplot2-specs", package="ggplot2")`.
+#' @param max_deg optional, (`integer`) The maximum degree for the polynomial trend line. Must not be less than 1.
 #'
 #' @importFrom shinyjs show hide hidden
 #' @importFrom stats coef lm
@@ -81,6 +82,7 @@ tm_g_scatterplot <- function(label,
                              alpha = c(1, 0, 1),
                              shape = shape_names,
                              size = c(5, 1, 15),
+                             max_deg = 5L,
                              rotate_xaxis_labels = FALSE,
                              ggtheme = gg_themes,
                              pre_output = NULL,
@@ -107,8 +109,12 @@ tm_g_scatterplot <- function(label,
     list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),
     is.null(size_by) || is_class_list("data_extract_spec")(size_by),
     is.null(color_by) || is_class_list("data_extract_spec")(color_by),
-    is_character_single(ggtheme)
-    )
+    is_character_single(ggtheme),
+    list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
+    list(
+      max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
+      "`max_deg` must be a finite whole number greater than zero")
+  )
 
   check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
   check_slider_input(size, allow_null = FALSE, allow_single = TRUE)
@@ -179,7 +185,7 @@ ui_g_scatterplot <- function(id, ...) {
         panel_item(
           title = "Add trend line",
           shinyjs::hidden(helpText(id = ns("line_msg"), "first select numeric X and Y variables")),
-          optionalSelectInput(ns("formula"), "Smoothing degree", c("1" = 1, "2" = 2)),
+          optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
           optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
@@ -268,7 +274,14 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     })
   }
 
-  plot_r_line <- reactiveValues(ANL_no_NA = NULL, form = NULL, r_2 = NULL, warn_NA = NULL)
+  plot_r_line <- reactiveValues(
+    ANL_no_NA = NULL,
+    form = NULL,
+    r_2 = NULL,
+    warn_NA = NULL,
+    degree_too_high = FALSE
+  )
+
   observe({ # nolint
     ANL <- merged_data()$data() # nolint
     color_sub <- input$color_sub
@@ -297,28 +310,37 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
 
   observe({
     df <- plot_r_line$ANL_no_NA
-    formula <- input$formula
+    smoothing_degree <- as.integer(input$smoothing_degree)
     req(df)
-    req(formula)
-    if (formula == 1) {
-      req(nrow(df) > 2)
-      m <- lm(df[[2]] ~ df[[1]], df)
-      form <- paste0(names(df)[2], " = ", round(coef(m)[1], 4), " + ", round(coef(m)[2], 4), "*", names(df)[1])
-      r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
-    } else if (formula == 2) {
-      req(length(unique(df[[1]])) > 2)
-      m <- lm(df[[2]] ~ poly(df[[1]], 2), df)
-      form <- paste0(
-        names(df)[2], " = ",
-        round(coef(m)[1], 4), " + ",
-        round(coef(m)[2], 4),
-        "*", names(df)[1], " + ",
-        round(coef(m)[3], 4),
-        "*", names(df)[1], "^2")
-      r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
-    }
-    plot_r_line$form <- form
-    plot_r_line$r_2 <- r_2
+    req(smoothing_degree)
+    m <- try(lm(df[[2]] ~ poly(df[[1]], smoothing_degree), df), silent = TRUE)
+    plot_r_line$degree_too_high <- inherits(m, "try-error")
+    req(!inherits(m, "try-error"))
+    plot_r_line$r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
+    plot_r_line$form <- sprintf(
+      "%s = %#.4f %s %#.4f * %s%s",
+      names(df)[2],
+      coef(m)[1],
+      ifelse(coef(m)[2] < 0, "-", "+"),
+      abs(coef(m)[2]),
+      names(df)[1],
+      paste(
+        vapply(
+          X = seq_len(smoothing_degree)[-1],
+          FUN = function(deg) {
+            sprintf(
+              "%s%s %#.4f*%s^%s",
+              ifelse(deg %%  5 == 0, "\n", " "),
+              ifelse(coef(m)[deg + 1] < 0, "-", "+"),
+              abs(coef(m)[deg + 1]),
+              names(df)[1],
+              deg
+            )
+          },
+          FUN.VALUE = character(1)),
+        collapse = ""
+      )
+    )
   })
 
   plot_r <- reactive({
@@ -340,7 +362,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
     rug_plot <- input$rug_plot
     color <- input$color # nolint
     shape <- if_empty_string(if_null(input$shape, "circle"), "circle") # nolint
-    formula <- input$formula
+    smoothing_degree <- as.integer(input$smoothing_degree)
     ci <- input$ci # nolint
     color_sub <- input$color_sub
     show_form <- input$show_form
@@ -359,15 +381,15 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
-        ))
+      ))
       validate(need(
         !(inherits(ANL[[color_by_var]], "Date") ||
           inherits(ANL[[color_by_var]], "POSIXct") ||
           inherits(ANL[[color_by_var]], "POSIXlt")),
         "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
-        ))
-      }
+      ))
+    }
 
     validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
@@ -413,8 +435,8 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
 
     if (is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])) {
       shinyjs::hide("line_msg")
-      shinyjs::show("formula")
-      if (is.null(formula)) {
+      shinyjs::show("smoothing_degree")
+      if (is_empty(smoothing_degree)) {
         shinyjs::hide("ci")
         shinyjs::hide("color_sub")
         shinyjs::hide("show_form")
@@ -446,20 +468,21 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
           shinyjs::hide("color_sub")
           NULL
         }
-        validate(need(nrow(plot_r_line$ANL_no_NA) > 1, "Need at least 2 points to fit a line"))
+        validate(need(
+          !plot_r_line$degree_too_high,
+          paste(
+            "Not enough unique values in X variable for the selected smoothing degree.",
+            "\nNumber of unique x values:",
+            length(unique(plot_r_line$ANL_no_NA[[x_var]])),
+            "\nNumber of rows in data:",
+            nrow(plot_r_line$ANL_no_NA),
+            "\nPlease try lower smoothing degrees."))
+        )
         if (!is.null(plot_r_line$warn_NA)) {
           shinyjs::show("show_warn")
           chunks_push(bquote(ANL <- dplyr::filter(ANL, !is.na(.(as.name(x_var))) & !is.na(.(as.name(y_var)))))) # nolint
         } else {
           shinyjs::hide("show_warn")
-        }
-        equation <- if (formula == 1) {
-          quote(y ~ x)
-        } else if (formula == 2) {
-          validate(need(
-            length(unique(plot_r_line$ANL_no_NA[[x_var]])) > 2,
-            "Number of unique values in X variable is less than or equal to 2 (the degree of the polynomial)"))
-          quote(y ~ poly(x, 2))
         }
         label <- paste0(
           if (show_form) paste0(plot_r_line$form, "\n"),
@@ -469,12 +492,12 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         )
         plot_call <- bquote(
           .(plot_call) +
-            geom_smooth(formula = .(equation), se = TRUE, level = .(ci), method = "lm") +
+            geom_smooth(formula = y ~ poly(x, .(smoothing_degree)), se = TRUE, level = .(ci), method = "lm") +
             annotate(
               "text",
-              x = min(ANL[[.(x_var)]], na.rm = TRUE) * (1 - .(pos)) + max(ANL[[.(x_var)]], na.rm = TRUE) * .(pos),
+              x = min(ANL[[.(x_var)]], na.rm = TRUE) * (.(1 - pos)) + max(ANL[[.(x_var)]], na.rm = TRUE) * .(pos),
               hjust = .(if (pos > .5) 1 else if (pos == .5) .5 else 0),
-              y = max(ANL[[.(y_var)]], na.rm = TRUE),
+              y = Inf,
               vjust = 1,
               label =  .(label),
               size = 5
@@ -482,7 +505,7 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
         )
       }
     } else {
-      shinyjs::hide("formula")
+      shinyjs::hide("smoothing_degree")
       shinyjs::hide("ci")
       shinyjs::hide("color_sub")
       shinyjs::hide("show_form")

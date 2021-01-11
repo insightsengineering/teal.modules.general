@@ -15,6 +15,7 @@ tm_g_scatterplot(
   alpha = c(1, 0, 1),
   shape = shape_names,
   size = c(5, 1, 15),
+  max_deg = 5L,
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
@@ -53,6 +54,8 @@ shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape
 \item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
 If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 vector of length three with \code{c(value, min, max)}.}
+
+\item{max_deg}{optional, (\code{integer}) The maximum degree for the polynomial trend line. Must not be less than 1.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}

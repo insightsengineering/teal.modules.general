@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.7.9000
 
 * Issues with no news:
+* Added `max_deg` optional argument to scatterplot to allow user to choose the maximum smoothing degree for trend line.
 
 # teal.modules.general 0.2.7
 
