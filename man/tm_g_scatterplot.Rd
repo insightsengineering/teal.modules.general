@@ -19,7 +19,8 @@ tm_g_scatterplot(
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  table_dec = 4
 )
 }
 \arguments{
@@ -71,6 +72,8 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
+
+\item{table_dec}{optional, (\code{integer}) Number of decimal places used to round numeric values in the table.}
 }
 \description{
 Create a plot with the \code{\link{ggplot2}[geom_point]} function

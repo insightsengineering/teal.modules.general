@@ -2,6 +2,7 @@
 
 * Issues with no news:
 * Added `max_deg` optional argument to scatterplot to allow user to choose the maximum smoothing degree for trend line.
+* Introduced plot brushing to the tm_g_scatterplot module.
 
 # teal.modules.general 0.2.7
 

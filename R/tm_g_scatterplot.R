@@ -24,6 +24,7 @@
 #'   shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
 #'   `vignette("ggplot2-specs", package="ggplot2")`.
 #' @param max_deg optional, (`integer`) The maximum degree for the polynomial trend line. Must not be less than 1.
+#' @param table_dec optional, (`integer`) Number of decimal places used to round numeric values in the table.
 #'
 #' @importFrom shinyjs show hide hidden
 #' @importFrom stats coef lm
@@ -86,7 +87,8 @@ tm_g_scatterplot <- function(label,
                              rotate_xaxis_labels = FALSE,
                              ggtheme = gg_themes,
                              pre_output = NULL,
-                             post_output = NULL) {
+                             post_output = NULL,
+                             table_dec = 4) {
   if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
@@ -113,7 +115,8 @@ tm_g_scatterplot <- function(label,
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
-      "`max_deg` must be a finite whole number greater than zero")
+      "`max_deg` must be a finite whole number greater than zero"),
+    is_numeric_single(table_dec)
   )
 
   check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
@@ -135,7 +138,9 @@ tm_g_scatterplot <- function(label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -148,7 +153,9 @@ ui_g_scatterplot <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
+      plot_with_settings_ui(id = ns("scatter_plot"), height = args$plot_height, width = args$plot_width),
+      tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
+      DT::dataTableOutput(ns("data_table"), width = "100%")
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -236,7 +243,17 @@ ui_g_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom ggExtra ggMarginal
 #' @importFrom shinyjs hide show
-srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, size_by, plot_height, plot_width) {
+srv_g_scatterplot <- function(input,
+                              output,
+                              session,
+                              datasets,
+                              x,
+                              y,
+                              color_by,
+                              size_by,
+                              plot_height,
+                              plot_width,
+                              table_dec) {
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -537,13 +554,31 @@ srv_g_scatterplot <- function(input, output, session, datasets, x, y, color_by, 
   })
 
   # Insert the plot into a plot_with_settings module from teal.devel
-  callModule(
+  brush <- callModule(
     plot_with_settings_srv,
-    id = "myplot",
+    id = "scatter_plot",
     plot_r = plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    brushing = TRUE
   )
+
+  output$data_table <- DT::renderDataTable({
+    # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL in plot_r
+    # which ends up in a bunch of warnings that ANL is not in chunks
+    plot_r()
+    plot_brush <- brush$brush()
+
+    merged_data <- isolate(chunks_get_var("ANL"))
+
+    df <- brushedPoints(merged_data, plot_brush)
+    numeric_cols <- names(df)[vapply(df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
+
+    DT::formatRound(
+      DT::datatable(df, rownames = FALSE, options = list(scrollX = TRUE)),
+      numeric_cols,
+      table_dec)
+  })
 
   callModule(
     get_rcode_srv,
