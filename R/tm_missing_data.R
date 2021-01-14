@@ -153,6 +153,18 @@ ui_missing_data <- function(id, plot_height, plot_width) {
     tabPanel(
       "By variable levels",
       DT::dataTableOutput(ns("levels_table"))
+    ),
+    tabPanel(
+      "Grouped by Subject",
+      plot_with_settings_ui(id = ns("by_subject_plot"), height = plot_height, width = plot_width),
+      helpText(
+        p(paste(
+          "This graph shows the missingness with respect to subjects rather than individual rows of the",
+          "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
+          "with at least one record in this dataset are shown. For a given subject, if they have any missing",
+          "values of a specific variable then the appropriate cell in the graph is marked as missing."
+        ))
+      )
     )
   )
 }
@@ -208,8 +220,8 @@ encoding_missing_data <- function(id) {
   )
 }
 
-#' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all
-#'   pull select summarise_all ungroup tally tibble distinct n_distinct
+#' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all transmute
+#'   pull select summarise_all ungroup tally tibble distinct n_distinct cur_group_id row_number desc
 #' @import ggplot2
 #' @importFrom grid grid.newpage grid.draw unit.pmax unit
 #' @importFrom gridExtra gtable_cbind gtable_rbind
@@ -218,6 +230,7 @@ encoding_missing_data <- function(id) {
 #' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom tidyselect everything all_of
+#' @importFrom digest sha1
 srv_missing_data <- function(input,
                              output,
                              session,
@@ -794,6 +807,83 @@ srv_missing_data <- function(input,
     chunks_get_var("summary_data")
   })
 
+  by_subject_plot_chunks <- reactive({
+    req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
+    validate_has_data(data(), 1)
+    # Create a private stack for this function only.
+    by_subject_stack <- chunks$new()
+    by_subject_stack_push <- function(...) {
+      chunks_push(..., chunks = by_subject_stack)
+    }
+
+    # Add common code into this chunk
+    chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
+
+    keys <- data_keys()
+    by_subject_stack_push(bquote(adsl_keys <- .(datasets$get_data_attr("ADSL", "keys")$primary)))
+
+    by_subject_stack_push(
+      bquote(
+        analysis_vars <- setdiff(colnames(ANL_FILTERED), .(data_keys()))
+      )
+    )
+
+    by_subject_stack_push(
+      quote({
+        summary_plot_patients <- ANL_FILTERED[, c(adsl_keys, analysis_vars)] %>%
+          dplyr::group_by_at(adsl_keys) %>%
+          dplyr::mutate(id = dplyr::cur_group_id()) %>%
+          dplyr::ungroup() %>%
+          dplyr::group_by_at(c(adsl_keys, "id")) %>%
+          dplyr::summarise_all(anyNA) %>%
+          dplyr::ungroup()
+
+        # order subjects by decreasing number of missing and then by
+        # missingness pattern (defined using sha1)
+        order_subjects <- summary_plot_patients %>%
+          dplyr::select(-"id", -tidyselect::all_of(adsl_keys)) %>%
+          dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
+          dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+          magrittr::extract2("id")
+
+        summary_plot_patients <- summary_plot_patients %>%
+          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(adsl_keys))
+
+      })
+    )
+
+    by_subject_stack_push(
+      bquote({
+        g <- ggplot(summary_plot_patients, aes(x = factor(id, levels = order_subjects),
+          y = create_cols_labels(col), fill = isna)) +
+          geom_raster() +
+          theme_classic() +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing (at least one)")
+          ) +
+          ylab("") +
+          xlab("") +
+          theme(
+            legend.position = "bottom",
+            axis.text.x = element_blank()
+          )
+        print(g)
+      })
+    )
+
+    chunks_safe_eval(by_subject_stack)
+    by_subject_stack
+  })
+
+
+  by_subject_plot_r <- reactive({
+    chunks_reset()
+    chunks_push_chunks(by_subject_plot_chunks())
+    chunks_get_var(var = "g")
+  })
+
   callModule(
     plot_with_settings_srv,
     id = "summary_plot",
@@ -805,6 +895,14 @@ srv_missing_data <- function(input,
     plot_with_settings_srv,
     id = "combination_plot",
     plot_r = combination_plot_r,
+    height = plot_height,
+    width = plot_width
+  )
+
+  callModule(
+    plot_with_settings_srv,
+    id = "by_subject_plot",
+    plot_r = by_subject_plot_r,
     height = plot_height,
     width = plot_width
   )
