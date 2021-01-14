@@ -295,6 +295,14 @@ srv_a_regression <- function(input,
       chunks = chunks_stack
     )
 
+    chunks_push(bquote({
+      for (regressor in names(fit$contrasts)) {
+        alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
+        names(fit$coefficients) <- gsub(
+          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients))
+      }}),
+      chunks = chunks_stack)
+
     chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
 
     chunks_safe_eval(chunks = chunks_stack)
