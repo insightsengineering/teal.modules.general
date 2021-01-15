@@ -143,8 +143,7 @@ ui_outliers <- function(id, ...) {
   standard_layout(
     output = white_small_well(
       tabsetPanel(
-        type = "tabs",
-        id = "tabs",
+        id = ns("tabs"),
         tabPanel(
           "Boxplot",
           div(
@@ -263,7 +262,7 @@ ui_outliers <- function(id, ...) {
               )
             ),
           conditionalPanel(
-            condition = "input.tabs == 'Boxplot'",
+            condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
             optionalSelectInput(
               inputId = ns("boxplot_alts"),
               label = "Plot type",
@@ -275,7 +274,7 @@ ui_outliers <- function(id, ...) {
           uiOutput(ns("ui_outlier_help"))
           ),
         conditionalPanel(
-          condition = "input.tabs == 'Line plot'",
+          condition = paste0("input['", ns("tabs"), "'] == 'Line plot'"),
           panel_item(
             title = "Line plot parameters",
             collapsed = FALSE,
@@ -300,10 +299,19 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, lineplot_param, plot_height, plot_width) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+
+  merged_data_lineplot <- data_merge_module(
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var, lineplot_param),
     input_id = c("outlier_var", "categorical_var", "lineplot_param"),
+    #left_join is used instead of inner_join
+    merge_function = "dplyr::left_join"
+  )
+
+  merged_data <- data_merge_module(
+    datasets = datasets,
+    data_extract = list(outlier_var, categorical_var),
+    input_id = c("outlier_var", "categorical_var"),
     #left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
@@ -315,10 +323,19 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       chunks_push(..., chunks = common_stack)
     }
 
-    chunks_push_data_merge(merged_data(), common_stack)
-    outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-    categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
-    lineplot_param <- as.vector(merged_data()$columns_source$lineplot_param)
+    if (input$tabs == "Line plot") {
+      chunks_push_data_merge(merged_data_lineplot(), common_stack)
+      outlier_var <- as.vector(merged_data_lineplot()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged_data_lineplot()$columns_source$categorical_var)
+      lineplot_param <- as.vector(merged_data_lineplot()$columns_source$lineplot_param)
+    }
+    else {
+      chunks_push_data_merge(merged_data(), common_stack)
+      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+    }
+
+
     method <- input$method
     validate(need(outlier_var, "Please select a variable"))
     validate(need(input$method, "Please select a method"))
@@ -621,9 +638,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ANL <- chunks_get_var("ANL", line_r_stack) # nolint
     ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", line_r_stack) # nolint
 
-    outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-    categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
-    lineplot_param <- as.vector(merged_data()$columns_source$lineplot_param)
+    outlier_var <- as.vector(merged_data_lineplot()$columns_source$outlier_var)
+    categorical_var <- as.vector(merged_data_lineplot()$columns_source$categorical_var)
+    lineplot_param <- as.vector(merged_data_lineplot()$columns_source$lineplot_param)
 
     validate(need(lineplot_param, "Please select a lineplot parameter"))
 
