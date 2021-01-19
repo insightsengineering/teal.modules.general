@@ -675,8 +675,8 @@ srv_a_regression <- function(input,
 
   fitted <- reactive(chunks_get_var("fit", chunks = fit()))
 
-  output$text <- renderPrint({
-    summary(fitted())
+  output$text <- renderText({
+    paste(capture.output(summary(fitted()))[-1], collapse = "\n")
   })
 
   callModule(
