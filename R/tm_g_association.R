@@ -124,7 +124,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
+      plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),

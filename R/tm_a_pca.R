@@ -120,7 +120,7 @@ ui_a_pca <- function(id, ...) {
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
-        plot_with_settings_ui(id = ns("pca_plot"), height = args$plot_height, width = args$plot_width)
+        plot_with_settings_ui(id = ns("pca_plot"))
       )
     ),
     encoding = div(

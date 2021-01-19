@@ -153,7 +153,7 @@ ui_g_scatterplot <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_with_settings_ui(id = ns("scatter_plot"), height = args$plot_height, width = args$plot_width),
+      plot_with_settings_ui(id = ns("scatter_plot")),
       tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
       DT::dataTableOutput(ns("data_table"), width = "100%")
     ),

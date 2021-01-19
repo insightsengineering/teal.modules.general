@@ -37,12 +37,11 @@ tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 50
     server = srv_page_missing_data,
     server_args = list(plot_height = plot_height, plot_width = plot_width),
     ui = ui_page_missing_data,
-    ui_args = list(plot_height = plot_height, plot_width = plot_width),
     filters = "all"
   )
 }
 
-ui_page_missing_data <- function(id, datasets, plot_height, plot_width) {
+ui_page_missing_data <- function(id, datasets) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -62,9 +61,7 @@ ui_page_missing_data <- function(id, datasets, plot_height, plot_width) {
                   column(
                     width = 12,
                     div(style = "height:10px;"),
-                    ui_missing_data(
-                      id = ns(x), plot_height = plot_height, plot_width = plot_width
-                    )
+                    ui_missing_data(id = ns(x))
                   )
                 )
               }
@@ -116,13 +113,13 @@ srv_page_missing_data <- function(input,
 }
 
 #' @importFrom shinyWidgets checkboxGroupButtons
-ui_missing_data <- function(id, plot_height, plot_width) {
+ui_missing_data <- function(id) {
   ns <- NS(id)
   tabsetPanel(
     id = ns("summary_type"),
     tabPanel(
       "Summary",
-      plot_with_settings_ui(id = ns("summary_plot"), height = plot_height, width = plot_width),
+      plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
@@ -134,7 +131,7 @@ ui_missing_data <- function(id, plot_height, plot_width) {
     ),
     tabPanel(
       "Combinations",
-      plot_with_settings_ui(id = ns("combination_plot"), height = plot_height, width = plot_width),
+      plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
         p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
@@ -156,7 +153,7 @@ ui_missing_data <- function(id, plot_height, plot_width) {
     ),
     tabPanel(
       "Grouped by Subject",
-      plot_with_settings_ui(id = ns("by_subject_plot"), height = plot_height, width = plot_width),
+      plot_with_settings_ui(id = ns("by_subject_plot")),
       helpText(
         p(paste(
           "This graph shows the missingness with respect to subjects rather than individual rows of the",

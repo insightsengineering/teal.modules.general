@@ -148,51 +148,35 @@ ui_outliers <- function(id, ...) {
           "Boxplot",
           div(
             fluidRow(
-              plot_with_settings_ui(
-                id = ns("box_plot"),
-                height = args$plot_height,
-                width = args$plot_width
-                )
-              )
+              plot_with_settings_ui(id = ns("box_plot"))
             )
-          ),
+          )
+        ),
         tabPanel(
           "Density plot",
           div(
             fluidRow(
-              plot_with_settings_ui(
-                id = ns("density_plot"),
-                height = args$plot_height,
-                width = args$plot_width
-                )
-              )
+              plot_with_settings_ui(id = ns("density_plot"))
             )
-          ),
+          )
+        ),
         tabPanel(
           "Cumulative distribution plot",
           div(
             fluidRow(
-              plot_with_settings_ui(
-                id = ns("cum_density_plot"),
-                height = args$plot_height,
-                width = args$plot_width
-                )
-              )
+              plot_with_settings_ui(id = ns("cum_density_plot"))
             )
-          ),
+          )
+        ),
         tabPanel(
           "Line plot",
           div(
             fluidRow(
-              plot_with_settings_ui(
-                id = ns("line_plot"),
-                height = args$plot_height,
-                width = args$plot_width
-                )
-              )
+              plot_with_settings_ui(id = ns("line_plot"))
             )
           )
-        ),
+        )
+      ),
       br(), hr(),
       h4("Data table"),
       DT::dataTableOutput(ns("table_ui"))

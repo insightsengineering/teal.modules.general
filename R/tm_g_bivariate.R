@@ -209,7 +209,7 @@ ui_g_bivariate <- function(id, ...) {
   ns <- NS(id)
   standard_layout(
     output = white_small_well(
-      tags$div(plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width))
+      tags$div(plot_with_settings_ui(id = ns("myplot")))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
