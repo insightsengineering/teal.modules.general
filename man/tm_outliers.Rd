@@ -9,7 +9,7 @@ tm_outliers(
   outlier_var,
   categorical_var,
   lineplot_param,
-  method = c("IQR", "Z-score", "Percentile"),
+  key_identifier = c("USUBJID", "SUBJID"),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -28,7 +28,8 @@ Categorical factor to split the analyzed variable on.}
 \item{lineplot_param}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 x-axis variable to be used for the outlier line plot.}
 
-\item{method}{Vector of outlier analysis methods to be used `c(IQR, Z-score, Percentile)`.}
+\item{key_identifier}{(`character`)
+Identifier key variable to be used in the cumulative distribution plot.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -53,7 +54,8 @@ ADSL <- radsl(cached = TRUE)
 ADLB <- radlb(cached = TRUE)
 
 fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-date_vars_adsl <- names(ADSL)[vapply(ADSL, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")), logical(1))]
+date_vars_adsl <-
+  names(ADSL)[vapply(ADSL, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")), logical(1))]
 adsl_extracted_col <- data_extract_spec(
   dataname = "ADSL",
   select = select_spec(
@@ -82,14 +84,14 @@ app <- init(
             fixed = FALSE
           )
         ),
-       data_extract_spec(
-         dataname = "ADLB",
-         select = select_spec(
-           label = "Select variable:",
-           choices = variable_choices(ADLB, c("AVAL", "CHG2")),
-           selected = "AVAL",
-           multiple = FALSE,
-           fixed = FALSE
+        data_extract_spec(
+          dataname = "ADLB",
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(ADLB, c("AVAL", "CHG2")),
+            selected = "AVAL",
+            multiple = FALSE,
+            fixed = FALSE
           )
         )
       ),
@@ -109,11 +111,11 @@ app <- init(
           selected = "ADTM",
           multiple = FALSE,
           fixed = FALSE
-          )
         )
       )
     )
   )
+)
 \dontrun{
 shinyApp(app$ui, app$server)
 }

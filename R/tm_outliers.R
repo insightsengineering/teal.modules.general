@@ -12,7 +12,8 @@
 #'   Categorical factor to split the analyzed variable on.
 #' @param lineplot_param (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   x-axis variable to be used for the outlier line plot.
-#' @param method Vector of outlier analysis methods to be used `c(IQR, Z-score, Percentile)`.
+#' @param key_identifier (`character`)
+#'   Identifier key variable to be used in the cumulative distribution plot.
 #'
 #' @export
 #'
@@ -23,7 +24,8 @@
 #' ADLB <- radlb(cached = TRUE)
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-#' date_vars_adsl <- names(ADSL)[vapply(ADSL, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")), logical(1))]
+#' date_vars_adsl <-
+#'   names(ADSL)[vapply(ADSL, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")), logical(1))]
 #' adsl_extracted_col <- data_extract_spec(
 #'   dataname = "ADSL",
 #'   select = select_spec(
@@ -52,14 +54,14 @@
 #'             fixed = FALSE
 #'           )
 #'         ),
-#'        data_extract_spec(
-#'          dataname = "ADLB",
-#'          select = select_spec(
-#'            label = "Select variable:",
-#'            choices = variable_choices(ADLB, c("AVAL", "CHG2")),
-#'            selected = "AVAL",
-#'            multiple = FALSE,
-#'            fixed = FALSE
+#'         data_extract_spec(
+#'           dataname = "ADLB",
+#'           select = select_spec(
+#'             label = "Select variable:",
+#'             choices = variable_choices(ADLB, c("AVAL", "CHG2")),
+#'             selected = "AVAL",
+#'             multiple = FALSE,
+#'             fixed = FALSE
 #'           )
 #'         )
 #'       ),
@@ -79,11 +81,11 @@
 #'           selected = "ADTM",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'           )
 #'         )
 #'       )
 #'     )
 #'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -92,7 +94,7 @@ tm_outliers <- function(label = "Outlier Module",
                         outlier_var,
                         categorical_var,
                         lineplot_param,
-                        method = c("IQR", "Z-score", "Percentile"),
+                        key_identifier = c("USUBJID", "SUBJID"),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
@@ -112,9 +114,8 @@ tm_outliers <- function(label = "Outlier Module",
     is_class_list("data_extract_spec")(outlier_var),
     is_class_list("data_extract_spec")(categorical_var),
     is_class_list("data_extract_spec")(lineplot_param),
-    !is.null(method)
+    !is.null(key_identifier)
   )
-  method <- match.arg(method)
 
   args <- as.list(environment())
 
@@ -180,7 +181,7 @@ ui_outliers <- function(id, ...) {
       br(), hr(),
       h4("Data table"),
       DT::dataTableOutput(ns("table_ui"))
-      ),
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("outlier_var", "categorical_var", "lineplot_param")]),
@@ -202,7 +203,7 @@ ui_outliers <- function(id, ...) {
         inputId = ns("method"),
         label = "Method",
         choices = c("IQR", "Z-score", "Percentile"),
-        selected = args$method,
+        selected = "IQR",
         multiple = FALSE
       ),
       checkboxInput(ns("split_outliers"), "Define outliers based on group splitting", value = FALSE),
@@ -218,10 +219,10 @@ ui_outliers <- function(id, ...) {
               "Outlier range:",
               min = 1,
               max = 5,
-              value = 0.5,
+              value = 3,
               step = 0.5
-              )
-            ),
+            )
+          ),
           conditionalPanel(
             condition =
               paste0("input['", ns("method"), "'] == 'Z-score'"),
@@ -230,9 +231,10 @@ ui_outliers <- function(id, ...) {
               "Outlier range:",
               min = 1,
               max = 5,
-              value = 0.5,
+              value = 3,
               step = 0.5
-            )),
+            )
+          ),
           conditionalPanel(
             condition =
               paste0("input['", ns("method"), "'] == 'Percentile'"),
@@ -243,8 +245,8 @@ ui_outliers <- function(id, ...) {
               max = 1,
               value = 0.01,
               step = 0.01
-              )
-            ),
+            )
+          ),
           conditionalPanel(
             condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
             optionalSelectInput(
@@ -255,8 +257,18 @@ ui_outliers <- function(id, ...) {
               multiple = FALSE
             )
           ),
-          uiOutput(ns("ui_outlier_help"))
-          ),
+          uiOutput(ns("ui_outlier_help")),
+          conditionalPanel(
+            condition = paste0("input['", ns("tabs"), "'] == 'Cumulative distribution plot'"),
+            optionalSelectInput(
+              inputId = ns("key_identifier"),
+              label = "Key Identifier",
+              choices = args$key_identifier,
+              selected = args$key_identifier[1],
+              multiple = FALSE
+            )
+          )
+        ),
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Line plot'"),
           panel_item(
@@ -267,10 +279,10 @@ ui_outliers <- function(id, ...) {
               label = "X-axis variable",
               data_extract_spec = args$lineplot_param,
               is_single_dataset = is_single_dataset_value
-              )
             )
           )
         )
+      )
     ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
@@ -278,7 +290,7 @@ ui_outliers <- function(id, ...) {
   )
 }
 
-
+#' @importFrom stats quantile sd
 srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, lineplot_param, plot_height, plot_width) {
   init_chunks()
@@ -288,7 +300,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var, lineplot_param),
     input_id = c("outlier_var", "categorical_var", "lineplot_param"),
-    #left_join is used instead of inner_join
+    # left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
 
@@ -296,7 +308,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var),
     input_id = c("outlier_var", "categorical_var"),
-    #left_join is used instead of inner_join
+    # left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
 
@@ -324,67 +336,68 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     validate(need(outlier_var, "Please select a variable"))
     validate(need(input$method, "Please select a method"))
 
-    #show/hide split_outliers
+    # show/hide split_outliers
     if (is_character_empty(categorical_var)) {
       shinyjs::hide("split_outliers")
     } else {
       shinyjs::show("split_outliers")
     }
 
-    #slider
+    # slider
     if (method == "IQR") {
-      slider_value <- input$iqr_slider # nolint
+      outlier_definition_param <- input$iqr_slider # nolint
     } else if (method == "Z-score") {
-      slider_value <- input$zscore_slider # nolint
+      outlier_definition_param <- input$zscore_slider # nolint
     } else {
-      slider_value <- input$percentile_slider # nolint
+      outlier_definition_param <- input$percentile_slider # nolint
     }
 
-    #Define calculation function
+    # Define calculation function
     if (method == "IQR") {
       if (input$split_outliers && is_character_single(categorical_var)) {
         common_stack_push(
           bquote({
-            calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var) { # nolint
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var) { # nolint
               all_categories <- lapply(unique(ANL[[.(categorical_var)]]), function(x) {
-                ANL_FILTERED <- ANL %>% filter(get(.(categorical_var)) == x) # nolint
+                ANL_FILTERED <- ANL %>% dplyr::filter(get(.(categorical_var)) == x) # nolint
                 outlier_var_value <- ANL_FILTERED[[.(outlier_var)]]
                 q1_q3 <- quantile(ANL_FILTERED[[.(outlier_var)]], probs = c(0.25, 0.75))
                 iqr <- q1_q3[2] - q1_q3[1]
                 outlier_var_outlier_indices <-
-                  !(outlier_var_value >= q1_q3[1] - .(slider_value) * iqr &
-                    outlier_var_value <= q1_q3[2] + .(slider_value) * iqr)
+                  !(outlier_var_value >= q1_q3[1] - .(outlier_definition_param) * iqr &
+                    outlier_var_value <= q1_q3[2] + .(outlier_definition_param) * iqr)
                   ANL_FILTERED[outlier_var_outlier_indices, ]
               })
               do.call(rbind, all_categories)
             }
           })
         )
-    } else {
-      common_stack_push(
-        bquote({
-          calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var = NA) { # nolint
-            outlier_var_value <- ANL[[.(outlier_var)]]
-            q1_q3 <- quantile(ANL[[.(outlier_var)]], probs = c(0.25, 0.75))
-            iqr <- q1_q3[2] - q1_q3[1]
-            outlier_var_outlier_indices <-
-              !(outlier_var_value >= q1_q3[1] - .(slider_value) * iqr &
-                outlier_var_value <= q1_q3[2] + .(slider_value) * iqr)
-              ANL[outlier_var_outlier_indices, ]
-          }
-        })
-      )}
+      } else {
+        common_stack_push(
+          bquote({
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var = NA) { # nolint
+              outlier_var_value <- ANL[[.(outlier_var)]]
+              q1_q3 <- quantile(ANL[[.(outlier_var)]], probs = c(0.25, 0.75))
+              iqr <- q1_q3[2] - q1_q3[1]
+              outlier_var_outlier_indices <-
+                !(outlier_var_value >= q1_q3[1] - .(outlier_definition_param) * iqr &
+                  outlier_var_value <= q1_q3[2] + .(outlier_definition_param) * iqr)
+                ANL[outlier_var_outlier_indices, ]
+            }
+          })
+        )
+      }
     } else if (method == "Z-score") {
       if (input$split_outliers && is_character_single(categorical_var)) {
         common_stack_push(
           bquote({
-            calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var) { # nolint
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var) { # nolint
               all_categories <- lapply(unique(ANL[[.(categorical_var)]]), function(x) {
-                ANL_FILTERED <- ANL %>% filter(get(.(categorical_var)) == x) # nolint
+                ANL_FILTERED <- ANL %>% dplyr::filter(get(.(categorical_var)) == x) # nolint
                 if (nrow(ANL_FILTERED) >= 2) {
                   outlier_var_value <- ANL_FILTERED[[.(outlier_var)]]
                   zscore <- abs(outlier_var_value - mean(outlier_var_value)) / sd(outlier_var_value)
-                  outlier_var_outlier_indices <- zscore > .(slider_value)
+                  outlier_var_outlier_indices <- zscore > .(outlier_definition_param)
                   ANL_FILTERED[outlier_var_outlier_indices, ]
                 } else {
                   ANL_FILTERED[FALSE, ]
@@ -394,51 +407,52 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             }
           })
         )
-    } else {
-      common_stack_push(
-        bquote({
-          calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var = NA) { # nolint
-            outlier_var_value <- ANL[[.(outlier_var)]]
-            zscore <- abs(outlier_var_value - mean(outlier_var_value)) / sd(outlier_var_value)
-            outlier_var_outlier_indices <- zscore > .(slider_value)
-            ANL[outlier_var_outlier_indices, ]
-          }
-        })
-      )}
+      } else {
+        common_stack_push(
+          bquote({
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var = NA) { # nolint
+              outlier_var_value <- ANL[[.(outlier_var)]]
+              zscore <- abs(outlier_var_value - mean(outlier_var_value)) / sd(outlier_var_value)
+              outlier_var_outlier_indices <- zscore > .(outlier_definition_param)
+              ANL[outlier_var_outlier_indices, ]
+            }
+          })
+        )
+      }
     } else if (method == "Percentile") {
       if (input$split_outliers && is_character_single(categorical_var)) {
         common_stack_push(
           bquote({
-            calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var) { # nolint
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var) { # nolint
               all_categories <- lapply(unique(ANL[[.(categorical_var)]]), function(x) {
-                ANL_FILTERED <- ANL %>% filter(get(.(categorical_var)) == x) # nolint
+                ANL_FILTERED <- ANL %>% dplyr::filter(get(.(categorical_var)) == x) # nolint
                 outlier_var_value <- ANL_FILTERED[[outlier_var]]
-                lower_bound <- quantile(outlier_var_value, .(slider_value))
-                upper_bound <- quantile(outlier_var_value, 1 - .(slider_value))
+                lower_bound <- quantile(outlier_var_value, .(outlier_definition_param))
+                upper_bound <- quantile(outlier_var_value, 1 - .(outlier_definition_param))
                 outlier_var_outlier_indices <- which(outlier_var_value < lower_bound | outlier_var_value > upper_bound)
                 ANL_FILTERED[outlier_var_outlier_indices, ]
               })
               do.call(rbind, all_categories)
             }
-            })
-          )
-        } else {
-          common_stack_push(
-            bquote({
-              calculate_outliers <- function(ANL, outlier_var, slider_value, categorical_var = NA) { # nolint
-                outlier_var_value <- ANL[[.(outlier_var)]]
-                lower_bound <- quantile(outlier_var_value, .(slider_value))
-                upper_bound <- quantile(outlier_var_value, 1 - .(slider_value))
-                outlier_var_outlier_indices <- which(outlier_var_value < lower_bound | outlier_var_value > upper_bound)
-                ANL[outlier_var_outlier_indices, ]
-              }
-            })
-          )
-        }
+          })
+        )
+      } else {
+        common_stack_push(
+          bquote({
+            calculate_outliers <- function(ANL, outlier_var, outlier_definition_param, categorical_var = NA) { # nolint
+              outlier_var_value <- ANL[[.(outlier_var)]]
+              lower_bound <- quantile(outlier_var_value, .(outlier_definition_param))
+              upper_bound <- quantile(outlier_var_value, 1 - .(outlier_definition_param))
+              outlier_var_outlier_indices <- which(outlier_var_value < lower_bound | outlier_var_value > upper_bound)
+              ANL[outlier_var_outlier_indices, ]
+            }
+          })
+        )
       }
+    }
     common_stack_push(
       bquote({
-        ANL_OUTLIER <- calculate_outliers(ANL, .(outlier_var), .(slider_value), .(categorical_var)) # nolint
+        ANL_OUTLIER <- calculate_outliers(ANL, .(outlier_var), .(outlier_definition_param), .(categorical_var)) # nolint
       })
     )
 
@@ -473,8 +487,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       bquote(.(plot_call) + geom_boxplot(outlier.shape = NA))
     } else if (input$boxplot_alts == "Violin plot") {
       bquote(.(plot_call) + geom_violin(outlier.shape = NA))
-    } else
+    } else {
       NULL
+    }
 
     plot_call <- if (is_character_empty(categorical_var)) {
       bquote(
@@ -543,12 +558,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     plot_call <- if (is_character_empty(categorical_var)) {
       bquote(
         .(plot_call)
-      )} else {
-        bquote(
-          .(plot_call) +
-            facet_grid(~.(as.name(categorical_var)))
-        )
-      }
+      )
+    } else {
+      bquote(
+        .(plot_call) +
+          facet_grid(~ .(as.name(categorical_var)))
+      )
+    }
 
     density_r_stack_push(bquote(g <- .(plot_call)))
     density_r_stack_push(quote(grid::grid.draw(g)))
@@ -577,25 +593,63 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+    identifier <- input$key_identifier
 
     # validation
     validate_has_data(ANL, 1)
+    validate(need(identifier, "Please select a unique identifier"))
 
     # plot
     plot_call <- bquote(ANL %>% ggplot(
-      aes(x = .(as.name(outlier_var)))) +
-        stat_ecdf(geom = "point")
-      )
+      aes(x = .(as.name(outlier_var)))
+    ) +
+      stat_ecdf())
 
     plot_call <- if (is_character_empty(categorical_var)) {
-      bquote(
-        .(plot_call)
-      )} else {
-        bquote(
-          .(plot_call) +
-            facet_grid(~.(as.name(categorical_var)))
-        )
-      }
+      outlier_red_points <- bquote({
+        ecdf_df <- ANL %>%
+          mutate(
+            y = ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]]),
+            unique_identifier = paste0(ANL[[.(identifier)]], "_", ANL[[.(outlier_var)]])
+          )
+        anl_outlier2 <- ANL_OUTLIER %>%
+          mutate(unique_identifier = paste0(ANL_OUTLIER[[.(identifier)]], "_", ANL_OUTLIER[[.(outlier_var)]]))
+        red_points <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
+      })
+
+      plot_call <- bquote(
+        .(plot_call) +
+          geom_point(
+            data = .(outlier_red_points),
+            aes(x = .(as.name(outlier_var)), y = y), color = "red"
+          )
+      )
+    } else {
+      outlier_red_points <- bquote({
+        all_categories <- lapply(unique(ANL[[.(categorical_var)]]), function(x) {
+          anl_filtered <- ANL %>% dplyr::filter(get(.(categorical_var)) == x)
+          anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(.(categorical_var)) == x)
+          ecdf_df <- anl_filtered %>%
+            mutate(y = ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
+          ecdf_df[["unique_identifier"]] <- paste0(ecdf_df[[.(identifier)]], "_", ecdf_df[[.(outlier_var)]])
+          if (nrow(anl_outlier2) != 0) {
+            anl_outlier2[["unique_identifier"]] <-
+              paste0(anl_outlier2[[.(identifier)]], "_", anl_outlier2[[.(outlier_var)]])
+            ecdf_df2 <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
+          } else {
+            ecdf_df2 <- ecdf_df[FALSE, ]
+          }
+          ecdf_df2
+        })
+        do.call(rbind, all_categories)
+      })
+
+      plot_call <- bquote(
+        .(plot_call) +
+          facet_grid(~ .(as.name(categorical_var))) +
+          geom_point(data = .(outlier_red_points), aes(x = .(as.name(outlier_var)), y = y), color = "red")
+      )
+    }
 
     cumulative_r_stack_push(bquote(g <- .(plot_call)))
     cumulative_r_stack_push(quote(grid::grid.draw(g)))
@@ -632,24 +686,25 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     validate_has_data(ANL, 1)
 
     plot_call <- bquote(ANL %>% ggplot(
-      aes(x = .(as.name(lineplot_param)), y = .(as.name(outlier_var)), group = USUBJID)) +
+      aes(x = .(as.name(lineplot_param)), y = .(as.name(outlier_var)), group = USUBJID)
+    ) +
       geom_line() +
-        geom_point(
-          data = ANL_OUTLIER,
-          aes(y = .(as.name(outlier_var))),
-          color = "red"
-        )
-    )
+      geom_point(
+        data = ANL_OUTLIER,
+        aes(y = .(as.name(outlier_var))),
+        color = "red"
+      ))
 
     plot_call <- if (is_character_empty(categorical_var)) {
       bquote(
         .(plot_call)
-      )} else {
-        bquote(
-          .(plot_call) +
-            facet_grid(~.(as.name(categorical_var)))
-        )
-      }
+      )
+    } else {
+      bquote(
+        .(plot_call) +
+          facet_grid(~ .(as.name(categorical_var)))
+      )
+    }
 
     line_r_stack_push(bquote(g <- .(plot_call)))
     line_r_stack_push(quote(grid::grid.draw(g)))
@@ -672,29 +727,29 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           "Outlier data points (\\(Q1 - ", input$iqr_slider, "\\times IQR \\gt x\\) and \\(
           Q3 + ", input$iqr_slider, "\\times IQR \\lt x\\))
           are displayed in red on the plot and can be visualized in the table below."
-          ))
         ))
-      } else if (input$method == "Z-score") {
-        req(input$zscore_slider)
-        tags$small(helpText(
-          withMathJax(paste0(
-            "Outlier data points (\\(Z-score(x) > ", input$zscore_slider,
-            "\\) and \\(Z-score(x) < -", input$zscore_slider, "\\))
+      ))
+    } else if (input$method == "Z-score") {
+      req(input$zscore_slider)
+      tags$small(helpText(
+        withMathJax(paste0(
+          "Outlier data points (\\(Z-score(x) > ", input$zscore_slider,
+          "\\) and \\(Z-score(x) < -", input$zscore_slider, "\\))
             are displayed in red on the plot and can be visualized in the table below."
-            ))
-          ))
-      } else if (input$method == "Percentile") {
-        req(input$percentile_slider)
-        tags$small(helpText(
-          withMathJax(paste0(
-            "Outlier/extreme data points (\\(", input$percentile_slider,
-            "-Percentile > x\\) and \\(",
-            1 - input$percentile_slider, "-Percentile < x\\))
+        ))
+      ))
+    } else if (input$method == "Percentile") {
+      req(input$percentile_slider)
+      tags$small(helpText(
+        withMathJax(paste0(
+          "Outlier/extreme data points (\\(", input$percentile_slider,
+          "-Percentile > x\\) and \\(",
+          1 - input$percentile_slider, "-Percentile < x\\))
             are displayed in red on the plot and can be visualized in the table below."
-            ))
-          ))
-        }
-    })
+        ))
+      ))
+    }
+  })
 
   # table
   table_chunks <- reactive({
@@ -710,8 +765,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     table_stack_push(quote({
       tbl <- ANL_OUTLIER
-      })
-    )
+    }))
     chunks_safe_eval(table_stack)
     table_stack
   })
