@@ -812,7 +812,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(outlier_var, categorical_var)),
+    datanames = get_extract_datanames(list(outlier_var, categorical_var, lineplot_param)),
     modal_title = "R Code for outlier",
     code_header = "Outlier"
   )
