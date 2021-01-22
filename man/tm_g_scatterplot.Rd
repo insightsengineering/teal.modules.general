@@ -10,6 +10,8 @@ tm_g_scatterplot(
   y,
   color_by = NULL,
   size_by = NULL,
+  row_facet = NULL,
+  col_facet = NULL,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
@@ -37,6 +39,12 @@ Defines the color encoding. If \code{NULL} then no color encoding option will be
 
 \item{size_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
+
+\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data columns to use for faceting rows.}
+
+\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data to use for faceting columns.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}

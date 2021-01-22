@@ -1,11 +1,8 @@
 # teal.modules.general 0.2.7.9000
 
-* Added additional Grouped by subject plot to `tm_missing_data`.
-
 * Issues with no news:
 * Added `max_deg` optional argument to scatterplot to allow user to choose the maximum smoothing degree for trend line.
-* Add new module "tm_outliers" to analyse outlier points.
-* Introduced plot brushing to the tm_g_scatterplot module.
+# Added both column and row facetting to scatterplot.
 
 # teal.modules.general 0.2.7
 

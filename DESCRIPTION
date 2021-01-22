@@ -29,7 +29,6 @@ Imports:
   grid,
   gridExtra,
   dplyr,
-  digest,
   tidyselect,
   DT,
   forcats,
