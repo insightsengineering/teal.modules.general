@@ -453,6 +453,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(
       bquote({
         ANL_OUTLIER <- calculate_outliers(ANL, .(outlier_var), .(outlier_definition_param), .(categorical_var)) # nolint
+        print(ANL_OUTLIER)
       })
     )
 
@@ -751,25 +752,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
   })
 
-  # table
-  table_chunks <- reactive({
-
-    # Create a private stack for this function only.
-    table_stack <- chunks$new()
-    table_stack_push <- function(...) {
-      chunks_push(..., chunks = table_stack)
-    }
-
-    chunks_push_chunks(common_code_chunks(), chunks = table_stack)
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", table_stack) # nolint
-
-    table_stack_push(quote({
-      tbl <- ANL_OUTLIER
-    }))
-    chunks_safe_eval(table_stack)
-    table_stack
-  })
-
   callModule(
     plot_with_settings_srv,
     id = "box_plot",
@@ -803,9 +785,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
 
   output$table_ui <- DT::renderDataTable({
-    chunks_reset()
-    chunks_push_chunks(table_chunks())
-    chunks_get_var("tbl")
+    chunks_get_var("ANL_OUTLIER", common_code_chunks())
   })
 
   callModule(
