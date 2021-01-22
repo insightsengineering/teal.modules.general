@@ -341,7 +341,7 @@ srv_a_regression <- function(input,
     bquote(
       dplyr::if_else(
         data$.cooksd > .(input$outlier) * mean(data$.cooksd, na.rm = TRUE),
-        as.character(ANL[[.(input$label_var)]]),
+        as.character(na.omit(ANL)[[.(input$label_var)]]),
         "") %>% dplyr::if_else(is.na(.), "cooksd == NaN", .)
     )
   })
