@@ -702,7 +702,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     id = "pca_plot",
     plot_r = plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    graph_align = "center"
   )
 
   # tables ----
