@@ -24,8 +24,12 @@
 #' ADLB <- radlb(cached = TRUE)
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-#' date_vars_adsl <-
-#'   names(ADSL)[vapply(ADSL, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")), logical(1))]
+#' date_vars_adsl <- names(ADSL)[
+#'   vapply(ADSL,
+#'     function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")),
+#'     logical(1)
+#'   )
+#' ]
 #' adsl_extracted_col <- data_extract_spec(
 #'   dataname = "ADSL",
 #'   select = select_spec(
