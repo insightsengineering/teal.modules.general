@@ -203,18 +203,28 @@ ui_outliers <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         )
       },
-      optionalSelectInput(
-        inputId = ns("method"),
-        label = "Method",
-        choices = c("IQR", "Z-score", "Percentile"),
-        selected = "IQR",
-        multiple = FALSE
+      conditionalPanel(
+        condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
+        optionalSelectInput(
+          inputId = ns("boxplot_alts"),
+          label = "Plot type",
+          choices = c("Box plot", "Violin plot"),
+          selected = "Box plot",
+          multiple = FALSE
+        )
       ),
       checkboxInput(ns("split_outliers"), "Define outliers based on group splitting", value = FALSE),
       panel_group(
         panel_item(
           title = "Method paramteres",
           collapsed = FALSE,
+          optionalSelectInput(
+            inputId = ns("method"),
+            label = "Method",
+            choices = c("IQR", "Z-score", "Percentile"),
+            selected = "IQR",
+            multiple = FALSE
+          ),
           conditionalPanel(
             condition =
               paste0("input['", ns("method"), "'] == 'IQR'"),
@@ -249,16 +259,6 @@ ui_outliers <- function(id, ...) {
               max = 1,
               value = 0.01,
               step = 0.01
-            )
-          ),
-          conditionalPanel(
-            condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
-            optionalSelectInput(
-              inputId = ns("boxplot_alts"),
-              label = "Plot type",
-              choices = c("Box plot", "Violin plot"),
-              selected = "Box plot",
-              multiple = FALSE
             )
           ),
           uiOutput(ns("ui_outlier_help")),
@@ -484,6 +484,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     # validation
     validate_has_data(ANL, 1)
+    validate(need(input$boxplot_alts, "Please select `Plot type`"))
 
     # boxplot
     plot_call <- bquote(ANL %>% ggplot()) # nolint
@@ -725,6 +726,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
   # slider text
   output$ui_outlier_help <- renderUI({
+    validate(need(input$method, "Please select a method"))
     if (input$method == "IQR") {
       req(input$iqr_slider)
       tags$small(helpText(
