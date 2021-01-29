@@ -335,7 +335,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
     }
 
-
     method <- input$method
     validate(need(outlier_var, "Please select a variable"))
     validate(need(input$method, "Please select a method"))
@@ -498,16 +497,20 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     plot_call <- if (is_character_empty(categorical_var)) {
-      bquote(
+      inner_call <- bquote(
         .(plot_call) +
-          aes(x = .(outlier_var), y = .(as.name(outlier_var))) +
-          scale_x_discrete() +
-          geom_point(
-            data = ANL_OUTLIER,
-            aes(y = .(as.name(outlier_var))),
-            color = "red"
-          )
-      )
+          aes(x = "Entire dataset", y = .(as.name(outlier_var))) +
+          scale_x_discrete()
+        )
+      if (nrow(ANL_OUTLIER) > 0) {
+        bquote(.(inner_call) + geom_point(
+          data = ANL_OUTLIER,
+          aes(x = "Entire dataset", y = .(as.name(outlier_var))),
+          color = "red"
+        ))
+      } else {
+        inner_call
+      }
     } else {
       bquote(
         .(plot_call) +
