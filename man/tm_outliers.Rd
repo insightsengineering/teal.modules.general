@@ -8,7 +8,7 @@ tm_outliers(
   label = "Outlier Module",
   outlier_var,
   categorical_var,
-  lineplot_param,
+  lineplot_param = NULL,
   key_identifier = c("USUBJID", "SUBJID"),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -26,7 +26,8 @@ Which variable to use for the outliers analysis.}
 Categorical factor to split the analyzed variable on.}
 
 \item{lineplot_param}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-x-axis variable to be used for the outlier line plot.}
+x-axis variable to be used for the outlier line plot or `NULL` (default) if no line plot
+tab to be included.}
 
 \item{key_identifier}{(`character`)
 Identifier key variable to be used in the cumulative distribution plot.}

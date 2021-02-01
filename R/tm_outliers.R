@@ -11,7 +11,8 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Categorical factor to split the analyzed variable on.
 #' @param lineplot_param (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   x-axis variable to be used for the outlier line plot.
+#'   x-axis variable to be used for the outlier line plot or `NULL` (default) if no line plot
+#'   tab to be included.
 #' @param key_identifier (`character`)
 #'   Identifier key variable to be used in the cumulative distribution plot.
 #'
@@ -97,7 +98,7 @@
 tm_outliers <- function(label = "Outlier Module",
                         outlier_var,
                         categorical_var,
-                        lineplot_param,
+                        lineplot_param = NULL,
                         key_identifier = c("USUBJID", "SUBJID"),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
@@ -109,7 +110,7 @@ tm_outliers <- function(label = "Outlier Module",
   if (!is_class_list("data_extract_spec")(categorical_var)) {
     categorical_var <- list(categorical_var)
   }
-  if (!is_class_list("data_extract_spec")(lineplot_param)) {
+  if (!is.null(lineplot_param) && !is_class_list("data_extract_spec")(lineplot_param)) {
     lineplot_param <- list(lineplot_param)
   }
 
@@ -117,7 +118,7 @@ tm_outliers <- function(label = "Outlier Module",
     is_character_single(label),
     is_class_list("data_extract_spec")(outlier_var),
     is_class_list("data_extract_spec")(categorical_var),
-    is_class_list("data_extract_spec")(lineplot_param),
+    is.null(lineplot_param) || is_class_list("data_extract_spec")(lineplot_param),
     !is.null(key_identifier)
   )
 
@@ -152,33 +153,23 @@ ui_outliers <- function(id, ...) {
       DT::dataTableOutput(ns("summary_table")),
       uiOutput(ns("total_missing")),
       br(), hr(),
-      tabsetPanel(
-        id = ns("tabs"),
-        tabPanel(
-          "Boxplot",
-          div(
-            plot_with_settings_ui(id = ns("box_plot"))
-          )
-        ),
-        tabPanel(
-          "Density plot",
-          div(
-            plot_with_settings_ui(id = ns("density_plot"))
-          )
-        ),
-        tabPanel(
-          "Cumulative distribution plot",
-          div(
-            plot_with_settings_ui(id = ns("cum_density_plot"))
-          )
-        ),
-        tabPanel(
-          "Line plot",
-          div(
-            plot_with_settings_ui(id = ns("line_plot"))
-          )
+      if (!is.null(args$lineplot_param)) {
+        tabsetPanel(
+          id = ns("tabs"),
+          tabPanel("Boxplot", plot_with_settings_ui(id = ns("box_plot"))),
+          tabPanel("Density plot", plot_with_settings_ui(id = ns("density_plot"))),
+          tabPanel("Cumulative distribution plot", plot_with_settings_ui(id = ns("cum_density_plot"))),
+          tabPanel("Line plot", plot_with_settings_ui(id = ns("line_plot")))
         )
-      ),
+      }
+      else {
+        tabsetPanel(
+          id = ns("tabs"),
+          tabPanel("Boxplot", plot_with_settings_ui(id = ns("box_plot"))),
+          tabPanel("Density plot", plot_with_settings_ui(id = ns("density_plot"))),
+          tabPanel("Cumulative distribution plot", plot_with_settings_ui(id = ns("cum_density_plot")))
+        )
+      },
       br(), hr(),
       h4("Data table"),
       shinyjs::hidden(DT::dataTableOutput(ns("table_ui"))),
@@ -215,7 +206,7 @@ ui_outliers <- function(id, ...) {
       checkboxInput(ns("order_by_outlier"), "Re-arrange categories by share of outliers", value = TRUE),
       panel_group(
         panel_item(
-          title = "Method paramteres",
+          title = "Method parameters",
           collapsed = FALSE,
           optionalSelectInput(
             inputId = ns("method"),
