@@ -14,7 +14,7 @@
 #'   x-axis variable to be used for the outlier line plot or `NULL` (default) if no line plot
 #'   tab to be included.
 #' @param key_identifier (`character`)
-#'   Identifier key variable to be used in the cumulative distribution plot.
+#'   Identifier key variable to be used in the cumulative distribution plot and the line plot.
 #'
 #' @export
 #'
@@ -99,7 +99,7 @@ tm_outliers <- function(label = "Outlier Module",
                         outlier_var,
                         categorical_var,
                         lineplot_param = NULL,
-                        key_identifier = c("USUBJID", "SUBJID"),
+                        key_identifier = c("USUBJID"),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
@@ -253,7 +253,10 @@ ui_outliers <- function(id, ...) {
           ),
           uiOutput(ns("ui_outlier_help")),
           conditionalPanel(
-            condition = paste0("input['", ns("tabs"), "'] == 'Cumulative distribution plot'"),
+            condition =
+              paste0(
+              "input['", ns("tabs"), "'] == 'Cumulative distribution plot' ||
+              input['", ns("tabs"), "'] == 'Line plot'"),
             optionalSelectInput(
               inputId = ns("key_identifier"),
               label = "Key Identifier",
@@ -821,14 +824,16 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     outlier_var <- as.vector(merged_data_lineplot()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data_lineplot()$columns_source$categorical_var)
     lineplot_param <- as.vector(merged_data_lineplot()$columns_source$lineplot_param)
+    identifier <- input$key_identifier
 
-    validate(need(lineplot_param, "Please select a lineplot parameter"))
 
     # validation
     validate_has_data(ANL, 1)
+    validate(need(lineplot_param, "Please select a lineplot parameter"))
+    validate(need(identifier, "Please select a unique identifier"))
 
     plot_call <- bquote(ANL %>% ggplot(
-      aes(x = .(as.name(lineplot_param)), y = .(as.name(outlier_var)), group = USUBJID)
+      aes(x = .(as.name(lineplot_param)), y = .(as.name(outlier_var)), group = .(as.name(identifier)))
     ) +
       geom_line() +
       geom_point(

@@ -9,7 +9,7 @@ tm_outliers(
   outlier_var,
   categorical_var,
   lineplot_param = NULL,
-  key_identifier = c("USUBJID", "SUBJID"),
+  key_identifier = c("USUBJID"),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -30,7 +30,7 @@ x-axis variable to be used for the outlier line plot or `NULL` (default) if no l
 tab to be included.}
 
 \item{key_identifier}{(`character`)
-Identifier key variable to be used in the cumulative distribution plot.}
+Identifier key variable to be used in the cumulative distribution plot and the line plot.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
