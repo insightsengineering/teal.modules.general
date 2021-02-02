@@ -227,6 +227,7 @@ encoding_missing_data <- function(id) {
 #' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom tidyselect everything all_of
+#' @importFrom tibble as_tibble
 srv_missing_data <- function(input,
                              output,
                              session,
@@ -343,13 +344,17 @@ srv_missing_data <- function(input,
   })
 
   output$group_by_var_ui <- renderUI({
+    all_choices <- variable_choices(raw_data())
+    cat_choices <- all_choices[!sapply(raw_data(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
+    validate(
+      need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with"))
     optionalSelectInput(
       session$ns("group_by_var"),
       label = "Group by variable",
-      choices = variable_choices(raw_data()),
+      choices = cat_choices,
       selected = if_null(
         isolate(input$group_by_var),
-        names(raw_data())[!sapply(raw_data(), is.numeric)][1]
+        cat_choices[1]
       ),
       multiple = FALSE,
       label_help = paste0("Dataset: ", dataname)
@@ -422,7 +427,9 @@ srv_missing_data <- function(input,
 
     summary_stack_push(
       bquote({
-        summary_plot_obs <- ANL_FILTERED[, analysis_vars] %>%
+        summary_plot_obs <- .(if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
+          quote(tibble::as_tibble(ANL_FILTERED))
+        } else quote(ANL_FILTERED))[, analysis_vars] %>%
           dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
           tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
           dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
