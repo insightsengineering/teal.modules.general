@@ -1,5 +1,3 @@
-context("bivariate_ggplot_call")
-
 test_that("bivariate_ggplot_call with numerics", {
   expect_match(
     bivariate_ggplot_call("numeric", "numeric") %>% deparse(width.cutoff = 300),

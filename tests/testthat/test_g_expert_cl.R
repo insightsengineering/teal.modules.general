@@ -1,5 +1,3 @@
-context("coloring_ggplot_call")
-
 test_that("coloring_ggplot_call can work with all combinations", {
   expect_equal(
     coloring_ggplot_call(character(0), character(0), character(0), FALSE),
