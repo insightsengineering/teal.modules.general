@@ -483,7 +483,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           .(outlier_var),
           .(outlier_definition_param),
           .(categorical_var)) # nolint
-        print(ANL_OUTLIER)
+        ANL_OUTLIER # used to display table when running show-r-code code
       })
     )
 
