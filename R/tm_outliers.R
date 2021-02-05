@@ -185,11 +185,14 @@ ui_outliers <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$categorical_var)) {
-        data_extract_input(
-          id = ns("categorical_var"),
-          label = "Categorial factor",
-          data_extract_spec = args$categorical_var,
-          is_single_dataset = is_single_dataset_value
+        tagList(
+          data_extract_input(
+            id = ns("categorical_var"),
+            label = "Categorial factor",
+            data_extract_spec = args$categorical_var,
+            is_single_dataset = is_single_dataset_value
+          ),
+          uiOutput(ns("categorical_var_levels_ui"))
         )
       },
       conditionalPanel(
@@ -297,7 +300,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, lineplot_param, plot_height, plot_width) {
   init_chunks()
 
-
   merged_data_lineplot <- data_merge_module(
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var, lineplot_param),
@@ -313,6 +315,24 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     # left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
+
+  output$categorical_var_levels_ui <- renderUI({
+    categorical_var <- merged_data()$columns_source$categorical_var
+    req(categorical_var)
+    choices <- value_choices(merged_data()$data(), categorical_var)
+    selected <- isolate(input$categorical_var_levels)
+    selected <- if (!is.null(selected) && any(selected %in% choices)) {
+      selected[selected %in% choices]
+    } else {
+      choices
+    }
+    optionalSelectInput(session$ns("categorical_var_levels"),
+                        label = "Categories to include",
+                        choices = choices,
+                        selected = selected,
+                        multiple = TRUE
+    )
+  })
 
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
@@ -353,12 +373,22 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         }))
       }
     } else {
+
+      validate(need(input$categorical_var_levels, "Please select categories to include"))
+
       validate(need(
         is.factor(merged_data()$data()[[categorical_var]]) ||
           is.character(merged_data()$data()[[categorical_var]]) ||
           is.integer(merged_data()$data()[[categorical_var]]),
         "`Categorical factor` must be `factor`, `character`, or `integer`"))
       validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
+
+      common_line_stack_push(
+        bquote({
+          ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
+        })
+      )
+
       contains_na <- anyNA(merged_data()$data()[, c(outlier_var, categorical_var)])
       if (contains_na) {
         common_line_stack_push(bquote({
