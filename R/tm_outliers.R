@@ -141,7 +141,6 @@ tm_outliers <- function(label = "Outlier Module",
 }
 
 #' @importFrom DT datatable
-#' @importFrom shinyjs hidden
 ui_outliers <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -172,8 +171,7 @@ ui_outliers <- function(id, ...) {
       },
       br(), hr(),
       h4("Data table"),
-      shinyjs::hidden(DT::dataTableOutput(ns("table_ui"))),
-      shinyjs::hidden(DT::dataTableOutput(ns("line_table_ui")))
+      DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -1044,63 +1042,130 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
   })
 
-  callModule(
+  box_brush <- callModule(
     plot_with_settings_srv,
     id = "box_plot",
     plot_r = box_plot_plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    brushing = TRUE
   )
 
-  callModule(
+  density_brush <- callModule(
     plot_with_settings_srv,
     id = "density_plot",
     plot_r = density_plot_plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    brushing = TRUE
   )
 
-  callModule(
+  cum_density_brush <- callModule(
     plot_with_settings_srv,
     id = "cum_density_plot",
     plot_r = cumulative_plot_plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    brushing = TRUE
   )
 
-  callModule(
+  line_brush <- callModule(
     plot_with_settings_srv,
     id = "line_plot",
     plot_r = line_plot_plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    brushing = TRUE
   )
 
   output$table_ui <- DT::renderDataTable({
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
-    subset(
-      ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ], # nolint
-      select = if ("order" %in% names(ANL_OUTLIER)) -c(order, is_outlier_selected) else (-is_outlier_selected)
-    )
-  })
+    tab <- input$tabs
+    req(tab) # tab is NULL upon app launch, hence will crash without this statement
+    outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
+    categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
-  output$line_table_ui <- DT::renderDataTable({
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$line_stack) # nolint
-    subset(
-      ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ], # nolint
-      select = if ("order" %in% names(ANL_OUTLIER)) -c(order, is_outlier_selected) else (-is_outlier_selected)
-    )
-  })
-
-  observe({
-    req(input$tabs) # input$tabs does not exist upon app launch
-    if (input$tabs == "Line plot") {
-      shinyjs::hide("table_ui")
-      shinyjs::show("line_table_ui")
+    plot_brush <- if (tab == "Line plot") {
+      ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$line_stack) # nolint
+      ANL <- chunks_get_var("ANL", common_code_chunks()$line_stack) # nolint
+      ANL_NO_NA <- suppressWarnings(chunks_get_var("ANL_NO_NA", common_code_chunks()$line_stack)) # nolint
+      if (!is.null(ANL_NO_NA)) {
+        ANL <- ANL_NO_NA # nolint
+      }
+      line_plot_plot_r()
+      line_brush$brush()
     } else {
-      shinyjs::show("table_ui")
-      shinyjs::hide("line_table_ui")
+      ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+      ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
+      ANL_NO_NA <- suppressWarnings(chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
+      if (!is.null(ANL_NO_NA)) {
+        ANL <- ANL_NO_NA # nolint
+      }
+      if (tab == "Boxplot") {
+        box_plot_plot_r()
+        box_brush$brush()
+      } else if (tab == "Density plot") {
+        density_plot_plot_r()
+        density_brush$brush()
+      } else if (tab == "Cumulative distribution plot") {
+        cumulative_plot_plot_r()
+        cum_density_brush$brush()
+      }
     }
+
+    display_table <- if (!is.null(plot_brush)) {
+      if (!is_empty(categorical_var)) {
+        # due to reordering, the x-axis label may be changed to something like "reorder(categorical_var, order)"
+        if (tab == "Boxplot") {
+          plot_brush$mapping$x <- categorical_var
+        } else {
+          # the other plots use facetting, so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
+          plot_brush$mapping$panelvar1 <- categorical_var
+        }
+      } else {
+        if (tab == "Boxplot") {
+          # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
+          # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
+          ANL[[plot_brush$mapping$x]] <- "Entire dataset"
+        }
+      }
+      # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
+      # so they need to be computed and attached to ANL
+      if (tab == "Density plot") {
+        plot_brush$mapping$y <- "density"
+        ANL$density <- plot_brush$ymin # either ymin or ymax will work
+      } else if (tab == "Cumulative distribution plot") {
+        plot_brush$mapping$y <- "cdf"
+        if (!is_empty(categorical_var)) {
+          ANL <- ANL %>%  # nolint
+            dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
+            dplyr::mutate(cdf = ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
+        } else {
+          ANL$cdf <- ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+        }
+      }
+      brushed_rows <- brushedPoints(ANL, plot_brush)
+      if (nrow(brushed_rows) > 0) {
+        # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
+        # so that dplyr::intersect will work
+        if (tab == "Density plot") {
+          brushed_rows$density <- NULL
+        } else if (tab == "Cumulative distribution plot") {
+          brushed_rows$cdf <- NULL
+        } else if (tab == "Boxplot" && is_empty(categorical_var)) {
+          brushed_rows[[plot_brush$mapping$x]] <- NULL
+        }
+        brushed_rows$is_outlier_selected <- TRUE
+        dplyr::intersect(ANL_OUTLIER, brushed_rows)
+      } else {
+        ANL_OUTLIER[0, ]
+      }
+    } else {
+      ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
+    }
+    subset(
+      display_table,
+      select = if ("order" %in% names(ANL_OUTLIER)) -c(order, is_outlier_selected) else (-is_outlier_selected)
+    )
   })
 
   output$total_outliers <- shiny::renderUI({
