@@ -895,7 +895,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     chunks_get_var(var = "g", chunks = line_plot_r_chunks())
   })
 
-  observe({
+  observeEvent(input$tabs, {
     tab <- input$tabs
     req(tab) # tab is NULL upon app launch, hence will crash without this statement
     chunks_reset()
