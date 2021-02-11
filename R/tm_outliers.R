@@ -1111,6 +1111,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         cum_density_brush$brush()
       }
     }
+    # removing unused column ASAP
+    ANL_OUTLIER$order <- ANL$order <- NULL
 
     display_table <- if (!is.null(plot_brush)) {
       if (!is_empty(categorical_var)) {
@@ -1154,6 +1156,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         } else if (tab == "Boxplot" && is_empty(categorical_var)) {
           brushed_rows[[plot_brush$mapping$x]] <- NULL
         }
+        # is_outlier_selected is part of ANL_OUTLIER so needed here
         brushed_rows$is_outlier_selected <- TRUE
         dplyr::intersect(ANL_OUTLIER, brushed_rows)
       } else {
@@ -1162,10 +1165,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     } else {
       ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
     }
-    subset(
-      display_table,
-      select = if ("order" %in% names(ANL_OUTLIER)) -c(order, is_outlier_selected) else (-is_outlier_selected)
-    )
+    subset(display_table, select = -is_outlier_selected) # nolint
   })
 
   output$total_outliers <- shiny::renderUI({
