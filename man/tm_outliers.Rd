@@ -2,10 +2,10 @@
 % Please edit documentation in R/tm_outliers.R
 \name{tm_outliers}
 \alias{tm_outliers}
-\title{Outlier Module}
+\title{Outliers Module}
 \usage{
 tm_outliers(
-  label = "Outlier Module",
+  label = "Outliers Module",
   outlier_var,
   categorical_var,
   lineplot_param = NULL,
@@ -20,10 +20,10 @@ tm_outliers(
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{outlier_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-Which variable to use for the outliers analysis.}
+variable to consider for the outliers analysis.}
 
 \item{categorical_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-Categorical factor to split the analyzed variable on.}
+categorical factor to split the selected outliers variable on.}
 
 \item{lineplot_param}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 x-axis variable to be used for the outlier line plot or `NULL` (default) if no line plot
@@ -52,28 +52,12 @@ Module to analyze and identify outliers using different methods
 library(random.cdisc.data)
 
 ADSL <- radsl(cached = TRUE)
-ADLB <- radlb(cached = TRUE)
 
 fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-date_vars_adsl <- names(ADSL)[
-  vapply(ADSL,
-    function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")),
-    logical(1)
-  )
-]
-adsl_extracted_col <- data_extract_spec(
-  dataname = "ADSL",
-  select = select_spec(
-    choices = variable_choices(ADSL, subset = fact_vars_adsl),
-    selected = NULL,
-    multiple = FALSE,
-    fixed = FALSE
-  )
-)
+
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-    cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
     check = TRUE
   ),
   modules = root_modules(
@@ -88,16 +72,6 @@ app <- init(
             multiple = FALSE,
             fixed = FALSE
           )
-        ),
-        data_extract_spec(
-          dataname = "ADLB",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(ADLB, c("AVAL", "CHG2")),
-            selected = "AVAL",
-            multiple = FALSE,
-            fixed = FALSE
-          )
         )
       ),
       categorical_var = data_extract_spec(
@@ -105,15 +79,6 @@ app <- init(
         select = select_spec(
           choices = variable_choices(ADSL, subset = fact_vars_adsl),
           selected = "RACE",
-          multiple = FALSE,
-          fixed = FALSE
-        )
-      ),
-      lineplot_param = data_extract_spec(
-        dataname = "ADLB",
-        select = select_spec(
-          choices = c("ADTM"),
-          selected = "ADTM",
           multiple = FALSE,
           fixed = FALSE
         )

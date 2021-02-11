@@ -1,4 +1,4 @@
-#' Outlier Module
+#' Outliers Module
 #'
 #' Module to analyze and identify outliers using different methods
 #'
@@ -7,9 +7,9 @@
 #' @inheritParams shared_params
 #'
 #' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which variable to use for the outliers analysis.
+#'  variable to consider for the outliers analysis.
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Categorical factor to split the analyzed variable on.
+#'   categorical factor to split the selected outliers variable on.
 #' @param lineplot_param (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   x-axis variable to be used for the outlier line plot or `NULL` (default) if no line plot
 #'   tab to be included.
@@ -22,28 +22,12 @@
 #' library(random.cdisc.data)
 #'
 #' ADSL <- radsl(cached = TRUE)
-#' ADLB <- radlb(cached = TRUE)
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-#' date_vars_adsl <- names(ADSL)[
-#'   vapply(ADSL,
-#'     function(x) inherits(x, c("Date", "POSIXct", "POSIXlt")),
-#'     logical(1)
-#'   )
-#' ]
-#' adsl_extracted_col <- data_extract_spec(
-#'   dataname = "ADSL",
-#'   select = select_spec(
-#'     choices = variable_choices(ADSL, subset = fact_vars_adsl),
-#'     selected = NULL,
-#'     multiple = FALSE,
-#'     fixed = FALSE
-#'   )
-#' )
+#'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-#'     cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
@@ -58,16 +42,6 @@
 #'             multiple = FALSE,
 #'             fixed = FALSE
 #'           )
-#'         ),
-#'         data_extract_spec(
-#'           dataname = "ADLB",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = variable_choices(ADLB, c("AVAL", "CHG2")),
-#'             selected = "AVAL",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
 #'         )
 #'       ),
 #'       categorical_var = data_extract_spec(
@@ -75,15 +49,6 @@
 #'         select = select_spec(
 #'           choices = variable_choices(ADSL, subset = fact_vars_adsl),
 #'           selected = "RACE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
-#'       ),
-#'       lineplot_param = data_extract_spec(
-#'         dataname = "ADLB",
-#'         select = select_spec(
-#'           choices = c("ADTM"),
-#'           selected = "ADTM",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
@@ -95,7 +60,7 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-tm_outliers <- function(label = "Outlier Module",
+tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var,
                         lineplot_param = NULL,
@@ -1168,12 +1133,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     subset(display_table, select = -is_outlier_selected) # nolint
   })
 
-  output$total_outliers <- shiny::renderUI({
+  output$total_outliers <- renderUI({
     ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
     ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
     validate_has_data(ANL, 1)
     ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint
-    shiny::h5(
+    h5(
       sprintf(
         "%s %d / %d [%.02f%%]",
         "Total number of outlier(s):",
@@ -1182,11 +1147,11 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         100 * nrow(ANL_OUTLIER_SELECTED) / nrow(ANL)))
   })
 
-  output$total_missing <- shiny::renderUI({
+  output$total_missing <- renderUI({
     ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
     ANL_NO_NA <- suppressWarnings(chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
     if (!is.null(ANL_NO_NA)) {
-      shiny::helpText(
+      helpText(
         sprintf(
           "%s %d / %d [%.02f%%]",
           "Total number of row(s) with missing values:",

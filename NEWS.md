@@ -1,10 +1,10 @@
 # teal.modules.general 0.2.7.9000
-
-* Issues with no news:
 * Added `max_deg` optional argument to scatterplot to allow user to choose the maximum smoothing degree for trend line.
 * Added both column and row facetting to scatterplot.
 * Fixed edge case errors in `tm_missing_data` caused by input `dataset` not having categorical variables or being a `data.frame` instead of `tibble`.
 * Added brushing feature to `tm_outliers` so that selected outlier points will be singled out to display in the table below the plot.
+* Added new module `tm_outliers` to analyse outliers in datasets.
+* Issues with no news:
 
 # teal.modules.general 0.2.7
 
