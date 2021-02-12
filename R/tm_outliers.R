@@ -62,7 +62,7 @@
 #'
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
-                        categorical_var,
+                        categorical_var = NULL,
                         lineplot_param = NULL,
                         key_identifier = c("USUBJID"),
                         plot_height = c(600, 200, 2000),
@@ -72,7 +72,7 @@ tm_outliers <- function(label = "Outliers Module",
   if (!is_class_list("data_extract_spec")(outlier_var)) {
     outlier_var <- list(outlier_var)
   }
-  if (!is_class_list("data_extract_spec")(categorical_var)) {
+  if (!is.null(categorical_var) && !is_class_list("data_extract_spec")(categorical_var)) {
     categorical_var <- list(categorical_var)
   }
   if (!is.null(lineplot_param) && !is_class_list("data_extract_spec")(lineplot_param)) {
@@ -82,7 +82,7 @@ tm_outliers <- function(label = "Outliers Module",
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(outlier_var),
-    is_class_list("data_extract_spec")(categorical_var),
+    is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var),
     is.null(lineplot_param) || is_class_list("data_extract_spec")(lineplot_param),
     !is.null(key_identifier)
   )
@@ -686,7 +686,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       NULL
     }
 
-    plot_call <- if (is_character_empty(categorical_var)) {
+    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
       inner_call <- bquote(
         .(plot_call) +
           aes(x = "Entire dataset", y = .(as.name(outlier_var))) +
@@ -755,7 +755,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         )
     })
 
-    plot_call <- if (is_character_empty(categorical_var)) {
+    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
       bquote(
         .(plot_call)
       )
@@ -805,7 +805,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ) +
       stat_ecdf())
 
-    plot_call <- if (is_character_empty(categorical_var)) {
+    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
       cumulative_r_stack_push(
         bquote({
           ecdf_df <- ANL %>%
@@ -935,7 +935,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         color = ifelse(ANL_OUTLIER$is_outlier_selected, "red", "black")
       ))
 
-    plot_call <- if (is_character_empty(categorical_var)) {
+    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
       bquote(
         .(plot_call)
       )

@@ -7,7 +7,7 @@
 tm_outliers(
   label = "Outliers Module",
   outlier_var,
-  categorical_var,
+  categorical_var = NULL,
   lineplot_param = NULL,
   key_identifier = c("USUBJID"),
   plot_height = c(600, 200, 2000),
