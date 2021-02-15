@@ -5,6 +5,7 @@
 * Added brushing feature to `tm_outliers` so that selected outlier points will be singled out to display in the table below the plot.
 * Added new module `tm_outliers` to analyse outliers in datasets.
 * Updated `categorical_var` in `tm_outliers` to accept `NULL`.
+* Remove the `line plot` tab in `tm_outliers` module.
 * Issues with no news:
 
 # teal.modules.general 0.2.7
