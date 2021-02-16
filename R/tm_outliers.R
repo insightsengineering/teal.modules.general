@@ -337,7 +337,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                 }
               ) %>%
               dplyr::ungroup() %>%
-              dplyr::filter(is_outlier | is_outlier_selected) %>%
+              dplyr::filter(is_outlier | !!as.name("is_outlier_selected")) %>%
               dplyr::select(-is_outlier)
           } else {
             ANL %>%
@@ -348,7 +348,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                   !(!!as.name(outlier_var) >= q1_q3[1] - iqr & !!as.name(outlier_var) <= q1_q3[2] + iqr)
                 }
               ) %>%
-              dplyr::filter(is_outlier | is_outlier_selected) %>%
+              dplyr::filter(is_outlier | !!as.name("is_outlier_selected")) %>%
               dplyr::select(-is_outlier)
           }
         }
@@ -495,7 +495,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     if (!is_empty(categorical_var)) {
       common_stack_push(
-        quote(ANL_SUMMARY <- dplyr::filter(ANL_OUTLIER, is_outlier_selected) %>% dplyr::select(-is_outlier_selected)) # nolint
+        quote(ANL_SUMMARY <- dplyr::filter( # nolint
+          ANL_OUTLIER,
+          !!as.name("is_outlier_selected")
+        ) %>% dplyr::select(-"is_outlier_selected"))
       )
 
       common_stack_push(
@@ -762,7 +765,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         bquote({
           ecdf_df <- ANL %>%
             mutate(
-              y = ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]]),
+              y = stats::ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]]),
               unique_identifier = paste0(ANL[[.(identifier)]], "_", ANL[[.(outlier_var)]])
             )
           anl_outlier2 <- ANL_OUTLIER %>%
@@ -772,7 +775,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           outlier_points <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
           outlier_points <- dplyr::left_join(
             outlier_points,
-            dplyr::select(anl_outlier2, unique_identifier, is_outlier_selected),
+            dplyr::select(anl_outlier2, unique_identifier, "is_outlier_selected"),
             by = "unique_identifier"
           )
         })
@@ -809,7 +812,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               anl_filtered <- .(ANL) %>% dplyr::filter(get(.(categorical_var)) == x)
               anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(.(categorical_var)) == x)
               ecdf_df <- anl_filtered %>%
-                mutate(y = ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
+                mutate(y = stats::ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
               ecdf_df[["unique_identifier"]] <- paste0(ecdf_df[[.(identifier)]], "_", ecdf_df[[.(outlier_var)]])
               if (nrow(anl_outlier2) != 0) {
                 anl_outlier2[["unique_identifier"]] <- paste0(
@@ -820,7 +823,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                 ecdf_df2 <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
                 ecdf_df2 <- dplyr::left_join(
                   ecdf_df2,
-                  dplyr::select(anl_outlier2, unique_identifier, is_outlier_selected),
+                  dplyr::select(anl_outlier2, unique_identifier, "is_outlier_selected"),
                   by = "unique_identifier"
                 )
               } else {
@@ -982,9 +985,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         if (!is_empty(categorical_var)) {
           ANL <- ANL %>% # nolint
             dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
-            dplyr::mutate(cdf = ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
+            dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
         } else {
-          ANL$cdf <- ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
         }
       }
       brushed_rows <- brushedPoints(ANL, plot_brush)
@@ -1007,7 +1010,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     } else {
       ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
     }
-    subset(display_table, select = -is_outlier_selected) # nolint
+    display_table$is_outlier_selected <- NULL
+    display_table
   })
 
   output$total_outliers <- renderUI({

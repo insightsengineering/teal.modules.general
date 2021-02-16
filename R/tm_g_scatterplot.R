@@ -277,6 +277,7 @@ ui_g_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom ggExtra ggMarginal
 #' @importFrom shinyjs hide show
+#' @importFrom purrr map2 map map_chr
 srv_g_scatterplot <- function(input,
                               output,
                               session,

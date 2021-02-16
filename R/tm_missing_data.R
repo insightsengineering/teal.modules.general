@@ -228,6 +228,7 @@ encoding_missing_data <- function(id) {
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom tidyselect everything all_of
 #' @importFrom tibble as_tibble
+#' @importFrom digest sha1
 srv_missing_data <- function(input,
                              output,
                              session,
