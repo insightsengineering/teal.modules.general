@@ -115,7 +115,7 @@ ui_outliers <- function(id, ...) {
         tabPanel("Cumulative distribution plot", plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
-      h4("Data table"),
+      h4("Outlier Table"),
       DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
@@ -246,7 +246,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     } else {
       choices
     }
-    optionalSelectInput(session$ns("categorical_var_levels"),
+    optionalSelectInput(
+      inputId = session$ns("categorical_var_levels"),
       label = "Categories to include",
       choices = choices,
       selected = selected,
@@ -454,8 +455,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                   outlier_var_value <- ANL_FILTERED[[outlier_var]]
                   ANL_FILTERED$is_outlier_selected <-
                     outlier_var_value < quantile(outlier_var_value, outlier_definition_param) |
-                      outlier_var_value > quantile(outlier_var_value, 1 - outlier_definition_param)
-                    ANL_FILTERED
+                    outlier_var_value > quantile(outlier_var_value, 1 - outlier_definition_param)
+                  ANL_FILTERED
                 }
               )
               do.call(rbind, all_categories)
@@ -472,8 +473,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               outlier_var_value <- ANL[[outlier_var]]
               ANL$is_outlier_selected <-
                 outlier_var_value < quantile(outlier_var_value, outlier_definition_param) |
-                  outlier_var_value > quantile(outlier_var_value, 1 - outlier_definition_param)
-                ANL
+                outlier_var_value > quantile(outlier_var_value, 1 - outlier_definition_param)
+              ANL
             }
           })
         )
@@ -604,9 +605,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   output$summary_table <- DT::renderDataTable({
     suppressWarnings(
       chunks_get_var("summary_table_wide", common_code_chunks()$common_stack)
-      )
-    },
-    options = list(dom = "t", autoWidth = TRUE, columnDefs = list(list(width = "200px", targets = "_all")))
+    )
+  },
+  options = list(dom = "t", autoWidth = TRUE, columnDefs = list(list(width = "200px", targets = "_all")))
   )
 
   # boxplot/violinplot #nolint
@@ -650,8 +651,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       if (nrow(ANL_OUTLIER) > 0) {
         bquote(.(inner_call) + geom_point(
           data = ANL_OUTLIER,
-          aes(x = "Entire dataset", y = .(as.name(outlier_var))),
-          color = ifelse(ANL_OUTLIER$is_outlier_selected, "red", "black")
+          aes(x = "Entire dataset", y = .(as.name(outlier_var)), color = is_outlier_selected)
         ))
       } else {
         inner_call
@@ -664,12 +664,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           scale_x_discrete() +
           geom_point(
             data = ANL_OUTLIER,
-            aes(x = as.factor(.(as.name(categorical_var))), y = .(as.name(outlier_var))),
-            color = ifelse(ANL_OUTLIER$is_outlier_selected, "red", "black")
+            aes(x = as.factor(.(as.name(categorical_var))), y = .(as.name(outlier_var)), color = is_outlier_selected)
           )
       )
     }
-    boxplot_r_stack_push(bquote(g <- .(plot_call)))
+    boxplot_r_stack_push(bquote(g <- .(plot_call) +
+      scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+      labs(color = "is_outlier") +
+      theme(legend.position = "top")))
     boxplot_r_stack_push(quote(grid::grid.draw(g)))
     chunks_safe_eval(boxplot_r_stack)
     boxplot_r_stack
@@ -705,9 +707,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         geom_density() +
         geom_rug(
           data = ANL_OUTLIER,
-          aes(x = .(as.name(outlier_var))),
-          color = ifelse(ANL_OUTLIER$is_outlier_selected, "red", "black")
-        )
+          aes(x = .(as.name(outlier_var)),
+              color = is_outlier_selected)
+        ) +
+        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+        labs(color = "is_outlier") +
+        theme(legend.position = "top")
     })
 
     plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
@@ -781,11 +786,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         })
       )
       plot_call <- bquote(
-        .(plot_call) +
-          geom_point(
-            data = outlier_points,
-            aes(x = .(as.name(outlier_var)), y = y), color = ifelse(outlier_points$is_outlier_selected, "red", "black")
-          )
+        .(plot_call)
       )
     } else {
       contains_na <- !is.null(suppressWarnings(chunks_get_var("ANL_NO_NA", cumulative_r_stack)))
@@ -837,16 +838,19 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
       plot_call <- bquote(
         .(plot_call) +
-          facet_grid(~ reorder(.(as.name(categorical_var)), order)) +
-          geom_point(
-            data = outlier_points,
-            aes(x = .(as.name(outlier_var)), y = y),
-            color = ifelse(outlier_points$is_outlier_selected, "red", "black")
-          )
+          facet_grid(~ reorder(.(as.name(categorical_var)), order))
       )
     }
 
-    cumulative_r_stack_push(bquote(g <- .(plot_call)))
+    cumulative_r_stack_push(bquote(g <- .(plot_call) +
+      geom_point(
+        data = outlier_points,
+        aes(x = .(as.name(outlier_var)), y = y, color = is_outlier_selected)
+      ) +
+      scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+      labs(color = "is_outlier") +
+      theme(legend.position = "top")))
+
     cumulative_r_stack_push(quote(grid::grid.draw(g)))
     chunks_safe_eval(cumulative_r_stack)
     cumulative_r_stack
@@ -1012,7 +1016,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
     display_table$is_outlier_selected <- NULL
     display_table
-  })
+  }, options =  list(searching = FALSE, paging = FALSE, language = list(
+    zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold")
+  )
+  )
 
   output$total_outliers <- renderUI({
     ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint

@@ -6,6 +6,8 @@
 * Added new module `tm_outliers` to analyse outliers in datasets.
 * Updated `categorical_var` in `tm_outliers` to accept `NULL`.
 * Remove the `line plot` tab in `tm_outliers` module.
+* Colors legend for each plot.
+* More informative title and empty content description for an outlier table.
 * Remove "Show variables other than in ADSL" checkbox in variable browser module.
 * Capitalize default module labels.
 * Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
