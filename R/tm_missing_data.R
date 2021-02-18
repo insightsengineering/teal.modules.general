@@ -27,7 +27,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_missing_data <- function(label = "Missing data", plot_height = c(600, 400, 5000), plot_width = NULL) {
+tm_missing_data <- function(label = "Missing Data", plot_height = c(600, 400, 5000), plot_width = NULL) {
   stopifnot(is_character_single(label))
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -45,6 +45,8 @@ ui_page_missing_data <- function(id, datasets) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
+  if_subject_plot <- is(datasets, "CDISCFilteredData")
+
   standard_layout(
     output = white_small_well(
       column(
@@ -61,7 +63,7 @@ ui_page_missing_data <- function(id, datasets) {
                   column(
                     width = 12,
                     div(style = "height:10px;"),
-                    ui_missing_data(id = ns(x))
+                    ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
                   )
                 )
               }
@@ -82,7 +84,7 @@ ui_page_missing_data <- function(id, datasets) {
           function(x) {
             conditionalPanel(
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(id = ns(x))
+              encoding_missing_data(id = ns(x), summary_per_patient = if_subject_plot)
             )
           }
         )
@@ -112,11 +114,10 @@ srv_page_missing_data <- function(input,
   )
 }
 
-#' @importFrom shinyWidgets checkboxGroupButtons
-ui_missing_data <- function(id) {
+ui_missing_data <- function(id, by_subject_plot = FALSE) {
   ns <- NS(id)
-  tabsetPanel(
-    id = ns("summary_type"),
+
+  tab_list <- list(
     tabPanel(
       "Summary",
       plot_with_settings_ui(id = ns("summary_plot")),
@@ -150,23 +151,37 @@ ui_missing_data <- function(id) {
     tabPanel(
       "By variable levels",
       DT::dataTableOutput(ns("levels_table"))
-    ),
-    tabPanel(
-      "Grouped by Subject",
-      plot_with_settings_ui(id = ns("by_subject_plot")),
-      helpText(
-        p(paste(
-          "This graph shows the missingness with respect to subjects rather than individual rows of the",
-          "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
-          "with at least one record in this dataset are shown. For a given subject, if they have any missing",
-          "values of a specific variable then the appropriate cell in the graph is marked as missing."
-        ))
+    )
+  )
+  if (isTRUE(by_subject_plot)) {
+    tab_list <- append(
+      tab_list,
+      list(tabPanel(
+        "Grouped by Subject",
+        plot_with_settings_ui(id = ns("by_subject_plot")),
+        helpText(
+          p(paste(
+            "This graph shows the missingness with respect to subjects rather than individual rows of the",
+            "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
+            "with at least one record in this dataset are shown. For a given subject, if they have any missing",
+            "values of a specific variable then the appropriate cell in the graph is marked as missing."
+          ))
+        )
       )
+    ))
+  }
+
+  do.call(
+    tabsetPanel,
+    c(
+      id = ns("summary_type"),
+      tab_list
     )
   )
 }
 
-encoding_missing_data <- function(id) {
+#' @importFrom shinyWidgets checkboxGroupButtons
+encoding_missing_data <- function(id, summary_per_patient = FALSE) {
   ns <- NS(id)
 
   tagList(
@@ -174,7 +189,8 @@ encoding_missing_data <- function(id) {
     actionButton(ns("filter_na"), span(style = "white-space: normal;", "Select only vars with missings"), width = "100%"), # nolint
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
-      checkboxInput(ns("any_na"),
+      checkboxInput(
+        ns("any_na"),
         div(
           "Add **anyna** variable",
           title = "Describes the number of observations with at least one missing value in any variable.",
@@ -182,17 +198,20 @@ encoding_missing_data <- function(id) {
         ),
         value = FALSE
       ),
-      checkboxInput(ns("if_patients_plot"),
-        div(
-          "Add summary per patients",
-          title = paste(
-            "Displays the number of missing values per observation,",
-            "where the x-axis is sorted by observation appearance in the table."
+      if (summary_per_patient) {
+        checkboxInput(
+          ns("if_patients_plot"),
+          div(
+            "Add summary per patients",
+            title = paste(
+              "Displays the number of missing values per observation,",
+              "where the x-axis is sorted by observation appearance in the table."
+            ),
+            icon("info-circle")
           ),
-          icon("info-circle")
-        ),
-        value = FALSE
-      )
+          value = FALSE
+        )
+      }
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
@@ -250,7 +269,7 @@ srv_missing_data <- function(input,
   })
 
   data_keys <- reactive({
-    datasets$get_data_attr(dataname, "keys")$primary
+    datasets$get_primary_keys(dataname)
   })
 
   # chunks needed by all three outputs stored here
@@ -277,7 +296,7 @@ srv_missing_data <- function(input,
     common_stack_push(
       bquote({
         create_cols_labels <- function(cols, just_label = FALSE) {
-          column_labels <- .(c(datasets$get_variable_labels(dataname)[selected_vars()], new_col_name = new_col_name))
+          column_labels <- .(c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name))
           column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
           if (just_label) {
             labels <- column_labels[cols]
@@ -385,7 +404,7 @@ srv_missing_data <- function(input,
     }
 
     prev_group_by_var(input$group_by_var) # set current group_by_var
-    validate(need(length(choices) < 100, "Please select variable with fewer than 100 unique values"))
+    validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
 
     optionalSelectInput(
       session$ns("group_by_vals"),
@@ -489,16 +508,18 @@ srv_missing_data <- function(input,
       )
     )
 
-    if (input$if_patients_plot) {
+    if (isTRUE(input$if_patients_plot)) {
       keys <- data_keys()
-      summary_stack_push(bquote(adsl_keys <- .(datasets$get_data_attr("ADSL", "keys")$primary)))
-      summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, adsl_keys])))
+      summary_stack_push(bquote(
+        parent_keys <- .(datasets$get_primary_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+      ))
+      summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
         quote(
-          summary_plot_patients <- ANL_FILTERED[, c(adsl_keys, analysis_vars)] %>%
-            dplyr::group_by_at(adsl_keys) %>%
+          summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+            dplyr::group_by_at(parent_keys) %>%
             dplyr::summarise_all(anyNA) %>%
-            tidyr::pivot_longer(cols = !tidyselect::all_of(adsl_keys), names_to = "col", values_to = "anyna") %>%
+            tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
             dplyr::group_by_at(c("col")) %>%
             dplyr::summarise(count_na = sum(anyna)) %>%
             dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
@@ -727,7 +748,7 @@ srv_missing_data <- function(input,
 
     validate(need(input$count_type, "Please select type of counts"))
     if (!is.null(input$group_by_var)) {
-      validate(need(!is.null(input$group_by_vals), "Please select grouping variable values"))
+      validate(need(!is.null(input$group_by_vals), "Please select both group-by variable and values"))
     }
 
     group_var <- input$group_by_var
@@ -740,7 +761,7 @@ srv_missing_data <- function(input,
     validate(
       need(is.null(group_var) ||
         nrow(unique(anl_filtered[, group_var])) < 100,
-        "Please select variable with fewer than 100 unique values")
+        "Please select group-by variable with fewer than 100 unique values")
     )
 
     group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
@@ -807,6 +828,10 @@ srv_missing_data <- function(input,
 
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
+    validate(need(
+      !is_empty(datasets$get_parentname(dataname)),
+      "This plot can only be calculated for datasets that have a parent dataset."
+    ))
     validate_has_data(data(), 1)
     # Create a private stack for this function only.
     by_subject_stack <- chunks$new()
@@ -818,7 +843,7 @@ srv_missing_data <- function(input,
     chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
 
     keys <- data_keys()
-    by_subject_stack_push(bquote(adsl_keys <- .(datasets$get_data_attr("ADSL", "keys")$primary)))
+    by_subject_stack_push(bquote(parent_keys <- .(datasets$get_primary_keys(datasets$get_parentname(dataname)))))
 
     by_subject_stack_push(
       bquote(
@@ -828,24 +853,24 @@ srv_missing_data <- function(input,
 
     by_subject_stack_push(
       quote({
-        summary_plot_patients <- ANL_FILTERED[, c(adsl_keys, analysis_vars)] %>%
-          dplyr::group_by_at(adsl_keys) %>%
+        summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+          dplyr::group_by_at(parent_keys) %>%
           dplyr::mutate(id = dplyr::cur_group_id()) %>%
           dplyr::ungroup() %>%
-          dplyr::group_by_at(c(adsl_keys, "id")) %>%
+          dplyr::group_by_at(c(parent_keys, "id")) %>%
           dplyr::summarise_all(anyNA) %>%
           dplyr::ungroup()
 
         # order subjects by decreasing number of missing and then by
         # missingness pattern (defined using sha1)
         order_subjects <- summary_plot_patients %>%
-          dplyr::select(-"id", -tidyselect::all_of(adsl_keys)) %>%
+          dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
           magrittr::extract2("id")
 
         summary_plot_patients <- summary_plot_patients %>%
-          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(adsl_keys))
+          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
 
       })
     )

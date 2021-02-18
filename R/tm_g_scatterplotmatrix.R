@@ -67,7 +67,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
+tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,

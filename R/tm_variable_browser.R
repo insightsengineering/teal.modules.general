@@ -33,7 +33,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_variable_browser <- function(label = "variable browser") {
+tm_variable_browser <- function(label = "Variable Browser") {
   stopifnot(is_character_single(label))
 
   module(
@@ -75,8 +75,7 @@ ui_variable_browser <- function(id, datasets) {
               )
             }), NULL))
           )
-        ),
-        checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
+        )
       )
     ),
     column(
@@ -144,7 +143,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     validate_has_variable(varname = varname, data = df, "variable not available")
     .log("plot/summarize variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
 
-    varlabel <- datasets$get_variable_labels(dataname = data, varname)
+    varlabel <- datasets$get_varlabels(dataname = data, varname)
     d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
     list(data = df[[varname]], d_var_name = d_var_name)
   })
@@ -179,12 +178,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     output[[table_ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(name, filtered = FALSE)
-      show_adsl_vars <- input$show_adsl_vars
 
-      if (!show_adsl_vars && name != "ADSL") {
-        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
-        df <- df[!(names(df) %in% adsl_vars)]
-      }
+      df_vars <- datasets$get_filterable_varnames(name)
+      df <- df[df_vars]
 
       if (is.null(df) || ncol(df) == 0) {
         current_rows[[name]] <- character(0)
@@ -196,10 +192,15 @@ srv_variable_browser <- function(input, output, session, datasets) {
           stringsAsFactors = FALSE)
       } else {
         # extract data variable labels
-        labels <- setNames(unlist(lapply(df, function(x) {
-          lab <- attr(x, "label")
-          if (is.null(lab)) "" else lab
-          }), use.names = FALSE), names(df))
+        labels <- setNames(
+          ulapply(
+            df,
+            function(x) {
+              if_null(attr(x, "label"), "")
+            }
+          ),
+          names(df)
+        )
 
         current_rows[[name]] <- names(labels)
 
@@ -209,11 +210,11 @@ srv_variable_browser <- function(input, output, session, datasets) {
           var_missings_info,
           FUN.VALUE = character(1),
           USE.NAMES = FALSE
-          )
+        )
 
         # get icons proper for the data types
         icons <- setNames(teal:::variable_types(df), colnames(df))
-        icons[intersect(datasets$get_keys(name)$primary, colnames(df))] <- "primary_key"
+        icons[intersect(datasets$get_keys(name), colnames(df))] <- "primary_key"
         icons <- teal:::variable_type_icons(icons)
 
         # generate sparklines
@@ -231,21 +232,21 @@ srv_variable_browser <- function(input, output, session, datasets) {
             Missings = missings,
             Sparklines = sparklines_html,
             stringsAsFactors = FALSE
-            ),
+          ),
           escape = FALSE,
           rownames = FALSE,
           selection = list(mode = "single", target = "row", selected = 1),
           options = list(
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
-              ),
+            ),
             fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }")
-            )
           )
-        }
-      },
-      server = TRUE
-      )
+        )
+      }
+    },
+    server = TRUE
+    )
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {
@@ -317,7 +318,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
   output$outlier_definition_slider_ui <- renderUI({
     req(input$remove_outliers)
-    sliderInput(inputId = session$ns("outlier_definition_slider"),
+    sliderInput(
+      inputId = session$ns("outlier_definition_slider"),
       div(
         "Outlier definition:",
         title = paste("Use the slider to choose the cut-off value to define outliers;\nthe larger the value the",
@@ -327,7 +329,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
       min = 1,
       max = 5,
       value = 3,
-      step = 0.5)
+      step = 0.5
+    )
   })
 
   output$ui_density_help <- renderUI({

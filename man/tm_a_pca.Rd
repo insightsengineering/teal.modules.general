@@ -5,7 +5,7 @@
 \title{Principal component analysis module}
 \usage{
 tm_a_pca(
-  label = "Principal component analysis",
+  label = "Principal Component Analysis",
   dat,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,

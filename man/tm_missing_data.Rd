@@ -5,7 +5,7 @@
 \title{Missing data module}
 \usage{
 tm_missing_data(
-  label = "Missing data",
+  label = "Missing Data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL
 )

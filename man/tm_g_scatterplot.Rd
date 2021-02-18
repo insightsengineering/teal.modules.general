@@ -5,7 +5,7 @@
 \title{Create a simple scatterplot}
 \usage{
 tm_g_scatterplot(
-  label,
+  label = "Scatterplot",
   x,
   y,
   color_by = NULL,

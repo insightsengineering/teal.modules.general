@@ -417,7 +417,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                   ANL_FILTERED$is_outlier_selected <- zscore > outlier_definition_param
                   ANL_FILTERED
                 } else {
-                  dplyr::mutate(ANL_FILTERED[FALSE, ], is_outlier_selected = logical(0))
+                  dplyr::mutate(ANL_FILTERED[FALSE, , drop = FALSE], is_outlier_selected = logical(0))
                 }
               })
               do.call(rbind, all_categories)

@@ -77,7 +77,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_g_scatterplot <- function(label,
+tm_g_scatterplot <- function(label = "Scatterplot",
                              x,
                              y,
                              color_by = NULL,

@@ -131,7 +131,7 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-tm_data_table <- function(label = "Data table",
+tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
                           datasets_selected = character(0),
                           dt_args = list(),

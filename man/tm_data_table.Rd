@@ -5,7 +5,7 @@
 \title{Data Table Viewer Teal Module}
 \usage{
 tm_data_table(
-  label = "Data table",
+  label = "Data Table",
   variables_selected = list(),
   datasets_selected = character(0),
   dt_args = list(),

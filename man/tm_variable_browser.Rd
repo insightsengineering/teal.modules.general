@@ -4,7 +4,7 @@
 \alias{tm_variable_browser}
 \title{Variable Browser Teal Module}
 \usage{
-tm_variable_browser(label = "variable browser")
+tm_variable_browser(label = "Variable Browser")
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
