@@ -4,6 +4,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
+#' @inheritParams teal.devel::standard_layout
 #'
 #'
 #' @export
@@ -27,7 +28,11 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_missing_data <- function(label = "Missing Data", plot_height = c(600, 400, 5000), plot_width = NULL) {
+tm_missing_data <- function(label = "Missing data",
+                            plot_height = c(600, 400, 5000),
+                            plot_width = NULL,
+                            pre_output = NULL,
+                            post_output = NULL) {
   stopifnot(is_character_single(label))
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -37,11 +42,12 @@ tm_missing_data <- function(label = "Missing Data", plot_height = c(600, 400, 50
     server = srv_page_missing_data,
     server_args = list(plot_height = plot_height, plot_width = plot_width),
     ui = ui_page_missing_data,
-    filters = "all"
+    filters = "all",
+    ui_args = list(pre_output = pre_output, post_output = post_output)
   )
 }
 
-ui_page_missing_data <- function(id, datasets) {
+ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -89,7 +95,9 @@ ui_page_missing_data <- function(id, datasets) {
           }
         )
       )
-    )
+    ),
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 

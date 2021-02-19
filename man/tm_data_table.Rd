@@ -10,7 +10,9 @@ tm_data_table(
   datasets_selected = character(0),
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
-    scrollX = TRUE)
+    scrollX = TRUE),
+  pre_output = NULL,
+  post_output = NULL
 )
 }
 \arguments{
@@ -30,6 +32,13 @@ If vector of length zero (default) then all datasets are shown.}
 
 \item{dt_options}{(named \code{list}) The \code{options} argument to \code{DT::datatable}. By default
 \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example a title.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed after the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 A data table viewer shows the data using a paginated table.

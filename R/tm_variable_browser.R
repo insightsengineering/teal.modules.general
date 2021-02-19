@@ -9,6 +9,7 @@
 #'
 #'
 #' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @importFrom stats quantile sd
 #'
@@ -33,7 +34,9 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_variable_browser <- function(label = "Variable Browser") {
+tm_variable_browser <- function(label = "Variable Browser",
+                                pre_output = NULL,
+                                post_output = NULL) {
   stopifnot(is_character_single(label))
 
   module(
@@ -41,71 +44,82 @@ tm_variable_browser <- function(label = "Variable Browser") {
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
-    ui_args = list()
+    ui_args = list(
+      pre_output = pre_output,
+      post_output = post_output
+    )
   )
 }
 
 # ui function
 #' @importFrom stats setNames
 #' @importFrom shinyWidgets switchInput
-ui_variable_browser <- function(id, datasets) {
+ui_variable_browser <- function(id,
+                                datasets,
+                                pre_output = NULL,
+                                post_output = NULL) {
   ns <- NS(id)
 
-  fluidRow(
-    htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
-    column(
-      6,
-      # variable browser
-      white_small_well(
-        do.call(
-          tabsetPanel,
-          c(
-            id = ns("tsp"),
-            do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
-              tabPanel(
-                dataname,
-                div(
-                  style = "margin-top: 15px;",
-                  textOutput(ns(paste0("dataset_summary_", dataname)))
-                ),
-                div(
-                  style = "margin-top: 15px;",
-                  DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+  standard_layout(
+    output = fluidRow(
+      htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
+      column(
+        6,
+        # variable browser
+        white_small_well(
+          do.call(
+            tabsetPanel,
+            c(
+              id = ns("tsp"),
+              do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
+                tabPanel(
+                  dataname,
+                  div(
+                    style = "margin-top: 15px;",
+                    textOutput(ns(paste0("dataset_summary_", dataname)))
+                  ),
+                  div(
+                    style = "margin-top: 15px;",
+                    DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+                  )
                 )
+              }), NULL))
+            )
+          ),
+          checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
+        )
+      ),
+      column(
+        6,
+        white_small_well(
+          div(
+            class = "clearfix",
+            style = "margin: 15px 15px 0px 15px;",
+            div(
+              class = "pull-left",
+              shinyWidgets::switchInput(
+                inputId = ns("raw_or_filtered"),
+                label = "Use filtered data",
+                value = TRUE,
+                width = "100%",
+                labelWidth = "130px",
+                handleWidth = "50px"
               )
-            }), NULL))
-          )
+            )
+          ),
+          div(
+            class = "clearfix;",
+            style = "margin: 0px 15px 15px 15px;",
+            uiOutput(ns("ui_numeric_display"))
+          ),
+          plotOutput(ns("variable_plot"), height = "500px"),
+          br(),
+          DT::dataTableOutput(ns("variable_summary_table"))
         )
       )
     ),
-    column(
-      6,
-      white_small_well(
-        div(
-          class = "clearfix",
-          style = "margin: 15px 15px 0px 15px;",
-          div(
-            class = "pull-left",
-            shinyWidgets::switchInput(
-              inputId = ns("raw_or_filtered"),
-              label = "Use filtered data",
-              value = TRUE,
-              width = "100%",
-              labelWidth = "130px",
-              handleWidth = "50px"
-            )
-          )
-        ),
-        div(
-          class = "clearfix;",
-          style = "margin: 0px 15px 15px 15px;",
-          uiOutput(ns("ui_numeric_display"))
-        ),
-        plotOutput(ns("variable_plot"), height = "500px"),
-        br(),
-        DT::dataTableOutput(ns("variable_summary_table"))
-      )
-    )
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 

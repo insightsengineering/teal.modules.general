@@ -4,10 +4,21 @@
 \alias{tm_variable_browser}
 \title{Variable Browser Teal Module}
 \usage{
-tm_variable_browser(label = "Variable Browser")
+tm_variable_browser(
+  label = "Variable Browser",
+  pre_output = NULL,
+  post_output = NULL
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example a title.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed after the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 The variable browser provides a table with variable names and labels and a
