@@ -10,8 +10,6 @@
 #'  variable to consider for the outliers analysis.
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical factor to split the selected outliers variable on.
-#' @param key_identifier (`character`)
-#'   Identifier key variable to be used in the cumulative distribution plot.
 #'
 #' @export
 #'
@@ -60,7 +58,6 @@
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
-                        key_identifier = c("USUBJID"),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
@@ -75,8 +72,7 @@ tm_outliers <- function(label = "Outliers Module",
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(outlier_var),
-    is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var),
-    !is.null(key_identifier)
+    is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
   )
 
   args <- as.list(environment())
@@ -197,18 +193,7 @@ ui_outliers <- function(id, ...) {
               step = 0.01
             )
           ),
-          uiOutput(ns("ui_outlier_help")),
-          conditionalPanel(
-            condition =
-              paste0("input['", ns("tabs"), "'] == 'Cumulative distribution plot'"),
-            optionalSelectInput(
-              inputId = ns("key_identifier"),
-              label = "Key Identifier",
-              choices = args$key_identifier,
-              selected = args$key_identifier[1],
-              multiple = FALSE
-            )
-          )
+          uiOutput(ns("ui_outlier_help"))
         )
       )
     ),
@@ -753,11 +738,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
-    identifier <- input$key_identifier
 
     # validation
     validate_has_data(ANL, 1)
-    validate(need(identifier, "Please select a unique identifier"))
 
     # plot
     plot_call <- bquote(ANL %>% ggplot(
@@ -770,19 +753,15 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         bquote({
           ecdf_df <- ANL %>%
             mutate(
-              y = stats::ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]]),
-              unique_identifier = paste0(ANL[[.(identifier)]], "_", ANL[[.(outlier_var)]])
+              y = stats::ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]])
             )
-          anl_outlier2 <- ANL_OUTLIER %>%
-            mutate(unique_identifier = paste0(
-              ANL_OUTLIER[[.(identifier)]], "_", ANL_OUTLIER[[.(outlier_var)]]
-            ))
-          outlier_points <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
+
           outlier_points <- dplyr::left_join(
-            outlier_points,
-            dplyr::select(anl_outlier2, unique_identifier, "is_outlier_selected"),
-            by = "unique_identifier"
-          )
+            ecdf_df,
+            ANL_OUTLIER,
+            by = dplyr::setdiff(names(ecdf_df), "y")
+          ) %>%
+            dplyr::filter(!is.na(is_outlier_selected))
         })
       )
       plot_call <- bquote(
@@ -814,23 +793,15 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(.(categorical_var)) == x)
               ecdf_df <- anl_filtered %>%
                 mutate(y = stats::ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
-              ecdf_df[["unique_identifier"]] <- paste0(ecdf_df[[.(identifier)]], "_", ecdf_df[[.(outlier_var)]])
+
               if (nrow(anl_outlier2) != 0) {
-                anl_outlier2[["unique_identifier"]] <- paste0(
-                  anl_outlier2[[.(identifier)]],
-                  "_",
-                  anl_outlier2[[.(outlier_var)]]
-                )
-                ecdf_df2 <- ecdf_df[match(anl_outlier2[["unique_identifier"]], ecdf_df[["unique_identifier"]]), ]
-                ecdf_df2 <- dplyr::left_join(
-                  ecdf_df2,
-                  dplyr::select(anl_outlier2, unique_identifier, "is_outlier_selected"),
-                  by = "unique_identifier"
-                )
-              } else {
-                ecdf_df2 <- ecdf_df[FALSE, ]
+                dplyr::left_join(
+                  ecdf_df,
+                  anl_outlier2,
+                  by = dplyr::setdiff(names(ecdf_df), "y")
+                ) %>%
+                  dplyr::filter(!is.na(is_outlier_selected))
               }
-              ecdf_df2
             }
           )
           outlier_points <- do.call(rbind, all_categories)

@@ -8,7 +8,6 @@ tm_outliers(
   label = "Outliers Module",
   outlier_var,
   categorical_var = NULL,
-  key_identifier = c("USUBJID"),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -23,9 +22,6 @@ variable to consider for the outliers analysis.}
 
 \item{categorical_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 categorical factor to split the selected outliers variable on.}
-
-\item{key_identifier}{(`character`)
-Identifier key variable to be used in the cumulative distribution plot.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
