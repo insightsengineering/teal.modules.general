@@ -585,6 +585,9 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
   }
+  if (length(arr) > 100000) {
+    return(as.character(tags$code("Too many rows (>100000)", style = "color:blue")))
+  }
 
   res <- sparkline::spk_chr(arr, type = "box", width = width, ...)
   return(res)
