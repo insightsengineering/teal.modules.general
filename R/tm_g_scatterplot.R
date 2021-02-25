@@ -788,6 +788,10 @@ srv_g_scatterplot <- function(input,
     plot_r()
     plot_brush <- brush$brush()
 
+    if (!is.null(plot_brush)) {
+      validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
+    }
+
     merged_data <- isolate(chunks_get_var("ANL"))
 
     df <- brushedPoints(merged_data, plot_brush)
