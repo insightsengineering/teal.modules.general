@@ -14,6 +14,7 @@
 * Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
 * Add `pre_output` and `post_output` arguments to `tm_data_table`, `tm_missing_data`, `tm_variable_browser`.
 * Remove `key_identifier` input variable from `tm_outliers` module.
+* Added input widget to select additional columns to display in table under `tm_outliers` plots.
 * Issues with no news:
 
 # teal.modules.general 0.2.7

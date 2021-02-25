@@ -111,6 +111,13 @@ ui_outliers <- function(id, ...) {
         tabPanel("Cumulative distribution plot", plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
+      optionalSelectInput(
+        inputId = ns("table_ui_columns"),
+        label = "Choose additional columns",
+        choices = NULL,
+        selected = NULL,
+        multiple = TRUE
+      ),
       h4("Outlier Table"),
       DT::dataTableOutput(ns("table_ui"))
     ),
@@ -907,6 +914,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     brushing = TRUE
   )
 
+  observe({
+    choices <- variable_choices(
+      datasets$get_data(if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])))
+    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+    updateOptionalSelectInput(
+      session,
+      inputId = "table_ui_columns",
+      choices = setdiff(choices, names(ANL_OUTLIER)),
+      selected = isolate(input$table_ui_columns))
+  })
+
   output$table_ui <- DT::renderDataTable({
     tab <- input$tabs
     req(tab) # tab is NULL upon app launch, hence will crash without this statement
@@ -986,7 +1004,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
     }
     display_table$is_outlier_selected <- NULL
-    display_table
+    dataname <- if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])
+    keys <- datasets$get_keys(dataname)
+    data <- datasets$get_data(dataname)
+    dplyr::left_join(
+      display_table,
+      dplyr::select(data, setdiff(names(data), setdiff(names(display_table), keys))), by = keys) %>%
+      dplyr::select(union(names(display_table), input$table_ui_columns))
   }, options =  list(searching = FALSE, paging = FALSE, language = list(
     zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold")
   )
