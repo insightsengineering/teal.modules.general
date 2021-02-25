@@ -231,18 +231,18 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   output$categorical_var_levels_ui <- renderUI({
     categorical_var <- merged_data()$columns_source$categorical_var
     req(categorical_var)
-    choices <- value_choices(merged_data()$data(), categorical_var)
-    selected <- isolate(input$categorical_var_levels)
-    selected <- if (!is.null(selected) && any(selected %in% choices)) {
-      selected[selected %in% choices]
-    } else {
-      choices
+    data <- merged_data()$data()
+    req(nrow(data) > 0)
+    data_no_cat_na <- data[!is.na(data[[categorical_var]]), ]
+    choices <- value_choices(data_no_cat_na, categorical_var)
+    if (anyNA(data[[categorical_var]])) {
+      choices <- c(choices, "(Missing)")
     }
     optionalSelectInput(
       inputId = session$ns("categorical_var_levels"),
       label = "Categories to include",
       choices = choices,
-      selected = selected,
+      selected = choices,
       multiple = TRUE
     )
   })
@@ -292,17 +292,35 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ))
       validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
 
-      common_stack_push(
-        bquote({
-          ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
-        })
-      )
-
-      contains_na <- anyNA(merged_data()$data()[, c(outlier_var, categorical_var)])
-      if (contains_na) {
-        common_stack_push(bquote({
-          ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var))) & !is.na(.(as.name(categorical_var)))) # nolint
-        }))
+      if ("(Missing)" %in% input$categorical_var_levels) {
+        common_stack_push(
+          bquote({
+            ANL[[.(categorical_var)]] <- dplyr::if_else(
+              is.na(ANL[[.(categorical_var)]]),
+              "(Missing)",
+              as.character(ANL[[.(categorical_var)]])
+            )
+            ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
+          })
+        )
+        contains_na <- anyNA(merged_data()$data()[, outlier_var])
+        if (contains_na) {
+          common_stack_push(bquote({
+            ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var)))) # nolint
+          }))
+        }
+      } else {
+        common_stack_push(
+          bquote(
+            ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
+          )
+        )
+        contains_na <- anyNA(merged_data()$data()[, c(outlier_var, categorical_var)])
+        if (contains_na) {
+          common_stack_push(bquote({
+            ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var))) & !is.na(.(as.name(categorical_var)))) # nolint
+          }))
+        }
       }
       shinyjs::show("split_outliers")
     }
