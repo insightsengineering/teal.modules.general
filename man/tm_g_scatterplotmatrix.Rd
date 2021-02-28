@@ -5,7 +5,7 @@
 \title{Create a scatterplot matrix}
 \usage{
 tm_g_scatterplotmatrix(
-  label = "Scatterplot matrix",
+  label = "Scatterplot Matrix",
   variables,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,

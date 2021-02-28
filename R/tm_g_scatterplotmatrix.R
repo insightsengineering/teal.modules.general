@@ -67,7 +67,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_g_scatterplotmatrix <- function(label = "Scatterplot matrix",
+tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,
@@ -102,7 +102,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("message")),
       br(),
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
+      plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),

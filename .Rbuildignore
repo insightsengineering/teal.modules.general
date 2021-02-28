@@ -2,7 +2,8 @@
 ^\.drone\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^README.md$
+^README\.md$
 ^docs$
 ^\_pkgdown\.yml
 ^Jenkinsfile$
+^\.lintr$

@@ -2,7 +2,7 @@ Package: teal.modules.general
 Type: Package
 Title: General modules to add to a teal application
 Date: 2020-12-15
-Version: 0.2.7
+Version: 0.2.7.9000
 Authors@R: c(
     person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
     person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = "aut"),
@@ -28,6 +28,7 @@ Imports:
   ggExtra,
   grid,
   gridExtra,
+  digest,
   dplyr,
   tidyselect,
   DT,
@@ -36,6 +37,7 @@ Imports:
   jsonlite,
   lattice,
   methods,
+  purrr,
   rlang,
   rtables (>= 0.3.3),
   scales,

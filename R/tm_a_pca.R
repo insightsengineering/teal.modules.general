@@ -48,7 +48,7 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-tm_a_pca <- function(label = "Principal component analysis",
+tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
@@ -94,7 +94,6 @@ tm_a_pca <- function(label = "Principal component analysis",
 
 
 ui_a_pca <- function(id, ...) {
-
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- is_single_dataset(args$dat)
@@ -120,7 +119,7 @@ ui_a_pca <- function(id, ...) {
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
-        plot_with_settings_ui(id = ns("pca_plot"), height = args$plot_height, width = args$plot_width)
+        plot_with_settings_ui(id = ns("pca_plot"))
       )
     ),
     encoding = div(
@@ -221,7 +220,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     response[[i]]$select$selected <- NULL
     response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
     response[[1]]$select$choices <- setdiff(response[[1]]$select$choices,
-                                            datasets$get_keys(response[[i]]$dataname)$primary)
+                                            datasets$get_keys(response[[i]]$dataname))
   }
 
   init_chunks()
@@ -702,7 +701,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     id = "pca_plot",
     plot_r = plot_r,
     height = plot_height,
-    width = plot_width
+    width = plot_width,
+    graph_align = "center"
   )
 
   # tables ----

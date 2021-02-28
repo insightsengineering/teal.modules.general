@@ -5,20 +5,24 @@
 \title{Create a simple scatterplot}
 \usage{
 tm_g_scatterplot(
-  label,
+  label = "Scatterplot",
   x,
   y,
   color_by = NULL,
   size_by = NULL,
+  row_facet = NULL,
+  col_facet = NULL,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
   shape = shape_names,
   size = c(5, 1, 15),
+  max_deg = 5L,
   rotate_xaxis_labels = FALSE,
   ggtheme = gg_themes,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  table_dec = 4
 )
 }
 \arguments{
@@ -35,6 +39,12 @@ Defines the color encoding. If \code{NULL} then no color encoding option will be
 
 \item{size_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
+
+\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data columns to use for faceting rows.}
+
+\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Which data to use for faceting columns.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -54,6 +64,8 @@ shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape
 If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 vector of length three with \code{c(value, min, max)}.}
 
+\item{max_deg}{optional, (\code{integer}) The maximum degree for the polynomial trend line. Must not be less than 1.}
+
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
@@ -68,6 +80,8 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
+
+\item{table_dec}{optional, (\code{integer}) Number of decimal places used to round numeric values in the table.}
 }
 \description{
 Create a plot with the \code{\link{ggplot2}[geom_point]} function

@@ -148,7 +148,7 @@ ui_g_response <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
+      plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),

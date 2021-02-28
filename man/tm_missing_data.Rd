@@ -7,7 +7,9 @@
 tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
-  plot_width = NULL
+  plot_width = NULL,
+  pre_output = NULL,
+  post_output = NULL
 )
 }
 \arguments{
@@ -18,6 +20,13 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
+
+\item{pre_output}{optional, \code{shiny.tag} with text placed before the
+output to put the output into context. For example a title.}
+
+\item{post_output}{optional, \code{shiny.tag} with text placed after the
+output to put the output into context. For example the
+\code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
 Present analysis of missing observations and patients.

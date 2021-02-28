@@ -4,6 +4,7 @@
 #' @md
 #'
 #' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #' @param variables_selected (`list`) A named list of character vectors of the variables (i.e. columns)
 #'   which should be initially shown for each dataset. Names of list elements should correspond to the names
 #'   of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
@@ -131,7 +132,7 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-tm_data_table <- function(label = "Data table",
+tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
                           datasets_selected = character(0),
                           dt_args = list(),
@@ -139,7 +140,9 @@ tm_data_table <- function(label = "Data table",
                             searching = FALSE,
                             pageLength = 30,
                             lengthMenu = c(5, 15, 30, 100),
-                            scrollX = TRUE)) {
+                            scrollX = TRUE),
+                          pre_output = NULL,
+                          post_output = NULL) {
   stop_if_not(
     is_character_single(label),
     is.list(variables_selected),
@@ -172,7 +175,9 @@ tm_data_table <- function(label = "Data table",
     server_args = list(datasets_selected = datasets_selected, dt_args = dt_args, dt_options = dt_options),
     ui_args = list(
       selected = variables_selected,
-      datasets_selected = datasets_selected
+      datasets_selected = datasets_selected,
+      pre_output = pre_output,
+      post_output = post_output
     )
   )
 }
@@ -183,75 +188,80 @@ tm_data_table <- function(label = "Data table",
 ui_page_data_table <- function(id,
                                datasets,
                                selected,
-                               datasets_selected) {
+                               datasets_selected,
+                               pre_output = NULL,
+                               post_output = NULL) {
   ns <- NS(id)
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
-
-  tagList(
-    fluidRow(
-      column(
-        width = 6,
-        radioButtons(
-          ns("if_filtered"),
-          NULL,
-          choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
-          selected = TRUE,
-          inline = TRUE
-        )
-      ),
-      column(
-        width = 6,
-        checkboxInput(
-          ns("if_distinct"),
-          "Show only distinct rows:",
-          value = FALSE
-        )
-      )
-    ),
-    fluidRow(
-      column(
-        width = 12,
-        do.call(
-          tabsetPanel,
-          lapply(
-            datanames,
-            function(x) {
-              dataset <- datasets$get_data(x, filtered = FALSE)
-              choices <- names(dataset)
-              labels <- vapply(
-                dataset,
-                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
-                character(1)
-              )
-              names(choices) <- ifelse(
-                is.na(labels) | labels == "",
-                choices,
-                paste(choices, labels, sep = ": ")
-              )
-              selected <- if (!is.null(selected[[x]])) {
-                selected[[x]]
-              } else {
-                head(choices)
-              }
-              tabPanel(
-                title = x,
-                column(
-                  width = 12,
-                  div(style = "height:10px;"),
-                  ui_data_table(
-                    id = ns(x),
-                    choices = choices,
-                    selected = selected
-                  )
-                )
-              )
-            }
+  standard_layout(
+    output = tagList(
+      fluidRow(
+        column(
+          width = 6,
+          radioButtons(
+            ns("if_filtered"),
+            NULL,
+            choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
+            selected = TRUE,
+            inline = TRUE
+          )
+        ),
+        column(
+          width = 6,
+          checkboxInput(
+            ns("if_distinct"),
+            "Show only distinct rows:",
+            value = FALSE
           )
         )
-      )
+      ),
+      fluidRow(
+        column(
+          width = 12,
+          do.call(
+            tabsetPanel,
+            lapply(
+              datanames,
+              function(x) {
+                dataset <- datasets$get_data(x, filtered = FALSE)
+                choices <- names(dataset)
+                labels <- vapply(
+                  dataset,
+                  function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                  character(1)
+                )
+                names(choices) <- ifelse(
+                  is.na(labels) | labels == "",
+                  choices,
+                  paste(choices, labels, sep = ": ")
+                )
+                selected <- if (!is.null(selected[[x]])) {
+                  selected[[x]]
+                } else {
+                  head(choices)
+                }
+                tabPanel(
+                  title = x,
+                  column(
+                    width = 12,
+                    div(style = "height:10px;"),
+                    ui_data_table(
+                      id = ns(x),
+                      choices = choices,
+                      selected = selected
+                    )
+                  )
+                )
+              }
+            )
+          )
+        )
+      ),
+      div(style = "height:30px;")
     ),
-    div(style = "height:30px;")
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 

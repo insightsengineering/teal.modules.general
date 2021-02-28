@@ -145,7 +145,7 @@ ui_a_regression <- function(id, ...) {
 
   standard_layout(
     output = white_small_well(tags$div(
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width),
+      plot_with_settings_ui(id = ns("myplot")),
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = div(
@@ -295,6 +295,14 @@ srv_a_regression <- function(input,
       chunks = chunks_stack
     )
 
+    chunks_push(bquote({
+      for (regressor in names(fit$contrasts)) {
+        alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
+        names(fit$coefficients) <- gsub(
+          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients))
+      }}),
+      chunks = chunks_stack)
+
     chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
 
     chunks_safe_eval(chunks = chunks_stack)
@@ -333,7 +341,7 @@ srv_a_regression <- function(input,
     bquote(
       dplyr::if_else(
         data$.cooksd > .(input$outlier) * mean(data$.cooksd, na.rm = TRUE),
-        as.character(ANL[[.(input$label_var)]]),
+        as.character(na.omit(ANL)[[.(input$label_var)]]),
         "") %>% dplyr::if_else(is.na(.), "cooksd == NaN", .)
     )
   })
@@ -667,8 +675,8 @@ srv_a_regression <- function(input,
 
   fitted <- reactive(chunks_get_var("fit", chunks = fit()))
 
-  output$text <- renderPrint({
-    summary(fitted())
+  output$text <- renderText({
+    paste(capture.output(summary(fitted()))[-1], collapse = "\n")
   })
 
   callModule(

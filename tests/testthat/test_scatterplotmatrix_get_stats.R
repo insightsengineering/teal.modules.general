@@ -1,5 +1,3 @@
-context("tm_g_scatterplotmatrix")
-
 set.seed(1)
 x <-  runif(25, 0, 1)
 y <-  runif(25, 0, 1)

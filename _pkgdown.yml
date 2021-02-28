@@ -32,7 +32,6 @@ reference:
       - add_facet_labels
       - create_sparklines
       - get_scatterplotmatrix_stats
-      - stack_grobs
 
   - title: Unexported functions
     contents:

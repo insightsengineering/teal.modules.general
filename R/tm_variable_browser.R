@@ -9,6 +9,7 @@
 #'
 #'
 #' @inheritParams teal::module
+#' @inheritParams teal.devel::standard_layout
 #'
 #' @importFrom stats quantile sd
 #'
@@ -33,7 +34,9 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
-tm_variable_browser <- function(label = "variable browser") {
+tm_variable_browser <- function(label = "Variable Browser",
+                                pre_output = NULL,
+                                post_output = NULL) {
   stopifnot(is_character_single(label))
 
   module(
@@ -41,72 +44,82 @@ tm_variable_browser <- function(label = "variable browser") {
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
-    ui_args = list()
+    ui_args = list(
+      pre_output = pre_output,
+      post_output = post_output
+    )
   )
 }
 
 # ui function
 #' @importFrom stats setNames
 #' @importFrom shinyWidgets switchInput
-ui_variable_browser <- function(id, datasets) {
+ui_variable_browser <- function(id,
+                                datasets,
+                                pre_output = NULL,
+                                post_output = NULL) {
   ns <- NS(id)
 
-  fluidRow(
-    htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
-    column(
-      6,
-      # variable browser
-      white_small_well(
-        do.call(
-          tabsetPanel,
-          c(
-            id = ns("tsp"),
-            do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
-              tabPanel(
-                dataname,
-                div(
-                  style = "margin-top: 15px;",
-                  textOutput(ns(paste0("dataset_summary_", dataname)))
-                ),
-                div(
-                  style = "margin-top: 15px;",
-                  DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+  standard_layout(
+    output = fluidRow(
+      htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
+      column(
+        6,
+        # variable browser
+        white_small_well(
+          do.call(
+            tabsetPanel,
+            c(
+              id = ns("tsp"),
+              do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
+                tabPanel(
+                  dataname,
+                  div(
+                    style = "margin-top: 15px;",
+                    textOutput(ns(paste0("dataset_summary_", dataname)))
+                  ),
+                  div(
+                    style = "margin-top: 15px;",
+                    DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+                  )
                 )
+              }), NULL))
+            )
+          ),
+          checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
+        )
+      ),
+      column(
+        6,
+        white_small_well(
+          div(
+            class = "clearfix",
+            style = "margin: 15px 15px 0px 15px;",
+            div(
+              class = "pull-left",
+              shinyWidgets::switchInput(
+                inputId = ns("raw_or_filtered"),
+                label = "Use filtered data",
+                value = TRUE,
+                width = "100%",
+                labelWidth = "130px",
+                handleWidth = "50px"
               )
-            }), NULL))
-          )
-        ),
-        checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
+            )
+          ),
+          div(
+            class = "clearfix;",
+            style = "margin: 0px 15px 15px 15px;",
+            uiOutput(ns("ui_numeric_display"))
+          ),
+          plotOutput(ns("variable_plot"), height = "500px"),
+          br(),
+          DT::dataTableOutput(ns("variable_summary_table"))
+        )
       )
     ),
-    column(
-      6,
-      white_small_well(
-        div(
-          class = "clearfix",
-          style = "margin: 15px 15px 0px 15px;",
-          div(
-            class = "pull-left",
-            shinyWidgets::switchInput(
-              inputId = ns("raw_or_filtered"),
-              label = "Use filtered data",
-              value = TRUE,
-              width = "100%",
-              labelWidth = "130px",
-              handleWidth = "50px"
-            )
-          )
-        ),
-        div(
-          class = "clearfix;",
-          style = "margin: 0px 15px 15px 15px;",
-          uiOutput(ns("ui_numeric_display"))
-        ),
-        plotOutput(ns("variable_plot"), height = "500px"),
-        br(),
-        DT::dataTableOutput(ns("variable_summary_table"))
-      )
-    )
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 
@@ -144,7 +157,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     validate_has_variable(varname = varname, data = df, "variable not available")
     .log("plot/summarize variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
 
-    varlabel <- datasets$get_variable_labels(dataname = data, varname)
+    varlabel <- datasets$get_varlabels(dataname = data, varname)
     d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
     list(data = df[[varname]], d_var_name = d_var_name)
   })
@@ -179,12 +192,9 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
     output[[table_ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(name, filtered = FALSE)
-      show_adsl_vars <- input$show_adsl_vars
 
-      if (!show_adsl_vars && name != "ADSL") {
-        adsl_vars <- names(datasets$get_data("ADSL", filtered = FALSE))
-        df <- df[!(names(df) %in% adsl_vars)]
-      }
+      df_vars <- datasets$get_filterable_varnames(name)
+      df <- df[df_vars]
 
       if (is.null(df) || ncol(df) == 0) {
         current_rows[[name]] <- character(0)
@@ -196,10 +206,15 @@ srv_variable_browser <- function(input, output, session, datasets) {
           stringsAsFactors = FALSE)
       } else {
         # extract data variable labels
-        labels <- setNames(unlist(lapply(df, function(x) {
-          lab <- attr(x, "label")
-          if (is.null(lab)) "" else lab
-          }), use.names = FALSE), names(df))
+        labels <- setNames(
+          ulapply(
+            df,
+            function(x) {
+              if_null(attr(x, "label"), "")
+            }
+          ),
+          names(df)
+        )
 
         current_rows[[name]] <- names(labels)
 
@@ -209,11 +224,11 @@ srv_variable_browser <- function(input, output, session, datasets) {
           var_missings_info,
           FUN.VALUE = character(1),
           USE.NAMES = FALSE
-          )
+        )
 
         # get icons proper for the data types
         icons <- setNames(teal:::variable_types(df), colnames(df))
-        icons[intersect(datasets$get_keys(name)$primary, colnames(df))] <- "primary_key"
+        icons[intersect(datasets$get_keys(name), colnames(df))] <- "primary_key"
         icons <- teal:::variable_type_icons(icons)
 
         # generate sparklines
@@ -231,21 +246,21 @@ srv_variable_browser <- function(input, output, session, datasets) {
             Missings = missings,
             Sparklines = sparklines_html,
             stringsAsFactors = FALSE
-            ),
+          ),
           escape = FALSE,
           rownames = FALSE,
           selection = list(mode = "single", target = "row", selected = 1),
           options = list(
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
-              ),
+            ),
             fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }")
-            )
           )
-        }
-      },
-      server = TRUE
-      )
+        )
+      }
+    },
+    server = TRUE
+    )
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {
@@ -317,7 +332,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
   output$outlier_definition_slider_ui <- renderUI({
     req(input$remove_outliers)
-    sliderInput(inputId = session$ns("outlier_definition_slider"),
+    sliderInput(
+      inputId = session$ns("outlier_definition_slider"),
       div(
         "Outlier definition:",
         title = paste("Use the slider to choose the cut-off value to define outliers;\nthe larger the value the",
@@ -327,7 +343,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
       min = 1,
       max = 5,
       value = 3,
-      step = 0.5)
+      step = 0.5
+    )
   })
 
   output$ui_density_help <- renderUI({
@@ -345,12 +362,16 @@ srv_variable_browser <- function(input, output, session, datasets) {
   output$ui_outlier_help <- renderUI({
     req(is.logical(input$remove_outliers), input$outlier_definition_slider)
     if (input$remove_outliers) {
-      tags$small(helpText(paste0(
-        "Outlier data points (those less than Q1 -", input$outlier_definition_slider,
-        "*IQR and those greater than Q3 + ", input$outlier_definition_slider, "*IQR) ",
-        "have not been displayed on the graph and will not be used for any kernel density estimations, ",
-        "although their values remain in the statisics table below"
-      )))
+      tags$small(
+        helpText(
+          withMathJax(paste0(
+            "Outlier data points (\\(Q1 - ", input$outlier_definition_slider, "\\times IQR \\gt X\\ and\\
+            Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
+            have not been displayed on the graph and will not be used for any kernel density estimations, ",
+            "although their values remain in the statisics table below."
+          ))
+        )
+      )
     } else {
       NULL
     }
@@ -563,6 +584,9 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolint
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
+  }
+  if (length(arr) > 100000) {
+    return(as.character(tags$code("Too many rows (>100000)", style = "color:blue")))
   }
 
   res <- sparkline::spk_chr(arr, type = "box", width = width, ...)

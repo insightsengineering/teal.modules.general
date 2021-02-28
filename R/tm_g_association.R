@@ -124,7 +124,7 @@ ui_tm_g_association <- function(id, ...) {
     output = white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_with_settings_ui(id = ns("myplot"), height = args$plot_height, width = args$plot_width)
+      plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -319,7 +319,7 @@ srv_tm_g_association <- function(input,
     chunks_push(
       expression = bquote({
         plots <- .(do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        p <- stack_grobs(grobs = lapply(plots, ggplotGrob))
+        p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
         grid::grid.newpage()
         grid::grid.draw(p)
       }),
