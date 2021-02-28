@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.7.9000
+# teal.modules.general 0.2.8
 * Added `max_deg` optional argument to scatterplot to allow user to choose the maximum smoothing degree for trend line.
 * Added both column and row facetting to scatterplot.
 * Fixed edge case errors in `tm_missing_data` caused by input `dataset` not having categorical variables or being a `data.frame` instead of `tibble`.
