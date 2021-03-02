@@ -819,14 +819,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               ecdf_df <- anl_filtered %>%
                 mutate(y = stats::ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
 
-              if (nrow(anl_outlier2) != 0) {
-                dplyr::left_join(
-                  ecdf_df,
-                  anl_outlier2,
-                  by = dplyr::setdiff(names(ecdf_df), "y")
-                ) %>%
-                  dplyr::filter(!is.na(is_outlier_selected))
-              }
+
+              dplyr::left_join(
+                ecdf_df,
+                anl_outlier2,
+                by = dplyr::setdiff(names(ecdf_df), "y")) %>%
+                dplyr::filter(!is.na(is_outlier_selected))
             }
           )
           outlier_points <- do.call(rbind, all_categories)
