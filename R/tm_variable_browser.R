@@ -85,8 +85,7 @@ ui_variable_browser <- function(id,
                 )
               }), NULL))
             )
-          ),
-          checkboxInput(ns("show_adsl_vars"), "Show ADSL variables in datasets other than ADSL", value = FALSE)
+          )
         )
       ),
       column(
