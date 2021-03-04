@@ -19,7 +19,8 @@
 * Capitalize default module labels.
 * Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
 * Add `pre_output` and `post_output` arguments to `tm_data_table`, `tm_missing_data`, `tm_variable_browser`.
-* Issues with no news:
+* Fixed issue in `tm_data_table` when selecting "show distinct rows" if variable names had non-alphanumeric characters. 
+
 
 # teal.modules.general 0.2.7
 
