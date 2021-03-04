@@ -152,7 +152,7 @@ ui_outliers <- function(id, ...) {
         )
       ),
       shinyjs::hidden(checkboxInput(ns("split_outliers"), "Define outliers based on group splitting", value = FALSE)),
-      shinyjs::hidden(checkboxInput(ns("order_by_outlier"), "Re-order categories by outliers [by pct]", value = TRUE)),
+      shinyjs::hidden(checkboxInput(ns("order_by_outlier"), "Re-order categories by outliers [by %]", value = FALSE)),
       panel_group(
         panel_item(
           title = "Method parameters",
@@ -194,10 +194,10 @@ ui_outliers <- function(id, ...) {
             sliderInput(
               ns("percentile_slider"),
               "Outlier range:",
-              min = 0.01,
-              max = 1,
+              min = 0.001,
+              max = 0.5,
               value = 0.01,
-              step = 0.01
+              step = 0.001
             )
           ),
           uiOutput(ns("ui_outlier_help"))
@@ -874,33 +874,47 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     validate(need(input$method, "Please select a method"))
     if (input$method == "IQR") {
       req(input$iqr_slider)
-      tags$small(helpText(
-        withMathJax(paste0(
-          "Outlier data points (\\(Q1 - ", input$iqr_slider, "\\times IQR \\gt x\\) and \\(
-          Q3 + ", input$iqr_slider, "\\times IQR \\lt x\\))
-          are displayed in red on the plot and can be visualized in the table below."
-        ))
-      ))
+      tags$small(
+        withMathJax(
+          helpText(
+            "Outlier data points (\\(Q1 - ", input$iqr_slider, "\\times IQR \\gt x\\) and \\(
+            Q3 + ", input$iqr_slider, "\\times IQR \\lt x\\))
+            are displayed in red on the plot and can be visualized in the table below."
+          ),
+          if (input$split_outliers) {
+            withMathJax(helpText("Note: Quantiles are calculated per group."))
+            }
+        )
+      )
     } else if (input$method == "Z-score") {
       req(input$zscore_slider)
-      tags$small(helpText(
-        withMathJax(paste0(
-          "Outlier data points (\\(Z-score(x) > ", input$zscore_slider,
-          "\\) and \\(Z-score(x) < -", input$zscore_slider, "\\))
-            are displayed in red on the plot and can be visualized in the table below."
-        ))
-      ))
+      tags$small(
+        withMathJax(
+          helpText(
+            "Outlier data points (\\(Zscore(x) > ", input$zscore_slider,
+            "\\) and \\(Zscore(x) < -", input$zscore_slider, "\\))
+              are displayed in red on the plot and can be visualized in the table below."
+          ),
+          if (input$split_outliers) {
+            withMathJax(helpText(" Note: Z-scores are calculated per group."))
+            }
+        )
+      )
     } else if (input$method == "Percentile") {
       req(input$percentile_slider)
-      tags$small(helpText(
-        withMathJax(paste0(
-          "Outlier/extreme data points (\\(", input$percentile_slider,
-          "-Percentile > x\\) and \\(",
-          1 - input$percentile_slider, "-Percentile < x\\))
+      tags$small(
+        withMathJax(
+          helpText(
+            "Outlier/extreme data points (\\(Percentile(x) <", input$percentile_slider,
+            "\\) and \\(Percentile(x) >", 1 - input$percentile_slider, "\\))
             are displayed in red on the plot and can be visualized in the table below."
-        ))
-      ))
-    }
+          ),
+          if (input$split_outliers) {
+            withMathJax(helpText("Note: Percentiles are calculated per group."))
+            }
+          )
+        )
+      }
   })
 
   box_brush <- callModule(
