@@ -647,7 +647,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     plot_call <- if (input$boxplot_alts == "Box plot") {
       bquote(.(plot_call) + geom_boxplot(outlier.shape = NA))
     } else if (input$boxplot_alts == "Violin plot") {
-      bquote(.(plot_call) + geom_violin(outlier.shape = NA))
+      bquote(.(plot_call) + geom_violin())
     } else {
       NULL
     }
