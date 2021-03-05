@@ -303,24 +303,18 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
           })
         )
-        contains_na <- anyNA(merged_data()$data()[, outlier_var])
-        if (contains_na) {
-          common_stack_push(bquote({
-            ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var)))) # nolint
-          }))
-        }
       } else {
         common_stack_push(
           bquote(
             ANL <- ANL %>% dplyr::filter(.(as.name(categorical_var)) %in% .(input$categorical_var_levels)) # nolint
           )
         )
-        contains_na <- anyNA(merged_data()$data()[, c(outlier_var, categorical_var)])
-        if (contains_na) {
-          common_stack_push(bquote({
-            ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var))) & !is.na(.(as.name(categorical_var)))) # nolint
-          }))
-        }
+      }
+      contains_na <- anyNA(merged_data()$data()[, outlier_var])
+      if (contains_na) {
+        common_stack_push(bquote({
+          ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(.(as.name(outlier_var)))) # nolint
+        }))
       }
       shinyjs::show("split_outliers")
     }
@@ -380,7 +374,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                 function(x) {
                   ANL_FILTERED <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint
                   outlier_var_value <- ANL_FILTERED[[outlier_var]]
-                  q1_q3 <- quantile(ANL_FILTERED[[outlier_var]], probs = c(0.25, 0.75))
+                  q1_q3 <- quantile(outlier_var_value, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
                   ANL_FILTERED$is_outlier_selected <-
                     !(outlier_var_value >= q1_q3[1] - outlier_definition_param * iqr &
@@ -401,7 +395,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                                            outlier_definition_param,
                                            categorical_var = NA) {
               outlier_var_value <- ANL[[outlier_var]]
-              q1_q3 <- quantile(ANL[[outlier_var]], probs = c(0.25, 0.75))
+              q1_q3 <- quantile(outlier_var_value, probs = c(0.25, 0.75))
               iqr <- q1_q3[2] - q1_q3[1]
               ANL$is_outlier_selected <-
                 !(outlier_var_value >= q1_q3[1] - outlier_definition_param * iqr &
@@ -586,7 +580,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               dplyr::select(.(as.name(categorical_var)), display_str_na) %>%
               tidyr::pivot_wider(names_from = .(categorical_var), values_from = display_str_na) %>%
               dplyr::mutate(row_name = "Missing(s)")
-            summary_table_wide <- dplyr::bind_rows(summary_table_wide, summary_table_na_wide)
           })
         )
       }
@@ -597,10 +590,23 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             dplyr::mutate(total_in_cat = as.character(total_in_cat)) %>%
             tidyr::pivot_wider(names_from = .(categorical_var), values_from = total_in_cat) %>%
             dplyr::mutate(row_name = "Total")
-          summary_table_wide <- dplyr::bind_rows(summary_table_wide, summary_table_total_wide) %>%
-            tibble::column_to_rownames("row_name")
         })
       )
+      if (contains_na) {
+        common_stack_push(
+          bquote(
+            summary_table <- dplyr::bind_rows(summary_table_wide, summary_table_na_wide, summary_table_total_wide) %>%
+              tibble::column_to_rownames("row_name")
+          )
+        )
+      } else {
+        common_stack_push(
+          bquote(
+            summary_table <- dplyr::bind_rows(summary_table_wide, summary_table_total_wide) %>%
+              tibble::column_to_rownames("row_name")
+          )
+        )
+      }
     }
 
     chunks_safe_eval(chunks = common_stack)
@@ -614,7 +620,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
   output$summary_table <- DT::renderDataTable({
     suppressWarnings(
-      chunks_get_var("summary_table_wide", common_code_chunks()$common_stack)
+      chunks_get_var("summary_table", common_code_chunks()$common_stack)
     )
   },
   options = list(dom = "t", autoWidth = TRUE, columnDefs = list(list(width = "200px", targets = "_all")))
@@ -1041,7 +1047,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       display_table,
       dplyr::select(data, setdiff(names(data), setdiff(names(display_table), keys))), by = keys) %>%
       dplyr::select(union(names(display_table), input$table_ui_columns))
-  }, options =  list(searching = FALSE, paging = FALSE, language = list(
+  }, options =  list(searching = FALSE, pageLength = 10, language = list(
     zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold")
   )
   )
