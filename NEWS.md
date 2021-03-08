@@ -8,6 +8,7 @@
 #### `tm_g_scatterplot`
 * Added `max_deg` optional argument to scatterplot to allow users to choose the maximum smoothing degree for the trend line.
 * Added column and row facetting functionality to the scatterplot.
+* Added possibility to specify type of join in `tm_t_crosstable`. Incorporate missings resulting from non inner join.
 
 ### Bug Fixes
 * Fixed edge case errors in `tm_missing_data` caused by input `dataset` not having categorical variables or being a `data.frame` instead of `tibble`.

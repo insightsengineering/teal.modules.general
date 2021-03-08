@@ -18,8 +18,7 @@ tm_t_crosstable(
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable X - row values.
-\code{data_extract_spec} must not allow multiple selection in this case.}
+Object with all available choices with pre-selected option for variable X - row values.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Object with all available choices with pre-selected option for variable Y - column values
@@ -90,4 +89,5 @@ app <- init(
 \dontrun{
 shinyApp(app$ui, app$server)
 }
+
 }

@@ -5,7 +5,6 @@
 #' @inheritParams teal.devel::standard_layout
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable X - row values.
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
@@ -67,6 +66,7 @@
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
+#'
 tm_t_crosstable <- function(label = "Cross Table",
                             x,
                             y,
@@ -109,6 +109,13 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   ns <- NS(id)
   is_single_dataset <- is_single_dataset(x, y)
 
+  join_default_options <- c(
+    "Full Join" = "dplyr::full_join",
+    "Inner Join" = "dplyr::inner_join",
+    "Left Join" = "dplyr::left_join",
+    "Right Join" = "dplyr::right_join"
+  )
+
   standard_layout(
     output = white_small_well(
       textOutput(ns("title")),
@@ -118,8 +125,14 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
       data_extract_input(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
-      tags$hr(),
       data_extract_input(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
+      optionalSelectInput(
+        ns("join_fun"),
+        label = "Row to Column type of join",
+        choices = join_default_options,
+        selected = join_default_options[1],
+        multiple = FALSE
+      ),
       tags$hr(),
       panel_group(
         panel_item(
@@ -139,30 +152,53 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+  x_de_r <- callModule(
+    data_extract_module,
+    id = "x",
     datasets = datasets,
-    data_extract = list(x, y),
-    input_id = c("x", "y")
+    data_extract_spec = x
   )
+
+  y_de_r <- callModule(
+    data_extract_module,
+    id = "y",
+    datasets = datasets,
+    data_extract_spec = y
+  )
+
+  observeEvent(list(x_de_r(), y_de_r()), {
+    if (identical(x_de_r()$dataname, y_de_r()$dataname)) {
+      shinyjs::hide("join_fun")
+    } else {
+      shinyjs::show("join_fun")
+    }
+  })
+
+  merged_data_r <- reactive({
+    data_merge_module(
+      datasets = datasets,
+      data_extract = list(x, y),
+      input_id = c("x", "y"),
+      merge_function = input$join_fun
+    )
+  })
 
   create_table <- reactive({
     chunks_reset()
-    chunks_push_data_merge(merged_data())
+    chunks_push_data_merge(merged_data_r()())
 
     ANL <- chunks_get_var("ANL") # nolint
 
     # As this is a summary
     validate_has_data(ANL, 3)
 
-    x_name <- as.vector(merged_data()$columns_source$x)
-    y_name <- as.vector(merged_data()$columns_source$y)
+    x_name <- as.vector(merged_data_r()()$columns_source$x)
+    y_name <- as.vector(merged_data_r()()$columns_source$y)
 
     validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
     validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
-
-    validate(need(!any(is.na(ANL[[y_name]])), "NAs in the chosen variable, please choose another column variable"))
 
     is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
     validate(need(
@@ -190,10 +226,17 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       print(title)
     }))
 
+    if (anyNA(ANL)) {
+      chunks_push(quote(
+        ANL <- tern::df_explicit_na(ANL) # nolint
+      ))
+    }
+
     labels_vec <- vapply( # nolint
-      as.vector(merged_data()$columns_source$x),
-      function(x) varname_w_label(x, ANL),
-      character(1)
+      as.vector(merged_data_r()()$columns_source$x),
+      varname_w_label,
+      character(1),
+      ANL
     )
 
     chunks_push(bquote({
@@ -245,9 +288,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   show_r_code_title <- reactive(
     paste(
       "Cross-Table of",
-      paste0(merged_data()$columns_source$x, collapse = ", "),
+      paste0(merged_data_r()()$columns_source$x, collapse = ", "),
       "vs.",
-      merged_data()$columns_source$y
+      merged_data_r()()$columns_source$y
     )
   )
 
