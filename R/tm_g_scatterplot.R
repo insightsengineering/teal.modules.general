@@ -432,50 +432,50 @@ srv_g_scatterplot <- function(input,
 
     label_generator <- bquote({
       df_no_na <- na.omit(df)
-      warn_na <- if ((num_local_na <- nrow(df) - nrow(df_no_na)) > 0) paste(num_local_na, "row(s) with NA removed")
+      warn_na <- switch((num_local_na <- nrow(df) - nrow(df_no_na)) > 0, paste(num_local_na, "row(s) with NA removed"))
 
       m <- try(lm(df_no_na[[.(y_var)]] ~ poly(df_no_na[[.(x_var)]], .(smoothing_degree)), df_no_na), silent = TRUE)
-      label <- if (!inherits(m, "try-error")) {
-        r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
-        form <- sprintf(
-          "%s = %#.4f %s %#.4f * %s%s",
-          .(y_var),
-          coef(m)[1],
-          ifelse(coef(m)[2] < 0, "-", "+"),
-          abs(coef(m)[2]),
-          .(x_var),
-          paste(
-            vapply(
-              X = seq_len(.(smoothing_degree))[-1],
-              FUN = function(deg) {
-                sprintf(
-                  " %s %#.4f*%s^%s",
-                  ifelse(coef(m)[deg + 1] < 0, "-", "+"),
-                  abs(coef(m)[deg + 1]),
-                  .(x_var),
-                  deg
-                )
-              },
-              FUN.VALUE = character(1)),
-            collapse = ""
+      label <- ifelse(
+        !inherits(m, "try-error"), {
+          r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
+          form <- sprintf(
+            "%s = %#.4f %s %#.4f * %s%s",
+            .(y_var),
+            coef(m)[1],
+            ifelse(coef(m)[2] < 0, "-", "+"),
+            abs(coef(m)[2]),
+            .(x_var),
+            paste(
+              vapply(
+                X = seq_len(.(smoothing_degree))[-1],
+                FUN = function(deg) {
+                  sprintf(
+                    " %s %#.4f*%s^%s",
+                    ifelse(coef(m)[deg + 1] < 0, "-", "+"),
+                    abs(coef(m)[deg + 1]),
+                    .(x_var),
+                    deg
+                  )
+                },
+                FUN.VALUE = character(1)),
+              collapse = ""
+            )
           )
-        )
-        list(
-          form = form,
-          r_2 = r_2,
-          msg = .(if (!is.null(color_sub_chunk))
-            bquote(if (length(unique(df_no_na[[.(color_by_var)]])) > 1) "Stats from combined selected color groups")),
-          warn_na = warn_na)
-      } else {
-        list(paste("Not enough unique x values to fit line with degree:", .(smoothing_degree)))
-      }
+          list(
+            form = form,
+            r_2 = r_2,
+            msg = .(if (!is.null(color_sub_chunk))
+              bquote(if (length(unique(df_no_na[[.(color_by_var)]])) > 1) "Stats from combined selected color groups")),
+            warn_na = warn_na)
+      },
+      list(paste("Not enough unique x values to fit line with degree:", .(smoothing_degree))))
     })
 
     select_columns <- bquote(
       .(if (!is.null(color_sub_chunk)) {
-        bquote(select(.(x_var), .(y_var), .(color_by_var)))
+        bquote(dplyr::select(.(x_var), .(y_var), .(color_by_var)))
       } else {
-        bquote(select(.(x_var), .(y_var)))
+        bquote(dplyr::select(.(x_var), .(y_var)))
       })
     )
 
@@ -526,7 +526,8 @@ srv_g_scatterplot <- function(input,
         .(label_generator[[2]])
         .(label_generator[[3]])
         .(label_generator[[4]])
-        .(label_generator[[5]])})
+        .(label_generator[[5]])
+      })
     }
     chunks_push(plot_labels_chunk, chunks = formula_tbl_chunk)
     if (!is.null(warn_na$code_chunk)) {
