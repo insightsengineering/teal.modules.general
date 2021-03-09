@@ -71,21 +71,38 @@ ui_variable_browser <- function(id,
             tabsetPanel,
             c(
               id = ns("tsp"),
-              do.call(tagList, setNames(lapply(datasets$datanames(), function(dataname) {
-                tabPanel(
-                  dataname,
-                  div(
-                    style = "margin-top: 15px;",
-                    textOutput(ns(paste0("dataset_summary_", dataname)))
+              do.call(
+                tagList,
+                setNames(
+                  lapply(
+                    datasets$datanames(),
+                    function(dataname) {
+                      tabPanel(
+                        dataname,
+                        div(
+                          style = "margin-top: 15px;",
+                          textOutput(ns(paste0("dataset_summary_", dataname)))
+                        ),
+                        div(
+                          style = "margin-top: 15px;",
+                          DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+                        )
+                      )
+                    }
                   ),
-                  div(
-                    style = "margin-top: 15px;",
-                    DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
-                  )
+                  NULL
                 )
-              }), NULL))
+              )
             )
-          )
+          ),
+          { # nolint
+            x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
+            if (is(datasets, "CDISCFilteredData")) {
+              x
+            } else {
+              shinyjs::hidden(x)
+            }
+          }
         )
       ),
       column(
@@ -164,11 +181,10 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
   treat_numeric_as_factor <- reactive({
     if (length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)) {
-      numeric_as_factor <- input$numeric_as_factor
+      input$numeric_as_factor
     } else {
-      numeric_as_factor <- FALSE
+      FALSE
     }
-    numeric_as_factor
   })
 
 
@@ -180,9 +196,10 @@ srv_variable_browser <- function(input, output, session, datasets) {
     dataset_ui_id <- paste0("dataset_summary_", name)
     output[[dataset_ui_id]] <- renderText({
       df <- datasets$get_data(name, filtered = FALSE)
+      key <- datasets$get_keys(name)
       sprintf(
-        "Dataset with %s unique subjects IDs and %s variables",
-        length(unique(df$USUBJID)),
+        "Dataset with %s unique key rows and %s variables",
+        nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
         ncol(df)
       )
     })
@@ -192,7 +209,11 @@ srv_variable_browser <- function(input, output, session, datasets) {
     output[[table_ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(name, filtered = FALSE)
 
-      df_vars <- datasets$get_filterable_varnames(name)
+      df_vars <- if (isFALSE(input$show_parent_vars)) {
+        datasets$get_filterable_varnames(name)
+      } else {
+        datasets$get_varnames(name)
+      }
       df <- df[df_vars]
 
       if (is.null(df) || ncol(df) == 0) {
@@ -387,7 +408,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
       outlier_definition <- 0
     }
 
-    plot_var_summary(var = data_for_analysis()$data,
+    plot_var_summary(
+      var = data_for_analysis()$data,
       var_lab = data_for_analysis()$d_var_name,
       numeric_as_factor = treat_numeric_as_factor(),
       display_density = display_density,

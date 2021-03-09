@@ -16,7 +16,7 @@
 ### Miscellaneous
 * Sparklines no longer shown for numeric variables with more than 100000 rows.
 * Colors legend for each plot.
-* Removed "Show variables other than in ADSL" checkbox in variable browser module.
+* Replaced "Show variables other than in ADSL" checkbox to more general "Show parent dataset variables".
 * Capitalize default module labels.
 * Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
 * Added `pre_output` and `post_output` arguments to `tm_data_table`, `tm_missing_data`, `tm_variable_browser`.
