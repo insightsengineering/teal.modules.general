@@ -46,7 +46,7 @@ point sizes dynamically then it can be a vector of length three with \code{c(val
 slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 length three with \code{c(value, min, max)}.}
 
-\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
+\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size.
 If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 vector of length three with \code{c(value, min, max)}.}
 
@@ -75,7 +75,7 @@ app <- teal::init(
              data_extract_spec(
                dataname = "ADSL",
                select = select_spec(
-                 choices = variable_choices(data = ADSL),
+                 choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
                  selected = c("BMRKR1", "AGE"),
                  multiple = TRUE
                ),

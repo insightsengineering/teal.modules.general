@@ -9,7 +9,7 @@
 #' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 #'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
+#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size.
 #'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
 #' @param font_size optional, (`numeric`) font size control for title, x-axis label, y-axis label and legend.
@@ -34,7 +34,7 @@
 #'              data_extract_spec(
 #'                dataname = "ADSL",
 #'                select = select_spec(
-#'                  choices = variable_choices(data = ADSL),
+#'                  choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
 #'                  selected = c("BMRKR1", "AGE"),
 #'                  multiple = TRUE
 #'                ),
@@ -243,10 +243,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_stack <- chunks$new()
 
     keep_cols <- as.character(anl_data()$columns_source$dat)
-    na_action <- input$na_action #nolint
+    na_action <- input$na_action
     standardization <- input$standardization
     center <- standardization %in% c("center", "center_scale") #nolint
-    scale <- standardization == "center_scale" #nolint
+    scale <- standardization == "center_scale"
 
     validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
 
