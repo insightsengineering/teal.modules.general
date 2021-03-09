@@ -334,7 +334,6 @@ ui_g_bivariate <- function(id, ...) {
 
 
 #' @importFrom magrittr %>%
-#' @importFrom methods is
 #' @importFrom shinyjs show hide
 srv_g_bivariate <- function(input,
                             output,
