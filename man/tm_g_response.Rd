@@ -10,7 +10,7 @@ tm_g_response(
   x,
   row_facet = NULL,
   col_facet = NULL,
-  coord_flip = TRUE,
+  coord_flip = FALSE,
   count_labels = TRUE,
   rotate_xaxis_labels = FALSE,
   freq = FALSE,
