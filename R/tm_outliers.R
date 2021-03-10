@@ -216,6 +216,7 @@ ui_outliers <- function(id, ...) {
 #' @importFrom tibble column_to_rownames
 #' @importFrom shinyjs hide show
 #' @importFrom grid grid.draw
+#' @importFrom stats ecdf
 srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width) {
   init_chunks()
