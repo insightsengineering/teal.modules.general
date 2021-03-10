@@ -559,7 +559,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
                          is.factor(response) ||
                          (is.numeric(response) && length(unique(response)) <= 6)) {
           bquote({
-            response <- merge(ANL, RP, by = .(rp_keys))[[.(resp_col)]]
+            response <- RP[[.(resp_col)]]
             pca_rot$response <- as.factor(response)
             scale_colors <- scale_color_brewer(palette = "Dark2")
             aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
