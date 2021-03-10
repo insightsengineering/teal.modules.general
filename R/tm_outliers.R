@@ -331,7 +331,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(
       quote(
         outliers_beyond_1.5_IQR <- function(ANL, outlier_var, categorical_var = NULL) { # nolint
-          if (!is_empty(categorical_var)) {
+          if (!utils.nest::is_empty(categorical_var)) {
             ANL %>%
               dplyr::group_by(!!as.name(categorical_var)) %>%
               dplyr::mutate(
@@ -783,8 +783,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       cumulative_r_stack_push(
         bquote({
           ecdf_df <- ANL %>%
-            mutate(
-              y = stats::ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]])
+            dplyr::mutate(
+              y = ecdf(ANL[[.(outlier_var)]])(ANL[[.(outlier_var)]])
             )
 
           outlier_points <- dplyr::left_join(
@@ -823,7 +823,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               anl_filtered <- .(ANL) %>% dplyr::filter(get(.(categorical_var)) == x)
               anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(.(categorical_var)) == x)
               ecdf_df <- anl_filtered %>%
-                mutate(y = stats::ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
+                dplyr::mutate(y = ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
 
 
               dplyr::left_join(
@@ -957,7 +957,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     updateOptionalSelectInput(
       session,
       inputId = "table_ui_columns",
-      choices = setdiff(choices, names(ANL_OUTLIER)),
+      choices = dplyr::setdiff(choices, names(ANL_OUTLIER)),
       selected = isolate(input$table_ui_columns))
   })
 
@@ -1014,9 +1014,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         if (!is_empty(categorical_var)) {
           ANL <- ANL %>% # nolint
             dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
-            dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
+            dplyr::mutate(cdf = ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
         } else {
-          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+          ANL$cdf <- ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
         }
       }
       brushed_rows <- brushedPoints(ANL, plot_brush)
@@ -1045,7 +1045,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     data <- datasets$get_data(dataname)
     dplyr::left_join(
       display_table,
-      dplyr::select(data, setdiff(names(data), setdiff(names(display_table), keys))), by = keys) %>%
+      dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))), by = keys) %>%
       dplyr::select(union(names(display_table), input$table_ui_columns))
   }, options =  list(searching = FALSE, pageLength = 10, language = list(
     zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold")
