@@ -432,10 +432,10 @@ srv_g_scatterplot <- function(input,
 
     label_generator <- bquote({
       df_no_na <- na.omit(df)
-      warn_na <- switch((num_local_na <- nrow(df) - nrow(df_no_na)) > 0, paste(num_local_na, "row(s) with NA removed"))
+      warn_na <- `if`((num_local_na <- nrow(df) - nrow(df_no_na)) > 0, paste(num_local_na, "row(s) with NA removed"))
 
       m <- try(lm(df_no_na[[.(y_var)]] ~ poly(df_no_na[[.(x_var)]], .(smoothing_degree)), df_no_na), silent = TRUE)
-      label <- ifelse(
+      label <- `if`(
         !inherits(m, "try-error"), {
           r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
           form <- sprintf(
