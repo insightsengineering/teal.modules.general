@@ -950,9 +950,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     brushing = TRUE
   )
 
-  observe({
-    choices <- variable_choices(
-      datasets$get_data(if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])))
+  choices <- variable_choices(
+    datasets$get_data(if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])))
+
+  observeEvent(common_code_chunks(), {
     ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
     updateOptionalSelectInput(
       session,
