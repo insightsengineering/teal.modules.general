@@ -308,15 +308,6 @@ srv_g_scatterplot <- function(input,
       if_not_null(col_facet, "col_facet"))
   )
 
-  observe({
-    color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    if (!is_empty(color_by_var)) {
-      shinyjs::hide("color")
-    } else {
-      shinyjs::show("color")
-    }
-  })
-
   eval_merged_data <- reactive({
     data_chunk <- chunks$new()
     chunks_push_data_merge(merged_data(), chunks = data_chunk)
@@ -353,6 +344,15 @@ srv_g_scatterplot <- function(input,
         choices = choices,
         selected = if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% choices], NULL))
       NULL
+    })
+
+    observeEvent(merged_data()$columns_source$color_by, {
+      color_by_var <- as.vector(merged_data()$columns_source$color_by)
+      if (!is_empty(color_by_var)) {
+        shinyjs::hide("color")
+      } else {
+        shinyjs::show("color")
+      }
     })
   }
 
