@@ -883,7 +883,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       tags$small(
         withMathJax(
           helpText(
-            "Outlier data points (\\(Q1 - ", input$iqr_slider, "\\times IQR \\gt x\\) and \\(
+            "Outlier data points (\\(x \\lt Q1 - ", input$iqr_slider, "\\times IQR\\) or \\(
             Q3 + ", input$iqr_slider, "\\times IQR \\lt x\\))
             are displayed in red on the plot and can be visualized in the table below."
           ),
@@ -897,8 +897,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       tags$small(
         withMathJax(
           helpText(
-            "Outlier data points (\\(Zscore(x) > ", input$zscore_slider,
-            "\\) and \\(Zscore(x) < -", input$zscore_slider, "\\))
+            "Outlier data points (\\(Zscore(x) < -", input$zscore_slider,
+            "\\) or \\(", input$zscore_slider, "< Zscore(x) \\))
               are displayed in red on the plot and can be visualized in the table below."
           ),
           if (input$split_outliers) {
@@ -911,8 +911,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       tags$small(
         withMathJax(
           helpText(
-            "Outlier/extreme data points (\\(Percentile(x) <", input$percentile_slider,
-            "\\) and \\(Percentile(x) >", 1 - input$percentile_slider, "\\))
+            "Outlier/extreme data points (\\( Percentile(x) <", input$percentile_slider,
+            "\\) or \\(", 1 - input$percentile_slider, " < Percentile(x) \\))
             are displayed in red on the plot and can be visualized in the table below."
           ),
           if (input$split_outliers) {

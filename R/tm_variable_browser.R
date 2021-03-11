@@ -385,8 +385,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
       tags$small(
         helpText(
           withMathJax(paste0(
-            "Outlier data points (\\(Q1 - ", input$outlier_definition_slider, "\\times IQR \\gt X\\ and\\
-            Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
+            "Outlier data points (\\( X \\lt Q1 - ", input$outlier_definition_slider, "\\times IQR \\) or
+            \\(Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
             have not been displayed on the graph and will not be used for any kernel density estimations, ",
             "although their values remain in the statisics table below."
           ))
