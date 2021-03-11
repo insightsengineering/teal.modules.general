@@ -215,7 +215,6 @@ ui_outliers <- function(id, ...) {
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble column_to_rownames
 #' @importFrom shinyjs hide show
-#' @importFrom grid grid.draw
 #' @importFrom stats ecdf
 srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width) {
@@ -689,7 +688,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
       labs(color = "is_outlier") +
       theme(legend.position = "top")))
-    boxplot_r_stack_push(quote(grid::grid.draw(g)))
+    boxplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(boxplot_r_stack)
     boxplot_r_stack
   })
@@ -719,7 +718,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     # validation
     validate_has_data(ANL, 1)
     # plot
-    plot_call <- bquote({
+    plot_call <- bquote(
       ANL %>% ggplot(aes(x = .(as.name(outlier_var)))) +
         geom_density() +
         geom_rug(
@@ -730,7 +729,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
         labs(color = "is_outlier") +
         theme(legend.position = "top")
-    })
+    )
 
     plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
       bquote(
@@ -744,7 +743,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     density_r_stack_push(bquote(g <- .(plot_call)))
-    density_r_stack_push(quote(grid::grid.draw(g)))
+    density_r_stack_push(quote(print(g)))
     chunks_safe_eval(density_r_stack)
     density_r_stack
   })
@@ -852,7 +851,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       labs(color = "is_outlier") +
       theme(legend.position = "top")))
 
-    cumulative_r_stack_push(quote(grid::grid.draw(g)))
+    cumulative_r_stack_push(quote(print(g)))
     chunks_safe_eval(cumulative_r_stack)
     cumulative_r_stack
   })
