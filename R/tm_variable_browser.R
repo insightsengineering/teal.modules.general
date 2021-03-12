@@ -726,10 +726,9 @@ plot_var_summary <- function(var,
 
   get_bin_width <- function(x, scaling_factor = 2) {
     x <- x[!is.na(x)]
-    binwidth <- max(
-      scaling_factor * IQR(x) / length(x) ^ (1 / 3),
-      sqrt(quantile(x, 0.9) - quantile(x, 0.1))
-    )
+    qntls <- quantile(x, probs = c(0.1, 0.25, 0.75, 0.9))
+    iqr <- qntls[3] - qntls[2]
+    binwidth <- max(scaling_factor * iqr / length(x) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
     binwidth <- ifelse(binwidth == 0, 1, binwidth)
   }
 
