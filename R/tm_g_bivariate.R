@@ -421,8 +421,7 @@ srv_g_bivariate <- function(input,
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
 
-    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1)))
-
+    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && !is_empty(x_name)
 
     if (is_scatterplot) {
       shinyjs::show("alpha")
