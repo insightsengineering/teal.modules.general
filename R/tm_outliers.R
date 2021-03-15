@@ -686,7 +686,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
     boxplot_r_stack_push(bquote(g <- .(plot_call) +
       scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-      labs(color = "is_outlier") +
+      labs(color = "Is outlier?") +
       theme(legend.position = "top")))
     boxplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(boxplot_r_stack)
@@ -727,7 +727,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               color = is_outlier_selected)
         ) +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "is_outlier") +
+        labs(color = "Is outlier?") +
         theme(legend.position = "top")
     )
 
@@ -848,7 +848,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         aes(x = .(as.name(outlier_var)), y = y, color = is_outlier_selected)
       ) +
       scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-      labs(color = "is_outlier") +
+      labs(color = "Is outlier?") +
       theme(legend.position = "top")))
 
     cumulative_r_stack_push(quote(print(g)))
