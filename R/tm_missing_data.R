@@ -194,7 +194,10 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
 
   tagList(
     uiOutput(ns("variables")),
-    actionButton(ns("filter_na"), span(style = "white-space: normal;", "Select only vars with missings"), width = "100%"), # nolint
+    actionButton(
+      ns("filter_na"),
+      span(style = "white-space: normal;", "Select only vars with missings"),
+      width = "100%"),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
       checkboxInput(
@@ -245,8 +248,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
 }
 
 #' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all transmute
-#'   pull select summarise_all ungroup tally tibble distinct n_distinct cur_group_id row_number desc
-#' @import ggplot2
+#'   pull select summarise_all ungroup tally tibble distinct n_distinct cur_group_id row_number
 #' @importFrom grid grid.newpage grid.draw unit.pmax unit
 #' @importFrom gridExtra gtable_cbind gtable_rbind
 #' @importFrom magrittr %>% extract2
