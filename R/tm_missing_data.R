@@ -836,10 +836,6 @@ srv_missing_data <- function(input,
 
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
-    validate(need(
-      !is_empty(datasets$get_parentname(dataname)),
-      "This plot can only be calculated for datasets that have a parent dataset."
-    ))
     validate_has_data(data(), 1)
     # Create a private stack for this function only.
     by_subject_stack <- chunks$new()
@@ -851,7 +847,13 @@ srv_missing_data <- function(input,
     chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
 
     keys <- data_keys()
-    by_subject_stack_push(bquote(parent_keys <- .(datasets$get_primary_keys(datasets$get_parentname(dataname)))))
+    by_subject_stack_push(bquote(
+      parent_keys <- .(`if`(
+        is_empty(datasets$get_parentname(dataname)),
+        keys,
+        datasets$get_primary_keys(datasets$get_parentname(dataname))
+      ))
+    ))
 
     by_subject_stack_push(
       bquote(
