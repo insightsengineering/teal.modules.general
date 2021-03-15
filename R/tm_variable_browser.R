@@ -174,7 +174,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
     .log("plot/summarize variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
 
     varlabel <- datasets$get_varlabels(dataname = data, varname)
-    d_var_name <- paste0(varlabel, " [", data, ".", varname, "]")
+    d_var_name <- paste0(if_na(varlabel, varname), " [", data, ".", varname, "]")
     list(data = df[[varname]], d_var_name = d_var_name)
   })
 
