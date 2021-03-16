@@ -248,7 +248,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
 }
 
 #' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all transmute
-#'   pull select summarise_all ungroup tally tibble distinct n_distinct cur_group_id row_number
+#'   pull select summarise_all ungroup tally distinct n_distinct cur_group_id row_number
 #' @importFrom grid grid.newpage grid.draw unit.pmax unit
 #' @importFrom gridExtra gtable_cbind gtable_rbind
 #' @importFrom magrittr %>% extract2
@@ -256,7 +256,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
 #' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom tidyselect everything all_of
-#' @importFrom tibble as_tibble
+#' @importFrom tibble as_tibble tibble
 #' @importFrom digest sha1
 srv_missing_data <- function(input,
                              output,
@@ -429,6 +429,7 @@ srv_missing_data <- function(input,
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
+    validate(need(!is_empty(input$variables_select), "No variables selected"))
 
     # Create a private stack for this function only.
     summary_stack <- chunks$new()
@@ -646,6 +647,7 @@ srv_missing_data <- function(input,
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
+    validate(need(!is_empty(input$variables_select), "No variables selected"))
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
@@ -839,6 +841,7 @@ srv_missing_data <- function(input,
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
+    validate(need(!is_empty(input$variables_select), "No variables selected"))
     # Create a private stack for this function only.
     by_subject_stack <- chunks$new()
     by_subject_stack_push <- function(...) {
@@ -921,10 +924,17 @@ srv_missing_data <- function(input,
   })
 
   output$levels_table <- DT::renderDataTable({
-    chunks_reset()
-    chunks_push_chunks(table_chunks())
-    chunks_get_var("summary_data")
-  })
+    if (is_empty(input$variables_select)) {
+      # so that zeroRecords message gets printed
+      # using tibble as it supports weird column names, such as " "
+      tibble::tibble(` ` = logical(0))
+    } else {
+      chunks_reset()
+      chunks_push_chunks(table_chunks())
+      chunks_get_var("summary_data")
+    }
+  }, options =  list(language = list(zeroRecords = "No variable selected"))
+  )
 
   callModule(
     plot_with_settings_srv,
