@@ -548,10 +548,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         !resp_col %in% colnames(ANL),
         "Response column must be different from the original variables (that were used for PCA)."))
 
-      RP <- chunks_get_var("RP") # nolint
-      rp_keys <- setdiff(colnames(RP), as.character(unlist(rd$columns_source))) # nolint
+      rp <- chunks_get_var("RP")
+      rp_keys <- setdiff(colnames(rp), as.character(unlist(rd$columns_source))) # nolint
 
-      response <- RP[[resp_col]]
+      response <- rp[[resp_col]]
 
       chunks_push(
         id = "pca_plot_response",
@@ -559,14 +559,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
                          is.factor(response) ||
                          (is.numeric(response) && length(unique(response)) <= 6)) {
           bquote({
-            response <- RP[[.(resp_col)]]
+            response <- rp[[.(resp_col)]]
             pca_rot$response <- as.factor(response)
             scale_colors <- scale_color_brewer(palette = "Dark2")
             aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
           })
         } else if (class(response) == "Date") {
           bquote({
-            response <- RP[[.(resp_col)]]
+            response <- rp[[.(resp_col)]]
             pca_rot$response <- as.numeric(response)
             scale_colors <- scale_color_gradient(
               low = "darkred",
@@ -576,7 +576,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           })
         } else {
           bquote({
-            response <- RP[[.(resp_col)]]
+            response <- rp[[.(resp_col)]]
             pca_rot$response <- response
             scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
             aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
@@ -591,7 +591,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
             geom_point(aes_biplot, data = pca_rot, alpha = .(alpha), size = .(size)) +
             scale_colors +
             .(call(paste0("theme_", ggtheme))) +
-            labs(color = .(varname_w_label(resp_col, RP))) +
+            labs(color = .(varname_w_label(resp_col, rp))) +
             theme(axis.text.x = element_text(
               angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
               hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
