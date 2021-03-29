@@ -119,7 +119,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   standard_layout(
     output = white_small_well(
       textOutput(ns("title")),
-      uiOutput(ns("table"))
+      table_with_settings_ui(ns("table"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
@@ -280,10 +280,16 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     chunks_get_var("title")
   })
 
-  output$table <- renderUI({
+  table <- reactive({
     create_table()
     as_html(chunks_get_var("tbl"))
   })
+
+  callModule(
+    table_with_settings_srv,
+    id = "table",
+    table_r = table
+  )
 
   show_r_code_title <- reactive(
     paste(

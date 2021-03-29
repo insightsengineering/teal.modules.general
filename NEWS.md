@@ -1,6 +1,6 @@
 # teal.modules.general 0.2.8.9000
-
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.
+* Added download and expand options to `tm_t_crosstable`.
 
 Issues with no news:
 
