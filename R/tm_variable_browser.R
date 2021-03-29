@@ -128,7 +128,7 @@ ui_variable_browser <- function(id,
             style = "margin: 0px 15px 15px 15px;",
             uiOutput(ns("ui_numeric_display"))
           ),
-          plotOutput(ns("variable_plot"), height = "500px"),
+          plot_with_settings_ui(ns("variable_plot")),
           br(),
           DT::dataTableOutput(ns("variable_summary_table"))
         )
@@ -397,7 +397,8 @@ srv_variable_browser <- function(input, output, session, datasets) {
     }
   })
 
-  output$variable_plot <- renderPlot({
+
+  variable_plot_r <- reactive({
     display_density <- if_null(input$display_density, FALSE)
     remove_outliers <- if_null(input$remove_outliers, FALSE)
 
@@ -416,8 +417,14 @@ srv_variable_browser <- function(input, output, session, datasets) {
       outlier_definition = outlier_definition,
       records_for_factor = .unique_records_for_factor
     )
-
   })
+
+  callModule(
+    plot_with_settings_srv,
+    id = "variable_plot",
+    plot_r = variable_plot_r,
+    height =  c(500, 200, 2000)
+  )
 
   output$variable_summary_table <- DT::renderDataTable({
     var_summary_table(data_for_analysis()$data, treat_numeric_as_factor())
@@ -842,4 +849,5 @@ plot_var_summary <- function(var,
   }
 
   grid::grid.draw(plot_grob)
+  plot_grob
 }

@@ -1,4 +1,7 @@
 # teal.modules.general 0.2.8.9000
+
+* Added download, enlarge and resize graph options to `tm_variable_browser` module.
+
 Issues with no news:
 
 # teal.modules.general 0.2.8
