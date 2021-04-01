@@ -308,6 +308,7 @@ ui_data_table <- function(id,
   }
 
   tagList(
+    get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
       teal::optionalSelectInput(
         ns("variables"),
@@ -360,6 +361,8 @@ srv_data_table <- function(input,
     }
 
     dt_args$options <- dt_options
+    if (!is.null(input$dt_rows))
+      dt_args$options$pageLength <- input$dt_rows #nolint
     dt_args$data <- dataframe_selected
 
     do.call(DT::datatable, dt_args)
