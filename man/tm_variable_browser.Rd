@@ -6,12 +6,17 @@
 \usage{
 tm_variable_browser(
   label = "Variable Browser",
+  datasets_selected = character(0),
   pre_output = NULL,
   post_output = NULL
 )
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
+
+\item{datasets_selected}{(`character`) A vector of datasets which should be
+shown and in what order. Names in the vector have to correspond with datasets names.
+If vector of length zero (default) then all datasets are shown.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

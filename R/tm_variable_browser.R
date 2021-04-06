@@ -7,9 +7,11 @@
 #' or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
 #' then the default is categorical, otherwise it is numeric).
 #'
-#'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @param datasets_selected (`character`) A vector of datasets which should be
+#'   shown and in what order. Names in the vector have to correspond with datasets names.
+#'   If vector of length zero (default) then all datasets are shown.
 #'
 #' @importFrom stats quantile sd
 #'
@@ -35,16 +37,23 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "Variable Browser",
+                                datasets_selected = character(0),
                                 pre_output = NULL,
                                 post_output = NULL) {
-  stopifnot(is_character_single(label))
+  stop_if_not(is_character_single(label),
+              is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
+  )
+
+  datasets_selected <- unique(datasets_selected)
 
   module(
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
+    server_args = list(datasets_selected = datasets_selected),
     ui_args = list(
+      datasets_selected = datasets_selected,
       pre_output = pre_output,
       post_output = post_output
     )
@@ -56,9 +65,12 @@ tm_variable_browser <- function(label = "Variable Browser",
 #' @importFrom shinyWidgets switchInput
 ui_variable_browser <- function(id,
                                 datasets,
+                                datasets_selected,
                                 pre_output = NULL,
                                 post_output = NULL) {
   ns <- NS(id)
+
+  datanames <- get_datanames_selected(datasets, datasets_selected)
 
   standard_layout(
     output = fluidRow(
@@ -75,7 +87,7 @@ ui_variable_browser <- function(id,
                 tagList,
                 setNames(
                   lapply(
-                    datasets$datanames(),
+                    datanames,
                     function(dataname) {
                       tabPanel(
                         dataname,
@@ -143,7 +155,7 @@ ui_variable_browser <- function(id,
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
 #' @importFrom shinyWidgets switchInput
-srv_variable_browser <- function(input, output, session, datasets) {
+srv_variable_browser <- function(input, output, session, datasets, datasets_selected) {
 
   # if there are < this number of unique records then a numeric
   # variable can be treated as a factor and all factors with < this groups
@@ -155,6 +167,7 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
   # useful to pass on to parent program
   plot_var <- reactiveValues(data = NULL, variable = list())
+
 
 
   # reactive contain list of the column of data to be analyzed (data) and
@@ -189,8 +202,10 @@ srv_variable_browser <- function(input, output, session, datasets) {
 
 
   current_rows <- new.env() # nolint
+  # subset certain datasets
+  datanames <- get_datanames_selected(datasets, datasets_selected)
 
-  lapply(datasets$datanames(), function(name) {
+  lapply(datanames, function(name) {
     .log("variable label table:", name)
 
     dataset_ui_id <- paste0("dataset_summary_", name)
