@@ -1,5 +1,5 @@
 # teal.modules.general 0.2.8.9000
-* Added persistence for `lengthMenu` selected value from `datatable` in `tm_data_table`. 
+* Added persistence for `lengthMenu` selected value from `datatable`. 
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.
 * Added download and expand options to `tm_t_crosstable`.
 * Enabled selection of custom datasets for `tm_variable_browser` with `datasets_selected` argument.

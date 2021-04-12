@@ -4,12 +4,14 @@
 \alias{var_summary_table}
 \title{Summarizes variable}
 \usage{
-var_summary_table(x, numeric_as_factor)
+var_summary_table(x, numeric_as_factor, dt_rows)
 }
 \arguments{
 \item{x}{vector of any type}
 
 \item{numeric_as_factor}{\code{logical} should the numeric variable be treated as a factor}
+
+\item{dt_rows}{\code{numeric} current/latest DT page length}
 }
 \value{
 text with simple statistics.

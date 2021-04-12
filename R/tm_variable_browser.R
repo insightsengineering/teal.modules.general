@@ -95,10 +95,16 @@ ui_variable_browser <- function(id,
                           style = "margin-top: 15px;",
                           textOutput(ns(paste0("dataset_summary_", dataname)))
                         ),
-                        div(
-                          style = "margin-top: 15px;",
-                          DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
-                        )
+                        div(style = "margin-top: 15px;",
+                          get_dt_rows(ns(paste0(
+                            "variable_browser_", dataname
+                          )),
+                          ns(
+                            paste0("variable_browser_", dataname, "_rows")
+                          )),
+                          DT::dataTableOutput(ns(paste0(
+                            "variable_browser_", dataname
+                          )), width = "100%"))
                       )
                     }
                   ),
@@ -142,6 +148,7 @@ ui_variable_browser <- function(id,
           ),
           plot_with_settings_ui(ns("variable_plot")),
           br(),
+          get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
           DT::dataTableOutput(ns("variable_summary_table"))
         )
       )
@@ -294,7 +301,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         )
       }
     },
-    server = TRUE
+    server = TRUE,
+    options = list(pageLength = input$table_ui_id_rows)
     )
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
@@ -442,7 +450,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   )
 
   output$variable_summary_table <- DT::renderDataTable({
-    var_summary_table(data_for_analysis()$data, treat_numeric_as_factor())
+    var_summary_table(data_for_analysis()$data, treat_numeric_as_factor(), input$variable_summary_table_rows)
   })
 }
 
@@ -643,9 +651,12 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
 #' number of levels.
 #' @param x vector of any type
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
+#' @param dt_rows \code{numeric} current/latest DT page length
 #' @return text with simple statistics.
 #' @importFrom stats median
-var_summary_table <- function(x, numeric_as_factor) {
+var_summary_table <- function(x, numeric_as_factor, dt_rows) {
+  if (is.null(dt_rows))
+    dt_rows <- 10
   if (is.numeric(x) && !numeric_as_factor) {
 
     req(!any(is.infinite(x)))
@@ -668,7 +679,7 @@ var_summary_table <- function(x, numeric_as_factor) {
         )
       )
 
-    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
+    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>", pageLength = dt_rows))
   } else if (is.factor(x) || is.character(x) || (is.numeric(x) && numeric_as_factor)) {
 
     # make sure factor is ordered numeric
@@ -704,7 +715,7 @@ var_summary_table <- function(x, numeric_as_factor) {
     } else {
       "<lf<t>ip>"
     }
-    DT::datatable(summary, rownames = FALSE, options = list(dom = dom_opts))
+    DT::datatable(summary, rownames = FALSE, options = list(dom = dom_opts, pageLength = dt_rows))
   } else if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")) {
     summary <-
       data.frame(
@@ -715,7 +726,7 @@ var_summary_table <- function(x, numeric_as_factor) {
           max(x, na.rm = TRUE)
         )
       )
-    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>"))
+    DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>", pageLength = dt_rows))
   } else {
     NULL
   }

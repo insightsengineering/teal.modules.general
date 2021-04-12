@@ -172,6 +172,7 @@ ui_g_scatterplot <- function(id, ...) {
     output = white_small_well(
       plot_with_settings_ui(id = ns("scatter_plot")),
       tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
+      get_dt_rows(ns("data_table"), ns("data_table_rows")),
       DT::dataTableOutput(ns("data_table"), width = "100%")
     ),
     encoding = div(
@@ -799,7 +800,7 @@ srv_g_scatterplot <- function(input,
     numeric_cols <- names(df)[vapply(df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
 
     DT::formatRound(
-      DT::datatable(df, rownames = FALSE, options = list(scrollX = TRUE)),
+      DT::datatable(df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
       numeric_cols,
       table_dec)
   })

@@ -119,6 +119,7 @@ ui_outliers <- function(id, ...) {
         multiple = TRUE
       ),
       h4("Outlier Table"),
+      get_dt_rows(ns("table_ui"), ns("table_ui_rows")),
       DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
@@ -623,7 +624,11 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       chunks_get_var("summary_table", common_code_chunks()$common_stack)
     )
   },
-  options = list(dom = "t", autoWidth = TRUE, columnDefs = list(list(width = "200px", targets = "_all")))
+  options = list(
+    dom = "t",
+    autoWidth = TRUE,
+    columnDefs = list(list(width = "200px", targets = "_all"))
+  )
   )
 
   # boxplot/violinplot #nolint
@@ -1048,8 +1053,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       display_table,
       dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))), by = keys) %>%
       dplyr::select(union(names(display_table), input$table_ui_columns))
-  }, options =  list(searching = FALSE, pageLength = 10, language = list(
-    zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold")
+  }, options = list(searching = FALSE, language = list(
+    zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"),
+    pageLength = input$table_ui_rows
   )
   )
 

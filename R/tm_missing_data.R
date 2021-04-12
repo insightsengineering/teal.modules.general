@@ -158,6 +158,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By variable levels",
+      get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
       DT::dataTableOutput(ns("levels_table"))
     )
   )
@@ -933,7 +934,7 @@ srv_missing_data <- function(input,
       chunks_push_chunks(table_chunks())
       chunks_get_var("summary_data")
     }
-  }, options =  list(language = list(zeroRecords = "No variable selected"))
+  }, options =  list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
   )
 
   callModule(
