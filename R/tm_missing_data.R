@@ -295,11 +295,16 @@ srv_missing_data <- function(input,
     anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
     assign(anl_name, anl_filtered)
     chunks_reset(chunks = common_stack)
+    group_var <- input$group_by_var
 
     if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
       common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name))[, .(selected_vars())])) # nolint
     } else {
       common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name)))) # nolint
+    }
+
+    if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
+      common_stack_push(bquote(ANL_FILTERED[[.(group_var)]] <- .(as.name(anl_name))[[.(group_var)]]))
     }
 
     new_col_name <- "**anyna**" # nolint variable assigned and used
@@ -766,11 +771,6 @@ srv_missing_data <- function(input,
 
     group_var <- input$group_by_var
 
-    validate(
-      need(is.null(group_var) ||
-        group_var %in% selected_vars(),
-        "Grouping variable has been already filtered out")
-      )
     validate(
       need(is.null(group_var) ||
         nrow(unique(anl_filtered[, group_var])) < 100,

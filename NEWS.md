@@ -3,6 +3,8 @@
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.
 * Added download and expand options to `tm_t_crosstable`.
 * Enabled selection of custom datasets for `tm_variable_browser` with `datasets_selected` argument.
+* Allowed all dataset variables to be used as grouping variables in `by variable levels` tab of `tm_missing_data`
+not just those selected to be displayed as rows in the table.
 
 Issues with no news:
 
