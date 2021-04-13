@@ -796,7 +796,7 @@ srv_g_scatterplot <- function(input,
 
     merged_data <- isolate(chunks_get_var("ANL"))
 
-    df <- brushedPoints(merged_data, plot_brush)
+    df <- clean_brushedPoints(merged_data, plot_brush)
     numeric_cols <- names(df)[vapply(df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
 
     DT::formatRound(

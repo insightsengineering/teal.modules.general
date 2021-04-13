@@ -5,7 +5,7 @@
 * Enabled selection of custom datasets for `tm_variable_browser` with `datasets_selected` argument.
 * Allowed all dataset variables to be used as grouping variables in `by variable levels` tab of `tm_missing_data`
 not just those selected to be displayed as rows in the table.
-
+* Enabled the brushing of points in NA categories when facetting in `tm_g_scatterplot`.
 Issues with no news:
 
 # teal.modules.general 0.2.8
