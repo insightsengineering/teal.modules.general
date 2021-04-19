@@ -1,11 +1,15 @@
 # teal.modules.general 0.2.8.9000
-* Added persistence for `lengthMenu` selected value from `datatable`. 
+### Enhancements
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.
-* Added download and expand options to `tm_t_crosstable`.
+* Added download and expand options to the table in `tm_t_crosstable`.
 * Enabled selection of custom datasets for `tm_variable_browser` with `datasets_selected` argument.
-* Allowed all dataset variables to be used as grouping variables in `by variable levels` tab of `tm_missing_data`
+* Allowed all dataset variables to be used as grouping variables in `by variable levels` tab of `tm_missing_data`,
 not just those selected to be displayed as rows in the table.
 * Enabled the brushing of points in NA categories when facetting in `tm_g_scatterplot`.
+
+### Bug fixes
+* Added persistence for the number of entries displayed in data tables. 
+
 Issues with no news:
 
 # teal.modules.general 0.2.8
