@@ -509,7 +509,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
       common_stack_push(
         bquote({
-          summary_table <- ANL_SUMMARY[, c(.(outlier_var), .(categorical_var))] %>%
+          summary_table_pre <- ANL_SUMMARY[, c(.(outlier_var), .(categorical_var))] %>%
             dplyr::group_by(.(as.name(categorical_var))) %>%
             dplyr::summarise(n_outliers = dplyr::n()) %>%
             dplyr::right_join(
@@ -545,9 +545,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       if (order_by_outlier) {
         common_stack_push(
           quote(
-            summary_table <- summary_table %>%
+            summary_table_pre <- summary_table_pre %>%
               dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
-              dplyr::mutate(order = seq_len(nrow(summary_table)))
+              dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
           )
         )
       }
@@ -558,17 +558,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           # In this case, the column used for reordering is `order`.
           ANL_OUTLIER <- dplyr::left_join( # nolint
             ANL_OUTLIER,
-            summary_table[, c("order", .(categorical_var))],
+            summary_table_pre[, c("order", .(categorical_var))],
             by = .(categorical_var)
           )
           # so that x axis of plot aligns with columns of summary table, from most outliers to least by percentage
           ANL <- ANL %>% # nolint
             dplyr::left_join(
-              dplyr::select(summary_table, .(as.name(categorical_var)), order),
+              dplyr::select(summary_table_pre, .(as.name(categorical_var)), order),
               by = .(categorical_var)
             ) %>%
             dplyr::arrange(order)
-          summary_table_wide <- summary_table %>%
+          summary_table_wide <- summary_table_pre %>%
             dplyr::select(.(as.name(categorical_var)), display_str) %>%
             tidyr::pivot_wider(names_from = .(categorical_var), values_from = display_str) %>%
             dplyr::mutate(row_name = "Outlier(s)")
@@ -577,7 +577,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       if (contains_na) {
         common_stack_push(
           bquote({
-            summary_table_na_wide <- summary_table %>%
+            summary_table_na_wide <- summary_table_pre %>%
               dplyr::select(.(as.name(categorical_var)), display_str_na) %>%
               tidyr::pivot_wider(names_from = .(categorical_var), values_from = display_str_na) %>%
               dplyr::mutate(row_name = "Missing(s)")
@@ -586,7 +586,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       }
       common_stack_push(
         bquote({
-          summary_table_total_wide <- summary_table %>%
+          summary_table_total_wide <- summary_table_pre %>%
             dplyr::select(.(as.name(categorical_var)), total_in_cat) %>%
             dplyr::mutate(total_in_cat = as.character(total_in_cat)) %>%
             tidyr::pivot_wider(names_from = .(categorical_var), values_from = total_in_cat) %>%
@@ -810,7 +810,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           bquote(
             ANL_NO_NA <- ANL_NO_NA %>% # nolint
               dplyr::left_join(
-                dplyr::select(summary_table, .(as.name(categorical_var)), order),
+                dplyr::select(summary_table_pre, .(as.name(categorical_var)), order),
                 by = .(categorical_var)
               ) %>%
               dplyr::arrange(order)
@@ -829,7 +829,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(.(categorical_var)) == x)
               ecdf_df <- anl_filtered %>%
                 dplyr::mutate(y = ecdf(anl_filtered[[.(outlier_var)]])(anl_filtered[[.(outlier_var)]]))
-
 
               dplyr::left_join(
                 ecdf_df,
