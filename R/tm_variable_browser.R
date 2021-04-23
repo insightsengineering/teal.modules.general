@@ -296,14 +296,15 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
             columnDefs = list(
               list(orderable = FALSE, className = "details-control", targets = 0)
             ),
-            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }")
+            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+            pageLength = input$table_ui_id_rows
           )
         )
       }
     },
-    server = TRUE,
-    options = list(pageLength = input$table_ui_id_rows)
+    server = TRUE
     )
+
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {
