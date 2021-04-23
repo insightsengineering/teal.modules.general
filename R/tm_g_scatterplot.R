@@ -230,7 +230,7 @@ ui_g_scatterplot <- function(id, ...) {
           shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
           optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show R Squared", value = TRUE)),
+          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_warn"), "", value = TRUE)),
           shinyjs::hidden(checkboxInput(ns("trans_label"), "Transparent label", value = FALSE)),
           div(
@@ -278,7 +278,7 @@ ui_g_scatterplot <- function(id, ...) {
 #' @importFrom magrittr %>%
 #' @importFrom ggExtra ggMarginal
 #' @importFrom shinyjs hide show
-#' @importFrom purrr map2 map map_chr
+#' @importFrom dplyr mutate filter select
 srv_g_scatterplot <- function(input,
                               output,
                               session,
@@ -430,106 +430,16 @@ srv_g_scatterplot <- function(input,
     if (is.list(color_sub_chunk)) {
       chunks_push(color_sub_chunk$expr, chunks = formula_tbl_chunk)
     }
-
-    label_generator <- bquote({
-      df_no_na <- na.omit(df)
-      warn_na <- `if`((num_local_na <- nrow(df) - nrow(df_no_na)) > 0, paste(num_local_na, "row(s) with NA removed"))
-
-      m <- try(lm(df_no_na[[.(y_var)]] ~ poly(df_no_na[[.(x_var)]], .(smoothing_degree)), df_no_na), silent = TRUE)
-      label <- `if`(
-        !inherits(m, "try-error"), {
-          r_2 <- paste("R^2:", round(summary(m)$r.squared, 8))
-          form <- sprintf(
-            "%s = %#.4f %s %#.4f * %s%s",
-            .(y_var),
-            coef(m)[1],
-            ifelse(coef(m)[2] < 0, "-", "+"),
-            abs(coef(m)[2]),
-            .(x_var),
-            paste(
-              vapply(
-                X = seq_len(.(smoothing_degree))[-1],
-                FUN = function(deg) {
-                  sprintf(
-                    " %s %#.4f*%s^%s",
-                    ifelse(coef(m)[deg + 1] < 0, "-", "+"),
-                    abs(coef(m)[deg + 1]),
-                    .(x_var),
-                    deg
-                  )
-                },
-                FUN.VALUE = character(1)),
-              collapse = ""
-            )
-          )
-          list(
-            form = form,
-            r_2 = r_2,
-            msg = .(if (!is.null(color_sub_chunk))
-              bquote(if (length(unique(df_no_na[[.(color_by_var)]])) > 1) "Stats from combined selected color groups")),
-            warn_na = warn_na)
-      },
-      list(paste("Not enough unique x values to fit line with degree:", .(smoothing_degree))))
-    })
-
-    select_columns <- bquote(
-      .(if (!is.null(color_sub_chunk)) {
-        bquote(dplyr::select(.(x_var), .(y_var), .(color_by_var)))
-      } else {
-        bquote(dplyr::select(.(x_var), .(y_var)))
-      })
+    plot_labels_chunk <- bquote(
+      plot_labels_df <- trend_line_stats(
+        ANL,
+        x_var = .(x_var),
+        y_var = .(y_var),
+        smoothing_degree = .(smoothing_degree),
+        group_by_var = .(if (!is.null(color_sub_chunk)) color_by_var),
+        facet_by_var = .(c(row_facet_name, col_facet_name))
+      )
     )
-
-    plot_labels_chunk <- if (!is_empty(row_facet_name) && !is_empty(col_facet_name)) {
-      bquote({
-        plot_labels <- data.frame(
-          row_facet = rep(unique(ANL[[.(row_facet_name)]]), length(unique(ANL[[.(col_facet_name)]]))),
-          col_facet = rep(unique(ANL[[.(col_facet_name)]]), each = length(unique(ANL[[.(row_facet_name)]])))
-        ) %>% mutate(label = purrr::map2(row_facet, col_facet, function(row_facet, col_facet) {
-          df <- ANL %>%
-            filter(.(as.name(row_facet_name)) == row_facet & .(as.name(col_facet_name)) == col_facet) %>%
-            .(select_columns)
-          # extracting expressions individually to avoid the extra open and close brackets
-          .(label_generator[[2]])
-          .(label_generator[[3]])
-          .(label_generator[[4]])
-          .(label_generator[[5]])
-        }))
-        names(plot_labels) <- .(c(row_facet_name, col_facet_name, "label"))
-      })
-    } else if (!is_empty(row_facet_name)) {
-      bquote({
-        plot_labels <- data.frame(row_facet = unique(ANL[[.(row_facet_name)]])
-        ) %>% mutate(label = purrr::map(row_facet, function(row_facet) {
-          df <- ANL %>% filter(.(as.name(row_facet_name)) == row_facet) %>% .(select_columns) # nolint
-          .(label_generator[[2]])
-          .(label_generator[[3]])
-          .(label_generator[[4]])
-          .(label_generator[[5]])
-        }))
-        names(plot_labels) <- .(c(row_facet_name, "label"))
-      })
-    } else if (!is_empty(col_facet_name)) {
-      bquote({
-        plot_labels <- data.frame(col_facet = unique(ANL[[.(col_facet_name)]])
-        ) %>% mutate(label = purrr::map(col_facet, function(col_facet) {
-          df <- ANL %>% filter(.(as.name(col_facet_name)) == col_facet) %>% .(select_columns) # nolint
-          .(label_generator[[2]])
-          .(label_generator[[3]])
-          .(label_generator[[4]])
-          .(label_generator[[5]])
-        }))
-        names(plot_labels) <- .(c(col_facet_name, "label"))
-      })
-    } else {
-      bquote({
-        df <- ANL %>% .(select_columns)
-        .(label_generator[[2]])
-        .(label_generator[[3]])
-        .(label_generator[[4]])
-        .(label_generator[[5]])
-      })
-    }
     chunks_push(plot_labels_chunk, chunks = formula_tbl_chunk)
     if (!is.null(warn_na$code_chunk)) {
       chunks_push(warn_na$code_chunk, chunks = formula_tbl_chunk)
@@ -544,10 +454,19 @@ srv_g_scatterplot <- function(input,
     pos <- input$pos # nolint
     x_var <- as.vector(merged_data()$columns_source$x)
     trans_label <- input$trans_label  # nolint
+
+    x_pos <- if (pos == 1) {
+      bquote(max(ANL[[.(x_var)]], na.rm = TRUE))
+    } else if (pos == 0) {
+      bquote(min(ANL[[.(x_var)]], na.rm = TRUE))
+    } else {
+      bquote(min(ANL[[.(x_var)]], na.rm = TRUE) * (.(1 - pos)) + max(ANL[[.(x_var)]], na.rm = TRUE) * .(pos))
+    }
+
     bquote(.(if (trans_label) quote(geom_text) else quote(geom_label))(
-      data = .(if (is_faceted()) quote(plot_labels)),
+      data = plot_labels,
       mapping = aes(label = label, fontface = "plain"),
-      x = min(ANL[[.(x_var)]], na.rm = TRUE) * (.(1 - pos)) + max(ANL[[.(x_var)]], na.rm = TRUE) * .(pos),
+      x = .(x_pos),
       y = Inf,
       hjust = .(if (pos > .5) 1 else if (pos == .5) .5 else 0),
       vjust = 1,
@@ -556,27 +475,20 @@ srv_g_scatterplot <- function(input,
   })
 
   plot_labels_fix_call <- reactive({
-    concat_lab <- bquote(
-      ifelse(
-        length(label) == 1,
-        label[[1]],
-        trimws(paste0(
-          .(if (input$show_form) quote(paste0(label$form, "\n"))),
-          .(if (input$show_r2) quote(paste0(label$r_2, "\n"))),
-          .(if ((input$show_form || input$show_r2)) quote(if (!is.null(label$msg)) paste0(label$msg, "\n"))),
-          .(if (input$show_warn) quote(label$warn_na))
-        ))
-      )
-    )
-    if (is_faceted()) {
-      bquote(plot_labels <- plot_labels %>%
-        mutate(label = purrr::map_chr(label, function(label) {
-        .(concat_lab)})
+    bquote(plot_labels <- plot_labels_df %>%
+      dplyr::mutate(label =
+        ifelse(
+          !is.na(failed_fit_msg),
+          failed_fit_msg,
+          trimws(paste0(
+            .(if (input$show_form) quote(paste0(form, "\n"))),
+            .(if (input$show_r2) quote(paste0(r_2, "\n"))),
+            .(if (input$show_form || input$show_r2) quote(ifelse(!is.na(msg), paste0(msg, "\n"), ""))),
+            .(if (input$show_warn) quote(ifelse(!is.na(warn_na), warn_na, "")))
+          ))
         )
       )
-    } else {
-      bquote(label <- .(concat_lab))
-    }
+    )
   })
 
   initialize_data_chunk <- reactive({
@@ -796,11 +708,11 @@ srv_g_scatterplot <- function(input,
 
     merged_data <- isolate(chunks_get_var("ANL"))
 
-    df <- clean_brushedPoints(merged_data, plot_brush)
-    numeric_cols <- names(df)[vapply(df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
+    brushed_df <- clean_brushedPoints(merged_data, plot_brush)
+    numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
 
     DT::formatRound(
-      DT::datatable(df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
+      DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
       numeric_cols,
       table_dec)
   })
