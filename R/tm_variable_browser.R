@@ -359,14 +359,14 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
 
     if (is.numeric(df[[varname]])) {
       unique_entries <- length(unique(df[[varname]]))
-      if (unique_entries < .unique_records_for_factor) {
+      if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
             "Treat variable as factor",
             value = if_null(isolate(input$numeric_as_factor), unique_entries < .unique_records_default_as_factor)),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
-      } else {
+      } else if (unique_entries > 0) {
         numeric_ui
       }
     } else {

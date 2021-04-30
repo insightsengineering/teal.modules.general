@@ -8,6 +8,7 @@
 
 ### Bug fixes
 * Added persistence for the number of entries displayed in data tables.
+* Removed 'treat variable as factor' checkbox in `tm_variable_browser` if no graph shown.
 
 # teal.modules.general 0.2.8
 
