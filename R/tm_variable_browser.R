@@ -280,31 +280,25 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           FUN.VALUE = character(1),
           USE.NAMES = FALSE)
 
-        # join labels, missings and icons
-        dt <- DT::datatable(
-          data.frame(
-            Variable = paste(icons, names(labels)),
-            Label = labels,
-            Missings = missings,
-            Sparklines = sparklines_html,
-            stringsAsFactors = FALSE
-          ),
-          escape = FALSE,
-          rownames = FALSE,
-          selection = list(mode = "single", target = "row", selected = 1),
-          options = list(
-            columnDefs = list(
-              list(orderable = FALSE, className = "details-control", targets = 0)
-            ),
-            fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-            pageLength = input$table_ui_id_rows
-          )
+        data.frame(
+          Variable = paste(icons, names(labels)),
+          Label = labels,
+          Missings = missings,
+          Sparklines = sparklines_html,
+          stringsAsFactors = FALSE
         )
       }
     },
-    server = TRUE
-    )
-
+    escape = FALSE,
+    rownames = FALSE,
+    selection = list(mode = "single", target = "row", selected = 1),
+    options = list(
+      columnDefs = list(
+        list(orderable = FALSE, className = "details-control", targets = 0)
+      ),
+      fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+      pageLength = input[[paste0(table_ui_id, "_rows")]]
+    ))
 
     table_id_sel <- paste0(table_ui_id, "_rows_selected")
     observeEvent(input[[table_id_sel]], {

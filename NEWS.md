@@ -9,6 +9,7 @@
 ### Bug fixes
 * Added persistence for the number of entries displayed in data tables.
 * Removed 'treat variable as factor' checkbox in `tm_variable_browser` if no graph shown.
+* Fixed DT length reset in `tm_variable_browser` on "Show parent dataset variables" checkbox tick.
 
 # teal.modules.general 0.2.8
 
