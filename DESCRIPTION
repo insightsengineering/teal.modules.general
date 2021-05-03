@@ -56,7 +56,7 @@ Imports:
 Suggests:
   knitr,
   random.cdisc.data (>= 0.3.10),
-  test.nest (>= 0.2.7),
+  test.nest (>= 0.2.8),
   testthat (>= 2.0)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
