@@ -635,7 +635,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
     return(as.character(tags$code("Too many rows (>100000)", style = "color:blue")))
   }
 
-  res <- sparkline::spk_chr(arr, type = "box", width = width, ...)
+  res <- sparkline::spk_chr(unname(arr), type = "box", width = width, ...)
   return(res)
 }
 
