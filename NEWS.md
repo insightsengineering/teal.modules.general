@@ -1,5 +1,7 @@
 # teal.modules.general 0.2.9.9000
 
+* Added support for logical variables in `tm_variable_browser`. 
+
 # teal.modules.general 0.2.9
 ### Enhancements
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.

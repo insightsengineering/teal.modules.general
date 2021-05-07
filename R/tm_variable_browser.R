@@ -549,6 +549,24 @@ create_sparklines.character <- function(arr, ...) { # nousage # nolint
   return(create_sparklines(arr))
 }
 
+
+#' Generates the HTML code for the \code{sparkline} widget
+#'
+#' Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
+#'
+#' @inheritParams create_sparklines
+#'
+#' @return \code{character} with HTML code for the \code{sparkline} widget
+#'
+#' @export
+#'
+#' @seealso \code{\link{create_sparklines}}
+create_sparklines.logical <- function(arr, ...) { # nousage # nolint
+  arr <- as.factor(arr)
+  return(create_sparklines(arr))
+}
+
+
 #' Generates the \code{sparkline} HTML code
 #'
 #' @inheritParams create_sparklines
@@ -675,7 +693,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
       )
 
     DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>", pageLength = dt_rows))
-  } else if (is.factor(x) || is.character(x) || (is.numeric(x) && numeric_as_factor)) {
+  } else if (is.factor(x) || is.character(x) || (is.numeric(x) && numeric_as_factor) || is.logical(x)) {
 
     # make sure factor is ordered numeric
     if (is.numeric(x)) {
@@ -762,7 +780,7 @@ plot_var_summary <- function(var,
 
   grid::grid.newpage()
 
-  plot_grob <- if (is.factor(var) || is.character(var)) {
+  plot_grob <- if (is.factor(var) || is.character(var) || is.logical(var)) {
     groups <- unique(as.character(var))
     len_groups <- length(groups)
     if (len_groups >= records_for_factor) {
