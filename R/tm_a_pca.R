@@ -204,14 +204,7 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-#' @importFrom magrittr %>%
-#' @importFrom stringr str_sort
-#' @importFrom dplyr as_tibble filter mutate mutate_at
-#' @importFrom tibble column_to_rownames rownames_to_column
-#' @importFrom tidyr gather drop_na
-#' @importFrom rlang !! !!! quo sym syms
 srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width) {
-
   response <- dat
 
   for (i in seq_along(response)) {
@@ -269,25 +262,34 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_1",
-      expression = bquote({
-        keep_columns <- .(keep_cols)
-      }),
+      expression = substitute(
+        expr = {
+          keep_columns <- keep_cols
+        },
+        env = list(
+          keep_cols = keep_cols
+        )
+      ),
       chunks = chunks_stack
     )
 
     if (na_action == "drop") {
       chunks_push(
         id = "pca_2",
-        expression = bquote({
-          ANL <- tidyr::drop_na(ANL, !!!syms(keep_columns)) # nolint
-        }),
+        expression = substitute(
+          expr = ANL <- tidyr::drop_na(ANL, keep_columns_syms), # nolint
+          env = list(keep_columns_syms = rlang::syms(keep_columns))
+        ),
         chunks = chunks_stack
       )
     }
 
     if (scale) {
       chunks_validate_custom(
-        bquote(vapply(ANL[.(keep_cols)], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))),
+        substitute(
+          expr = vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
+          env = list(keep_cols = keep_cols)
+        ),
         msg = paste0(
           "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
           "but one or more of your columns has/have a variance value of zero, indicating all values are identical"),
@@ -297,15 +299,16 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_3",
-      expression = bquote({
-        pca <- summary(prcomp(ANL[keep_columns], center = .(center), scale. = .(scale), retx = TRUE))
-      }),
+      expression = substitute(
+        expr = pca <- summary(prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
+        env = list(center = center, scale = scale)
+      ),
       chunks = chunks_stack
     )
 
     chunks_push(
       id = "pca_tbl_importance",
-      expression = bquote({
+      expression = quote({
         tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
         tbl_importance
       }),
@@ -314,7 +317,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_tbl_eigenvector",
-      expression = bquote({
+      expression = quote({
         tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
         tbl_eigenvector
       }),
@@ -369,36 +372,45 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot",
-      expression = bquote({
-        elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
-          dplyr::as_tibble(rownames = "metric") %>%
-          tidyr::gather("component", "value", -metric) %>%
-          dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = T))))
+      expression = substitute(
+        expr = {
+          elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
+            dplyr::as_tibble(rownames = "metric") %>%
+            tidyr::gather("component", "value", -metric) %>%
+            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = T))))
 
-        g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
-          geom_bar(
-            aes(fill = "Single variance"),
-            data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
-            color = "black",
-            stat = "identity") +
-          geom_point(
-            aes(color = "Cumulative variance"),
-            data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
-          geom_line(
-            aes(group = 1, color = "Cumulative variance"),
-            data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
-          .(call(paste0("theme_", ggtheme))) +
-          labs(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend") +
-          scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
-          scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-          theme(legend.position = "right", legend.spacing.y = unit(-5, "pt"), legend.title = element_text(vjust = 8)) +
-          theme(axis.text.x = element_text(
-            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
-            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
-          theme(text = element_text(size = .(font_size)))
+          g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
+            geom_bar(
+              aes(fill = "Single variance"),
+              data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
+              color = "black",
+              stat = "identity") +
+            geom_point(
+              aes(color = "Cumulative variance"),
+              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
+            geom_line(
+              aes(group = 1, color = "Cumulative variance"),
+              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
+            ggtheme_call +
+            labs(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend") +
+            scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
+            scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
+            theme(
+              legend.position = "right",
+              legend.spacing.y = unit(-5, "pt"),
+              legend.title = element_text(vjust = 8)) +
+            theme(axis.text.x = element_text(angle = angle_value, hjust = hjust_value)) +
+            theme(text = element_text(size = font_size))
 
-        print(g)
-      })
+          print(g)
+        },
+        env = list(
+          ggtheme_call = call(paste0("theme_", ggtheme)),
+          angle_value = ifelse(rotate_xaxis_labels, 45, 0),
+          hjust_value = ifelse(rotate_xaxis_labels, 1, 0.5),
+          font_size = font_size
+        )
+      )
     )
 
     invisible(NULL)
@@ -424,31 +436,40 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot",
-      expression = bquote({
-        pca_rot <- pca$rotation[, c(.(x_axis), .(y_axis))] %>%
-          dplyr::as_tibble(rownames = "label") %>%
-          dplyr::filter(label %in% .(variables))
+      expression = substitute(
+        expr = {
+          pca_rot <- pca$rotation[, c(x_axis, y_axis)] %>%
+            dplyr::as_tibble(rownames = "label") %>%
+            dplyr::filter(label %in% variables)
 
-        circle_data <- data.frame(
-          x = cos(seq(0, 2 * pi, length.out = 100)),
-          y = sin(seq(0, 2 * pi, length.out = 100))
+          circle_data <- data.frame(
+            x = cos(seq(0, 2 * pi, length.out = 100)),
+            y = sin(seq(0, 2 * pi, length.out = 100))
+          )
+
+          g <- ggplot(pca_rot) +
+            geom_point(aes_string(x = x_axis, y = y_axis)) +
+            geom_label(
+              aes_string(x = x_axis, y = y_axis, label = "label"),
+              nudge_x = 0.1, nudge_y = 0.05,
+              fontface = "bold") +
+            geom_path(aes(x, y, group = 1), data = circle_data) +
+            geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
+            ggtheme_call +
+            theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
+            theme(text = element_text(size = font_size))
+          print(g)
+        },
+        env = list(
+          x_axis = x_axis,
+          y_axis = y_axis,
+          variables = variables,
+          ggtheme_call = call(paste0("theme_", ggtheme)),
+          angle = ifelse(rotate_xaxis_labels, 45, 0),
+          hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
+          font_size = font_size
         )
-
-        g <- ggplot(pca_rot) +
-          geom_point(aes_string(x = .(x_axis), y = .(y_axis))) +
-          geom_label(
-            aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-            nudge_x = 0.1, nudge_y = 0.05,
-            fontface = "bold") +
-          geom_path(aes(x, y, group = 1), data = circle_data) +
-          geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
-          .(call(paste0("theme_", ggtheme))) +
-          theme(axis.text.x = element_text(
-            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
-            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
-          theme(text = element_text(size = .(font_size)))
-        print(g)
-      })
+      )
     )
 
     invisible(NULL)
@@ -478,71 +499,82 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot_data_rot",
-      expression = bquote({
-        pca_rot <- dplyr::as_tibble(pca$x[, c(.(x_axis), .(y_axis))])
-      })
+      expression = substitute(
+        expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
+        env = list(x_axis = x_axis, y_axis = y_axis)
+      )
     )
 
     # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
     if (!is.null(input$variables)) {
-
       chunks_push(
         id = "pca_plot_vars_rot_1",
-        expression = bquote({
-          r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
-          v_scale <- rowSums(pca$rotation ^ 2)
+        expression = substitute(
+          expr = {
+            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
+            v_scale <- rowSums(pca$rotation ^ 2)
 
-          rot_vars <- pca$rotation[, c(.(x_axis), .(y_axis))] %>%
-            dplyr::as_tibble(rownames = "label") %>%
-            dplyr::mutate_at(vars(c(.(x_axis), .(y_axis))), function(x) r * x / sqrt(max(v_scale)))
-        })
+            rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
+              dplyr::as_tibble(rownames = "label") %>%
+              dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
+          },
+          env = list(x_axis = x_axis, y_axis = y_axis)
+        )
       )
 
       # determine start of arrows
       chunks_push(
         id = "pca_plot_vars_rot_2",
         expression = if (is.logical(pca$center) && !pca$center) {
-          bquote({
-            rot_vars <- rot_vars %>%
-              tibble::column_to_rownames("label") %>%
-              sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
-              tibble::rownames_to_column("label") %>%
-              dplyr::mutate(xstart = mean(pca$x[, .(x_axis)], na.rm = TRUE),
-                            ystart = mean(pca$x[, .(y_axis)], na.rm = TRUE))
-          })
+          substitute(
+            expr = {
+              rot_vars <- rot_vars %>%
+                tibble::column_to_rownames("label") %>%
+                sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
+                tibble::rownames_to_column("label") %>%
+                dplyr::mutate(xstart = mean(pca$x[, x_axis], na.rm = TRUE),
+                              ystart = mean(pca$x[, y_axis], na.rm = TRUE))
+            },
+            env = list(x_axis = x_axis, y_axis = y_axis)
+          )
         } else {
-          bquote({
-            rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0)
-          })
+          quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
         }
       )
 
       chunks_push(
         id = "pca_plot_vars_rot_3",
-        expression = bquote({
-          rot_vars <- rot_vars %>%
-            dplyr::filter(label %in% .(variables))
-        })
+        expression = substitute(
+          expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
+          env = list(variables = variables)
+        )
       )
     }
 
     if (length(resp_col) == 0) {
-
       chunks_push(
         id = "pca_plot_biplot",
-        bquote({
-          g <- ggplot() +
-            geom_point(aes_string(x = .(x_axis), y = .(y_axis)), data = pca_rot, alpha = .(alpha), size = .(size)) +
-            .(call(paste0("theme_", ggtheme))) +
-            theme(axis.text.x = element_text(
-              angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
-              hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
-            theme(text = element_text(size = .(font_size)))
-        })
+        substitute(
+          expr = {
+            g <- ggplot() +
+              geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size) +
+              ggtheme_call +
+              theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
+              theme(text = element_text(size = font_size))
+          },
+          env = list(
+            x_axis = x_axis,
+            y_axis = y_axis,
+            alpha = alpha,
+            size = size,
+            ggtheme_call = call(paste0("theme_", ggtheme)),
+            angle = ifelse(rotate_xaxis_labels, 45, 0),
+            hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
+            font_size = font_size
+          )
+        )
       )
-
     } else {
-
       ANL <- chunks_get_var("ANL") # nolint
       validate(need(
         !resp_col %in% colnames(ANL),
@@ -558,73 +590,92 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         expression = if (is.character(response) ||
                          is.factor(response) ||
                          (is.numeric(response) && length(unique(response)) <= 6)) {
-          bquote({
-            response <- rp[[.(resp_col)]]
-            pca_rot$response <- as.factor(response)
-            scale_colors <- scale_color_brewer(palette = "Dark2")
-            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
-          })
+          substitute(
+            expr = {
+              response <- RP[[resp_col]]
+              pca_rot$response <- as.factor(response)
+              scale_colors <- scale_color_brewer(palette = "Dark2")
+              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
+            },
+            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
+          )
         } else if (class(response) == "Date") {
-          bquote({
-            response <- rp[[.(resp_col)]]
-            pca_rot$response <- as.numeric(response)
-            scale_colors <- scale_color_gradient(
-              low = "darkred",
-              high = "lightblue",
-              labels = function(x) as.Date(x, origin = "1970-01-01"))
-            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
-          })
+          substitute(
+            expr = {
+              response <- RP[[resp_col]]
+              pca_rot$response <- as.numeric(response)
+              scale_colors <- scale_color_gradient(
+                low = "darkred",
+                high = "lightblue",
+                labels = function(x) as.Date(x, origin = "1970-01-01"))
+              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
+            },
+            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
+          )
         } else {
-          bquote({
-            response <- rp[[.(resp_col)]]
-            pca_rot$response <- response
-            scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
-            aes_biplot <- aes_string(x = .(x_axis), y = .(y_axis), color = "response")
-          })
+          substitute(
+            expr = {
+              response <- RP[[resp_col]]
+              pca_rot$response <- response
+              scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
+              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
+            },
+            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
+          )
         }
       )
 
       chunks_push(
         id = "pca_plot_biplot",
-        expression = bquote({
-          g <- ggplot() +
-            geom_point(aes_biplot, data = pca_rot, alpha = .(alpha), size = .(size)) +
-            scale_colors +
-            .(call(paste0("theme_", ggtheme))) +
-            labs(color = .(varname_w_label(resp_col, rp))) +
-            theme(axis.text.x = element_text(
-              angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
-              hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
-            theme(text = element_text(size = .(font_size)))
-          })
+        expression = substitute(
+          expr = {
+            g <- ggplot() +
+              geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size) +
+              scale_colors +
+              ggtheme_call +
+              labs(color = color) +
+              theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
+              theme(text = element_text(size = font_size))
+          },
+          env = list(
+            alpha = alpha,
+            size = size,
+            ggtheme_call = call(paste0("theme_", ggtheme)),
+            color = varname_w_label(resp_col, rp),
+            angle = ifelse(rotate_xaxis_labels, 45, 0),
+            hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
+            font_size = font_size
+          )
+        )
       )
-      }
+    }
 
     if (!is.null(input$variables)) {
       chunks_push(
         id = "pca_plot_arrow_plot",
-        expression = bquote({
-          g <- g +
-            geom_segment(
-              aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
-              data = rot_vars,
-              lineend = "round", linejoin = "round",
-              arrow = arrow(length = unit(0.5, "cm"))) +
-            geom_label(
-              aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-              data = rot_vars,
-              nudge_y = 0.1,
-              fontface = "bold") +
-            geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5)
-        })
+        expression = substitute(
+          expr = {
+            g <- g +
+              geom_segment(
+                aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
+                data = rot_vars,
+                lineend = "round", linejoin = "round",
+                arrow = arrow(length = unit(0.5, "cm"))) +
+              geom_label(
+                aes_string(x = x_axis, y = y_axis, label = "label"),
+                data = rot_vars,
+                nudge_y = 0.1,
+                fontface = "bold") +
+              geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5)
+          },
+          env = list(x_axis = x_axis, y_axis = y_axis)
+        )
       )
     }
 
     chunks_push(
       id = "pca_plot_final",
-      expression = bquote({
-        print(g)
-      })
+      expression = quote(print(g))
     )
 
     invisible(NULL)
@@ -644,25 +695,36 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot",
-      expression = bquote({
-        pca_rot <- pca$rotation[, .(pc), drop = FALSE] %>%
-          dplyr::as_tibble(rownames = "Variable")
+      expression = substitute(
+        expr = {
+          pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
+            dplyr::as_tibble(rownames = "Variable")
 
-        g <- ggplot(pca_rot) +
-          geom_bar(aes_string(x = "Variable", y = .(pc)), stat = "identity", color = "black", fill = "lightblue") +
-          geom_text(aes_q(
-            x = quote(Variable),
-            y = as.name(.(pc)),
-            label = quo(round(!!sym(.(pc)), 3)),
-            vjust = quo(ifelse(!!sym(.(pc)) > 0, -0.5, 1.3)))) +
-          .(call(paste0("theme_", ggtheme))) +
-          theme(axis.text.x = element_text(
-            angle = .(ifelse(rotate_xaxis_labels, 45, 0)),
-            hjust = .(ifelse(rotate_xaxis_labels, 1, 0.5)))) +
-          theme(text = element_text(size = .(font_size)))
+          g <- ggplot(pca_rot) +
+            geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue") +
+            geom_text(
+              aes_q(
+                x = quote(Variable),
+                y = as.name(pc),
+                label = quote(round(pc_sym, 3)),
+                vjust = quote(ifelse(pc_sym > 0, -0.5, 1.3))
+              )
+            ) +
+            ggtheme_call +
+            theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
+            theme(text = element_text(size = font_size))
 
-        print(g)
-      })
+          print(g)
+        },
+        env = list(
+          pc = pc,
+          pc_sym = rlang::sym(pc),
+          ggtheme_call = call(paste0("theme_", ggtheme)),
+          angle = ifelse(rotate_xaxis_labels, 45, 0),
+          hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
+          font_size = font_size
+        )
+      )
     )
 
     invisible(NULL)

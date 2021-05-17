@@ -210,9 +210,6 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-#' @importFrom dplyr mutate summarise group_by_at vars n
-#' @importFrom forcats fct_rev
-#' @importFrom magrittr %>%
 srv_g_response <- function(input,
                            output,
                            session,
@@ -273,105 +270,106 @@ srv_g_response <- function(input,
     x_cl <- as.name(x) #nolint
 
     if (swap_axes) {
-
-    chunks_push(expression = bquote({
-      ANL[[.(x)]] <- with(ANL, forcats::fct_rev(.(x_cl)))
-    }))
-
+      chunks_push(expression = substitute(
+        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)),
+        env = list(x = x, x_cl = x_cl)
+      ))
     }
 
-    chunks_push(expression = bquote({
-      ANL[[.(resp_var)]] <- factor(ANL[[.(resp_var)]])
-    }))
+    chunks_push(expression = substitute(
+      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]),
+      env = list(resp_var = resp_var)
+    ))
     # nolint start
     # rowf and colf will be a NULL if not set by a user
-    chunks_push(expression = bquote({
-      ANL2 <- ANL %>%
-        dplyr::group_by_at(
-          dplyr::vars(
-          .(x_cl),
-          .(resp_cl),
-          .(rowf),
-          .(colf)
-          )
-        ) %>%
+    chunks_push(expression = substitute(
+      expr = ANL2 <- ANL %>%
+        dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
         dplyr::summarise(ns = dplyr::n()) %>%
-        dplyr::group_by_at(
-          dplyr::vars(
-          .(x_cl),
-          .(rowf),
-          .(colf)
-          )
-        ) %>%
-        dplyr::mutate(
-          sums = sum(ns),
-          percent = round(ns / sums * 100, 1)
-        )
-    }))
+        dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+        dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
+      env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
+    ))
 
-
-    chunks_push(expression = bquote({
-      ANL3 <- ANL %>%
-        dplyr::group_by_at(
-          dplyr::vars(
-          .(x_cl),
-          .(rowf),
-          .(colf)
-        )
-        ) %>%
-        dplyr::summarise(ns = dplyr::n())
-    }))
+    chunks_push(expression = substitute(
+      expr = ANL3 <- ANL %>%
+        dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+        dplyr::summarise(ns = dplyr::n()),
+      env = list(x_cl = x_cl, rowf = rowf, colf = colf)
+    ))
     # nolint end
-    plot_call <- bquote(
-      ANL2 %>%
+    plot_call <- substitute(
+      expr = ANL2 %>%
         ggplot() +
-        aes(x = .(x_cl), y = ns) +
-        geom_bar(aes(fill = .(resp_cl)), stat = "identity", position = .(arg_position)) +
-        xlab(.(varname_w_label(x, ANL))) +
-        ylab(.(varname_w_label(resp_var, ANL, prefix = "Proportion of "))) +
-        .(call(paste0("theme_", ggtheme)))
+        aes(x = x_cl, y = ns) +
+        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position) +
+        xlab(x_label) +
+        ylab(y_label) +
+        ggtheme_call,
+      env = list(
+        x_cl = x_cl,
+        resp_cl = resp_cl,
+        arg_position = arg_position,
+        x_label = varname_w_label(x, ANL),
+        y_label = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
+        ggtheme_call = call(paste0("theme_", ggtheme))
+      )
     )
 
-    plot_call <- bquote(.(plot_call) +
-      labs(fill = .(varname_w_label(resp_var, ANL))) +
-      theme(legend.position = "bottom"))
+    plot_call <- substitute(
+      expr = plot_call + labs(fill = fill_label) + theme(legend.position = "bottom"),
+      env = list(plot_call = plot_call, fill_label = varname_w_label(resp_var, ANL))
+    )
 
-    if (!freq) plot_call <- bquote(.(plot_call) + expand_limits(y = c(0, 1.1)))
+    if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
 
     if (counts) {
-      plot_call <-
-        bquote(.(plot_call) +
+      plot_call <- substitute(
+        expr = plot_call +
           geom_text(
             data = ANL2,
-            aes(label = ns, x = .(x_cl), y = ns, group = .(resp_cl)),
+            aes(label = ns, x = x_cl, y = ns, group = resp_cl),
             col = "white",
             vjust = "middle",
             hjust = "middle",
-            position = .(if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5))))  +
+            position = position_anl2_value)  +
           geom_text(
-            data = ANL3, aes(label = ns, x = .(x_cl), y = .(if (!freq) 1.1 else as.name("ns"))),
-            hjust = .(if (swap_axes) "left" else "middle"),
-            vjust = .(if (swap_axes) "middle" else -1),
-            position = .(if (!freq) "fill" else "stack")
-          )
+            data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
+            hjust = hjust_value,
+            vjust = vjust_value,
+            position = position_anl3_value
+          ),
+        env = list(
+          plot_call = plot_call,
+          x_cl = x_cl,
+          resp_cl = resp_cl,
+          hjust_value = if (swap_axes) "left" else "middle",
+          vjust_value = if (swap_axes) "middle" else -1,
+          position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)),
+          anl3_y = if (!freq) 1.1 else as.name("ns"),
+          position_anl3_value = if (!freq) "fill" else "stack"
         )
+      )
     }
 
     if (swap_axes) {
-      plot_call <- bquote(.(plot_call) + coord_flip())
+      plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
     }
 
     if (rotate_xaxis_labels) {
-      plot_call <- bquote(.(plot_call) + theme(axis.text.x = element_text(angle = 45, hjust = 1)))
+      plot_call <- substitute(
+        expr = plot_call + theme(axis.text.x = element_text(angle = 45, hjust = 1)),
+        env = list(plot_call = plot_call)
+      )
     }
 
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
-      plot_call <- bquote(.(plot_call) + .(facet_cl))
+      plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    plot_call <- bquote(p <- .(plot_call))
+    plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
 
     chunks_push(expression = plot_call, id = "plotCall")
 

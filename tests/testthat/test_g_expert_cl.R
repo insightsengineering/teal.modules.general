@@ -51,7 +51,7 @@ test_that("coloring_ggplot_call can work with all combinations without colour_va
   )
   expect_equal(
     coloring_ggplot_call(character(0), "ADSL", "ADSL", TRUE) %>% deparse(),
-    "aes(color = ADSL, fill = ADSL, size = ADSL)"
+    "aes(colour = ADSL, fill = ADSL, size = ADSL)"
   )
 })
 

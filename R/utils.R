@@ -234,7 +234,7 @@ shape_names <- c(
 #' trend_line_stats(mpg, "displ", "hwy", 2, group_by_var = "class", facet_by_var = "manufacturer")
 #' }
 #' @export
-#' @importFrom purrr pmap_dfr
+#'
 trend_line_stats <- function(data_df,
                              x_var,
                              y_var,
@@ -267,9 +267,9 @@ trend_line_stats <- function(data_df,
       }
     }
     data_df <- data_df %>% dplyr::select(x_var, y_var, group_by_var)
-    ANL_sub_no_na <- na.omit(data_df) # nolint
+    ANL_sub_no_na <- stats::na.omit(data_df) # nolint
     model <- try(
-      lm(ANL_sub_no_na[[y_var]] ~ poly(ANL_sub_no_na[[x_var]], smoothing_degree), ANL_sub_no_na),
+      stats::lm(ANL_sub_no_na[[y_var]] ~ poly(ANL_sub_no_na[[x_var]], smoothing_degree), ANL_sub_no_na),
       silent = TRUE)
     output <- if (!inherits(model, "try-error")) {
       r_2 <- paste(
@@ -283,9 +283,9 @@ trend_line_stats <- function(data_df,
       form <- sprintf(
         "%s = %#.4f %s %#.4f * %s%s",
         y_var,
-        coef(model)[1],
-        ifelse(coef(model)[2] < 0, "-", "+"),
-        abs(coef(model)[2]),
+        stats::coef(model)[1],
+        ifelse(stats::coef(model)[2] < 0, "-", "+"),
+        abs(stats::coef(model)[2]),
         x_var,
         paste(
           vapply(
@@ -293,8 +293,8 @@ trend_line_stats <- function(data_df,
             FUN = function(deg) {
               sprintf(
                 " %s %#.4f*%s^%s",
-                ifelse(coef(model)[deg + 1] < 0, "-", "+"),
-                abs(coef(model)[deg + 1]),
+                ifelse(stats::coef(model)[deg + 1] < 0, "-", "+"),
+                abs(stats::coef(model)[deg + 1]),
                 x_var,
                 deg
               )

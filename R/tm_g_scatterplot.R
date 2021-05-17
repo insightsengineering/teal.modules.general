@@ -30,9 +30,6 @@
 #' @param max_deg optional, (`integer`) The maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec optional, (`integer`) Number of decimal places used to round numeric values in the table.
 #'
-#' @importFrom shinyjs show hide hidden
-#' @importFrom stats coef lm
-#'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
 #'
@@ -275,10 +272,6 @@ ui_g_scatterplot <- function(id, ...) {
   )
 }
 
-#' @importFrom magrittr %>%
-#' @importFrom ggExtra ggMarginal
-#' @importFrom shinyjs hide show
-#' @importFrom dplyr mutate filter select
 srv_g_scatterplot <- function(input,
                               output,
                               session,
@@ -374,7 +367,10 @@ srv_g_scatterplot <- function(input,
           validate(need(color_sub %in% value_choices(ANL, color_by_var), "processing..."))
           # if all choices are selected filtering makes no difference
           if (length(color_sub) < num_choices) {
-            expr <- bquote(ANL <- dplyr::filter(ANL, .(as.name(color_by_var)) %in% .(color_sub))) # nolint
+            expr <- substitute(
+              expr = ANL <- dplyr::filter(ANL, color_by_var_name) %in% color_sub, # nolint
+              env = list(color_by_var_name = as.name(color_by_var), color_sub = color_sub)
+            )
             list(expr = expr, ANL_sub = eval(expr)) # nolint
           } else 1 # to indicate not null
         } else 1
@@ -399,10 +395,13 @@ srv_g_scatterplot <- function(input,
     if (is.list(color_sub_chunk())) {
       ANL <- color_sub_chunk()$ANL_sub # nolint
     }
-    if ((num_total_na <- nrow(ANL) - nrow(na.omit(ANL[, c(x_var, y_var)]))) > 0) {
+    if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
       warn_na <- paste(num_total_na, "total row(s) with NA removed")
       updateCheckboxInput(session, "show_warn", label = warn_na)
-      code_chunk <- bquote(ANL <- dplyr::filter(ANL, !is.na(.(as.name(x_var))) & !is.na(.(as.name(y_var))))) # nolint
+      code_chunk <- substitute(
+        expr = ANL <- dplyr::filter(ANL, !is.na(x_var_name) & !is.na(y_var_name)), # nolint
+        env = list(x_var_name = as.name(x_var), y_var_name = as.name(y_var))
+      )
     } else {
       warn_na <- NULL
       code_chunk <- NULL
@@ -430,14 +429,21 @@ srv_g_scatterplot <- function(input,
     if (is.list(color_sub_chunk)) {
       chunks_push(color_sub_chunk$expr, chunks = formula_tbl_chunk)
     }
-    plot_labels_chunk <- bquote(
-      plot_labels_df <- trend_line_stats(
+    plot_labels_chunk <- substitute(
+      expr = plot_labels_df <- trend_line_stats(
         ANL,
-        x_var = .(x_var),
-        y_var = .(y_var),
-        smoothing_degree = .(smoothing_degree),
-        group_by_var = .(if (!is.null(color_sub_chunk)) color_by_var),
-        facet_by_var = .(c(row_facet_name, col_facet_name))
+        x_var = x_var,
+        y_var = y_var,
+        smoothing_degree = smooth_degree,
+        group_by_var = group_by_value,
+        facet_by_var = facet_by_value
+      ),
+      env = list(
+        x_var = x_var,
+        y_var = y_var,
+        smooth_degree = smoothing_degree,
+        group_by_value = if (!is.null(color_sub_chunk)) color_by_var,
+        facet_by_value = c(row_facet_name, col_facet_name)
       )
     )
     chunks_push(plot_labels_chunk, chunks = formula_tbl_chunk)
@@ -456,37 +462,48 @@ srv_g_scatterplot <- function(input,
     trans_label <- input$trans_label  # nolint
 
     x_pos <- if (pos == 1) {
-      bquote(max(ANL[[.(x_var)]], na.rm = TRUE))
+      substitute(max(ANL[[x_var]], na.rm = TRUE), env = list(x_var = x_var))
     } else if (pos == 0) {
-      bquote(min(ANL[[.(x_var)]], na.rm = TRUE))
+      substitute(min(ANL[[x_var]], na.rm = TRUE), env = list(x_var = x_var))
     } else {
-      bquote(min(ANL[[.(x_var)]], na.rm = TRUE) * (.(1 - pos)) + max(ANL[[.(x_var)]], na.rm = TRUE) * .(pos))
+      substitute(
+        expr = min(ANL[[x_var]], na.rm = TRUE) * (one_minus_pos) + max(ANL[[x_var]], na.rm = TRUE) * pos,
+        env = list(x_var = x_var, one_minus_pos = 1 - pos, pos = pos)
+      )
     }
 
-    bquote(.(if (trans_label) quote(geom_text) else quote(geom_label))(
-      data = plot_labels,
-      mapping = aes(label = label, fontface = "plain"),
-      x = .(x_pos),
-      y = Inf,
-      hjust = .(if (pos > .5) 1 else if (pos == .5) .5 else 0),
-      vjust = 1,
-      inherit.aes = FALSE)
+    substitute(
+      expr = geom_call(
+        data = plot_labels,
+        mapping = aes(label = label, fontface = "plain"),
+        x = x_pos,
+        y = Inf,
+        hjust = hjust_value,
+        vjust = 1,
+        inherit.aes = FALSE),
+      env = list(
+        geom_call = if (trans_label) quote(geom_text) else quote(geom_label),
+        x_pos = x_pos,
+        hjust_value = if (pos > .5) 1 else if (pos == .5) .5 else 0
+      )
     )
   })
 
   plot_labels_fix_call <- reactive({
-    bquote(plot_labels <- plot_labels_df %>%
-      dplyr::mutate(label =
-        ifelse(
-          !is.na(failed_fit_msg),
-          failed_fit_msg,
-          trimws(paste0(
-            .(if (input$show_form) quote(paste0(form, "\n"))),
-            .(if (input$show_r2) quote(paste0(r_2, "\n"))),
-            .(if (input$show_form || input$show_r2) quote(ifelse(!is.na(msg), paste0(msg, "\n"), ""))),
-            .(if (input$show_warn) quote(ifelse(!is.na(warn_na), warn_na, "")))
-          ))
-        )
+    substitute(
+      expr = plot_labels <- plot_labels_df %>%
+        dplyr::mutate(label =
+          ifelse(
+            !is.na(failed_fit_msg),
+            failed_fit_msg,
+            trimws(paste0(form_call, r2_call, msg_call, warn_na_call))
+          )
+        ),
+      env = list(
+        form_call = if (input$show_form) quote(paste0(form, "\n")),
+        r2_call = if (input$show_r2) quote(paste0(r_2, "\n")),
+        msg_call = if (input$show_form || input$show_r2) quote(ifelse(!is.na(msg), paste0(msg, "\n"), "")),
+        warn_na_call = if (input$show_warn) quote(ifelse(!is.na(warn_na), warn_na, ""))
       )
     )
   })
@@ -571,7 +588,10 @@ srv_g_scatterplot <- function(input,
 
     point_sizes <- if (!is_empty(size_by_var)) {
       validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
-      bquote(.(size) * ANL[[.(size_by_var)]] / max(ANL[[.(size_by_var)]], na.rm = TRUE))
+      substitute(
+        expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
+        env = list(size = size, size_by_var = size_by_var)
+      )
     } else {
       size
     }
@@ -580,36 +600,58 @@ srv_g_scatterplot <- function(input,
 
     plot_call <- quote(ANL %>% ggplot())
     plot_call <- if (is_empty(color_by_var)) {
-      bquote(
-        .(plot_call) +
-          aes(x = .(as.name(x_var)), y = .(as.name(y_var))) +
-          geom_point(alpha = .(alpha), size = .(point_sizes), shape = .(shape), color = .(color))
+      substitute(
+        expr = plot_call +
+          aes(x = x_name, y = y_name) +
+          geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
+        env = list(
+          plot_call = plot_call,
+          x_name = as.name(x_var),
+          y_name = as.name(y_var),
+          alpha_value = alpha,
+          point_sizes = point_sizes,
+          shape_value = shape,
+          color_value = color
+        )
       )
     } else {
-      bquote(
-        .(plot_call) +
-          aes(x = .(as.name(x_var)), y = .(as.name(y_var)), color = .(as.name(color_by_var))) +
-          geom_point(alpha = .(alpha), size = .(point_sizes), shape = .(shape)) +
-          labs(color = .(varname_w_label(color_by_var, ANL)))
+      substitute(
+        expr = plot_call +
+          aes(x = x_name, y = y_name, color = color_by_var_name) +
+          geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value) +
+          labs(color = color_labs),
+        env = list(
+          plot_call = plot_call,
+          x_name = as.name(x_var),
+          y_name = as.name(y_var),
+          color_by_var_name = as.name(color_by_var),
+          alpha_value = alpha,
+          point_sizes = point_sizes,
+          shape_value = shape,
+          color_labs = varname_w_label(color_by_var, ANL)
+        )
       )
     }
 
-    plot_call <- bquote(
-      .(plot_call) +
-        ylab(.(varname_w_label(y_var, ANL))) +
-        xlab(.(varname_w_label(x_var, ANL))) +
-        .(call(paste0("theme_", ggtheme))) +
+    plot_call <- substitute(
+      expr = plot_call +
+        ylab(y_label) +
+        xlab(x_label) +
+        ggtheme_call +
         theme(
           legend.position = "bottom",
-          axis.text.x = .(if (rotate_xaxis_labels) quote(element_text(angle = 45, hjust = 1))))
+          axis.text.x = axis_text_x
+        ),
+      env = list(
+        plot_call = plot_call,
+        y_label = varname_w_label(y_var, ANL),
+        x_label = varname_w_label(x_var, ANL),
+        ggtheme_call = call(paste0("theme_", ggtheme)),
+        axis_text_x = if (rotate_xaxis_labels) quote(element_text(angle = 45, hjust = 1))
+      )
     )
 
-    if (rug_plot) {
-      plot_call <- bquote(
-        .(plot_call) +
-          geom_rug()
-      )
-    }
+    if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
 
     if (trend_line_is_applicable()) {
       shinyjs::hide("line_msg")
@@ -634,7 +676,10 @@ srv_g_scatterplot <- function(input,
         if (show_line_label()) {
           shinyjs::show("label_pos")
           shinyjs::show("trans_label")
-          plot_call <- bquote(.(plot_call) + .(formula_label()))
+          plot_call <- substitute(
+            expr = plot_call + formula_label,
+            env = list(plot_call = plot_call, formula_label = formula_label())
+          )
         } else {
           shinyjs::hide("label_pos")
           shinyjs::hide("trans_label")
@@ -644,9 +689,10 @@ srv_g_scatterplot <- function(input,
         } else {
           shinyjs::hide("color_sub")
         }
-        plot_call <- bquote(
-          .(plot_call) +
-            geom_smooth(formula = y ~ poly(x, .(smoothing_degree)), se = TRUE, level = .(ci), method = "lm")
+        plot_call <- substitute(
+          expr = plot_call +
+            geom_smooth(formula = y ~ poly(x, smoothing_degree), se = TRUE, level = ci, method = "lm"),
+          env = list(plot_call = plot_call, smoothing_degree = smoothing_degree, ci = ci)
         )
       }
     } else {
@@ -662,20 +708,17 @@ srv_g_scatterplot <- function(input,
     }
 
     if (!is.null(facet_cl)) {
-      plot_call <- bquote(.(plot_call) + .(facet_cl))
+      plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
     if (add_density) {
-      plot_call <- bquote(
-        ggExtra::ggMarginal(
-          .(plot_call),
-          type = "density",
-          groupColour = .(if (!is_empty(color_by_var)) TRUE else FALSE)
-        )
+      plot_call <- substitute(
+        expr = ggExtra::ggMarginal(plot_call, type = "density", groupColour = group_colour),
+        env = list(plot_call = plot_call, group_colour = if (!is_empty(color_by_var)) TRUE else FALSE)
       )
     }
 
-    plot_call <- bquote(p <- .(plot_call))
+    plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
     chunks_push(plot_call)
 
     #explicitly calling print on the plot inside the chunk evaluates

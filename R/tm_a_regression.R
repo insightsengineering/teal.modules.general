@@ -206,12 +206,6 @@ ui_a_regression <- function(id, ...) {
 }
 
 
-#' @importFrom magrittr %>%
-#' @importFrom dplyr if_else filter
-#' @importFrom methods is substituteDirect
-#' @importFrom stats as.formula
-#' @importFrom stats lowess
-#' @importFrom shinyjs show hide
 srv_a_regression <- function(input,
                              output,
                              session,
@@ -285,17 +279,17 @@ srv_a_regression <- function(input,
 
     chunks_push(
       id = "form",
-      expression = bquote(form <- .(form)),
+      expression = substitute(expr = form <- formula, env = list(formula = form)),
       chunks = chunks_stack
     )
 
     chunks_push(
       id = "fit_lm",
-      expression = quote(fit <- lm(form, data = ANL)) %>% substituteDirect(list(form = form)),
+      expression = quote(fit <- stats::lm(form, data = ANL)) %>% methods::substituteDirect(list(form = form)),
       chunks = chunks_stack
     )
 
-    chunks_push(bquote({
+    chunks_push(quote({
       for (regressor in names(fit$contrasts)) {
         alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
         names(fit$coefficients) <- gsub(
@@ -321,7 +315,7 @@ srv_a_regression <- function(input,
         selected = selected
       )
 
-      data <- fortify(lm(form, data = ANL))
+      data <- fortify(stats::lm(form, data = ANL))
       cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
       max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
       cur_outlier <- isolate(input$outlier)
@@ -338,20 +332,21 @@ srv_a_regression <- function(input,
 
   label_col <- reactive({
     validate(need(input$label_var, "`Display outlier labels` field is checked but `Outlier label` field is empty"))
-    bquote(
-      dplyr::if_else(
-        data$.cooksd > .(input$outlier) * mean(data$.cooksd, na.rm = TRUE),
-        as.character(na.omit(ANL)[[.(input$label_var)]]),
-        "") %>% dplyr::if_else(is.na(.), "cooksd == NaN", .)
+    substitute(
+      expr = dplyr::if_else(
+        data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
+        as.character(na.omit(ANL)[[label_var]]),
+        "") %>%
+        dplyr::if_else(is.na(.), "cooksd == NaN", .),
+      env = list(outliers = input$outlier, label_var = input$label_var)
     )
   })
 
   outlier_label <- reactive({
-    bquote(geom_text(
-      label = .(label_col()),
-      hjust = 0,
-      vjust = 1,
-      color = "red"))
+    substitute(
+      expr = geom_text(label = label_col, hjust = 0, vjust = 1, color = "red"),
+      env = list(label_col = label_col())
+    )
   })
 
   observeEvent(input$show_outlier, {
@@ -386,57 +381,82 @@ srv_a_regression <- function(input,
       if (!is.factor(ANL[[regression_var()$regressor]])) {
         shinyjs::show("size")
         shinyjs::show("alpha")
-        plot <- bquote(ggplot(
-          fit$model[, 2:1],
-          aes_string(.(regression_var()$regressor), .(regression_var()$response))
-          ) +
-          geom_point(size = .(size), alpha = .(alpha)) +
-          stat_smooth(
-            method = "lm",
-            formula = y ~ x,
-            se = FALSE
-          )
+        plot <- substitute(
+          env = list(
+            regressor = regression_var()$regressor,
+            response = regression_var()$response,
+            size = size,
+            alpha = alpha
+          ),
+          expr = ggplot(
+            fit$model[, 2:1],
+            aes_string(regressor, response)
+            ) +
+            geom_point(size = size, alpha = alpha) +
+            stat_smooth(
+              method = "lm",
+              formula = y ~ x,
+              se = FALSE
+            )
         )
         if (show_outlier) {
-          plot <- bquote(.(plot) + .(outlier_label()))
+          plot <- substitute(
+            expr = plot + outlier_label,
+            env = list(plot = plot, outlier_label = outlier_label())
+          )
         }
-        chunks_push(id = "plot_0_a", expression = bquote({
-          class(fit$residuals) <- NULL
-          data <- fortify(fit)
-          gg <- .(plot)
-        }))
+        chunks_push(
+          id = "plot_0_a",
+          expression = substitute(
+            expr = {
+              class(fit$residuals) <- NULL
+              data <- fortify(fit)
+              gg <- plot
+            },
+            env = list(plot = plot)
+          )
+        )
       } else {
         shinyjs::hide("size")
         shinyjs::hide("alpha")
-        plot <- bquote(
-          ggplot(
-            fit$model[, 2:1],
-            aes_string(.(regression_var()$regressor), .(regression_var()$response))
-          ) +
-          geom_boxplot()
+        plot <- substitute(
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) + geom_boxplot(),
+          env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
         if (show_outlier) {
-          plot <- bquote(.(plot) + .(outlier_label()))
+          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
         }
-        chunks_push(id = "plot_0_a", expression = bquote({
-          class(fit$residuals) <- NULL
-          data <- fortify(fit)
-          gg <- .(plot)
-        }))
+        chunks_push(
+          id = "plot_0_a",
+          expression = substitute(
+            expr = {
+              class(fit$residuals) <- NULL
+              data <- fortify(fit)
+              gg <- plot
+            },
+            env = list(plot = plot)
+          )
+        )
       }
 
-      chunks_push(id = "plot_0_b", expression = bquote({
-        g_final <- gg +
-          xlab(.(varname_w_label(regression_var()$regressor, ANL))) +
-          ylab(.(varname_w_label(regression_var()$response, ANL))) +
-          ggtitle("Response vs Regressor") +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(
+        id = "plot_0_b",
+        expression = substitute(
+          expr = {
+            g_final <- gg + xlab(xlabel) + ylab(ylabel) + ggtitle("Response vs Regressor") + ggtheme_call
+            print(g_final)
+          },
+          env = list(
+            xlabel = varname_w_label(regression_var()$regressor, ANL),
+            ylabel = varname_w_label(regression_var()$response, ANL),
+            ggtheme_call = call(paste0("theme_", ggtheme))
+          )
+        )
+      )
     }
 
     plot_base <- function() {
-      chunks_push(id = "plot_0_c", expression = bquote({
+      chunks_push(id = "plot_0_c", expression = quote({
         class(fit$residuals) <- NULL
 
         data <- fortify(fit)
@@ -454,98 +474,110 @@ srv_a_regression <- function(input,
     plot_type_1 <- function() {
       shinyjs::show("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(.fitted, .resid)) +
-        geom_point(size = .(size), alpha = .(alpha)) +
-        geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
-        geom_line(data = smoothy, mapping = smoothy_aes))
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.fitted, .resid)) +
+          geom_point(size = size, alpha = alpha) +
+          geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = size, alpha = alpha)
+      )
       if (show_outlier) {
-        plot <- bquote(.(plot) + .(outlier_label()))
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_1", expression = bquote({
-        smoothy <- smooth(data$.fitted, data$.resid)
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Fitted values\nlm(", reg_form, ")"),
-          y = "Residuals",
-          title = .(input_type)
-        ) + .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_1", expression = substitute(
+        expr = {
+          smoothy <- smooth(data$.fitted, data$.resid)
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Fitted values\nlm(", reg_form, ")"),
+            y = "Residuals",
+            title = input_type
+          ) + ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
     plot_type_2 <- function() {
       shinyjs::show("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(sample = .stdresid)) +
-          stat_qq(size = .(size), alpha = .(alpha)) +
-          geom_abline(linetype = "dashed")
+      plot <- substitute(
+        expr = ggplot(data = data, aes(sample = .stdresid)) +
+          stat_qq(size = size, alpha = alpha) +
+          geom_abline(linetype = "dashed"),
+        env = list(size = size, alpha = alpha)
       )
       if (show_outlier) {
-        plot <- bquote(
-          .(plot) +
+        plot <- substitute(
+          expr = plot +
             stat_qq(
               geom = "text",
-              label = .(label_col()) %>%
+              label = label_col %>%
                 data.frame(label = .) %>%
                 dplyr::filter(label != "cooksd == NaN") %>%
                 unlist(),
               hjust = 0,
               vjust = 1,
               color = "red"
-            )
-          )
+            ),
+          env = list(plot = plot, label_col = label_col())
+        )
       }
-      chunks_push(id = "plot_2", expression = bquote({
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Theoretical Quantiles\nlm(", reg_form, ")"),
-          y = "Standardized residuals",
-          title = .(input_type)
-        ) +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_2", expression = substitute(
+        expr = {
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Theoretical Quantiles\nlm(", reg_form, ")"),
+            y = "Standardized residuals",
+            title = input_type
+          ) + ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
     plot_type_3 <- function() {
       shinyjs::show("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
-          geom_point(size = .(size), alpha = .(alpha)) +
-          geom_line(data = smoothy, mapping = smoothy_aes)
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
+          geom_point(size = size, alpha = alpha) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = size, alpha = alpha)
       )
       if (show_outlier) {
-        plot <- bquote(.(plot) + .(outlier_label()))
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_3", expression = bquote({
-        smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Fitted values\nlm(", reg_form, ")"),
-          y = expression(sqrt(abs(`Standardized residuals`))),
-          title = .(input_type)
-        ) +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_3", expression = substitute(
+        expr = {
+          smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Fitted values\nlm(", reg_form, ")"),
+            y = expression(sqrt(abs(`Standardized residuals`))),
+            title = input_type
+          ) + ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
     plot_type_4 <- function() {
       shinyjs::hide("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
-          geom_col(alpha = .(alpha))
+      plot <- substitute(
+        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) + geom_col(alpha = alpha),
+        env = list(alpha = alpha)
       )
       if (show_outlier) {
-        plot <- bquote(
-          .(plot) +
+        plot <- substitute(
+          expr = plot +
             geom_hline(
               yintercept = c(
-                .(input$outlier) * mean(data$.cooksd, na.rm = TRUE),
+                outlier * mean(data$.cooksd, na.rm = TRUE),
                 mean(data$.cooksd, na.rm = TRUE)),
               color = "red",
               linetype = "dashed") +
@@ -560,27 +592,31 @@ srv_a_regression <- function(input,
                 angle = 90),
               parse = TRUE,
               show.legend = FALSE) +
-            .(outlier_label())
-          )
+            outlier_label,
+          env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
+        )
       }
-      chunks_push(id = "plot_4", expression = bquote({
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Obs. number\nlm(", reg_form, ")"),
-          y = "Cook's distance",
-          title = .(input_type)
-        ) +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_4", expression = substitute(
+        expr = {
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Obs. number\nlm(", reg_form, ")"),
+            y = "Cook's distance",
+            title = input_type
+          ) +
+            ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
 
     plot_type_5 <- function() {
       shinyjs::show("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(.hat, .stdresid)) +
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.hat, .stdresid)) +
           geom_vline(
             size = 1,
             colour = "black",
@@ -593,31 +629,35 @@ srv_a_regression <- function(input,
             linetype = "dashed",
             yintercept = 0
           ) +
-          geom_point(size = .(size), alpha = .(alpha)) +
-          geom_line(data = smoothy, mapping = smoothy_aes)
+          geom_point(size = size, alpha = alpha) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = size, alpha = alpha)
       )
       if (show_outlier) {
-        plot <- bquote(.(plot) + .(outlier_label()))
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_5", expression = bquote({
-        smoothy <- smooth(data$.hat, data$.stdresid)
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Standardized residuals\nlm(", reg_form, ")"),
-          y = "Leverage",
-          title = .(input_type)
-        ) +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_5", expression = substitute(
+        expr = {
+          smoothy <- smooth(data$.hat, data$.stdresid)
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Standardized residuals\nlm(", reg_form, ")"),
+            y = "Leverage",
+            title = input_type
+          ) +
+            ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
 
     plot_type_6 <- function() {
       shinyjs::show("size")
       shinyjs::show("alpha")
-      plot <- bquote(
-        ggplot(data = data, aes(.hat, .cooksd)) +
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.hat, .cooksd)) +
           geom_vline(xintercept = 0, colour = NA) +
           geom_abline(
             slope = seq(0, 3, by = 0.5),
@@ -626,22 +666,26 @@ srv_a_regression <- function(input,
             size = 1
           ) +
           geom_line(data = smoothy, mapping = smoothy_aes) +
-          geom_point(size = .(size), alpha = .(alpha))
+          geom_point(size = size, alpha = alpha),
+        env = list(size = size, alpha = alpha)
       )
       if (show_outlier) {
-        plot <- bquote(.(plot) + .(outlier_label()))
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_6", expression = bquote({
-        smoothy <- smooth(data$.hat, data$.cooksd)
-        g_base <- .(plot)
-        g_final <- g_base + labs(
-          x = paste0("Leverage\nlm(", reg_form, ")"),
-          y = "Cooks's distance",
-          title = .(input_type)
-        ) +
-          .(call(paste0("theme_", ggtheme)))
-        print(g_final)
-      }))
+      chunks_push(id = "plot_6", expression = substitute(
+        expr = {
+          smoothy <- smooth(data$.hat, data$.cooksd)
+          g_base <- plot
+          g_final <- g_base + labs(
+            x = paste0("Leverage\nlm(", reg_form, ")"),
+            y = "Cooks's distance",
+            title = input_type
+          ) +
+            ggtheme_call
+          print(g_final)
+        },
+        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+      ))
     }
 
     if (input_type == "Response vs Regressor") {

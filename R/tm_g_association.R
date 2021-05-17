@@ -269,19 +269,21 @@ srv_tm_g_association <- function(input,
     # association
     ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-    chunks_push(bquote(title <- .(paste(
-      "Association",
-      ifelse(ref_class_cov == "NULL", "for", "between"),
-      paste(lapply(vars_names, function(x) {
-        if (is.numeric(ANL[[x]]) && log_transformation) {
-          varname_w_label(x, ANL, prefix = "Log of ")
-        } else {
-          varname_w_label(x, ANL)
-        }
+    chunks_push(substitute(
+      expr = title <- new_title,
+      env = list(new_title = paste(
+        "Association",
+        ifelse(ref_class_cov == "NULL", "for", "between"),
+        paste(lapply(vars_names, function(x) {
+          if (is.numeric(ANL[[x]]) && log_transformation) {
+            varname_w_label(x, ANL, prefix = "Log of ")
+          } else {
+            varname_w_label(x, ANL)
+          }
         }), collapse = " / "),
-      ifelse(ref_class_cov == "NULL", "",
-             paste("and", ref_cl_lbl)))
-    )))
+        ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
+      ))
+    ))
 
     chunks_push(quote(print(title)))
 
@@ -317,12 +319,15 @@ srv_tm_g_association <- function(input,
     })
 
     chunks_push(
-      expression = bquote({
-        plots <- .(do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
-        grid::grid.newpage()
-        grid::grid.draw(p)
-      }),
+      expression = substitute(
+        expr = {
+          plots <- plot_calls
+          p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+          grid::grid.newpage()
+          grid::grid.draw(p)
+        },
+        env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
+      ),
       id = "plotCall"
     )
   })

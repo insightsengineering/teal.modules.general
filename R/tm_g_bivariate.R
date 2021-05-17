@@ -489,20 +489,21 @@ srv_g_bivariate <- function(input,
           size = size_name,
           is_point = any(grepl("geom_point", cl %>% deparse()))
         )
-        legend_lbls <- bquote(labs(color = .(varname_w_label(color_name, ANL)),
-                                   fill = .(varname_w_label(fill_name, ANL)),
-                                   size = .(varname_w_label(size_name, ANL))
-                                   )
-                              )
+        legend_lbls <- substitute(
+          expr = labs(color = color_name, fill = fill_name, size = size_name),
+          env = list(
+            color_name = varname_w_label(color_name, ANL),
+            fill_name = varname_w_label(fill_name, ANL),
+            size_name = varname_w_label(size_name, ANL)
+          )
+        )
       }
       if (!is.null(coloring_cl)) {
         cl <- call("+", call("+", cl, coloring_cl), legend_lbls)
       }
     }
 
-    chunks_push(bquote({
-      p <- .(cl)
-    }))
+    chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
 
     # Add labels to facets
     nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
@@ -512,12 +513,15 @@ srv_g_bivariate <- function(input,
       chunks_push(quote(print(p)))
       chunks_safe_eval()
     } else {
-      chunks_push(bquote({
-        # Add facetting labels
-        # optional: grid.newpage() #nolintr
-        g <- add_facet_labels(p, xfacet_label = .(nulled_col_facet_name), yfacet_label = .(nulled_row_facet_name))
-        grid::grid.draw(g)
-      }))
+      chunks_push(substitute(
+        expr = {
+          # Add facetting labels
+          # optional: grid.newpage() #nolintr
+          g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+          grid::grid.draw(g)
+        },
+        env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
+      ))
       chunks_safe_eval()
       chunks_get_var("g")
     }
@@ -591,7 +595,7 @@ bivariate_plot_call <- function(data_name,
   cl_plot <- substitute_q(
     cl,
     list(
-      .ggplotcall = bquote(ggplot(.(as.name(data_name)))),
+      .ggplotcall = substitute(expr = ggplot(data_name), env = list(data_name = as.name(data_name))),
       .x = x,
       .y = y,
       .xlab = x_label,
@@ -857,50 +861,40 @@ coloring_ggplot_call <- function(colour,
                                  is_point = FALSE) {
   if (!is_character_empty(colour) && !is_character_empty(fill) &&
     is_point && !is_character_empty(size)) {
-    bquote(aes(
-      colour = .(as.name(colour)),
-      fill = .(as.name(fill)),
-      size = .(as.name(size))
-    ))
+    substitute(
+      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
+      env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
+    )
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
              is_point && is_character_empty(size)) {
-    bquote(aes(
-      fill = .(as.name(fill))
-    ))
+    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   }  else if (!is_character_empty(colour) && !is_character_empty(fill) &&
     (!is_point || is_character_empty(size))) {
-    bquote(aes(
-      colour = .(as.name(colour)),
-      fill = .(as.name(fill))
-    ))
+    substitute(
+      expr = aes(colour = colour_name, fill = fill_name),
+      env = list(colour_name = as.name(colour), fill_name = as.name(fill))
+    )
   } else if (!is_character_empty(colour) && is_character_empty(fill) &&
     (!is_point || is_character_empty(size))) {
-    bquote(aes(
-      colour = .(as.name(colour))
-    ))
+    substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
     (!is_point || is_character_empty(size))) {
-    bquote(aes(
-      fill = .(as.name(fill))
-    ))
+    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (is_character_empty(colour) && is_character_empty(fill) &&
     is_point && !is_character_empty(size)) {
-    bquote(aes(
-      size = .(as.name(size))
-    ))
+    substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (!is_character_empty(colour) && is_character_empty(fill) &&
     is_point && !is_character_empty(size)) {
-    bquote(aes(
-      colour = .(as.name(colour)),
-      size = .(as.name(size))
-    ))
+    substitute(
+      expr = aes(colour = colour_name, size = size_name),
+      env = list(colour_name = as.name(colour), size_name = as.name(size))
+    )
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
     is_point && !is_character_empty(size)) {
-    bquote(aes(
-      color = .(as.name(fill)),
-      fill = .(as.name(fill)),
-      size = .(as.name(size))
-    ))
+    substitute(
+      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
+      env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
+    )
   } else {
     NULL
   }

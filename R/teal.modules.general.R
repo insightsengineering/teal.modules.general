@@ -9,6 +9,7 @@
 #' @import teal
 #' @import teal.devel
 #' @import utils.nest
+#' @import magrittr
 #'
 #'
 #' @docType package

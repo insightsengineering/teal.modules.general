@@ -248,17 +248,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
   )
 }
 
-#' @importFrom dplyr arrange arrange_at desc filter group_by_all group_by_at mutate mutate_all transmute
-#'   pull select summarise_all ungroup tally distinct n_distinct cur_group_id row_number
-#' @importFrom grid grid.newpage grid.draw unit.pmax unit
-#' @importFrom gridExtra gtable_cbind gtable_rbind
-#' @importFrom magrittr %>% extract2
-#' @importFrom scales percent_format
 #' @importFrom rlang .data
-#' @importFrom tidyr pivot_longer pivot_wider
-#' @importFrom tidyselect everything all_of
-#' @importFrom tibble as_tibble tibble
-#' @importFrom digest sha1
 srv_missing_data <- function(input,
                              output,
                              session,
@@ -298,31 +288,40 @@ srv_missing_data <- function(input,
     group_var <- input$group_by_var
 
     if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
-      common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name))[, .(selected_vars())])) # nolint
+      common_stack_push(substitute(
+        expr = ANL_FILTERED <- anl_name[, selected_vars], # nolint
+        env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
+      ))
     } else {
-      common_stack_push(bquote(ANL_FILTERED <- .(as.name(anl_name)))) # nolint
+      common_stack_push(substitute(expr = ANL_FILTERED <- anl_name, env = list(anl_name = as.name(anl_name)))) # nolint
     }
 
     if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
-      common_stack_push(bquote(ANL_FILTERED[[.(group_var)]] <- .(as.name(anl_name))[[.(group_var)]]))
+      common_stack_push(substitute(
+        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]],
+        env = list(group_var = group_var, anl_name = as.name(anl_name))
+      ))
     }
 
     new_col_name <- "**anyna**" # nolint variable assigned and used
 
-    common_stack_push(
-      bquote({
+    common_stack_push(substitute(
+      expr =
         create_cols_labels <- function(cols, just_label = FALSE) {
-          column_labels <- .(c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name))
+          column_labels <- column_labels_value
           column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
           if (just_label) {
             labels <- column_labels[cols]
           } else {
-            labels <- ifelse(cols == .(new_col_name) | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
+            labels <- ifelse(cols == new_col_name | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
           }
           return(labels)
-        }
-      })
-    )
+        },
+      env = list(
+        new_col_name = new_col_name,
+        column_labels_value = c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name)
+      )
+    ))
     chunks_safe_eval(chunks = common_stack)
     common_stack
   })
@@ -340,7 +339,7 @@ srv_missing_data <- function(input,
       sapply(function(x) mean(is.na(x)), USE.NAMES = TRUE) %>%
       sort(decreasing = TRUE)
 
-    tibble(
+    tibble::tibble(
       key = names(na_count),
       value = unname(na_count),
       label = cut(na_count, breaks = seq(from = 0, to = 1, by = 0.1), include.lowest = TRUE)
@@ -363,12 +362,12 @@ srv_missing_data <- function(input,
 
   observeEvent(input$filter_na, {
     choices <- vars_summary() %>%
-      select(.data$key) %>%
+      dplyr::select(.data$key) %>%
       extract2(1)
 
     selected <- vars_summary() %>%
-      filter(.data$value > 0) %>%
-      select(.data$key) %>%
+      dplyr::filter(.data$value > 0) %>%
+      dplyr::select(.data$key) %>%
       extract2(1)
 
     updateOptionalSelectInput(
@@ -448,87 +447,77 @@ srv_missing_data <- function(input,
 
     if (input$any_na) {
       new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
-      summary_stack_push(
-        bquote(
-          ANL_FILTERED[[.(new_col_name)]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE)
-        )
-      )
+      summary_stack_push(substitute(
+        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE),
+        env = list(new_col_name = new_col_name)
+      ))
     }
 
+    summary_stack_push(substitute(
+      expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+      env = list(data_keys = data_keys())
+    ))
 
-    summary_stack_push(
-      bquote(
-        analysis_vars <- setdiff(colnames(ANL_FILTERED), .(data_keys()))
-        )
-    )
-
-    summary_stack_push(
-      bquote({
-        summary_plot_obs <- .(if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
-          quote(tibble::as_tibble(ANL_FILTERED))
-        } else quote(ANL_FILTERED))[, analysis_vars] %>%
-          dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-          tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
-          dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
-          tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-          dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100)
-      })
-    )
+    summary_stack_push(substitute(
+      expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
+        dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+        tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+        dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
+        tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
+        dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100),
+      env = list(data_frame_call = if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
+        quote(tibble::as_tibble(ANL_FILTERED))
+        } else quote(ANL_FILTERED)
+      )
+    ))
 
     # x axis ordering according to number of missing values and alphabet
-    summary_stack_push(
-      bquote(
-        x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
-          dplyr::arrange(n_pct, dplyr::desc(col)) %>%
-          dplyr::pull(col) %>%
-          create_cols_labels()
-      )
-    )
+    summary_stack_push(quote(
+      expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
+        dplyr::arrange(n_pct, dplyr::desc(col)) %>%
+        dplyr::pull(col) %>%
+        create_cols_labels()
+    ))
 
     # always set "**anyna**" level as the last one
     if (isolate(input$any_na)) {
-      summary_stack_push(
-        quote(
-          x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")
-        )
-      )
+      summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
     }
 
-    summary_stack_push(
-      bquote(
-        p1 <- summary_plot_obs %>%
-          ggplot() +
-          aes(
-            x = factor(create_cols_labels(col), levels = x_levels),
-            y = n_pct,
-            fill = isna
-          ) +
-          geom_bar(position = "fill", stat = "identity") +
-          scale_fill_manual(
-            name = "",
-            values = c("grey90", "#ff2951ff"),
-            labels = c("Present", "Missing")
-          ) +
-          scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
-          geom_text(
-            aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-            hjust = 1,
-            color = "black"
-          ) +
-          labs(
-            x = "Variable",
-            y = "Missing observations"
-          ) +
-          theme_classic() +
-          theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
-          coord_flip()
-      )
-    )
+    summary_stack_push(quote(
+      p1 <- summary_plot_obs %>%
+        ggplot() +
+        aes(
+          x = factor(create_cols_labels(col), levels = x_levels),
+          y = n_pct,
+          fill = isna
+        ) +
+        geom_bar(position = "fill", stat = "identity") +
+        scale_fill_manual(
+          name = "",
+          values = c("grey90", "#ff2951ff"),
+          labels = c("Present", "Missing")
+        ) +
+        scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+        geom_text(
+          aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+          hjust = 1,
+          color = "black"
+        ) +
+        labs(
+          x = "Variable",
+          y = "Missing observations"
+        ) +
+        theme_classic() +
+        theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
+        coord_flip()
+    ))
 
     if (isTRUE(input$if_patients_plot)) {
       keys <- data_keys()
-      summary_stack_push(bquote(
-        parent_keys <- .(datasets$get_primary_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+      summary_stack_push(substitute(
+        expr = parent_keys <- keys,
+        env = list(keys = datasets$get_primary_keys(if_empty(datasets$get_parentname(dataname), dataname)))
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
@@ -546,57 +535,51 @@ srv_missing_data <- function(input,
         )
       )
 
-      summary_stack_push(
-        bquote(
-          p2 <- summary_plot_patients %>%
-            ggplot() +
-            aes_(
-              x = ~ factor(create_cols_labels(col), levels = x_levels),
-              y = ~n_pct,
-              fill = ~isna
-            ) +
-            geom_bar(alpha = 1, stat = "identity", position = "fill") +
-            scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
-            scale_fill_manual(
-              name = "",
-              values = c("grey90", "#ff2951ff"),
-              labels = c("Present", "Missing")
-            ) +
-            labs(
-              x = "",
-              y = "Missing patients"
-            ) +
-            geom_text(
-              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-              hjust = 1,
-              color = "black"
-            ) +
-            theme_classic() +
-            theme(
-              legend.position = "bottom",
-              axis.text.x = element_text(angle = 45, hjust = 1),
-              axis.text.y = element_blank()
-            ) +
-            coord_flip()
-        )
-      )
+      summary_stack_push(quote(
+        p2 <- summary_plot_patients %>%
+          ggplot() +
+          aes_(
+            x = ~ factor(create_cols_labels(col), levels = x_levels),
+            y = ~n_pct,
+            fill = ~isna
+          ) +
+          geom_bar(alpha = 1, stat = "identity", position = "fill") +
+          scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing")
+          ) +
+          labs(
+            x = "",
+            y = "Missing patients"
+          ) +
+          geom_text(
+            aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+            hjust = 1,
+            color = "black"
+          ) +
+          theme_classic() +
+          theme(
+            legend.position = "bottom",
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            axis.text.y = element_blank()
+          ) +
+          coord_flip()
+      ))
 
-      summary_stack_push(
-        bquote({
-          g1 <- ggplotGrob(p1)
-          g2 <- ggplotGrob(p2)
-          g <- gridExtra::gtable_cbind(g1, g2, size = "first")
-          g$heights <- grid::unit.pmax(g1$heights, g2$heights)
-          grid::grid.newpage()
-        })
-      )
+      summary_stack_push(quote({
+        g1 <- ggplotGrob(p1)
+        g2 <- ggplotGrob(p2)
+        g <- gridExtra::gtable_cbind(g1, g2, size = "first")
+        g$heights <- grid::unit.pmax(g1$heights, g2$heights)
+        grid::grid.newpage()
+      }))
     } else {
-      summary_stack_push(
-        bquote({
-          g <- ggplotGrob(p1)
-          grid::grid.newpage()
-        })
-      )
+      summary_stack_push(quote({
+        g <- ggplotGrob(p1)
+        grid::grid.newpage()
+      }))
     }
 
     summary_stack_push(quote(grid::grid.draw(g)))
@@ -617,7 +600,7 @@ srv_missing_data <- function(input,
     chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
 
     chunks_push(
-      bquote({
+      quote({
         combination_cutoff <- ANL_FILTERED %>%
           dplyr::mutate_all(is.na) %>%
           dplyr::group_by_all() %>%
@@ -664,79 +647,73 @@ srv_missing_data <- function(input,
 
     chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
 
-    combination_stack_push(
-      bquote(
-        data_combination_plot_cutoff <- combination_cutoff %>%
-          dplyr::filter(n >= .(input$combination_cutoff)) %>%
-          dplyr::mutate(id = rank(n, ties.method = "first")) %>%
-          tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
-          dplyr::arrange(n)
-      )
-    )
+    combination_stack_push(substitute(
+      expr = data_combination_plot_cutoff <- combination_cutoff %>%
+        dplyr::filter(n >= combination_cutoff_value) %>%
+        dplyr::mutate(id = rank(n, ties.method = "first")) %>%
+        tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
+        dplyr::arrange(n),
+      env = list(combination_cutoff_value = input$combination_cutoff)
+    ))
 
     # find keys in dataset not selected in the UI and remove them from dataset
     keys_not_selected <- setdiff(data_keys(), input$variables_select)
     if (length(keys_not_selected) > 0) {
-      combination_stack_push(
-        bquote(
-          data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
-            dplyr::filter(!key %in% .(keys_not_selected))
-        )
-      )
+      combination_stack_push(substitute(
+        expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
+          dplyr::filter(!key %in% keys_not_selected),
+        env = list(keys_not_selected = keys_not_selected)
+      ))
     }
 
-    combination_stack_push(
-      bquote(
-        labels <- data_combination_plot_cutoff %>%
-          dplyr::filter(key == key[[1]]) %>%
-          magrittr::extract2(1)
-      )
-    )
+    combination_stack_push(quote(
+      labels <- data_combination_plot_cutoff %>%
+        dplyr::filter(key == key[[1]]) %>%
+        extract2(1)
+    ))
 
-    combination_stack_push(
-      bquote({
-        p1 <- data_combination_plot_cutoff %>%
-          dplyr::select(id, n) %>%
-          dplyr::distinct() %>%
-          ggplot(aes(x = id, y = n)) +
-          geom_bar(stat = "identity", fill = "#ff2951ff") +
-          ylab("") + xlab("") + theme_void() +
-          theme(axis.text.x = element_blank()) +
-          geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
-          ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))
+    combination_stack_push(quote({
+      p1 <- data_combination_plot_cutoff %>%
+        dplyr::select(id, n) %>%
+        dplyr::distinct() %>%
+        ggplot(aes(x = id, y = n)) +
+        geom_bar(stat = "identity", fill = "#ff2951ff") +
+        ylab("") + xlab("") + theme_void() +
+        theme(axis.text.x = element_blank()) +
+        geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
+        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))
 
-        graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
-        graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
+      graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
+      graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
 
-        p2 <- data_combination_plot_cutoff %>% ggplot() +
-          aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-          geom_tile(alpha = 0.85, height = 0.95) +
-          scale_fill_manual(
-            name = "",
-            values = c("grey90", "#ff2951ff"),
-            labels = c("Present", "Missing")
-          ) +
-          labs(x = "", y = "") +
-          theme_classic() +
-          theme(
-            legend.position = "bottom",
-            axis.text.x = element_blank(),
-            axis.ticks = element_blank(),
-            panel.grid.major = element_blank()
-          ) +
-          geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-          geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-          coord_flip()
+      p2 <- data_combination_plot_cutoff %>% ggplot() +
+        aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+        geom_tile(alpha = 0.85, height = 0.95) +
+        scale_fill_manual(
+          name = "",
+          values = c("grey90", "#ff2951ff"),
+          labels = c("Present", "Missing")
+        ) +
+        labs(x = "", y = "") +
+        theme_classic() +
+        theme(
+          legend.position = "bottom",
+          axis.text.x = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid.major = element_blank()
+        ) +
+        geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+        geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+        coord_flip()
 
-        g1 <- ggplotGrob(p1)
-        g2 <- ggplotGrob(p2)
+      g1 <- ggplotGrob(p1)
+      g2 <- ggplotGrob(p2)
 
-        g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-        g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
-        grid::grid.newpage()
-        grid::grid.draw(g)
-      })
-    )
+      g <- gridExtra::gtable_rbind(g1, g2, size = "last")
+      g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
+      grid::grid.newpage()
+      grid::grid.draw(g)
+    }))
 
     chunks_safe_eval(combination_stack)
     combination_stack
@@ -782,20 +759,23 @@ srv_missing_data <- function(input,
     vars <- unique(variables_select, group_var)
     count_type <- input$count_type # nolint (local variable is assigned and used)
 
-    table_stack_push(bquote(cell_values <- function(x) {
-      nas_string <- if ("Missing" %in% .(count_type)) sum(is.na(x)) else ""
-      sum_string <- if ("All" %in% .(count_type)) length(x) else ""
-      fra_string <- if ("Fraction" %in% .(count_type)) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
+    table_stack_push(substitute(
+      expr = cell_values <- function(x) {
+        nas_string <- if ("Missing" %in% count_type) sum(is.na(x)) else ""
+        sum_string <- if ("All" %in% count_type) length(x) else ""
+        fra_string <- if ("Fraction" %in% count_type) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
 
-      trimws(
-        paste(
-          nas_string,
-          if (all(c("Missing", "All") %in% .(count_type))) "/",
-          sum_string,
-          fra_string
+        trimws(
+          paste(
+            nas_string,
+            if (all(c("Missing", "All") %in% count_type)) "/",
+            sum_string,
+            fra_string
+          )
         )
-      )
-    }))
+      },
+      env = list(count_type = count_type)
+    ))
 
     if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
       variables <- selected_vars() # nolint (local variable is assigned and used)
@@ -804,33 +784,29 @@ srv_missing_data <- function(input,
     }
 
     if (!is.null(group_var)) {
-      table_stack_push(
-        bquote(
-          summary_data <- ANL_FILTERED %>%
-            dplyr::group_by_at(.(group_var)) %>%
-            dplyr::filter(.(as.name(group_var)) %in% .(group_vals)) %>%
-            dplyr::summarise_all(cell_values) %>%
-            tidyr::pivot_longer(!tidyselect::all_of(.(group_var)), names_to = "Variable", values_to = "out") %>%
-            dplyr::mutate(
-              `Variable label` = "Placeholder",
-              altered_group_var = dplyr::if_else(
-                .(as.name(group_var)) == "", "''", as.character(.(as.name(group_var))))
-              ) %>%
-            dplyr::select(altered_group_var, Variable, `Variable label`, out) %>%
-            tidyr::pivot_wider(names_from = altered_group_var, values_from = out) %>%
-            dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE))
-        )
-      )
+      table_stack_push(substitute(
+        expr = summary_data <- ANL_FILTERED %>%
+          dplyr::group_by_at(group_var) %>%
+          dplyr::filter(group_var_name %in% group_vals) %>%
+          dplyr::summarise_all(cell_values) %>%
+          tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+          dplyr::mutate(
+            `Variable label` = "Placeholder",
+            altered_group_var = dplyr::if_else(group_var_name == "", "''", group_var)
+          ) %>%
+          dplyr::select(altered_group_var, Variable, `Variable label`, out) %>%
+          tidyr::pivot_wider(names_from = altered_group_var, values_from = out) %>%
+          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE)),
+        env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
+      ))
     } else {
-      table_stack_push(
-        bquote(
-          summary_data <- ANL_FILTERED %>%
-            dplyr::summarise_all(cell_values) %>%
-            tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable", values_to = "out") %>%
-            dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
-            dplyr::select(Variable, `Variable label`, `Overall missing` = out)
-        )
-      )
+      table_stack_push(quote(
+        summary_data <- ANL_FILTERED %>%
+          dplyr::summarise_all(cell_values) %>%
+          tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable", values_to = "out") %>%
+          dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
+          dplyr::select(Variable, `Variable label`, `Overall missing` = out)
+      ))
     }
     table_stack_push(quote({
       summary_data
@@ -853,8 +829,9 @@ srv_missing_data <- function(input,
     chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
 
     keys <- data_keys()
-    by_subject_stack_push(bquote(
-      parent_keys <- .(`if`(
+    by_subject_stack_push(substitute(
+      expr = parent_keys <- keys,
+      env = list(keys = `if`(
         is_empty(datasets$get_parentname(dataname)),
         keys,
         datasets$get_primary_keys(datasets$get_parentname(dataname))
@@ -862,8 +839,9 @@ srv_missing_data <- function(input,
     ))
 
     by_subject_stack_push(
-      bquote(
-        analysis_vars <- setdiff(colnames(ANL_FILTERED), .(data_keys()))
+      substitute(
+        expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+        env = list(data_keys = data_keys())
       )
     )
 
@@ -883,7 +861,7 @@ srv_missing_data <- function(input,
           dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-          magrittr::extract2("id")
+          extract2("id")
 
         summary_plot_patients <- summary_plot_patients %>%
           tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
@@ -892,7 +870,7 @@ srv_missing_data <- function(input,
     )
 
     by_subject_stack_push(
-      bquote({
+      quote({
         g <- ggplot(summary_plot_patients, aes(
           x = factor(id, levels = order_subjects),
           y = create_cols_labels(col), fill = isna)

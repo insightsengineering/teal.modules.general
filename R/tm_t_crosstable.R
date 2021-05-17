@@ -15,7 +15,6 @@
 #' @note For more examples, please see the vignette "Using cross table" via
 #'   `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
-#' @importFrom rtables add_colcounts add_overall_level as_html basic_table build_table split_cols_by
 #' @importFrom tern summarize_vars
 #'
 #' @export
@@ -148,7 +147,6 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   )
 }
 
-#' @importFrom rtables as_html
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
@@ -221,10 +219,13 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       "(columns)"
     )
 
-    chunks_push(bquote({
-      title <- .(plot_title)
-      print(title)
-    }))
+    chunks_push(substitute(
+      expr = {
+        title <- plot_title
+        print(title)
+      },
+      env = list(plot_title = plot_title)
+    ))
 
     if (anyNA(ANL)) {
       chunks_push(quote(
@@ -239,38 +240,43 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       ANL
     )
 
-    chunks_push(bquote({
-      lyt <- rtables::basic_table() %>%
-        .(
-          if (show_total) {
-            bquote(
-              rtables::split_cols_by(
-                .(y_name),
-                split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
-              )
-            )
-          } else {
-            bquote(
-              rtables::split_cols_by(
-                .(y_name)
-              )
-            )
-          }
-        ) %>%
-        rtables::add_colcounts() %>%
-        tern::summarize_vars(
-          vars = .(x_name),
-          var_labels = .(labels_vec),
-          na.rm = FALSE,
-          denom = "N_col",
-          .stats = c("n", "mean_sd", "median", "range", .(ifelse(show_percentage, "count_fraction", "count")))
-        )
-    }))
+    chunks_push(substitute(
+      expr = {
+        lyt <- rtables::basic_table() %>%
+          split_call %>%
+          rtables::add_colcounts() %>%
+          tern::summarize_vars(
+            vars = x_name,
+            var_labels = labels_vec,
+            na.rm = FALSE,
+            denom = "N_col",
+            .stats = c("n", "mean_sd", "median", "range", count_value)
+          )
+      },
+      env = list(
+        split_call = if (show_total) {
+          substitute(
+            expr = rtables::split_cols_by(
+              y_name, split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+            ),
+            env = list(y_name = y_name)
+          )
+        } else {
+          substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
+        },
+        x_name = x_name,
+        labels_vec = labels_vec,
+        count_value = ifelse(show_percentage, "count_fraction", "count")
+      )
+    ))
 
-    chunks_push(bquote({
-      tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[.(y_name)]]), ])
-      tbl
-    }))
+    chunks_push(substitute(
+      expr = {
+        tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
+        tbl
+      },
+      env = list(y_name = y_name)
+    ))
 
     chunks_safe_eval()
   })
@@ -282,7 +288,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
   table <- reactive({
     create_table()
-    as_html(chunks_get_var("tbl"))
+    rtables::as_html(chunks_get_var("tbl"))
   })
 
   callModule(

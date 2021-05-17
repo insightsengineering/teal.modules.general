@@ -15,7 +15,7 @@
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 #' @export
-#' @importFrom shinyjs show hide
+#'
 #' @examples
 #' # Scatterplot matrix of variables from ADSL dataset
 #' library(random.cdisc.data)
@@ -141,11 +141,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
-
-#' @importFrom magrittr %>%
-#' @importFrom dplyr mutate_if
-#' @importFrom lattice splom panel.splom panel.text current.panel.limits
-#' @importFrom stats cor.test na.omit
 srv_g_scatterplotmatrix <- function(input,
                                     output,
                                     session,
@@ -192,16 +187,18 @@ srv_g_scatterplotmatrix <- function(input,
     # check character columns. If any, then those are converted to factors
     check_char <- vapply(ANL[, cols_names], is.character, logical(1))
     if (any(check_char)) {
-      chunks_push(bquote({
-        ANL <- ANL[, .(cols_names)] %>% # nolint
+      chunks_push(substitute(
+        expr = ANL <- ANL[, cols_names] %>% # nolint
           dplyr::mutate_if(is.character, as.factor) %>%
-          droplevels()
-      }))
+          droplevels(),
+        env = list(cols_names = cols_names)
+      ))
     } else {
-      chunks_push(bquote({
-        ANL <- ANL[, .(cols_names)] %>% # nolint
-          droplevels()
-      }))
+      chunks_push(substitute(
+        expr = ANL <- ANL[, cols_names] %>% # nolint
+          droplevels(),
+        env = list(cols_names = cols_names)
+      ))
     }
 
     # create plot
@@ -210,39 +207,50 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::show("cor_use")
       shinyjs::show("cor_na_omit")
 
-      chunks_push(bquote({
-        plot <- lattice::splom(
-          ANL,
-          varnames = .(varnames),
-          panel = function(x, y, ...) {
-            lattice::panel.splom(x = x, y = y, ...)
-            cpl <- lattice::current.panel.limits()
-            lattice::panel.text(
-              mean(cpl$xlim),
-              mean(cpl$ylim),
-              get_scatterplotmatrix_stats(
-                x,
-                y,
-                .f = cor.test,
-                .f_args = list(method = .(cor_method),
-                na.action = .(cor_na_action))),
-              alpha = 0.6,
-              fontsize = 18,
-              fontface = "bold")
-          },
-          pch = 16,
-          alpha = .(alpha),
-          cex = .(cex))
-        print(plot)
-      }))
+      chunks_push(substitute(
+        expr = {
+          plot <- lattice::splom(
+            ANL,
+            varnames = varnames_value,
+            panel = function(x, y, ...) {
+              lattice::panel.splom(x = x, y = y, ...)
+              cpl <- lattice::current.panel.limits()
+              lattice::panel.text(
+                mean(cpl$xlim),
+                mean(cpl$ylim),
+                get_scatterplotmatrix_stats(
+                  x,
+                  y,
+                  .f = stats::cor.test,
+                  .f_args = list(method = cor_method, na.action = cor_na_action)
+                ),
+                alpha = 0.6,
+                fontsize = 18,
+                fontface = "bold"
+              )
+            },
+            pch = 16,
+            alpha = alpha_value,
+            cex = cex_value
+          )
+          print(plot)
+        },
+        env = list(
+          varnames_value = varnames,
+          cor_method = cor_method,
+          cor_na_action = cor_na_action,
+          alpha_value = alpha,
+          cex_value = cex
+        )
+      ))
     } else {
       shinyjs::hide("cor_method")
       shinyjs::hide("cor_use")
       shinyjs::hide("cor_na_omit")
-      chunks_push(bquote({
-        lattice::splom(ANL, varnames = .(varnames),
-                       pch = 16, alpha = .(alpha), cex = .(cex))
-      }))
+      chunks_push(substitute(
+        expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
+        env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
+      ))
     }
     chunks_safe_eval()
   })
@@ -311,25 +319,25 @@ srv_g_scatterplotmatrix <- function(input,
 
 
 #' Get stats for x-y pairs in scatterplot matrix
-#' @description uses cor.test per default for all numerical input variables and converts results
+#' @description uses stats::cor.test per default for all numerical input variables and converts results
 #'  to character vector. Could be extended if different stats for different variable
 #'  types are needed. Meant to be called from \code{lattice::panel.text}.
 #' @param x \code{numeric}
 #' @param y \code{numeric}
 #' @param .f \code{function}, function that accepts x and y as formula input \code{~ x + y}.
-#' Default \code{cor.test}
+#' Default \code{stats::cor.test}
 #' @param .f_args \code{list} of arguments to be passed to \code{.f}
 #' @param round_stat \code{integer}
 #' @param round_pval \code{integer}
-#' @details presently we need to use a formula input for \code{cor.test} because
+#' @details presently we need to use a formula input for \code{stats::cor.test} because
 #' \code{na.fail} only gets evaluated when a formula is passed (see below).
 #' \preformatted{
 #' x = c(1,3,5,7,NA)
 #' y = c(3,6,7,8,1)
-#' cor.test(x, y, na.action = "na.fail")
-#' cor.test(~ x + y,  na.action = "na.fail")
+#' stats::cor.test(x, y, na.action = "na.fail")
+#' stats::cor.test(~ x + y,  na.action = "na.fail")
 #' }
-#' @return \code{character} with stats. For \code{cor.test} correlation coefficient and p-value.
+#' @return \code{character} with stats. For \code{stats::cor.test} correlation coefficient and p-value.
 #' @export
 #' @examples
 #' set.seed(1)
@@ -337,11 +345,11 @@ srv_g_scatterplotmatrix <- function(input,
 #' y <- runif(25, 0, 1)
 #' x[c(3,10,18)] <- NA
 #'
-#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson",
+#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
+#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson",
 #'   na.action = na.fail))
 get_scatterplotmatrix_stats <- function(x, y,
-                                        .f = cor.test,
+                                        .f = stats::cor.test,
                                         .f_args = list(),
                                         round_stat = 2,
                                         round_pval = 4) {

@@ -1,4 +1,6 @@
 # teal.modules.general 0.2.9.9000
+### Enhancements
+* Refactored the internal code of all the modules to optimize their performance.
 
 * Added support for logical variables in `tm_variable_browser`. 
 

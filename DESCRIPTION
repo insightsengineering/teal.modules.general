@@ -25,14 +25,14 @@ Depends:
   shiny,
   teal (>= 0.9.4)
 Imports:
+  colourpicker,
+  digest,
+  dplyr,
+  DT,
+  forcats,
   ggExtra,
   grid,
   gridExtra,
-  digest,
-  dplyr,
-  tidyselect,
-  DT,
-  forcats,
   htmlwidgets,
   jsonlite,
   lattice,
@@ -50,9 +50,9 @@ Imports:
   tern (>= 0.7.1),
   tibble,
   tidyr,
+  tidyselect,
   utils,
-  utils.nest (>= 0.2.8),
-  colourpicker
+  utils.nest (>= 0.2.8)
 Suggests:
   knitr,
   random.cdisc.data (>= 0.3.10),
