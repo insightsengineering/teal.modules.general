@@ -30,6 +30,7 @@
 #' @param max_deg optional, (`integer`) The maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec optional, (`integer`) Number of decimal places used to round numeric values in the table.
 #'
+#'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
 #'
@@ -158,7 +159,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   )
 }
 
-#' @importFrom colourpicker colourInput
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -228,14 +228,13 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_warn"), "", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("trans_label"), "Transparent label", value = FALSE)),
+          uiOutput(ns("num_na_removed")),
           div(
             id = ns("label_pos"),
             div(style = "display: inline-block; width: 10%", helpText("Left")),
             div(
               style = "display: inline-block; width: 70%",
-              optionalSliderInput(ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .1)),
+              optionalSliderInput(ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .01)),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
           )
         )
@@ -302,18 +301,11 @@ srv_g_scatterplot <- function(input,
       if_not_null(col_facet, "col_facet"))
   )
 
-  eval_merged_data <- reactive({
-    data_chunk <- chunks$new()
-    chunks_push_data_merge(merged_data(), chunks = data_chunk)
-    chunks_safe_eval(data_chunk) # evaluation here results in minor performance improvement
-    data_chunk
-  })
-
   trend_line_is_applicable <- reactive({
     ANL <- merged_data()$data() # nolint
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
-    is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
+    !is_empty(x_var) && !is_empty(y_var) && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
   })
 
   add_trend_line <- reactive({
@@ -321,23 +313,26 @@ srv_g_scatterplot <- function(input,
     trend_line_is_applicable() && !is_empty(smoothing_degree)
   })
 
+  color_by_var_is_categorical <- reactive({
+    color_by_var <- as.vector(merged_data()$columns_source$color_by)
+    ANL <- merged_data()$data() # nolint
+    !is_empty(color_by_var) && (is.character(ANL[[color_by_var]]) || is.factor(ANL[[color_by_var]]))
+  })
+
   if (!is.null(color_by)) {
-    # The reason why a reactive is used instead of observer is because there is a bug in shiny 1.4 that automatically
-    # unhides selectInput/optionalSelectInput whenever you call their update functions.
-    # This behavior creates a bug whenever some validation step fails and observer would update the selectInput
-    # widget anyways causing it to unhide.
-    # The observer should replace the reactive whenever we upgrade to shiny 1.5, where the bug is fixed.
-    update_color_sub <- reactive({
-      ANL <- merged_data()$data() # nolint
-      color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      choices <- value_choices(ANL, color_by_var)
-      updateOptionalSelectInput(
-        session = session,
-        inputId = "color_sub",
-        label = color_by_var,
-        choices = choices,
-        selected = if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% choices], NULL))
-      NULL
+    update_color_sub <- observeEvent(
+      merged_data(), {
+      if (color_by_var_is_categorical()) {
+        ANL <- merged_data()$data() # nolint
+        color_by_var <- as.vector(merged_data()$columns_source$color_by)
+        choices <- value_choices(ANL, color_by_var)
+        updateOptionalSelectInput(
+          session = session,
+          inputId = "color_sub",
+          label = color_by_var,
+          choices = choices,
+          selected = if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% choices], NULL))
+      }
     })
 
     observeEvent(merged_data()$columns_source$color_by, {
@@ -350,184 +345,44 @@ srv_g_scatterplot <- function(input,
     })
   }
 
-  color_by_var_is_categorical <- reactive({
-    color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    ANL <- merged_data()$data() # nolint
-    !is_empty(color_by_var) && (is.character(ANL[[color_by_var]]) || is.factor(ANL[[color_by_var]]))
-  })
-
   color_sub_chunk <- reactive({
     color_sub <- input$color_sub
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
     ANL <- merged_data()$data() # nolint
     if (color_by_var_is_categorical()) {
-      isolate(update_color_sub())
       if ((num_choices <- length(value_choices(ANL, color_by_var))) > 1) {
         if (!is.null(color_sub)) {
           validate(need(color_sub %in% value_choices(ANL, color_by_var), "processing..."))
           # if all choices are selected filtering makes no difference
           if (length(color_sub) < num_choices) {
             expr <- substitute(
-              expr = ANL <- dplyr::filter(ANL, color_by_var_name) %in% color_sub, # nolint
+              expr = ANL <- dplyr::filter(ANL, color_by_var_name %in% color_sub), # nolint
               env = list(color_by_var_name = as.name(color_by_var), color_sub = color_sub)
             )
             list(expr = expr, ANL_sub = eval(expr)) # nolint
-          } else 1 # to indicate not null
-        } else 1
-      }
-    }
-  })
-
-  is_faceted <- reactive({
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
-    if (!is_empty(row_facet_name) || !is_empty(col_facet_name)) {
-      TRUE
-    } else {
-      FALSE
-    }
-  })
-
-  warn_na <- reactive({
-    ANL <- merged_data()$data() # nolint
-    x_var <- as.vector(merged_data()$columns_source$x)
-    y_var <- as.vector(merged_data()$columns_source$y)
-    if (is.list(color_sub_chunk())) {
-      ANL <- color_sub_chunk()$ANL_sub # nolint
-    }
-    if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
-      warn_na <- paste(num_total_na, "total row(s) with NA removed")
-      updateCheckboxInput(session, "show_warn", label = warn_na)
-      code_chunk <- substitute(
-        expr = ANL <- dplyr::filter(ANL, !is.na(x_var_name) & !is.na(y_var_name)), # nolint
-        env = list(x_var_name = as.name(x_var), y_var_name = as.name(y_var))
-      )
-    } else {
-      warn_na <- NULL
-      code_chunk <- NULL
-    }
-    list(msg = warn_na, code_chunk = code_chunk)
-  })
-
-  show_line_label <- reactive({
-    input$show_form || input$show_r2 || (!is.null(warn_na()$msg) && input$show_warn)
-  })
-
-  plot_labels_eval <- reactive({
-    color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    x_var <- as.vector(merged_data()$columns_source$x)
-    y_var <- as.vector(merged_data()$columns_source$y)
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
-    smoothing_degree <- as.integer(input$smoothing_degree)
-    color_sub_chunk <- color_sub_chunk()
-    warn_na <- warn_na()
-
-    formula_tbl_chunk <- chunks$new()
-    chunks_push_chunks(eval_merged_data(), chunks = formula_tbl_chunk)
-
-    if (is.list(color_sub_chunk)) {
-      chunks_push(color_sub_chunk$expr, chunks = formula_tbl_chunk)
-    }
-    plot_labels_chunk <- substitute(
-      expr = plot_labels_df <- trend_line_stats(
-        ANL,
-        x_var = x_var,
-        y_var = y_var,
-        smoothing_degree = smooth_degree,
-        group_by_var = group_by_value,
-        facet_by_var = facet_by_value
-      ),
-      env = list(
-        x_var = x_var,
-        y_var = y_var,
-        smooth_degree = smoothing_degree,
-        group_by_value = if (!is.null(color_sub_chunk)) color_by_var,
-        facet_by_value = c(row_facet_name, col_facet_name)
-      )
-    )
-    chunks_push(plot_labels_chunk, chunks = formula_tbl_chunk)
-    if (!is.null(warn_na$code_chunk)) {
-      chunks_push(warn_na$code_chunk, chunks = formula_tbl_chunk)
-    }
-    # since this reactive performs evaluation, it is essential that it contains the minimum number of dependencies so
-    # that unrelated changes do not trigger re-evaluation of coeffecients and r-squared
-    chunks_safe_eval(formula_tbl_chunk)
-    formula_tbl_chunk
-  })
-
-  formula_label <- reactive({
-    pos <- input$pos # nolint
-    x_var <- as.vector(merged_data()$columns_source$x)
-    trans_label <- input$trans_label  # nolint
-
-    x_pos <- if (pos == 1) {
-      substitute(max(ANL[[x_var]], na.rm = TRUE), env = list(x_var = x_var))
-    } else if (pos == 0) {
-      substitute(min(ANL[[x_var]], na.rm = TRUE), env = list(x_var = x_var))
-    } else {
-      substitute(
-        expr = min(ANL[[x_var]], na.rm = TRUE) * (one_minus_pos) + max(ANL[[x_var]], na.rm = TRUE) * pos,
-        env = list(x_var = x_var, one_minus_pos = 1 - pos, pos = pos)
-      )
-    }
-
-    substitute(
-      expr = geom_call(
-        data = plot_labels,
-        mapping = aes(label = label, fontface = "plain"),
-        x = x_pos,
-        y = Inf,
-        hjust = hjust_value,
-        vjust = 1,
-        inherit.aes = FALSE),
-      env = list(
-        geom_call = if (trans_label) quote(geom_text) else quote(geom_label),
-        x_pos = x_pos,
-        hjust_value = if (pos > .5) 1 else if (pos == .5) .5 else 0
-      )
-    )
-  })
-
-  plot_labels_fix_call <- reactive({
-    substitute(
-      expr = plot_labels <- plot_labels_df %>%
-        dplyr::mutate(label =
-          ifelse(
-            !is.na(failed_fit_msg),
-            failed_fit_msg,
-            trimws(paste0(form_call, r2_call, msg_call, warn_na_call))
-          )
-        ),
-      env = list(
-        form_call = if (input$show_form) quote(paste0(form, "\n")),
-        r2_call = if (input$show_r2) quote(paste0(r_2, "\n")),
-        msg_call = if (input$show_form || input$show_r2) quote(ifelse(!is.na(msg), paste0(msg, "\n"), "")),
-        warn_na_call = if (input$show_warn) quote(ifelse(!is.na(warn_na), warn_na, ""))
-      )
-    )
-  })
-
-  initialize_data_chunk <- reactive({
-    if (add_trend_line()) {
-      data_chunk <- chunks$new()
-      if (show_line_label()) {
-        chunks_push_chunks(plot_labels_eval(), chunks = data_chunk)
-        chunks_push(plot_labels_fix_call(), chunks = data_chunk)
-      } else {
-        chunks_push_chunks(eval_merged_data(), chunks = data_chunk)
-        if (is.list(color_sub_chunk())) {
-          chunks_push(color_sub_chunk()$expr, chunks = data_chunk)
+          }
         }
       }
-      data_chunk
-    } else {
-      eval_merged_data()
+    }
+  })
+
+  output$num_na_removed <- renderUI({
+    if (add_trend_line()) {
+      ANL <- merged_data()$data() # nolint
+      x_var <- as.vector(merged_data()$columns_source$x)
+      y_var <- as.vector(merged_data()$columns_source$y)
+      if (!is.null(color_sub_chunk())) {
+        ANL <- color_sub_chunk()$ANL_sub # nolint
+      }
+      if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
+        shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
+      }
     }
   })
 
   plot_r <- reactive({
     chunks_reset()
+    chunks_push_data_merge(merged_data())
 
     ANL <- merged_data()$data() # nolint
     validate_has_data(ANL, 10)
@@ -596,9 +451,8 @@ srv_g_scatterplot <- function(input,
       size
     }
 
-    chunks_push_chunks(initialize_data_chunk())
-
     plot_call <- quote(ANL %>% ggplot())
+
     plot_call <- if (is_empty(color_by_var)) {
       substitute(
         expr = plot_call +
@@ -662,27 +516,57 @@ srv_g_scatterplot <- function(input,
         shinyjs::hide("show_form")
         shinyjs::hide("show_r2")
         shinyjs::hide("label_pos")
-        shinyjs::hide("show_warn")
-        shinyjs::hide("trans_label")
       } else {
         shinyjs::show("ci")
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
-        if (!is.null(warn_na()$msg)) {
-          shinyjs::show("show_warn")
+        shinyjs::show("label_pos")
+        data_anl <- if (!is.null(color_sub_chunk())) {
+          chunks_push(color_sub_chunk()$expr)
+          color_sub_chunk()$ANL_sub
         } else {
-          shinyjs::hide("show_warn")
+          ANL
         }
-        if (show_line_label()) {
-          shinyjs::show("label_pos")
-          shinyjs::show("trans_label")
-          plot_call <- substitute(
-            expr = plot_call + formula_label,
-            env = list(plot_call = plot_call, formula_label = formula_label())
+        if (nrow(data_anl) - nrow(stats::na.omit(data_anl[, c(x_var, y_var)])) > 0) {
+          chunks_push(substitute(
+            expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
+            env = list(x_var = as.name(x_var), y_var = as.name(y_var))
+          ))
+        }
+        rhs_formula <- substitute( # nolint
+          expr = y ~ poly(x, smoothing_degree),
+          env = list(smoothing_degree = smoothing_degree)
+        )
+        label <- if (input$show_form && input$show_r2) {
+          substitute(
+            expr = ggpmisc::stat_poly_eq(
+              aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "*\", \"*")),
+              formula = rhs_formula,
+              parse = TRUE,
+              label.x = pos),
+            env = list(rhs_formula = rhs_formula, pos = input$pos)
+          )
+        } else if (input$show_form) {
+          substitute(
+            expr = ggpmisc::stat_poly_eq(
+              aes(label =  stat(eq.label)),
+              formula = rhs_formula,
+              parse = TRUE,
+              label.x = pos),
+            env = list(rhs_formula = rhs_formula, pos = input$pos)
+          )
+        } else if (input$show_r2) {
+          substitute(
+            expr = ggpmisc::stat_poly_eq(
+              aes(label =  stat(adj.rr.label)),
+              formula = rhs_formula,
+              parse = TRUE,
+              label.x = pos),
+            env = list(rhs_formula = rhs_formula, pos = input$pos)
           )
         } else {
           shinyjs::hide("label_pos")
-          shinyjs::hide("trans_label")
+          NULL
         }
         if (color_by_var_is_categorical()) {
           shinyjs::show("color_sub")
@@ -690,10 +574,12 @@ srv_g_scatterplot <- function(input,
           shinyjs::hide("color_sub")
         }
         plot_call <- substitute(
-          expr = plot_call +
-            geom_smooth(formula = y ~ poly(x, smoothing_degree), se = TRUE, level = ci, method = "lm"),
-          env = list(plot_call = plot_call, smoothing_degree = smoothing_degree, ci = ci)
+          expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
+          env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
         )
+        if (!is.null(label)) {
+          plot_call <- substitute(expr = plot_call + label, env = list(plot_call = plot_call, label = label))
+        }
       }
     } else {
       shinyjs::hide("smoothing_degree")
@@ -702,8 +588,6 @@ srv_g_scatterplot <- function(input,
       shinyjs::hide("show_form")
       shinyjs::hide("show_r2")
       shinyjs::hide("label_pos")
-      shinyjs::hide("show_warn")
-      shinyjs::hide("trans_label")
       shinyjs::show("line_msg")
     }
 
@@ -713,7 +597,11 @@ srv_g_scatterplot <- function(input,
 
     if (add_density) {
       plot_call <- substitute(
-        expr = ggExtra::ggMarginal(plot_call, type = "density", groupColour = group_colour),
+        expr = ggExtra::ggMarginal(
+          plot_call,
+          type = "density",
+          groupColour = group_colour
+        ),
         env = list(plot_call = plot_call, group_colour = if (!is_empty(color_by_var)) TRUE else FALSE)
       )
     }

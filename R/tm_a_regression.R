@@ -335,7 +335,7 @@ srv_a_regression <- function(input,
     substitute(
       expr = dplyr::if_else(
         data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
-        as.character(na.omit(ANL)[[label_var]]),
+        as.character(stats::na.omit(ANL)[[label_var]]),
         "") %>%
         dplyr::if_else(is.na(.), "cooksd == NaN", .),
       env = list(outliers = input$outlier, label_var = input$label_var)

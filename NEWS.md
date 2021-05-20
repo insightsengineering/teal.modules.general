@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.9.9000
 ### Enhancements
 * Refactored the internal code of all the modules to optimize their performance.
+* Refactored `tm_g_scatterplot` to compute trend line statistics using `ggpmisc::stat_poly_eq` to simplify code and to have labels for each group on the plot.
 
 * Added support for logical variables in `tm_variable_browser`. 
 
