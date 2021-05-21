@@ -983,8 +983,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     brushing = TRUE
   )
 
-  choices <- variable_choices(
-    datasets$get_data(if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])))
+  dataname <- datasets$datanames()[[1]]
+  dataname <- if (!is.function(datasets$get_parentname)) {
+    dataname
+  } else {
+    if_empty(datasets$get_parentname(dataname), dataname)
+  }
+  choices <- variable_choices(datasets$get_data(dataname))
 
   observeEvent(common_code_chunks(), {
     ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
@@ -1074,7 +1079,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
     }
     display_table$is_outlier_selected <- NULL
-    dataname <- if_empty(datasets$get_parentname(datasets$datanames()[[1]]), datasets$datanames()[[1]])
     keys <- datasets$get_keys(dataname)
     data <- datasets$get_data(dataname)
     dplyr::left_join(
