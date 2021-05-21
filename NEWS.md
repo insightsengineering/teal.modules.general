@@ -5,6 +5,10 @@
 * Added support for logical variables in `tm_variable_browser`. 
 * Updated `tm_outliers` to handle non-CDISC datasets.
 
+### Miscellaneous
+* Moved as_html() function call inside `teal.devel::table_with_settings`.
+
+
 # teal.modules.general 0.2.9
 ### Enhancements
 * Added download, enlarge and resize graph options to `tm_variable_browser` module.

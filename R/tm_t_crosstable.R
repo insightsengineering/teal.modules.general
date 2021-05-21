@@ -288,7 +288,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
   table <- reactive({
     create_table()
-    rtables::as_html(chunks_get_var("tbl"))
+    chunks_get_var("tbl")
   })
 
   callModule(
