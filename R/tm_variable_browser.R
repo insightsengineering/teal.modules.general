@@ -784,14 +784,13 @@ plot_var_summary <- function(var,
     groups <- unique(as.character(var))
     len_groups <- length(groups)
     if (len_groups >= records_for_factor) {
-      len_groups_even <- ifelse(!len_groups %% 2, len_groups, len_groups - 1)
-      groups_df <- apply(matrix(groups[1:min(50, len_groups_even)], nrow = 2), 2, paste, collapse = ",  ")
       grid::textGrob(
         sprintf(
-          "%s:\n  %s\n   ... other %s values",
+          "%s unique values\n%s:\n %s\n ...\n %s",
+          len_groups,
           var_lab,
-          paste(groups_df, collapse = ",\n  "),
-          len_groups - min(50, len_groups_even)
+          paste(head(groups), collapse = ",\n "),
+          paste(tail(groups), collapse = ",\n ")
           ),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),
