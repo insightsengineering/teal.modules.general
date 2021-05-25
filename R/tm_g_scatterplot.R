@@ -298,7 +298,8 @@ srv_g_scatterplot <- function(input,
       if_not_null(color_by, "color_by"),
       if_not_null(size_by, "size_by"),
       if_not_null(row_facet, "row_facet"),
-      if_not_null(col_facet, "col_facet"))
+      if_not_null(col_facet, "col_facet")),
+    merge_function = "dplyr::inner_join"
   )
 
   trend_line_is_applicable <- reactive({
@@ -313,28 +314,7 @@ srv_g_scatterplot <- function(input,
     trend_line_is_applicable() && !is_empty(smoothing_degree)
   })
 
-  color_by_var_is_categorical <- reactive({
-    color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    ANL <- merged_data()$data() # nolint
-    !is_empty(color_by_var) && (is.character(ANL[[color_by_var]]) || is.factor(ANL[[color_by_var]]))
-  })
-
   if (!is.null(color_by)) {
-    update_color_sub <- observeEvent(
-      merged_data(), {
-      if (color_by_var_is_categorical()) {
-        ANL <- merged_data()$data() # nolint
-        color_by_var <- as.vector(merged_data()$columns_source$color_by)
-        choices <- value_choices(ANL, color_by_var)
-        updateOptionalSelectInput(
-          session = session,
-          inputId = "color_sub",
-          label = color_by_var,
-          choices = choices,
-          selected = if_empty(isolate(input$color_sub)[isolate(input$color_sub) %in% choices], NULL))
-      }
-    })
-
     observeEvent(merged_data()$columns_source$color_by, {
       color_by_var <- as.vector(merged_data()$columns_source$color_by)
       if (!is_empty(color_by_var)) {
@@ -345,35 +325,11 @@ srv_g_scatterplot <- function(input,
     })
   }
 
-  color_sub_chunk <- reactive({
-    color_sub <- input$color_sub
-    color_by_var <- as.vector(merged_data()$columns_source$color_by)
-    ANL <- merged_data()$data() # nolint
-    if (color_by_var_is_categorical()) {
-      if ((num_choices <- length(value_choices(ANL, color_by_var))) > 1) {
-        if (!is.null(color_sub)) {
-          validate(need(color_sub %in% value_choices(ANL, color_by_var), "processing..."))
-          # if all choices are selected filtering makes no difference
-          if (length(color_sub) < num_choices) {
-            expr <- substitute(
-              expr = ANL <- dplyr::filter(ANL, color_by_var_name %in% color_sub), # nolint
-              env = list(color_by_var_name = as.name(color_by_var), color_sub = color_sub)
-            )
-            list(expr = expr, ANL_sub = eval(expr)) # nolint
-          }
-        }
-      }
-    }
-  })
-
   output$num_na_removed <- renderUI({
     if (add_trend_line()) {
       ANL <- merged_data()$data() # nolint
       x_var <- as.vector(merged_data()$columns_source$x)
       y_var <- as.vector(merged_data()$columns_source$y)
-      if (!is.null(color_sub_chunk())) {
-        ANL <- color_sub_chunk()$ANL_sub # nolint
-      }
       if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
         shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
       }
@@ -521,13 +477,7 @@ srv_g_scatterplot <- function(input,
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
         shinyjs::show("label_pos")
-        data_anl <- if (!is.null(color_sub_chunk())) {
-          chunks_push(color_sub_chunk()$expr)
-          color_sub_chunk()$ANL_sub
-        } else {
-          ANL
-        }
-        if (nrow(data_anl) - nrow(stats::na.omit(data_anl[, c(x_var, y_var)])) > 0) {
+        if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
           chunks_push(substitute(
             expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
             env = list(x_var = as.name(x_var), y_var = as.name(y_var))
@@ -567,11 +517,6 @@ srv_g_scatterplot <- function(input,
         } else {
           shinyjs::hide("label_pos")
           NULL
-        }
-        if (color_by_var_is_categorical()) {
-          shinyjs::show("color_sub")
-        } else {
-          shinyjs::hide("color_sub")
         }
         plot_call <- substitute(
           expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),

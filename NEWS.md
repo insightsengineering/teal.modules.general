@@ -2,6 +2,7 @@
 ### Enhancements
 * Refactored the internal code of all the modules to optimize their performance.
 * Refactored `tm_g_scatterplot` to compute trend line statistics using `ggpmisc::stat_poly_eq` to simplify code and to have labels for each group on the plot.
+* Refactored `tm_g_scatterplot` to enable filtering via the Encoding Panel using the new `filter_spec` functionalities.
 * Added support for logical variables in `tm_variable_browser`. 
 * Updated `tm_outliers` to handle non-CDISC datasets.
 * New look of `tm_variable_browser` for factor and character variables with more than 30 levels.
