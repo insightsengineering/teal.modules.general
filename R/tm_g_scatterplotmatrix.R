@@ -93,7 +93,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   )
 }
 
-
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- is_single_dataset(args$variables)
@@ -284,22 +283,6 @@ srv_g_scatterplotmatrix <- function(input,
     }
   })
 
-  # show r code
-  observeEvent(input$show_rcode, {
-    title <- paste0(
-      "Scatterplotmatrix of ",
-      paste(merged_data()$cols, collapse = ", ")
-    )
-
-    show_rcode_modal(
-      title = "R Code for a Scatterplotmatrix",
-      rcode = get_rcode(
-        datasets = datasets,
-        title = title
-      )
-    )
-  })
-
   show_r_code_title <- reactive(
     paste0(
       "Scatterplotmatrix of ",
@@ -316,7 +299,6 @@ srv_g_scatterplotmatrix <- function(input,
     code_header = show_r_code_title()
   )
 }
-
 
 #' Get stats for x-y pairs in scatterplot matrix
 #' @description uses stats::cor.test per default for all numerical input variables and converts results
