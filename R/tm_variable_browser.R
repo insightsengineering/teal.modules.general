@@ -545,8 +545,7 @@ create_sparklines.POSIXt <- function(arr, ...) { # nousage # nolint
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.character <- function(arr, ...) { # nousage # nolint
-  arr <- as.factor(arr)
-  return(create_sparklines(arr))
+  return(create_sparklines(as.factor(arr)))
 }
 
 
@@ -562,8 +561,7 @@ create_sparklines.character <- function(arr, ...) { # nousage # nolint
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.logical <- function(arr, ...) { # nousage # nolint
-  arr <- as.factor(arr)
-  return(create_sparklines(arr))
+  return(create_sparklines(as.factor(arr)))
 }
 
 
@@ -585,7 +583,7 @@ create_sparklines.logical <- function(arr, ...) { # nousage # nolint
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
   decreasing_order <- TRUE
 
-  counts <- table(droplevels(arr))
+  counts <- table(arr)
   if (length(counts) >= 100) {
     return(as.character(tags$code("> 99 levels", style = "color:blue")))
   } else if (length(counts) == 0) {
@@ -598,7 +596,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
   # and get the maximum and minimum number of occurences
   # This is needed for the sparkline to correctly display the bar plots
   # Otherwise they are cropped
-  counts <- sort(counts, decreasing = decreasing_order)
+  counts <- sort(counts, decreasing = decreasing_order, method = "radix")
   max_value <- if (decreasing_order) counts[1] else counts[length[counts]]
   max_value <- unname(max_value)
 
