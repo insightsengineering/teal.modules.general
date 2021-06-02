@@ -7,6 +7,7 @@
 * Updated `tm_outliers` to handle non-CDISC datasets.
 * New look of `tm_variable_browser` for factor and character variables with more than 30 levels.
 * Updated sparklines to remove NA values for numeric variables.
+* Added checkbox to display number of observations on plot to `tm_g_scatterplot`.
 
 ### Miscellaneous
 * Moved as_html() function call inside `teal.devel::table_with_settings`.

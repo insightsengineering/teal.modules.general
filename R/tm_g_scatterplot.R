@@ -221,26 +221,6 @@ ui_g_scatterplot <- function(id, ...) {
       },
       panel_group(
         panel_item(
-          title = "Add trend line",
-          shinyjs::hidden(helpText(id = ns("line_msg"), "first select numeric X and Y variables")),
-          optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
-          shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
-          optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
-          shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
-          uiOutput(ns("num_na_removed")),
-          div(
-            id = ns("label_pos"),
-            div(style = "display: inline-block; width: 10%", helpText("Left")),
-            div(
-              style = "display: inline-block; width: 70%",
-              optionalSliderInput(ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .01)),
-            div(style = "display: inline-block; width: 10%", helpText("Right"))
-          )
-        )
-      ),
-      panel_group(
-        panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSelectInput(
@@ -255,6 +235,24 @@ ui_g_scatterplot <- function(id, ...) {
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
           checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
+          checkboxInput(ns("show_count"), "Show N (number of observations)", value = FALSE),
+          shinyjs::hidden(helpText(id = ns("line_msg"), "Trendline needs numeric X and Y variables")),
+          optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
+          shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
+          optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
+          shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
+          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
+          uiOutput(ns("num_na_removed")),
+          div(
+            id = ns("label_pos"),
+            div(style = "display: inline-block; width: 10%", helpText("Left")),
+            div(
+              style = "display: inline-block; width: 70%",
+              optionalSliderInput(
+                ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .01)
+              ),
+            div(style = "display: inline-block; width: 10%", helpText("Right"))
+          ),
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -407,7 +405,21 @@ srv_g_scatterplot <- function(input,
       size
     }
 
-    plot_call <- quote(ANL %>% ggplot())
+    pre_pro_anl <- if (input$show_count) {
+      paste0(
+        "ANL %>% dplyr::group_by(",
+        paste(
+          c(if (!is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+            row_facet_name,
+            col_facet_name),
+          collapse = ", "),
+        ") %>% dplyr::mutate(n = dplyr::n()) %>% dplyr::ungroup()"
+      )
+    } else {
+      "ANL"
+    }
+
+    plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
     plot_call <- if (is_empty(color_by_var)) {
       substitute(
@@ -463,6 +475,44 @@ srv_g_scatterplot <- function(input,
 
     if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
 
+    plot_label_generator <- function(rhs_formula = quote(y ~ 1),
+                                     show_form = input$show_form,
+                                     show_r2 = input$show_r2,
+                                     show_count = input$show_count,
+                                     pos = input$pos) {
+      stopifnot(sum(show_form, show_r2, show_count) >= 1)
+      aes_label <- paste0(
+        "aes(",
+        if (show_count) "n = n, ",
+        "label = ",
+        if (sum(show_form, show_r2, show_count) > 1) "paste(",
+        paste(
+          c(if (show_form) "stat(eq.label)", if (show_r2) "stat(adj.rr.label)", if (show_count) "paste('N ~`=`~', n)"),
+          collapse = ", "
+        ),
+        if (sum(show_form, show_r2, show_count) > 1) ", sep = '*\", \"*'))" else ")"
+      )
+      label_geom <- substitute(
+        expr = ggpmisc::stat_poly_eq(
+          mapping = aes_label,
+          formula = rhs_formula,
+          parse = TRUE,
+          label.x = pos
+        ),
+        env = list(
+          rhs_formula = rhs_formula,
+          pos = pos,
+          aes_label = str2lang(aes_label)
+        )
+      )
+      substitute(
+        expr = plot_call + label_geom,
+        env = list(
+          plot_call = plot_call,
+          label_geom = label_geom)
+      )
+    }
+
     if (trend_line_is_applicable()) {
       shinyjs::hide("line_msg")
       shinyjs::show("smoothing_degree")
@@ -471,60 +521,36 @@ srv_g_scatterplot <- function(input,
         shinyjs::hide("color_sub")
         shinyjs::hide("show_form")
         shinyjs::hide("show_r2")
-        shinyjs::hide("label_pos")
+        if (input$show_count) {
+          plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
+          shinyjs::show("label_pos")
+        } else {
+          shinyjs::hide("label_pos")
+        }
       } else {
         shinyjs::show("ci")
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
-        shinyjs::show("label_pos")
         if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
           chunks_push(substitute(
             expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
             env = list(x_var = as.name(x_var), y_var = as.name(y_var))
           ))
         }
-        rhs_formula <- substitute( # nolint
+        rhs_formula <- substitute(
           expr = y ~ poly(x, smoothing_degree),
           env = list(smoothing_degree = smoothing_degree)
         )
-        label <- if (input$show_form && input$show_r2) {
-          substitute(
-            expr = ggpmisc::stat_poly_eq(
-              aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "*\", \"*")),
-              formula = rhs_formula,
-              parse = TRUE,
-              label.x = pos),
-            env = list(rhs_formula = rhs_formula, pos = input$pos)
-          )
-        } else if (input$show_form) {
-          substitute(
-            expr = ggpmisc::stat_poly_eq(
-              aes(label =  stat(eq.label)),
-              formula = rhs_formula,
-              parse = TRUE,
-              label.x = pos),
-            env = list(rhs_formula = rhs_formula, pos = input$pos)
-          )
-        } else if (input$show_r2) {
-          substitute(
-            expr = ggpmisc::stat_poly_eq(
-              aes(label =  stat(adj.rr.label)),
-              formula = rhs_formula,
-              parse = TRUE,
-              label.x = pos),
-            env = list(rhs_formula = rhs_formula, pos = input$pos)
-          )
+        if (input$show_form || input$show_r2 || input$show_count) {
+          plot_call <- plot_label_generator(rhs_formula = rhs_formula)
+          shinyjs::show("label_pos")
         } else {
           shinyjs::hide("label_pos")
-          NULL
         }
         plot_call <- substitute(
           expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
           env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
         )
-        if (!is.null(label)) {
-          plot_call <- substitute(expr = plot_call + label, env = list(plot_call = plot_call, label = label))
-        }
       }
     } else {
       shinyjs::hide("smoothing_degree")
@@ -532,7 +558,12 @@ srv_g_scatterplot <- function(input,
       shinyjs::hide("color_sub")
       shinyjs::hide("show_form")
       shinyjs::hide("show_r2")
-      shinyjs::hide("label_pos")
+      if (input$show_count) {
+        plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
+        shinyjs::show("label_pos")
+      } else {
+        shinyjs::hide("label_pos")
+      }
       shinyjs::show("line_msg")
     }
 
