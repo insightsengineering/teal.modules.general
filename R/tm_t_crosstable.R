@@ -227,12 +227,6 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
       env = list(plot_title = plot_title)
     ))
 
-    if (anyNA(ANL)) {
-      chunks_push(quote(
-        ANL <- tern::df_explicit_na(ANL) # nolint
-      ))
-    }
-
     labels_vec <- vapply( # nolint
       as.vector(merged_data_r()()$columns_source$x),
       varname_w_label,
@@ -272,6 +266,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     chunks_push(substitute(
       expr = {
+        ANL <- tern::df_explicit_na(ANL) # nolint
         tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
         tbl
       },
