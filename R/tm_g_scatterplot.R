@@ -363,7 +363,8 @@ srv_g_scatterplot <- function(input,
     validate(need(length(y_var) == 1, "There must be exactly one y var."))
     validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
     validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
-
+    validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
+    validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
       is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
       "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"))

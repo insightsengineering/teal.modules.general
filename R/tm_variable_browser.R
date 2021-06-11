@@ -788,8 +788,8 @@ plot_var_summary <- function(var,
           "%s unique values\n%s:\n %s\n ...\n %s",
           len_groups,
           var_lab,
-          paste(head(groups), collapse = ",\n "),
-          paste(tail(groups), collapse = ",\n ")
+          paste(utils::head(groups), collapse = ",\n "),
+          paste(utils::tail(groups), collapse = ",\n ")
           ),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),

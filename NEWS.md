@@ -8,6 +8,7 @@
 * New look of `tm_variable_browser` for factor and character variables with more than 30 levels.
 * Updated sparklines to remove NA values for numeric variables.
 * Added checkbox to display number of observations on plot to `tm_g_scatterplot`.
+* Added validation statements to `tm_g_scatterplot` handling users choosing more than one facet variable.
 
 ### Miscellaneous
 * Moved as_html() function call inside `teal.devel::table_with_settings`.
