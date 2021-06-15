@@ -55,24 +55,27 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
 
   standard_layout(
     output = white_small_well(
-      column(
-        width = 12,
-        do.call(
-          tabsetPanel,
-          c(
-            id = ns("dataname_tab"),
-            lapply(
-              datanames,
-              function(x) {
-                tabPanel(
-                  title = x,
-                  column(
-                    width = 12,
-                    div(style = "height:10px;"),
-                    ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
+      div(
+        style = "display: flex;",
+        column(
+          width = 12,
+          do.call(
+            tabsetPanel,
+            c(
+              id = ns("dataname_tab"),
+              lapply(
+                datanames,
+                function(x) {
+                  tabPanel(
+                    title = x,
+                    column(
+                      width = 12,
+                      div(style = "height:10px;"),
+                      ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
+                    )
                   )
-                )
-              }
+                }
+              )
             )
           )
         )
