@@ -5,14 +5,11 @@
 * Refactored `tm_g_scatterplot` to enable filtering via the Encoding Panel using the new `filter_spec` functionalities.
 * Added support for logical variables in `tm_variable_browser`. 
 * Updated `tm_outliers` to handle non-CDISC datasets.
-* New look of `tm_variable_browser` for factor and character variables with more than 30 levels.
+* Updated UI of `tm_variable_browser` for factor and character variables with more than 30 levels.
 * Updated sparklines to remove NA values for numeric variables.
 * Added checkbox to display number of observations on plot to `tm_g_scatterplot`.
 * Added validation statements to `tm_g_scatterplot` handling users choosing more than one facet variable.
-
-### Miscellaneous
-* Moved as_html() function call inside `teal.devel::table_with_settings`.
-
+* Improved performance of `tm_variable_browser` by a more efficient `sparkline` generation.
 
 # teal.modules.general 0.2.9
 ### Enhancements
