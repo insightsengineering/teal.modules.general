@@ -39,7 +39,7 @@ Imports:
   lattice,
   methods,
   rlang,
-  rtables (>= 0.3.7),
+  rtables (>= 0.3.8),
   scales,
   shinyjs,
   shinyWidgets,
