@@ -118,8 +118,48 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-           choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
+          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
           selected = "BMRKR1",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      color_by = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          selected = NULL,
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      size_by = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          selected = "AGE",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      row_facet = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          selected = NULL,
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          selected = NULL,
           multiple = FALSE,
           fixed = FALSE
         )
