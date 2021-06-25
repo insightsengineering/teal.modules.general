@@ -61,8 +61,6 @@ tm_variable_browser <- function(label = "Variable Browser",
 }
 
 # ui function
-#' @importFrom stats setNames
-#' @importFrom shinyWidgets switchInput
 ui_variable_browser <- function(id,
                                 datasets,
                                 datasets_selected,
@@ -82,10 +80,10 @@ ui_variable_browser <- function(id,
           do.call(
             tabsetPanel,
             c(
-              id = ns("tsp"),
+              id = ns("tabset_panel"),
               do.call(
                 tagList,
-                setNames(
+                stats::setNames(
                   lapply(
                     datanames,
                     function(dataname) {
@@ -161,7 +159,6 @@ ui_variable_browser <- function(id,
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
-#' @importFrom shinyWidgets switchInput
 srv_variable_browser <- function(input, output, session, datasets, datasets_selected) {
 
   # if there are < this number of unique records then a numeric
@@ -172,144 +169,46 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   # variable is by default treated as a factor
   .unique_records_default_as_factor <- 6 # nolint
 
-  # useful to pass on to parent program
+  datanames <- get_datanames_selected(datasets, datasets_selected)
+  columns_names <- new.env() # nolint
+
+  # plot_var$data holds the name of the currently selected dataset
+  # plot_var$variable[[<dataset_name>]] holds the name of the currently selected
+  # variable for dataset <dataset_name>
   plot_var <- reactiveValues(data = NULL, variable = list())
 
+  establish_updating_selection(datanames, input, plot_var, columns_names)
 
+  # validations
+  validation_checks <- validate_input(input, plot_var, datasets)
 
-  # reactive contain list of the column of data to be analyzed (data) and
-  # the variable label for this column (d_var_name)
-  data_for_analysis <- reactive({
-    data <- input$tsp
-    varname <- plot_var$variable[[input$tsp]]
-    type <- input$raw_or_filtered
+  # data_for_analysis is a list with two elements: a column from a dataset and the column label
+  plotted_data <- reactive({
+    validation_checks()
 
-    validate(need(data, "no data selected"))
-    validate(need(varname, "no variable selected"))
-    validate(need(is.logical(type), "select what type of data to plot"))
-
-    df <- datasets$get_data(data, filtered = type)
-    validate_has_data(df, 1)
-    validate_has_variable(varname = varname, data = df, "variable not available")
-    .log("plot/summarize variable", varname, "for data", data, "(", `if`(type, "filtered", "raw"), ")")
-
-    varlabel <- datasets$get_varlabels(dataname = data, varname)
-    d_var_name <- paste0(if_na(varlabel, varname), " [", data, ".", varname, "]")
-    list(data = df[[varname]], d_var_name = d_var_name)
+    get_plotted_data(input, plot_var, datasets)
   })
 
-
   treat_numeric_as_factor <- reactive({
-    if (length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)) {
+    if (is_num_var_short(.unique_records_for_factor, input, plotted_data)) {
       input$numeric_as_factor
     } else {
       FALSE
     }
   })
 
-
-  current_rows <- new.env() # nolint
-  # subset certain datasets
-  datanames <- get_datanames_selected(datasets, datasets_selected)
-
-  lapply(datanames, function(name) {
-    .log("variable label table:", name)
-
-    dataset_ui_id <- paste0("dataset_summary_", name)
-    output[[dataset_ui_id]] <- renderText({
-      df <- datasets$get_data(name, filtered = FALSE)
-      key <- datasets$get_keys(name)
-      sprintf(
-        "Dataset with %s unique key rows and %s variables",
-        nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
-        ncol(df)
-      )
-    })
-
-    table_ui_id <- paste0("variable_browser_", name)
-
-    output[[table_ui_id]] <- DT::renderDataTable({
-      df <- datasets$get_data(name, filtered = FALSE)
-
-      df_vars <- if (isFALSE(input$show_parent_vars)) {
-        datasets$get_filterable_varnames(name)
-      } else {
-        datasets$get_varnames(name)
-      }
-      df <- df[df_vars]
-
-      if (is.null(df) || ncol(df) == 0) {
-        current_rows[[name]] <- character(0)
-        data.frame(
-          Variable = character(0),
-          Label = character(0),
-          Missings = character(0),
-          Sparklines = character(0),
-          stringsAsFactors = FALSE)
-      } else {
-        # extract data variable labels
-        labels <- setNames(
-          ulapply(
-            df,
-            function(x) {
-              if_null(attr(x, "label"), "")
-            }
-          ),
-          names(df)
-        )
-
-        current_rows[[name]] <- names(labels)
-
-        # calculate number of missing values
-        missings <- vapply(
-          df,
-          var_missings_info,
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE
-        )
-
-        # get icons proper for the data types
-        icons <- setNames(teal:::variable_types(df), colnames(df))
-        icons[intersect(datasets$get_keys(name), colnames(df))] <- "primary_key"
-        icons <- teal:::variable_type_icons(icons)
-
-        # generate sparklines
-        sparklines_html <- vapply(
-          df,
-          create_sparklines,
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE)
-
-        data.frame(
-          Variable = paste(icons, names(labels)),
-          Label = labels,
-          Missings = missings,
-          Sparklines = sparklines_html,
-          stringsAsFactors = FALSE
-        )
-      }
-    },
-    escape = FALSE,
-    rownames = FALSE,
-    selection = list(mode = "single", target = "row", selected = 1),
-    options = list(
-      columnDefs = list(
-        list(orderable = FALSE, className = "details-control", targets = 0)
-      ),
-      fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-      pageLength = input[[paste0(table_ui_id, "_rows")]]
-    ))
-
-    table_id_sel <- paste0(table_ui_id, "_rows_selected")
-    observeEvent(input[[table_id_sel]], {
-      plot_var$data <- name
-      plot_var$variable[[name]] <- current_rows[[name]][input[[table_id_sel]]]
-    })
-  })
+  render_tabset_panel_content(
+    input = input,
+    output = output,
+    datasets = datasets,
+    datanames = datanames,
+    columns_names = columns_names,
+    plot_var = plot_var
+  )
 
   output$ui_numeric_display <- renderUI({
-    data <- input$tsp
-    varname <- plot_var$variable[[input$tsp]]
+    data <- input$tabset_panel
+    varname <- plot_var$variable[[input$tabset_panel]]
     type <- input$raw_or_filtered
     req(data, varname, is.logical(type))
 
@@ -428,8 +327,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
     }
 
     plot_var_summary(
-      var = data_for_analysis()$data,
-      var_lab = data_for_analysis()$d_var_name,
+      var = plotted_data()$data,
+      var_lab = plotted_data()$var_description,
       numeric_as_factor = treat_numeric_as_factor(),
       display_density = display_density,
       outlier_definition = outlier_definition,
@@ -445,7 +344,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   )
 
   output$variable_summary_table <- DT::renderDataTable({
-    var_summary_table(data_for_analysis()$data, treat_numeric_as_factor(), input$variable_summary_table_rows)
+    var_summary_table(plotted_data()$data, treat_numeric_as_factor(), input$variable_summary_table_rows)
   })
 }
 
@@ -665,7 +564,6 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @param dt_rows \code{numeric} current/latest DT page length
 #' @return text with simple statistics.
-#' @importFrom stats median
 var_summary_table <- function(x, numeric_as_factor, dt_rows) {
   if (is.null(dt_rows))
     dt_rows <- 10
@@ -734,7 +632,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
         Statistic = c("min", "median", "max"),
         Value = c(
           min(x, na.rm = TRUE),
-          median(x, na.rm = TRUE),
+          stats::median(x, na.rm = TRUE),
           max(x, na.rm = TRUE)
         )
       )
@@ -759,7 +657,6 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 #'   a graph of the factors isn't shown, only a list of values.
 #' @return plot
 #'
-#' @importFrom stats IQR
 plot_var_summary <- function(var,
   var_lab,
   numeric_as_factor,
@@ -887,4 +784,226 @@ plot_var_summary <- function(var,
 
   grid::grid.draw(plot_grob)
   plot_grob
+}
+
+#' Returns a short variable description.
+#'
+#' @description
+#' The format of the variable description is:
+#' <Long variable label> [<dataset name>.<variable name>]
+#'
+#' Example: Study Identifier [ADSL.STUDYID]
+#'
+#' @param datasets (`FilteredData`) the object containing the dataset
+#' @param dataset_name (`character`) the name of the dataset containing the variable
+#' @param var_name (`character`) the name of the variable
+get_var_description <- function(datasets, dataset_name, var_name) {
+  varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
+  d_var_name <- paste0(if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
+  d_var_name
+}
+
+is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
+  length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
+}
+
+#' Validates the variable browser inputs
+#'
+#' @param input (`session$input`) the shiny session input
+#' @param plot_var (`list`) list of a data frame and an array of variable names
+#' @param datasets (`FilteredData`) the datasets passed to the module
+#'
+#' @returns `logical` TRUE if validations pass; a Shiny validation error otherwise
+validate_input <- function(input, plot_var, datasets) {
+  reactive({
+    dataset_name <- input$tabset_panel
+    varname <- plot_var$variable[[input$tabset_panel]]
+    type <- input$raw_or_filtered
+
+    validate(need(dataset_name, "No data selected"))
+    validate(need(varname, "No variable selected"))
+    validate(need(is.logical(type), "Select what type of data to plot"))
+
+    df <- datasets$get_data(dataset_name, filtered = type)
+    validate_has_data(df, 1)
+    validate_has_variable(varname = varname, data = df, "Variable not available")
+
+    TRUE
+  })
+}
+
+get_plotted_data <- function(input, plot_var, datasets) {
+  dataset_name <- input$tabset_panel
+  varname <- plot_var$variable[[input$tabset_panel]]
+  type <- input$raw_or_filtered
+  df <- datasets$get_data(dataset_name, filtered = type)
+
+  .log("plot/summarize variable", varname, "for data", dataset_name, "(", `if`(type, "filtered", "raw"), ")")
+
+  var_description <- get_var_description(datasets = datasets, dataset_name = dataset_name, var_name = varname)
+  list(data = df[[varname]], var_description = var_description)
+}
+
+#' Renders the left-hand side `tabset` panel of the module
+#'
+#' @param datanames (`character`) the name of the dataset
+#' @param datasets (`FilteredData`) the object containing all datasets
+#' @param input (`session$input`) the shiny session input
+#' @param output (`session$output`) the shiny session output
+#' @param columns_names (`environment`) the environment containing bindings for each dataset
+#' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
+render_tabset_panel_content <- function(datanames, output, datasets, input, columns_names, plot_var) {
+  lapply(datanames, render_single_tab,
+    input = input,
+    output = output,
+    datasets = datasets,
+    columns_names = columns_names,
+    plot_var = plot_var
+  )
+}
+
+#' Renders a single tab in the left-hand side tabset panel
+#'
+#' @description
+#' Renders a single tab in the left-hand side tabset panel. The rendered tab contains
+#' information about one dataset out of many presented in the module.
+#'
+#' @param dataset_name (`character`) the name of the dataset contained in the rendered tab
+#' @inheritParams render_tabset_panel_content
+render_single_tab <- function(dataset_name, output, datasets, input, columns_names, plot_var) {
+  .log("variable label table:", dataset_name)
+
+  render_tab_header(dataset_name, output, datasets)
+
+  render_tab_table(
+    dataset_name = dataset_name,
+    output = output,
+    datasets = datasets,
+    input = input,
+    columns_names = columns_names
+  )
+}
+
+#' Renders the text headlining a single tab in the left-hand side tabset panel
+#'
+#' @param dataset_name (`character`) the name of the dataset of the tab
+#' @inheritParams render_tabset_panel_content
+#'
+render_tab_header <- function(dataset_name, output, datasets) {
+  dataset_ui_id <- paste0("dataset_summary_", dataset_name)
+  output[[dataset_ui_id]] <- renderText({
+    df <- datasets$get_data(dataset_name, filtered = FALSE)
+    key <- datasets$get_keys(dataset_name)
+    sprintf(
+      "Dataset with %s unique key rows and %s variables",
+      nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
+      ncol(df)
+    )
+  })
+}
+
+#' Renders the table for a single dataset in the left-hand side tabset panel
+#'
+#' @description
+#' The table contains column names, column labels,
+#' small summary about NA values and a sparkline (if appropriate).
+#'
+#' @param dataset_name (`character`) the name of the dataset
+#' @inheritParams render_tabset_panel_content
+#'
+render_tab_table <- function(dataset_name, output, datasets, input, columns_names) {
+  table_ui_id <- paste0("variable_browser_", dataset_name)
+
+  output[[table_ui_id]] <- DT::renderDataTable({
+    df <- datasets$get_data(dataset_name, filtered = FALSE)
+
+    df_vars <- if (isFALSE(input$show_parent_vars)) {
+      datasets$get_filterable_varnames(dataset_name)
+    } else {
+      datasets$get_varnames(dataset_name)
+    }
+    df <- df[df_vars]
+
+    if (is.null(df) || ncol(df) == 0) {
+      columns_names[[dataset_name]] <- character(0)
+      data.frame(
+        Variable = character(0),
+        Label = character(0),
+        Missings = character(0),
+        Sparklines = character(0),
+        stringsAsFactors = FALSE)
+    } else {
+      # extract data variable labels
+      labels <- stats::setNames(
+        ulapply(
+          df,
+          function(x) {
+            if_null(attr(x, "label"), "")
+          }
+        ),
+        names(df)
+      )
+
+      columns_names[[dataset_name]] <- names(labels)
+
+      # calculate number of missing values
+      missings <- vapply(
+        df,
+        var_missings_info,
+        FUN.VALUE = character(1),
+        USE.NAMES = FALSE
+      )
+
+      # get icons proper for the data types
+      icons <- stats::setNames(teal:::variable_types(df), colnames(df))
+      icons[intersect(datasets$get_keys(dataset_name), colnames(df))] <- "primary_key"
+      icons <- teal:::variable_type_icons(icons)
+
+      # generate sparklines
+      sparklines_html <- vapply(
+        df,
+        create_sparklines,
+        FUN.VALUE = character(1),
+        USE.NAMES = FALSE)
+
+      data.frame(
+        Variable = paste(icons, names(labels)),
+        Label = labels,
+        Missings = missings,
+        Sparklines = sparklines_html,
+        stringsAsFactors = FALSE
+      )
+    }
+  },
+  escape = FALSE,
+  rownames = FALSE,
+  selection = list(mode = "single", target = "row", selected = 1),
+  options = list(
+    columnDefs = list(
+      list(orderable = FALSE, className = "details-control", targets = 0)
+    ),
+    fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+    pageLength = input[[paste0(table_ui_id, "_rows")]]
+  ))
+}
+
+#' Creates observers updating the currently selected column
+#'
+#' @description
+#' The created observers update the column currently selected in the left-hand side
+#' tabset panel.
+#'
+#' @note
+#' Creates an observer for each dataset (each tab in the tabset panel).
+#'
+#' @inheritParams render_tabset_panel_content
+establish_updating_selection <- function(datanames, input, plot_var, columns_names) {
+  lapply(datanames, function(dataset_name) {
+    table_ui_id <- paste0("variable_browser_", dataset_name)
+    table_id_sel <- paste0(table_ui_id, "_rows_selected")
+    observeEvent(input[[table_id_sel]], {
+      plot_var$data <- dataset_name
+      plot_var$variable[[dataset_name]] <- columns_names[[dataset_name]][input[[table_id_sel]]]
+    })
+  })
 }

@@ -333,7 +333,6 @@ ui_g_bivariate <- function(id, ...) {
 }
 
 
-#' @importFrom shinyjs show hide
 srv_g_bivariate <- function(input,
                             output,
                             session,
@@ -349,7 +348,7 @@ srv_g_bivariate <- function(input,
                             plot_height,
                             plot_width) {
   init_chunks()
-  data_extract <- setNames(
+  data_extract <- stats::setNames(
     list(x, y),
     c("x", "y")
   )
@@ -357,7 +356,7 @@ srv_g_bivariate <- function(input,
   if (!is.null(row_facet)) {
     data_extract <- append(
       data_extract,
-      setNames(
+      stats::setNames(
         list(row_facet),
         c("row_facet")
       )
@@ -367,7 +366,7 @@ srv_g_bivariate <- function(input,
   if (!is.null(col_facet)) {
     data_extract <- append(
       data_extract,
-      setNames(
+      stats::setNames(
         list(col_facet),
         c("col_facet")
       )
@@ -377,7 +376,7 @@ srv_g_bivariate <- function(input,
   if (color_settings) {
     data_extract <- append(
       data_extract,
-      setNames(
+      stats::setNames(
         list(color, fill, size),
         c("color", "fill", "size")
       )
