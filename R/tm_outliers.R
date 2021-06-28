@@ -134,7 +134,7 @@ ui_outliers <- function(id, ...) {
         tagList(
           data_extract_input(
             id = ns("categorical_var"),
-            label = "Categorial factor",
+            label = "Categorical factor",
             data_extract_spec = args$categorical_var,
             is_single_dataset = is_single_dataset_value
           ),
