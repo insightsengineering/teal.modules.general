@@ -277,8 +277,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       chunks_push(
         id = "pca_2",
         expression = substitute(
-          expr = ANL <- tidyr::drop_na(ANL, keep_columns_syms), # nolint
-          env = list(keep_columns_syms = rlang::syms(keep_columns))
+          expr = ANL <- tidyr::drop_na(ANL, keep_columns), # nolint
+          env = list()
         ),
         chunks = chunks_stack
       )
