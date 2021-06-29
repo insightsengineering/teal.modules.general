@@ -356,7 +356,7 @@ srv_missing_data <- function(input,
     optionalSelectInput(
       session$ns("variables_select"),
       label = "Select variables",
-      label_help = paste0("Dataset: ", dataname),
+      label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
       choices = variable_choices(raw_data(), choices),
       selected = selected,
       multiple = TRUE

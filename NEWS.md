@@ -10,6 +10,7 @@
 * Added checkbox to display number of observations on plot to `tm_g_scatterplot`.
 * Added validation statements to `tm_g_scatterplot` handling users choosing more than one facet variable.
 * Improved performance of `tm_variable_browser` by a more efficient `sparkline` generation.
+* Added the html code type for all datasets labels inside `tm_missing_data`.
 
 # teal.modules.general 0.2.9
 ### Enhancements
