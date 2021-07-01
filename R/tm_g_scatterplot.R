@@ -336,7 +336,8 @@ srv_g_scatterplot <- function(input,
       if_not_null(color_by, "color_by"),
       if_not_null(size_by, "size_by"),
       if_not_null(row_facet, "row_facet"),
-      if_not_null(col_facet, "col_facet"))
+      if_not_null(col_facet, "col_facet")),
+    merge_function = "dplyr::inner_join"
   )
 
   trend_line_is_applicable <- reactive({
@@ -426,31 +427,6 @@ srv_g_scatterplot <- function(input,
     }
 
     validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
-
-    row_facet_name <- if_not_empty(
-      row_facet_name,
-      if (all(is.na(ANL[[row_facet_name]]))) {
-        character(0)
-      } else {
-        row_facet_name
-      }
-    )
-    col_facet_name <- if_not_empty(
-      col_facet_name,
-      if (all(is.na(ANL[[col_facet_name]]))) {
-        character(0)
-      } else {
-        col_facet_name
-      }
-    )
-
-    if (!is_empty(col_facet_name) || !is_empty(row_facet_name)) {
-      validate_has_data(ANL[, c(col_facet_name, row_facet_name)], min_nrow = 10, complete = TRUE)
-      chunks_push(substitute(
-        expr = ANL <- ANL[complete.cases(ANL[, facets]), ], # nolint
-        env = list(facets = c(row_facet_name, col_facet_name)
-      )))
-    }
 
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
     if (!is.null(facet_cl)) {
