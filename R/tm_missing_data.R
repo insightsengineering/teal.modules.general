@@ -207,9 +207,15 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
       checkboxInput(
         ns("any_na"),
         div(
-          "Add **anyna** variable",
-          title = "Describes the number of observations with at least one missing value in any variable.",
-          icon("info-circle")
+          class = "teal-tooltip",
+          tagList(
+            "Add **anyna** variable",
+            icon("info-circle"),
+            span(
+              class = "tooltiptext",
+              "Describes the number of observations with at least one missing value in any variable."
+            )
+          )
         ),
         value = FALSE
       ),
@@ -217,12 +223,18 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
         checkboxInput(
           ns("if_patients_plot"),
           div(
-            "Add summary per patients",
-            title = paste(
-              "Displays the number of missing values per observation,",
-              "where the x-axis is sorted by observation appearance in the table."
-            ),
-            icon("info-circle")
+            class = "teal-tooltip",
+            tagList(
+              "Add summary per patients",
+              icon("info-circle"),
+              span(
+                class = "tooltiptext",
+                paste(
+                  "Displays the number of missing values per observation,",
+                  "where the x-axis is sorted by observation appearance in the table."
+                )
+              )
+            )
           ),
           value = FALSE
         )

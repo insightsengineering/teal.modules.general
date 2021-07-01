@@ -11,6 +11,7 @@
 * Added validation statements to `tm_g_scatterplot` handling users choosing more than one facet variable.
 * Improved performance of `tm_variable_browser` by a more efficient `sparkline` generation.
 * Added the html code type for all datasets labels inside `tm_missing_data`.
+* Improved the styling of tool tips in `tm_a_regression`, `tm_missing_data` and `tm_variable_browser`.
 
 # teal.modules.general 0.2.9
 ### Enhancements

@@ -173,11 +173,19 @@ ui_a_regression <- function(id, ...) {
       shinyjs::hidden(optionalSliderInput(
         ns("outlier"),
         div(
-          "Outlier definition:",
-          title = paste(
-            "Use the slider to choose the cut-off value to define outliers. Points with a Cook's distance greater than",
-            "the value on the slider times the mean of the Cook's distance of the dataset will have labels."),
-          icon("info-circle")
+          class = "teal-tooltip",
+          tagList(
+            "Outlier definition:",
+            icon("info-circle"),
+            span(
+              class = "tooltiptext",
+              paste(
+              "Use the slider to choose the cut-off value to define outliers.",
+              "Points with a Cook's distance greater than",
+              "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+              )
+            )
+          )
         ), min = 1, max = 10, value = 9, ticks = FALSE, step = .1)),
       shinyjs::hidden(optionalSelectInput(
         ns("label_var"),

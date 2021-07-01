@@ -272,10 +272,18 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
     sliderInput(
       inputId = session$ns("outlier_definition_slider"),
       div(
-        "Outlier definition:",
-        title = paste("Use the slider to choose the cut-off value to define outliers;\nthe larger the value the",
-          "further below Q1/above Q3 points have\nto be in order to be classed as outliers"),
-        icon("info-circle")
+        class = "teal-tooltip",
+        tagList(
+          "Outlier definition:",
+          icon("info-circle"),
+          span(
+            class = "tooltiptext",
+            paste(
+              "Use the slider to choose the cut-off value to define outliers; the larger the value the",
+              "further below Q1/above Q3 points have to be in order to be classed as outliers"
+            )
+          )
+        )
       ),
       min = 1,
       max = 5,
