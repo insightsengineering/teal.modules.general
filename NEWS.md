@@ -1,5 +1,6 @@
 # teal.modules.general 0.2.10.9000
 
+* Added template for `tm_g_distibution` module.
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`. 
 
 # teal.modules.general 0.2.10

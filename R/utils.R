@@ -203,6 +203,13 @@ varname_w_label <- function(var_names,
   }
 }
 
+extract_input <- function(varname, dataname, filter = FALSE) {
+  if (filter) {
+    paste0(varname, "-dataset_", dataname, "_singleextract-filter1-vals")
+  } else {
+    paste0(varname, "-dataset_", dataname, "_singleextract-select")
+  }
+}
 
 gg_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")
 
