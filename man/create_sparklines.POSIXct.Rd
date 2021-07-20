@@ -4,10 +4,16 @@
 \alias{create_sparklines.POSIXct}
 \title{Generates the HTML code for the \code{sparkline} widget}
 \usage{
-\method{create_sparklines}{POSIXct}(arr, ...)
+\method{create_sparklines}{POSIXct}(arr, width = 150, bar_spacing = 5, bar_width = 20, ...)
 }
 \arguments{
 \item{arr}{vector of any type and length}
+
+\item{width}{\code{numeric} the width of the \code{sparkline} widget (pixels)}
+
+\item{bar_spacing}{\code{numeric} the spacing between the bars (in pixels)}
+
+\item{bar_width}{\code{numeric} the width of the bars (in pixels)}
 
 \item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
