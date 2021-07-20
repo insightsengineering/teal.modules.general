@@ -34,7 +34,6 @@
 #'       dist_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select dist variable:",
 #'           choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
@@ -44,8 +43,7 @@
 #'       group_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           label = "Select group variable:",
-#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY")),
+#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -134,8 +132,7 @@ ui_distribution <- function(id, ...) {
           ns = NS(NULL),
           panel_item(
             "Histogram",
-            sliderInput(ns("bins"), label = "bins:", min = 1, max = 100, value = 30, step = 1),
-            tags$br(),
+            sliderInput(ns("bins"), label = "number of bins:", min = 1, max = 100, value = 30, step = 1),
             shinyWidgets::radioGroupButtons(
               ns("main_type"),
               label = "Plot Type:",
@@ -144,7 +141,12 @@ ui_distribution <- function(id, ...) {
               checkIcon = list(yes = icon("ok", lib = "glyphicon"), no = icon("remove", lib = "glyphicon"))
             ),
             shinyWidgets::awesomeCheckbox(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            numericInput(ns("ndensity"), label = "n density points:", 512, 0, 1024, 16),
+            shinyWidgets::sliderTextInput(
+              inputId = ns("ndensity"),
+              label = "n density points:",
+              choices = 2**seq(1, 10, 1),
+              selected = 2**9
+            ),
             conditionalPanel(
               condition = paste0(
                 "input['", ns("main_type"), "'] == 'Density'",
@@ -177,100 +179,41 @@ ui_distribution <- function(id, ...) {
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
           panel_item(
             "QQ Plot",
-            checkboxInput(ns("qq_line"), label = "Add lines", TRUE),
+            checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             collapsed = FALSE
           )
         )
       ),
-      panel_item(div(
-        class = "teal-tooltip",
-        tagList(
-          "Theoretical Distribution",
-          icon("info-circle"),
-          span(
-            class = "tooltiptext",
-            "Choose the assumed distribution, will be used for all connected functionalities."
-          )
-        )
-      ),
-      optionalSelectInput(ns("fitdistr_dist"),
-                          label = div(
-                            class = "teal-tooltip",
-                            tagList(
-                              "Distribution:",
-                              icon("info-circle"),
-                              span(
-                                class = "tooltiptext",
-                                paste(
-                                  "Choose the assumed distribution, will be used for all connected functionalities.\n",
-                                  "Compare best MASS::fitdistr function fit for certain distribution",
-                                  "with original data or set it manually."
-                                )
-                              )
-                            )
-                          ),
-                          choices = c("normal", "lognormal", "gamma", "unif"),
-                          selected = NULL, multiple = FALSE
-      ),
-      checkboxInput(ns("params_manual"),
-                    label = div(
-                      class = "teal-tooltip",
-                      tagList(
-                        "manual",
-                        icon("info-circle"),
-                        span(
-                          class = "tooltiptext",
-                          "Default parameters are assessed by MASS:fitdistr optimization,",
-                          "set it to TRUE if you want to update the parameters."
-                        )
-                      )
-                    ),
-                    value = FALSE
-      ),
-      numericInput(ns("dist_param1"), "parameter 1", value = NULL),
-      numericInput(ns("dist_param2"), "parameter 2", value = NULL),
-      span(actionButton(ns("params_update"), "Update params")),
-      collapsed = FALSE
+      panel_item(
+        "Theoretical Distribution",
+        optionalSelectInput(ns("fitdistr_dist"),
+                            "Distribution:",
+                            choices = c("normal", "lognormal", "gamma", "unif"),
+                            selected = NULL, multiple = FALSE
+        ),
+        checkboxInput(ns("params_manual"),
+                      "manual",
+                      value = FALSE
+        ),
+        numericInput(ns("dist_param1"), "parameter 1", value = NULL),
+        numericInput(ns("dist_param2"), "parameter 2", value = NULL),
+        span(actionButton(ns("params_update"), "Update params")),
+        collapsed = FALSE
       ),
       panel_item(
         "Tests",
-        optionalSelectInput(ns("dist_tests"), div(
-          class = "teal-tooltip",
-          tagList(
-            "Test:",
-            icon("info-circle"),
-            span(
-              class = "tooltiptext",
-              paste(
-                "Choose the test to be applied.\n",
-                "Take into account that default arguments are used.\n",
-                "Test summary is at the bottom of the main app panel."
-              )
-            )
-          )
-        ),
-        choices = c("Kolmogorov-Smirnov", "Shapiro-Wilk", "Fligner-Killeen", "t-test", "var-test"),
-        selected = NULL
+        optionalSelectInput(ns("dist_tests"),
+                            "Test:",
+                            choices = c("Kolmogorov-Smirnov", "Shapiro-Wilk", "Fligner-Killeen", "t-test", "var-test"),
+                            selected = NULL
         )
       ),
       panel_item(
         "Statictics Table",
         sliderInput(ns("roundn"), "Round n digits", min = 0, max = 10, value = 2),
         shinyWidgets::awesomeCheckbox(ns("add_stats_plot"),
-          label = div(
-            class = "teal-tooltip",
-            tagList(
-              "Overlay params table",
-              icon("info-circle"),
-              span(
-                class = "tooltiptext",
-                paste(
-                  "Development version till ggpp package will be avaible"
-                )
-              )
-            )
-          ),
-          value = TRUE
+                                      label =
+                                        "Overlay params table", value = TRUE
         )
       )
     ),
@@ -321,9 +264,11 @@ srv_distribution <- function(input,
     input$params_update
 
     validate(need(dist_var, "Please select a variable."))
+    validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
     validate_has_data(ANL, 1, complete = TRUE)
 
-    common_stack_push(substitute(variable <- ANL[[dist_var]], env = list(dist_var = dist_var)))
+
+    common_stack_push(substitute(variable <- as.numeric(ANL[[dist_var]]), env = list(dist_var = dist_var)))
 
     if (length(g_var) == 0) {
       common_stack_push(

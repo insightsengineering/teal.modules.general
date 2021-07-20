@@ -60,7 +60,6 @@ app <- init(
       dist_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          label = "Select dist variable:",
           choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
           selected = "BMRKR1",
           multiple = FALSE,
@@ -70,8 +69,7 @@ app <- init(
       group_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
-          label = "Select group variable:",
-          choices = variable_choices(ADSL, c("SEX", "COUNTRY")),
+          choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
