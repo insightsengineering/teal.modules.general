@@ -16,7 +16,7 @@
 \code{character} with HTML code for the \code{sparkline} widget
 }
 \description{
-Coerces character vector to factor and delegates to the \code{create_sparklines.factor}
+Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
 }
 \seealso{
 \code{\link{create_sparklines}}

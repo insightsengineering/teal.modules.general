@@ -402,47 +402,114 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nousage # nolin
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #' @inheritParams create_sparklines
+#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
+#' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.Date <- function(arr, ...) { # nousage # nolint
-  return(as.character(tags$code("Date variable", style = "color:blue")))
+create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(as.Date(arr_num[start_bins], origin = as.Date("1970-01-01")))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+  )
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
 #' @inheritParams create_sparklines
+#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
+#' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.POSIXct <- function(arr, ...) { # nousage # nolint
-  return(as.character(tags$code("POSIXct variable", style = "color:blue")))
+create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+    )
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
 #' @inheritParams create_sparklines
+#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
+#' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.POSIXt <- function(arr, ...) { # nousage # nolint
-  return(as.character(tags$code("POSIXt variable", style = "color:blue")))
+create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+    )
 }
+
 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
-#' Coerces character vector to factor and delegates to the \code{create_sparklines.factor}
+#' Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
 #'
 #' @inheritParams create_sparklines
 #'
@@ -507,35 +574,17 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
   max_value <- if (decreasing_order) counts[1] else counts[length[counts]]
   max_value <- unname(max_value)
 
-  custom_formatter <- function(labels, counts) {
-    htmlwidgets::JS(
-      sprintf(
-        "function(sparkline, options, field) {
-        return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
-        }",
-        jsonlite::toJSON(labels),
-        jsonlite::toJSON(counts)
-      )
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(names(counts), as.vector(counts))
     )
-  }
 
-  res <- do.call(
-    spk_chr,
-    c(
-      list(
-        unname(counts),
-        type = "bar",
-        chartRangeMin = 0,
-        chartRangeMax = max_value,
-        width = width,
-        barWidth = bar_width,
-        barSpacing = bar_spacing,
-        tooltipFormatter = custom_formatter(names(counts), as.vector(counts))
-      ),
-      ...
-    )
-  )
-  return(res)
 }
 
 #' Generates the \code{sparkline} HTML code
@@ -674,14 +723,6 @@ plot_var_summary <- function(var,
 
   stopifnot(is_logical_single(display_density))
 
-  get_bin_width <- function(x, scaling_factor = 2) {
-    x <- x[!is.na(x)]
-    qntls <- quantile(x, probs = c(0.1, 0.25, 0.75, 0.9))
-    iqr <- qntls[3] - qntls[2]
-    binwidth <- max(scaling_factor * iqr / length(x) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
-    binwidth <- ifelse(binwidth == 0, 1, binwidth)
-  }
-
   grid::grid.newpage()
 
   plot_grob <- if (is.factor(var) || is.character(var) || is.logical(var)) {
@@ -695,7 +736,7 @@ plot_var_summary <- function(var,
           var_lab,
           paste(utils::head(groups), collapse = ",\n "),
           paste(utils::tail(groups), collapse = ",\n ")
-          ),
+        ),
         x = grid::unit(1, "line"),
         y = grid::unit(1, "npc") - grid::unit(1, "line"),
         just = c("left", "top")
@@ -772,7 +813,6 @@ plot_var_summary <- function(var,
 
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
-
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
       geom_histogram(binwidth = binwidth) +
       xlab(var_lab) +
@@ -1014,4 +1054,24 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
       plot_var$variable[[dataset_name]] <- columns_names[[dataset_name]][input[[table_id_sel]]]
     })
   })
+}
+
+get_bin_width <- function(x_vec, scaling_factor = 2) {
+  x_vec <- x_vec[!is.na(x_vec)]
+  qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9))
+  iqr <- qntls[3] - qntls[2]
+  binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
+  binwidth <- ifelse(binwidth == 0, 1, binwidth)
+}
+
+custom_sparkline_formatter <- function(labels, counts) {
+  htmlwidgets::JS(
+    sprintf(
+      "function(sparkline, options, field) {
+        return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
+        }",
+      jsonlite::toJSON(labels),
+      jsonlite::toJSON(counts)
+    )
+  )
 }
