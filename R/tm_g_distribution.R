@@ -508,7 +508,15 @@ srv_distribution <- function(input,
 
     if (add_dens_var) {
       plot_call <- substitute(
-        expr = plot_call + stat_density(aes_string(y = m_type2), geom = "line", alpha = 0.5, size = 2, n = ndensity),
+        expr = plot_call +
+          stat_density(
+            aes_string(y = m_type2),
+            geom = "line",
+            position = "identity",
+            alpha = 0.5,
+            size = 2,
+            n = ndensity
+          ),
         env = list(
           plot_call = plot_call,
           m_type2 = m_type2,
