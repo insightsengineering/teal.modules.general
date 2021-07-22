@@ -203,6 +203,15 @@ varname_w_label <- function(var_names,
   }
 }
 
+#' Extract html id for data_extract_input
+#' @description The data_extract_input is located under extended html id.
+#'   We could not use \code{ns("original id")} for reference, as it is extended with specific suffixes.
+#' @param varname character original html id.
+#'   This will be mostly retrieved with \code{ns("original id")} in ui or
+#'   \code{session$ns("original id")} in server function.
+#' @param dataname character \code{dataname} from data_extract input.
+#'   This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.
+#' @param filter logical if the connected \code{extract_data_spec} is used with \code{filter} option.
 extract_input <- function(varname, dataname, filter = FALSE) {
   if (filter) {
     paste0(varname, "-dataset_", dataname, "_singleextract-filter1-vals")
