@@ -268,7 +268,7 @@ srv_distribution <- function(input,
     validate_has_data(ANL, 1, complete = TRUE)
 
 
-    common_stack_push(substitute(variable <- as.numeric(ANL[[dist_var]]), env = list(dist_var = dist_var)))
+    common_stack_push(substitute(variable <- ANL[[dist_var]], env = list(dist_var = dist_var)))
 
     if (length(g_var) == 0) {
       common_stack_push(
@@ -313,22 +313,11 @@ srv_distribution <- function(input,
       )
     }
 
-    common_stack_push(substitute({
-      test_stats <- NULL
-      params <- NULL
-      params_vec <- NULL
-      params_names <- c("param1", "param2")
-    }))
-
     if (length(fitdistr_dist) != 0 && isFALSE(params_manual)) {
       common_stack_push(
         substitute(
           expr = {
             get_dist_params <- function(x, dist) {
-              if (dist == "poisson") {
-                x <- as.integer(x)
-              }
-
               if (dist == "unif") {
                 res <- as.list(range(x))
                 names(res) <- c("min", "max")
@@ -356,12 +345,10 @@ srv_distribution <- function(input,
       )
     } else if (length(fitdistr_dist) != 0) {
       map_distr_nams <- data.frame(
-        distr = c("normal", "lognormal", "t", "poisson", "gamma", "unif"),
+        distr = c("normal", "lognormal", "gamma", "unif"),
         namparam = I(list(
           c("mean", "sd"),
           c("meanlog", "sdlog"),
-          c("m", "s", "df"),
-          c("lambda"),
           c("shape", "rate"),
           c("min", "max")
         )),
@@ -398,8 +385,8 @@ srv_distribution <- function(input,
       common_stack_push(substitute(
         expr = {
           map_dist <- stats::setNames(
-            c("pnorm", "plnorm", "pt", "ppois", "pgamma", "punif"),
-            c("normal", "lognormal", "t", "poisson", "gamma", "unif")
+            c("pnorm", "plnorm", "pgamma", "punif"),
+            c("normal", "lognormal", "gamma", "unif")
           )
 
           test_stats <- do.call(ks.test, append(list(quote(variable), map_dist[[ks_var]]), params), quote = FALSE)
@@ -431,8 +418,8 @@ srv_distribution <- function(input,
       common_stack_push(substitute({
         variable_group <- split(variable, ANL[[g_var]])
         test_stats <- stats::var.test(variable_group[[1]], variable_group[[2]])
-      },
-      env = list(g_var = g_var)
+        },
+        env = list(g_var = g_var)
       ))
     }
 
@@ -443,13 +430,16 @@ srv_distribution <- function(input,
 
   observeEvent(list(input$fitdistr_dist, input$params_update, input$params_manual), {
     params_names <- tryCatch(
-      chunks_get_var("params_names", common_code_chunks()$common_stack),
+      suppressWarnings(chunks_get_var("params_names", common_code_chunks()$common_stack)),
       error = function(e) NULL
-    )
-    params_vec <- tryCatch(chunks_get_var("params_vec", common_code_chunks()$common_stack), error = function(e) NULL)
+      )
+    params_vec <- tryCatch(suppressWarnings(chunks_get_var("params_vec", common_code_chunks()$common_stack)),
+      error = function(e) NULL
+      )
     updateNumericInput(session = session, inputId = "dist_param1", label = params_names[1], value = params_vec[1])
     updateNumericInput(session = session, inputId = "dist_param2", label = params_names[2], value = params_vec[2])
-  }, ignoreInit = TRUE
+    },
+    ignoreInit = TRUE
   )
 
   dist_plot_r_chunks <- reactive({
@@ -620,8 +610,8 @@ srv_distribution <- function(input,
         plot_call <- substitute(
           expr = {
             map_dist <- stats::setNames(
-              c("dnorm", "dlnorm", "dt", "dpois", "dgamma", "dunif"),
-              c("normal", "lognormal", "t", "poisson", "gamma", "unif")
+              c("dnorm", "dlnorm", "dgamma", "dunif"),
+              c("normal", "lognormal", "gamma", "unif")
             )
             ddist <- unname(map_dist[fitdistr_dist])
             plot_call + stat_function(
@@ -706,8 +696,8 @@ srv_distribution <- function(input,
     plot_call <- substitute(
       expr = {
         map_dist <- stats::setNames(
-          c("qnorm", "qlnorm", "qt", "qpois", "qgamma", "qunif"),
-          c("normal", "lognormal", "t", "poisson", "gamma", "unif")
+          c("qnorm", "qlnorm", "qgamma", "qunif"),
+          c("normal", "lognormal", "gamma", "unif")
         )
         plot_call +
           stat_qq(distribution = map_dist[dist], dparams = params) +
@@ -809,7 +799,7 @@ srv_distribution <- function(input,
   })
 
   output$t_stats <- renderText({
-    res <- tryCatch(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack),
+    res <- tryCatch(suppressWarnings(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack)),
                     error = function(e) NULL
     )
     if (is.null(res)) {
@@ -821,16 +811,18 @@ srv_distribution <- function(input,
   })
 
   output$summary_table <- DT::renderDataTable({
-    suppressWarnings(
+    tryCatch(suppressWarnings(
       chunks_get_var("summary_table", common_code_chunks()$common_stack)
-    )
-  },
-  options = list(
-    dom = "t",
-    autoWidth = TRUE,
-    columnDefs = list(list(width = "200px", targets = "_all"))
-  ),
-  rownames = FALSE
+      ),
+      error = function(e) NULL
+      )
+    },
+    options = list(
+      dom = "t",
+      autoWidth = TRUE,
+      columnDefs = list(list(width = "200px", targets = "_all"))
+    ),
+    rownames = FALSE
   )
 
   dist_brush <- callModule(
