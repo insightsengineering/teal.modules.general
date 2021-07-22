@@ -186,34 +186,42 @@ ui_distribution <- function(id, ...) {
       ),
       panel_item(
         "Theoretical Distribution",
-        optionalSelectInput(ns("fitdistr_dist"),
-                            "Distribution:",
-                            choices = c("normal", "lognormal", "gamma", "unif"),
-                            selected = NULL, multiple = FALSE
+        optionalSelectInput(
+          ns("fitdistr_dist"),
+          div(
+            class = "teal-tooltip",
+            tagList(
+              "Distribution:",
+              icon("info-circle"),
+              span(
+                class = "tooltiptext",
+                "Default parameters are optimized with MASS::fitdistr function."
+              )
+            )
+          ),
+          choices = c("normal", "lognormal", "gamma", "unif"),
+          selected = NULL, multiple = FALSE
         ),
-        checkboxInput(ns("params_manual"),
-                      "manual",
-                      value = FALSE
-        ),
-        numericInput(ns("dist_param1"), "parameter 1", value = NULL),
-        numericInput(ns("dist_param2"), "parameter 2", value = NULL),
-        span(actionButton(ns("params_update"), "Update params")),
+        numericInput(ns("dist_param1"), label = "param1", value = NULL),
+        numericInput(ns("dist_param2"), label = "param2", value = NULL),
+        span(actionButton(ns("params_reset"), "Reset params")),
         collapsed = FALSE
       ),
       panel_item(
         "Tests",
         optionalSelectInput(ns("dist_tests"),
-                            "Test:",
-                            choices = c("Kolmogorov-Smirnov", "Shapiro-Wilk", "Fligner-Killeen", "t-test", "var-test"),
-                            selected = NULL
+          "Test:",
+          choices = c("Kolmogorov-Smirnov", "Shapiro-Wilk", "Fligner-Killeen", "t-test", "var-test"),
+          selected = NULL
         )
       ),
       panel_item(
         "Statictics Table",
         sliderInput(ns("roundn"), "Round n digits", min = 0, max = 10, value = 2),
-        shinyWidgets::awesomeCheckbox(ns("add_stats_plot"),
-                                      label =
-                                        "Overlay params table", value = TRUE
+        shinyWidgets::awesomeCheckbox(
+          ns("add_stats_plot"),
+          label = "Overlay params table",
+          value = TRUE
         )
       )
     ),
@@ -239,6 +247,35 @@ srv_distribution <- function(input,
     input_id = c("dist_i", "group_i")
   )
 
+  observeEvent(list(input$fitdistr_dist, input$params_reset), {
+    if (length(input$fitdistr_dist) != 0) {
+      dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+
+      get_dist_params <- function(x, dist) {
+        if (dist == "unif") {
+          res <- as.list(range(x))
+          names(res) <- c("min", "max")
+          return(res)
+        }
+        tryCatch(as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+          error = function(e) list(param1 = NA, param2 = NA)
+        )
+      }
+      ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+      params <- get_dist_params(ANL[[dist_var2]], input$fitdistr_dist)
+      params_vec <- round(unname(unlist(params)), 2)
+      params_names <- names(params)
+
+      updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+      updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+    } else {
+      updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+      updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+    }
+  },
+  ignoreInit = TRUE
+  )
+
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
     common_stack <- chunks$new()
@@ -255,20 +292,43 @@ srv_distribution <- function(input,
     main_type_var <- input$main_type
     bins_var <- input$bins
     roundn <- input$roundn
-    fitdistr_dist <- input$fitdistr_dist
-    dist_param1 <- isolate(input$dist_param1)
-    dist_param2 <- isolate(input$dist_param2)
-    params_manual <- isolate(input$params_manual)
+    fitdistr_dist <- isolate(input$fitdistr_dist)
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
     input$tabs
-    input$params_update
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
     validate_has_data(ANL, 1, complete = TRUE)
-
-
     common_stack_push(substitute(variable <- ANL[[dist_var]], env = list(dist_var = dist_var)))
+
+    if (length(fitdistr_dist) != 0) {
+      map_distr_nams <- data.frame(
+        distr = c("normal", "lognormal", "gamma", "unif"),
+        namparam = I(list(
+          c("mean", "sd"),
+          c("meanlog", "sdlog"),
+          c("shape", "rate"),
+          c("min", "max")
+        )),
+        stringsAsFactors = FALSE
+      )
+      params_names_raw <- map_distr_nams$namparam[match(fitdistr_dist, map_distr_nams$distr)][[1]]
+
+      common_stack_push(substitute({
+        params <- as.list(c(dist_param1, dist_param2))
+        params_names <- params_names_raw
+        names(params) <- params_names
+      },
+      env = list(
+        dist_param1 = dist_param1,
+        dist_param2 = dist_param2,
+        fitdistr_dist = fitdistr_dist,
+        params_names_raw = params_names_raw
+      )
+    ))
+  }
 
     if (length(g_var) == 0) {
       common_stack_push(
@@ -313,73 +373,6 @@ srv_distribution <- function(input,
       )
     }
 
-    if (length(fitdistr_dist) != 0 && isFALSE(params_manual)) {
-      common_stack_push(
-        substitute(
-          expr = {
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                res <- as.list(range(x))
-                names(res) <- c("min", "max")
-                return(res)
-              }
-
-              tryCatch(as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-                       error = function(e) list(param1 = NA, param2 = NA)
-              )
-            }
-
-            params <- get_dist_params(ANL[[dist_var]], fitdistr_dist)
-            params_vec <- round(unname(unlist(params)), 2)
-            params_names <- names(params)
-            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
-            colnames(df_params) <- params_names
-            df_params$name <- fitdistr_dist
-          },
-          env = list(
-            dist_var_name = as.name(dist_var),
-            dist_var = dist_var,
-            fitdistr_dist = fitdistr_dist
-          )
-        )
-      )
-    } else if (length(fitdistr_dist) != 0) {
-      map_distr_nams <- data.frame(
-        distr = c("normal", "lognormal", "gamma", "unif"),
-        namparam = I(list(
-          c("mean", "sd"),
-          c("meanlog", "sdlog"),
-          c("shape", "rate"),
-          c("min", "max")
-        )),
-        stringsAsFactors = FALSE
-      )
-      params_names <- map_distr_nams$namparam[match(fitdistr_dist, map_distr_nams$distr)][[1]]
-
-      params_raw <- as.list(c(dist_param1, dist_param2))
-
-      common_stack_push(
-        substitute(
-          expr = {
-            params <- params_raw
-            names(params) <- params_names
-            params_vec <- round(unname(unlist(params)), 2)
-            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
-            colnames(df_params) <- params_names
-            df_params$name <- fitdistr_dist
-          },
-          env = list(
-            dist_param1 = dist_param1,
-            dist_param2 = dist_param2,
-            fitdistr_dist = fitdistr_dist,
-            params_raw = params_raw,
-            params_names = params_names
-          )
-        )
-      )
-    }
-
-
     if (length(test_var) > 0 && test_var == "Kolmogorov-Smirnov") {
       validate(need(fitdistr_dist, "Please select the theoretical distribution."))
       common_stack_push(substitute(
@@ -388,7 +381,6 @@ srv_distribution <- function(input,
             c("pnorm", "plnorm", "pgamma", "punif"),
             c("normal", "lognormal", "gamma", "unif")
           )
-
           test_stats <- do.call(ks.test, append(list(quote(variable), map_dist[[ks_var]]), params), quote = FALSE)
         },
         env = list(ks_var = fitdistr_dist, dist_var = dist_var)
@@ -403,7 +395,7 @@ srv_distribution <- function(input,
     } else if (length(test_var) > 0 && test_var == "Fligner-Killeen") {
       validate(need(g_var, "select grouping variable"))
       common_stack_push(substitute(test_stats <- stats::fligner.test(variable, ANL[[g_var]]),
-                                   env = list(g_var = g_var)
+        env = list(g_var = g_var)
       ))
     } else if (length(test_var) > 0 && test_var == "t-test") {
       validate(need(g_var, "select grouping variable"))
@@ -418,29 +410,15 @@ srv_distribution <- function(input,
       common_stack_push(substitute({
         variable_group <- split(variable, ANL[[g_var]])
         test_stats <- stats::var.test(variable_group[[1]], variable_group[[2]])
-        },
-        env = list(g_var = g_var)
-      ))
-    }
+      },
+      env = list(g_var = g_var)
+    ))
+  }
 
     chunks_safe_eval(chunks = common_stack)
 
     list(common_stack = common_stack)
   })
-
-  observeEvent(list(input$fitdistr_dist, input$params_update, input$params_manual), {
-    params_names <- tryCatch(
-      suppressWarnings(chunks_get_var("params_names", common_code_chunks()$common_stack)),
-      error = function(e) NULL
-      )
-    params_vec <- tryCatch(suppressWarnings(chunks_get_var("params_vec", common_code_chunks()$common_stack)),
-      error = function(e) NULL
-      )
-    updateNumericInput(session = session, inputId = "dist_param1", label = params_names[1], value = params_vec[1])
-    updateNumericInput(session = session, inputId = "dist_param2", label = params_names[2], value = params_vec[2])
-    },
-    ignoreInit = TRUE
-  )
 
   dist_plot_r_chunks <- reactive({
     # Create a private stack for this function only.
@@ -458,7 +436,7 @@ srv_distribution <- function(input,
     bins_var <- input$bins
     add_dens_var <- input$add_dens
     boot_iters_var <- input$boot_iters
-    fitdistr_dist <- input$fitdistr_dist
+    fitdistr_dist <- isolate(input$fitdistr_dist)
     add_stats_plot <- input$add_stats_plot
     ndensity <- input$ndensity
 
@@ -543,6 +521,11 @@ srv_distribution <- function(input,
       if (length(fitdistr_dist) != 0 && length(g_var) == 0) {
         plot_call <- substitute(
           expr = {
+            params_vec <- round(unname(unlist(params)), 2)
+            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
+            colnames(df_params) <- params_names
+            df_params$name <- fitdistr_dist
+
             plot_data <- ggplot2::ggplot_build(plot_call)
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
             x_range <- plot_data$layout$panel_scales_x[[1]]$range$range
@@ -555,7 +538,7 @@ srv_distribution <- function(input,
                 ymin = sum(y_range) / 1.2, ymax = y_range[2]
               )
           },
-          env = list(plot_call = plot_call)
+          env = list(plot_call = plot_call, fitdistr_dist = fitdistr_dist)
         )
       }
     }
@@ -669,7 +652,7 @@ srv_distribution <- function(input,
 
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
     g_var <- as.vector(merged_data()$columns_source$group_i)
-    dist <- input$fitdistr_dist
+    dist <- isolate(input$fitdistr_dist)
     add_stats_plot <- input$add_stats_plot
 
     validate(need(dist_var, "Please select a variable."))
@@ -750,6 +733,11 @@ srv_distribution <- function(input,
       if (length(dist) != 0) {
         plot_call <- substitute(
           expr = {
+            params_vec <- round(unname(unlist(params)), 2)
+            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
+            colnames(df_params) <- params_names
+            df_params$name <- dist
+
             plot_data <- ggplot2::ggplot_build(plot_call)
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
             x_range <- plot_data$layout$panel_scales_x[[1]]$range$range
@@ -762,7 +750,7 @@ srv_distribution <- function(input,
                 ymin = sum(y_range) / 1.2, ymax = y_range[2]
               )
           },
-          env = list(plot_call = plot_call)
+          env = list(plot_call = plot_call, dist = dist)
         )
       }
     }
@@ -800,7 +788,7 @@ srv_distribution <- function(input,
 
   output$t_stats <- renderText({
     res <- tryCatch(suppressWarnings(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack)),
-                    error = function(e) NULL
+      error = function(e) NULL
     )
     if (is.null(res)) {
       return(NULL)
@@ -813,10 +801,10 @@ srv_distribution <- function(input,
   output$summary_table <- DT::renderDataTable({
     tryCatch(suppressWarnings(
       chunks_get_var("summary_table", common_code_chunks()$common_stack)
-      ),
-      error = function(e) NULL
-      )
-    },
+    ),
+    error = function(e) NULL
+    )
+  },
     options = list(
       dom = "t",
       autoWidth = TRUE,
