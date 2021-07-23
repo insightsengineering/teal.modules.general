@@ -37,6 +37,7 @@ Imports:
   htmlwidgets,
   jsonlite,
   lattice,
+  MASS,
   methods,
   rlang,
   rtables (>= 0.3.8),
