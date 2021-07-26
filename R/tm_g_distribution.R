@@ -122,7 +122,7 @@ ui_distribution <- function(id, ...) {
       ),
       data_extract_input(
         id = ns("group_i"),
-        label = "Group by",
+        label = "Stratify by",
         data_extract_spec = args$group_var,
         is_single_dataset = is_single_dataset_value
       ),
@@ -133,20 +133,15 @@ ui_distribution <- function(id, ...) {
           panel_item(
             "Histogram",
             sliderInput(ns("bins"), label = "number of bins:", min = 1, max = 100, value = 30, step = 1),
-            shinyWidgets::radioGroupButtons(
+            shinyWidgets::prettyRadioButtons(
               ns("main_type"),
               label = "Plot Type:",
               choices = c("Density", "Frequency"),
-              justified = TRUE, status = "primary",
-              checkIcon = list(yes = icon("ok", lib = "glyphicon"), no = icon("remove", lib = "glyphicon"))
+              selected = "Density",
+              bigger = TRUE,
+              inline = TRUE
             ),
             shinyWidgets::awesomeCheckbox(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            shinyWidgets::sliderTextInput(
-              inputId = ns("ndensity"),
-              label = "n density points:",
-              choices = 2**seq(1, 10, 1),
-              selected = 2**9
-            ),
             conditionalPanel(
               condition = paste0(
                 "input['", ns("main_type"), "'] == 'Density'",
@@ -247,7 +242,11 @@ srv_distribution <- function(input,
     input_id = c("dist_i", "group_i")
   )
 
-  observeEvent(list(input$fitdistr_dist, input$params_reset), {
+  observeEvent(list(
+    input$fitdistr_dist,
+    input$params_reset,
+    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
+  ), {
     if (length(input$fitdistr_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
@@ -290,7 +289,6 @@ srv_distribution <- function(input,
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
     g_var <- as.vector(merged_data()$columns_source$group_i)
     main_type_var <- input$main_type
-    bins_var <- input$bins
     roundn <- input$roundn
     fitdistr_dist <- isolate(input$fitdistr_dist)
     dist_param1 <- input$dist_param1
@@ -335,11 +333,11 @@ srv_distribution <- function(input,
         substitute(
           expr = {
             summary_table <- data.frame(
-              mean = round(mean(variable, na.rm = TRUE), roundn),
-              median = round(median(variable, na.rm = TRUE), roundn),
-              sd = round(sd(variable, na.rm = TRUE), roundn),
               min = round(min(variable, na.rm = TRUE), roundn),
+              median = round(median(variable, na.rm = TRUE), roundn),
+              mean = round(mean(variable, na.rm = TRUE), roundn),
               max = round(max(variable, na.rm = TRUE), roundn),
+              sd = round(sd(variable, na.rm = TRUE), roundn),
               count = length(variable)
             )
           },
@@ -356,11 +354,11 @@ srv_distribution <- function(input,
             summary_table <- ANL %>%
               dplyr::group_by(g_var_name) %>%
               dplyr::summarise(
-                mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
-                median = round(median(dist_var_name, na.rm = TRUE), roundn),
-                sd = round(sd(dist_var_name, na.rm = TRUE), roundn),
                 min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                median = round(median(dist_var_name, na.rm = TRUE), roundn),
+                mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
                 max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                sd = round(sd(dist_var_name, na.rm = TRUE), roundn),
                 count = dplyr::n()
               )
           },
@@ -438,7 +436,7 @@ srv_distribution <- function(input,
     boot_iters_var <- input$boot_iters
     fitdistr_dist <- isolate(input$fitdistr_dist)
     add_stats_plot <- input$add_stats_plot
-    ndensity <- input$ndensity
+    ndensity <- 512
 
     validate(need(dist_var, "Please select a variable."))
 
