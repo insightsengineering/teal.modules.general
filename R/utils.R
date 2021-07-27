@@ -168,8 +168,8 @@ list_or_null <- function(obj) {
 #'
 #' @examples
 #' \dontrun{
-#' library(random.cdisc.data)
-#' ADSL <- radsl(cached = TRUE)
+#' library(scda)
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
 #' varname_w_label("AGE", ADSL)
 #' }

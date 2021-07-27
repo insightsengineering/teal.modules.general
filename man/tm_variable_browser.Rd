@@ -35,15 +35,15 @@ or numbers with a checkbox allowing users to switch how they are treated (if < 6
 then the default is categorical, otherwise it is numeric).
 }
 \examples{
-library(random.cdisc.data)
+library(scda)
 
-ADSL <- radsl(cached = TRUE)
-ADTTE <- radtte(cached = TRUE)
+ADSL <- synthetic_cdisc_data("latest")$adsl
+ADTTE <- synthetic_cdisc_data("latest")$adtte
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
     check = TRUE
   ),
   root_modules(

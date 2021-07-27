@@ -14,8 +14,8 @@
 #' @export
 #'
 #' @examples
-#' library(random.cdisc.data)
-#' ADSL <- radsl(cached = TRUE)
+#' library(scda)
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
 #' vars <- choices_selected(
 #'   choices = variable_choices(ADSL)
 #' )
@@ -26,7 +26,7 @@
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- radsl(cached = TRUE)",
+#'     code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl",
 #'     check = FALSE
 #'   ),
 #'   modules = root_modules(

@@ -2,6 +2,7 @@
 
 * Added template for `tm_g_distibution` module.
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`. 
+* Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 
 # teal.modules.general 0.2.10
 ### Enhancements

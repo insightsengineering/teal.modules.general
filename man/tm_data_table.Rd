@@ -44,13 +44,13 @@ output to put the output into context. For example the
 A data table viewer shows the data using a paginated table.
 }
 \examples{
-library(random.cdisc.data)
+library(scda)
 
-ADSL <- radsl(cached = TRUE)
+ADSL <- synthetic_cdisc_data("latest")$adsl
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
     check = TRUE
   ),
   modules = root_modules(
@@ -65,16 +65,16 @@ shinyApp(app$ui, app$server)
 }
 
 # two-datasets example
-library(random.cdisc.data)
+library(scda)
 
-ADSL <- radsl(cached = TRUE)
-ADTTE <- radtte(cached = TRUE)
+ADSL <- synthetic_cdisc_data("latest")$adsl
+ADTTE <- synthetic_cdisc_data("latest")$adtte
 
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
     check = TRUE
   ),
   modules = root_modules(
@@ -100,15 +100,15 @@ shinyApp(app$ui, app$server)
 }
 
 # datasets: different subsets of long dataset
-library(random.cdisc.data)
+library(scda)
 
-ADSL <- radsl(cached = TRUE)
-ADLB <- radlb(cached = TRUE)
+ADSL <- synthetic_cdisc_data("latest")$adsl
+ADLB <- synthetic_cdisc_data("latest")$adlb
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-    cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADLB", ADLB, code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb"),
     check = TRUE
   ),
   modules = root_modules(
@@ -127,17 +127,17 @@ app <- init(
 shinyApp(app$ui, app$server)
 }
 # datasets: subsetting or changing order of datasets inside tm_data_table
-library(random.cdisc.data)
+library(scda)
 
-ADSL <- radsl(cached = TRUE)
-ADLB <- radlb(cached = TRUE)
-ADTTE <- radtte(cached = TRUE)
+ADSL <- synthetic_cdisc_data("latest")$adsl
+ADLB <- synthetic_cdisc_data("latest")$adlb
+ADTTE <- synthetic_cdisc_data("latest")$adtte
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-    cdisc_dataset("ADLB", ADLB, code = "ADLB <- radlb(cached = TRUE)"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADLB", ADLB, code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
     check = TRUE
   ),
   modules = root_modules(

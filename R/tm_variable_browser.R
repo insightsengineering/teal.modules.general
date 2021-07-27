@@ -18,15 +18,15 @@
 #' @export
 #'
 #' @examples
-#' library(random.cdisc.data)
+#' library(scda)
 #'
-#' ADSL <- radsl(cached = TRUE)
-#' ADTTE <- radtte(cached = TRUE)
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADTTE <- synthetic_cdisc_data("latest")$adtte
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
-#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- radtte(cached = TRUE)"),
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
 #'     check = TRUE
 #'   ),
 #'   root_modules(

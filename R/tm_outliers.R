@@ -14,15 +14,15 @@
 #' @export
 #'
 #' @examples
-#' library(random.cdisc.data)
+#' library(scda)
 #'
-#' ADSL <- radsl(cached = TRUE)
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(

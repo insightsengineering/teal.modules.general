@@ -32,13 +32,13 @@
 #' @examples
 #' # Regression graphs from selected response variable (BMRKR1) and
 #' # selected regressors (AGE)
-#' library(random.cdisc.data)
+#' library(scda)
 #'
-#' ADSL <- radsl(cached = TRUE)
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- radsl(cached = TRUE)"),
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
