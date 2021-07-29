@@ -8,6 +8,8 @@ tm_g_distribution(
   label = "Distribution Module",
   dist_var,
   group_var = NULL,
+  facet_var = NULL,
+  freq = FALSE,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -22,6 +24,12 @@ variable to consider for the distribution analysis.}
 
 \item{group_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 categorical variable to split the selected distribution variable on.}
+
+\item{facet_var}{optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+Which data columns to use for faceting rows.}
+
+\item{freq}{optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
+Defaults to density (`FALSE`).}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -67,6 +75,15 @@ app <- init(
         )
       ),
       group_var = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
+          selected = NULL,
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      facet_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),

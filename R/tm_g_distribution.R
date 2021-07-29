@@ -10,6 +10,10 @@
 #'  variable to consider for the distribution analysis.
 #' @param group_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical variable to split the selected distribution variable on.
+#' @param facet_var  optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#'   Which data columns to use for faceting rows.
+#' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
+#'   Defaults to density (`FALSE`).
 #'
 #' @export
 #'
@@ -48,6 +52,15 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
+#'       ),
+#'       facet_var = data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
 #'       )
 #'     )
 #'   )
@@ -58,6 +71,8 @@
 tm_g_distribution <- function(label = "Distribution Module",
                               dist_var,
                               group_var = NULL,
+                              facet_var = NULL,
+                              freq = FALSE,
                               plot_height = c(600, 200, 2000),
                               plot_width = NULL,
                               pre_output = NULL,
@@ -70,17 +85,24 @@ tm_g_distribution <- function(label = "Distribution Module",
     group_var <- list(group_var)
   }
 
+  if (!is_class_list("data_extract_spec")(facet_var)) {
+    facet_var <- list(facet_var)
+  }
+
   stop_if_not(
     is_character_single(label),
-    is_class_list("data_extract_spec")(dist_var),
-    is.null(group_var) || is_class_list("data_extract_spec")(group_var)
+    is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
+    is.null(group_var) || (is_class_list("data_extract_spec")(group_var) && isFALSE(group_var[[1]]$select$multiple)),
+    is.null(facet_var) || (is_class_list("data_extract_spec")(facet_var) && isFALSE(facet_var[[1]]$select$multiple)),
+    is_logical_single(freq)
   )
 
   args <- as.list(environment())
 
   data_extract_list <- list(
     dist_var = dist_var,
-    group_var = group_var
+    group_var = group_var,
+    facet_var = facet_var
   )
 
   module(
@@ -97,7 +119,7 @@ tm_g_distribution <- function(label = "Distribution Module",
 ui_distribution <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-  is_single_dataset_value <- is_single_dataset(args$dist_var, args$group_var)
+  is_single_dataset_value <- is_single_dataset(args$dist_var, args$group_var, args$facet_var)
 
   standard_layout(
     output = tagList(
@@ -126,6 +148,12 @@ ui_distribution <- function(id, ...) {
         data_extract_spec = args$group_var,
         is_single_dataset = is_single_dataset_value
       ),
+      data_extract_input(
+        id = ns("facet_i"),
+        label = "Facet by",
+        data_extract_spec = args$facet_var,
+        is_single_dataset = is_single_dataset_value
+      ),
       panel_group(
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
@@ -137,36 +165,11 @@ ui_distribution <- function(id, ...) {
               ns("main_type"),
               label = "Plot Type:",
               choices = c("Density", "Frequency"),
-              selected = "Density",
+              selected = if (!args$freq) "Density" else "Frequency",
               bigger = TRUE,
               inline = TRUE
             ),
             shinyWidgets::awesomeCheckbox(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            conditionalPanel(
-              condition = paste0(
-                "input['", ns("main_type"), "'] == 'Density'",
-                " && ",
-                "input['", extract_input(
-                  ns("group_i"),
-                  args$group_var[[1]]$dataname
-                ),
-                "'].length == 0"
-              ),
-              sliderInput(ns("boot_iters"), label = div(
-                class = "teal-tooltip",
-                tagList(
-                  "Number of bootstrap:",
-                  icon("info-circle"),
-                  span(
-                    class = "tooltiptext",
-                    paste(
-                      "Choose the the number of bootstrap samples.\n",
-                      "Use random sampling with replacement to get intervals for distribution."
-                    )
-                  )
-                )
-              ), 0, 100, 0, 5)
-            ),
             collapsed = FALSE
           )
         ),
@@ -182,7 +185,7 @@ ui_distribution <- function(id, ...) {
       panel_item(
         "Theoretical Distribution",
         optionalSelectInput(
-          ns("fitdistr_dist"),
+          ns("t_dist"),
           div(
             class = "teal-tooltip",
             tagList(
@@ -232,22 +235,23 @@ srv_distribution <- function(input,
                              datasets,
                              dist_var,
                              group_var,
+                             facet_var,
                              plot_height,
                              plot_width) {
   init_chunks()
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = list(dist_var, group_var),
-    input_id = c("dist_i", "group_i")
+    data_extract = list(dist_var, group_var, facet_var),
+    input_id = c("dist_i", "group_i", "facet_i")
   )
 
   observeEvent(list(
-    input$fitdistr_dist,
+    input$t_dist,
     input$params_reset,
     input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
   ), {
-    if (length(input$fitdistr_dist) != 0) {
+    if (length(input$t_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
       get_dist_params <- function(x, dist) {
@@ -256,12 +260,13 @@ srv_distribution <- function(input,
           names(res) <- c("min", "max")
           return(res)
         }
-        tryCatch(as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+        tryCatch(
+          as.list(MASS::fitdistr(x, densfun = dist)$estimate),
           error = function(e) list(param1 = NA, param2 = NA)
         )
       }
       ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-      params <- get_dist_params(ANL[[dist_var2]], input$fitdistr_dist)
+      params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
       params_vec <- round(unname(unlist(params)), 2)
       params_names <- names(params)
 
@@ -287,10 +292,12 @@ srv_distribution <- function(input,
     ANL <- chunks_get_var("ANL", common_stack) # nolint
 
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
+    s_var <- as.vector(merged_data()$columns_source$group_i)
+    f_var <- as.vector(merged_data()$columns_source$facet_i)
+
     main_type_var <- input$main_type
     roundn <- input$roundn
-    fitdistr_dist <- isolate(input$fitdistr_dist)
+    t_dist <- isolate(input$t_dist)
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
@@ -301,7 +308,7 @@ srv_distribution <- function(input,
     validate_has_data(ANL, 1, complete = TRUE)
     common_stack_push(substitute(variable <- ANL[[dist_var]], env = list(dist_var = dist_var)))
 
-    if (length(fitdistr_dist) != 0) {
+    if (length(t_dist) != 0) {
       map_distr_nams <- data.frame(
         distr = c("normal", "lognormal", "gamma", "unif"),
         namparam = I(list(
@@ -312,7 +319,7 @@ srv_distribution <- function(input,
         )),
         stringsAsFactors = FALSE
       )
-      params_names_raw <- map_distr_nams$namparam[match(fitdistr_dist, map_distr_nams$distr)][[1]]
+      params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
       common_stack_push(substitute({
         params <- as.list(c(dist_param1, dist_param2))
@@ -322,13 +329,13 @@ srv_distribution <- function(input,
       env = list(
         dist_param1 = dist_param1,
         dist_param2 = dist_param2,
-        fitdistr_dist = fitdistr_dist,
+        t_dist = t_dist,
         params_names_raw = params_names_raw
       )
-    ))
-  }
+      ))
+    }
 
-    if (length(g_var) == 0) {
+    if (length(s_var) == 0 && length(f_var) == 0) {
       common_stack_push(
         substitute(
           expr = {
@@ -351,8 +358,9 @@ srv_distribution <- function(input,
       common_stack_push(
         substitute(
           expr = {
+            group_vars <- group_vars_raw
             summary_table <- ANL %>%
-              dplyr::group_by(g_var_name) %>%
+              dplyr::group_by_at(dplyr::vars(dplyr::one_of(group_vars))) %>%
               dplyr::summarise(
                 min = round(min(dist_var_name, na.rm = TRUE), roundn),
                 median = round(median(dist_var_name, na.rm = TRUE), roundn),
@@ -364,7 +372,7 @@ srv_distribution <- function(input,
           },
           env = list(
             dist_var_name = as.name(dist_var),
-            g_var_name = as.name(g_var),
+            group_vars_raw = c(s_var, f_var),
             roundn = roundn
           )
         )
@@ -372,7 +380,7 @@ srv_distribution <- function(input,
     }
 
     if (length(test_var) > 0 && test_var == "Kolmogorov-Smirnov") {
-      validate(need(fitdistr_dist, "Please select the theoretical distribution."))
+      validate(need(t_dist, "Please select the theoretical distribution."))
       common_stack_push(substitute(
         expr = {
           map_dist <- stats::setNames(
@@ -381,7 +389,7 @@ srv_distribution <- function(input,
           )
           test_stats <- do.call(ks.test, append(list(quote(variable), map_dist[[ks_var]]), params), quote = FALSE)
         },
-        env = list(ks_var = fitdistr_dist, dist_var = dist_var)
+        env = list(ks_var = t_dist, dist_var = dist_var)
       ))
     } else if (length(test_var) > 0 && test_var == "Shapiro-Wilk") {
       common_stack_push(substitute(
@@ -391,27 +399,27 @@ srv_distribution <- function(input,
         env = list(dist_var = dist_var)
       ))
     } else if (length(test_var) > 0 && test_var == "Fligner-Killeen") {
-      validate(need(g_var, "select grouping variable"))
-      common_stack_push(substitute(test_stats <- stats::fligner.test(variable, ANL[[g_var]]),
-        env = list(g_var = g_var)
+      validate(need(s_var, "select stratify variable"))
+      common_stack_push(substitute(test_stats <- stats::fligner.test(variable, ANL[[s_var]]),
+                                   env = list(s_var = s_var)
       ))
     } else if (length(test_var) > 0 && test_var == "t-test") {
-      validate(need(g_var, "select grouping variable"))
-      validate(need(length(unique(ANL[[g_var]])) == 2, "select grouping variable with 2 levels."))
+      validate(need(s_var, "select stratify variable"))
+      validate(need(length(unique(ANL[[s_var]])) == 2, "select stratify variable with 2 levels."))
       common_stack_push(substitute(expr = {
-        variable_group <- split(variable, ANL[[g_var]])
+        variable_group <- split(variable, ANL[[s_var]])
         test_stats <- stats::t.test(variable_group[[1]], variable_group[[2]])
-      }, env = list(g_var = g_var)))
+      }, env = list(s_var = s_var)))
     } else if (length(test_var) > 0 && test_var == "var-test") {
-      validate(need(g_var, "select grouping variable"))
-      validate(need(length(unique(ANL[[g_var]])) == 2, "select grouping variable with 2 levels."))
+      validate(need(s_var, "select stratify variable"))
+      validate(need(length(unique(ANL[[s_var]])) == 2, "select stratify variable with 2 levels."))
       common_stack_push(substitute({
-        variable_group <- split(variable, ANL[[g_var]])
+        variable_group <- split(variable, ANL[[s_var]])
         test_stats <- stats::var.test(variable_group[[1]], variable_group[[2]])
       },
-      env = list(g_var = g_var)
-    ))
-  }
+      env = list(s_var = s_var)
+      ))
+    }
 
     chunks_safe_eval(chunks = common_stack)
 
@@ -429,12 +437,13 @@ srv_distribution <- function(input,
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = distplot_r_stack)
 
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
+    s_var <- as.vector(merged_data()$columns_source$group_i)
+    f_var <- as.vector(merged_data()$columns_source$facet_i)
+
     main_type_var <- input$main_type
     bins_var <- input$bins
     add_dens_var <- input$add_dens
-    boot_iters_var <- input$boot_iters
-    fitdistr_dist <- isolate(input$fitdistr_dist)
+    t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
     ndensity <- 512
 
@@ -447,7 +456,7 @@ srv_distribution <- function(input,
       paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
     }
 
-    plot_call <- if (length(g_var) == 0) {
+    plot_call <- if (length(s_var) == 0 && length(f_var) == 0) {
       substitute(
         expr = ggplot(ANL, aes(dist_var_name)) +
           geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
@@ -457,16 +466,42 @@ srv_distribution <- function(input,
           dist_var_name = as.name(dist_var)
         )
       )
-    } else {
+    } else if (length(s_var) != 0 && length(f_var) == 0) {
       substitute(
-        expr = ggplot(ANL, aes(dist_var_name, col = g_var_name)) +
-          geom_histogram(position = "identity", aes_string(y = m_type, fill = g_var), bins = bins_var, alpha = 0.3),
+        expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+          geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
         env = list(
           m_type = m_type,
           bins_var = bins_var,
           dist_var_name = as.name(dist_var),
-          g_var = g_var,
-          g_var_name = as.name(g_var)
+          s_var = s_var,
+          s_var_name = as.name(s_var)
+        )
+      )
+    } else if (length(s_var) == 0 && length(f_var) != 0) {
+      substitute(
+        expr = ggplot(ANL, aes(dist_var_name)) +
+          geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
+          facet_wrap(~f_var_name, ncol = 1),
+        env = list(
+          m_type = m_type,
+          bins_var = bins_var,
+          dist_var_name = as.name(dist_var),
+          f_var_name = as.name(f_var)
+        )
+      )
+    } else {
+      substitute(
+        expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+          geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
+          facet_wrap(~f_var_name, ncol = 1),
+        env = list(
+          m_type = m_type,
+          bins_var = bins_var,
+          dist_var_name = as.name(dist_var),
+          s_var = s_var,
+          f_var_name = if (length(f_var) > 0) as.name(f_var) else NULL,
+          s_var_name = if (length(s_var) > 0) as.name(s_var) else NULL
         )
       )
     }
@@ -492,7 +527,7 @@ srv_distribution <- function(input,
     }
     # nolint start
     # if (add_stats_plot) {
-    #   datas <- if (length(fitdistr_dist) != 0 && m_type == "..density..") {
+    #   datas <- if (length(t_dist) != 0 && m_type == "..density..") {
     #     bquote(data.frame(
     #       x = c(0.7, 0), y = c(1, 1),
     #       tb = I(c(list(df_params), list(summary_table)))
@@ -516,13 +551,13 @@ srv_distribution <- function(input,
     # nolint end
 
     if (add_stats_plot) {
-      if (length(fitdistr_dist) != 0 && length(g_var) == 0) {
+      if (length(t_dist) != 0 && length(s_var) == 0 && length(f_var) == 0) {
         plot_call <- substitute(
           expr = {
             params_vec <- round(unname(unlist(params)), 2)
             df_params <- as.data.frame(matrix(params_vec, nrow = 1))
             colnames(df_params) <- params_names
-            df_params$name <- fitdistr_dist
+            df_params$name <- t_dist
 
             plot_data <- ggplot2::ggplot_build(plot_call)
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
@@ -536,65 +571,20 @@ srv_distribution <- function(input,
                 ymin = sum(y_range) / 1.2, ymax = y_range[2]
               )
           },
-          env = list(plot_call = plot_call, fitdistr_dist = fitdistr_dist)
+          env = list(plot_call = plot_call, t_dist = t_dist)
         )
       }
     }
 
-    if (length(g_var) == 0 && m_type == "..density..") {
-      if (length(boot_iters_var) != 0 && boot_iters_var != 0) {
-        plot_call <- substitute(
-          expr = {
-            gg_boot <- function(data, iters = 100, seed = 1234, type = "..density..") {
-              if (iters == 0 || type != "..density..") {
-                return(data.frame(obs = NA, size = NA, x = NA, group = NA, name = NA))
-              }
-
-              set.seed(seed)
-              len_data <- length(data)
-
-              data_boot <- data.frame(
-                obs = rep(1:len_data, iters), x = sample(data, size = len_data * iters, replace = TRUE),
-                group = as.character(rep(1:iters, each = len_data))
-              )
-
-              data_boot$name <- "boot"
-              data_boot <- data_boot[order(data_boot$obs), ]
-              cols <- c("obs", "x", "group", "name")
-              data_boot <- data_boot[, cols]
-
-              data_boot
-            }
-
-            data_boot <- gg_boot(na.omit(ANL[[dist_var]]), boot_iters_var, type = m_type)
-            plot_call +
-              geom_line(
-                data = data_boot,
-                aes_string("x", group = "group"),
-                stat = "density",
-                alpha = 0.1,
-                size = 1,
-                col = "red"
-              ) +
-              theme(legend.position = "right")
-          },
-          env = list(
-            plot_call = plot_call,
-            dist_var = dist_var,
-            boot_iters_var = boot_iters_var,
-            m_type = m_type
-          )
-        )
-      }
-
-      if (length(fitdistr_dist) != 0 && m_type == "..density..") {
+    if (length(s_var) == 0 && length(f_var) == 0 && m_type == "..density..") {
+      if (length(t_dist) != 0 && m_type == "..density..") {
         plot_call <- substitute(
           expr = {
             map_dist <- stats::setNames(
               c("dnorm", "dlnorm", "dgamma", "dunif"),
               c("normal", "lognormal", "gamma", "unif")
             )
-            ddist <- unname(map_dist[fitdistr_dist])
+            ddist <- unname(map_dist[t_dist])
             plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = ddist),
               aes(x, color = color),
@@ -609,8 +599,7 @@ srv_distribution <- function(input,
           env = list(
             plot_call = plot_call,
             dist_var = dist_var,
-            fitdistr_dist = fitdistr_dist,
-            boot_iters_var = boot_iters_var,
+            t_dist = t_dist,
             m_type = m_type,
             ndensity = ndensity
           )
@@ -649,27 +638,47 @@ srv_distribution <- function(input,
     ANL <- chunks_get_var("ANL", qqplot_r_stack) # nolint
 
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
-    dist <- isolate(input$fitdistr_dist)
+    s_var <- as.vector(merged_data()$columns_source$group_i)
+    t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
+    f_var <- as.vector(merged_data()$columns_source$facet_i)
 
     validate(need(dist_var, "Please select a variable."))
-    validate(need(dist, "Please select the theoretical distribution."))
+    validate(need(t_dist, "Please select the theoretical distribution."))
     validate_has_data(ANL, 1)
 
-    if (length(g_var) == 0) {
-      plot_call <- substitute(
+    plot_call <- if (length(s_var) == 0 && length(f_var) == 0) {
+      substitute(
         expr = ggplot(ANL, aes_string(sample = dist_var)),
         env = list(
           dist_var = dist_var
         )
       )
-    } else {
-      plot_call <- substitute(
-        expr = ggplot(ANL, aes_string(sample = dist_var, color = g_var)),
+    } else if (length(s_var) != 0 && length(f_var) == 0) {
+      substitute(
+        expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
         env = list(
           dist_var = dist_var,
-          g_var = g_var
+          s_var = s_var
+        )
+      )
+    } else if (length(s_var) == 0 && length(f_var) != 0) {
+      substitute(
+        expr = ggplot(ANL, aes_string(sample = dist_var)) +
+          facet_wrap(~f_var_name, ncol = 1),
+        env = list(
+          dist_var = dist_var,
+          f_var_name = as.name(f_var)
+        )
+      )
+    } else {
+      substitute(
+        expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)) +
+          facet_wrap(~f_var_name, ncol = 1),
+        env = list(
+          dist_var = dist_var,
+          s_var = s_var,
+          f_var_name = as.name(f_var)
         )
       )
     }
@@ -681,15 +690,15 @@ srv_distribution <- function(input,
           c("normal", "lognormal", "gamma", "unif")
         )
         plot_call +
-          stat_qq(distribution = map_dist[dist], dparams = params) +
+          stat_qq(distribution = map_dist[t_dist], dparams = params) +
           xlab("theoretical") +
           ylab("sample")
       },
       env = list(
         plot_call = plot_call,
-        dist = dist,
+        t_dist = t_dist,
         dist_var = dist_var,
-        g_var = g_var
+        s_var = s_var
       )
     )
 
@@ -728,13 +737,13 @@ srv_distribution <- function(input,
     # nolint end
 
     if (add_stats_plot) {
-      if (length(dist) != 0) {
+      if (length(t_dist) != 0 && length(f_var) == 0) {
         plot_call <- substitute(
           expr = {
             params_vec <- round(unname(unlist(params)), 2)
             df_params <- as.data.frame(matrix(params_vec, nrow = 1))
             colnames(df_params) <- params_names
-            df_params$name <- dist
+            df_params$name <- t_dist
 
             plot_data <- ggplot2::ggplot_build(plot_call)
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
@@ -748,7 +757,7 @@ srv_distribution <- function(input,
                 ymin = sum(y_range) / 1.2, ymax = y_range[2]
               )
           },
-          env = list(plot_call = plot_call, dist = dist)
+          env = list(plot_call = plot_call, t_dist = t_dist)
         )
       }
     }
@@ -757,11 +766,11 @@ srv_distribution <- function(input,
       plot_call <- substitute(
         expr = {
           plot_call +
-            stat_qq_line(distribution = map_dist[dist], dparams = params)
+            stat_qq_line(distribution = map_dist[t_dist], dparams = params)
         },
         env = list(
           plot_call = plot_call,
-          dist = dist
+          t_dist = t_dist
         )
       )
     }
@@ -785,7 +794,8 @@ srv_distribution <- function(input,
   })
 
   output$t_stats <- renderText({
-    res <- tryCatch(suppressWarnings(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack)),
+    res <- tryCatch(
+      suppressWarnings(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack)),
       error = function(e) NULL
     )
     if (is.null(res)) {
@@ -803,12 +813,12 @@ srv_distribution <- function(input,
     error = function(e) NULL
     )
   },
-    options = list(
-      dom = "t",
-      autoWidth = TRUE,
-      columnDefs = list(list(width = "200px", targets = "_all"))
-    ),
-    rownames = FALSE
+  options = list(
+    dom = "t",
+    autoWidth = TRUE,
+    columnDefs = list(list(width = "200px", targets = "_all"))
+  ),
+  rownames = FALSE
   )
 
   dist_brush <- callModule(
@@ -833,7 +843,7 @@ srv_distribution <- function(input,
     get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(dist_var, group_var)),
+    datanames = get_extract_datanames(list(dist_var, group_var, facet_var)),
     modal_title = "R Code for distribution",
     code_header = "Distribution"
   )
