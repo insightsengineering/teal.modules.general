@@ -1,15 +1,17 @@
 # teal.modules.general 0.2.10.9000
 
 * Added template for `tm_g_distibution` module.
-* Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`. 
+* Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
+
+### Bug fixes
 
 # teal.modules.general 0.2.10
 ### Enhancements
 * Refactored the internal code of all the modules to optimize their performance.
 * Refactored `tm_g_scatterplot` to compute trend line statistics using `ggpmisc::stat_poly_eq` to simplify code and to have labels for each group on the plot.
 * Refactored `tm_g_scatterplot` to enable filtering via the Encoding Panel using the new `filter_spec` functionality.
-* Added support for logical variables in `tm_variable_browser`. 
+* Added support for logical variables in `tm_variable_browser`.
 * Updated `tm_outliers` to handle non-CDISC datasets.
 * Updated UI of `tm_variable_browser` for factor and character variables with more than 30 levels.
 * Updated sparklines to remove NA values for numeric variables.
@@ -56,16 +58,16 @@
 * Capitalize default module labels.
 * Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
 * Added `pre_output` and `post_output` arguments to `tm_data_table`, `tm_missing_data`, `tm_variable_browser`.
-* Fixed issue in `tm_data_table` when selecting "show distinct rows" if variable names had non-alphanumeric characters. 
+* Fixed issue in `tm_data_table` when selecting "show distinct rows" if variable names had non-alphanumeric characters.
 
 # teal.modules.general 0.2.7
 
 ### Enhancements
-#### `tm_variable_browser` 
+#### `tm_variable_browser`
 * Introduced `sparklines` for quick, inline variable summaries.
 * Added option to remove outliers.
 * Histograms and statistics tables are now displayed for variables of type `Date`, `POSIXct` and `POSIXlt`.
-* Character variable summary statistics tables are now displayed in decreasing order of occurrences instead of alphabetical. 
+* Character variable summary statistics tables are now displayed in decreasing order of occurrences instead of alphabetical.
 * Display number of non-missing rows `n` in statistics table for numeric variables.
 * Added ability to treat numeric variables as categorical.
 * `tm_variable_browser` shows from 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.
@@ -82,7 +84,7 @@
 
 #### `tm_missing_data`
 * Added bar chart to missing data combination plot.
-* Removed keys from missing data combinations plot in when they have not been selected. 
+* Removed keys from missing data combinations plot in when they have not been selected.
 
 #### `tm_g_bivariate`
 * Bivariate plots with two continuous variables now allow adding lines.
@@ -101,7 +103,7 @@
 * Adds additional plot settings such as themes for `tm_g_association`, `tm_g_response`, and `tm_g_scatterplot`, as well as point size and opacity settings for `tm_g_association` and `tm_g_scatterplot`.
 * Replace `pickerInput` with `optionalSelectInput` for `tm_data_table`.
 * Adds new `facet` parameter to `tm_g_bivariate` to specify whether the facet encodings elements should be visible to the user by default.
-* Replace `plot_with_height` module with new `plot_with_settings` module. 
+* Replace `plot_with_height` module with new `plot_with_settings` module.
 * Missing data module now uses chunks to get reproducible R code.
 * New theme for missing data module and new label positioning.
 * `tm_data_table`: allow developers to pass arguments to `DT::dataTable` and use `pickerInput` to select variables.
