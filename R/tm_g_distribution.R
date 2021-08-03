@@ -446,6 +446,8 @@ srv_distribution <- function(input,
     t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
     ndensity <- 512
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
 
     validate(need(dist_var, "Please select a variable."))
 
@@ -529,12 +531,11 @@ srv_distribution <- function(input,
       datas <- if (length(t_dist) != 0 && m_type == "..density..") {
         distplot_r_stack_push(substitute(
           expr = {
-            params_vec <- round(unname(unlist(params)), 2)
-            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
+            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
             colnames(df_params) <- params_names
             df_params$name <- t_dist
           },
-          env = list(t_dist = t_dist)
+          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
           ))
 
         bquote(data.frame(
@@ -624,6 +625,8 @@ srv_distribution <- function(input,
     t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
     f_var <- as.vector(merged_data()$columns_source$facet_i)
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(t_dist, "Please select the theoretical distribution."))
@@ -688,12 +691,11 @@ srv_distribution <- function(input,
       datas <- if (length(dist) != 0) {
         qqplot_r_stack_push(substitute(
           expr = {
-            params_vec <- round(unname(unlist(params)), 2)
-            df_params <- as.data.frame(matrix(params_vec, nrow = 1))
+            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
             colnames(df_params) <- params_names
             df_params$name <- t_dist
           },
-          env = list(t_dist = t_dist)
+          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
         ))
 
         bquote(data.frame(
