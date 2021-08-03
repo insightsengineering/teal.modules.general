@@ -506,7 +506,6 @@ srv_distribution <- function(input,
       )
     }
 
-
     if (add_dens_var) {
       plot_call <- substitute(
         expr = plot_call +
@@ -525,6 +524,7 @@ srv_distribution <- function(input,
         )
       )
     }
+
     # nolint start
     # if (add_stats_plot) {
     #   datas <- if (length(t_dist) != 0 && m_type == "..density..") {
@@ -552,7 +552,7 @@ srv_distribution <- function(input,
 
     if (add_stats_plot) {
       if (length(t_dist) != 0 && length(s_var) == 0 && length(f_var) == 0) {
-        plot_call <- substitute(
+        distplot_r_stack_push(substitute(
           expr = {
             params_vec <- round(unname(unlist(params)), 2)
             df_params <- as.data.frame(matrix(params_vec, nrow = 1))
@@ -563,44 +563,48 @@ srv_distribution <- function(input,
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
             x_range <- plot_data$layout$panel_scales_x[[1]]$range$range
             x_diff <- diff(x_range)
-
-            plot_call +
-              annotation_custom(
-                gridExtra::tableGrob(df_params, rows = NULL),
-                xmin = x_range[2] - 0.25 * x_diff, xmax = x_range[2] - 0.15 * x_diff,
-                ymin = sum(y_range) / 1.2, ymax = y_range[2]
-              )
           },
           env = list(plot_call = plot_call, t_dist = t_dist)
+        ))
+
+        plot_call <- substitute(
+          expr = plot_call +
+            annotation_custom(
+              gridExtra::tableGrob(df_params, rows = NULL),
+              xmin = x_range[2] - 0.25 * x_diff, xmax = x_range[2] - 0.15 * x_diff,
+              ymin = sum(y_range) / 1.2, ymax = y_range[2]
+              ),
+          env = list(plot_call = plot_call)
         )
       }
     }
 
     if (length(s_var) == 0 && length(f_var) == 0 && m_type == "..density..") {
       if (length(t_dist) != 0 && m_type == "..density..") {
-        plot_call <- substitute(
+        distplot_r_stack_push(substitute(
           expr = {
             map_dist <- stats::setNames(
               c("dnorm", "dlnorm", "dgamma", "dunif"),
               c("normal", "lognormal", "gamma", "unif")
             )
             ddist <- unname(map_dist[t_dist])
-            plot_call + stat_function(
-              data = data.frame(x = range(ANL[[dist_var]]), color = ddist),
-              aes(x, color = color),
-              fun = ddist,
-              n = ndensity,
-              size = 2,
-              args = params
-            ) +
-              scale_color_manual(values = stats::setNames("blue", ddist), aesthetics = "color") +
-              theme(legend.position = "right")
           },
+          env = list(t_dist = t_dist)
+        ))
+        plot_call <- substitute(
+          expr = plot_call + stat_function(
+            data = data.frame(x = range(ANL[[dist_var]]), color = ddist),
+            aes(x, color = color),
+            fun = ddist,
+            n = ndensity,
+            size = 2,
+            args = params
+            ) +
+            scale_color_manual(values = stats::setNames("blue", ddist), aesthetics = "color") +
+            theme(legend.position = "right"),
           env = list(
             plot_call = plot_call,
             dist_var = dist_var,
-            t_dist = t_dist,
-            m_type = m_type,
             ndensity = ndensity
           )
         )
@@ -608,9 +612,7 @@ srv_distribution <- function(input,
     }
 
     distplot_r_stack_push(substitute(
-      expr = {
-        g <- plot_call
-      },
+      expr = g <- plot_call,
       env = list(plot_call = plot_call)
     ))
 
@@ -683,23 +685,18 @@ srv_distribution <- function(input,
       )
     }
 
-    plot_call <- substitute(
-      expr = {
-        map_dist <- stats::setNames(
+    qqplot_r_stack_push(
+        quote(map_dist <- stats::setNames(
           c("qnorm", "qlnorm", "qgamma", "qunif"),
           c("normal", "lognormal", "gamma", "unif")
-        )
-        plot_call +
-          stat_qq(distribution = map_dist[t_dist], dparams = params) +
-          xlab("theoretical") +
-          ylab("sample")
-      },
-      env = list(
-        plot_call = plot_call,
-        t_dist = t_dist,
-        dist_var = dist_var,
-        s_var = s_var
-      )
+    )))
+
+    plot_call <- substitute(
+      expr = plot_call +
+        stat_qq(distribution = map_dist[t_dist], dparams = params) +
+        xlab("theoretical") +
+        ylab("sample"),
+      env = list(plot_call = plot_call, t_dist = t_dist)
     )
 
     # nolint start
@@ -738,7 +735,7 @@ srv_distribution <- function(input,
 
     if (add_stats_plot) {
       if (length(t_dist) != 0 && length(f_var) == 0) {
-        plot_call <- substitute(
+        qqplot_r_stack_push(substitute(
           expr = {
             params_vec <- round(unname(unlist(params)), 2)
             df_params <- as.data.frame(matrix(params_vec, nrow = 1))
@@ -749,25 +746,25 @@ srv_distribution <- function(input,
             y_range <- plot_data$layout$panel_scales_y[[1]]$range$range
             x_range <- plot_data$layout$panel_scales_x[[1]]$range$range
             x_diff <- diff(x_range)
-
-            plot_call +
-              annotation_custom(
-                gridExtra::tableGrob(df_params, rows = NULL),
-                xmin = x_range[2] - 0.25 * x_diff, xmax = x_range[2] - 0.15 * x_diff,
-                ymin = sum(y_range) / 1.2, ymax = y_range[2]
-              )
           },
           env = list(plot_call = plot_call, t_dist = t_dist)
+        ))
+        plot_call <- substitute(
+          expr = plot_call +
+            annotation_custom(
+              gridExtra::tableGrob(df_params, rows = NULL),
+              xmin = x_range[2] - 0.25 * x_diff, xmax = x_range[2] - 0.15 * x_diff,
+              ymin = sum(y_range) / 1.2, ymax = y_range[2]
+            ),
+          env = list(plot_call = plot_call)
         )
       }
     }
 
     if (isTRUE(input$qq_line)) {
       plot_call <- substitute(
-        expr = {
-          plot_call +
-            stat_qq_line(distribution = map_dist[t_dist], dparams = params)
-        },
+        expr = plot_call +
+          stat_qq_line(distribution = map_dist[t_dist], dparams = params),
         env = list(
           plot_call = plot_call,
           t_dist = t_dist
@@ -776,9 +773,7 @@ srv_distribution <- function(input,
     }
 
     qqplot_r_stack_push(substitute(
-      expr = {
-        g <- plot_call
-      },
+      expr = g <- plot_call,
       env = list(plot_call = plot_call)
     ))
 
