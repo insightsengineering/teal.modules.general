@@ -573,7 +573,7 @@ srv_distribution <- function(input,
               gridExtra::tableGrob(df_params, rows = NULL),
               xmin = x_range[2] - 0.25 * x_diff, xmax = x_range[2] - 0.15 * x_diff,
               ymin = sum(y_range) / 1.2, ymax = y_range[2]
-              ),
+            ),
           env = list(plot_call = plot_call)
         )
       }
@@ -686,10 +686,11 @@ srv_distribution <- function(input,
     }
 
     qqplot_r_stack_push(
-        quote(map_dist <- stats::setNames(
-          c("qnorm", "qlnorm", "qgamma", "qunif"),
-          c("normal", "lognormal", "gamma", "unif")
-    )))
+      quote(map_dist <- stats::setNames(
+        c("qnorm", "qlnorm", "qgamma", "qunif"),
+        c("normal", "lognormal", "gamma", "unif")
+        ))
+      )
 
     plot_call <- substitute(
       expr = plot_call +
