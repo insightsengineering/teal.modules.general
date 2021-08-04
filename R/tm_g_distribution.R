@@ -446,8 +446,8 @@ srv_distribution <- function(input,
     t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
     ndensity <- 512
-    dist_param1 <- input$dist_param1
-    dist_param2 <- input$dist_param2
+    dist_param1 <- isolate(input$dist_param1)
+    dist_param2 <- isolate(input$dist_param2)
 
     validate(need(dist_var, "Please select a variable."))
 
@@ -625,8 +625,8 @@ srv_distribution <- function(input,
     t_dist <- isolate(input$t_dist)
     add_stats_plot <- input$add_stats_plot
     f_var <- as.vector(merged_data()$columns_source$facet_i)
-    dist_param1 <- input$dist_param1
-    dist_param2 <- input$dist_param2
+    dist_param1 <- isolate(input$dist_param1)
+    dist_param2 <- isolate(input$dist_param2)
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(t_dist, "Please select the theoretical distribution."))
