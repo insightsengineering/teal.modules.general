@@ -81,6 +81,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     dist_var <- list(dist_var)
   }
 
+
   if (!is_class_list("data_extract_spec")(group_var)) {
     group_var <- list(group_var)
   }
