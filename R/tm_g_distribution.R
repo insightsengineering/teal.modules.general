@@ -540,22 +540,30 @@ srv_distribution <- function(input,
 
         bquote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
-          tb = I(c(list(df_params), list(summary_table)))
+          tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
         ))
       } else {
         quote(data.frame(
           x = 0, y = 1,
-          tb = I(list(summary_table))
+          tb = I(list(summary_table = summary_table))
         ))
       }
+
+      label <-  if (!is_empty(f_var)) {
+        substitute(
+          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
+          env = list(f_var = f_var, f_var_name = if(is_empty(f_var)) f_var else as.name(f_var)))
+        } else {
+          substitute(expr = tb, env = list())
+        }
 
       plot_call <- substitute(
         expr = plot_call + ggpp::geom_table_npc(
           data = data,
-          aes(npcx = x, npcy = y, label = tb),
+          aes(npcx = x, npcy = y, label = label),
           hjust = 0, vjust = 1, size = 4
         ),
-        env = list(plot_call = plot_call, data = datas)
+        env = list(plot_call = plot_call, data = datas, label = label)
       )
     }
 
@@ -701,29 +709,38 @@ srv_distribution <- function(input,
         bquote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
           tb = I(c(
-            list(df_params),
-            list(summary_table)
+            list(df_params = df_params),
+            list(summary_table = summary_table)
           ))
         ))
       } else {
         quote(data.frame(
           x = 0, y = 1,
-          tb = I(list(summary_table))
+          tb = I(list(summary_table = summary_table))
         ))
+      }
+
+      label <-  if (!is_empty(f_var)) {
+        substitute(
+          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
+          env = list(f_var = f_var, f_var_name = if(is_empty(f_var)) f_var else as.name(f_var)))
+      } else {
+        substitute(expr = tb, env = list())
       }
 
       plot_call <- substitute(
         expr = plot_call +
           ggpp::geom_table_npc(
             data = data,
-            aes(npcx = x, npcy = y, label = tb),
+            aes(npcx = x, npcy = y, label = label),
             hjust = 0,
             vjust = 1,
             size = 4
           ),
         env = list(
           plot_call = plot_call,
-          data = datas
+          data = datas,
+          label = label
         )
       )
     }
