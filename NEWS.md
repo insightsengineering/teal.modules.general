@@ -1,8 +1,12 @@
 # teal.modules.general 0.2.10.9000
 
+### Enhancements
 * Added template for `tm_g_distibution` module.
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
+
+### Miscellaneous
+* Removed mentions of Roche internal services from the README file.
 
 ### Bug fixes
 
