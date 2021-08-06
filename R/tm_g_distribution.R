@@ -528,7 +528,7 @@ srv_distribution <- function(input,
     }
 
     if (add_stats_plot) {
-      datas <- if (length(t_dist) != 0 && m_type == "..density..") {
+      datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(f_var) == 0 && length(s_var) == 0) {
         distplot_r_stack_push(substitute(
           expr = {
             df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
