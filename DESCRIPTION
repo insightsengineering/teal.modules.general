@@ -27,6 +27,7 @@ Depends:
   shiny,
   teal (>= 0.9.5)
 Imports:
+  broom,
   colourpicker,
   digest,
   dplyr,

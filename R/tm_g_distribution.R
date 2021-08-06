@@ -452,7 +452,7 @@ srv_distribution <- function(input,
           } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
             test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
           } else if (!is_empty(s_var) && !is_empty(g_var) &&
-                     !all(na.omit(as.vector(tapply(ANL[[s_var]],
+                     !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
                                                    list(ANL[[g_var]]),
                                                    function(x) length(unique(x))) == 2)))) {
             test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
