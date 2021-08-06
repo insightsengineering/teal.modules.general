@@ -7,5 +7,7 @@ current_repo:
 upstream_repos:
 - repo: insightsengineering/teal.devel
   host: https://github.com
+- repo: insightsengineering/scda
+  host: https://github.com
 
 downstream_repos:
