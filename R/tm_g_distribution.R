@@ -538,7 +538,7 @@ srv_distribution <- function(input,
           env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
           ))
 
-        bquote(data.frame(
+        quote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
           tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
         ))
@@ -706,7 +706,7 @@ srv_distribution <- function(input,
           env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
         ))
 
-        bquote(data.frame(
+        quote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
           tb = I(c(
             list(df_params = df_params),
