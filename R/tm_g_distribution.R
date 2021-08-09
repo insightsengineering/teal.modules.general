@@ -214,8 +214,8 @@ ui_distribution <- function(id, ...) {
         )
       ),
       panel_item(
-        "Statictics Table",
-        sliderInput(ns("roundn"), "Round n digits", min = 0, max = 10, value = 2),
+        "Statistics Table",
+        sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
         shinyWidgets::awesomeCheckbox(
           ns("add_stats_plot"),
           label = "Overlay params table",
@@ -696,7 +696,7 @@ srv_distribution <- function(input,
     )
 
     if (add_stats_plot) {
-      datas <- if (length(dist) != 0) {
+      datas <- if (length(dist) != 0 && length(f_var) == 0 && length(s_var) == 0) {
         qqplot_r_stack_push(substitute(
           expr = {
             df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
