@@ -8,18 +8,18 @@ The modules in this package are generic modules that should work with any data s
 1. Clone the repository
 
    The repository can be downloaded directly from the `github.com` site as an archive (see [Github tutorial on cloning to learn more](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository)). Alternatively, Git command-line tools offer the same functionality, without the need for manually downloading and unpacking the archive, but require authentication to Github. You can authenticate using an SSH key pair or a Personal Access Token (PAT). Please refer to excellent Github tutorials on [connecting to Github using SSH](https://docs.github.com/en/github/authenticating-to-github) or [creating and using PAT](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-   1. Using PAT. Input in the Git Bash console, PowerShell or any Linux shell:
+   * Using PAT. Input in the Git Bash console, PowerShell or any Linux shell:
 
       ```
       $ git clone https://github.com/insightsengineering/teal.modules.general.git
       Username: your_username_goes_here
       Password: your_token_goes_here
       ```
-    1. Using SSH. If set up properly, the repository is ready to be cloned executing:
+   * Using SSH. If set up properly, the repository is ready to be cloned executing:
 
-       ```
-       $ git clone https://github.com/insightsengineering/teal.modules.general.git
-       ```
+      ```
+      $ git clone https://github.com/insightsengineering/teal.modules.general.git
+      ```
    This creates a subdirectory `teal.modules.general` containing the cloned repository.
 
 2. Build and install
