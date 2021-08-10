@@ -28,7 +28,7 @@ The modules in this package are generic modules that should work with any data s
    ```
    $ R CMD build teal.modules.general
    ```
-   This command builds the package and creates an archive. The name of the archive is output by the command at then of building. Then input in the shell:
+   This command builds the package and creates an archive. The name of the archive is output by the command at the end of building the package. Then input in the shell:
    ```
    $ Rscript -e 'install.packages("name_of_the_archive")
    ```
