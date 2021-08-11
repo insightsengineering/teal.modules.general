@@ -32,6 +32,7 @@ Imports:
   forcats,
   ggExtra,
   ggpmisc,
+  ggpp,
   grid,
   gridExtra,
   htmlwidgets,
