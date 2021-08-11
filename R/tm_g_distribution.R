@@ -704,7 +704,7 @@ srv_distribution <- function(input,
         ))
       }
 
-     label <-  if (!is_empty(f_var)) {
+      label <-  if (!is_empty(f_var)) {
         substitute(
           expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
           env = list(f_var = f_var, f_var_name = if (is_empty(f_var)) f_var else as.name(f_var)))
