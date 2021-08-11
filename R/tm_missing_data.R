@@ -285,7 +285,7 @@ srv_missing_data <- function(input,
   })
 
   data_keys <- reactive({
-    datasets$get_primary_keys(dataname)
+    datasets$get_keys(dataname)
   })
 
   # chunks needed by all three outputs stored here
