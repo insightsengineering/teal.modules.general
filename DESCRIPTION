@@ -12,6 +12,8 @@ Authors@R: c(
     person("Maximilian", "Mordig", email = "maximilian_oliver.mordig@roche.com", role = "aut"),
     person("Bartosz", "Baranowski", email = "bartosz.baranowski@roche.com", role = "aut"),
     person("Ondrej", "Slama", email = "ondrej.slama@roche.com", role = "aut"),
+    person("Maciej", "Nasinski", email = "maciej.nasinski@contractors.roche.com", role = "aut"),
+    person("Mahmoud", "Hallal", email = "mahmoud.hallal@roche.com", role = "aut"),
     person("Roche", role = c("cph", "fnd"))
   )
 Description: General Purpose Teal Modules.
@@ -25,6 +27,7 @@ Depends:
   shiny,
   teal (>= 0.9.5)
 Imports:
+  broom,
   colourpicker,
   digest,
   dplyr,
@@ -32,6 +35,7 @@ Imports:
   forcats,
   ggExtra,
   ggpmisc,
+  goftest,
   ggpp,
   grid,
   gridExtra,
