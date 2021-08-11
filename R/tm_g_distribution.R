@@ -323,8 +323,7 @@ srv_distribution <- function(input,
 
       common_stack_push(substitute({
         params <- as.list(c(dist_param1, dist_param2))
-        params_names <- params_names_raw
-        names(params) <- params_names
+        names(params) <- params_names_raw
       },
       env = list(
         dist_param1 = dist_param1,
@@ -339,17 +338,18 @@ srv_distribution <- function(input,
       common_stack_push(
         substitute(
           expr = {
-            summary_table <- data.frame(
-              min = round(min(variable, na.rm = TRUE), roundn),
-              median = round(median(variable, na.rm = TRUE), roundn),
-              mean = round(mean(variable, na.rm = TRUE), roundn),
-              max = round(max(variable, na.rm = TRUE), roundn),
-              sd = round(sd(variable, na.rm = TRUE), roundn),
-              count = length(variable)
-            )
+            summary_table <- ANL %>%
+              dplyr::summarise(
+                min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                median = round(median(dist_var_name, na.rm = TRUE), roundn),
+                mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
+                max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                sd = round(sd(dist_var_name, na.rm = TRUE), roundn),
+                count = dplyr::n()
+              )
           },
           env = list(
-            dist_var = dist_var,
+            dist_var_name = as.name(dist_var),
             roundn = roundn
           )
         )
@@ -381,15 +381,14 @@ srv_distribution <- function(input,
 
     if (length(test_var) > 0 && test_var == "Kolmogorov-Smirnov") {
       validate(need(t_dist, "Please select the theoretical distribution."))
+      map_dist <- stats::setNames(
+        c("pnorm", "plnorm", "pgamma", "punif"),
+        c("normal", "lognormal", "gamma", "unif")
+      )
+
       common_stack_push(substitute(
-        expr = {
-          map_dist <- stats::setNames(
-            c("pnorm", "plnorm", "pgamma", "punif"),
-            c("normal", "lognormal", "gamma", "unif")
-          )
-          test_stats <- do.call(ks.test, append(list(quote(variable), map_dist[[ks_var]]), params), quote = FALSE)
-        },
-        env = list(ks_var = t_dist, dist_var = dist_var)
+        expr = test_stats <- do.call(ks.test, append(list(quote(variable), mapped_dist), params), quote = FALSE),
+        env = list(mapped_dist = unname(map_dist[[t_dist]]))
       ))
     } else if (length(test_var) > 0 && test_var == "Shapiro-Wilk") {
       common_stack_push(substitute(
@@ -526,16 +525,14 @@ srv_distribution <- function(input,
         )
       )
     }
-          
+
     if (add_stats_plot) {
       datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(f_var) == 0 && length(s_var) == 0) {
         distplot_r_stack_push(substitute(
           expr = {
-            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
-            colnames(df_params) <- params_names
-            df_params$name <- t_dist
+            df_params <- as.data.frame(append(params, list(name = t_dist)))
           },
-          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
+          env = list(t_dist = t_dist)
           ))
 
         quote(data.frame(
@@ -569,31 +566,27 @@ srv_distribution <- function(input,
 
     if (length(s_var) == 0 && length(f_var) == 0 && m_type == "..density..") {
       if (length(t_dist) != 0 && m_type == "..density..") {
-        distplot_r_stack_push(substitute(
-          expr = {
-            map_dist <- stats::setNames(
-              c("dnorm", "dlnorm", "dgamma", "dunif"),
-              c("normal", "lognormal", "gamma", "unif")
-            )
-            ddist <- unname(map_dist[t_dist])
-          },
-          env = list(t_dist = t_dist)
-        ))
+        map_dist <- stats::setNames(
+          c("dnorm", "dlnorm", "dgamma", "dunif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+
         plot_call <- substitute(
           expr = plot_call + stat_function(
-            data = data.frame(x = range(ANL[[dist_var]]), color = ddist),
+            data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
             aes(x, color = color),
-            fun = ddist,
+            fun = mapped_dist,
             n = ndensity,
             size = 2,
             args = params
             ) +
-            scale_color_manual(values = stats::setNames("blue", ddist), aesthetics = "color") +
+            scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
             theme(legend.position = "right"),
           env = list(
             plot_call = plot_call,
             dist_var = dist_var,
-            ndensity = ndensity
+            ndensity = ndensity,
+            mapped_dist = unname(map_dist[t_dist])
           )
         )
       }
@@ -675,30 +668,26 @@ srv_distribution <- function(input,
       )
     }
 
-    qqplot_r_stack_push(
-      quote(map_dist <- stats::setNames(
-        c("qnorm", "qlnorm", "qgamma", "qunif"),
-        c("normal", "lognormal", "gamma", "unif")
-        ))
-      )
+    map_dist <- stats::setNames(
+      c("qnorm", "qlnorm", "qgamma", "qunif"),
+      c("normal", "lognormal", "gamma", "unif")
+    )
 
     plot_call <- substitute(
       expr = plot_call +
-        stat_qq(distribution = map_dist[t_dist], dparams = params) +
+        stat_qq(distribution = mapped_dist, dparams = params) +
         xlab("theoretical") +
         ylab("sample"),
-      env = list(plot_call = plot_call, t_dist = t_dist)
+      env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
     )
 
     if (add_stats_plot) {
       datas <- if (length(dist) != 0 && length(f_var) == 0 && length(s_var) == 0) {
         qqplot_r_stack_push(substitute(
           expr = {
-            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
-            colnames(df_params) <- params_names
-            df_params$name <- t_dist
+            df_params <- as.data.frame(append(params, list(name = t_dist)))
           },
-          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
+          env = list(t_dist = t_dist)
         ))
 
         quote(data.frame(
@@ -743,10 +732,10 @@ srv_distribution <- function(input,
     if (isTRUE(input$qq_line)) {
       plot_call <- substitute(
         expr = plot_call +
-          stat_qq_line(distribution = map_dist[t_dist], dparams = params),
+          stat_qq_line(distribution = mapped_dist, dparams = params),
         env = list(
           plot_call = plot_call,
-          t_dist = t_dist
+          mapped_dist = unname(map_dist[t_dist])
         )
       )
     }
