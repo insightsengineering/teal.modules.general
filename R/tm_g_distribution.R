@@ -586,7 +586,7 @@ srv_distribution <- function(input,
     dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
     g_var_name <- if (length(g_var)) as.name(g_var) else NULL
     s_var_name <- if (length(s_var)) as.name(s_var) else NULL
-      
+
     main_type_var <- input$main_type
     bins_var <- input$bins
     add_dens_var <- input$add_dens
@@ -699,10 +699,10 @@ srv_distribution <- function(input,
         ))
       }
 
-      label <-  if (!is_empty(f_var)) {
+      label <-  if (!is_empty(g_var)) {
         substitute(
-          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
-          env = list(f_var = f_var, f_var_name = f_var_name))
+          expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
+          env = list(g_var = g_var, g_var_name = g_var_name))
         } else {
           substitute(expr = tb, env = list())
         }
@@ -716,6 +716,14 @@ srv_distribution <- function(input,
         env = list(plot_call = plot_call, data = datas, label = label)
       )
     }
+
+    if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
+      if (length(t_dist) != 0 && m_type == "..density..") {
+        map_dist <- stats::setNames(
+          c("dnorm", "dlnorm", "dgamma", "dunif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+        ddist <- unname(map_dist[t_dist])
 
         plot_call <- substitute(
           expr = plot_call + stat_function(
@@ -777,7 +785,7 @@ srv_distribution <- function(input,
     dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
     g_var_name <- if (length(g_var)) as.name(g_var) else NULL
     s_var_name <- if (length(s_var)) as.name(s_var) else NULL
-      
+
     t_dist <- isolate(input$t_dist)
     scales_type <- input$scales_type
     add_stats_plot <- input$add_stats_plot
@@ -870,10 +878,10 @@ srv_distribution <- function(input,
         ))
       }
 
-      label <-  if (!is_empty(f_var)) {
+      label <-  if (!is_empty(g_var)) {
         substitute(
-          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
-          env = list(f_var = f_var, f_var_name = f_var_name))
+          expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
+          env = list(g_var = g_var, g_var_name = g_var_name))
       } else {
         substitute(expr = tb, env = list())
       }
