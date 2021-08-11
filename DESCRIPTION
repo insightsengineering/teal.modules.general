@@ -18,7 +18,7 @@ Authors@R: c(
   )
 Description: General Purpose Teal Modules.
 Encoding: UTF-8
-License: file LICENSE
+License: MIT + file LICENSE
 LazyData: true
 Depends:
   ggmosaic (>= 0.3.0),
@@ -36,6 +36,7 @@ Imports:
   ggExtra,
   ggpmisc,
   goftest,
+  ggpp,
   grid,
   gridExtra,
   htmlwidgets,

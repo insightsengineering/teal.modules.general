@@ -247,8 +247,8 @@ ui_distribution <- function(id, ...) {
         )
       ),
       panel_item(
-        "Statictics Table",
-        sliderInput(ns("roundn"), "Round n digits", min = 0, max = 10, value = 2),
+        "Statistics Table",
+        sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
         shinyWidgets::awesomeCheckbox(
           ns("add_stats_plot"),
           label = "Overlay params table",
@@ -408,7 +408,7 @@ srv_distribution <- function(input,
               )
           },
           env = list(
-            dist_var_name = as.name(dist_var),
+            dist_var_name = dist_var_name,
             strata_vars_raw = c(s_var, g_var),
             roundn = roundn
           )
@@ -583,7 +583,10 @@ srv_distribution <- function(input,
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
     s_var <- as.vector(merged_data()$columns_source$strata_i)
     g_var <- as.vector(merged_data()$columns_source$group_i)
-
+    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
+    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
+    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+      
     main_type_var <- input$main_type
     bins_var <- input$bins
     add_dens_var <- input$add_dens
@@ -591,6 +594,8 @@ srv_distribution <- function(input,
     add_stats_plot <- input$add_stats_plot # nolint
     scales_type <- input$scales_type
     ndensity <- 512
+    dist_param1 <- isolate(input$dist_param1)
+    dist_param2 <- isolate(input$dist_param2)
 
     validate(need(dist_var, "Please select a variable."))
 
@@ -618,9 +623,9 @@ srv_distribution <- function(input,
         env = list(
           m_type = m_type,
           bins_var = bins_var,
-          dist_var_name = as.name(dist_var),
+          dist_var_name = dist_var_name,
           s_var = s_var,
-          s_var_name = as.name(s_var)
+          s_var_name = s_var_name
         )
       )
     } else if (length(s_var) == 0 && length(g_var) != 0) {
@@ -631,8 +636,8 @@ srv_distribution <- function(input,
         env = list(
           m_type = m_type,
           bins_var = bins_var,
-          dist_var_name = as.name(dist_var),
-          g_var_name = as.name(g_var),
+          dist_var_name = dist_var_name,
+          g_var_name = g_var_name,
           scales_raw = tolower(scales_type)
         )
       )
@@ -644,15 +649,14 @@ srv_distribution <- function(input,
         env = list(
           m_type = m_type,
           bins_var = bins_var,
-          dist_var_name = as.name(dist_var),
+          dist_var_name = dist_var_name,
           s_var = s_var,
-          g_var_name = if (length(g_var) > 0) as.name(g_var) else NULL,
-          s_var_name = if (length(s_var) > 0) as.name(s_var) else NULL,
+          g_var_name = g_var_name,
+          s_var_name = s_var_name,
           scales_raw = tolower(scales_type)
         )
       )
     }
-
 
     if (add_dens_var) {
       plot_call <- substitute(
@@ -672,38 +676,46 @@ srv_distribution <- function(input,
         )
       )
     }
-    # nolint start
-    # if (add_stats_plot) {
-    #   datas <- if (length(t_dist) != 0 && m_type == "..density..") {
-    #     bquote(data.frame(
-    #       x = c(0.7, 0), y = c(1, 1),
-    #       tb = I(c(list(df_params), list(summary_table)))
-    #     ))
-    #   } else {
-    #     quote(data.frame(
-    #       x = 0, y = 1,
-    #       tb = I(list(summary_table))
-    #     ))
-    #   }
-    #
-    #   plot_call <- substitute(
-    #     expr = plot_call + ggpp::geom_table_npc(
-    #       data = data,
-    #       aes(npcx = x, npcy = y, label = tb),
-    #       hjust = 0, vjust = 1, size = 4
-    #     ),
-    #     env = list(plot_call = plot_call, data = datas)
-    #   )
-    # }
-    # nolint end
 
-    if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
-      if (length(t_dist) != 0 && m_type == "..density..") {
-        map_dist <- stats::setNames(
-          c("dnorm", "dlnorm", "dgamma", "dunif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
-        ddist <- unname(map_dist[t_dist])
+    if (add_stats_plot) {
+      datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
+        distplot_r_stack_push(substitute(
+          expr = {
+            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
+            colnames(df_params) <- params_names
+            df_params$name <- t_dist
+          },
+          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
+          ))
+
+        quote(data.frame(
+          x = c(0.7, 0), y = c(1, 1),
+          tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
+        ))
+      } else {
+        quote(data.frame(
+          x = 0, y = 1,
+          tb = I(list(summary_table = summary_table))
+        ))
+      }
+
+      label <-  if (!is_empty(f_var)) {
+        substitute(
+          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
+          env = list(f_var = f_var, f_var_name = f_var_name))
+        } else {
+          substitute(expr = tb, env = list())
+        }
+
+      plot_call <- substitute(
+        expr = plot_call + ggpp::geom_table_npc(
+          data = data,
+          aes(npcx = x, npcy = y, label = label),
+          hjust = 0, vjust = 1, size = 4
+        ),
+        env = list(plot_call = plot_call, data = datas, label = label)
+      )
+    }
 
         plot_call <- substitute(
           expr = plot_call + stat_function(
@@ -761,10 +773,16 @@ srv_distribution <- function(input,
 
     dist_var <- as.vector(merged_data()$columns_source$dist_i)
     s_var <- as.vector(merged_data()$columns_source$strata_i)
-    t_dist <- isolate(input$t_dist)
-    add_stats_plot <- input$add_stats_plot # nolint
     g_var <- as.vector(merged_data()$columns_source$group_i)
+    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
+    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
+    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+      
+    t_dist <- isolate(input$t_dist)
     scales_type <- input$scales_type
+    add_stats_plot <- input$add_stats_plot
+    dist_param1 <- isolate(input$dist_param1)
+    dist_param2 <- isolate(input$dist_param2)
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(t_dist, "Please select the theoretical distribution."))
@@ -791,7 +809,7 @@ srv_distribution <- function(input,
           facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
         env = list(
           dist_var = dist_var,
-          g_var_name = as.name(g_var),
+          g_var_name = g_var_name,
           scales_raw = tolower(scales_type)
         )
       )
@@ -802,7 +820,7 @@ srv_distribution <- function(input,
         env = list(
           dist_var = dist_var,
           s_var = s_var,
-          g_var_name = as.name(g_var),
+          g_var_name = g_var_name,
           scales_raw = tolower(scales_type)
         )
       )
@@ -827,40 +845,55 @@ srv_distribution <- function(input,
       )
     )
 
-    # nolint start
-    # if (add_stats_plot) {
-    #   datas <- if (length(dist) != 0) {
-    #     bquote(data.frame(
-    #       x = c(0.7, 0), y = c(1, 1),
-    #       tb = I(c(
-    #         list(df_params),
-    #         list(summary_table)
-    #       ))
-    #     ))
-    #   } else {
-    #     quote(data.frame(
-    #       x = 0, y = 1,
-    #       tb = I(list(summary_table))
-    #     ))
-    #   }
-    #
-    #   plot_call <- substitute(
-    #     expr = plot_call +
-    #       ggpp::geom_table_npc(
-    #         data = data,
-    #         aes(npcx = x, npcy = y, label = tb),
-    #         hjust = 0,
-    #         vjust = 1,
-    #         size = 4
-    #       ),
-    #     env = list(
-    #       plot_call = plot_call,
-    #       data = datas
-    #     )
-    #   )
-    # }
-    # nolint end
+    if (add_stats_plot) {
+      datas <- if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
+        qqplot_r_stack_push(substitute(
+          expr = {
+            df_params <- as.data.frame(t(c(dist_param1, dist_param2)))
+            colnames(df_params) <- params_names
+            df_params$name <- t_dist
+          },
+          env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
+        ))
 
+        quote(data.frame(
+          x = c(0.7, 0), y = c(1, 1),
+          tb = I(c(
+            list(df_params = df_params),
+            list(summary_table = summary_table)
+          ))
+        ))
+      } else {
+        quote(data.frame(
+          x = 0, y = 1,
+          tb = I(list(summary_table = summary_table))
+        ))
+      }
+
+      label <-  if (!is_empty(f_var)) {
+        substitute(
+          expr = split(tb$summary_table, tb$summary_table$f_var_name, drop = TRUE),
+          env = list(f_var = f_var, f_var_name = f_var_name))
+      } else {
+        substitute(expr = tb, env = list())
+      }
+
+      plot_call <- substitute(
+        expr = plot_call +
+          ggpp::geom_table_npc(
+            data = data,
+            aes(npcx = x, npcy = y, label = label),
+            hjust = 0,
+            vjust = 1,
+            size = 4
+          ),
+        env = list(
+          plot_call = plot_call,
+          data = datas,
+          label = label
+        )
+      )
+    }
 
     if (isTRUE(input$qq_line)) {
       plot_call <- substitute(
