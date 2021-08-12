@@ -314,6 +314,23 @@ srv_distribution <- function(input,
   ignoreInit = TRUE
   )
 
+  merge_vars <- reactive({
+    dist_var <- as.vector(merged_data()$columns_source$dist_i)
+    s_var <- as.vector(merged_data()$columns_source$strata_i)
+    g_var <- as.vector(merged_data()$columns_source$group_i)
+
+    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
+    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
+
+    list(dist_var = dist_var,
+         s_var = s_var,
+         g_var = g_var,
+         dist_var_name = dist_var_name,
+         s_var_name = s_var_name,
+         g_var_name = g_var_name)
+  })
+
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
     common_stack <- chunks$new()
@@ -325,21 +342,22 @@ srv_distribution <- function(input,
     chunks_push_data_merge(merged_data(), common_stack)
     ANL <- chunks_get_var("ANL", common_stack) # nolint
 
-    dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    s_var <- as.vector(merged_data()$columns_source$strata_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
+    dist_var <- merge_vars()$dist_var
+    s_var <- merge_vars()$s_var
+    g_var <- merge_vars()$g_var
 
-    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
-    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
-    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+    dist_var_name <- merge_vars()$dist_var_name
+    s_var_name <- merge_vars()$s_var_name
+    g_var_name <- merge_vars()$g_var_name
 
-    main_type_var <- input$main_type
     roundn <- input$roundn
-    t_dist <- isolate(input$t_dist)
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
     input$tabs
+
+    #isolated as params already triggered the reactivity
+    t_dist <- isolate(input$t_dist)
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
@@ -580,22 +598,25 @@ srv_distribution <- function(input,
     # Add common code into this chunk
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = distplot_r_stack)
 
-    dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    s_var <- as.vector(merged_data()$columns_source$strata_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
-    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
-    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
-    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
-
-    main_type_var <- input$main_type
-    bins_var <- input$bins
-    add_dens_var <- input$add_dens
+    #isolated as common chunks already triggered the reactivity
+    dist_var <- isolate(merge_vars()$dist_var)
+    s_var <- isolate(merge_vars()$s_var)
+    g_var <- isolate(merge_vars()$g_var)
+    dist_var_name <- isolate(merge_vars()$dist_var_name)
+    s_var_name <- isolate(merge_vars()$s_var_name)
+    g_var_name <- isolate(merge_vars()$g_var_name)
     t_dist <- isolate(input$t_dist)
+    dist_param1 <- isolate(input$dist_param1)
+    dist_param2 <- isolate(input$dist_param2)
+
     add_stats_plot <- input$add_stats_plot # nolint
     scales_type <- input$scales_type
     ndensity <- 512
-    dist_param1 <- isolate(input$dist_param1)
-    dist_param2 <- isolate(input$dist_param2)
+    main_type_var <- input$main_type
+    bins_var <- input$bins
+    add_dens_var <- input$add_dens
+
+    t_dist <- isolate(input$t_dist)
 
     validate(need(dist_var, "Please select a variable."))
 
@@ -686,7 +707,7 @@ srv_distribution <- function(input,
             df_params$name <- t_dist
           },
           env = list(t_dist = t_dist, dist_param1 = dist_param1, dist_param2 = dist_param2)
-          ))
+        ))
 
         quote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
@@ -703,9 +724,9 @@ srv_distribution <- function(input,
         substitute(
           expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
           env = list(g_var = g_var, g_var_name = g_var_name))
-        } else {
-          substitute(expr = tb, env = list())
-        }
+      } else {
+        substitute(expr = tb, env = list())
+      }
 
       plot_call <- substitute(
         expr = plot_call + ggpp::geom_table_npc(
@@ -779,12 +800,13 @@ srv_distribution <- function(input,
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = qqplot_r_stack)
     ANL <- chunks_get_var("ANL", qqplot_r_stack) # nolint
 
-    dist_var <- as.vector(merged_data()$columns_source$dist_i)
-    s_var <- as.vector(merged_data()$columns_source$strata_i)
-    g_var <- as.vector(merged_data()$columns_source$group_i)
-    dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
-    g_var_name <- if (length(g_var)) as.name(g_var) else NULL
-    s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+    dist_var <- isolate(merge_vars()$dist_var)
+    s_var <- isolate(merge_vars()$s_var)
+    g_var <- isolate(merge_vars()$g_var)
+
+    dist_var_name <- isolate(merge_vars()$dist_var_name)
+    s_var_name <- isolate(merge_vars()$s_var_name)
+    g_var_name <- isolate(merge_vars()$g_var_name)
 
     t_dist <- isolate(input$t_dist)
     scales_type <- input$scales_type
