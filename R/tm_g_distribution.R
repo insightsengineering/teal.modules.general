@@ -354,7 +354,6 @@ srv_distribution <- function(input,
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
-    input$tabs
 
     #isolated as params already triggered the reactivity
     t_dist <- isolate(input$t_dist)
