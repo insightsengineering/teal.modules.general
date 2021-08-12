@@ -352,7 +352,7 @@ srv_distribution <- function(input,
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
 
-    #isolated as params already triggered the reactivity
+    # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
     validate(need(dist_var, "Please select a variable."))
@@ -594,7 +594,7 @@ srv_distribution <- function(input,
     # Add common code into this chunk
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = distplot_r_stack)
 
-    #isolated as common chunks already triggered the reactivity
+    # isolated as common chunks already triggered the reactivity
     dist_var <- isolate(merge_vars()$dist_var)
     s_var <- isolate(merge_vars()$s_var)
     g_var <- isolate(merge_vars()$g_var)
@@ -794,7 +794,7 @@ srv_distribution <- function(input,
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = qqplot_r_stack)
     ANL <- chunks_get_var("ANL", qqplot_r_stack) # nolint
 
-    #isolated as common chunks already triggered the reactivity
+    # isolated as common chunks already triggered the reactivity
     dist_var <- isolate(merge_vars()$dist_var)
     s_var <- isolate(merge_vars()$s_var)
     g_var <- isolate(merge_vars()$g_var)
