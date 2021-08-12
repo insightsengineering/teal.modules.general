@@ -7,9 +7,10 @@
 tm_g_distribution(
   label = "Distribution Module",
   dist_var,
+  strata_var = NULL,
   group_var = NULL,
-  facet_var = NULL,
   freq = FALSE,
+  bins = c(30L, 1L, 100L),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -22,14 +23,19 @@ tm_g_distribution(
 \item{dist_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 variable to consider for the distribution analysis.}
 
-\item{group_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
+\item{strata_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 categorical variable to split the selected distribution variable on.}
 
-\item{facet_var}{optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+\item{group_var}{optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 Which data columns to use for faceting rows.}
 
 \item{freq}{optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
 Defaults to density (`FALSE`).}
+
+\item{bins}{optional, (`integer`) If scalar then the histogram bins will have a fixed size.
+If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
+vector of length three with `c(value, min, max)`.
+Defaults to `c(30L, 1L, 100L)`.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -74,7 +80,7 @@ app <- init(
           fixed = FALSE
         )
       ),
-      group_var = data_extract_spec(
+      strata_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
@@ -83,7 +89,7 @@ app <- init(
           fixed = FALSE
         )
       ),
-      facet_var = data_extract_spec(
+      group_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
