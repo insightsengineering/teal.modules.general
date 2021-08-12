@@ -339,7 +339,7 @@ srv_distribution <- function(input,
       chunks_push(..., chunks = common_stack)
     }
 
-    chunks_push_data_merge(merged_data(), common_stack)
+    chunks_push_data_merge(isolate(merged_data()), common_stack)
     ANL <- chunks_get_var("ANL", common_stack) # nolint
 
     dist_var <- merge_vars()$dist_var
