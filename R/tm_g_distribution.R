@@ -800,19 +800,19 @@ srv_distribution <- function(input,
     chunks_push_chunks(common_code_chunks()$common_stack, chunks = qqplot_r_stack)
     ANL <- chunks_get_var("ANL", qqplot_r_stack) # nolint
 
+    #isolated as common chunks already triggered the reactivity
     dist_var <- isolate(merge_vars()$dist_var)
     s_var <- isolate(merge_vars()$s_var)
     g_var <- isolate(merge_vars()$g_var)
-
     dist_var_name <- isolate(merge_vars()$dist_var_name)
     s_var_name <- isolate(merge_vars()$s_var_name)
     g_var_name <- isolate(merge_vars()$g_var_name)
-
     t_dist <- isolate(input$t_dist)
-    scales_type <- input$scales_type
-    add_stats_plot <- input$add_stats_plot
     dist_param1 <- isolate(input$dist_param1)
     dist_param2 <- isolate(input$dist_param2)
+
+    scales_type <- input$scales_type
+    add_stats_plot <- input$add_stats_plot
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(t_dist, "Please select the theoretical distribution."))
