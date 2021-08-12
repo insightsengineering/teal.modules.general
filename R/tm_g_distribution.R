@@ -615,8 +615,6 @@ srv_distribution <- function(input,
     bins_var <- input$bins
     add_dens_var <- input$add_dens
 
-    t_dist <- isolate(input$t_dist)
-
     validate(need(dist_var, "Please select a variable."))
 
     m_type <- if (main_type_var == "Density") "..density.." else "..count.."
