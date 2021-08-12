@@ -734,7 +734,6 @@ srv_distribution <- function(input,
             scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
             theme(legend.position = "right"),
           env = list(
-            ddist = ddist,
             plot_call = plot_call,
             dist_var = dist_var,
             ndensity = ndensity,
