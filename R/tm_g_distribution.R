@@ -539,20 +539,33 @@ srv_distribution <- function(input,
           g_var_name = g_var_name,
           s_var_name = s_var_name
         )
-
-        common_stack_push(
-          substitute(
-            expr = {
-              test_stats <- ANL %>%
-                dplyr::select(dplyr::any_of(c(dist_var, s_var, g_var))) %>%
-                dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                dplyr::do(tests = broom::glance(do.call(test, args))) %>%
-                tidyr::unnest(tests) %>%
-                dplyr::mutate_if(is.numeric, round, 3)
-            },
-            env = env
+        if ((is_empty(s_var) && is_empty(g_var))) {
+          common_stack_push(
+            substitute(
+              expr = {
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var) %>%
+                  with(., broom::glance(do.call(test, args))) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
+              },
+              env = env
+            )
           )
-        )
+        } else {
+          common_stack_push(
+            substitute(
+              expr = {
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var, s_var, g_var) %>%
+                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
+                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                  tidyr::unnest(tests) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
+              },
+              env = env
+            )
+          )
+        }
       } else {
         common_stack_push(
           substitute(
