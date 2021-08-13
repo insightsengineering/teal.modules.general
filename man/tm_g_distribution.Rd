@@ -60,9 +60,6 @@ vars <- choices_selected(
   choices = variable_choices(ADSL)
 )
 
-dists <- choices_selected(
-  choices = c("Exponential", "Gaussian", "Gamma", "Beta")
-)
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL),
