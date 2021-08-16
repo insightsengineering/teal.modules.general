@@ -52,6 +52,10 @@
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = choices_selected(variable_choices(ADSL)),
+#'           multiple = TRUE
 #'         )
 #'       ),
 #'       group_var = data_extract_spec(
@@ -61,6 +65,10 @@
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
+#'         ),
+#'         filter = filter_spec(
+#'           vars = choices_selected(variable_choices(ADSL)),
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -429,6 +437,20 @@ srv_distribution <- function(input,
         )
       )
     }
+
+    if (!is_empty(g_var)) {
+      common_stack_push(substitute(
+        expr = {summary_table[[g_var]] <- forcats::fct_explicit_na(summary_table[[g_var]])},
+        env = list(g_var = g_var)
+      ))
+      }
+
+    if (!is_empty(s_var)) {
+      common_stack_push(substitute(
+        expr = {summary_table[[s_var]] <- forcats::fct_explicit_na(summary_table[[s_var]])},
+        env = list(s_var = s_var)
+      ))
+      }
 
     if (length(test_var)) {
       test_stats <- NULL
