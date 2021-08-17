@@ -529,17 +529,17 @@ srv_distribution <- function(input,
         )
         mt_args <- list(
           test = quote(stats::t.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]]))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
         mv_args <- list(
           test = quote(stats::var.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]]))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
         mks_args <- list(
           test = quote(stats::ks.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]]))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
 
