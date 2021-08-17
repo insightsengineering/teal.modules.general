@@ -24,9 +24,9 @@
 #' @examples
 #' library(scda)
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' vars <- choices_selected(
-#'   choices = variable_choices(ADSL)
-#' )
+#'
+#' vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")))
+#' vars2 <- choices_selected(variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")))
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -47,27 +47,19 @@
 #'       ),
 #'       strata_var = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         ),
 #'         filter = filter_spec(
-#'           vars = choices_selected(variable_choices(ADSL)),
+#'           vars = vars,
+#'           choices = value_choices(ADSL, vars1$selected),
+#'           selected = value_choices(ADSL, vars1$selected),
 #'           multiple = TRUE
 #'         )
 #'       ),
 #'       group_var = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         ),
 #'         filter = filter_spec(
-#'           vars = choices_selected(variable_choices(ADSL)),
+#'           vars = vars2,
+#'           choices = value_choices(ADSL, vars2$selected),
+#'           selected = value_choices(ADSL, vars2$selected),
 #'           multiple = TRUE
 #'         )
 #'       )
@@ -103,8 +95,8 @@ tm_g_distribution <- function(label = "Distribution Module",
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
-    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var) && isFALSE(strata_var[[1]]$select$multiple)),
-    is.null(group_var) || (is_class_list("data_extract_spec")(group_var) && isFALSE(group_var[[1]]$select$multiple)),
+    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
+    is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
     is_logical_single(freq),
     (is_integer_vector(bins, 3, 3) && is.null(check_slider_input(bins))) || is_integer_single(bins)
   )
@@ -373,6 +365,7 @@ srv_distribution <- function(input,
         env = list(s_var_name = s_var_name)
       ))
     }
+
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
