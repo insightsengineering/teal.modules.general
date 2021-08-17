@@ -48,7 +48,7 @@
 #'       strata_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         filter = filter_spec(
-#'           vars = vars,
+#'           vars = vars1,
 #'           choices = value_choices(ADSL, vars1$selected),
 #'           selected = value_choices(ADSL, vars1$selected),
 #'           multiple = TRUE
