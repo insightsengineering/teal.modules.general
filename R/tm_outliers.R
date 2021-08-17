@@ -255,11 +255,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ))
       }
     } else {
-      validate(need(input[[
-        extract_input("categorical_var",
-                      attributes(merged_data()$columns_source$categorical_var)$dataname,
-                      filter = TRUE)]],
-        "Please select categories to include"))
+      validate(need(input[[extract_input(
+        "categorical_var",
+        attributes(merged_data()$columns_source$categorical_var)$dataname,
+        filter = TRUE
+      )]],
+      "Please select categories to include"))
 
       validate(need(
         is.factor(merged_data()$data()[[categorical_var]]) ||
