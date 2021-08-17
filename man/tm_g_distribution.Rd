@@ -84,6 +84,10 @@ app <- init(
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = choices_selected(variable_choices(ADSL)),
+          multiple = TRUE
         )
       ),
       group_var = data_extract_spec(
@@ -93,6 +97,10 @@ app <- init(
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
+        ),
+        filter = filter_spec(
+          vars = choices_selected(variable_choices(ADSL)),
+          multiple = TRUE
         )
       )
     )

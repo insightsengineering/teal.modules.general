@@ -360,6 +360,19 @@ srv_distribution <- function(input,
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
 
+    if (!is_empty(g_var)) {
+      common_stack_push(substitute(
+        expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(g_var_name)), # nolint
+        env = list(g_var_name = g_var_name)
+      ))
+    }
+
+    if (!is_empty(s_var)) {
+      common_stack_push(substitute(
+        expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(s_var_name)), # nolint
+        env = list(s_var_name = s_var_name)
+      ))
+    }
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
@@ -437,20 +450,6 @@ srv_distribution <- function(input,
         )
       )
     }
-
-    if (!is_empty(g_var)) {
-      common_stack_push(substitute(
-        expr = {summary_table[[g_var]] <- forcats::fct_explicit_na(summary_table[[g_var]])},
-        env = list(g_var = g_var)
-      ))
-      }
-
-    if (!is_empty(s_var)) {
-      common_stack_push(substitute(
-        expr = {summary_table[[s_var]] <- forcats::fct_explicit_na(summary_table[[s_var]])},
-        env = list(s_var = s_var)
-      ))
-      }
 
     if (length(test_var)) {
       test_stats <- NULL
@@ -575,6 +574,7 @@ srv_distribution <- function(input,
           g_var_name = g_var_name,
           s_var_name = s_var_name
         )
+
         if ((is_empty(s_var) && is_empty(g_var))) {
           common_stack_push(
             substitute(
