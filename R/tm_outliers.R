@@ -131,14 +131,11 @@ ui_outliers <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$categorical_var)) {
-        tagList(
-          data_extract_input(
-            id = ns("categorical_var"),
-            label = "Categorical factor",
-            data_extract_spec = args$categorical_var,
-            is_single_dataset = is_single_dataset_value
-          ),
-          uiOutput(ns("categorical_var_levels_ui"))
+        data_extract_input(
+          id = ns("categorical_var"),
+          label = "Categorical factor",
+          data_extract_spec = args$categorical_var,
+          is_single_dataset = is_single_dataset_value
         )
       },
       conditionalPanel(
@@ -222,25 +219,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     merge_function = "dplyr::left_join"
   )
 
-  output$categorical_var_levels_ui <- renderUI({
-    categorical_var <- merged_data()$columns_source$categorical_var
-    req(categorical_var)
-    data <- merged_data()$data()
-    req(nrow(data) > 0)
-    data_no_cat_na <- data[!is.na(data[[categorical_var]]), ]
-    choices <- value_choices(data_no_cat_na, categorical_var)
-    if (anyNA(data[[categorical_var]])) {
-      choices <- c(choices, "(Missing)")
-    }
-    optionalSelectInput(
-      inputId = session$ns("categorical_var_levels"),
-      label = "Categories to include",
-      choices = choices,
-      selected = choices,
-      multiple = TRUE
-    )
-  })
-
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
     common_stack <- chunks$new()
@@ -277,7 +255,11 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ))
       }
     } else {
-      validate(need(input$categorical_var_levels, "Please select categories to include"))
+      validate(need(input[[
+        extract_input("categorical_var",
+                      attributes(merged_data()$columns_source$categorical_var)$dataname,
+                      filter = TRUE)]],
+        "Please select categories to include"))
 
       validate(need(
         is.factor(merged_data()$data()[[categorical_var]]) ||
@@ -287,7 +269,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ))
       validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
 
-      if ("(Missing)" %in% input$categorical_var_levels) {
+      if ("(Missing)" %in% input[[
+        extract_input("categorical_var", attributes(merged_data()$columns_source$categorical_var)$dataname,
+                      filter = TRUE)]]) {
         common_stack_push(
           substitute(
             expr = {
@@ -301,7 +285,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             env = list(
               categorical_var = categorical_var,
               categorical_var_name = as.name(categorical_var),
-              categorical_var_levels = input$categorical_var_levels
+              categorical_var_levels = input[[
+                extract_input("categorical_var",
+                              attributes(merged_data()$columns_source$categorical_var)$dataname,
+                              filter = TRUE)]]
             )
           )
         )
@@ -311,7 +298,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
             env = list(
               categorical_var_name = as.name(categorical_var),
-              categorical_var_levels = input$categorical_var_levels
+              categorical_var_levels = input[[
+                extract_input("categorical_var",
+                              attributes(merged_data()$columns_source$categorical_var)$dataname,
+                              filter = TRUE)]]
             )
           )
         )
