@@ -158,7 +158,9 @@ ui_distribution <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           ),
           conditionalPanel(
-            condition = paste0("input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"),
+            condition = paste0(
+              "input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
+              ),
             shinyWidgets::prettyRadioButtons(
               ns("scales_type"),
               label = "Scales:",

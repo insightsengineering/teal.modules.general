@@ -57,8 +57,7 @@ Module to analyze and explore univariate variable distribution
 library(scda)
 ADSL <- synthetic_cdisc_data("latest")$adsl
 
-vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")))
-vars2 <- choices_selected(variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")))
+vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 
 app <- init(
   data = cdisc_data(
@@ -81,17 +80,13 @@ app <- init(
         dataname = "ADSL",
         filter = filter_spec(
           vars = vars1,
-          choices = value_choices(ADSL, vars1$selected),
-          selected = value_choices(ADSL, vars1$selected),
           multiple = TRUE
         )
       ),
       group_var = data_extract_spec(
         dataname = "ADSL",
         filter = filter_spec(
-          vars = vars2,
-          choices = value_choices(ADSL, vars2$selected),
-          selected = value_choices(ADSL, vars2$selected),
+          vars = vars1,
           multiple = TRUE
         )
       )
