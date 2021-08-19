@@ -1,10 +1,11 @@
-set.seed(1)
-x <-  runif(25, 0, 1)
-y <-  runif(25, 0, 1)
-x_na <- x
-x_na[c(3, 10, 18)] <-  NA
-
 test_that("get_scatterplotmatrix_stats() x-y numeric", {
+  test.nest::skip_if_too_deep(0)
+
+  set.seed(1)
+  x <-  runif(25, 0, 1)
+  y <-  runif(25, 0, 1)
+  x_na <- x
+  x_na[c(3, 10, 18)] <-  NA
 
   corr <- get_scatterplotmatrix_stats(x_na, y, .f = cor.test, .f_args = list(method = "pearson"))
   expect_true(is.character(corr))
@@ -17,13 +18,14 @@ test_that("get_scatterplotmatrix_stats() x-y numeric", {
 
 })
 
-x <- LETTERS[runif(25, 0, 10)]
-y <- LETTERS[runif(25, 0, 10)]
-
-x_na <-  x
-x_na[c(3, 10, 18)] <-  NA
-
 test_that("get_scatterplotmatrix_stats() x-y character", {
+  test.nest::skip_if_too_deep(0)
+
+  x <- LETTERS[runif(25, 0, 10)]
+  y <- LETTERS[runif(25, 0, 10)]
+
+  x_na <-  x
+  x_na[c(3, 10, 18)] <-  NA
 
   corr <-  get_scatterplotmatrix_stats(x, y, .f = cor.test, .f_args = list(method = "pearson"))
   expect_true(startsWith(corr, "cor"))
