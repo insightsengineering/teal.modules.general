@@ -4,6 +4,7 @@
 * Added template for `tm_g_distibution` module.
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
+* Added `filter_spec` support in  `tm_outliers` module.
 
 ### Miscellaneous
 * Removed mentions of Roche internal services from the README file.
