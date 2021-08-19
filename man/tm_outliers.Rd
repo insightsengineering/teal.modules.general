@@ -48,35 +48,35 @@ fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
 vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 
 app <- init(
- data = cdisc_data(
-   cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-   check = TRUE
- ),
- modules = root_modules(
-   tm_outliers(
-     outlier_var = list(
-       data_extract_spec(
-         dataname = "ADSL",
-         select = select_spec(
-           label = "Select variable:",
-           choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
-           selected = "AGE",
-           multiple = FALSE,
-           fixed = FALSE
-         )
-       )
-     ),
-     categorical_var = data_extract_spec(
-       dataname = "ADSL",
-       filter = filter_spec(
-         vars = vars,
-         choices = value_choices(ADSL, vars$selected),
-         selected = value_choices(ADSL, vars$selected),
-         multiple = TRUE
-       )
-     )
-   )
- )
+  data = cdisc_data(
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    check = TRUE
+  ),
+  modules = root_modules(
+    tm_outliers(
+      outlier_var = list(
+        data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+            selected = "AGE",
+            multiple = FALSE,
+            fixed = FALSE
+          )
+        )
+      ),
+      categorical_var = data_extract_spec(
+        dataname = "ADSL",
+        filter = filter_spec(
+          vars = vars,
+          choices = value_choices(ADSL, vars$selected),
+          selected = value_choices(ADSL, vars$selected),
+          multiple = TRUE
+        )
+      )
+    )
+  )
 )
 \dontrun{
 shinyApp(app$ui, app$server)
