@@ -21,7 +21,7 @@ tm_outliers(
 variable to consider for the outliers analysis.}
 
 \item{categorical_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-categorical factor to split the selected outliers variable on.}
+categorical factor to split the selected outlier variables on.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -45,6 +45,7 @@ library(scda)
 ADSL <- synthetic_cdisc_data("latest")$adsl
 
 fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
+vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 
 app <- init(
   data = cdisc_data(
@@ -67,11 +68,11 @@ app <- init(
       ),
       categorical_var = data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
-          choices = variable_choices(ADSL, subset = fact_vars_adsl),
-          selected = "RACE",
-          multiple = FALSE,
-          fixed = FALSE
+        filter = filter_spec(
+          vars = vars,
+          choices = value_choices(ADSL, vars$selected),
+          selected = value_choices(ADSL, vars$selected),
+          multiple = TRUE
         )
       )
     )
