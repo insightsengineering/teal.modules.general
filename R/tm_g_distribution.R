@@ -24,9 +24,8 @@
 #' @examples
 #' library(scda)
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' vars <- choices_selected(
-#'   choices = variable_choices(ADSL)
-#' )
+#'
+#' vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 #'
 #' app <- init(
 #'   data = cdisc_data(
@@ -47,20 +46,16 @@
 #'       ),
 #'       strata_var = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
+#'         filter = filter_spec(
+#'           vars = vars1,
+#'           multiple = TRUE
 #'         )
 #'       ),
 #'       group_var = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(ADSL, c("SEX", "COUNTRY", "ARM")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
+#'         filter = filter_spec(
+#'           vars = vars1,
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -95,8 +90,8 @@ tm_g_distribution <- function(label = "Distribution Module",
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
-    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var) && isFALSE(strata_var[[1]]$select$multiple)),
-    is.null(group_var) || (is_class_list("data_extract_spec")(group_var) && isFALSE(group_var[[1]]$select$multiple)),
+    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
+    is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
     is_logical_single(freq),
     (is_integer_vector(bins, 3, 3) && is.null(check_slider_input(bins))) || is_integer_single(bins)
   )
@@ -163,7 +158,9 @@ ui_distribution <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           ),
           conditionalPanel(
-            condition = paste0("input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname), "'].length != 0"),
+            condition = paste0(
+              "input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
+              ),
             shinyWidgets::prettyRadioButtons(
               ns("scales_type"),
               label = "Scales:",
@@ -351,6 +348,20 @@ srv_distribution <- function(input,
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
     test_var <- input$dist_tests
+
+    if (!is_empty(g_var)) {
+      common_stack_push(substitute(
+        expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(g_var_name)), # nolint
+        env = list(g_var_name = g_var_name)
+      ))
+    }
+
+    if (!is_empty(s_var)) {
+      common_stack_push(substitute(
+        expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(s_var_name)), # nolint
+        env = list(s_var_name = s_var_name)
+      ))
+    }
 
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
@@ -553,6 +564,7 @@ srv_distribution <- function(input,
           g_var_name = g_var_name,
           s_var_name = s_var_name
         )
+
         if ((is_empty(s_var) && is_empty(g_var))) {
           common_stack_push(
             substitute(
