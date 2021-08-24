@@ -160,7 +160,7 @@ ui_distribution <- function(id, ...) {
           conditionalPanel(
             condition = paste0(
               "input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
-              ),
+            ),
             shinyWidgets::prettyRadioButtons(
               ns("scales_type"),
               label = "Scales:",
@@ -347,7 +347,6 @@ srv_distribution <- function(input,
     roundn <- input$roundn
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
-    test_var <- input$dist_tests
 
     if (!is_empty(g_var)) {
       common_stack_push(substitute(
@@ -441,169 +440,6 @@ srv_distribution <- function(input,
       )
     }
 
-    if (length(test_var)) {
-      test_stats <- NULL
-
-      if ((!is_empty(s_var) || !is_empty(g_var))) {
-        counts <- ANL %>%
-          dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
-          dplyr::summarise(n = dplyr::n())
-
-        if (any(counts$n < 5)) {
-          test_stats <- data.frame(message = "Please select strata*group with at least 5 observation each.")
-        }
-      }
-
-      if (is.null(test_stats)) {
-        if (test_var %in% c(
-          "Kolmogorov-Smirnov (one-sample)",
-          "Anderson-Darling (one-sample)",
-          "Cramer-von Mises (one-sample)"
-        )) {
-          if (is_empty(t_dist)) test_stats <- data.frame(message = "Please select the theoretical distribution.")
-        } else if (test_var == "Fligner-Killeen") {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          } else if (identical(s_var, g_var)) {
-            test_stats <- data.frame(message = "Please select different variables for strata and group.")
-          }
-        } else if (test_var %in% c(
-          "t-test (two-samples, not paired)",
-          "F-test",
-          "Kolmogorov-Smirnov (two-samples)"
-        )) {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
-            test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
-          } else if (!is_empty(s_var) && !is_empty(g_var) &&
-                     !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
-                                                          list(ANL[[g_var]]),
-                                                          function(x) length(unique(x))) == 2)))) {
-            test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
-          }
-        } else if (test_var == "one-way ANOVA") {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          }
-        }
-      }
-
-      if (is.null(test_stats)) {
-        map_dist <- stats::setNames(
-          c("pnorm", "plnorm", "pgamma", "punif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
-        sks_args <- list(
-          test = quote(stats::ks.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        ssw_args <- list(
-          test = quote(stats::shapiro.test),
-          args = bquote(list(.[[.(dist_var)]])),
-          groups = c(g_var, s_var)
-        )
-        mfil_args <- list(
-          test = quote(stats::fligner.test),
-          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
-          groups = c(g_var)
-        )
-        sad_args <- list(
-          test = quote(goftest::ad.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        scvm_args <- list(
-          test = quote(goftest::cvm.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        manov_args <- list(
-          test = quote(stats::aov),
-          args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
-          groups = c(g_var)
-        )
-        mt_args <- list(
-          test = quote(stats::t.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
-        mv_args <- list(
-          test = quote(stats::var.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
-        mks_args <- list(
-          test = quote(stats::ks.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
-
-        tests_base <- switch(test_var,
-                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
-                             "Shapiro-Wilk" = ssw_args,
-                             "Fligner-Killeen" = mfil_args,
-                             "one-way ANOVA" = manov_args,
-                             "t-test (two-samples, not paired)" = mt_args,
-                             "F-test" = mv_args,
-                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
-                             "Anderson-Darling (one-sample)" = sad_args,
-                             "Cramer-von Mises (one-sample)" = scvm_args
-        )
-
-        env <- list(
-          t_test = t_dist,
-          dist_var = dist_var,
-          g_var = g_var,
-          s_var = s_var,
-          args = tests_base$args,
-          groups = tests_base$groups,
-          test = tests_base$test,
-          dist_var_name = dist_var_name,
-          g_var_name = g_var_name,
-          s_var_name = s_var_name
-        )
-
-        if ((is_empty(s_var) && is_empty(g_var))) {
-          common_stack_push(
-            substitute(
-              expr = {
-                test_stats <- ANL %>%
-                  dplyr::select(dist_var) %>%
-                  with(., broom::glance(do.call(test, args))) %>%
-                  dplyr::mutate_if(is.numeric, round, 3)
-              },
-              env = env
-            )
-          )
-        } else {
-          common_stack_push(
-            substitute(
-              expr = {
-                test_stats <- ANL %>%
-                  dplyr::select(dist_var, s_var, g_var) %>%
-                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
-                  tidyr::unnest(tests) %>%
-                  dplyr::mutate_if(is.numeric, round, 3)
-              },
-              env = env
-            )
-          )
-        }
-      } else {
-        common_stack_push(
-          substitute(
-            expr = {
-              test_stats <- test_stats_raw
-            },
-            env = list(test_stats_raw = test_stats)
-          )
-        )
-      }
-    }
-
     chunks_safe_eval(chunks = common_stack)
 
     list(common_stack = common_stack)
@@ -612,8 +448,11 @@ srv_distribution <- function(input,
   dist_plot_r_chunks <- reactive({
     # Create a private stack for this function only.
     distplot_r_stack <- chunks$new()
+    distplot_r_stack2 <- chunks$new()
+
     distplot_r_stack_push <- function(...) {
       chunks_push(..., chunks = distplot_r_stack)
+      chunks_push(..., chunks = distplot_r_stack2)
     }
 
     # Add common code into this chunk
@@ -724,7 +563,7 @@ srv_distribution <- function(input,
             df_params <- as.data.frame(append(params, list(name = t_dist)))
           },
           env = list(t_dist = t_dist)
-          ))
+        ))
 
         quote(data.frame(
           x = c(0.7, 0), y = c(1, 1),
@@ -770,7 +609,7 @@ srv_distribution <- function(input,
             n = ndensity,
             size = 2,
             args = params
-            ) +
+          ) +
             scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
             theme(legend.position = "right"),
           env = list(
@@ -790,21 +629,19 @@ srv_distribution <- function(input,
 
     distplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(distplot_r_stack)
-    distplot_r_stack
-  })
 
-  dist_plot_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(dist_plot_r_chunks())
-    chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
+    list(a = distplot_r_stack, b = distplot_r_stack2)
   })
 
   qq_plot_r_chunks <- reactive({
 
     # Create a private stack for this function only.
     qqplot_r_stack <- chunks$new()
+    qqplot_r_stack2 <- chunks$new()
+
     qqplot_r_stack_push <- function(...) {
       chunks_push(..., chunks = qqplot_r_stack)
+      chunks_push(..., chunks = qqplot_r_stack2)
     }
 
     # Add common code into this chunk
@@ -946,30 +783,215 @@ srv_distribution <- function(input,
 
     qqplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(qqplot_r_stack)
-    qqplot_r_stack
+
+    list(a = qqplot_r_stack, b = qqplot_r_stack2)
   })
 
-  qq_plot_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(qq_plot_r_chunks())
-    chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
-  })
+  test_r_chunks <- reactive({
 
-  output$t_stats <- DT::renderDataTable({
-    res <- tryCatch(
-      suppressWarnings(chunks_get_var(var = "test_stats", chunks = common_code_chunks()$common_stack)),
-      error = function(e) NULL
-    )
-    if (is.null(res)) {
-      return(NULL)
+    # Create a private stack for this function only.
+    test_stack <- chunks$new()
+
+    test_stack_push <- function(...) {
+      chunks_push(..., chunks = test_stack)
     }
-    res
-  },
-  options = list(
-    scrollX = TRUE
-  ),
-  rownames = FALSE
-  )
+
+    chunks_push_chunks(common_code_chunks()$common_stack, chunks = test_stack)
+
+    ANL <- chunks_get_var("ANL", test_stack) # nolint
+
+    dist_var <- isolate(merge_vars()$dist_var)
+    s_var <- isolate(merge_vars()$s_var)
+    g_var <- isolate(merge_vars()$g_var)
+
+    dist_var_name <- isolate(merge_vars()$dist_var_name)
+    s_var_name <- isolate(merge_vars()$s_var_name)
+    g_var_name <- isolate(merge_vars()$g_var_name)
+
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
+    test_var <- input$dist_tests
+    t_dist <- isolate(input$t_dist)
+
+    if (length(test_var)) {
+      test_stats <- NULL
+
+      if ((!is_empty(s_var) || !is_empty(g_var))) {
+        counts <- ANL %>%
+          dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
+          dplyr::summarise(n = dplyr::n())
+
+        if (any(counts$n < 5)) {
+          test_stats <- data.frame(message = "Please select strata*group with at least 5 observation each.")
+        }
+      }
+
+      if (is.null(test_stats)) {
+        if (test_var %in% c(
+          "Kolmogorov-Smirnov (one-sample)",
+          "Anderson-Darling (one-sample)",
+          "Cramer-von Mises (one-sample)"
+        )) {
+          if (is_empty(t_dist)) test_stats <- data.frame(message = "Please select the theoretical distribution.")
+        } else if (test_var == "Fligner-Killeen") {
+          if (is_empty(s_var)) {
+            test_stats <- data.frame(message = "Please select stratify variable.")
+          } else if (identical(s_var, g_var)) {
+            test_stats <- data.frame(message = "Please select different variables for strata and group.")
+          }
+        } else if (test_var %in% c(
+          "t-test (two-samples, not paired)",
+          "F-test",
+          "Kolmogorov-Smirnov (two-samples)"
+        )) {
+          if (is_empty(s_var)) {
+            test_stats <- data.frame(message = "Please select stratify variable.")
+          } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
+            test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
+          } else if (!is_empty(s_var) && !is_empty(g_var) &&
+                     !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
+                                                          list(ANL[[g_var]]),
+                                                          function(x) length(unique(x))) == 2)))) {
+            test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
+          }
+        } else if (test_var == "one-way ANOVA") {
+          if (is_empty(s_var)) {
+            test_stats <- data.frame(message = "Please select stratify variable.")
+          }
+        }
+      }
+
+      if (is.null(test_stats)) {
+        map_dist <- stats::setNames(
+          c("pnorm", "plnorm", "pgamma", "punif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+        sks_args <- list(
+          test = quote(stats::ks.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        ssw_args <- list(
+          test = quote(stats::shapiro.test),
+          args = bquote(list(.[[.(dist_var)]])),
+          groups = c(g_var, s_var)
+        )
+        mfil_args <- list(
+          test = quote(stats::fligner.test),
+          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
+          groups = c(g_var)
+        )
+        sad_args <- list(
+          test = quote(goftest::ad.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        scvm_args <- list(
+          test = quote(goftest::cvm.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        manov_args <- list(
+          test = quote(stats::aov),
+          args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
+          groups = c(g_var)
+        )
+        mt_args <- list(
+          test = quote(stats::t.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
+        mv_args <- list(
+          test = quote(stats::var.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
+        mks_args <- list(
+          test = quote(stats::ks.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
+
+        tests_base <- switch(test_var,
+                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
+                             "Shapiro-Wilk" = ssw_args,
+                             "Fligner-Killeen" = mfil_args,
+                             "one-way ANOVA" = manov_args,
+                             "t-test (two-samples, not paired)" = mt_args,
+                             "F-test" = mv_args,
+                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
+                             "Anderson-Darling (one-sample)" = sad_args,
+                             "Cramer-von Mises (one-sample)" = scvm_args
+        )
+
+        env <- list(
+          t_test = t_dist,
+          dist_var = dist_var,
+          g_var = g_var,
+          s_var = s_var,
+          args = tests_base$args,
+          groups = tests_base$groups,
+          test = tests_base$test,
+          dist_var_name = dist_var_name,
+          g_var_name = g_var_name,
+          s_var_name = s_var_name
+        )
+
+        if ((is_empty(s_var) && is_empty(g_var))) {
+          test_stack_push(
+            substitute(
+              expr = {
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var) %>%
+                  with(., broom::glance(do.call(test, args))) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
+              },
+              env = env
+            )
+          )
+        } else {
+          test_stack_push(
+            substitute(
+              expr = {
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var, s_var, g_var) %>%
+                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
+                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                  tidyr::unnest(tests) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
+              },
+              env = env
+            )
+          )
+        }
+      } else {
+        test_stack_push(
+          substitute(
+            expr = {
+              test_stats <- test_stats_raw
+            },
+            env = list(test_stats_raw = test_stats)
+          )
+        )
+      }
+    }
+
+    chunks_safe_eval(test_stack)
+    test_stack
+  })
+
+
+  dist_r <- reactive({
+    chunks_reset()
+    chunks_push_chunks(dist_plot_r_chunks()$a)
+    chunks_get_var(var = "g", chunks = dist_plot_r_chunks()$a)
+  })
+
+  qq_r <- reactive({
+    chunks_reset()
+    chunks_push_chunks(qq_plot_r_chunks()$a)
+    chunks_get_var(var = "g", chunks = qq_plot_r_chunks()$a)
+  })
 
   output$summary_table <- DT::renderDataTable({
     tryCatch(suppressWarnings(
@@ -990,7 +1012,7 @@ srv_distribution <- function(input,
   dist_brush <- callModule(
     plot_with_settings_srv,
     id = "hist_plot",
-    plot_r = dist_plot_plot_r,
+    plot_r = dist_r,
     height = plot_height,
     width = plot_width,
     brushing = FALSE
@@ -999,10 +1021,38 @@ srv_distribution <- function(input,
   qq_brush <- callModule(
     plot_with_settings_srv,
     id = "qq_plot",
-    plot_r = qq_plot_plot_r,
+    plot_r = qq_r,
     height = plot_height,
     width = plot_width,
     brushing = FALSE
+  )
+
+
+  test_r <- reactive({
+    chunks_reset()
+    chunks_push_chunks(test_r_chunks())
+    if (input$tabs == "QQplot") {
+      chunks_push_chunks(qq_plot_r_chunks()$b)
+    } else {
+      chunks_push_chunks(dist_plot_r_chunks()$b)
+    }
+    chunks_get_var(var = "test_stats", chunks = test_r_chunks())
+  })
+
+  output$t_stats <- DT::renderDataTable({
+    res <- tryCatch(
+      suppressWarnings(test_r()),
+      error = function(e) NULL
+    )
+    if (is.null(res)) {
+      return(NULL)
+    }
+    res
+  },
+  options = list(
+    scrollX = TRUE
+  ),
+  rownames = FALSE
   )
 
   callModule(
