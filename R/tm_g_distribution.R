@@ -127,9 +127,9 @@ ui_distribution <- function(id, ...) {
         tabPanel("Histogram", plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      h3("Statistics:"),
+      h3("Summary statistics:"),
       DT::dataTableOutput(ns("summary_table")),
-      shiny::uiOutput(ns("test_name")),
+      h3("Tests:"),
       DT::dataTableOutput(ns("t_stats"))
     ),
     encoding = div(
@@ -325,6 +325,7 @@ srv_distribution <- function(input,
          g_var_name = g_var_name)
   })
 
+  # common chunks ----
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
     common_stack <- chunks$new()
@@ -347,6 +348,8 @@ srv_distribution <- function(input,
     roundn <- input$roundn
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
+    # isolated as dist_param1/dist_param2 already triggered the reactivity
+    t_dist <- isolate(input$t_dist)
 
     if (!is_empty(g_var)) {
       common_stack_push(substitute(
@@ -361,9 +364,6 @@ srv_distribution <- function(input,
         env = list(s_var_name = s_var_name)
       ))
     }
-
-    # isolated as dist_param1/dist_param2 already triggered the reactivity
-    t_dist <- isolate(input$t_dist)
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
@@ -440,34 +440,50 @@ srv_distribution <- function(input,
       )
     }
 
+    common_stack_push(quote(print("common")))
+
     chunks_safe_eval(chunks = common_stack)
 
-    list(common_stack = common_stack)
+    chunks_reset()
+    # chunks_push_chunks(common_stack)
+
+    common_stack
   })
 
-  dist_plot_r_chunks <- reactive({
+  # distplot chunks ----
+  dist_plot_r_chunks <- eventReactive({
+    common_code_chunks()
+    input$add_stats_plot
+    input$scales_type
+    input$main_type
+    input$bins
+    input$add_dens
+  }, {
     # Create a private stack for this function only.
-    distplot_r_stack <- chunks$new()
-    distplot_r_stack2 <- chunks$new()
+    distplot_stack <- chunks$new()
 
-    distplot_r_stack_push <- function(...) {
-      chunks_push(..., chunks = distplot_r_stack)
-      chunks_push(..., chunks = distplot_r_stack2)
+    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+    if ("params" %in% common_code_chunks()$ls()) {
+      params <- chunks_get_var("params", common_code_chunks())
+    }
+    summary_table <- chunks_get_var("summary_table", common_code_chunks())
+
+    chunks_reset(chunks = distplot_stack)
+
+    distplot_stack_push <- function(...) {
+      chunks_push(..., chunks = distplot_stack)
     }
 
-    # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = distplot_r_stack)
-
     # isolated as common chunks already triggered the reactivity
-    dist_var <- isolate(merge_vars()$dist_var)
-    s_var <- isolate(merge_vars()$s_var)
-    g_var <- isolate(merge_vars()$g_var)
-    dist_var_name <- isolate(merge_vars()$dist_var_name)
-    s_var_name <- isolate(merge_vars()$s_var_name)
-    g_var_name <- isolate(merge_vars()$g_var_name)
-    t_dist <- isolate(input$t_dist)
-    dist_param1 <- isolate(input$dist_param1)
-    dist_param2 <- isolate(input$dist_param2)
+    dist_var <- merge_vars()$dist_var
+    s_var <- merge_vars()$s_var
+    g_var <- merge_vars()$g_var
+    dist_var_name <- merge_vars()$dist_var_name
+    s_var_name <- merge_vars()$s_var_name
+    g_var_name <- merge_vars()$g_var_name
+    t_dist <- input$t_dist
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
 
     add_stats_plot <- input$add_stats_plot # nolint
     scales_type <- input$scales_type
@@ -475,8 +491,6 @@ srv_distribution <- function(input,
     main_type_var <- input$main_type
     bins_var <- input$bins
     add_dens_var <- input$add_dens
-
-    validate(need(dist_var, "Please select a variable."))
 
     m_type <- if (main_type_var == "Density") "..density.." else "..count.."
     m_type2 <- if (main_type_var == "Density") {
@@ -558,7 +572,7 @@ srv_distribution <- function(input,
 
     if (add_stats_plot) {
       datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-        distplot_r_stack_push(substitute(
+        distplot_stack_push(substitute(
           expr = {
             df_params <- as.data.frame(append(params, list(name = t_dist)))
           },
@@ -622,49 +636,57 @@ srv_distribution <- function(input,
       }
     }
 
-    distplot_r_stack_push(substitute(
+    distplot_stack_push(substitute(
       expr = g <- plot_call,
       env = list(plot_call = plot_call)
     ))
 
-    distplot_r_stack_push(quote(print(g)))
-    chunks_safe_eval(distplot_r_stack)
+    distplot_stack_push(quote(print("distr")))
 
-    list(a = distplot_r_stack, b = distplot_r_stack2)
+    distplot_stack_push(quote(print(g)))
+
+    chunks_safe_eval(distplot_stack)
+
+    distplot_stack
   })
 
-  qq_plot_r_chunks <- reactive({
-
+  # qqplot chunks ----
+  qq_plot_r_chunks <- eventReactive({
+    common_code_chunks()
+    input$scales_type
+    input$add_stats_plot
+    input$qq_line
+  },{
     # Create a private stack for this function only.
-    qqplot_r_stack <- chunks$new()
-    qqplot_r_stack2 <- chunks$new()
+    qqplot_stack <- chunks$new()
 
-    qqplot_r_stack_push <- function(...) {
-      chunks_push(..., chunks = qqplot_r_stack)
-      chunks_push(..., chunks = qqplot_r_stack2)
+    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+    if ("params" %in% common_code_chunks()$ls()) {
+      params <- chunks_get_var("params", common_code_chunks())
+    }
+    summary_table <- chunks_get_var("summary_table", common_code_chunks())
+
+    chunks_reset(chunks = qqplot_stack)
+
+    qqplot_stack_push <- function(...) {
+      chunks_push(..., chunks = qqplot_stack)
     }
 
-    # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = qqplot_r_stack)
-    ANL <- chunks_get_var("ANL", qqplot_r_stack) # nolint
-
     # isolated as common chunks already triggered the reactivity
-    dist_var <- isolate(merge_vars()$dist_var)
-    s_var <- isolate(merge_vars()$s_var)
-    g_var <- isolate(merge_vars()$g_var)
-    dist_var_name <- isolate(merge_vars()$dist_var_name)
-    s_var_name <- isolate(merge_vars()$s_var_name)
-    g_var_name <- isolate(merge_vars()$g_var_name)
-    t_dist <- isolate(input$t_dist)
-    dist_param1 <- isolate(input$dist_param1)
-    dist_param2 <- isolate(input$dist_param2)
+    dist_var <- merge_vars()$dist_var
+    s_var <- merge_vars()$s_var
+    g_var <- merge_vars()$g_var
+    dist_var_name <- merge_vars()$dist_var_name
+    s_var_name <- merge_vars()$s_var_name
+    g_var_name <- merge_vars()$g_var_name
+    t_dist <-input$t_dist
+    dist_param1 <- input$dist_param1
+    dist_param2 <- input$dist_param2
 
     scales_type <- input$scales_type
     add_stats_plot <- input$add_stats_plot
 
-    validate(need(dist_var, "Please select a variable."))
     validate(need(t_dist, "Please select the theoretical distribution."))
-    validate_has_data(ANL, 1)
 
     plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
       substitute(
@@ -719,7 +741,7 @@ srv_distribution <- function(input,
 
     if (add_stats_plot) {
       datas <- if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-        qqplot_r_stack_push(substitute(
+        qqplot_stack_push(substitute(
           expr = {
             df_params <- as.data.frame(append(params, list(name = t_dist)))
           },
@@ -776,44 +798,57 @@ srv_distribution <- function(input,
       )
     }
 
-    qqplot_r_stack_push(substitute(
+    qqplot_stack_push(substitute(
       expr = g <- plot_call,
       env = list(plot_call = plot_call)
     ))
 
-    qqplot_r_stack_push(quote(print(g)))
-    chunks_safe_eval(qqplot_r_stack)
+    qqplot_stack_push(quote(print("qq")))
 
-    list(a = qqplot_r_stack, b = qqplot_r_stack2)
+    qqplot_stack_push(quote(print(g)))
+
+    chunks_safe_eval(qqplot_stack)
+
+    qqplot_stack
   })
 
-  test_r_chunks <- reactive({
-
+  # test chunks ----
+  test_r_chunks <- eventReactive({
+    common_code_chunks()
+    input$dist_param1
+    input$dist_param2
+    input$dist_tests
+  }, ignoreNULL = FALSE, {
     # Create a private stack for this function only.
     test_stack <- chunks$new()
+
+    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+    if ("params" %in% common_code_chunks()$ls()) {
+      params <- chunks_get_var("params", common_code_chunks())
+    }
+
+    chunks_reset(chunks = test_stack)
 
     test_stack_push <- function(...) {
       chunks_push(..., chunks = test_stack)
     }
 
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = test_stack)
+    dist_var <- merge_vars()$dist_var
+    s_var <- merge_vars()$s_var
+    g_var <- merge_vars()$g_var
 
-    ANL <- chunks_get_var("ANL", test_stack) # nolint
-
-    dist_var <- isolate(merge_vars()$dist_var)
-    s_var <- isolate(merge_vars()$s_var)
-    g_var <- isolate(merge_vars()$g_var)
-
-    dist_var_name <- isolate(merge_vars()$dist_var_name)
-    s_var_name <- isolate(merge_vars()$s_var_name)
-    g_var_name <- isolate(merge_vars()$g_var_name)
+    dist_var_name <- merge_vars()$dist_var_name
+    s_var_name <- merge_vars()$s_var_name
+    g_var_name <- merge_vars()$g_var_name
 
     dist_param1 <- input$dist_param1
     dist_param2 <- input$dist_param2
-    test_var <- input$dist_tests
-    t_dist <- isolate(input$t_dist)
+    dist_tests <- input$dist_tests
+    t_dist <- input$t_dist
 
-    if (length(test_var)) {
+    validate(need(dist_tests, "Please select a test"))
+
+    if (length(dist_tests)) {
       test_stats <- NULL
 
       if ((!is_empty(s_var) || !is_empty(g_var))) {
@@ -827,19 +862,21 @@ srv_distribution <- function(input,
       }
 
       if (is.null(test_stats)) {
-        if (test_var %in% c(
+        if (dist_tests %in% c(
           "Kolmogorov-Smirnov (one-sample)",
           "Anderson-Darling (one-sample)",
           "Cramer-von Mises (one-sample)"
         )) {
-          if (is_empty(t_dist)) test_stats <- data.frame(message = "Please select the theoretical distribution.")
-        } else if (test_var == "Fligner-Killeen") {
+          if (is_empty(t_dist)) {
+            test_stats <- data.frame(message = "Please select the theoretical distribution.")
+          }
+        } else if (dist_tests == "Fligner-Killeen") {
           if (is_empty(s_var)) {
             test_stats <- data.frame(message = "Please select stratify variable.")
           } else if (identical(s_var, g_var)) {
             test_stats <- data.frame(message = "Please select different variables for strata and group.")
           }
-        } else if (test_var %in% c(
+        } else if (dist_tests %in% c(
           "t-test (two-samples, not paired)",
           "F-test",
           "Kolmogorov-Smirnov (two-samples)"
@@ -854,7 +891,7 @@ srv_distribution <- function(input,
                                                           function(x) length(unique(x))) == 2)))) {
             test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
           }
-        } else if (test_var == "one-way ANOVA") {
+        } else if (dist_tests == "one-way ANOVA") {
           if (is_empty(s_var)) {
             test_stats <- data.frame(message = "Please select stratify variable.")
           }
@@ -912,16 +949,17 @@ srv_distribution <- function(input,
           groups = c(g_var)
         )
 
-        tests_base <- switch(test_var,
-                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
-                             "Shapiro-Wilk" = ssw_args,
-                             "Fligner-Killeen" = mfil_args,
-                             "one-way ANOVA" = manov_args,
-                             "t-test (two-samples, not paired)" = mt_args,
-                             "F-test" = mv_args,
-                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
-                             "Anderson-Darling (one-sample)" = sad_args,
-                             "Cramer-von Mises (one-sample)" = scvm_args
+        tests_base <- switch(
+          dist_tests,
+          "Kolmogorov-Smirnov (one-sample)" = sks_args,
+          "Shapiro-Wilk" = ssw_args,
+          "Fligner-Killeen" = mfil_args,
+          "one-way ANOVA" = manov_args,
+          "t-test (two-samples, not paired)" = mt_args,
+          "F-test" = mv_args,
+          "Kolmogorov-Smirnov (two-samples)" = mks_args,
+          "Anderson-Darling (one-sample)" = sad_args,
+          "Cramer-von Mises (one-sample)" = scvm_args
         )
 
         env <- list(
@@ -976,40 +1014,91 @@ srv_distribution <- function(input,
       }
     }
 
+    test_stack_push(quote(print("test")))
+
     chunks_safe_eval(test_stack)
+
     test_stack
   })
 
+  # outputs ----
+  observe({
+    tab <- input$tabs
+    req(tab) # tab is NULL upon app launch, hence will crash without this statement
 
-  dist_r <- reactive({
+    print("o_0")
+
     chunks_reset()
-    chunks_push_chunks(dist_plot_r_chunks()$a)
-    chunks_get_var(var = "g", chunks = dist_plot_r_chunks()$a)
+    chunks_push_chunks(common_code_chunks())
+    `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
+    if (tab == "Histogram") {
+      chunks_push_chunks(dist_plot_r_chunks())
+    } else if (tab == "QQplot") {
+      chunks_push_chunks(qq_plot_r_chunks())
+    }
+    print("o_1")
+    # chunks_safe_eval()
   })
 
-  qq_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(qq_plot_r_chunks()$a)
-    chunks_get_var(var = "g", chunks = qq_plot_r_chunks()$a)
+
+  # dist_r <- eventReactive(final_r_chunks(), {
+  dist_r <- eventReactive(dist_plot_r_chunks(), {
+    print("dist_r_0")
+
+    # chunks_reset()
+    # chunks_push_chunks(common_code_chunks())
+    # `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
+    # chunks_push_chunks(dist_plot_r_chunks())
+
+    g <- chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
+    print("dist_r_1")
+    g
   })
 
-  output$summary_table <- DT::renderDataTable({
-    tryCatch(suppressWarnings(
-      chunks_get_var("summary_table", common_code_chunks()$common_stack)
+  # qq_r <- eventReactive(final_r_chunks(), {
+  qq_r <- eventReactive(qq_plot_r_chunks(), {
+    print("qq_r_0")
+
+    # chunks_reset()
+    # chunks_push_chunks(common_code_chunks())
+    # `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
+    # chunks_push_chunks(qq_plot_r_chunks())
+
+    g <- chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
+    print("qq_r_1")
+    g
+  })
+
+  tests_r <- eventReactive(test_r_chunks(), {
+    print("tests_r_0")
+
+    # chunks_reset()
+    # chunks_push_chunks(common_code_chunks())
+    # chunks_push_chunks(test_r_chunks())
+    # if (input$tabs == "Histogram") {
+    #   chunks_push_chunks(dist_plot_r_chunks())
+    # } else if (input$tabs == "QQplot") {
+    #   chunks_push_chunks(qq_plot_r_chunks())
+    # }
+
+    t <- chunks_get_var(var = "test_stats", chunks = test_r_chunks())
+    print("tests_r_1")
+    t
+  })
+
+
+  output$summary_table <- DT::renderDataTable(
+    expr = {
+      chunks_get_var("summary_table", chunks = common_code_chunks())
+    },
+    options = list(
+      autoWidth = TRUE,
+      columnDefs = list(list(width = "200px", targets = "_all"))
     ),
-    error = function(e) NULL
-    )
-  },
-  options = list(
-    autoWidth = TRUE,
-    columnDefs = list(list(width = "200px", targets = "_all"))
-  ),
-  rownames = FALSE
+    rownames = FALSE
   )
 
-  output$test_name <- renderUI(h3(input$dist_tests))
-
-  dist_brush <- callModule(
+  callModule(
     plot_with_settings_srv,
     id = "hist_plot",
     plot_r = dist_r,
@@ -1018,7 +1107,7 @@ srv_distribution <- function(input,
     brushing = FALSE
   )
 
-  qq_brush <- callModule(
+  callModule(
     plot_with_settings_srv,
     id = "qq_plot",
     plot_r = qq_r,
@@ -1027,32 +1116,12 @@ srv_distribution <- function(input,
     brushing = FALSE
   )
 
-
-  test_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(test_r_chunks())
-    if (input$tabs == "QQplot") {
-      chunks_push_chunks(qq_plot_r_chunks()$b)
-    } else {
-      chunks_push_chunks(dist_plot_r_chunks()$b)
-    }
-    chunks_get_var(var = "test_stats", chunks = test_r_chunks())
-  })
-
-  output$t_stats <- DT::renderDataTable({
-    res <- tryCatch(
-      suppressWarnings(test_r()),
-      error = function(e) NULL
-    )
-    if (is.null(res)) {
-      return(NULL)
-    }
-    res
-  },
-  options = list(
-    scrollX = TRUE
-  ),
-  rownames = FALSE
+  output$t_stats <- DT::renderDataTable(
+    expr = {
+      tests_r()
+    },
+    options = list(scrollX = TRUE),
+    rownames = FALSE
   )
 
   callModule(
