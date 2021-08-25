@@ -1,6 +1,4 @@
 test_that("get_scatterplotmatrix_stats() x-y numeric", {
-  test.nest::skip_if_too_deep(0)
-
   set.seed(1)
   x <-  runif(25, 0, 1)
   y <-  runif(25, 0, 1)
@@ -19,8 +17,6 @@ test_that("get_scatterplotmatrix_stats() x-y numeric", {
 })
 
 test_that("get_scatterplotmatrix_stats() x-y character", {
-  test.nest::skip_if_too_deep(0)
-
   x <- LETTERS[runif(25, 0, 10)]
   y <- LETTERS[runif(25, 0, 10)]
 
