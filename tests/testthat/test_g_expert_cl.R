@@ -1,6 +1,4 @@
 test_that("coloring_ggplot_call can work with all combinations", {
-  test.nest::skip_if_too_deep(0)
-
   expect_equal(
     coloring_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
@@ -34,8 +32,6 @@ test_that("coloring_ggplot_call can work with all combinations", {
   )
 })
 test_that("coloring_ggplot_call can work with all combinations without colour_var", {
-  test.nest::skip_if_too_deep(0)
-
   expect_equal(
     coloring_ggplot_call(character(0), character(0), character(0), FALSE),
     NULL
@@ -60,8 +56,6 @@ test_that("coloring_ggplot_call can work with all combinations without colour_va
 })
 
 test_that("coloring_ggplot_call can work size_var", {
-  test.nest::skip_if_too_deep(0)
-
   expect_equal(
     coloring_ggplot_call(character(0), character(0), "ADSL", TRUE) %>% deparse(),
     "aes(size = ADSL)"
