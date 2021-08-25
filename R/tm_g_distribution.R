@@ -465,7 +465,7 @@ srv_distribution <- function(input,
       if ("params" %in% common_code_chunks()$ls()) {
         params <- chunks_get_var("params", common_code_chunks())
       }
-      summary_table <- chunks_get_var("summary_table", common_code_chunks())
+      summary_table <- chunks_get_var("summary_table", common_code_chunks()) # nolint
 
       chunks_reset(chunks = distplot_stack)
 
