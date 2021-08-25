@@ -1,6 +1,4 @@
 test_that("bivariate_ggplot_call with numerics", {
-  test.nest::skip_if_too_deep(0)
-
   expect_match(
     bivariate_ggplot_call("numeric", "numeric") %>% deparse(width.cutoff = 300),
     "geom_point\\(alpha = \\.alpha\\, size = \\.size\\, pch = 21)"
@@ -20,8 +18,6 @@ test_that("bivariate_ggplot_call with numerics", {
 })
 
 test_that("bivariate_ggplot_call with factor, char, logical", {
-  test.nest::skip_if_too_deep(0)
-
   expect_match(
     bivariate_ggplot_call("factor", "factor") %>% deparse(width.cutoff = 300),
     "geom_mosaic"
@@ -53,8 +49,6 @@ test_that("bivariate_ggplot_call with factor, char, logical", {
 })
 
 test_that("bivariate_ggplot_call with single data numeric", {
-  test.nest::skip_if_too_deep(0)
-
   expect_match(
     bivariate_ggplot_call("numeric", "NULL") %>% deparse(width.cutoff = 300),
     "geom\\_histogram"
@@ -82,8 +76,6 @@ test_that("bivariate_ggplot_call with single data numeric", {
   )
 })
 test_that("bivariate_ggplot_call with single data factor", {
-  test.nest::skip_if_too_deep(0)
-
   expect_match(
     bivariate_ggplot_call("factor", "NULL") %>% deparse(width.cutoff = 300),
     "geom\\_bar"
