@@ -440,657 +440,621 @@ srv_distribution <- function(input,
       )
     }
 
-    common_stack_push(quote(print("common")))
-
     chunks_safe_eval(chunks = common_stack)
 
     chunks_reset()
-    # chunks_push_chunks(common_stack)
 
     common_stack
   })
 
   # distplot chunks ----
-  dist_plot_r_chunks <- eventReactive({
-    common_code_chunks()
-    input$add_stats_plot
-    input$scales_type
-    input$main_type
-    input$bins
-    input$add_dens
-  }, {
-    # Create a private stack for this function only.
-    distplot_stack <- chunks$new()
+  dist_plot_r_chunks <- eventReactive(
+    eventExpr = {
+      common_code_chunks()
+      input$add_stats_plot
+      input$scales_type
+      input$main_type
+      input$bins
+      input$add_dens
+    },
+    valueExpr = {
+      # Create a private stack for this function only.
+      distplot_stack <- chunks$new()
 
-    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
-    if ("params" %in% common_code_chunks()$ls()) {
-      params <- chunks_get_var("params", common_code_chunks())
-    }
-    summary_table <- chunks_get_var("summary_table", common_code_chunks())
+      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      if ("params" %in% common_code_chunks()$ls()) {
+        params <- chunks_get_var("params", common_code_chunks())
+      }
+      summary_table <- chunks_get_var("summary_table", common_code_chunks())
 
-    chunks_reset(chunks = distplot_stack)
+      chunks_reset(chunks = distplot_stack)
 
-    distplot_stack_push <- function(...) {
-      chunks_push(..., chunks = distplot_stack)
-    }
-
-    # isolated as common chunks already triggered the reactivity
-    dist_var <- merge_vars()$dist_var
-    s_var <- merge_vars()$s_var
-    g_var <- merge_vars()$g_var
-    dist_var_name <- merge_vars()$dist_var_name
-    s_var_name <- merge_vars()$s_var_name
-    g_var_name <- merge_vars()$g_var_name
-    t_dist <- input$t_dist
-    dist_param1 <- input$dist_param1
-    dist_param2 <- input$dist_param2
-
-    add_stats_plot <- input$add_stats_plot # nolint
-    scales_type <- input$scales_type
-    ndensity <- 512
-    main_type_var <- input$main_type
-    bins_var <- input$bins
-    add_dens_var <- input$add_dens
-
-    m_type <- if (main_type_var == "Density") "..density.." else "..count.."
-    m_type2 <- if (main_type_var == "Density") {
-      "..density.."
-    } else {
-      paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
-    }
-
-    plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-      substitute(
-        expr = ggplot(ANL, aes(dist_var_name)) +
-          geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
-        env = list(
-          m_type = m_type,
-          bins_var = bins_var,
-          dist_var_name = as.name(dist_var)
-        )
-      )
-    } else if (length(s_var) != 0 && length(g_var) == 0) {
-      substitute(
-        expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-          geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
-        env = list(
-          m_type = m_type,
-          bins_var = bins_var,
-          dist_var_name = dist_var_name,
-          s_var = s_var,
-          s_var_name = s_var_name
-        )
-      )
-    } else if (length(s_var) == 0 && length(g_var) != 0) {
-      substitute(
-        expr = ggplot(ANL, aes(dist_var_name)) +
-          geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
-          facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-        env = list(
-          m_type = m_type,
-          bins_var = bins_var,
-          dist_var_name = dist_var_name,
-          g_var_name = g_var_name,
-          scales_raw = tolower(scales_type)
-        )
-      )
-    } else {
-      substitute(
-        expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-          geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
-          facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-        env = list(
-          m_type = m_type,
-          bins_var = bins_var,
-          dist_var_name = dist_var_name,
-          s_var = s_var,
-          g_var_name = g_var_name,
-          s_var_name = s_var_name,
-          scales_raw = tolower(scales_type)
-        )
-      )
-    }
-
-    if (add_dens_var) {
-      plot_call <- substitute(
-        expr = plot_call +
-          stat_density(
-            aes_string(y = m_type2),
-            geom = "line",
-            position = "identity",
-            alpha = 0.5,
-            size = 2,
-            n = ndensity
-          ),
-        env = list(
-          plot_call = plot_call,
-          m_type2 = m_type2,
-          ndensity = ndensity
-        )
-      )
-    }
-
-    if (add_stats_plot) {
-      datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-        distplot_stack_push(substitute(
-          expr = {
-            df_params <- as.data.frame(append(params, list(name = t_dist)))
-          },
-          env = list(t_dist = t_dist)
-        ))
-
-        quote(data.frame(
-          x = c(0.7, 0), y = c(1, 1),
-          tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
-        ))
-      } else {
-        quote(data.frame(
-          x = 0, y = 1,
-          tb = I(list(summary_table = summary_table))
-        ))
+      distplot_stack_push <- function(...) {
+        chunks_push(..., chunks = distplot_stack)
       }
 
-      label <-  if (!is_empty(g_var)) {
+      # isolated as common chunks already triggered the reactivity
+      dist_var <- merge_vars()$dist_var
+      s_var <- merge_vars()$s_var
+      g_var <- merge_vars()$g_var
+      dist_var_name <- merge_vars()$dist_var_name
+      s_var_name <- merge_vars()$s_var_name
+      g_var_name <- merge_vars()$g_var_name
+      t_dist <- input$t_dist
+      dist_param1 <- input$dist_param1
+      dist_param2 <- input$dist_param2
+
+      add_stats_plot <- input$add_stats_plot # nolint
+      scales_type <- input$scales_type
+      ndensity <- 512
+      main_type_var <- input$main_type
+      bins_var <- input$bins
+      add_dens_var <- input$add_dens
+
+      m_type <- if (main_type_var == "Density") "..density.." else "..count.."
+      m_type2 <- if (main_type_var == "Density") {
+        "..density.."
+      } else {
+        paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
+      }
+
+      plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
         substitute(
-          expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-          env = list(g_var = g_var, g_var_name = g_var_name))
+          expr = ggplot(ANL, aes(dist_var_name)) +
+            geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
+          env = list(
+            m_type = m_type,
+            bins_var = bins_var,
+            dist_var_name = as.name(dist_var)
+          )
+        )
+      } else if (length(s_var) != 0 && length(g_var) == 0) {
+        substitute(
+          expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+            geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
+          env = list(
+            m_type = m_type,
+            bins_var = bins_var,
+            dist_var_name = dist_var_name,
+            s_var = s_var,
+            s_var_name = s_var_name
+          )
+        )
+      } else if (length(s_var) == 0 && length(g_var) != 0) {
+        substitute(
+          expr = ggplot(ANL, aes(dist_var_name)) +
+            geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
+            facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+          env = list(
+            m_type = m_type,
+            bins_var = bins_var,
+            dist_var_name = dist_var_name,
+            g_var_name = g_var_name,
+            scales_raw = tolower(scales_type)
+          )
+        )
       } else {
-        substitute(expr = tb, env = list())
+        substitute(
+          expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+            geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
+            facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+          env = list(
+            m_type = m_type,
+            bins_var = bins_var,
+            dist_var_name = dist_var_name,
+            s_var = s_var,
+            g_var_name = g_var_name,
+            s_var_name = s_var_name,
+            scales_raw = tolower(scales_type)
+          )
+        )
       }
 
-      plot_call <- substitute(
-        expr = plot_call + ggpp::geom_table_npc(
-          data = data,
-          aes(npcx = x, npcy = y, label = label),
-          hjust = 0, vjust = 1, size = 4
-        ),
-        env = list(plot_call = plot_call, data = datas, label = label)
-      )
-    }
-
-    if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
-      if (length(t_dist) != 0 && m_type == "..density..") {
-        map_dist <- stats::setNames(
-          c("dnorm", "dlnorm", "dgamma", "dunif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
-
+      if (add_dens_var) {
         plot_call <- substitute(
-          expr = plot_call + stat_function(
-            data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-            aes(x, color = color),
-            fun = mapped_dist,
-            n = ndensity,
-            size = 2,
-            args = params
-          ) +
-            scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
-            theme(legend.position = "right"),
+          expr = plot_call +
+            stat_density(
+              aes_string(y = m_type2),
+              geom = "line",
+              position = "identity",
+              alpha = 0.5,
+              size = 2,
+              n = ndensity
+            ),
           env = list(
             plot_call = plot_call,
+            m_type2 = m_type2,
+            ndensity = ndensity
+          )
+        )
+      }
+
+      if (add_stats_plot) {
+        datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
+          distplot_stack_push(substitute(
+            expr = {
+              df_params <- as.data.frame(append(params, list(name = t_dist)))
+            },
+            env = list(t_dist = t_dist)
+          ))
+
+          quote(data.frame(
+            x = c(0.7, 0), y = c(1, 1),
+            tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
+          ))
+        } else {
+          quote(data.frame(
+            x = 0, y = 1,
+            tb = I(list(summary_table = summary_table))
+          ))
+        }
+
+        label <-  if (!is_empty(g_var)) {
+          substitute(
+            expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
+            env = list(g_var = g_var, g_var_name = g_var_name))
+        } else {
+          substitute(expr = tb, env = list())
+        }
+
+        plot_call <- substitute(
+          expr = plot_call + ggpp::geom_table_npc(
+            data = data,
+            aes(npcx = x, npcy = y, label = label),
+            hjust = 0, vjust = 1, size = 4
+          ),
+          env = list(plot_call = plot_call, data = datas, label = label)
+        )
+      }
+
+      if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
+        if (length(t_dist) != 0 && m_type == "..density..") {
+          map_dist <- stats::setNames(
+            c("dnorm", "dlnorm", "dgamma", "dunif"),
+            c("normal", "lognormal", "gamma", "unif")
+          )
+
+          plot_call <- substitute(
+            expr = plot_call + stat_function(
+              data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
+              aes(x, color = color),
+              fun = mapped_dist,
+              n = ndensity,
+              size = 2,
+              args = params
+            ) +
+              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
+              theme(legend.position = "right"),
+            env = list(
+              plot_call = plot_call,
+              dist_var = dist_var,
+              ndensity = ndensity,
+              mapped_dist = unname(map_dist[t_dist])
+            )
+          )
+        }
+      }
+
+      distplot_stack_push(substitute(
+        expr = g <- plot_call,
+        env = list(plot_call = plot_call)
+      ))
+
+      distplot_stack_push(quote(print(g)))
+
+      chunks_safe_eval(distplot_stack)
+
+      distplot_stack
+    }
+  )
+
+  # qqplot chunks ----
+  qq_plot_r_chunks <- eventReactive(
+    eventExpr = {
+      common_code_chunks()
+      input$scales_type
+      input$add_stats_plot
+      input$qq_line
+    },
+    valueExpr = {
+      # Create a private stack for this function only.
+      qqplot_stack <- chunks$new()
+
+      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      if ("params" %in% common_code_chunks()$ls()) {
+        params <- chunks_get_var("params", common_code_chunks())
+      }
+      summary_table <- chunks_get_var("summary_table", common_code_chunks())
+
+      chunks_reset(chunks = qqplot_stack)
+
+      qqplot_stack_push <- function(...) {
+        chunks_push(..., chunks = qqplot_stack)
+      }
+
+      # isolated as common chunks already triggered the reactivity
+      dist_var <- merge_vars()$dist_var
+      s_var <- merge_vars()$s_var
+      g_var <- merge_vars()$g_var
+      dist_var_name <- merge_vars()$dist_var_name
+      s_var_name <- merge_vars()$s_var_name
+      g_var_name <- merge_vars()$g_var_name
+      t_dist <- input$t_dist
+      dist_param1 <- input$dist_param1
+      dist_param2 <- input$dist_param2
+
+      scales_type <- input$scales_type
+      add_stats_plot <- input$add_stats_plot
+
+      validate(need(t_dist, "Please select the theoretical distribution."))
+
+      plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
+        substitute(
+          expr = ggplot(ANL, aes_string(sample = dist_var)),
+          env = list(
+            dist_var = dist_var
+          )
+        )
+      } else if (length(s_var) != 0 && length(g_var) == 0) {
+        substitute(
+          expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
+          env = list(
             dist_var = dist_var,
-            ndensity = ndensity,
+            s_var = s_var
+          )
+        )
+      } else if (length(s_var) == 0 && length(g_var) != 0) {
+        substitute(
+          expr = ggplot(ANL, aes_string(sample = dist_var)) +
+            facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+          env = list(
+            dist_var = dist_var,
+            g_var_name = g_var_name,
+            scales_raw = tolower(scales_type)
+          )
+        )
+      } else {
+        substitute(
+          expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)) +
+            facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+          env = list(
+            dist_var = dist_var,
+            s_var = s_var,
+            g_var_name = g_var_name,
+            scales_raw = tolower(scales_type)
+          )
+        )
+      }
+
+      map_dist <- stats::setNames(
+        c("qnorm", "qlnorm", "qgamma", "qunif"),
+        c("normal", "lognormal", "gamma", "unif")
+      )
+
+      plot_call <- substitute(
+        expr = plot_call +
+          stat_qq(distribution = mapped_dist, dparams = params) +
+          xlab("theoretical") +
+          ylab("sample"),
+        env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
+      )
+
+      if (add_stats_plot) {
+        datas <- if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
+          qqplot_stack_push(substitute(
+            expr = {
+              df_params <- as.data.frame(append(params, list(name = t_dist)))
+            },
+            env = list(t_dist = t_dist)
+          ))
+
+          quote(data.frame(
+            x = c(0.7, 0), y = c(1, 1),
+            tb = I(c(
+              list(df_params = df_params),
+              list(summary_table = summary_table)
+            ))
+          ))
+        } else {
+          quote(data.frame(
+            x = 0, y = 1,
+            tb = I(list(summary_table = summary_table))
+          ))
+        }
+
+        label <-  if (!is_empty(g_var)) {
+          substitute(
+            expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
+            env = list(g_var = g_var, g_var_name = g_var_name))
+        } else {
+          substitute(expr = tb, env = list())
+        }
+
+        plot_call <- substitute(
+          expr = plot_call +
+            ggpp::geom_table_npc(
+              data = data,
+              aes(npcx = x, npcy = y, label = label),
+              hjust = 0,
+              vjust = 1,
+              size = 4
+            ),
+          env = list(
+            plot_call = plot_call,
+            data = datas,
+            label = label
+          )
+        )
+      }
+
+      if (isTRUE(input$qq_line)) {
+        plot_call <- substitute(
+          expr = plot_call +
+            stat_qq_line(distribution = mapped_dist, dparams = params),
+          env = list(
+            plot_call = plot_call,
             mapped_dist = unname(map_dist[t_dist])
           )
         )
       }
+
+      qqplot_stack_push(substitute(
+        expr = g <- plot_call,
+        env = list(plot_call = plot_call)
+      ))
+
+      qqplot_stack_push(quote(print(g)))
+
+      chunks_safe_eval(qqplot_stack)
+
+      qqplot_stack
     }
-
-    distplot_stack_push(substitute(
-      expr = g <- plot_call,
-      env = list(plot_call = plot_call)
-    ))
-
-    distplot_stack_push(quote(print("distr")))
-
-    distplot_stack_push(quote(print(g)))
-
-    chunks_safe_eval(distplot_stack)
-
-    distplot_stack
-  })
-
-  # qqplot chunks ----
-  qq_plot_r_chunks <- eventReactive({
-    common_code_chunks()
-    input$scales_type
-    input$add_stats_plot
-    input$qq_line
-  },{
-    # Create a private stack for this function only.
-    qqplot_stack <- chunks$new()
-
-    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
-    if ("params" %in% common_code_chunks()$ls()) {
-      params <- chunks_get_var("params", common_code_chunks())
-    }
-    summary_table <- chunks_get_var("summary_table", common_code_chunks())
-
-    chunks_reset(chunks = qqplot_stack)
-
-    qqplot_stack_push <- function(...) {
-      chunks_push(..., chunks = qqplot_stack)
-    }
-
-    # isolated as common chunks already triggered the reactivity
-    dist_var <- merge_vars()$dist_var
-    s_var <- merge_vars()$s_var
-    g_var <- merge_vars()$g_var
-    dist_var_name <- merge_vars()$dist_var_name
-    s_var_name <- merge_vars()$s_var_name
-    g_var_name <- merge_vars()$g_var_name
-    t_dist <-input$t_dist
-    dist_param1 <- input$dist_param1
-    dist_param2 <- input$dist_param2
-
-    scales_type <- input$scales_type
-    add_stats_plot <- input$add_stats_plot
-
-    validate(need(t_dist, "Please select the theoretical distribution."))
-
-    plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-      substitute(
-        expr = ggplot(ANL, aes_string(sample = dist_var)),
-        env = list(
-          dist_var = dist_var
-        )
-      )
-    } else if (length(s_var) != 0 && length(g_var) == 0) {
-      substitute(
-        expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
-        env = list(
-          dist_var = dist_var,
-          s_var = s_var
-        )
-      )
-    } else if (length(s_var) == 0 && length(g_var) != 0) {
-      substitute(
-        expr = ggplot(ANL, aes_string(sample = dist_var)) +
-          facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-        env = list(
-          dist_var = dist_var,
-          g_var_name = g_var_name,
-          scales_raw = tolower(scales_type)
-        )
-      )
-    } else {
-      substitute(
-        expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)) +
-          facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-        env = list(
-          dist_var = dist_var,
-          s_var = s_var,
-          g_var_name = g_var_name,
-          scales_raw = tolower(scales_type)
-        )
-      )
-    }
-
-    map_dist <- stats::setNames(
-      c("qnorm", "qlnorm", "qgamma", "qunif"),
-      c("normal", "lognormal", "gamma", "unif")
-    )
-
-    plot_call <- substitute(
-      expr = plot_call +
-        stat_qq(distribution = mapped_dist, dparams = params) +
-        xlab("theoretical") +
-        ylab("sample"),
-      env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
-    )
-
-    if (add_stats_plot) {
-      datas <- if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-        qqplot_stack_push(substitute(
-          expr = {
-            df_params <- as.data.frame(append(params, list(name = t_dist)))
-          },
-          env = list(t_dist = t_dist)
-        ))
-
-        quote(data.frame(
-          x = c(0.7, 0), y = c(1, 1),
-          tb = I(c(
-            list(df_params = df_params),
-            list(summary_table = summary_table)
-          ))
-        ))
-      } else {
-        quote(data.frame(
-          x = 0, y = 1,
-          tb = I(list(summary_table = summary_table))
-        ))
-      }
-
-      label <-  if (!is_empty(g_var)) {
-        substitute(
-          expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-          env = list(g_var = g_var, g_var_name = g_var_name))
-      } else {
-        substitute(expr = tb, env = list())
-      }
-
-      plot_call <- substitute(
-        expr = plot_call +
-          ggpp::geom_table_npc(
-            data = data,
-            aes(npcx = x, npcy = y, label = label),
-            hjust = 0,
-            vjust = 1,
-            size = 4
-          ),
-        env = list(
-          plot_call = plot_call,
-          data = datas,
-          label = label
-        )
-      )
-    }
-
-    if (isTRUE(input$qq_line)) {
-      plot_call <- substitute(
-        expr = plot_call +
-          stat_qq_line(distribution = mapped_dist, dparams = params),
-        env = list(
-          plot_call = plot_call,
-          mapped_dist = unname(map_dist[t_dist])
-        )
-      )
-    }
-
-    qqplot_stack_push(substitute(
-      expr = g <- plot_call,
-      env = list(plot_call = plot_call)
-    ))
-
-    qqplot_stack_push(quote(print("qq")))
-
-    qqplot_stack_push(quote(print(g)))
-
-    chunks_safe_eval(qqplot_stack)
-
-    qqplot_stack
-  })
+  )
 
   # test chunks ----
-  test_r_chunks <- eventReactive({
-    common_code_chunks()
-    input$dist_param1
-    input$dist_param2
-    input$dist_tests
-  }, ignoreNULL = FALSE, {
-    # Create a private stack for this function only.
-    test_stack <- chunks$new()
+  test_r_chunks <- eventReactive(
+    ignoreNULL = FALSE,
+    eventExpr = {
+      common_code_chunks()
+      input$dist_param1
+      input$dist_param2
+      input$dist_tests
+    },
+    valueExpr = {
+      # Create a private stack for this function only.
+      test_stack <- chunks$new()
 
-    ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
-    if ("params" %in% common_code_chunks()$ls()) {
-      params <- chunks_get_var("params", common_code_chunks())
-    }
-
-    chunks_reset(chunks = test_stack)
-
-    test_stack_push <- function(...) {
-      chunks_push(..., chunks = test_stack)
-    }
-
-    dist_var <- merge_vars()$dist_var
-    s_var <- merge_vars()$s_var
-    g_var <- merge_vars()$g_var
-
-    dist_var_name <- merge_vars()$dist_var_name
-    s_var_name <- merge_vars()$s_var_name
-    g_var_name <- merge_vars()$g_var_name
-
-    dist_param1 <- input$dist_param1
-    dist_param2 <- input$dist_param2
-    dist_tests <- input$dist_tests
-    t_dist <- input$t_dist
-
-    validate(need(dist_tests, "Please select a test"))
-
-    if (length(dist_tests)) {
-      test_stats <- NULL
-
-      if ((!is_empty(s_var) || !is_empty(g_var))) {
-        counts <- ANL %>%
-          dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
-          dplyr::summarise(n = dplyr::n())
-
-        if (any(counts$n < 5)) {
-          test_stats <- data.frame(message = "Please select strata*group with at least 5 observation each.")
-        }
+      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      if ("params" %in% common_code_chunks()$ls()) {
+        params <- chunks_get_var("params", common_code_chunks())
       }
 
-      if (is.null(test_stats)) {
-        if (dist_tests %in% c(
-          "Kolmogorov-Smirnov (one-sample)",
-          "Anderson-Darling (one-sample)",
-          "Cramer-von Mises (one-sample)"
-        )) {
-          if (is_empty(t_dist)) {
-            test_stats <- data.frame(message = "Please select the theoretical distribution.")
-          }
-        } else if (dist_tests == "Fligner-Killeen") {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          } else if (identical(s_var, g_var)) {
-            test_stats <- data.frame(message = "Please select different variables for strata and group.")
-          }
-        } else if (dist_tests %in% c(
-          "t-test (two-samples, not paired)",
-          "F-test",
-          "Kolmogorov-Smirnov (two-samples)"
-        )) {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
-            test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
-          } else if (!is_empty(s_var) && !is_empty(g_var) &&
-                     !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
-                                                          list(ANL[[g_var]]),
-                                                          function(x) length(unique(x))) == 2)))) {
-            test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
-          }
-        } else if (dist_tests == "one-way ANOVA") {
-          if (is_empty(s_var)) {
-            test_stats <- data.frame(message = "Please select stratify variable.")
-          }
-        }
+      chunks_reset(chunks = test_stack)
+
+      test_stack_push <- function(...) {
+        chunks_push(..., chunks = test_stack)
       }
 
-      if (is.null(test_stats)) {
-        map_dist <- stats::setNames(
-          c("pnorm", "plnorm", "pgamma", "punif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
-        sks_args <- list(
-          test = quote(stats::ks.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        ssw_args <- list(
-          test = quote(stats::shapiro.test),
-          args = bquote(list(.[[.(dist_var)]])),
-          groups = c(g_var, s_var)
-        )
-        mfil_args <- list(
-          test = quote(stats::fligner.test),
-          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
-          groups = c(g_var)
-        )
-        sad_args <- list(
-          test = quote(goftest::ad.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        scvm_args <- list(
-          test = quote(goftest::cvm.test),
-          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-          groups = c(g_var, s_var)
-        )
-        manov_args <- list(
-          test = quote(stats::aov),
-          args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
-          groups = c(g_var)
-        )
-        mt_args <- list(
-          test = quote(stats::t.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
-        mv_args <- list(
-          test = quote(stats::var.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
-        mks_args <- list(
-          test = quote(stats::ks.test),
-          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-          groups = c(g_var)
-        )
+      dist_var <- merge_vars()$dist_var
+      s_var <- merge_vars()$s_var
+      g_var <- merge_vars()$g_var
 
-        tests_base <- switch(
-          dist_tests,
-          "Kolmogorov-Smirnov (one-sample)" = sks_args,
-          "Shapiro-Wilk" = ssw_args,
-          "Fligner-Killeen" = mfil_args,
-          "one-way ANOVA" = manov_args,
-          "t-test (two-samples, not paired)" = mt_args,
-          "F-test" = mv_args,
-          "Kolmogorov-Smirnov (two-samples)" = mks_args,
-          "Anderson-Darling (one-sample)" = sad_args,
-          "Cramer-von Mises (one-sample)" = scvm_args
-        )
+      dist_var_name <- merge_vars()$dist_var_name
+      s_var_name <- merge_vars()$s_var_name
+      g_var_name <- merge_vars()$g_var_name
 
-        env <- list(
-          t_test = t_dist,
-          dist_var = dist_var,
-          g_var = g_var,
-          s_var = s_var,
-          args = tests_base$args,
-          groups = tests_base$groups,
-          test = tests_base$test,
-          dist_var_name = dist_var_name,
-          g_var_name = g_var_name,
-          s_var_name = s_var_name
-        )
+      dist_param1 <- input$dist_param1
+      dist_param2 <- input$dist_param2
+      dist_tests <- input$dist_tests
+      t_dist <- input$t_dist
 
-        if ((is_empty(s_var) && is_empty(g_var))) {
-          test_stack_push(
-            substitute(
-              expr = {
-                test_stats <- ANL %>%
-                  dplyr::select(dist_var) %>%
-                  with(., broom::glance(do.call(test, args))) %>%
-                  dplyr::mutate_if(is.numeric, round, 3)
-              },
-              env = env
-            )
+      validate(need(dist_tests, "Please select a test"))
+
+      if (length(dist_tests)) {
+        test_stats <- NULL
+
+        if ((!is_empty(s_var) || !is_empty(g_var))) {
+          counts <- ANL %>%
+            dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
+            dplyr::summarise(n = dplyr::n())
+
+          if (any(counts$n < 5)) {
+            test_stats <- data.frame(message = "Please select strata*group with at least 5 observation each.")
+          }
+        }
+
+        if (is.null(test_stats)) {
+          if (dist_tests %in% c(
+            "Kolmogorov-Smirnov (one-sample)",
+            "Anderson-Darling (one-sample)",
+            "Cramer-von Mises (one-sample)"
+          )) {
+            if (is_empty(t_dist)) {
+              test_stats <- data.frame(message = "Please select the theoretical distribution.")
+            }
+          } else if (dist_tests == "Fligner-Killeen") {
+            if (is_empty(s_var)) {
+              test_stats <- data.frame(message = "Please select stratify variable.")
+            } else if (identical(s_var, g_var)) {
+              test_stats <- data.frame(message = "Please select different variables for strata and group.")
+            }
+          } else if (dist_tests %in% c(
+            "t-test (two-samples, not paired)",
+            "F-test",
+            "Kolmogorov-Smirnov (two-samples)"
+          )) {
+            if (is_empty(s_var)) {
+              test_stats <- data.frame(message = "Please select stratify variable.")
+            } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
+              test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
+            } else if (!is_empty(s_var) && !is_empty(g_var) &&
+                       !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
+                                                            list(ANL[[g_var]]),
+                                                            function(x) length(unique(x))) == 2)))) {
+              test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
+            }
+          } else if (dist_tests == "one-way ANOVA") {
+            if (is_empty(s_var)) {
+              test_stats <- data.frame(message = "Please select stratify variable.")
+            }
+          }
+        }
+
+        if (is.null(test_stats)) {
+          map_dist <- stats::setNames(
+            c("pnorm", "plnorm", "pgamma", "punif"),
+            c("normal", "lognormal", "gamma", "unif")
           )
+          sks_args <- list(
+            test = quote(stats::ks.test),
+            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+            groups = c(g_var, s_var)
+          )
+          ssw_args <- list(
+            test = quote(stats::shapiro.test),
+            args = bquote(list(.[[.(dist_var)]])),
+            groups = c(g_var, s_var)
+          )
+          mfil_args <- list(
+            test = quote(stats::fligner.test),
+            args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
+            groups = c(g_var)
+          )
+          sad_args <- list(
+            test = quote(goftest::ad.test),
+            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+            groups = c(g_var, s_var)
+          )
+          scvm_args <- list(
+            test = quote(goftest::cvm.test),
+            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+            groups = c(g_var, s_var)
+          )
+          manov_args <- list(
+            test = quote(stats::aov),
+            args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
+            groups = c(g_var)
+          )
+          mt_args <- list(
+            test = quote(stats::t.test),
+            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+            groups = c(g_var)
+          )
+          mv_args <- list(
+            test = quote(stats::var.test),
+            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+            groups = c(g_var)
+          )
+          mks_args <- list(
+            test = quote(stats::ks.test),
+            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+            groups = c(g_var)
+          )
+
+          tests_base <- switch(
+            dist_tests,
+            "Kolmogorov-Smirnov (one-sample)" = sks_args,
+            "Shapiro-Wilk" = ssw_args,
+            "Fligner-Killeen" = mfil_args,
+            "one-way ANOVA" = manov_args,
+            "t-test (two-samples, not paired)" = mt_args,
+            "F-test" = mv_args,
+            "Kolmogorov-Smirnov (two-samples)" = mks_args,
+            "Anderson-Darling (one-sample)" = sad_args,
+            "Cramer-von Mises (one-sample)" = scvm_args
+          )
+
+          env <- list(
+            t_test = t_dist,
+            dist_var = dist_var,
+            g_var = g_var,
+            s_var = s_var,
+            args = tests_base$args,
+            groups = tests_base$groups,
+            test = tests_base$test,
+            dist_var_name = dist_var_name,
+            g_var_name = g_var_name,
+            s_var_name = s_var_name
+          )
+
+          if ((is_empty(s_var) && is_empty(g_var))) {
+            test_stack_push(
+              substitute(
+                expr = {
+                  test_stats <- ANL %>%
+                    dplyr::select(dist_var) %>%
+                    with(., broom::glance(do.call(test, args))) %>%
+                    dplyr::mutate_if(is.numeric, round, 3)
+                },
+                env = env
+              )
+            )
+          } else {
+            test_stack_push(
+              substitute(
+                expr = {
+                  test_stats <- ANL %>%
+                    dplyr::select(dist_var, s_var, g_var) %>%
+                    dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
+                    dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                    tidyr::unnest(tests) %>%
+                    dplyr::mutate_if(is.numeric, round, 3)
+                },
+                env = env
+              )
+            )
+          }
         } else {
           test_stack_push(
             substitute(
               expr = {
-                test_stats <- ANL %>%
-                  dplyr::select(dist_var, s_var, g_var) %>%
-                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
-                  tidyr::unnest(tests) %>%
-                  dplyr::mutate_if(is.numeric, round, 3)
+                test_stats <- test_stats_raw
               },
-              env = env
+              env = list(test_stats_raw = test_stats)
             )
           )
         }
-      } else {
-        test_stack_push(
-          substitute(
-            expr = {
-              test_stats <- test_stats_raw
-            },
-            env = list(test_stats_raw = test_stats)
-          )
-        )
       }
+
+      chunks_safe_eval(test_stack)
+
+      test_stack
     }
-
-    test_stack_push(quote(print("test")))
-
-    chunks_safe_eval(test_stack)
-
-    test_stack
-  })
+  )
 
   # outputs ----
+  ## building main chunk
   observe({
     tab <- input$tabs
     req(tab) # tab is NULL upon app launch, hence will crash without this statement
 
-    print("o_0")
-
     chunks_reset()
     chunks_push_chunks(common_code_chunks())
+    # wrapped in if since test chunk could lead into validate error - we do want to continue
     `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
     if (tab == "Histogram") {
       chunks_push_chunks(dist_plot_r_chunks())
     } else if (tab == "QQplot") {
       chunks_push_chunks(qq_plot_r_chunks())
     }
-    print("o_1")
-    # chunks_safe_eval()
   })
 
 
-  # dist_r <- eventReactive(final_r_chunks(), {
   dist_r <- eventReactive(dist_plot_r_chunks(), {
-    print("dist_r_0")
-
-    # chunks_reset()
-    # chunks_push_chunks(common_code_chunks())
-    # `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
-    # chunks_push_chunks(dist_plot_r_chunks())
-
-    g <- chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
-    print("dist_r_1")
-    g
+    chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
   })
 
-  # qq_r <- eventReactive(final_r_chunks(), {
   qq_r <- eventReactive(qq_plot_r_chunks(), {
-    print("qq_r_0")
-
-    # chunks_reset()
-    # chunks_push_chunks(common_code_chunks())
-    # `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
-    # chunks_push_chunks(qq_plot_r_chunks())
-
-    g <- chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
-    print("qq_r_1")
-    g
+    chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
   })
 
   tests_r <- eventReactive(test_r_chunks(), {
-    print("tests_r_0")
-
-    # chunks_reset()
-    # chunks_push_chunks(common_code_chunks())
-    # chunks_push_chunks(test_r_chunks())
-    # if (input$tabs == "Histogram") {
-    #   chunks_push_chunks(dist_plot_r_chunks())
-    # } else if (input$tabs == "QQplot") {
-    #   chunks_push_chunks(qq_plot_r_chunks())
-    # }
-
-    t <- chunks_get_var(var = "test_stats", chunks = test_r_chunks())
-    print("tests_r_1")
-    t
+    chunks_get_var(var = "test_stats", chunks = test_r_chunks())
   })
 
 
   output$summary_table <- DT::renderDataTable(
-    expr = {
-      chunks_get_var("summary_table", chunks = common_code_chunks())
-    },
+    expr = chunks_get_var("summary_table", chunks = common_code_chunks()),
     options = list(
       autoWidth = TRUE,
       columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1117,9 +1081,7 @@ srv_distribution <- function(input,
   )
 
   output$t_stats <- DT::renderDataTable(
-    expr = {
-      tests_r()
-    },
+    expr = tests_r(),
     options = list(scrollX = TRUE),
     rownames = FALSE
   )
