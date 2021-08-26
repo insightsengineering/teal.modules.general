@@ -442,8 +442,6 @@ srv_distribution <- function(input,
 
     chunks_safe_eval(chunks = common_stack)
 
-    chunks_reset()
-
     common_stack
   })
 
