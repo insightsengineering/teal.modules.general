@@ -128,7 +128,7 @@ ui_distribution <- function(id, ...) {
         tabPanel("QQplot", plot_with_settings_ui(id = ns("qq_plot")))
       ),
       h3("Statistics:"),
-      DT::dataTableOutput(ns("summary_table"), ),
+      DT::dataTableOutput(ns("summary_table")),
       shiny::uiOutput(ns("test_name")),
       DT::dataTableOutput(ns("t_stats"))
     ),
