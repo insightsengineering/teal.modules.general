@@ -884,7 +884,8 @@ srv_distribution <- function(input,
             validate(need(
               !is_empty(g_var) && !is_empty(s_var) &&
                 all(stats::na.omit(as.vector(tapply(
-                  ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))),
+                  ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2)
+                )),
               "Please select stratify variable with 2 levels, per each group."
             ))
           } else if (dist_tests == "one-way ANOVA") {
