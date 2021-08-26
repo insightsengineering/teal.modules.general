@@ -166,7 +166,7 @@ ui_distribution <- function(id, ...) {
               label = "Scales:",
               choices = c("Fixed", "Free"),
               selected = "Fixed",
-              bigger = TRUE,
+              bigger = FALSE,
               inline = TRUE
             )
           )
@@ -183,10 +183,10 @@ ui_distribution <- function(id, ...) {
               label = "Plot Type:",
               choices = c("Density", "Frequency"),
               selected = if (!args$freq) "Density" else "Frequency",
-              bigger = TRUE,
+              bigger = FALSE,
               inline = TRUE
             ),
-            shinyWidgets::awesomeCheckbox(ns("add_dens"), label = "Overlay Density", value = TRUE),
+            checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
             collapsed = FALSE
           )
         ),
@@ -243,7 +243,7 @@ ui_distribution <- function(id, ...) {
       panel_item(
         "Statistics Table",
         sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
-        shinyWidgets::awesomeCheckbox(
+        checkboxInput(
           ns("add_stats_plot"),
           label = "Overlay params table",
           value = TRUE
