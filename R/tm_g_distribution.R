@@ -850,163 +850,146 @@ srv_distribution <- function(input,
 
       validate(need(dist_tests, "Please select a test"))
 
-      if (length(dist_tests)) {
-        test_stats <- NULL
+      if ((!is_empty(s_var) || !is_empty(g_var))) {
+        counts <- ANL %>%
+          dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
+          dplyr::summarise(n = dplyr::n())
 
-        if ((!is_empty(s_var) || !is_empty(g_var))) {
-          counts <- ANL %>%
-            dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
-            dplyr::summarise(n = dplyr::n())
+        validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
+      }
 
-          validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
+      if (dist_tests %in% c(
+        "Kolmogorov-Smirnov (one-sample)",
+        "Anderson-Darling (one-sample)",
+        "Cramer-von Mises (one-sample)"
+      )) {
+        validate(need(t_dist, "Please select the theoretical distribution."))
+      } else if (dist_tests == "Fligner-Killeen") {
+        validate(need(s_var, "Please select stratify variable."))
+        validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
+      } else if (dist_tests %in% c(
+        "t-test (two-samples, not paired)",
+        "F-test",
+        "Kolmogorov-Smirnov (two-samples)"
+      )) {
+        validate(need(s_var, "Please select stratify variable."))
+        if (is_empty(g_var) && !is_empty(s_var)) {
+          validate(need(length(unique(ANL[[s_var]])) == 2,
+                        "Please select stratify variable with 2 levels."
+          ))
         }
-
-        if (is.null(test_stats)) {
-          if (dist_tests %in% c(
-            "Kolmogorov-Smirnov (one-sample)",
-            "Anderson-Darling (one-sample)",
-            "Cramer-von Mises (one-sample)"
-          )) {
-            validate(need(t_dist, "Please select the theoretical distribution."))
-          } else if (dist_tests == "Fligner-Killeen") {
-            validate(need(s_var, "Please select stratify variable."))
-            validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
-          } else if (dist_tests %in% c(
-            "t-test (two-samples, not paired)",
-            "F-test",
-            "Kolmogorov-Smirnov (two-samples)"
-          )) {
-            validate(need(s_var, "Please select stratify variable."))
-            validate(need(
-              is_empty(g_var) && !is_empty(s_var) && length(unique(ANL[[s_var]])) == 2,
-              "Please select stratify variable with 2 levels."
-            ))
-            validate(need(
-              !is_empty(g_var) && !is_empty(s_var) &&
-                all(stats::na.omit(as.vector(tapply(
-                  ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2)
-                )),
-              "Please select stratify variable with 2 levels, per each group."
-            ))
-          } else if (dist_tests == "one-way ANOVA") {
-            validate(need(s_var, "Please select stratify variable."))
-          }
+        if (!is_empty(g_var) && !is_empty(s_var)) {
+          validate(need(all(stats::na.omit(as.vector(tapply(
+            ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))),
+            "Please select stratify variable with 2 levels, per each group."
+          ))
         }
+      } else if (dist_tests == "one-way ANOVA") {
+        validate(need(s_var, "Please select stratify variable."))
+      }
 
-        if (is.null(test_stats)) {
-          map_dist <- stats::setNames(
-            c("pnorm", "plnorm", "pgamma", "punif"),
-            c("normal", "lognormal", "gamma", "unif")
-          )
-          sks_args <- list(
-            test = quote(stats::ks.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          ssw_args <- list(
-            test = quote(stats::shapiro.test),
-            args = bquote(list(.[[.(dist_var)]])),
-            groups = c(g_var, s_var)
-          )
-          mfil_args <- list(
-            test = quote(stats::fligner.test),
-            args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
-            groups = c(g_var)
-          )
-          sad_args <- list(
-            test = quote(goftest::ad.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          scvm_args <- list(
-            test = quote(goftest::cvm.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          manov_args <- list(
-            test = quote(stats::aov),
-            args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
-            groups = c(g_var)
-          )
-          mt_args <- list(
-            test = quote(stats::t.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
-          mv_args <- list(
-            test = quote(stats::var.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
-          mks_args <- list(
-            test = quote(stats::ks.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
+      map_dist <- stats::setNames(
+        c("pnorm", "plnorm", "pgamma", "punif"),
+        c("normal", "lognormal", "gamma", "unif")
+      )
+      sks_args <- list(
+        test = quote(stats::ks.test),
+        args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+        groups = c(g_var, s_var)
+      )
+      ssw_args <- list(
+        test = quote(stats::shapiro.test),
+        args = bquote(list(.[[.(dist_var)]])),
+        groups = c(g_var, s_var)
+      )
+      mfil_args <- list(
+        test = quote(stats::fligner.test),
+        args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
+        groups = c(g_var)
+      )
+      sad_args <- list(
+        test = quote(goftest::ad.test),
+        args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+        groups = c(g_var, s_var)
+      )
+      scvm_args <- list(
+        test = quote(goftest::cvm.test),
+        args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+        groups = c(g_var, s_var)
+      )
+      manov_args <- list(
+        test = quote(stats::aov),
+        args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
+        groups = c(g_var)
+      )
+      mt_args <- list(
+        test = quote(stats::t.test),
+        args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+        groups = c(g_var)
+      )
+      mv_args <- list(
+        test = quote(stats::var.test),
+        args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+        groups = c(g_var)
+      )
+      mks_args <- list(
+        test = quote(stats::ks.test),
+        args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+        groups = c(g_var)
+      )
 
-          tests_base <- switch(
-            dist_tests,
-            "Kolmogorov-Smirnov (one-sample)" = sks_args,
-            "Shapiro-Wilk" = ssw_args,
-            "Fligner-Killeen" = mfil_args,
-            "one-way ANOVA" = manov_args,
-            "t-test (two-samples, not paired)" = mt_args,
-            "F-test" = mv_args,
-            "Kolmogorov-Smirnov (two-samples)" = mks_args,
-            "Anderson-Darling (one-sample)" = sad_args,
-            "Cramer-von Mises (one-sample)" = scvm_args
-          )
+      tests_base <- switch(
+        dist_tests,
+        "Kolmogorov-Smirnov (one-sample)" = sks_args,
+        "Shapiro-Wilk" = ssw_args,
+        "Fligner-Killeen" = mfil_args,
+        "one-way ANOVA" = manov_args,
+        "t-test (two-samples, not paired)" = mt_args,
+        "F-test" = mv_args,
+        "Kolmogorov-Smirnov (two-samples)" = mks_args,
+        "Anderson-Darling (one-sample)" = sad_args,
+        "Cramer-von Mises (one-sample)" = scvm_args
+      )
 
-          env <- list(
-            t_test = t_dist,
-            dist_var = dist_var,
-            g_var = g_var,
-            s_var = s_var,
-            args = tests_base$args,
-            groups = tests_base$groups,
-            test = tests_base$test,
-            dist_var_name = dist_var_name,
-            g_var_name = g_var_name,
-            s_var_name = s_var_name
-          )
+      env <- list(
+        t_test = t_dist,
+        dist_var = dist_var,
+        g_var = g_var,
+        s_var = s_var,
+        args = tests_base$args,
+        groups = tests_base$groups,
+        test = tests_base$test,
+        dist_var_name = dist_var_name,
+        g_var_name = g_var_name,
+        s_var_name = s_var_name
+      )
 
-          if ((is_empty(s_var) && is_empty(g_var))) {
-            test_stack_push(
-              substitute(
-                expr = {
-                  test_stats <- ANL %>%
-                    dplyr::select(dist_var) %>%
-                    with(., broom::glance(do.call(test, args))) %>%
-                    dplyr::mutate_if(is.numeric, round, 3)
-                },
-                env = env
-              )
-            )
-          } else {
-            test_stack_push(
-              substitute(
-                expr = {
-                  test_stats <- ANL %>%
-                    dplyr::select(dist_var, s_var, g_var) %>%
-                    dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                    dplyr::do(tests = broom::glance(do.call(test, args))) %>%
-                    tidyr::unnest(tests) %>%
-                    dplyr::mutate_if(is.numeric, round, 3)
-                },
-                env = env
-              )
-            )
-          }
-        } else {
-          test_stack_push(
-            substitute(
-              expr = {
-                test_stats <- test_stats_raw
-              },
-              env = list(test_stats_raw = test_stats)
-            )
+      if ((is_empty(s_var) && is_empty(g_var))) {
+        test_stack_push(
+          substitute(
+            expr = {
+              test_stats <- ANL %>%
+                dplyr::select(dist_var) %>%
+                with(., broom::glance(do.call(test, args))) %>%
+                dplyr::mutate_if(is.numeric, round, 3)
+            },
+            env = env
           )
-        }
+        )
+      } else {
+        test_stack_push(
+          substitute(
+            expr = {
+              test_stats <- ANL %>%
+                dplyr::select(dist_var, s_var, g_var) %>%
+                dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
+                dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                tidyr::unnest(tests) %>%
+                dplyr::mutate_if(is.numeric, round, 3)
+            },
+            env = env
+          )
+        )
       }
 
       chunks_safe_eval(test_stack)
