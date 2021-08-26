@@ -127,9 +127,9 @@ ui_distribution <- function(id, ...) {
         tabPanel("Histogram", plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      h3("Summary statistics:"),
+      h3("Summary statistics"),
       DT::dataTableOutput(ns("summary_table")),
-      h3("Tests:"),
+      h3("Tests"),
       DT::dataTableOutput(ns("t_stats"))
     ),
     encoding = div(
@@ -858,9 +858,7 @@ srv_distribution <- function(input,
             dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
             dplyr::summarise(n = dplyr::n())
 
-          if (any(counts$n < 5)) {
-            test_stats <- data.frame(message = "Please select strata*group with at least 5 observation each.")
-          }
+          validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
         }
 
         if (is.null(test_stats)) {
@@ -869,34 +867,28 @@ srv_distribution <- function(input,
             "Anderson-Darling (one-sample)",
             "Cramer-von Mises (one-sample)"
           )) {
-            if (is_empty(t_dist)) {
-              test_stats <- data.frame(message = "Please select the theoretical distribution.")
-            }
+            validate(need(t_dist, "Please select the theoretical distribution."))
           } else if (dist_tests == "Fligner-Killeen") {
-            if (is_empty(s_var)) {
-              test_stats <- data.frame(message = "Please select stratify variable.")
-            } else if (identical(s_var, g_var)) {
-              test_stats <- data.frame(message = "Please select different variables for strata and group.")
-            }
+            validate(need(s_var, "Please select stratify variable."))
+            validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
           } else if (dist_tests %in% c(
             "t-test (two-samples, not paired)",
             "F-test",
             "Kolmogorov-Smirnov (two-samples)"
           )) {
-            if (is_empty(s_var)) {
-              test_stats <- data.frame(message = "Please select stratify variable.")
-            } else if (!is_empty(s_var) && is_empty(g_var) && length(unique(ANL[[s_var]])) != 2) {
-              test_stats <- data.frame(message = "Please select stratify variable with 2 levels.")
-            } else if (!is_empty(s_var) && !is_empty(g_var) &&
-                       !all(stats::na.omit(as.vector(tapply(ANL[[s_var]],
-                                                            list(ANL[[g_var]]),
-                                                            function(x) length(unique(x))) == 2)))) {
-              test_stats <- data.frame(message = "Please select stratify variable with 2 levels, per each group.")
-            }
+            validate(need(s_var, "Please select stratify variable."))
+            validate(need(
+              is_empty(g_var) && !is_empty(s_var) && length(unique(ANL[[s_var]])) == 2,
+              "Please select stratify variable with 2 levels."
+            ))
+            validate(need(
+              !is_empty(g_var) && !is_empty(s_var) &&
+                all(stats::na.omit(as.vector(tapply(
+                  ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))),
+              "Please select stratify variable with 2 levels, per each group."
+            ))
           } else if (dist_tests == "one-way ANOVA") {
-            if (is_empty(s_var)) {
-              test_stats <- data.frame(message = "Please select stratify variable.")
-            }
+            validate(need(s_var, "Please select stratify variable."))
           }
         }
 
@@ -1040,15 +1032,15 @@ srv_distribution <- function(input,
   })
 
 
-  dist_r <- eventReactive(dist_plot_r_chunks(), {
+  dist_r <- reactive({
     chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
   })
 
-  qq_r <- eventReactive(qq_plot_r_chunks(), {
+  qq_r <- reactive({
     chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
   })
 
-  tests_r <- eventReactive(test_r_chunks(), {
+  tests_r <- reactive({
     chunks_get_var(var = "test_stats", chunks = test_r_chunks())
   })
 
