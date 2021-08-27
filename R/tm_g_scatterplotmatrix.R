@@ -158,7 +158,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   variables_ordered <- sapply(datasets$datanames(), function(x) {
     get_input_order("variables", x)
-  }, USE.NAMES = T)
+  }, USE.NAMES = TRUE)
 
   # plot
   plot_r <- reactive({
