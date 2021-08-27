@@ -181,7 +181,7 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    cols_names <- variables_ordered[[attr(merged_data()$columns_source$variables, "dataname")]]()
+    cols_names <- variables_ordered[[input[["variables-dataset"]]]]()
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)

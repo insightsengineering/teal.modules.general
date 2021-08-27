@@ -5,6 +5,7 @@
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 * Added `filter_spec` support in  `tm_outliers` module.
+* Added ordered select input support in  `tm_g_scatterplotmatrix`, `tm_g_association` and `tm_t_crosstable` modules.
 
 ### Miscellaneous
 * Removed mentions of Roche internal services from the README file.
