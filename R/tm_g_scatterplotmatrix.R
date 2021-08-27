@@ -156,8 +156,13 @@ srv_g_scatterplotmatrix <- function(input,
     input_id = "variables"
   )
 
+  variables_ordered <- sapply(datasets$datanames(), function(x) {
+    get_input_order("variables", x)
+  }, USE.NAMES = T)
+
   # plot
   plot_r <- reactive({
+
     chunks_reset()
     chunks_push_data_merge(merged_data())
 
@@ -176,7 +181,8 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
+    cols_names <- variables_ordered[[attr(merged_data()$columns_source$variables, "dataname")]]()
+
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 
@@ -199,6 +205,7 @@ srv_g_scatterplotmatrix <- function(input,
         env = list(cols_names = cols_names)
       ))
     }
+
 
     # create plot
     if (add_cor) {
