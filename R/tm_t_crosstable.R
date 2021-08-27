@@ -181,6 +181,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     )
   })
 
+  x_ordered <- get_input_order("x", x$dataname)
+
   create_table <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data_r()())
@@ -190,7 +192,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     # As this is a summary
     validate_has_data(ANL, 3)
 
-    x_name <- as.vector(merged_data_r()()$columns_source$x)
+    x_name <- x_ordered()
     y_name <- as.vector(merged_data_r()()$columns_source$y)
 
     validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
@@ -228,7 +230,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     ))
 
     labels_vec <- vapply( # nolint
-      as.vector(merged_data_r()()$columns_source$x),
+      x_ordered(),
       varname_w_label,
       character(1),
       ANL
