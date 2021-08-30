@@ -9,6 +9,7 @@
 
 ### Miscellaneous
 * Removed mentions of Roche internal services from the README file.
+* Added `error_on_lint: TRUE` to `.lintr`.
 
 ### Bug fixes
 
