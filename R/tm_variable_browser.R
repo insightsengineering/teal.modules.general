@@ -742,7 +742,8 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      p <- qplot(var) +
+      p <- ggplot(data.frame(var), aes(x = forcats::fct_infreq(var))) +
+        geom_bar(stat = 'count') +
         xlab(var_lab) +
         theme_light() +
         theme(axis.text.x = element_text(angle = 45, hjust = 1))
