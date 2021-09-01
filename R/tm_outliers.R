@@ -323,175 +323,81 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       input$iqr_slider
     } else if (method == "Z-score") {
       input$zscore_slider
-    } else {
-      input$percentile_slider
-    }
-
-    # Define calculation function
-    if (method == "IQR") {
-      if (split_outliers && is_character_single(categorical_var)) {
-        common_stack_push(quote(
-          calculate_outliers <- function(anl,
-                                         outlier_var,
-                                         outlier_definition_param,
-                                         categorical_var) {
-            all_categories <- lapply(
-              unique(anl[[categorical_var]]),
-              function(x) {
-                anl_filtered <- anl %>% dplyr::filter(get(categorical_var) == x)
-                outlier_var_value <- anl_filtered[[outlier_var]]
-                q1_q3 <- stats::quantile(outlier_var_value, probs = c(0.25, 0.75))
-                iqr <- q1_q3[2] - q1_q3[1]
-                anl_filtered$is_outlier_selected <-
-                  !(outlier_var_value >= q1_q3[1] - outlier_definition_param * iqr &
-                    outlier_var_value <= q1_q3[2] + outlier_definition_param * iqr
-                  )
-                anl_filtered
-              }
-            )
-            do.call(rbind, all_categories)
-          }
-        ))
-      } else {
-        common_stack_push(
-          quote(
-            calculate_outliers <- function(ANL, # nolint
-                                           outlier_var,
-                                           outlier_definition_param,
-                                           categorical_var = NA) {
-              outlier_var_value <- ANL[[outlier_var]]
-              q1_q3 <- stats::quantile(outlier_var_value, probs = c(0.25, 0.75))
-              iqr <- q1_q3[2] - q1_q3[1]
-              ANL$is_outlier_selected <-
-                !(outlier_var_value >= q1_q3[1] - outlier_definition_param * iqr &
-                  outlier_var_value <= q1_q3[2] + outlier_definition_param * iqr
-                )
-              ANL
-            }
-          )
-        )
-      }
-    } else if (method == "Z-score") {
-      if (split_outliers && is_character_single(categorical_var)) {
-        common_stack_push(
-          quote({
-            calculate_outliers <- function(ANL, # nolint
-                                           outlier_var,
-                                           outlier_definition_param,
-                                           categorical_var) {
-              all_categories <- lapply(unique(ANL[[categorical_var]]), function(x) {
-                ANL_FILTERED <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint
-                if (nrow(ANL_FILTERED) >= 2) {
-                  outlier_var_value <- ANL_FILTERED[[outlier_var]]
-                  zscore <- abs(outlier_var_value - mean(outlier_var_value)) / sd(outlier_var_value)
-                  ANL_FILTERED$is_outlier_selected <- zscore > outlier_definition_param
-                  ANL_FILTERED
-                } else {
-                  dplyr::mutate(ANL_FILTERED[FALSE, , drop = FALSE], is_outlier_selected = logical(0))
-                }
-              })
-              do.call(rbind, all_categories)
-            }
-          })
-        )
-      } else {
-        common_stack_push(
-          quote({
-            calculate_outliers <- function(ANL, # nolint
-                                           outlier_var,
-                                           outlier_definition_param,
-                                           categorical_var = NA) {
-              outlier_var_value <- ANL[[outlier_var]]
-              zscore <- abs(outlier_var_value - mean(outlier_var_value)) / sd(outlier_var_value)
-              ANL$is_outlier_selected <- zscore > outlier_definition_param
-              ANL
-            }
-          })
-        )
-      }
     } else if (method == "Percentile") {
-      if (split_outliers && is_character_single(categorical_var)) {
-        common_stack_push(
-          quote({
-            calculate_outliers <- function(ANL, # nolint
-                                           outlier_var,
-                                           outlier_definition_param,
-                                           categorical_var) {
-              all_categories <- lapply(
-                unique(ANL[[categorical_var]]),
-                function(x) {
-                  ANL_FILTERED <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint
-                  outlier_var_value <- ANL_FILTERED[[outlier_var]]
-                  ANL_FILTERED$is_outlier_selected <-
-                    outlier_var_value < stats::quantile(outlier_var_value, outlier_definition_param) |
-                    outlier_var_value > stats::quantile(outlier_var_value, 1 - outlier_definition_param)
-                  ANL_FILTERED
-                }
-              )
-              do.call(rbind, all_categories)
-            }
-          })
-        )
-      } else {
-        common_stack_push(
-          quote({
-            calculate_outliers <- function(ANL, # nolint
-                                           outlier_var,
-                                           outlier_definition_param,
-                                           categorical_var) {
-              outlier_var_value <- ANL[[outlier_var]]
-              ANL$is_outlier_selected <-
-                outlier_var_value < stats::quantile(outlier_var_value, outlier_definition_param) |
-                outlier_var_value > stats::quantile(outlier_var_value, 1 - outlier_definition_param)
-              ANL
-            }
-          })
-        )
-      }
+      input$percentile_slider
     }
 
     common_stack_push(substitute(
       expr = {
-        ANL_OUTLIER <- calculate_outliers( # nolint
-          anl_call, outlier_var, outlier_definition_param, categorical_var
-        ) %>%
-        group_expr %>%
-        dplyr::mutate(
-          is_outlier = {
+        #' ANL_OUTLIER <- calculate_outliers( # nolint
+        #'  anl_call, outlier_var, outlier_definition_param, categorical_var
+        #' ) %>%
+        ANL_OUTLIER <- anl_call %>%
+          group_expr %>%
+          calculate_outliers %>%
+          dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
-            iqr <- 1.5 * (q1_q3[2] - q1_q3[1])
-            !(outlier_var_name >= q1_q3[1] - iqr & outlier_var_name <= q1_q3[2] + iqr)
-          }
-        ) %>%
-        ungroup_expr %>%
-        dplyr::filter(is_outlier | is_outlier_selected) %>%
-        dplyr::select(-is_outlier)
+            iqr <- q1_q3[2] - q1_q3[1]
+            !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
+          }) %>%
+          ungroup_expr %>%
+          dplyr::filter(is_outlier | is_outlier_selected) %>%
+          dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
       },
       env = list(
         anl_call = if (contains_na) quote(ANL_NO_NA) else quote(ANL),
-        outlier_var = outlier_var,
-        outlier_definition_param = outlier_definition_param,
-        categorical_var = categorical_var,
+        calculate_outliers = if (method == "IQR") {
+          substitute(
+            expr = dplyr::mutate(is_outlier_selected = {
+              q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
+              iqr <- q1_q3[2] - q1_q3[1]
+              !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr & outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+            }),
+            env = list(
+              outlier_var_name = as.name(outlier_var),
+              outlier_definition_param = outlier_definition_param
+            )
+          )
+        } else if (method == "Z-score") {
+          substitute(
+            expr = dplyr::mutate(
+              is_outlier_selected = abs(outlier_var_name - mean(outlier_var_name)) / sd(outlier_var_name) > outlier_definition_param
+            ),
+            env = list(
+              outlier_var_name = as.name(outlier_var),
+              outlier_definition_param = outlier_definition_param
+            )
+          )
+        } else if (method == "Percentile") {
+          substitute(
+            expr = dplyr::mutate(
+              is_outlier_selected = outlier_var_name < stats::quantile(outlier_var_name, outlier_definition_param) |
+                outlier_var_name > stats::quantile(outlier_var_name, 1 - outlier_definition_param)
+            ),
+            env = list(
+              outlier_var_name = as.name(outlier_var),
+              outlier_definition_param = outlier_definition_param
+            )
+          )
+        },
+        outlier_var_name = as.name(outlier_var),
         group_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
-        ungroup_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::ungroup()),
-        outlier_var_name = as.name(outlier_var)
+        ungroup_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::ungroup())
       )
     ))
 
     if (!is_empty(categorical_var)) {
-      common_stack_push(quote(
-        ANL_SUMMARY <- dplyr::filter(ANL_OUTLIER, ANL_OUTLIER$is_outlier_selected) %>% # nolint
-          dplyr::select(-"is_outlier_selected")
-      ))
-
       common_stack_push(substitute(
         expr = {
-          summary_table_pre <- ANL_SUMMARY[, c(outlier_var, categorical_var)] %>%
+          summary_table_pre <- ANL_OUTLIER %>% 
+            dplyr::filter(is_outlier_selected) %>% 
+            dplyr::select(outlier_var_name, categorical_var_name) %>% 
             dplyr::group_by(categorical_var_name) %>%
             dplyr::summarise(n_outliers = dplyr::n()) %>%
             dplyr::right_join(
-              ANL[, c(outlier_var, categorical_var)] %>%
+              ANL %>% 
+                dplyr::select(outlier_var_name, categorical_var_name) %>%
                 dplyr::group_by(categorical_var_name) %>%
                 dplyr::summarise(
                   total_in_cat = dplyr::n(),
@@ -519,7 +425,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             )
         },
         env = list(
-          outlier_var = outlier_var,
           categorical_var = categorical_var,
           categorical_var_name = as.name(categorical_var),
           outlier_var_name = as.name(outlier_var)
@@ -552,52 +457,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               by = categorical_var
             ) %>%
             dplyr::arrange(order)
-          summary_table_wide <- summary_table_pre %>%
-            dplyr::select(categorical_var_name, display_str) %>%
-            tidyr::pivot_wider(names_from = categorical_var, values_from = display_str) %>%
-            dplyr::mutate(row_name = "Outlier(s)")
+          summary_table <- summary_table_pre %>% 
+            dplyr::select(categorical_var_name, display_str, display_str_na, total_in_cat) %>% 
+            t() %>%
+            {`colnames<-`(.[-1, ], .[1, ])} %>% 
+            as.data.frame(row.names = c("Outlier(s)", "Missing(s)", "Total"))
         },
         env = list(
           categorical_var = categorical_var,
           categorical_var_name = as.name(categorical_var)
         )
       ))
-      if (contains_na) {
-        common_stack_push(substitute(
-          expr = {
-            summary_table_na_wide <- summary_table_pre %>%
-              dplyr::select(categorical_var_name, display_str_na) %>%
-              tidyr::pivot_wider(names_from = categorical_var, values_from = display_str_na) %>%
-              dplyr::mutate(row_name = "Missing(s)")
-          },
-          env = list(categorical_var_name = as.name(categorical_var), categorical_var = categorical_var)
-        ))
-      }
-      common_stack_push(substitute(
-        expr = {
-          summary_table_total_wide <- summary_table_pre %>%
-            dplyr::select(categorical_var_name, total_in_cat) %>%
-            dplyr::mutate(total_in_cat = as.character(total_in_cat)) %>%
-            tidyr::pivot_wider(names_from = categorical_var, values_from = total_in_cat) %>%
-            dplyr::mutate(row_name = "Total")
-        },
-        env = list(categorical_var_name = as.name(categorical_var), categorical_var = categorical_var)
-      ))
-      if (contains_na) {
-        common_stack_push(
-          quote(
-            summary_table <- dplyr::bind_rows(summary_table_wide, summary_table_na_wide, summary_table_total_wide) %>%
-              tibble::column_to_rownames("row_name")
-          )
-        )
-      } else {
-        common_stack_push(
-          quote(
-            summary_table <- dplyr::bind_rows(summary_table_wide, summary_table_total_wide) %>%
-              tibble::column_to_rownames("row_name")
-          )
-        )
-      }
     }
 
     chunks_safe_eval(chunks = common_stack)
