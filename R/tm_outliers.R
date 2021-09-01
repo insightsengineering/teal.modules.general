@@ -327,40 +327,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       input$percentile_slider
     }
 
-    common_stack_push(substitute(
-      expr = outliers_beyond_1.5_IQR <- function(ANL, outlier_var, categorical_var = NULL) { # nolint
-        if (!utils.nest::is_empty(categorical_var)) {
-          ANL %>%
-            dplyr::group_by(categorical_var_name) %>%
-            dplyr::mutate(
-              is_outlier = {
-                q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
-                iqr <- 1.5 * (q1_q3[2] - q1_q3[1])
-                !(outlier_var_name >= q1_q3[1] - iqr & outlier_var_name <= q1_q3[2] + iqr)
-              }
-            ) %>%
-            dplyr::ungroup() %>%
-            dplyr::filter(is_outlier | is_outlier_selected) %>%
-            dplyr::select(-is_outlier)
-        } else {
-          ANL %>%
-            dplyr::mutate(
-              is_outlier = {
-                q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
-                iqr <- 1.5 * (q1_q3[2] - q1_q3[1])
-                !(outlier_var_name >= q1_q3[1] - iqr & outlier_var_name <= q1_q3[2] + iqr)
-              }
-            ) %>%
-            dplyr::filter(is_outlier | is_outlier_selected) %>%
-            dplyr::select(-is_outlier)
-        }
-      },
-      env = list(
-        categorical_var_name = if_error(as.name(categorical_var), character(0)),
-        outlier_var_name = as.name(outlier_var)
-      )
-    ))
-
     # Define calculation function
     if (method == "IQR") {
       if (split_outliers && is_character_single(categorical_var)) {
@@ -489,14 +455,27 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ANL_OUTLIER <- calculate_outliers( # nolint
           anl_call, outlier_var, outlier_definition_param, categorical_var
         ) %>%
-          outliers_beyond_1.5_IQR(outlier_var, categorical_var)
+        group_expr %>%
+        dplyr::mutate(
+          is_outlier = {
+            q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
+            iqr <- 1.5 * (q1_q3[2] - q1_q3[1])
+            !(outlier_var_name >= q1_q3[1] - iqr & outlier_var_name <= q1_q3[2] + iqr)
+          }
+        ) %>%
+        ungroup_expr %>%
+        dplyr::filter(is_outlier | is_outlier_selected) %>%
+        dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
       },
       env = list(
         anl_call = if (contains_na) quote(ANL_NO_NA) else quote(ANL),
         outlier_var = outlier_var,
         outlier_definition_param = outlier_definition_param,
-        categorical_var = categorical_var
+        categorical_var = categorical_var,
+        group_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
+        ungroup_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::ungroup()),
+        outlier_var_name = as.name(outlier_var)
       )
     ))
 
