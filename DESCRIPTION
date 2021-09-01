@@ -18,7 +18,7 @@ Authors@R: c(
   )
 Description: General Purpose Teal Modules.
 Encoding: UTF-8
-License: MIT + file LICENSE
+License: Apache License 2.0 | file LICENSE
 LazyData: true
 Depends:
   ggmosaic (>= 0.3.0),
