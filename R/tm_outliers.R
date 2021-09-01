@@ -329,10 +329,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     common_stack_push(substitute(
       expr = {
-        #' ANL_OUTLIER <- calculate_outliers( # nolint
-        #'  anl_call, outlier_var, outlier_definition_param, categorical_var
-        #' ) %>%
-        ANL_OUTLIER <- anl_call %>%
+        ANL_OUTLIER <- anl_call %>% # nolint
           group_expr %>%
           calculate_outliers %>%
           dplyr::mutate(is_outlier = {
@@ -352,7 +349,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             expr = dplyr::mutate(is_outlier_selected = {
               q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
               iqr <- q1_q3[2] - q1_q3[1]
-              !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr & outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+              !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
+                  outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
             }),
             env = list(
               outlier_var_name = as.name(outlier_var),
@@ -362,7 +360,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         } else if (method == "Z-score") {
           substitute(
             expr = dplyr::mutate(
-              is_outlier_selected = abs(outlier_var_name - mean(outlier_var_name)) / sd(outlier_var_name) > outlier_definition_param
+              is_outlier_selected = abs(outlier_var_name - mean(outlier_var_name)) /
+                sd(outlier_var_name) > outlier_definition_param
             ),
             env = list(
               outlier_var_name = as.name(outlier_var),
@@ -382,7 +381,11 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           )
         },
         outlier_var_name = as.name(outlier_var),
-        group_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
+        group_expr = if (is_empty(categorical_var)) {
+          substitute(.)
+        } else {
+          substitute(dplyr::group_by(x), list(x = as.name(categorical_var)))
+        },
         ungroup_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::ungroup())
       )
     ))
@@ -390,13 +393,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     if (!is_empty(categorical_var)) {
       common_stack_push(substitute(
         expr = {
-          summary_table_pre <- ANL_OUTLIER %>% 
-            dplyr::filter(is_outlier_selected) %>% 
-            dplyr::select(outlier_var_name, categorical_var_name) %>% 
+          summary_table_pre <- ANL_OUTLIER %>%
+            dplyr::filter(is_outlier_selected) %>%
+            dplyr::select(outlier_var_name, categorical_var_name) %>%
             dplyr::group_by(categorical_var_name) %>%
             dplyr::summarise(n_outliers = dplyr::n()) %>%
             dplyr::right_join(
-              ANL %>% 
+              ANL %>%
                 dplyr::select(outlier_var_name, categorical_var_name) %>%
                 dplyr::group_by(categorical_var_name) %>%
                 dplyr::summarise(
@@ -457,10 +460,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               by = categorical_var
             ) %>%
             dplyr::arrange(order)
-          summary_table <- summary_table_pre %>% 
-            dplyr::select(categorical_var_name, display_str, display_str_na, total_in_cat) %>% 
+          summary_table <- summary_table_pre %>%
+            dplyr::select(categorical_var_name, display_str, display_str_na, total_in_cat) %>%
             t() %>%
-            {`colnames<-`(.[-1, ], .[1, ])} %>% 
+            {`colnames<-`(.[-1, ], .[1, ])} %>% # nolint
             as.data.frame(row.names = c("Outlier(s)", "Missing(s)", "Total"))
         },
         env = list(
@@ -853,17 +856,16 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     if (!is.null(ANL_NO_NA)) {
       ANL <- ANL_NO_NA # nolint
     }
-    plot_brush <-
-      if (tab == "Boxplot") {
-        box_plot_plot_r()
-        box_brush$brush()
-      } else if (tab == "Density plot") {
-        density_plot_plot_r()
-        density_brush$brush()
-      } else if (tab == "Cumulative distribution plot") {
-        cumulative_plot_plot_r()
-        cum_density_brush$brush()
-      }
+    plot_brush <- if (tab == "Boxplot") {
+      box_plot_plot_r()
+      box_brush$brush()
+    } else if (tab == "Density plot") {
+      density_plot_plot_r()
+      density_brush$brush()
+    } else if (tab == "Cumulative distribution plot") {
+      cumulative_plot_plot_r()
+      cum_density_brush$brush()
+    }
 
     # removing unused column ASAP
     ANL_OUTLIER$order <- ANL$order <- NULL
