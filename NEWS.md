@@ -12,6 +12,7 @@
 * Added `error_on_lint: TRUE` to `.lintr`.
 
 ### Bug fixes
+* Fixed bar plot order for factor variables in `tm_variable_browser`.
 
 # teal.modules.general 0.2.10
 ### Enhancements
