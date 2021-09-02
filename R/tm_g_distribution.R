@@ -1074,7 +1074,7 @@ srv_distribution <- function(input,
 #' @description
 #' Validates the parameters of the given theoretical distribution.
 #'
-#' @note Returns a Shiny validation error if the parameters doesn't meet
+#' @note Returns a Shiny validation error if the parameters don't meet
 #' the assumptions of the theoretical distribution.
 #'
 #' @param dist_type (`character(1)`) the family of a distribution
