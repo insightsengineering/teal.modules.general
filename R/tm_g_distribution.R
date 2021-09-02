@@ -1085,7 +1085,7 @@ srv_distribution <- function(input,
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
   switch(dist_type,
     "normal" =  {
-      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be positive"))
+      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
     },
     "lognormal" = {
       validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be positive"))
