@@ -685,6 +685,7 @@ srv_distribution <- function(input,
       add_stats_plot <- input$add_stats_plot
 
       validate(need(t_dist, "Please select the theoretical distribution."))
+      validate_dist_parameters(t_dist, dist_param1, dist_param2)
 
       plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
         substitute(
@@ -1068,4 +1069,34 @@ srv_distribution <- function(input,
     modal_title = "R Code for distribution",
     code_header = "Distribution"
   )
+}
+
+#' @description
+#' Validates the parameters of the given theoretical distribution.
+#'
+#' @note Returns a Shiny validation error if the parameters don't meet
+#' the assumptions of the theoretical distribution.
+#'
+#' @param dist_type (`character(1)`) the family of a distribution
+#' @param dist_param1 (`numeric(1)`) the first parameter of the distribution
+#' @param dist_param2 (`numeric(1)`) the second parameter of the distribution
+#' @return NULL
+#' @noRd
+validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
+  switch(dist_type,
+    "normal" =  {
+      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
+    },
+    "lognormal" = {
+      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
+    },
+    "gamma" = {
+      validate(need(
+        dist_param1 > 0 && dist_param2 > 0,
+        "k and theta parameters of the gamma distribution need to be positive"
+      ))
+    },
+    "unif" = NULL
+  )
+  NULL
 }
