@@ -1088,7 +1088,7 @@ validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
       validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
     },
     "lognormal" = {
-      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be positive"))
+      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
     },
     "gamma" = {
       validate(need(
