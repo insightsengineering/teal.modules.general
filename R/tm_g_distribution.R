@@ -1093,7 +1093,7 @@ validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
     "gamma" = {
       validate(need(
         dist_param1 > 0 && dist_param2 > 0,
-        "k and theta parameters of the gamma distribution needs to be positive"
+        "k and theta parameters of the gamma distribution need to be positive"
       ))
     },
     "unif" = NULL
