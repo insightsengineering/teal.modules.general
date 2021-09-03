@@ -433,7 +433,7 @@ srv_distribution <- function(input,
           },
           env = list(
             dist_var_name = dist_var_name,
-            strata_vars_raw = c(s_var, g_var),
+            strata_vars_raw = c(g_var, s_var),
             roundn = roundn
           )
         )
