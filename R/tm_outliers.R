@@ -331,12 +331,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
           group_expr %>%
-          calculate_outliers %>%
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
+          calculate_outliers %>%
           ungroup_expr %>%
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
@@ -381,12 +381,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           )
         },
         outlier_var_name = as.name(outlier_var),
-        group_expr = if (is_empty(categorical_var)) {
-          substitute(.)
-        } else {
+        group_expr = if (isTRUE(split_outliers)) {
           substitute(dplyr::group_by(x), list(x = as.name(categorical_var)))
+        } else {
+          substitute(identity)
         },
-        ungroup_expr = if (is_empty(categorical_var)) substitute(.) else substitute(dplyr::ungroup())
+        ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup()) else substitute(identity)
       )
     ))
 
@@ -766,7 +766,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           ),
           if (input$split_outliers) {
             withMathJax(helpText("Note: Quantiles are calculated per group."))
-            }
+          }
         )
       )
     } else if (input$method == "Z-score") {
@@ -780,7 +780,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           ),
           if (input$split_outliers) {
             withMathJax(helpText(" Note: Z-scores are calculated per group."))
-            }
+          }
         )
       )
     } else if (input$method == "Percentile") {
@@ -794,10 +794,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           ),
           if (input$split_outliers) {
             withMathJax(helpText("Note: Percentiles are calculated per group."))
-            }
-          )
+          }
         )
-      }
+      )
+    }
   })
 
   box_brush <- callModule(
