@@ -141,14 +141,6 @@ ui_distribution <- function(id, ...) {
         data_extract_spec = args$dist_var,
         is_single_dataset = is_single_dataset_value
       ),
-      if (!is.null(args$strata_var)) {
-        data_extract_input(
-          id = ns("strata_i"),
-          label = "Stratify by",
-          data_extract_spec = args$strata_var,
-          is_single_dataset = is_single_dataset_value
-        )
-      },
       if (!is.null(args$group_var)) {
         tagList(
           data_extract_input(
@@ -170,6 +162,14 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             )
           )
+        )
+      },
+      if (!is.null(args$strata_var)) {
+        data_extract_input(
+          id = ns("strata_i"),
+          label = "Stratify by",
+          data_extract_spec = args$strata_var,
+          is_single_dataset = is_single_dataset_value
         )
       },
       panel_group(
