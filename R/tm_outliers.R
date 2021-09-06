@@ -327,6 +327,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       input$percentile_slider
     }
 
+    # this is utils function that converts a %>% NULL %>% b into a %>% b
+    remove_pipe_null <- function(x) {
+      if (length(x) == 1) {
+        return(x)
+      }
+      if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
+        return(remove_pipe_null(x[[2]]))
+      }
+      return(as.call(c(x[[1]], lapply(x[-1], remove_pipe_null))))
+    }
+
     common_stack_push(substitute(
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
@@ -381,14 +392,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           )
         },
         outlier_var_name = as.name(outlier_var),
-        group_expr = if (isTRUE(split_outliers)) {
-          substitute(dplyr::group_by(x), list(x = as.name(categorical_var)))
-        } else {
-          substitute(identity)
-        },
-        ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup()) else substitute(identity)
+        group_expr = if (isTRUE(split_outliers)) substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
+        ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup())
       )
-    ))
+    ) %>% remove_pipe_null())
 
     if (!is_empty(categorical_var)) {
       common_stack_push(substitute(
