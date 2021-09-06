@@ -395,7 +395,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         group_expr = if (isTRUE(split_outliers)) substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
         ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup())
       )
-    ) %>% remove_pipe_null())
+    ) %>%
+      remove_pipe_null())
 
     if (!is_empty(categorical_var)) {
       common_stack_push(substitute(
