@@ -220,6 +220,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     merge_function = "dplyr::left_join"
   )
 
+  is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
+  cat_dataname <- categorical_var[[1]]$dataname
+
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
     common_stack <- chunks$new()
@@ -227,6 +230,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push <- function(...) {
       chunks_push(..., chunks = common_stack)
     }
+
+    input_catvar <- input[[extract_input(
+      "categorical_var",
+      cat_dataname,
+      filter = is_cat_filter_spec
+    )]]
 
     chunks_push_data_merge(merged_data(), common_stack)
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
@@ -256,12 +265,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ))
       }
     } else {
-      validate(need(input[[extract_input(
-        "categorical_var",
-        attributes(merged_data()$columns_source$categorical_var)$dataname,
-        filter = TRUE
-      )]],
-      "Please select categories to include"))
+      validate(need(input_catvar, "Please select categories to include"))
 
       validate(need(
         is.factor(merged_data()$data()[[categorical_var]]) ||
@@ -271,9 +275,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ))
       validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
 
-      if ("(Missing)" %in% input[[
-        extract_input("categorical_var", attributes(merged_data()$columns_source$categorical_var)$dataname,
-                      filter = TRUE)]]) {
+      input_catlevels <- if (is_cat_filter_spec) {
+        input_catvar
+      } else {
+        NULL
+      }
+
+      if ("(Missing)" %in% input_catlevels) {
         common_stack_push(
           substitute(
             expr = {
@@ -282,32 +290,27 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                 "(Missing)",
                 as.character(ANL[[categorical_var]])
               )
-              ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels) # nolint
             },
             env = list(
               categorical_var = categorical_var,
-              categorical_var_name = as.name(categorical_var),
-              categorical_var_levels = input[[
-                extract_input("categorical_var",
-                              attributes(merged_data()$columns_source$categorical_var)$dataname,
-                              filter = TRUE)]]
+              categorical_var_name = as.name(categorical_var)
             )
           )
         )
-      } else {
+      }
+
+      if (is_cat_filter_spec) {
         common_stack_push(
           substitute(
             expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
             env = list(
               categorical_var_name = as.name(categorical_var),
-              categorical_var_levels = input[[
-                extract_input("categorical_var",
-                              attributes(merged_data()$columns_source$categorical_var)$dataname,
-                              filter = TRUE)]]
+              categorical_var_levels = input_catlevels
             )
           )
         )
       }
+
       contains_na <- anyNA(merged_data()$data()[, outlier_var])
       if (contains_na) {
         common_stack_push(substitute(
