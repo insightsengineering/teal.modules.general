@@ -469,7 +469,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ) %>%
             dplyr::arrange(order)
           summary_table <- summary_table_pre %>%
-            dplyr::select(categorical_var_name, Outliers = display_str, Missings = display_str_na, Total = total_in_cat) %>%
+            dplyr::select(
+              categorical_var_name, Outliers = display_str, Missings = display_str_na, Total = total_in_cat
+            ) %>%
             dplyr::mutate_all(as.character) %>%
             tidyr::pivot_longer(-categorical_var_name) %>%
             tidyr::pivot_wider(names_from = categorical_var, values_from = value) %>%
