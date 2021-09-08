@@ -8,7 +8,8 @@
 * Added ordered select input support in  `tm_g_scatterplotmatrix`, `tm_g_association` and `tm_t_crosstable` modules.
 * Added validations to the theoretical distributions' parameters of `tm_g_distribution`.
 * Simplified returned R code in `tm_outliers` module.
-* Support `select_spec` in `tm_outliers` module for categorical variable.
+* Support `select_spec` for categorical variable in `tm_outliers` module.
+* Updated Show R Code in `tm_outliers` module to omit filtering for categorical variable if all levels are selected.
 
 ### Miscellaneous
 * Removed mentions of Roche internal services from the README file.
