@@ -299,7 +299,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         )
       }
 
-      if (is_cat_filter_spec) {
+      if (is_cat_filter_spec && !all(unique(merged_data()$data()[[categorical_var]]) %in% input_catlevels)) {
         common_stack_push(
           substitute(
             expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
