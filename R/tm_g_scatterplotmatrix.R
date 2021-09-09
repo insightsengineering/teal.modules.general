@@ -184,12 +184,11 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    if (length(variables) == 1)
-      cols_names <-
+    cols_names <- if (length(variables) == 1) {
       get_input_order("variables", variables[[1]]$dataname)()
-    else
-      cols_names <-
+    } else {
       variables_ordered[[input[["variables-dataset"]]]]()
+    }
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
