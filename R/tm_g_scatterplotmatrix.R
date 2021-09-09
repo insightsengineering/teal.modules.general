@@ -156,9 +156,12 @@ srv_g_scatterplotmatrix <- function(input,
     input_id = "variables"
   )
 
-  variables_ordered <- sapply(datasets$datanames(), function(x) {
-    get_input_order("variables", x)
-  }, USE.NAMES = TRUE)
+  variables_ordered <-
+    sapply(sapply(variables, function(x)
+      x$dataname),
+      function(x) {
+        get_input_order("variables", x)
+      }, USE.NAMES = TRUE)
 
   # plot
   plot_r <- reactive({
@@ -181,7 +184,12 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    cols_names <- variables_ordered[[input[["variables-dataset"]]]]()
+    if (length(variables) == 1)
+      cols_names <-
+      get_input_order("variables", variables[[1]]$dataname)()
+    else
+      cols_names <-
+      variables_ordered[[input[["variables-dataset"]]]]()
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
