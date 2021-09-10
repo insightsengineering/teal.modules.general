@@ -831,7 +831,6 @@ srv_missing_data <- function(input,
   })
 
   by_subject_plot_chunks <- reactive({
-
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
     validate(need(!is_empty(input$variables_select), "No variables selected"))
