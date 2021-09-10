@@ -532,7 +532,7 @@ srv_missing_data <- function(input,
       keys <- data_keys()
       summary_stack_push(substitute(
         expr = parent_keys <- keys,
-        env = list(keys = datasets$get_primary_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+        env = list(keys = datasets$get_keys(if_empty(datasets$get_parentname(dataname), dataname)))
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
@@ -849,7 +849,7 @@ srv_missing_data <- function(input,
       env = list(keys = `if`(
         is_empty(datasets$get_parentname(dataname)),
         keys,
-        datasets$get_primary_keys(datasets$get_parentname(dataname))
+        datasets$get_keys(datasets$get_parentname(dataname))
       ))
     ))
 
