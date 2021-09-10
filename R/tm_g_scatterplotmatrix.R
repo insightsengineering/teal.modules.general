@@ -184,7 +184,7 @@ srv_g_scatterplotmatrix <- function(input,
     }
 
     cols_names <- if (length(variables) == 1) {
-      get_input_order("variables", variables[[1]]$dataname)()
+      variables_ordered[[1]]()
     } else {
       variables_ordered[[input[["variables-dataset"]]]]()
     }
