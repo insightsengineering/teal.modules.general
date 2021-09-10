@@ -579,7 +579,7 @@ srv_g_scatterplot <- function(input,
           ))
         }
         rhs_formula <- substitute(
-          expr = y ~ poly(x, smoothing_degree),
+          expr = y ~ poly(x, smoothing_degree, raw = TRUE),
           env = list(smoothing_degree = smoothing_degree)
         )
         if (input$show_form || input$show_r2 || input$show_count) {

@@ -6,6 +6,7 @@
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 * Added `filter_spec` support in  `tm_outliers` module.
 * Added ordered select input support in  `tm_g_scatterplotmatrix`, `tm_g_association` and `tm_t_crosstable` modules.
+* Modified the trend line feature in `tm_g_scatterplot` to display the raw equation that will equal the actual y value when the actual x values are plugged in.
 * Added validations to the theoretical distributions' parameters of `tm_g_distribution`.
 * Simplified returned R code in `tm_outliers` module.
 * Support `select_spec` for categorical variable in `tm_outliers` module.
