@@ -34,7 +34,7 @@ Imports:
   DT,
   forcats,
   ggExtra,
-  ggpmisc,
+  ggpmisc (>= 0.4.3),
   goftest,
   ggpp,
   grid,
