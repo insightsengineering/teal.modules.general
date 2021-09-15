@@ -356,7 +356,7 @@ srv_distribution <- function(input,
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
          "Group by variable must be `factor`, `character`, or `integer`"
-         )
+        )
       )
       common_stack_push(substitute(
         expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(as.factor(g_var_name))), # nolint
