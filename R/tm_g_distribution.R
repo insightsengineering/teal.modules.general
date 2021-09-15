@@ -355,7 +355,8 @@ srv_distribution <- function(input,
       validate(
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
-         "Group by variable must be `factor`, `character`, or `integer`")
+         "Group by variable must be `factor`, `character`, or `integer`"
+         )
       )
       common_stack_push(substitute(
         expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(as.factor(g_var_name))), # nolint
@@ -367,7 +368,8 @@ srv_distribution <- function(input,
       validate(
         need(
           inherits(ANL[[s_var]], c("integer", "factor", "character")),
-          "Stratify by variable must be `factor`, `character`, or `integer`")
+          "Stratify by variable must be `factor`, `character`, or `integer`"
+        )
       )
       common_stack_push(substitute(
         expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(as.factor(s_var_name))), # nolint
