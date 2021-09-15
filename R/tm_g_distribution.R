@@ -355,7 +355,7 @@ srv_distribution <- function(input,
       validate(
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
-         "Group by variable must be `factor`, `character`, or `integer`"
+          "Group by variable must be `factor`, `character`, or `integer`"
         )
       )
       common_stack_push(substitute(
