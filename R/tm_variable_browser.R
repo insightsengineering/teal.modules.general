@@ -967,19 +967,11 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
   output[[table_ui_id]] <- DT::renderDataTable({
     df <- datasets$get_data(dataset_name, filtered = FALSE)
 
-    df_vars <-
-      if (identical(datasets$get_parentname(dataset_name), character(0))) {
-        datasets$get_varnames(dataset_name)
-      } else {
-        if (isFALSE(input$show_parent_vars)) {
-          setdiff(
-            datasets$get_filterable_varnames(dataset_name),
-            datasets$get_filterable_varnames(datasets$get_parentname(dataset_name))
-          )
-        } else {
-          datasets$get_varnames(dataset_name)
-        }
-      }
+    df_vars <- if (isTRUE(input$show_parent_vars)) {
+      datasets$get_varnames(dataset_name)
+    } else {
+      datasets$get_filterable_varnames(dataset_name)
+    }
 
     df <- df[df_vars]
 
