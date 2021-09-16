@@ -12,6 +12,7 @@
 * Support `select_spec` for categorical variable in `tm_outliers` module.
 * Updated Show R Code in `tm_outliers` module to omit filtering for categorical variable if all levels are selected.
 * Decoupling dataset list from the variables list parameters in `tm_g_scatterplotmatrix`.
+* Added validation to the group by and stratify by variables of `tm_g_distribution` to check that they are categorical variables.
 
 ### Miscellaneous
 * Removed mentions of Roche internal services from the README file.
