@@ -628,7 +628,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 
     req(!any(is.infinite(x)))
 
-    qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75)), 2)
+    qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75), type = 2), 2)
     # classical central tendency measures
 
     summary <-
@@ -769,7 +769,7 @@ plot_var_summary <- function(var,
     else {
       # remove outliers
       if (outlier_definition != 0) {
-        q1_q3 <- quantile(var, probs = c(0.25, 0.75))
+        q1_q3 <- quantile(var, probs = c(0.25, 0.75), type = 2)
         iqr <- q1_q3[2] - q1_q3[1]
         number_records <- length(var)
         var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
@@ -967,19 +967,11 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
   output[[table_ui_id]] <- DT::renderDataTable({
     df <- datasets$get_data(dataset_name, filtered = FALSE)
 
-    df_vars <-
-      if (identical(datasets$get_parentname(dataset_name), character(0))) {
-        datasets$get_varnames(dataset_name)
-      } else {
-        if (isFALSE(input$show_parent_vars)) {
-          setdiff(
-            datasets$get_filterable_varnames(dataset_name),
-            datasets$get_filterable_varnames(datasets$get_parentname(dataset_name))
-          )
-        } else {
-          datasets$get_varnames(dataset_name)
-        }
-      }
+    df_vars <- if (isTRUE(input$show_parent_vars)) {
+      datasets$get_varnames(dataset_name)
+    } else {
+      datasets$get_filterable_varnames(dataset_name)
+    }
 
     df <- df[df_vars]
 
@@ -1069,7 +1061,7 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
 
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
-  qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9))
+  qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
   iqr <- qntls[3] - qntls[2]
   binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
