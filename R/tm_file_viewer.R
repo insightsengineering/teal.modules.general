@@ -75,16 +75,14 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
-  observeEvent(input$files_names,
-    {
+  observeEvent(input$files_names, {
       data_path <- input$files_names
 
       req(data_path)
 
       test_path_text <- function(data_path) {
-        out <- tryCatch(
-          {
-            readLines(con = data_path)
+        out <- tryCatch({
+          readLines(con = data_path)
           },
           error = function(cond) {
             return("error/warning")
@@ -93,7 +91,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
             return("error/warning")
           }
         )
-        return(out)
       }
 
       output_text <- test_path_text(data_path)
