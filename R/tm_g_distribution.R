@@ -352,15 +352,27 @@ srv_distribution <- function(input,
     t_dist <- isolate(input$t_dist)
 
     if (!is_empty(g_var)) {
+      validate(
+        need(
+          inherits(ANL[[g_var]], c("integer", "factor", "character")),
+          "Group by variable must be `factor`, `character`, or `integer`"
+        )
+      )
       common_stack_push(substitute(
-        expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(g_var_name)), # nolint
+        expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(as.factor(g_var_name))), # nolint
         env = list(g_var_name = g_var_name)
       ))
     }
 
     if (!is_empty(s_var)) {
+      validate(
+        need(
+          inherits(ANL[[s_var]], c("integer", "factor", "character")),
+          "Stratify by variable must be `factor`, `character`, or `integer`"
+        )
+      )
       common_stack_push(substitute(
-        expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(s_var_name)), # nolint
+        expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(as.factor(s_var_name))), # nolint
         env = list(s_var_name = s_var_name)
       ))
     }
