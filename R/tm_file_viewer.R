@@ -61,11 +61,14 @@ ui_viewer <- function(id, ...) {
   ns <- NS(id)
 
   standard_layout(
-    output = uiOutput(ns("output")),
+    output = div(
+      verbatimTextOutput(ns("text")),
+      uiOutput(ns("output"))
+      ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       radioButtons(
-        inputId = ns("files_names"),
+        inputId = ns("file_name"),
         label = "Choose file to view:",
         choices = args$input_path,
         selected = args$input_path[[1]]
@@ -75,8 +78,8 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
-  observeEvent(input$files_names, {
-    data_path <- input$files_names
+  observeEvent(input$file_name, {
+    data_path <- input$file_name
 
     req(data_path)
 
@@ -96,9 +99,12 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     output_text <- test_path_text(data_path)
 
     if (output_text[1] != "error/warning") {
-      output$output <- {
-        renderText(output_text)
+      output$text <- {
+        renderText(paste0(output_text, collapse = "\n"))
       }
+
+      output$output <- renderUI({""})
+
     } else if (gsub(".*\\.", "", data_path) %in% c("pdf", "png", "jpg", "jpg", "jpeg", "svg")) {
       suffix <- switch(gsub(".+\\.", "", data_path),
         "pdf" = ".pdf",
@@ -122,6 +128,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
           src = paste0("www/0", suffix)
         )
       })
+
+      output$text <- renderText("")
+
     } else {
       output$output <- renderText({
         "Please select a supported format."
