@@ -76,58 +76,64 @@ ui_viewer <- function(id, ...) {
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
   observeEvent(input$files_names, {
-      data_path <- input$files_names
+    data_path <- input$files_names
 
-      req(data_path)
+    req(data_path)
 
-      test_path_text <- function(data_path) {
-        out <- tryCatch({
-          readLines(con = data_path)
-          },
-          error = function(cond) {
-            return("error/warning")
-          },
-          warning = function(cond) {
-            return("error/warning")
-          }
-        )
-      }
-
-      output_text <- test_path_text(data_path)
-
-      if (output_text[1] != "error/warning") {
-        output$output <- {
-          renderText(output_text)
+    test_path_text <- function(data_path) {
+      out <- tryCatch({
+        readLines(con = data_path)
+        },
+        error = function(cond) {
+          return("error/warning")
+        },
+        warning = function(cond) {
+          return("error/warning")
         }
-      } else if (gsub(".*\\.", "", data_path) %in% c("pdf", "png", "jpg", "jpg", "jpeg", "svg")) {
-        suffix <- switch(gsub(".+\\.", "", data_path),
-          "pdf" = ".pdf",
-          "png" = ".png",
-          "jpg" = ".jpg",
-          "jpeg" = ".jpeg",
-          "svg" = ".svg"
-        )
+      )
+    }
 
-        addResourcePath("www", system.file("www", package = "teal.modules.general"))
+    output_text <- test_path_text(data_path)
 
-        file.copy(
-          normalizePath(data_path, winslash = "/"),
-          paste0(system.file("www", package = "teal.modules.general"), "/0", suffix),
-          overwrite = T
-        )
-
-        output$output <- renderUI({
-          tags$iframe(
-            style = "height:600px; width:100%",
-            src = paste0("www/0", suffix)
-          )
-        })
-      } else {
-        output$output <- renderText({
-          "Please select a supported format."
-        })
+    if (output_text[1] != "error/warning") {
+      output$output <- {
+        renderText(output_text)
       }
-    },
-    ignoreNULL = FALSE
+    } else if (gsub(".*\\.", "", data_path) %in% c("pdf", "png", "jpg", "jpg", "jpeg", "svg")) {
+      suffix <- switch(gsub(".+\\.", "", data_path),
+        "pdf" = ".pdf",
+        "png" = ".png",
+        "jpg" = ".jpg",
+        "jpeg" = ".jpeg",
+        "svg" = ".svg"
+      )
+
+      addResourcePath("www", system.file("www", package = "teal.modules.general"))
+
+      file.copy(
+        normalizePath(data_path, winslash = "/"),
+        paste0(system.file("www", package = "teal.modules.general"), "/0", suffix),
+        overwrite = T
+      )
+
+      output$output <- renderUI({
+        tags$iframe(
+          style = "height:600px; width:100%",
+          src = paste0("www/0", suffix)
+        )
+      })
+    } else {
+      output$output <- renderText({
+        "Please select a supported format."
+      })
+    }
+  },
+  ignoreNULL = FALSE
   )
+
+  onStop(function() {
+    cat("Session stopped\n")
+    do.call(file.remove, list(list.files("inst/www", full.names = TRUE)))
+    cat("Static files cleared")
+    })
 }
