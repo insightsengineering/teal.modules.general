@@ -28,9 +28,17 @@
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = NULL) {
+
+  valid_url <- function(url_input, timeout = 2) {
+    con <- url(url_input)
+    check <- suppressWarnings(try(open.connection(con, open="rt", timeout = timeout), silent=T)[1])
+    suppressWarnings(try(close.connection(con), silent=T))
+    ifelse(is.null(check), TRUE, FALSE)
+  }
+
   stop_if_not(
     is_character_single(label),
-    is.null(input_path) || sapply(input_path, function(x) file.exists(x))
+    is.null(input_path) || sapply(input_path, function(x) file.exists(x)) || valid_url(input_path[[1]])
   )
 
   if (!is.null(input_path) && !is.list(input_path)) {
@@ -78,7 +86,15 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
+  temp_dir <- tempdir()
+  temp_dir_www <- paste0(temp_dir, "/www")
+  if (!dir.exists(temp_dir_www)){
+    dir.create(temp_dir_www)
+  }
+  addResourcePath("www", temp_dir_www)
+
   observeEvent(input$file_name, {
+
     data_path <- input$file_name
 
     req(data_path)
@@ -96,53 +112,71 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       )
     }
 
-    output_text <- test_path_text(data_path)
-
-    if (output_text[1] != "error/warning") {
-      output$text <- {
-        renderText(paste0(output_text, collapse = "\n"))
-      }
-
-      output$output <- renderUI({""})
-
-    } else if (gsub(".*\\.", "", data_path) %in% c("pdf", "png", "jpg", "jpg", "jpeg", "svg")) {
-      suffix <- switch(gsub(".+\\.", "", data_path),
-        "pdf" = ".pdf",
-        "png" = ".png",
-        "jpg" = ".jpg",
-        "jpeg" = ".jpeg",
-        "svg" = ".svg"
-      )
-
-      addResourcePath("www", system.file("www", package = "teal.modules.general"))
-
-      file.copy(
-        normalizePath(data_path, winslash = "/"),
-        paste0(system.file("www", package = "teal.modules.general"), "/0", suffix),
-        overwrite = T
-      )
-
+    file_class <- file(data_path)
+    if (class(file_class)[1] == "url"){
       output$output <- renderUI({
         tags$iframe(
           style = "height:600px; width:100%",
-          src = paste0("www/0", suffix)
+          src = data_path
         )
       })
 
       output$text <- renderText("")
-
     } else {
-      output$output <- renderText({
-        "Please select a supported format."
-      })
+      output_text <- test_path_text(data_path)
+      file <- gsub(".*/", "", data_path)
+      new_path <-  paste0(temp_dir_www, "/", file)
+
+      if (output_text[1] != "error/warning") {
+        output$text <- {
+          renderText(paste0(output_text, collapse = "\n"))
+        }
+
+        output$output <- renderUI({""})
+
+      } else if (gsub(".*\\.", "", data_path) %in% c("png", "jpg", "jpg", "jpeg", "svg")) {
+        file.copy(
+          normalizePath(data_path, winslash = "/"),
+          new_path
+        )
+
+        output$output <- renderUI({
+          tags$img(
+            style = "height:600px; width:100%",
+            src = paste0("www/", file)
+          )
+        })
+
+        output$text <- renderText("")
+
+      } else if (gsub(".*\\.", "", data_path) %in% c("pdf")) {
+        file.copy(
+          normalizePath(data_path, winslash = "/"),
+          new_path
+        )
+
+        output$output <- renderUI({
+          tags$embed(
+            style = "height:600px; width:100%",
+            src = paste0("www/", file)
+          )
+        })
+
+        output$text <- renderText("")
+      } else {
+        output$output <- renderText({
+          "Please select a supported format."
+        })
+      }
     }
+    close(file_class)
   },
   ignoreNULL = FALSE
   )
 
   onStop(function() {
     cat("Session stopped\n")
-    do.call(file.remove, list(list.files("inst/www", full.names = TRUE)))
+    do.call(file.remove, list(list.files(temp_dir_www, full.names = TRUE)))
     cat("Static files cleared")
     })
 }
