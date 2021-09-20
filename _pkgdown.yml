@@ -1,4 +1,4 @@
-url: https://go.roche.com/nest-docs/releases/latest/api-reference/teal.modules.general
+url: https://github.com/insightsengineering/teal.modules.general
 
 template:
   params:
@@ -7,7 +7,7 @@ template:
 navbar:
   right:
     - icon: fa-github
-      href: https://github.roche.com/NEST/teal.modules.general
+      href: https://github.com/insightsengineering/teal.modules.general
 
 reference:
   - title:
