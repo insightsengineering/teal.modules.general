@@ -139,7 +139,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       output$text <- {
         renderText(paste0(con_type$output_text, collapse = "\n"))
       }
-      output$output <- renderUI({""})
+      output$output <- renderUI("")
 
       output
       } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
