@@ -87,7 +87,7 @@ ui_viewer <- function(id, ...) {
 srv_viewer <- function(input, output, session, datasets, input_path) {
   temp_dir <- tempdir()
   temp_dir_www <- paste0(temp_dir, "/www")
-  if (!dir.exists(temp_dir_www)){
+  if (!dir.exists(temp_dir_www)) {
     dir.create(temp_dir_www)
   }
   addResourcePath("www", temp_dir_www)
