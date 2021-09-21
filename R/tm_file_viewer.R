@@ -44,7 +44,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   if (!is.null(input_path) && !is.list(input_path)) {
     input_path <- list(input_path)
   } else if (!is.null(input_path) && utils::file_test("-d", input_path[[1]])) {
-    files <- list.files(input_path[[1]])
+    files <- list.files(input_path[[1]], include.dirs = FALSE)
     input_path <- as.list(paste0(input_path[[1]], files))
   }
 
@@ -93,9 +93,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
   addResourcePath("www", temp_dir_www)
 
-  test_path_text <- function(data_path) {
+  test_path_text <- function(file_path) {
     out <- tryCatch({
-      readLines(con = data_path)
+      readLines(con = file_path)
     },
     error = function(cond) {
       return("error/warning")
@@ -106,72 +106,77 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     )
   }
 
-  observeEvent(input$file_name, {
+  handle_connection_type <- function(file_path) {
+    file_extension <- tools::file_ext(file_path)
+    file_class <- file(file_path)
+    close(file_class)
 
-    data_path <- input$file_name
-    req(data_path)
-
-    file_extension <- tools::file_ext(data_path)
-
-    file_class <- file(data_path)
-    if (class(file_class)[1] == "url"){
-      output$output <- renderUI({
-        tags$iframe(
-          style = "height:600px; width:100%",
-          src = data_path
-        )
-      })
-
-      output$text <- renderText("")
+    if (class(file_class)[1] == "url") {
+      output_text <- test_path_text(file_path)
+      list(file_path = file_path, output_text = output_text)
     } else {
-      output_text <- test_path_text(data_path)
-      file <- basename(data_path)
-      new_path <-  paste0(temp_dir_www, "/", file)
+      output_text <- test_path_text(file_path)
+      file <- basename(file_path)
+      temp_file <- basename(tempfile())
 
-      if (output_text[1] != "error/warning") {
-        output$text <- {
-          renderText(paste0(output_text, collapse = "\n"))
-        }
-
-        output$output <- renderUI({""})
-
-      } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "avif", "gif", "webp")) {
+      if (output_text[1] == "error/warning" || file_extension == "svg") {
+        new_path <-  paste0(temp_dir_www, "/", temp_file, ".", file_extension)
         file.copy(
-          normalizePath(data_path, winslash = "/"),
+          normalizePath(file_path, winslash = "/"),
           new_path
         )
+        file_path <- paste0("www/", temp_file, ".", file_extension)
+      }
 
+      list(file_path = file_path, output_text = output_text)
+    }
+  }
+
+  display_file <- function(file_path) {
+    con_type <- handle_connection_type(file_path)
+    file_extension <- tools::file_ext(file_path)
+
+    if (con_type$output_text[1] != "error/warning" && file_extension != "svg") {
+      output$text <- {
+        renderText(paste0(con_type$output_text, collapse = "\n"))
+      }
+      output$output <- renderUI({""})
+
+      output
+      } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
         output$output <- renderUI({
           tags$img(
-            style = "height:600px; width:100%",
-            src = paste0("www/", file)
+            src = con_type$file_path
           )
         })
-
         output$text <- renderText("")
 
+        output
       } else if (file_extension %in% c("pdf")) {
-        file.copy(
-          normalizePath(data_path, winslash = "/"),
-          new_path
-        )
-
         output$output <- renderUI({
           tags$embed(
             style = "height:600px; width:100%",
-            src = paste0("www/", file)
+            src = con_type$file_path
           )
         })
-
         output$text <- renderText("")
+
+        output
       } else {
         output$output <- renderText({
           "Please select a supported format."
         })
         output$text <- renderText("")
+
+        output
       }
     }
-    close(file_class)
+
+  observeEvent(input$file_name, {
+    file_path <- input$file_name
+    req(file_path)
+
+    output <- display_file(file_path)
   },
   ignoreNULL = FALSE
   )
