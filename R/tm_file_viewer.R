@@ -69,7 +69,6 @@ ui_viewer <- function(id, ...) {
 
   standard_layout(
     output = div(
-      verbatimTextOutput(ns("text")),
       uiOutput(ns("output"))
       ),
     encoding = div(
@@ -85,12 +84,11 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
-  temp_dir <- tempdir()
-  temp_dir_www <- paste0(temp_dir, "/www")
-  if (!dir.exists(temp_dir_www)) {
-    dir.create(temp_dir_www)
+  temp_dir <- tempfile()
+  if (!dir.exists(temp_dir)) {
+    dir.create(temp_dir, recursive = TRUE)
   }
-  addResourcePath("www", temp_dir_www)
+  addResourcePath(basename(temp_dir), temp_dir)
 
   test_path_text <- function(file_path) {
     out <- tryCatch({
@@ -115,16 +113,13 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       list(file_path = file_path, output_text = output_text)
     } else {
       output_text <- test_path_text(file_path)
-      file <- basename(file_path)
-      temp_file <- basename(tempfile())
 
       if (output_text[1] == "error/warning" || file_extension == "svg") {
-        new_path <-  paste0(temp_dir_www, "/", temp_file, ".", file_extension)
         file.copy(
           normalizePath(file_path, winslash = "/"),
-          new_path
+          temp_dir
         )
-        file_path <- paste0("www/", temp_file, ".", file_extension)
+        file_path <- paste0(basename(temp_dir), "/", basename(file_path))
       }
 
       list(file_path = file_path, output_text = output_text)
@@ -136,35 +131,16 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     file_extension <- tools::file_ext(file_path)
 
     if (con_type$output_text[1] != "error/warning" && file_extension != "svg") {
-      output$text <- {
-        renderText(paste0(con_type$output_text, collapse = "\n"))
-      }
-      output$output <- renderUI("")
-
-      output
+        tags$pre(paste0(con_type$output_text, collapse = "\n"))
       } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
-        output$output <- renderUI({
-          tags$img(
-            src = con_type$file_path
-          )
-        })
-        output$text <- renderText("")
-        output
+        tags$img(src = con_type$file_path)
       } else if (file_extension %in% c("pdf")) {
-        output$output <- renderUI({
-          tags$embed(
-            style = "height:600px; width:100%",
-            src = con_type$file_path
+        tags$embed(
+          style = "height:600px; width:100%",
+          src = con_type$file_path
           )
-        })
-        output$text <- renderText("")
-        output
       } else {
-        output$output <- renderText({
-          "Please select a supported format."
-        })
-        output$text <- renderText("")
-        output
+        tags$p("Please select a supported format.")
       }
     }
 
@@ -172,14 +148,16 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     file_path <- input$file_name
     req(file_path)
 
-    output <- display_file(file_path)
+    output$output <- renderUI({
+      display_file(file_path)
+    })
   },
   ignoreNULL = FALSE
   )
 
   onStop(function() {
     cat("Session stopped\n")
-    do.call(file.remove, list(list.files(temp_dir_www, full.names = TRUE)))
+    unlink(temp_dir)
     cat("Static files cleared")
     })
 }
