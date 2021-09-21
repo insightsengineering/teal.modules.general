@@ -28,11 +28,10 @@
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = NULL) {
-
   valid_url <- function(url_input, timeout = 2) {
     con <- url(url_input)
-    check <- suppressWarnings(try(open.connection(con, open="rt", timeout = timeout), silent=T)[1])
-    suppressWarnings(try(close.connection(con), silent=T))
+    check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
+    suppressWarnings(try(close.connection(con), silent = TRUE))
     ifelse(is.null(check), TRUE, FALSE)
   }
 
@@ -150,7 +149,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
           )
         })
         output$text <- renderText("")
-
         output
       } else if (file_extension %in% c("pdf")) {
         output$output <- renderUI({
@@ -160,14 +158,12 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
           )
         })
         output$text <- renderText("")
-
         output
       } else {
         output$output <- renderText({
           "Please select a supported format."
         })
         output$text <- renderText("")
-
         output
       }
     }
