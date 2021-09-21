@@ -93,24 +93,25 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
   addResourcePath("www", temp_dir_www)
 
+  test_path_text <- function(data_path) {
+    out <- tryCatch({
+      readLines(con = data_path)
+    },
+    error = function(cond) {
+      return("error/warning")
+    },
+    warning = function(cond) {
+      return("error/warning")
+    }
+    )
+  }
+
   observeEvent(input$file_name, {
 
     data_path <- input$file_name
-
     req(data_path)
 
-    test_path_text <- function(data_path) {
-      out <- tryCatch({
-        readLines(con = data_path)
-        },
-        error = function(cond) {
-          return("error/warning")
-        },
-        warning = function(cond) {
-          return("error/warning")
-        }
-      )
-    }
+    file_extension <- tools::file_ext(data_path)
 
     file_class <- file(data_path)
     if (class(file_class)[1] == "url"){
@@ -124,7 +125,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       output$text <- renderText("")
     } else {
       output_text <- test_path_text(data_path)
-      file <- gsub(".*/", "", data_path)
+      file <- basename(data_path)
       new_path <-  paste0(temp_dir_www, "/", file)
 
       if (output_text[1] != "error/warning") {
@@ -134,7 +135,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
         output$output <- renderUI({""})
 
-      } else if (gsub(".*\\.", "", data_path) %in% c("png", "jpg", "jpg", "jpeg", "svg")) {
+      } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "avif", "gif", "webp")) {
         file.copy(
           normalizePath(data_path, winslash = "/"),
           new_path
@@ -149,7 +150,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
         output$text <- renderText("")
 
-      } else if (gsub(".*\\.", "", data_path) %in% c("pdf")) {
+      } else if (file_extension %in% c("pdf")) {
         file.copy(
           normalizePath(data_path, winslash = "/"),
           new_path
@@ -167,6 +168,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         output$output <- renderText({
           "Please select a supported format."
         })
+        output$text <- renderText("")
       }
     }
     close(file_class)
