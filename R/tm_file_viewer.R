@@ -1,7 +1,7 @@
 #' File Viewer Teal Module
 #'
 #' The file viewer module provides a tool to upload and view static files.
-#' Supported formats include text formats, PDF, PNG, JPEG and SVG.
+#' Supported formats include text formats, PDF, PNG, APNG, JPEG, SVG, WEBP, GIF and BMP.
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
@@ -70,7 +70,7 @@ ui_viewer <- function(id, ...) {
   standard_layout(
     output = div(
       uiOutput(ns("output"))
-      ),
+    ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       radioButtons(
@@ -107,19 +107,17 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     file_extension <- tools::file_ext(file_path)
     file_class <- file(file_path)
     close(file_class)
+    output_text <- test_path_text(file_path)
 
     if (class(file_class)[1] == "url") {
-      output_text <- test_path_text(file_path)
       list(file_path = file_path, output_text = output_text)
     } else {
-      output_text <- test_path_text(file_path)
-
       if (output_text[1] == "error/warning" || file_extension == "svg") {
         file.copy(
           normalizePath(file_path, winslash = "/"),
           temp_dir
         )
-        file_path <- paste0(basename(temp_dir), "/", basename(file_path))
+        file_path <- file.path(basename(temp_dir), basename(file_path))
       }
 
       list(file_path = file_path, output_text = output_text)
@@ -131,33 +129,36 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     file_extension <- tools::file_ext(file_path)
 
     if (con_type$output_text[1] != "error/warning" && file_extension != "svg") {
-        tags$pre(paste0(con_type$output_text, collapse = "\n"))
-      } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
-        tags$img(src = con_type$file_path)
-      } else if (file_extension %in% c("pdf")) {
-        tags$embed(
-          style = "height:600px; width:100%",
-          src = con_type$file_path
-          )
-      } else {
-        tags$p("Please select a supported format.")
-      }
+      tags$pre(paste0(con_type$output_text, collapse = "\n"))
+    } else if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
+      tags$img(src = con_type$file_path, alt = "file does not exist")
+    } else if (file_extension %in% c("pdf")) {
+      tags$embed(
+        style = "height:600px; width:100%",
+        src = con_type$file_path
+      )
+    } else {
+      tags$p("Please select a supported format.")
     }
+  }
 
-  observeEvent(input$file_name, {
-    file_path <- input$file_name
-    req(file_path)
+  observeEvent(
+    eventExpr = input$file_name,
+    ignoreNULL = FALSE,
+    handlerExpr = {
+      file_path <- input$file_name
+      req(file_path)
 
-    output$output <- renderUI({
-      display_file(file_path)
-    })
-  },
-  ignoreNULL = FALSE
+      output$output <- renderUI({
+        display_file(file_path)
+      })
+    }
   )
 
   onStop(function() {
     cat("Session stopped\n")
+    removeResourcePath(basename(temp_dir))
     unlink(temp_dir)
     cat("Static files cleared")
-    })
+  })
 }
