@@ -4,7 +4,7 @@
 \alias{tm_file_viewer}
 \title{File Viewer Teal Module}
 \usage{
-tm_file_viewer(label = "File Viewer Module", input_path = NULL)
+tm_file_viewer(label = "File Viewer Module", input_path)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
@@ -13,7 +13,8 @@ tm_file_viewer(label = "File Viewer Module", input_path = NULL)
 }
 \description{
 The file viewer module provides a tool to upload and view static files.
-Supported formats include text formats, PDF, PNG, APNG, JPEG, SVG, WEBP, GIF and BMP.
+Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
+\code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
 library(scda)

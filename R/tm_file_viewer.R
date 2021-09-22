@@ -1,7 +1,8 @@
 #' File Viewer Teal Module
 #'
 #' The file viewer module provides a tool to upload and view static files.
-#' Supported formats include text formats, PDF, PNG, APNG, JPEG, SVG, WEBP, GIF and BMP.
+#' Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
+#' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
@@ -27,31 +28,27 @@
 #' }
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
-                           input_path = NULL) {
+                           input_path) {
   valid_url <- function(url_input, timeout = 2) {
     con <- url(url_input)
     check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
-    suppressWarnings(try(close.connection(con), silent = TRUE))
+    close.connection(con)
     ifelse(is.null(check), TRUE, FALSE)
   }
 
   stop_if_not(
     is_character_single(label),
-    is.null(input_path) || sapply(input_path, function(x) file.exists(x)) || valid_url(input_path[[1]])
+    sapply(input_path, function(x) file.exists(x)) || valid_url(input_path[[1]])
   )
 
-  if (!is.null(input_path) && !is.list(input_path)) {
+  if (!is.list(input_path)) {
     input_path <- list(input_path)
-  } else if (!is.null(input_path) && utils::file_test("-d", input_path[[1]])) {
+  } else if (utils::file_test("-d", input_path[[1]])) {
     files <- list.files(input_path[[1]], include.dirs = FALSE)
     input_path <- as.list(paste0(input_path[[1]], files))
   }
 
   args <- as.list(environment())
-
-  data_extract_list <- list(
-    input_path = input_path
-  )
 
   module(
     label = label,
@@ -95,10 +92,10 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       readLines(con = file_path)
     },
     error = function(cond) {
-      return("error/warning")
+      return(FALSE)
     },
     warning = function(cond) {
-      return("error/warning")
+      return(FALSE)
     }
     )
   }
@@ -112,7 +109,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     if (class(file_class)[1] == "url") {
       list(file_path = file_path, output_text = output_text)
     } else {
-      if (output_text[1] == "error/warning" || file_extension == "svg") {
+      if (isFALSE(output_text[1]) || file_extension == "svg") {
         file.copy(
           normalizePath(file_path, winslash = "/"),
           temp_dir
@@ -131,12 +128,12 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
     if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
       tags$img(src = con_type$file_path, alt = "file does not exist")
-    } else if (file_extension %in% c("pdf")) {
+    } else if (file_extension == "pdf") {
       tags$embed(
         style = "height:600px; width:100%",
         src = con_type$file_path
       )
-    } else if (con_type$output_text[1] != "error/warning") {
+    } else if (!isFALSE(con_type$output_text[1])) {
       tags$pre(paste0(con_type$output_text, collapse = "\n"))
     } else {
       tags$p("Please select a supported format.")
