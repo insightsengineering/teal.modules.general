@@ -13,7 +13,7 @@ tm_file_viewer(label = "File Viewer Module", input_path = NULL)
 }
 \description{
 The file viewer module provides a tool to upload and view static files.
-Supported formats include text formats, PDF, PNG, JPEG and SVG.
+Supported formats include text formats, PDF, PNG, APNG, JPEG, SVG, WEBP, GIF and BMP.
 }
 \examples{
 library(scda)
