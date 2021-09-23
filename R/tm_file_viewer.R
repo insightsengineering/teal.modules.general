@@ -157,9 +157,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   )
 
   onStop(function() {
-    message("Session stopped\n")
     removeResourcePath(basename(temp_dir))
     unlink(temp_dir)
-    message("Static files cleared\n")
   })
 }
