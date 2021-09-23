@@ -69,22 +69,44 @@ ui_viewer <- function(id, ...) {
 
   standard_layout(
     output = div(
-      uiOutput(ns("output"))
+      uiOutput(ns("output")),
+      verbatimTextOutput(ns("debug"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
+      shinyTree::shinyTree(ns("tree"), dragAndDrop=FALSE, sort = FALSE, wholerow = TRUE, theme="proton"),
       radioButtons(
         inputId = ns("file_name"),
         label = "Choose file to view:",
         choices = args$input_path,
         selected = args$input_path[[1]]
       ),
-      style = "overflow: scroll;"
+      style = "overflow: auto;"
     )
   )
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
+
+  # browser()
+
+
+  output$tree <- renderTree({
+    tree.list(input_path[[1]])
+  })
+
+  output$debug <- renderPrint({
+    # shinyTrees will also be available as inputs so you can
+    # monitor changes that occur to the tree as the user interacts
+    # with it.
+    if(length(get_selected(input$tree, format = "names"))>0)
+    {
+      obj <- get_selected(input$tree, format = "names")[[1]]
+      res <- paste(c(attr(obj, "ancestry"), obj), collapse = "/")
+      res
+    }
+  })
+
   temp_dir <- tempfile()
   if (!dir.exists(temp_dir)) {
     dir.create(temp_dir, recursive = TRUE)
@@ -143,21 +165,39 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     }
   }
 
-  observeEvent(
-    eventExpr = input$file_name,
-    ignoreNULL = FALSE,
-    handlerExpr = {
-      file_path <- input$file_name
-      req(file_path)
+  observeEvent(eventExpr = ({
+    # get_selected(input$tree)
+    input$file_name
+  }),
+  ignoreNULL = FALSE,
+  handlerExpr = {
+    # browser()
+    file_path <- input$file_name
 
-      output$output <- renderUI({
-        display_file(file_path)
-      })
-    }
-  )
+    req(file_path)
+
+    output$output <- renderUI({
+      display_file(file_path)
+    })
+  })
 
   onStop(function() {
     removeResourcePath(basename(temp_dir))
     unlink(temp_dir)
   })
+}
+
+# Helper function
+
+tree.list <- function(file.or.dir) {
+  isdir <- file.info(file.or.dir)$isdir
+  if (!isdir) {
+    out <- file.or.dir
+  } else {
+    files <- list.files(file.or.dir, full.names   = TRUE,
+                        include.dirs = TRUE)
+    out <- lapply(files, tree.list)
+    names(out) <- basename(files)
+  }
+  out
 }
