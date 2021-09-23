@@ -1,0 +1,16 @@
+pandoc: 2.3.1
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  using-association-plot: using-association-plot.html
+  using-bivariate-plot: using-bivariate-plot.html
+  using-cross-table: using-cross-table.html
+  using-regression-plots: using-regression-plots.html
+  using-response-plot: using-response-plot.html
+  using-scatterplot-matrix: using-scatterplot-matrix.html
+  using-scatterplot: using-scatterplot.html
+last_built: 2020-10-20T12:58Z
+urls:
+  reference: https://pages.github.roche.com/NEST/teal.modules.general/reference
+  article: https://pages.github.roche.com/NEST/teal.modules.general/articles
+
