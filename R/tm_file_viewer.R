@@ -38,14 +38,17 @@ tm_file_viewer <- function(label = "File Viewer Module",
 
   stop_if_not(
     is_character_single(label),
-    sapply(input_path, function(x) file.exists(x)) || valid_url(input_path[[1]])
+    vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
   )
 
   if (!is.list(input_path)) {
     input_path <- list(input_path)
-  } else if (utils::file_test("-d", input_path[[1]])) {
-    files <- list.files(input_path[[1]], include.dirs = FALSE)
-    input_path <- as.list(paste0(input_path[[1]], files))
+  } else if (all(vapply(input_path, function(x) utils::file_test("-d", x), logical(1)))) {
+    input_path_list <- lapply(input_path, function(x) {
+      files <- list.files(x, include.dirs = FALSE)
+      as.list(paste0(x, files))
+      })
+    input_path <- unlist(input_path_list)
   }
 
   args <- as.list(environment())
@@ -75,7 +78,8 @@ ui_viewer <- function(id, ...) {
         label = "Choose file to view:",
         choices = args$input_path,
         selected = args$input_path[[1]]
-      )
+      ),
+      style = "overflow: scroll;"
     )
   )
 }
@@ -125,7 +129,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     con_type <- handle_connection_type(file_path)
     file_extension <- tools::file_ext(file_path)
 
-
     if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
       tags$img(src = con_type$file_path, alt = "file does not exist")
     } else if (file_extension == "pdf") {
@@ -154,9 +157,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   )
 
   onStop(function() {
-    cat("Session stopped\n")
+    message("Session stopped\n")
     removeResourcePath(basename(temp_dir))
     unlink(temp_dir)
-    cat("Static files cleared")
+    message("Static files cleared\n")
   })
 }
