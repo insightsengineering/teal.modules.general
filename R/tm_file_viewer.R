@@ -31,9 +31,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
                            input_path) {
   valid_url <- function(url_input, timeout = 2) {
     con <- url(url_input)
-    check <-
-      suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)
-                       [1])
+    check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
     close.connection(con)
     ifelse(is.null(check), TRUE, FALSE)
   }
@@ -82,8 +80,7 @@ ui_viewer <- function(id, ...) {
         sort = FALSE,
         wholerow = TRUE,
         theme = "proton",
-        multiple = FALSE,
-        search = TRUE
+        multiple = FALSE
       ),
       radioButtons(
         inputId = ns("file_name"),
@@ -103,16 +100,14 @@ srv_viewer <-
            datasets,
            input_path) {
     output$tree <- renderTree({
-      tree.list(input_path[[1]])
+      tree_list(input_path[[1]])
     })
 
     output$debug <- renderPrint({
-      get_selected(input$tree)
       # shinyTrees will also be available as inputs so you can
       # monitor changes that occur to the tree as the user interacts
       # with it.
-      if (length(get_selected(input$tree, format = "names")) > 0)
-      {
+      if (length(get_selected(input$tree, format = "names")) > 0) {
         # for when shinyTree(multiple = TRUE)
         unlist(lapply(get_selected(input$tree, format = "names"), function(x) {
           paste(c(input$file_name, attr(x, "ancestry"), x), collapse = "/")
@@ -183,8 +178,7 @@ srv_viewer <-
       handlerExpr = {
 
         if (!is_empty(get_selected(input$tree)) &&
-            !is.null(attr(get_selected(input$tree)[[1]], "sticon")))
-        {
+            !is.null(attr(get_selected(input$tree)[[1]], "sticon"))) {
           obj <- get_selected(input$tree, format = "names")[[1]]
           file_path <-
             paste(c(input$file_name, attr(obj, "ancestry"), obj), collapse = "/")
@@ -204,12 +198,12 @@ srv_viewer <-
   }
 
 # Helper function
-tree.list <- function(file.or.dir) {
-  isdir <- file.info(file.or.dir)$isdir
+tree_list <- function(file_or_dir) {
+  isdir <- file.info(file_or_dir)$isdir
   if (!isdir) {
-    out <- file.or.dir
+    out <- file_or_dir
   } else {
-    files <- list.files(file.or.dir,
+    files <- list.files(file_or_dir,
                         full.names = TRUE,
                         include.dirs = TRUE)
 
@@ -217,7 +211,7 @@ tree.list <- function(file.or.dir) {
       if (!file.info(x)$isdir) {
         attr(x, "sticon") <- "fa fa-file-o"
       }
-      tree.list(x)
+      tree_list(x)
 
     })
     names(out) <- basename(files)
