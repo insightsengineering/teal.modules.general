@@ -38,15 +38,24 @@ reference:
       - call_fun_dots
       - create_sparklines.Date
       - create_sparklines.POSIXct
-      - create_sparklines.POSIXt
+      - create_sparklines.POSIXlt
       - create_sparklines.character
       - create_sparklines.default
       - create_sparklines.factor
+      - create_sparklines.logical
       - create_sparklines.numeric
+      - establish_updating_selection
+      - extract_input
       - get_datanames_selected
+      - get_var_description
       - list_or_null
       - plot_var_summary
+      - render_single_tab
+      - render_tab_header
+      - render_tab_table
+      - render_tabset_panel_content
       - shared_params
+      - validate_input
       - var_missings_info
       - var_summary_table
       - varname_w_label

@@ -88,9 +88,6 @@ ui_viewer <- function(id, ...) {
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
 
-  # browser()
-
-
   output$tree <- renderTree({
     tree.list(input_path[[1]])
   })
@@ -171,11 +168,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }),
   ignoreNULL = FALSE,
   handlerExpr = {
-    # browser()
     file_path <- input$file_name
-
     req(file_path)
-
     output$output <- renderUI({
       display_file(file_path)
     })
@@ -188,7 +182,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 }
 
 # Helper function
-
 tree.list <- function(file.or.dir) {
   isdir <- file.info(file.or.dir)$isdir
   if (!isdir) {
@@ -201,3 +194,4 @@ tree.list <- function(file.or.dir) {
   }
   out
 }
+
