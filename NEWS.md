@@ -1,5 +1,8 @@
 # teal.modules.general 0.2.10.9000
 
+### New features
+* New module `tm_file_viewer` was added for the uploading and visualization of static files.
+
 ### Enhancements
 * Added template for `tm_g_distibution` module.
 * Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
