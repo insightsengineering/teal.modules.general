@@ -1,5 +1,10 @@
-library(testthat)
-library(scda)
-
-test_results <- test_check("teal.modules.general")
-saveRDS(test_results, "unit_testing_results.rds")
+pkg_name <- "teal.modules.general"
+if (requireNamespace("testthat", quietly = TRUE)) {
+  library(testthat)
+  reporter <- MultiReporter$new(list(
+    CheckReporter$new(),
+    JunitReporter$new(file = "junit-result.xml")
+  ))
+  test_results <- test_check(pkg_name, reporter = reporter)
+  saveRDS(test_results, "unit_testing_results.rds")
+}
