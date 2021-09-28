@@ -37,6 +37,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
 
   stop_if_not(
     is_character_single(label),
+    is_character_list(input_path),
     list(
       vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
       "Non-existant file or url path, please provide valid paths."
@@ -157,7 +158,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   output$tree <- shinyTree::renderTree({
-    if (all(vapply(input_path, function(x) file.exists(x), FUN.VALUE = logical(1)))) {
+    if (all(vapply(input_path, file.exists, FUN.VALUE = logical(1)))) {
       tree_list(input_path)
     } else {
       input_path <- lapply(input_path, function(x) structure(x, sticon = "file"))
