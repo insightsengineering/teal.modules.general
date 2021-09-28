@@ -41,16 +41,6 @@ tm_file_viewer <- function(label = "File Viewer Module",
     vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
   )
 
-  if (!is.list(input_path)) {
-    input_path <- list(input_path)
-  } else if (all(vapply(input_path, function(x) utils::file_test("-d", x), logical(1)))) {
-    input_path_list <- lapply(input_path, function(x) {
-      files <- list.files(x, include.dirs = FALSE)
-      as.list(paste0(x, files))
-      })
-    input_path <- unlist(input_path_list)
-  }
-
   args <- as.list(environment())
 
   module(
@@ -73,13 +63,15 @@ ui_viewer <- function(id, ...) {
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      radioButtons(
-        inputId = ns("file_name"),
-        label = "Choose file to view:",
-        choices = args$input_path,
-        selected = args$input_path[[1]]
+      shinyTree::shinyTree(
+        ns("tree"),
+        dragAndDrop = FALSE,
+        sort = FALSE,
+        wholerow = TRUE,
+        theme = "proton",
+        multiple = FALSE
       ),
-      style = "overflow: scroll;"
+      style = "overflow-y: none; overflow-x: auto;"
     )
   )
 }
@@ -106,7 +98,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
   handle_connection_type <- function(file_path) {
     file_extension <- tools::file_ext(file_path)
-    file_class <- file(file_path)
+    file_class <- suppressWarnings(file(file_path))
     close(file_class)
     output_text <- test_path_text(file_path)
 
@@ -143,16 +135,46 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     }
   }
 
-  observeEvent(
-    eventExpr = input$file_name,
-    ignoreNULL = FALSE,
-    handlerExpr = {
-      file_path <- input$file_name
-      req(file_path)
+  tree_list <- function(file_or_dir) {
+    nested_list <- lapply(file_or_dir, function(y) {
+      isdir <- file.info(y)$isdir
 
-      output$output <- renderUI({
-        display_file(file_path)
-      })
+      if (!isdir) {
+        structure(y, sticon = "file")
+      } else {
+        files <- list.files(y, full.names = TRUE, include.dirs = TRUE)
+
+        out <- lapply(files, function(x) tree_list(x))
+        out <- unlist(out, recursive = F)
+        if (!is_empty(files)) names(out) <- basename(files)
+        out
+      }
+    })
+    names(nested_list) <- file_or_dir
+    nested_list
+  }
+
+  output$tree <- shinyTree::renderTree({
+    if (all(vapply(input_path, function(x) file.exists(x), FUN.VALUE = logical(1)))) {
+      tree_list(input_path)
+    } else {
+      names(input_path) <- input_path
+      input_path
+    }
+  })
+
+  observeEvent(
+    eventExpr = shinyTree::get_selected(input$tree),
+    ignoreNULL = TRUE,
+    handlerExpr = {
+      if (!is_empty(shinyTree::get_selected(input$tree))) {
+        obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
+        file_path <- paste0(c(attr(obj, "ancestry"), obj[1]), collapse = "/")
+        req(file_path)
+        output$output <- renderUI({
+          display_file(file_path)
+        })
+      }
     }
   )
 
