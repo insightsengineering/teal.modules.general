@@ -17,16 +17,15 @@ Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+data <- data.frame(1)
 
 app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl")
+  data = teal_data(
+    dataset("data", data)
   ),
   modules = root_modules(
-    tm_file_viewer(input_path = list("./"))
+    tm_file_viewer(input_path = list("."))
   )
 )
 \dontrun{
