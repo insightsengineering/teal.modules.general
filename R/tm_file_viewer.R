@@ -157,7 +157,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   output$tree <- shinyTree::renderTree({
-    if (all(vapply(input_path, function(x) file.exists(x), FUN.VALUE = logical(1)))) {
+    if (all(vapply(input_path, file.exists, FUN.VALUE = logical(1)))) {
       tree_list(input_path)
     } else {
       input_path <- lapply(input_path, function(x) structure(x, sticon = "file"))
