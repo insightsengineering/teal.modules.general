@@ -11,16 +11,15 @@
 #' @export
 #'
 #' @examples
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' data <- data.frame(1)
 #'
 #' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl")
+#'   data = teal_data(
+#'     dataset("data", data)
 #'   ),
 #'   modules = root_modules(
-#'     tm_file_viewer(input_path = list("./"))
+#'     tm_file_viewer(input_path = list("."))
 #'   )
 #' )
 #' \dontrun{
@@ -30,15 +29,18 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path) {
   valid_url <- function(url_input, timeout = 2) {
-    con <- url(url_input)
+    con <- try(url(url_input), silent = TRUE)
     check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
-    close.connection(con)
+    try(close.connection(con), silent = TRUE)
     ifelse(is.null(check), TRUE, FALSE)
   }
 
   stop_if_not(
     is_character_single(label),
-    vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
+    list(
+      vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
+      "Non-existant file or url path, please provide valid paths."
+    )
   )
 
   args <- as.list(environment())
@@ -158,20 +160,23 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     if (all(vapply(input_path, function(x) file.exists(x), FUN.VALUE = logical(1)))) {
       tree_list(input_path)
     } else {
+      input_path <- lapply(input_path, function(x) structure(x, sticon = "file"))
       names(input_path) <- input_path
       input_path
     }
   })
 
   observeEvent(
-    eventExpr = shinyTree::get_selected(input$tree),
+    eventExpr = input$tree,
     ignoreNULL = TRUE,
     handlerExpr = {
       if (!is_empty(shinyTree::get_selected(input$tree))) {
         obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
-        file_path <- paste0(c(attr(obj, "ancestry"), obj[1]), collapse = "/")
+        file_path <- do.call("file.path", as.list(c(attr(obj, "ancestry"), obj[1])))
         req(file_path)
+
         output$output <- renderUI({
+          validate(need(!isTRUE(file.info(file_path)$isdir), "Please select a single file."))
           display_file(file_path)
         })
       }
