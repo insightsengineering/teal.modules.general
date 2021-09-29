@@ -145,7 +145,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       close(file_class)
 
       if (class(file_class)[[1]] != "url") {
-      {
         isdir <- file.info(y)$isdir
         if (!isdir) {
           structure(y, sticon = "file")
