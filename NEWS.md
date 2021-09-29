@@ -26,6 +26,7 @@
 * Fixed bar plot order for factor variables in `tm_variable_browser`.
 * Fixed `Show parent dataset variables` functionality in `tm_variable_browser`.
 * Fixed getting data join keys method in `tm_missing_data`.
+* Fixed `tm_variable_browser` when a date variable is only NA.
 
 # teal.modules.general 0.2.10
 ### Enhancements
