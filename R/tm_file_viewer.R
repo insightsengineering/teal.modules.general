@@ -144,7 +144,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       file_class <- suppressWarnings(file(y))
       close(file_class)
 
-      if (class(file_class)[[1]]!="url")
+      if (class(file_class)[[1]] != "url") {
       {
         isdir <- file.info(y)$isdir
         if (!isdir) {
