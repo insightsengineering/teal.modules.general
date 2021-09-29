@@ -48,6 +48,7 @@ Imports:
   rtables (>= 0.3.8),
   scales,
   shinyjs,
+  shinyTree,
   shinyWidgets,
   sparkline,
   stats,
