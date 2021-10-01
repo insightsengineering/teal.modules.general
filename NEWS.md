@@ -15,7 +15,7 @@
 * Decoupling dataset list from the variables list parameters in `tm_g_scatterplotmatrix`.
 
 ### Miscellaneous
-* Removed mentions of Roche internal services from the README file.
+* Updated `LICENCE` and `README` with new package references.
 * Added `error_on_lint: TRUE` to `.lintr`.
 * Updated quantile `type = 2` argument in `tm_variable_browser` to be in line with STREAM.
 
