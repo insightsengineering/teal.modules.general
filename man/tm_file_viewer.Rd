@@ -20,14 +20,14 @@ Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 
 data <- data.frame(1)
 
-app <- init(
-  data = teal_data(
-    dataset("data", data)
-  ),
-  modules = root_modules(
-    tm_file_viewer(input_path = list("."))
-  )
-)
+app <- init(data = teal_data(dataset("data", data)),
+           modules = root_modules(tm_file_viewer(
+             input_path =
+               list(
+                 "./inst/sample_files",
+                 "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+               )
+           )))
 \dontrun{
 shinyApp(app$ui, app$server)
 }

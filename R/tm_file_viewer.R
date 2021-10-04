@@ -12,16 +12,16 @@
 #'
 #' @examples
 #'
-#' data <- data.frame(1)
+#'data <- data.frame(1)
 #'
-#' app <- init(
-#'   data = teal_data(
-#'     dataset("data", data)
-#'   ),
-#'   modules = root_modules(
-#'     tm_file_viewer(input_path = list("."))
-#'   )
-#' )
+#'app <- init(data = teal_data(dataset("data", data)),
+#'            modules = root_modules(tm_file_viewer(
+#'              input_path =
+#'                list(
+#'                  "./inst/sample_files",
+#'                  "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+#'                )
+#'            )))
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -89,7 +89,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
   test_path_text <- function(selected_path) {
     out <- tryCatch({
-      readLines(con = selected_path)
+      readLines(con = normalizePath(selected_path, winslash = "/"))
     },
     error = function(cond) {
       return(FALSE)
@@ -101,6 +101,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   handle_connection_type <- function(selected_path) {
+
     file_extension <- tools::file_ext(selected_path)
     file_class <- suppressWarnings(file(selected_path))
     close(file_class)
@@ -109,19 +110,18 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     if (class(file_class)[1] == "url") {
       list(selected_path = selected_path, output_text = output_text)
     } else {
-      if (isFALSE(output_text[1]) || file_extension == "svg") {
         file.copy(
           normalizePath(selected_path, winslash = "/"),
           temp_dir
         )
         selected_path <- file.path(basename(temp_dir), basename(selected_path))
-      }
 
       list(selected_path = selected_path, output_text = output_text)
     }
   }
 
   display_file <- function(selected_path) {
+
     con_type <- handle_connection_type(selected_path)
     file_extension <- tools::file_ext(selected_path)
 
