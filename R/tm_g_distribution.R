@@ -99,7 +99,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   }
 
   if (!is_class_list("data_extract_spec")(strata_var)) {
-    strata_var <- list(strata_var)
+    strata_var <- list_or_null(strata_var)
   }
 
   if (!is_class_list("data_extract_spec")(group_var)) {
