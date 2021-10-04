@@ -456,6 +456,11 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", style = "color:blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", style = "color:blue")))
+  }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
 
@@ -492,6 +497,11 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", style = "color:blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", style = "color:blue")))
+  }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
 
