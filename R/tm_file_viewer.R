@@ -110,11 +110,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     if (class(file_class)[1] == "url") {
       list(selected_path = selected_path, output_text = output_text)
     } else {
-      file.copy(normalizePath(selected_path, winslash = "/"),
-                temp_dir)
-      selected_path <-
-        file.path(basename(temp_dir), basename(selected_path))
-
+      file.copy(normalizePath(selected_path, winslash = "/"), temp_dir)
+      selected_path <- file.path(basename(temp_dir), basename(selected_path))
       list(selected_path = selected_path, output_text = output_text)
     }
   }
@@ -158,7 +155,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       } else {
         structure(y, sticon = "file")
       }
-
     })
     names(nested_list) <- file_or_dir
     nested_list
