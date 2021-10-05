@@ -25,6 +25,7 @@ Depends:
   ggplot2,
   magrittr,
   shiny,
+  shinyTree,
   teal (>= 0.10.0)
 Imports:
   broom,
@@ -48,7 +49,6 @@ Imports:
   rtables (>= 0.3.8),
   scales,
   shinyjs,
-  shinyTree,
   shinyWidgets,
   sparkline,
   stats,
