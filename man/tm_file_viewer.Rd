@@ -24,7 +24,7 @@ app <- init(data = teal_data(dataset("data", data)),
            modules = root_modules(tm_file_viewer(
              input_path =
                list(
-                 "./inst/sample_files",
+                 system.file("sample_files", package = "teal.modules.general"),
                  "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
                )
            )))
