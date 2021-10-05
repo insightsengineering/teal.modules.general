@@ -9,7 +9,8 @@ tm_file_viewer(label = "File Viewer Module", input_path)
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{input_path}{(`list`) A list of the input path to either specific files of accepted formats or a directory.}
+\item{input_path}{(`list`) A list of the input paths to either specific files of accepted formats or a directory.
+The paths can be specified as absolute paths or relative to the running directory of the application.}
 }
 \description{
 The file viewer module provides a tool to upload and view static files.
