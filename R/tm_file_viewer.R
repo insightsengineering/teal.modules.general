@@ -1,14 +1,14 @@
 #' File Viewer Teal Module
 #'
-#' The file viewer module provides a tool to upload and view static files.
+#' The file viewer module provides a tool to view static files.
 #' Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 #' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param input_path (`list`) A list of the input paths to either: specific files of accepted formats,
+#' @param input_path (`list`) `optional` A list of the input paths to either: specific files of accepted formats,
 #'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
-#'   directory of the application.
+#'   directory of the application. Will default to current working directory if not supplied.
 #'
 #' @export
 #'
@@ -29,7 +29,7 @@
 #' }
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
-                           input_path) {
+                           input_path = list("Current Working Directory" = ".")) {
 
   stop_if_not(
     is_character_single(label),
@@ -84,7 +84,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       readLines(con = selected_path)
     },
     error = function(cond) FALSE,
-    warning = function(cond) FALSE
+    warning = function(cond) {
+     `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
+    }
     )
   }
 
