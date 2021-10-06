@@ -12,16 +12,19 @@
 #'
 #' @examples
 #'
-#'data <- data.frame(1)
-#'
-#'app <- init(data = teal_data(dataset("data", data)),
-#'            modules = root_modules(tm_file_viewer(
-#'              input_path =
-#'                list(
-#'                  system.file("sample_files", package = "teal.modules.general"),
-#'                  "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
-#'                )
-#'            )))
+#' app <- init(
+#'   data = teal_data(
+#'     dataset("data", data)
+#'   ),
+#'   modules = root_modules(
+#'     tm_file_viewer(
+#'       input_path = list(
+#'         folder = system.file("sample_files", package = "teal.modules.general"),
+#'         url = "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+#'       )
+#'     )
+#'   )
+#' )
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -101,7 +104,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   handle_connection_type <- function(selected_path) {
-
     file_extension <- tools::file_ext(selected_path)
     file_class <- suppressWarnings(file(selected_path))
     close(file_class)
@@ -117,7 +119,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   display_file <- function(selected_path) {
-
     con_type <- handle_connection_type(selected_path)
     file_extension <- tools::file_ext(selected_path)
 
