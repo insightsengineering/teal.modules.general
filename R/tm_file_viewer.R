@@ -140,28 +140,26 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   tree_list <- function(file_or_dir) {
-    nested_list <- lapply(file_or_dir, function(y) {
-      file_class <- suppressWarnings(file(y))
+    nested_list <- lapply(file_or_dir, function(path) {
+      file_class <- suppressWarnings(file(path))
       close(file_class)
-
       if (class(file_class)[[1]] != "url") {
-        isdir <- file.info(y)$isdir
+        isdir <- file.info(path)$isdir
         if (!isdir) {
-          structure(y, sticon = "file")
+          structure(path, ancestry = path, sticon = "file")
         } else {
-          files <- list.files(y, full.names = TRUE, include.dirs = TRUE)
-
+          files <- list.files(path, full.names = TRUE, include.dirs = TRUE)
           out <- lapply(files, function(x) tree_list(x))
           out <- unlist(out, recursive = F)
           if (!is_empty(files)) names(out) <- basename(files)
           out
         }
       } else {
-        structure(y, sticon = "file")
+        structure(path, ancestry = path, sticon = "file")
       }
-
     })
-    names(nested_list) <- file_or_dir
+    missing_labels <- if (is.null(names(nested_list))) seq_along(nested_list) else which(names(nested_list) == "")
+    names(nested_list)[missing_labels] <- file_or_dir[missing_labels]
     nested_list
   }
 
@@ -175,11 +173,24 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     handlerExpr = {
       if (!is_empty(shinyTree::get_selected(input$tree))) {
         obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
-        selected_path <- do.call("file.path", as.list(c(attr(obj, "ancestry"), obj[1])))
-        req(selected_path)
+        repo <- attr(obj, "ancestry")
+        repo_collapsed <- if (length(repo) > 1) paste0(repo, collapse = "/") else repo
+        is_not_named <- file.exists(file.path(c(repo_collapsed, obj[1])))[1]
+
+        if (is_not_named) {
+          selected_path <- do.call("file.path", as.list(c(repo, obj[1])))
+        } else {
+          if (is_empty(repo)) {
+            selected_path <- do.call("file.path", as.list(attr(input$tree[[obj[1]]], "ancestry")))
+          } else {
+            selected_path <- do.call("file.path", as.list(attr(input$tree[[repo]][[obj[1]]], "ancestry")))
+          }
+        }
 
         output$output <- renderUI({
-          validate(need(!isTRUE(file.info(selected_path)$isdir), "Please select a single file."))
+          validate(
+            need(!isTRUE(file.info(selected_path)$isdir) && !is_empty(selected_path), "Please select a single file.")
+          )
           display_file(selected_path)
         })
       }
