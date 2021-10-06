@@ -13,6 +13,7 @@
 * Simplified returned R code in `tm_outliers` module.
 * Support `select_spec` for categorical variable in `tm_outliers` module.
 * Decoupling dataset list from the variables list parameters in `tm_g_scatterplotmatrix`.
+* Fixed `tm_variable_browser` histogram to contain at least 2 bars.
 
 ### Miscellaneous
 * Updated `LICENCE` and `README` with new package references.
