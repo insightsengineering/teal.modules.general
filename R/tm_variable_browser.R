@@ -1080,6 +1080,8 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   iqr <- qntls[3] - qntls[2]
   binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
+  x_span <- diff(range(x_vec))
+  if (x_span / binwidth >= 2) binwidth else x_span / 2
 }
 
 custom_sparkline_formatter <- function(labels, counts) {
