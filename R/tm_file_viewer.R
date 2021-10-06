@@ -7,8 +7,8 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @param input_path (`list`) A list of the input paths to either: specific files of accepted formats,
-#'   a directory or a URL.
-#'   The paths can be specified as absolute paths or relative to the running directory of the application.
+#'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
+#'   directory of the application.
 #'
 #' @export
 #'
