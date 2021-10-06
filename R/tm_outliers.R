@@ -479,6 +479,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             tidyr::pivot_longer(-categorical_var_name) %>%
             tidyr::pivot_wider(names_from = categorical_var, values_from = value) %>%
             tibble::column_to_rownames("name")
+          summary_table
         },
         env = list(
           categorical_var = categorical_var,
