@@ -41,8 +41,11 @@ tm_file_viewer <- function(label = "File Viewer Module",
     is_character_single(label),
     is_character_list(input_path) || is_character_vector(input_path),
     list(
-      vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
-      "Non-existant file or url path, please provide valid paths."
+      idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
+      paste0(
+        "Non-existant file or url path. Please provide valid paths for:\n",
+        paste0(input_path[!idx], collapse = "\n")
+      )
     )
   )
 
