@@ -6,9 +6,9 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param input_path (`list`) A list of the input paths to either: specific files of accepted formats,
+#' @param input_path (`list`) `optional` A list of the input paths to either: specific files of accepted formats,
 #'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
-#'   directory of the application.
+#'   directory of the application. Will default to current working directory if not supplied.
 #'
 #' @export
 #'
@@ -29,7 +29,7 @@
 #' }
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
-                           input_path) {
+                           input_path = list("Current Working Directory" = ".")) {
   valid_url <- function(url_input, timeout = 2) {
     con <- try(url(url_input), silent = TRUE)
     check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
