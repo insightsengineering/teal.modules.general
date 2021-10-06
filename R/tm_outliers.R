@@ -252,7 +252,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     )
     validate(need(input$method, "Please select a method"))
     validate(need(is.numeric(merged_data()$data()[[outlier_var]]), "`Variable` is not numeric"))
-    validate_has_data(merged_data()$data(), min_nrow = 10, complete = TRUE, allow_inf = FALSE)
+    validate_has_data(
+      # missing values in the categorical variable may be used to form a category of its own
+      `if`(
+        is_empty(categorical_var),
+        merged_data()$data(),
+        merged_data()$data()[, names(merged_data()$data()) != categorical_var]
+      ),
+      min_nrow = 10,
+      complete = TRUE,
+      allow_inf = FALSE
+    )
 
     # show/hide split_outliers
     if (is_empty(categorical_var)) {
@@ -281,13 +291,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         NULL
       }
 
-      if ("(Missing)" %in% input_catlevels) {
+      # If there are both string values "NA" and missing values NA, value_choices function should output a warning
+      if ("NA" %in% input_catlevels) {
         common_stack_push(
           substitute(
             expr = {
               ANL[[categorical_var]] <- dplyr::if_else(
                 is.na(ANL[[categorical_var]]),
-                "(Missing)",
+                "NA",
                 as.character(ANL[[categorical_var]])
               )
             },
