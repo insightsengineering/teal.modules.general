@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#'
+#' data <- data.frame(1)
 #' app <- init(
 #'   data = teal_data(
 #'     dataset("data", data)

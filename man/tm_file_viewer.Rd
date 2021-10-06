@@ -19,7 +19,7 @@ Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-
+data <- data.frame(1)
 app <- init(
   data = teal_data(
     dataset("data", data)
