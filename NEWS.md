@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.11
 
 ### New features
+* New module `tm_file_viewer` was added for the visualization of static files.
 * New module `tm_g_distibution` for distribution analysis.
 
 ### Enhancements
