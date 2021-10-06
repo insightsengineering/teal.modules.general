@@ -93,9 +93,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     out <- tryCatch({
       readLines(con = selected_path)
     },
-    error = function(cond) {
-      return(FALSE)
-    },
+    error = function(cond) FALSE,
     warning = function(cond) {
       if (grepl("^incomplete final line found on", cond[[1]])) {
         return(suppressWarnings(eval(cond[[2]])))
