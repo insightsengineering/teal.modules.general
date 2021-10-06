@@ -6,6 +6,7 @@
 #' @import ggplot2
 #' @import ggmosaic
 #' @import shiny
+#' @import shinyTree
 #' @import teal
 #' @import teal.devel
 #' @import utils.nest
