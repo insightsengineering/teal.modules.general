@@ -4,14 +4,17 @@
 \alias{tm_file_viewer}
 \title{File Viewer Teal Module}
 \usage{
-tm_file_viewer(label = "File Viewer Module", input_path)
+tm_file_viewer(
+  label = "File Viewer Module",
+  input_path = list(`Current Working Directory` = ".")
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{input_path}{(`list`) A list of the input paths to either: specific files of accepted formats,
+\item{input_path}{(`list`) `optional` A list of the input paths to either: specific files of accepted formats,
 a directory or a URL. The paths can be specified as absolute paths or relative to the running
-directory of the application.}
+directory of the application. Will default to current working directory if not supplied.}
 }
 \description{
 The file viewer module provides a tool to upload and view static files.
