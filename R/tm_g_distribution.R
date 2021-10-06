@@ -105,7 +105,13 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (!is_class_list("data_extract_spec")(group_var)) {
     group_var <- list_or_null(group_var)
   }
-
+  check_slider_input(
+    bins,
+    allow_null = FALSE,
+    allow_single = TRUE,
+    min = 1L,
+    max = Inf
+  )
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
