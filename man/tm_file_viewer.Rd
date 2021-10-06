@@ -17,7 +17,7 @@ a directory or a URL. The paths can be specified as absolute paths or relative t
 directory of the application. Will default to current working directory if not supplied.}
 }
 \description{
-The file viewer module provides a tool to upload and view static files.
+The file viewer module provides a tool to view static files.
 Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
