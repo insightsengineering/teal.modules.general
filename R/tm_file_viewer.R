@@ -29,7 +29,7 @@
 #' }
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
-                           input_path = list(".")) {
+                           input_path = list("Current Working Directory" = ".")) {
   valid_url <- function(url_input, timeout = 2) {
     con <- try(url(url_input), silent = TRUE)
     check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])

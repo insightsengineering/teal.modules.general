@@ -4,7 +4,10 @@
 \alias{tm_file_viewer}
 \title{File Viewer Teal Module}
 \usage{
-tm_file_viewer(label = "File Viewer Module", input_path = list("."))
+tm_file_viewer(
+  label = "File Viewer Module",
+  input_path = list(`Current Working Directory` = ".")
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
