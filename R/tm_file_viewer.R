@@ -6,7 +6,9 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param input_path (`list`) A list of the input path to either specific files of accepted formats or a directory.
+#' @param input_path (`list`) A list of the input paths to either: specific files of accepted formats,
+#'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
+#'   directory of the application.
 #'
 #' @export
 #'
@@ -97,12 +99,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     out <- tryCatch({
       readLines(con = normalizePath(selected_path, winslash = "/"))
     },
-    error = function(cond) {
-      return(FALSE)
-    },
-    warning = function(cond) {
-      return(FALSE)
-    }
+    error = function(cond) FALSE,
+    warning = function(cond) FALSE
     )
   }
 
