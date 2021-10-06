@@ -159,7 +159,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         structure(y, ancestry = y, sticon = "file")
       }
     })
-
     missing_labels <- if (is.null(names(nested_list))) seq_along(nested_list) else which(names(nested_list) == "")
     names(nested_list)[missing_labels] <- file_or_dir[missing_labels]
     nested_list
@@ -176,7 +175,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       if (!is_empty(shinyTree::get_selected(input$tree))) {
         obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
         repo <- attr(obj, "ancestry")
-        repo_collapsed <- if(length(repo) > 1) paste0(repo, collapse = "/") else repo
+        repo_collapsed <- if (length(repo) > 1) paste0(repo, collapse = "/") else repo
         is_not_named <- file.exists(file.path(c(repo_collapsed, obj[1])))[1]
 
         if (is_not_named) {
