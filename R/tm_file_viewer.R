@@ -13,15 +13,20 @@
 #' @export
 #'
 #' @examples
-#'
 #' data <- data.frame(1)
-#'
 #' app <- init(
 #'   data = teal_data(
 #'     dataset("data", data)
 #'   ),
 #'   modules = root_modules(
-#'     tm_file_viewer(input_path = list("."))
+#'     tm_file_viewer(
+#'       input_path = list(
+#'         folder = system.file("sample_files", package = "teal.modules.general"),
+#'         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
+#'         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
+#'         url = "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+#'       )
+#'     )
 #'   )
 #' )
 #' \dontrun{
@@ -94,7 +99,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
   test_path_text <- function(selected_path) {
     out <- tryCatch({
-      readLines(con = selected_path)
+      readLines(con = normalizePath(selected_path, winslash = "/"))
     },
     error = function(cond) FALSE,
     warning = function(cond) {
@@ -112,14 +117,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     if (class(file_class)[1] == "url") {
       list(selected_path = selected_path, output_text = output_text)
     } else {
-      if (isFALSE(output_text[1]) || file_extension == "svg") {
-        file.copy(
-          normalizePath(selected_path, winslash = "/"),
-          temp_dir
-        )
-        selected_path <- file.path(basename(temp_dir), basename(selected_path))
-      }
-
+      file.copy(normalizePath(selected_path, winslash = "/"), temp_dir)
+      selected_path <- file.path(basename(temp_dir), basename(selected_path))
       list(selected_path = selected_path, output_text = output_text)
     }
   }
