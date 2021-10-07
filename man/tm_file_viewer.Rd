@@ -22,15 +22,20 @@ Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-
 data <- data.frame(1)
-
 app <- init(
   data = teal_data(
     dataset("data", data)
   ),
   modules = root_modules(
-    tm_file_viewer(input_path = list("."))
+    tm_file_viewer(
+      input_path = list(
+        folder = system.file("sample_files", package = "teal.modules.general"),
+        png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
+        txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
+        url = "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+      )
+    )
   )
 )
 \dontrun{
