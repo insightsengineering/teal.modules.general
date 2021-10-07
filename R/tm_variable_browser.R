@@ -415,6 +415,11 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", style = "color:blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date", style = "color:blue")))
+  }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
 
@@ -451,6 +456,11 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", style = "color:blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", style = "color:blue")))
+  }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
 
@@ -487,6 +497,11 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", style = "color:blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", style = "color:blue")))
+  }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
 
@@ -1065,6 +1080,9 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   iqr <- qntls[3] - qntls[2]
   binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
+  # to ensure at least two bins when variable span is very small
+  x_span <- diff(range(x_vec))
+  if (isTRUE(x_span / binwidth >= 2)) binwidth else x_span / 2
 }
 
 custom_sparkline_formatter <- function(labels, counts) {

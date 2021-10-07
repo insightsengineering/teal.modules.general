@@ -1,8 +1,8 @@
 Package: teal.modules.general
 Type: Package
 Title: General modules to add to a teal application
-Date: 2021-07-07
-Version: 0.2.10.9000
+Date: 2021-10-13
+Version: 0.2.11
 Authors@R: c(
     person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
     person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = "aut"),
@@ -25,7 +25,8 @@ Depends:
   ggplot2,
   magrittr,
   shiny,
-  teal (>= 0.9.5)
+  shinyTree,
+  teal (>= 0.10.0)
 Imports:
   broom,
   colourpicker,
@@ -52,19 +53,19 @@ Imports:
   sparkline,
   stats,
   stringr,
-  teal.devel (>= 0.2.11),
-  tern (>= 0.7.4),
+  teal.devel (>= 0.2.12),
+  tern (>= 0.7.5),
   tibble,
   tidyr,
   tidyselect,
   utils,
-  utils.nest (>= 0.2.9)
+  utils.nest (>= 0.2.11)
 Suggests:
   knitr,
-  scda(>= 0.1.0),
-  scda.2021(>= 0.1.0),
+  scda(>= 0.1.1),
+  scda.2021(>= 0.1.1),
   rmarkdown,
-  test.nest (>= 0.2.9),
+  test.nest (>= 0.2.11),
   testthat (>= 2.0)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr

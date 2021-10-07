@@ -1,31 +1,27 @@
-# teal.modules.general 0.2.10.9000
+# teal.modules.general 0.2.11
 
 ### New features
-* New module `tm_file_viewer` was added for the uploading and visualization of static files.
+* New module `tm_file_viewer` was added for the visualization of static files.
+* New module `tm_g_distibution` for distribution analysis.
 
 ### Enhancements
-* Added template for `tm_g_distibution` module.
-* Added sparkline support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
+* Added `sparkline` support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 * Added `filter_spec` support in  `tm_outliers` module.
 * Added ordered select input support in  `tm_g_scatterplotmatrix`, `tm_g_association` and `tm_t_crosstable` modules.
 * Modified the trend line feature in `tm_g_scatterplot` to display the raw equation that will equal the actual y value when the actual x values are plugged in.
-* Added validations to the theoretical distributions' parameters of `tm_g_distribution`.
 * Simplified returned R code in `tm_outliers` module.
 * Support `select_spec` for categorical variable in `tm_outliers` module.
-* Updated Show R Code in `tm_outliers` module to omit filtering for categorical variable if all levels are selected.
 * Decoupling dataset list from the variables list parameters in `tm_g_scatterplotmatrix`.
-* Added validation to the group by and stratify by variables of `tm_g_distribution` to check that they are categorical variables.
+* Fixed `tm_variable_browser` histogram to contain at least 2 bars.
 
 ### Miscellaneous
-* Removed mentions of Roche internal services from the README file.
+* Updated `LICENCE` and `README` with new package references.
 * Added `error_on_lint: TRUE` to `.lintr`.
 * Updated quantile `type = 2` argument in `tm_variable_browser` to be in line with STREAM.
 
 ### Bug fixes
 * Fixed bar plot order for factor variables in `tm_variable_browser`.
-* Fixed `Show parent dataset variables` functionality in `tm_variable_browser`.
-* Fixed getting data join keys method in `tm_missing_data`.
 
 # teal.modules.general 0.2.10
 ### Enhancements

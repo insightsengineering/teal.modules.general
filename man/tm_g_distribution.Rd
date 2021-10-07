@@ -20,22 +20,22 @@ tm_g_distribution(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{dist_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-variable to consider for the distribution analysis.}
+\item{dist_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Variable to consider for the distribution analysis.}
 
-\item{strata_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-categorical variable to split the selected distribution variable on.}
+\item{strata_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Categorical variable to split the selected distribution variable on.}
 
-\item{group_var}{optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+\item{group_var}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which data columns to use for faceting rows.}
 
-\item{freq}{optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
-Defaults to density (`FALSE`).}
+\item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+Defaults to density (\code{FALSE}).}
 
-\item{bins}{optional, (`integer`) If scalar then the histogram bins will have a fixed size.
+\item{bins}{optional, (\code{integer(1)} or \code{integer(3)}) If scalar then the histogram bins will have a fixed size.
 If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
-vector of length three with `c(value, min, max)`.
-Defaults to `c(30L, 1L, 100L)`.}
+vector of length three with \code{c(value, min, max)}.
+Defaults to \code{c(30L, 1L, 100L)}.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -51,9 +51,29 @@ output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 }
 \description{
+Distribution Module
+}
+\details{
 Module to analyze and explore univariate variable distribution
 }
 \examples{
+# Example with non-clinical data
+app <- init(
+  data = teal_data(dataset("iris", iris)),
+  modules = list(
+    tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "iris",
+        select = select_spec(variable_choices("iris"), "Petal.Length")
+      )
+    )
+  )
+)
+\dontrun{
+shinyApp(app$ui, app$server)
+}
+
+# Example with clinical data
 library(scda)
 ADSL <- synthetic_cdisc_data("latest")$adsl
 

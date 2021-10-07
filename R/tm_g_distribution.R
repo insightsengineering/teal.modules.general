@@ -1,5 +1,7 @@
 #' Distribution Module
+#' @md
 #'
+#' @details
 #' Module to analyze and explore univariate variable distribution
 #'
 #' @inheritParams teal::module
@@ -7,14 +9,14 @@
 #' @inheritParams shared_params
 #'
 #' @param dist_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  variable to consider for the distribution analysis.
+#'  Variable to consider for the distribution analysis.
 #' @param strata_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   categorical variable to split the selected distribution variable on.
+#'   Categorical variable to split the selected distribution variable on.
 #' @param group_var  optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which data columns to use for faceting rows.
 #' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
 #'   Defaults to density (`FALSE`).
-#' @param bins optional, (`integer`) If scalar then the histogram bins will have a fixed size.
+#' @param bins optional, (`integer(1)` or `integer(3)`) If scalar then the histogram bins will have a fixed size.
 #'   If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
 #'   vector of length three with `c(value, min, max)`.
 #'   Defaults to `c(30L, 1L, 100L)`.
@@ -22,6 +24,23 @@
 #' @export
 #'
 #' @examples
+#' # Example with non-clinical data
+#' app <- init(
+#'   data = teal_data(dataset("iris", iris)),
+#'   modules = list(
+#'     tm_g_distribution(
+#'       dist_var = data_extract_spec(
+#'         dataname = "iris",
+#'         select = select_spec(variable_choices("iris"), "Petal.Length")
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
+#'
+#' # Example with clinical data
 #' library(scda)
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
@@ -86,7 +105,13 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (!is_class_list("data_extract_spec")(group_var)) {
     group_var <- list_or_null(group_var)
   }
-
+  check_slider_input(
+    bins,
+    allow_null = FALSE,
+    allow_single = TRUE,
+    min = 1L,
+    max = Inf
+  )
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),

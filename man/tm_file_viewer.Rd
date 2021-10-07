@@ -4,29 +4,33 @@
 \alias{tm_file_viewer}
 \title{File Viewer Teal Module}
 \usage{
-tm_file_viewer(label = "File Viewer Module", input_path)
+tm_file_viewer(
+  label = "File Viewer Module",
+  input_path = list(`Current Working Directory` = ".")
+)
 }
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{input_path}{(`list`) A list of the input path to either specific files of accepted formats or a directory.}
+\item{input_path}{(`list`) `optional` A list of the input paths to either: specific files of accepted formats,
+a directory or a URL. The paths can be specified as absolute paths or relative to the running
+directory of the application. Will default to current working directory if not supplied.}
 }
 \description{
-The file viewer module provides a tool to upload and view static files.
+The file viewer module provides a tool to view static files.
 Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+data <- data.frame(1)
 
 app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl")
+  data = teal_data(
+    dataset("data", data)
   ),
   modules = root_modules(
-    tm_file_viewer(input_path = list("./"))
+    tm_file_viewer(input_path = list("."))
   )
 )
 \dontrun{
