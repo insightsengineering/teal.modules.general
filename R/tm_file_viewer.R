@@ -36,6 +36,10 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
 
+  if (is.null(label) || length(label) == 0 || label == "") {
+    label <- " "
+  }
+
   stop_if_not(
     is_character_single(label),
     is_character_list(input_path) || is_character_vector(input_path)
