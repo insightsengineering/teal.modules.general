@@ -1,14 +1,14 @@
 #' File Viewer Teal Module
 #'
-#' The file viewer module provides a tool to upload and view static files.
+#' The file viewer module provides a tool to view static files.
 #' Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 #' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
-#' @param input_path (`list`) A list of the input paths to either: specific files of accepted formats,
+#' @param input_path (`list`) `optional` A list of the input paths to either: specific files of accepted formats,
 #'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
-#'   directory of the application.
+#'   directory of the application. Will default to current working directory if not supplied.
 #'
 #' @export
 #'
@@ -35,7 +35,7 @@
 #' }
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
-                           input_path) {
+                           input_path = list("Current Working Directory" = ".")) {
   valid_url <- function(url_input, timeout = 2) {
     con <- try(url(url_input), silent = TRUE)
     check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
@@ -47,8 +47,11 @@ tm_file_viewer <- function(label = "File Viewer Module",
     is_character_single(label),
     is_character_list(input_path) || is_character_vector(input_path),
     list(
-      vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
-      "Non-existant file or url path, please provide valid paths."
+      idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
+      paste0(
+        "Non-existant file or url path. Please provide valid paths for:\n",
+        paste0(input_path[!idx], collapse = "\n")
+      )
     )
   )
 
@@ -100,7 +103,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
       readLines(con = normalizePath(selected_path, winslash = "/"))
     },
     error = function(cond) FALSE,
-    warning = function(cond) FALSE
+    warning = function(cond) {
+     `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
+    }
     )
   }
 
