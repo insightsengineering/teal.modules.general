@@ -2,7 +2,7 @@
 
 ### New features
 * A new module, `tm_file_viewer`, was added for the visualization of static files.
-* A new module, `tm_g_distibution`, was added for distribution analysis.
+* A new module, `tm_g_distribution`, was added for distribution analysis.
 
 ### Enhancements
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
