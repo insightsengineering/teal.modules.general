@@ -60,7 +60,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
     if (!all(idx)) {
       warning(
         paste0(
-          "Non-existant file or url path. Please provide valid paths for:\n",
+          "Non-existent file or url path. Please provide valid paths for:\n",
           paste0(input_path[!idx], collapse = "\n")
         )
       )
