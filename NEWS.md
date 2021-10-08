@@ -1,19 +1,32 @@
 # teal.modules.general 0.2.11
 
 ### New features
-* New module `tm_file_viewer` was added for the visualization of static files.
-* New module `tm_g_distibution` for distribution analysis.
+* A new module, `tm_file_viewer`, was added for the visualization of static files.
+* A new module, `tm_g_distribution`, was added for distribution analysis.
 
 ### Enhancements
-* Added `sparkline` support for `Date`/`POSIXct`/`POSIXlt` variables in `tm_variable_browser`.
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
-* Added `filter_spec` support in  `tm_outliers` module.
-* Added ordered select input support in  `tm_g_scatterplotmatrix`, `tm_g_association` and `tm_t_crosstable` modules.
-* Modified the trend line feature in `tm_g_scatterplot` to display the raw equation that will equal the actual y value when the actual x values are plugged in.
-* Simplified returned R code in `tm_outliers` module.
-* Support `select_spec` for categorical variable in `tm_outliers` module.
-* Decoupling dataset list from the variables list parameters in `tm_g_scatterplotmatrix`.
-* Fixed `tm_variable_browser` histogram to contain at least 2 bars.
+#### `tm_variable_browser`
+* Added `sparkline` support for `Date`/`POSIXct`/`POSIXlt` variable types.
+* Fixed histograms to contain at least two bars.
+
+#### `tm_outliers`
+* Added `filter_spec` support.
+* Simplified returned R code.
+* Support `select_spec` for categorical variables.
+
+#### `tm_g_scatterplotmatrix`
+* Added ordered select input support.
+* Decoupled the dataset list from the variables list parameters.
+
+#### `tm_g_association`
+* Added ordered select input support.
+
+#### `tm_t_crosstable`
+* Added ordered select input support.
+
+#### `tm_g_scatterplot`
+* Modified the trend line feature of the scatterplot to display the raw equation that will equal the actual `y` value when the actual `x` values are plugged in.
 
 ### Miscellaneous
 * Updated `LICENCE` and `README` with new package references.
@@ -21,7 +34,7 @@
 * Updated quantile `type = 2` argument in `tm_variable_browser` to be in line with STREAM.
 
 ### Bug fixes
-* Fixed bar plot order for factor variables in `tm_variable_browser`.
+* Fixed the bar plot order for factor variables in `tm_variable_browser`.
 
 # teal.modules.general 0.2.10
 ### Enhancements
