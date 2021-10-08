@@ -186,13 +186,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   output$tree <- shinyTree::renderTree({
-    valid_url <- function(url_input, timeout = 2) {
-      con <- try(url(url_input), silent = TRUE)
-      check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
-      try(close.connection(con), silent = TRUE)
-      ifelse(is.null(check), TRUE, FALSE)
-    }
-
     if (!is_empty(input_path)) {
       tree_list(input_path)
     } else {
