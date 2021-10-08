@@ -101,9 +101,12 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
   addResourcePath(basename(temp_dir), temp_dir)
 
-  test_path_text <- function(selected_path) {
+  test_path_text <- function(selected_path, type) {
     out <- tryCatch({
-      readLines(con = normalizePath(selected_path, winslash = "/"))
+      if (type != "url") {
+        selected_path <- normalizePath(selected_path, winslash = "/")
+      }
+      readLines(con = selected_path)
     },
     error = function(cond) FALSE,
     warning = function(cond) {
@@ -116,7 +119,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     file_extension <- tools::file_ext(selected_path)
     file_class <- suppressWarnings(file(selected_path))
     close(file_class)
-    output_text <- test_path_text(selected_path)
+
+    output_text <- test_path_text(selected_path, type = class(file_class)[1])
 
     if (class(file_class)[1] == "url") {
       list(selected_path = selected_path, output_text = output_text)
@@ -130,7 +134,6 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   display_file <- function(selected_path) {
     con_type <- handle_connection_type(selected_path)
     file_extension <- tools::file_ext(selected_path)
-
     if (file_extension %in% c("png", "apng", "jpg", "jpeg", "svg", "gif", "webp", "bmp")) {
       tags$img(src = con_type$selected_path, alt = "file does not exist")
     } else if (file_extension == "pdf") {
