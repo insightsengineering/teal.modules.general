@@ -35,28 +35,43 @@
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
-  valid_url <- function(url_input, timeout = 2) {
-    con <- try(url(url_input), silent = TRUE)
-    check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
-    try(close.connection(con), silent = TRUE)
-    ifelse(is.null(check), TRUE, FALSE)
-  }
 
   if (is.null(label) || length(label) == 0 || label == "") {
     label <- " "
   }
+  if (is.null(input_path) || length(input_path) == 0 || input_path == "") {
+    input_path <- list()
+  }
 
   stop_if_not(
     is_character_single(label),
-    is_character_list(input_path) || is_character_vector(input_path),
-    list(
-      idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1)),
-      paste0(
-        "Non-existant file or url path. Please provide valid paths for:\n",
-        paste0(input_path[!idx], collapse = "\n")
-      )
-    )
+    is_character_list(input_path, 0) || is_character_vector(input_path)
   )
+
+  if (length(input_path) > 0) {
+    valid_url <- function(url_input, timeout = 2) {
+      con <- try(url(url_input), silent = TRUE)
+      check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
+      try(close.connection(con), silent = TRUE)
+      ifelse(is.null(check), TRUE, FALSE)
+    }
+    idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
+
+    if (!all(idx)) {
+      warning(
+        paste0(
+          "Non-existent file or url path. Please provide valid paths for:\n",
+          paste0(input_path[!idx], collapse = "\n")
+        )
+      )
+    }
+    input_path <- input_path[idx]
+  } else {
+    warning(
+      "No file or url paths were provided."
+    )
+  }
+
 
   args <- as.list(environment())
 
@@ -167,13 +182,18 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         structure(path, ancestry = path, sticon = "file")
       }
     })
+
     missing_labels <- if (is.null(names(nested_list))) seq_along(nested_list) else which(names(nested_list) == "")
     names(nested_list)[missing_labels] <- file_or_dir[missing_labels]
     nested_list
   }
 
   output$tree <- shinyTree::renderTree({
-    tree_list(input_path)
+    if (!is_empty(input_path)) {
+      tree_list(input_path)
+    } else {
+      list("Empty Path" = NULL)
+    }
   })
 
   observeEvent(
