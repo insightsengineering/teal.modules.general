@@ -4,6 +4,9 @@
 * A new module, `tm_file_viewer`, was added for the visualization of static files.
 * A new module, `tm_g_distribution`, was added for distribution analysis.
 
+### Bug fixes
+* Fixed the bar plot order for factor variables in `tm_variable_browser`.
+
 ### Enhancements
 * Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 #### `tm_variable_browser`
@@ -32,9 +35,6 @@
 * Updated `LICENCE` and `README` with new package references.
 * Added `error_on_lint: TRUE` to `.lintr`.
 * Updated quantile `type = 2` argument in `tm_variable_browser` to be in line with STREAM.
-
-### Bug fixes
-* Fixed the bar plot order for factor variables in `tm_variable_browser`.
 
 # teal.modules.general 0.2.10
 ### Enhancements
