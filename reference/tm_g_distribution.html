@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Distribution Module — tm_g_distribution" />
-<meta property="og:description" content="Module to analyze and explore univariate variable distribution" />
+<meta property="og:description" content="Distribution Module" />
 
 
 
@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9000</span>
       </span>
     </div>
 
@@ -160,7 +160,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Module to analyze and explore univariate variable distribution</p>
+    <p>Distribution Module</p>
     </div>
 
     <pre class="usage"><span class='fu'>tm_g_distribution</span><span class='op'>(</span>
@@ -185,30 +185,30 @@
     </tr>
     <tr>
       <th>dist_var</th>
-      <td><p>(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-variable to consider for the distribution analysis.</p></td>
+      <td><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+Variable to consider for the distribution analysis.</p></td>
     </tr>
     <tr>
       <th>strata_var</th>
-      <td><p>(`data_extract_spec` or `list` of multiple `data_extract_spec`)
-categorical variable to split the selected distribution variable on.</p></td>
+      <td><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+Categorical variable to split the selected distribution variable on.</p></td>
     </tr>
     <tr>
       <th>group_var</th>
-      <td><p>optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+      <td><p>optional, (<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
 Which data columns to use for faceting rows.</p></td>
     </tr>
     <tr>
       <th>freq</th>
-      <td><p>optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
-Defaults to density (`FALSE`).</p></td>
+      <td><p>optional, (<code>logical</code>) Whether to display frequency (<code>TRUE</code>) or density (<code>FALSE</code>).
+Defaults to density (<code>FALSE</code>).</p></td>
     </tr>
     <tr>
       <th>bins</th>
-      <td><p>optional, (`integer`) If scalar then the histogram bins will have a fixed size.
+      <td><p>optional, (<code><a href='https://rdrr.io/r/base/integer.html'>integer(1)</a></code> or <code><a href='https://rdrr.io/r/base/integer.html'>integer(3)</a></code>) If scalar then the histogram bins will have a fixed size.
 If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
-vector of length three with `c(value, min, max)`.
-Defaults to `c(30L, 1L, 100L)`.</p></td>
+vector of length three with <code><a href='https://rdrr.io/r/base/c.html'>c(value, min, max)</a></code>.
+Defaults to <code><a href='https://rdrr.io/r/base/c.html'>c(30L, 1L, 100L)</a></code>.</p></td>
     </tr>
     <tr>
       <th>plot_height</th>
@@ -233,9 +233,29 @@ output to put the output into context. For example the
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Module to analyze and explore univariate variable distribution</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='co'># Example with non-clinical data</span>
+<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
+  data <span class='op'>=</span> <span class='fu'>teal_data</span><span class='op'>(</span><span class='fu'>dataset</span><span class='op'>(</span><span class='st'>"iris"</span>, <span class='va'>iris</span><span class='op'>)</span><span class='op'>)</span>,
+  modules <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+    <span class='fu'>tm_g_distribution</span><span class='op'>(</span>
+      dist_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span>
+        dataname <span class='op'>=</span> <span class='st'>"iris"</span>,
+        select <span class='op'>=</span> <span class='fu'>select_spec</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>, <span class='st'>"Petal.Length"</span><span class='op'>)</span>
+      <span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>)</span>
+<span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'># Example with clinical data</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
 <span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
 
 <span class='va'>vars1</span> <span class='op'>&lt;-</span> <span class='fu'>choices_selected</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='va'>ADSL</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ARM"</span>, <span class='st'>"COUNTRY"</span>, <span class='st'>"SEX"</span><span class='op'>)</span><span class='op'>)</span>, selected <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>

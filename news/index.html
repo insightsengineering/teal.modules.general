@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9000</span>
       </span>
     </div>
 
@@ -157,50 +157,90 @@
       
     </div>
 
-    <div id="tealmodulesgeneral-02109000" class="section level1">
-<h1 class="page-header" data-toc-text="0.2.10.9000">
-<a href="#tealmodulesgeneral-02109000" class="anchor"></a>teal.modules.general 0.2.10.9000</h1>
+    <div id="tealmodulesgeneral-02119000" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.11.9000">
+<a href="#tealmodulesgeneral-02119000" class="anchor"></a>teal.modules.general 0.2.11.9000</h1>
+</div>
+    <div id="tealmodulesgeneral-0211" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.11">
+<a href="#tealmodulesgeneral-0211" class="anchor"></a>teal.modules.general 0.2.11</h1>
 <div id="new-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#new-features" class="anchor"></a>New features</h3>
 <ul>
-<li>New module <code>tm_file_viewer</code> was added for the uploading and visualization of static files.</li>
-</ul>
-</div>
-<div id="enhancements" class="section level3">
-<h3 class="hasAnchor">
-<a href="#enhancements" class="anchor"></a>Enhancements</h3>
-<ul>
-<li>Added template for <code>tm_g_distibution</code> module.</li>
-<li>Added sparkline support for <code>Date</code>/<code>POSIXct</code>/<code>POSIXlt</code> variables in <code>tm_variable_browser</code>.</li>
-<li>Updated examples and tests using <code>scda</code> synthetic data to replace <code>random.cdisc.data</code>.</li>
-<li>Added <code>filter_spec</code> support in <code>tm_outliers</code> module.</li>
-<li>Added ordered select input support in <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code> and <code>tm_t_crosstable</code> modules.</li>
-<li>Modified the trend line feature in <code>tm_g_scatterplot</code> to display the raw equation that will equal the actual y value when the actual x values are plugged in.</li>
-<li>Added validations to the theoretical distributions’ parameters of <code>tm_g_distribution</code>.</li>
-<li>Simplified returned R code in <code>tm_outliers</code> module.</li>
-<li>Support <code>select_spec</code> for categorical variable in <code>tm_outliers</code> module.</li>
-<li>Updated Show R Code in <code>tm_outliers</code> module to omit filtering for categorical variable if all levels are selected.</li>
-<li>Decoupling dataset list from the variables list parameters in <code>tm_g_scatterplotmatrix</code>.</li>
-<li>Added validation to the group by and stratify by variables of <code>tm_g_distribution</code> to check that they are categorical variables.</li>
-</ul>
-</div>
-<div id="miscellaneous" class="section level3">
-<h3 class="hasAnchor">
-<a href="#miscellaneous" class="anchor"></a>Miscellaneous</h3>
-<ul>
-<li>Removed mentions of Roche internal services from the README file.</li>
-<li>Added <code>error_on_lint: TRUE</code> to <code>.lintr</code>.</li>
-<li>Updated quantile <code>type = 2</code> argument in <code>tm_variable_browser</code> to be in line with STREAM.</li>
+<li>A new module, <code>tm_file_viewer</code>, was added for the visualization of static files.</li>
+<li>A new module, <code>tm_g_distribution</code>, was added for distribution analysis.</li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug fixes</h3>
 <ul>
-<li>Fixed bar plot order for factor variables in <code>tm_variable_browser</code>.</li>
-<li>Fixed <code>Show parent dataset variables</code> functionality in <code>tm_variable_browser</code>.</li>
-<li>Fixed getting data join keys method in <code>tm_missing_data</code>.</li>
+<li>Fixed the bar plot order for factor variables in <code>tm_variable_browser</code>.</li>
+</ul>
+</div>
+<div id="enhancements" class="section level3">
+<h3 class="hasAnchor">
+<a href="#enhancements" class="anchor"></a>Enhancements</h3>
+<ul>
+<li>
+<p>Updated examples and tests using <code>scda</code> synthetic data to replace <code>random.cdisc.data</code>.</p>
+<h4 id="tm_variable_browser"><code>tm_variable_browser</code></h4>
+</li>
+<li><p>Added <code>sparkline</code> support for <code>Date</code>/<code>POSIXct</code>/<code>POSIXlt</code> variable types.</p></li>
+<li><p>Fixed histograms to contain at least two bars.</p></li>
+</ul>
+<div id="tm_outliers" class="section level4">
+<h4 class="hasAnchor">
+<a href="#tm_outliers" class="anchor"></a><code>tm_outliers</code>
+</h4>
+<ul>
+<li>Added <code>filter_spec</code> support.</li>
+<li>Simplified returned R code.</li>
+<li>Support <code>select_spec</code> for categorical variables.</li>
+</ul>
+</div>
+<div id="tm_g_scatterplotmatrix" class="section level4">
+<h4 class="hasAnchor">
+<a href="#tm_g_scatterplotmatrix" class="anchor"></a><code>tm_g_scatterplotmatrix</code>
+</h4>
+<ul>
+<li>Added ordered select input support.</li>
+<li>Decoupled the dataset list from the variables list parameters.</li>
+</ul>
+</div>
+<div id="tm_g_association" class="section level4">
+<h4 class="hasAnchor">
+<a href="#tm_g_association" class="anchor"></a><code>tm_g_association</code>
+</h4>
+<ul>
+<li>Added ordered select input support.</li>
+</ul>
+</div>
+<div id="tm_t_crosstable" class="section level4">
+<h4 class="hasAnchor">
+<a href="#tm_t_crosstable" class="anchor"></a><code>tm_t_crosstable</code>
+</h4>
+<ul>
+<li>Added ordered select input support.</li>
+</ul>
+</div>
+<div id="tm_g_scatterplot" class="section level4">
+<h4 class="hasAnchor">
+<a href="#tm_g_scatterplot" class="anchor"></a><code>tm_g_scatterplot</code>
+</h4>
+<ul>
+<li>Modified the trend line feature of the scatterplot to display the raw equation that will equal the actual <code>y</code> value when the actual <code>x</code> values are plugged in.</li>
+</ul>
+</div>
+</div>
+<div id="miscellaneous" class="section level3">
+<h3 class="hasAnchor">
+<a href="#miscellaneous" class="anchor"></a>Miscellaneous</h3>
+<ul>
+<li>Updated <code>LICENCE</code> and <code>README</code> with new package references.</li>
+<li>Added <code>error_on_lint: TRUE</code> to <code>.lintr</code>.</li>
+<li>Updated quantile <code>type = 2</code> argument in <code>tm_variable_browser</code> to be in line with STREAM.</li>
 </ul>
 </div>
 </div>
@@ -256,9 +296,9 @@
 <div id="new-module" class="section level3">
 <h3 class="hasAnchor">
 <a href="#new-module" class="anchor"></a>New Module</h3>
-<div id="tm_outliers" class="section level4">
+<div id="tm_outliers-1" class="section level4">
 <h4 class="hasAnchor">
-<a href="#tm_outliers" class="anchor"></a><code>tm_outliers</code>
+<a href="#tm_outliers-1" class="anchor"></a><code>tm_outliers</code>
 </h4>
 <ul>
 <li>Added new module <code>tm_outliers</code> to analyse outliers in datasets.</li>
@@ -268,9 +308,9 @@
 <div id="enhancements-3" class="section level3">
 <h3 class="hasAnchor">
 <a href="#enhancements-3" class="anchor"></a>Enhancements</h3>
-<div id="tm_g_scatterplot" class="section level4">
+<div id="tm_g_scatterplot-1" class="section level4">
 <h4 class="hasAnchor">
-<a href="#tm_g_scatterplot" class="anchor"></a><code>tm_g_scatterplot</code>
+<a href="#tm_g_scatterplot-1" class="anchor"></a><code>tm_g_scatterplot</code>
 </h4>
 <ul>
 <li>Added <code>max_deg</code> optional argument to scatterplot to allow users to choose the maximum smoothing degree for the trend line.</li>
@@ -308,9 +348,9 @@
 <div id="enhancements-4" class="section level3">
 <h3 class="hasAnchor">
 <a href="#enhancements-4" class="anchor"></a>Enhancements</h3>
-<div id="tm_variable_browser" class="section level4">
+<div id="tm_variable_browser-1" class="section level4">
 <h4 class="hasAnchor">
-<a href="#tm_variable_browser" class="anchor"></a><code>tm_variable_browser</code>
+<a href="#tm_variable_browser-1" class="anchor"></a><code>tm_variable_browser</code>
 </h4>
 <ul>
 <li>Introduced <code>sparklines</code> for quick, inline variable summaries.</li>
@@ -331,9 +371,9 @@
 <li>Added support for outlier labels to <code>tm_a_regression</code> and provided an additional optional argument, <code>default_outlier_label</code> which can be used to specify the default column used to label outliers.</li>
 </ul>
 </div>
-<div id="tm_g_scatterplot-1" class="section level4">
+<div id="tm_g_scatterplot-2" class="section level4">
 <h4 class="hasAnchor">
-<a href="#tm_g_scatterplot-1" class="anchor"></a><code>tm_g_scatterplot</code>
+<a href="#tm_g_scatterplot-2" class="anchor"></a><code>tm_g_scatterplot</code>
 </h4>
 <ul>
 <li>Implemented trend line.</li>
