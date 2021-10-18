@@ -1,0 +1,17 @@
+pandoc: 2.11.4
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  using-association-plot: using-association-plot.html
+  using-bivariate-plot: using-bivariate-plot.html
+  using-cross-table: using-cross-table.html
+  using-outliers-module: using-outliers-module.html
+  using-regression-plots: using-regression-plots.html
+  using-response-plot: using-response-plot.html
+  using-scatterplot-matrix: using-scatterplot-matrix.html
+  using-scatterplot: using-scatterplot.html
+last_built: 2021-10-13T02:36Z
+urls:
+  reference: https://github.com/insightsengineering/teal.modules.general/reference
+  article: https://github.com/insightsengineering/teal.modules.general/articles
+
