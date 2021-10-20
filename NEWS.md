@@ -1,5 +1,7 @@
 # teal.modules.general 0.2.11.9000
 
+* Added R version requirement, R >= 3.6.
+
 # teal.modules.general 0.2.11
 
 ### New features
