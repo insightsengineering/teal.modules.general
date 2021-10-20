@@ -24,6 +24,7 @@ Depends:
   ggmosaic (>= 0.3.0),
   ggplot2,
   magrittr,
+  R (>= 3.6),
   shiny,
   shinyTree,
   teal (>= 0.10.0)
