@@ -180,7 +180,10 @@ ui_distribution <- function(id, ...) {
       ),
       conditionalPanel(
         condition = paste0(
-          "input['", extract_input(ns("merge_id-group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
+          "input['", 
+          extract_input(ns("merge_id-group_i"), 
+          args$group_var[[1]]$dataname, filter = TRUE), 
+          "'].length != 0"
         ),
         shinyWidgets::prettyRadioButtons(
           ns("scales_type"),
