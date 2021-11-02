@@ -1,71 +1,73 @@
-Package: teal.modules.general
 Type: Package
+Package: teal.modules.general
 Title: General modules to add to a teal application
+Version: 0.2.11.9001
 Date: 2021-10-13
-Version: 0.2.11.9000
 Authors@R: c(
-    person("NEST", email = "nestcicd@roche.com", role = c("aut", "cre")),
-    person("Adrian", "Waddell", email = "adrian.waddell@roche.com", role = "aut"),
-    person("Pawel", "Rucki", email = "pawel.rucki@contractors.roche.com", role = "aut"),
-    person("Dawid", "Kaledkowski", email = "dawid.kaledkowski@contractors.roche.com", role = "aut"),
-    person("Sebastian", "Wolf", email = "sebastian.wolf.sw1@roche.com", role = "aut"),
-    person("Maximilian", "Mordig", email = "maximilian_oliver.mordig@roche.com", role = "aut"),
-    person("Bartosz", "Baranowski", email = "bartosz.baranowski@roche.com", role = "aut"),
-    person("Ondrej", "Slama", email = "ondrej.slama@roche.com", role = "aut"),
-    person("Maciej", "Nasinski", email = "maciej.nasinski@contractors.roche.com", role = "aut"),
-    person("Mahmoud", "Hallal", email = "mahmoud.hallal@roche.com", role = "aut"),
+    person("NEST", , , "nestcicd@roche.com", role = c("aut", "cre")),
+    person("Adrian", "Waddell", , "adrian.waddell@roche.com", role = "aut"),
+    person("Pawel", "Rucki", , "pawel.rucki@contractors.roche.com", role = "aut"),
+    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@contractors.roche.com", role = "aut"),
+    person("Sebastian", "Wolf", , "sebastian.wolf.sw1@roche.com", role = "aut"),
+    person("Maximilian", "Mordig", , "maximilian_oliver.mordig@roche.com", role = "aut"),
+    person("Bartosz", "Baranowski", , "bartosz.baranowski@roche.com", role = "aut"),
+    person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "aut"),
+    person("Maciej", "Nasinski", , "maciej.nasinski@contractors.roche.com", role = "aut"),
+    person("Mahmoud", "Hallal", , "mahmoud.hallal@roche.com", role = "aut"),
     person("Roche", role = c("cph", "fnd"))
   )
 Description: General Purpose Teal Modules.
-Encoding: UTF-8
 License: Apache License 2.0 | file LICENSE
-LazyData: true
 Depends:
-  ggmosaic (>= 0.3.0),
-  ggplot2,
-  magrittr,
-  shiny,
-  shinyTree,
-  teal (>= 0.10.0)
+    ggmosaic (>= 0.3.0),
+    ggplot2,
+    magrittr,
+    R (>= 3.6),
+    shiny,
+    shinyTree,
+    teal (>= 0.10.0)
 Imports:
-  broom,
-  colourpicker,
-  digest,
-  dplyr,
-  DT,
-  forcats,
-  ggExtra,
-  ggpmisc (>= 0.4.3),
-  goftest,
-  ggpp,
-  grid,
-  gridExtra,
-  htmlwidgets,
-  jsonlite,
-  lattice,
-  MASS,
-  methods,
-  rlang,
-  rtables (>= 0.3.8),
-  scales,
-  shinyjs,
-  shinyWidgets,
-  sparkline,
-  stats,
-  stringr,
-  teal.devel (>= 0.2.12),
-  tern (>= 0.7.5),
-  tibble,
-  tidyr,
-  tidyselect,
-  utils,
-  utils.nest (>= 0.2.11)
+    broom,
+    colourpicker,
+    digest,
+    dplyr,
+    DT,
+    forcats,
+    ggExtra,
+    ggpmisc (>= 0.4.3),
+    ggpp,
+    goftest,
+    grid,
+    gridExtra,
+    htmlwidgets,
+    jsonlite,
+    lattice,
+    MASS,
+    methods,
+    rlang,
+    rtables (>= 0.3.8),
+    scales,
+    shinyjs,
+    shinyWidgets,
+    sparkline,
+    stats,
+    stringr,
+    teal.devel (>= 0.2.12),
+    tern (>= 0.7.5),
+    tibble,
+    tidyr,
+    tidyselect,
+    utils,
+    utils.nest (>= 0.2.11)
 Suggests:
-  knitr,
-  scda(>= 0.1.1),
-  scda.2021(>= 0.1.1),
-  rmarkdown,
-  test.nest (>= 0.2.11),
-  testthat (>= 2.0)
+    knitr,
+    rmarkdown,
+    scda.2021(>= 0.1.1),
+    scda(>= 0.1.1),
+    test.nest (>= 0.2.11),
+    testthat (>= 2.0)
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.1.2
-VignetteBuilder: knitr
