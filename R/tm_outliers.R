@@ -133,9 +133,9 @@ ui_outliers <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         ),
         categorical_var = list(
-            label = "Categorical factor",
-            data_extract_spec = args$categorical_var,
-            is_single_dataset = is_single_dataset_value
+          label = "Categorical factor",
+          data_extract_spec = args$categorical_var,
+          is_single_dataset = is_single_dataset_value
         )
       ),
       conditionalPanel(

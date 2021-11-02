@@ -170,29 +170,37 @@ ui_a_regression <- function(id, ...) {
         choices = plot_choices,
         selected = plot_choices[args$default_plot_type]
       ),
-      checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
-      shinyjs::hidden(optionalSliderInput(
-        ns("outlier"),
-        div(
-          class = "teal-tooltip",
-          tagList(
-            "Outlier definition:",
-            icon("info-circle"),
-            span(
-              class = "tooltiptext",
-              paste(
-              "Use the slider to choose the cut-off value to define outliers.",
-              "Points with a Cook's distance greater than",
-              "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+      checkboxInput(
+        ns("show_outlier"),
+        label = "Display outlier labels", value = TRUE
+      ),
+      shinyjs::hidden(
+        optionalSliderInput(
+          ns("outlier"),
+          div(
+            class = "teal-tooltip",
+            tagList(
+              "Outlier definition:",
+              icon("info-circle"),
+              span(
+                class = "tooltiptext",
+                paste(
+                "Use the slider to choose the cut-off value to define outliers.",
+                "Points with a Cook's distance greater than",
+                "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+                )
               )
             )
-          )
-        ), min = 1, max = 10, value = 9, ticks = FALSE, step = .1)),
-      shinyjs::hidden(optionalSelectInput(
-        ns("label_var"),
-        multiple = FALSE,
-        label = "Outlier label"
-      )),
+          ), min = 1, max = 10, value = 9, ticks = FALSE, step = .1
+        )
+      ),
+      shinyjs::hidden(
+        optionalSelectInput(
+          ns("label_var"),
+          multiple = FALSE,
+          label = "Outlier label"
+        )
+      ),
       panel_group(
         panel_item(
           title = "Plot settings",
