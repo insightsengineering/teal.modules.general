@@ -151,17 +151,18 @@ ui_a_regression <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "regressor")]),
-      data_extract_input(
-        id = ns("response"),
-        label = "Response variable",
-        data_extract_spec = args$response,
-        is_single_dataset = is_single_dataset_value
-      ),
-      data_extract_input(
-        id = ns("regressor"),
-        label = "Regressor variables",
-        data_extract_spec = args$regressor,
-        is_single_dataset = is_single_dataset_value
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        response = list(
+          label = "Response variable",
+          data_extract_spec = args$response,
+          is_single_dataset = is_single_dataset_value
+        ),
+        regressor = list(
+          label = "Regressor variables",
+          data_extract_spec = args$regressor,
+          is_single_dataset = is_single_dataset_value
+        )
       ),
       radioButtons(
         ns("plot_type"),
@@ -225,7 +226,8 @@ srv_a_regression <- function(input,
                              default_outlier_label) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
     datasets = datasets,
     data_extract = list(response, regressor),
     input_id = c("response", "regressor")

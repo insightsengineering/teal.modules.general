@@ -153,34 +153,29 @@ ui_g_response <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      data_extract_input(
-        id = ns("response"),
-        label = "Response variable",
-        data_extract_spec = args$response,
-        is_single_dataset = is_single_dataset_value
-      ),
-      data_extract_input(
-        id = ns("x"),
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        response = list(
+          label = "Response variable",
+          data_extract_spec = args$response,
+          is_single_dataset = is_single_dataset_value
+        ),
+      x = list(
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      if (!is.null(args$row_facet)) {
-        data_extract_input(
-          id = ns("row_facet"),
+      row_facet = list(
           label = "Row facetting",
           data_extract_spec = args$row_facet,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$col_facet)) {
-        data_extract_input(
-          id = ns("col_facet"),
+        ),
+      col_facet = list(
           label = "Column facetting",
           data_extract_spec = args$col_facet,
           is_single_dataset = is_single_dataset_value
         )
-      },
+      ),
       radioGroupButtons(
         inputId = ns("freq"),
         label = NULL,
@@ -225,7 +220,8 @@ srv_g_response <- function(input,
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
     datasets = datasets,
     data_extract = data_extract,
     input_id = names(data_extract)

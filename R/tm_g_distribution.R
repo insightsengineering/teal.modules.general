@@ -160,43 +160,37 @@ ui_distribution <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("dist_var", "strata_var")]),
-      data_extract_input(
-        id = ns("dist_i"),
-        label = "Variable",
-        data_extract_spec = args$dist_var,
-        is_single_dataset = is_single_dataset_value
-      ),
-      if (!is.null(args$group_var)) {
-        tagList(
-          data_extract_input(
-            id = ns("group_i"),
-            label = "Group by",
-            data_extract_spec = args$group_var,
-            is_single_dataset = is_single_dataset_value
-          ),
-          conditionalPanel(
-            condition = paste0(
-              "input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
-            ),
-            shinyWidgets::prettyRadioButtons(
-              ns("scales_type"),
-              label = "Scales:",
-              choices = c("Fixed", "Free"),
-              selected = "Fixed",
-              bigger = FALSE,
-              inline = TRUE
-            )
-          )
-        )
-      },
-      if (!is.null(args$strata_var)) {
-        data_extract_input(
-          id = ns("strata_i"),
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        dist_i = list(
+          label = "Variable",
+          data_extract_spec = args$dist_var,
+          is_single_dataset = is_single_dataset_value
+        ),
+        group_i = list(
+          label = "Group by",
+          data_extract_spec = args$group_var,
+          is_single_dataset = is_single_dataset_value
+        ),
+        strata_i = list(
           label = "Stratify by",
           data_extract_spec = args$strata_var,
           is_single_dataset = is_single_dataset_value
         )
-      },
+      ),
+      conditionalPanel(
+        condition = paste0(
+          "input['", extract_input(ns("merge_id-group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
+        ),
+        shinyWidgets::prettyRadioButtons(
+          ns("scales_type"),
+          label = "Scales:",
+          choices = c("Fixed", "Free"),
+          selected = "Fixed",
+          bigger = FALSE,
+          inline = TRUE
+        )
+      ),
       panel_group(
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
@@ -293,16 +287,17 @@ srv_distribution <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
+    input_id = c("dist_i", "strata_i", "group_i"),
     datasets = datasets,
-    data_extract = list(dist_var, strata_var, group_var),
-    input_id = c("dist_i", "strata_i", "group_i")
+    data_extract = list(dist_var, strata_var, group_var)
   )
 
   observeEvent(list(
     input$t_dist,
     input$params_reset,
-    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
+    input[[extract_input("merge_id-dist_i", dist_var[[1]]$dataname)]]
   ), {
     if (length(input$t_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)

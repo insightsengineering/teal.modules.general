@@ -125,20 +125,19 @@ ui_outliers <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("outlier_var", "categorical_var")]),
-      data_extract_input(
-        id = ns("outlier_var"),
-        label = "Variable",
-        data_extract_spec = args$outlier_var,
-        is_single_dataset = is_single_dataset_value
-      ),
-      if (!is.null(args$categorical_var)) {
-        data_extract_input(
-          id = ns("categorical_var"),
-          label = "Categorical factor",
-          data_extract_spec = args$categorical_var,
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        outlier_var = list(
+          label = "Variable",
+          data_extract_spec = args$outlier_var,
           is_single_dataset = is_single_dataset_value
+        ),
+        categorical_var = list(
+            label = "Categorical factor",
+            data_extract_spec = args$categorical_var,
+            is_single_dataset = is_single_dataset_value
         )
-      },
+      ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
         optionalSelectInput(
@@ -212,10 +211,11 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
+    input_id =  c("outlier_var", "categorical_var"),
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var),
-    input_id = c("outlier_var", "categorical_var"),
     # left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
@@ -232,7 +232,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     input_catvar <- input[[extract_input(
-      "categorical_var",
+      "merge_id-categorical_var",
       cat_dataname,
       filter = is_cat_filter_spec
     )]]

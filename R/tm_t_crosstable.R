@@ -123,8 +123,19 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
-      data_extract_input(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
-      data_extract_input(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        x = list(
+          label = "Row values",
+          data_extract_spec = x,
+          is_single_dataset = is_single_dataset
+        ),
+        y = list(
+          label = "Column values",
+          data_extract_spec = y,
+          is_single_dataset = is_single_dataset
+        )
+      ),
       optionalSelectInput(
         ns("join_fun"),
         label = "Row to Column type of join",
@@ -173,7 +184,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   merged_data_r <- reactive({
-    data_merge_module(
+    data_merge_module_srv(
+      id = "merge_id",
       datasets = datasets,
       data_extract = list(x, y),
       input_id = c("x", "y"),
@@ -181,12 +193,11 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     )
   })
 
-  x_ordered <- get_input_order("x", x$dataname)
+  x_ordered <- get_input_order("merge_id-x", x$dataname)
 
   create_table <- reactive({
     chunks_reset()
     chunks_push_data_merge(merged_data_r()())
-
     ANL <- chunks_get_var("ANL") # nolint
 
     # As this is a summary

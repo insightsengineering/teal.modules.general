@@ -129,17 +129,18 @@ ui_tm_g_association <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("ref", "vars")]),
-      data_extract_input(
-        id = ns("ref"),
-        label = "Reference variable",
-        data_extract_spec = args$ref,
-        is_single_dataset = is_single_dataset_value
-      ),
-      data_extract_input(
-        id = ns("vars"),
-        label = "Associated variables",
-        data_extract_spec = args$vars,
-        is_single_dataset = is_single_dataset_value
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        ref = list(
+          label = "Reference variable",
+          data_extract_spec = args$ref,
+          is_single_dataset = is_single_dataset_value
+        ),
+        vars = list(
+          label = "Associated variables",
+          data_extract_spec = args$vars,
+          is_single_dataset = is_single_dataset_value
+        )
       ),
       checkboxInput(ns("association"),
         "Association with the reference variable",
@@ -197,14 +198,14 @@ srv_tm_g_association <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
     datasets = datasets,
     data_extract = list(ref, vars),
     input_id = c("ref", "vars")
   )
 
-
-  vars_ordered <- get_input_order("vars", vars[[1]]$dataname)
+  vars_ordered <- get_input_order("merge_id-vars", vars[[1]]$dataname)
 
   chunks_reactive <- reactive({
     chunks_reset()

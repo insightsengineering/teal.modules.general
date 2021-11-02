@@ -214,94 +214,90 @@ ui_g_bivariate <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      data_extract_input(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
-      ),
-      data_extract_input(
-        id = ns("y"),
-        label = "Y variable",
-        data_extract_spec = args$y,
-        is_single_dataset = is_single_dataset_value
-      ),
-      conditionalPanel(
-        condition =
-          "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
-          $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        radioGroupButtons(
-          inputId = ns("use_density"),
-          label = NULL,
-          choices = c("frequency", "density"),
-          selected = ifelse(args$use_density, "density", "frequency"),
-          justified = TRUE
-        )
-      ),
-      if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
-        div(
-          class = "data-extract-box",
-          tags$label("Facetting"),
-          switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
-          conditionalPanel(
-            condition = paste0("input['", ns("facetting"), "']"),
-            div(
-              if (!is.null(args$row_facet)) {
-                data_extract_input(
-                  id = ns("row_facet"),
-                  label = "Row facetting variable",
-                  data_extract_spec = args$row_facet,
-                  is_single_dataset = is_single_dataset_value
-                )
-              },
-              if (!is.null(args$col_facet)) {
-                data_extract_input(
-                  id = ns("col_facet"),
-                  label = "Column facetting variable",
-                  data_extract_spec = args$col_facet,
-                  is_single_dataset = is_single_dataset_value
-                )
-              },
-              checkboxInput(ns("free_x_scales"), "free x scales", value = args$free_x_scales),
-              checkboxInput(ns("free_y_scales"), "free y scales", value = args$free_y_scales)
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        x = list(
+          label = "X variable",
+          data_extract_spec = args$x,
+          is_single_dataset = is_single_dataset_value
+        ),
+        y = list(
+          label = "Y variable",
+          data_extract_spec = args$y,
+          is_single_dataset = is_single_dataset_value
+        ),
+        conditionalPanel(
+          condition =
+            "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
+            $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
+          radioGroupButtons(
+            inputId = ns("use_density"),
+            label = NULL,
+            choices = c("frequency", "density"),
+            selected = ifelse(args$use_density, "density", "frequency"),
+            justified = TRUE
+          )
+        ),
+        if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
+          div(
+            class = "data-extract-box",
+            tags$label("Facetting"),
+            switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
+            conditionalPanel(
+              condition = paste0("input['", ns("facetting"), "']"),
+              div(
+                if (!is.null(args$row_facet)) {
+                  row_facet = list(
+                    label = "Row facetting variable",
+                    data_extract_spec = args$row_facet,
+                    is_single_dataset = is_single_dataset_value
+                  )
+                },
+                if (!is.null(args$col_facet)) {
+                  col_facet = list(
+                    label = "Column facetting variable",
+                    data_extract_spec = args$col_facet,
+                    is_single_dataset = is_single_dataset_value
+                  )
+                },
+                checkboxInput(ns("free_x_scales"), "free x scales", value = args$free_x_scales),
+                checkboxInput(ns("free_y_scales"), "free y scales", value = args$free_y_scales)
+              )
             )
           )
-        )
-      },
-      if (args$color_settings) {
-        # Put a grey border around the coloring settings
-        div(
-          class = "data-extract-box",
-          tags$label("Color settings"),
-          switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
-          conditionalPanel(
-            condition = paste0("input['", ns("coloring"), "']"),
-            div(
-              data_extract_input(
-                id = ns("color"),
-                label = "Outline color by variable",
-                data_extract_spec = args$color,
-                is_single_dataset = is_single_dataset_value
-              ),
-              data_extract_input(
-                id = ns("fill"),
-                label = "Fill color by variable",
-                data_extract_spec = args$fill,
-                is_single_dataset = is_single_dataset_value
-              ),
+        },
+        if (args$color_settings) {
+          # Put a grey border around the coloring settings
+          div(
+            class = "data-extract-box",
+            tags$label("Color settings"),
+            switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
+            conditionalPanel(
+              condition = paste0("input['", ns("coloring"), "']"),
               div(
-                id = ns("size_settings"),
-                data_extract_input(
-                  id = ns("size"),
-                  label = "Size of points by variable (only if x and y are numeric)",
-                  data_extract_spec = args$size,
+                color = list(
+                  label = "Outline color by variable",
+                  data_extract_spec = args$color,
                   is_single_dataset = is_single_dataset_value
+                ),
+                fill = list(
+                  label = "Fill color by variable",
+                  data_extract_spec = args$fill,
+                  is_single_dataset = is_single_dataset_value
+                ),
+                div(
+                  id = ns("size_settings"),
+                  size = list(
+                    label = "Size of points by variable (only if x and y are numeric)",
+                    data_extract_spec = args$size,
+                    is_single_dataset = is_single_dataset_value
+                  )
                 )
               )
             )
           )
-        )
-      },
+        }
+      ),
       panel_group(
         panel_item(
           title = "Plot settings",
@@ -383,7 +379,8 @@ srv_g_bivariate <- function(input,
     )
   }
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
     datasets = datasets,
     data_extract = data_extract,
     input_id = names(data_extract)

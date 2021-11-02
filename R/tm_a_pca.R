@@ -127,11 +127,13 @@ ui_a_pca <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args["dat"]),
-      data_extract_input(
-        id = ns("dat"),
-        label = "Data selection",
-        data_extract_spec = args$dat,
-        is_single_dataset = is_single_dataset_value
+      data_merge_module_ui(
+        id = ns("merge_id_dat"),
+        dat = list(
+          label = "Data selection",
+          data_extract_spec = args$dat,
+          is_single_dataset = is_single_dataset_value
+        )
       ),
       panel_group(
         panel_item(
@@ -168,11 +170,13 @@ ui_a_pca <- function(id, ...) {
           conditionalPanel(
             condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
             list(
-              data_extract_input(
-                id = ns("response"),
-                label = "Color by",
-                data_extract_spec = color_selector,
-                is_single_dataset = is_single_dataset_value
+              data_merge_module_ui(
+                id = ns("merge_id_response"),
+                response = list(
+                  label = "Color by",
+                  data_extract_spec = color_selector,
+                  is_single_dataset = is_single_dataset_value
+                )
               ),
               optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
               optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
@@ -220,13 +224,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   init_chunks()
 
-  anl_data <- data_merge_module(
+  anl_data <- data_merge_module_srv(
+    id = "merge_id_dat",
     datasets = datasets,
     data_extract = list(dat),
     input_id = c("dat")
   )
 
-  response_data <- data_merge_module(
+  response_data <- data_merge_module_srv(
+    id = "merge_id_response",
     datasets = datasets,
     data_extract = list(response),
     input_id = c("response"),

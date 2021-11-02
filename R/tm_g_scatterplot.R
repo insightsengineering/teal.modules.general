@@ -215,50 +215,39 @@ ui_g_scatterplot <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      data_extract_input(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
-      ),
-      data_extract_input(
-        id = ns("y"),
-        label = "Y variable",
-        data_extract_spec = args$y,
-        is_single_dataset = is_single_dataset_value
-      ),
-      if (!is.null(args$color_by)) {
-        data_extract_input(
-          id = ns("color_by"),
+      data_merge_module_ui(
+        id = ns("merge_id"),
+        x = list(
+          label = "X variable",
+          data_extract_spec = args$x,
+          is_single_dataset = is_single_dataset_value
+        ),
+        y = list(
+          label = "Y variable",
+          data_extract_spec = args$y,
+          is_single_dataset = is_single_dataset_value
+        ),
+        color_by = list(
           label = "Color by variable",
           data_extract_spec = args$color_by,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$size_by)) {
-        data_extract_input(
-          id = ns("size_by"),
+        ),
+        size_by = list(
           label = "Size by variable",
           data_extract_spec = args$size_by,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$row_facet)) {
-        data_extract_input(
-          id = ns("row_facet"),
+        ),
+        row_facet = list(
           label = "Row facetting",
           data_extract_spec = args$row_facet,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$col_facet)) {
-        data_extract_input(
-          id = ns("col_facet"),
+        ),
+        col_facet = list(
           label = "Column facetting",
           data_extract_spec = args$col_facet,
           is_single_dataset = is_single_dataset_value
         )
-      },
+      ),
       panel_group(
         panel_item(
           title = "Plot settings",
@@ -324,7 +313,8 @@ srv_g_scatterplot <- function(input,
                               table_dec) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- data_merge_module_srv(
+    id = "merge_id",
     datasets = datasets,
     data_extract  = Reduce(
       f = append,
