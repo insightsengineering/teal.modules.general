@@ -160,8 +160,8 @@ ui_distribution <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("dist_var", "strata_var")]),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         dist_i = list(
           label = "Variable",
           data_extract_spec = args$dist_var,
@@ -180,9 +180,9 @@ ui_distribution <- function(id, ...) {
       ),
       conditionalPanel(
         condition = paste0(
-          "input['", 
-          extract_input(ns("merge_id-group_i"), 
-          args$group_var[[1]]$dataname, filter = TRUE), 
+          "input['",
+          extract_input(ns("extract-group_i"),
+          args$group_var[[1]]$dataname, filter = TRUE),
           "'].length != 0"
         ),
         shinyWidgets::prettyRadioButtons(
@@ -290,8 +290,8 @@ srv_distribution <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     input_id = c("dist_i", "strata_i", "group_i"),
     datasets = datasets,
     data_extract = list(dist_var, strata_var, group_var)
@@ -300,7 +300,7 @@ srv_distribution <- function(input,
   observeEvent(list(
     input$t_dist,
     input$params_reset,
-    input[[extract_input("merge_id-dist_i", dist_var[[1]]$dataname)]]
+    input[[extract_input("extract-dist_i", dist_var[[1]]$dataname)]]
   ), {
     if (length(input$t_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
