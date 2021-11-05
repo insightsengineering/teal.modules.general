@@ -129,8 +129,8 @@ ui_tm_g_association <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("ref", "vars")]),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         ref = list(
           label = "Reference variable",
           data_extract_spec = args$ref,
@@ -198,14 +198,14 @@ srv_tm_g_association <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     datasets = datasets,
     data_extract = list(ref, vars),
     input_id = c("ref", "vars")
   )
 
-  vars_ordered <- get_input_order("merge_id-vars", vars[[1]]$dataname)
+  vars_ordered <- get_input_order("extract-vars", vars[[1]]$dataname)
 
   chunks_reactive <- reactive({
     chunks_reset()
