@@ -123,8 +123,8 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         x = list(
           label = "Row values",
           data_extract_spec = x,
@@ -184,8 +184,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   merged_data_r <- reactive({
-    data_merge_module_srv(
-      id = "merge_id",
+    data_merge_module(
+      extract_id = "extract",
       datasets = datasets,
       data_extract = list(x, y),
       input_id = c("x", "y"),
@@ -193,7 +193,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     )
   })
 
-  x_ordered <- get_input_order("merge_id-x", x$dataname)
+  x_ordered <- get_input_order("extract-x", x$dataname)
 
   create_table <- reactive({
     chunks_reset()
