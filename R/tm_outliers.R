@@ -126,7 +126,7 @@ ui_outliers <- function(id, ...) {
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("outlier_var", "categorical_var")]),
       data_merge_module_ui(
-        id = ns("merge_id"),
+        id = ns("extract"),
         outlier_var = list(
           label = "Variable",
           data_extract_spec = args$outlier_var,
@@ -211,8 +211,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width) {
   init_chunks()
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     input_id =  c("outlier_var", "categorical_var"),
     datasets = datasets,
     data_extract = list(outlier_var, categorical_var),
@@ -232,7 +232,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     input_catvar <- input[[extract_input(
-      "merge_id-categorical_var",
+      "extract-categorical_var",
       cat_dataname,
       filter = is_cat_filter_spec
     )]]

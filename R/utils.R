@@ -213,6 +213,7 @@ varname_w_label <- function(var_names,
 #'   This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.
 #' @param filter logical if the connected \code{extract_data_spec} is used with \code{filter} option.
 extract_input <- function(varname, dataname, filter = FALSE) {
+
   if (filter) {
     paste0(varname, "-dataset_", dataname, "_singleextract-filter1-vals")
   } else {
