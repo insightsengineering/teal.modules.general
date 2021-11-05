@@ -106,8 +106,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args$variables),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         variables = list(
           label = "Variables",
           data_extract_spec = args$variables,
@@ -152,8 +152,8 @@ srv_g_scatterplotmatrix <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     datasets = datasets,
     data_extract = list(variables),
     input_id = "variables"
@@ -161,7 +161,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   variables_ordered <- sapply(
     sapply(variables, function(x) x$dataname),
-    function(x) get_input_order("merge_id-variables", x),
+    function(x) get_input_order("extract-variables", x),
     USE.NAMES = TRUE
   )
 
@@ -189,7 +189,7 @@ srv_g_scatterplotmatrix <- function(input,
     cols_names <- if (length(variables) == 1) {
       variables_ordered[[1]]()
     } else {
-      variables_ordered[[input[["merge_id-variables-dataset"]]]]()
+      variables_ordered[[input[["extract-variables-dataset"]]]]()
     }
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
