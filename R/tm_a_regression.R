@@ -151,8 +151,8 @@ ui_a_regression <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "regressor")]),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         response = list(
           label = "Response variable",
           data_extract_spec = args$response,
@@ -234,8 +234,8 @@ srv_a_regression <- function(input,
                              default_outlier_label) {
   init_chunks()
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     datasets = datasets,
     data_extract = list(response, regressor),
     input_id = c("response", "regressor")

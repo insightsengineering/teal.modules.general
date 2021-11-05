@@ -127,8 +127,8 @@ ui_a_pca <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args["dat"]),
-      data_merge_module_ui(
-        id = ns("merge_id_dat"),
+      data_extract_module_ui(
+        id = ns("extract_dat"),
         dat = list(
           label = "Data selection",
           data_extract_spec = args$dat,
@@ -170,8 +170,8 @@ ui_a_pca <- function(id, ...) {
           conditionalPanel(
             condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
             list(
-              data_merge_module_ui(
-                id = ns("merge_id_response"),
+              data_extract_module_ui(
+                id = ns("extract_response"),
                 response = list(
                   label = "Color by",
                   data_extract_spec = color_selector,
@@ -224,15 +224,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   init_chunks()
 
-  anl_data <- data_merge_module_srv(
-    id = "merge_id_dat",
+  anl_data <- data_merge_module(
+    extract_id = "extract_dat",
     datasets = datasets,
     data_extract = list(dat),
     input_id = c("dat")
   )
 
-  response_data <- data_merge_module_srv(
-    id = "merge_id_response",
+  response_data <- data_merge_module(
+    extract_id = "extract_response",
     datasets = datasets,
     data_extract = list(response),
     input_id = c("response"),
