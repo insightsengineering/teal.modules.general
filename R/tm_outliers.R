@@ -125,7 +125,7 @@ ui_outliers <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("outlier_var", "categorical_var")]),
-      data_merge_module_ui(
+      data_extract_module_ui(
         id = ns("extract"),
         outlier_var = list(
           label = "Variable",
