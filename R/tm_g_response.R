@@ -153,8 +153,8 @@ ui_g_response <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         response = list(
           label = "Response variable",
           data_extract_spec = args$response,
@@ -220,8 +220,8 @@ srv_g_response <- function(input,
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     datasets = datasets,
     data_extract = data_extract,
     input_id = names(data_extract)

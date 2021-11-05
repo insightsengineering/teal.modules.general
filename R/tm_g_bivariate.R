@@ -214,8 +214,8 @@ ui_g_bivariate <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      data_merge_module_ui(
-        id = ns("merge_id"),
+      data_extract_module_ui(
+        id = ns("extract"),
         x = list(
           label = "X variable",
           data_extract_spec = args$x,
@@ -379,8 +379,8 @@ srv_g_bivariate <- function(input,
     )
   }
 
-  merged_data <- data_merge_module_srv(
-    id = "merge_id",
+  merged_data <- data_merge_module(
+    extract_id = "extract",
     datasets = datasets,
     data_extract = data_extract,
     input_id = names(data_extract)
