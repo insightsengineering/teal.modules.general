@@ -247,14 +247,14 @@ ui_g_bivariate <- function(id, ...) {
               condition = paste0("input['", ns("facetting"), "']"),
               div(
                 if (!is.null(args$row_facet)) {
-                  row_facet = list(
+                  row_facet <- list(
                     label = "Row facetting variable",
                     data_extract_spec = args$row_facet,
                     is_single_dataset = is_single_dataset_value
                   )
                 },
                 if (!is.null(args$col_facet)) {
-                  col_facet = list(
+                  col_facet <- list(
                     label = "Column facetting variable",
                     data_extract_spec = args$col_facet,
                     is_single_dataset = is_single_dataset_value
