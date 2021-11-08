@@ -338,7 +338,7 @@ srv_data_table <- function(input,
                            if_distinct,
                            dt_args,
                            dt_options) {
-  output$data_table <- DT::renderDataTable({
+  output$data_table <- DT::renderDataTable(server = FALSE, {
     variables <- input$variables
 
     validate(need(variables, "need valid variable names"))
