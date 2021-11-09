@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.11.9002
 
 * Added R version requirement, R >= 3.6.
+* Fixed an error in `tm_variable_browser` when the selected column is NA only.
 
 # teal.modules.general 0.2.11
 
