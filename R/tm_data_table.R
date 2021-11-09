@@ -45,7 +45,6 @@
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
 #' ADTTE <- synthetic_cdisc_data("latest")$adtte
 #'
-#'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
@@ -60,12 +59,6 @@
 #'           "STUDYID", "USUBJID", "SUBJID", "SITEID",
 #'           "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
 #'         )
-#'       ),
-#'       dt_options = list(
-#'         searching = FALSE,
-#'         pageLength = 30,
-#'         lengthMenu = c(5, 15, 30, 100),
-#'         scrollX = TRUE
 #'       )
 #'     )
 #'   )
@@ -74,33 +67,6 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
-#' # datasets: different subsets of long dataset
-#' library(scda)
-#'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' ADLB <- synthetic_cdisc_data("latest")$adlb
-#'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-#'     cdisc_dataset("ADLB", ADLB, code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb"),
-#'     check = TRUE
-#'   ),
-#'   modules = root_modules(
-#'     tm_data_table(
-#'       variables_selected = list(
-#'         ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-#'         ADLB = c(
-#'           "STUDYID", "USUBJID", "SUBJID", "SITEID",
-#'           "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
-#' }
 #' # datasets: subsetting or changing order of datasets inside tm_data_table
 #' library(scda)
 #'
@@ -132,6 +98,37 @@
 #' shinyApp(app$ui, app$server)
 #' }
 #'
+#' # advanced usage of DT options and extensions
+#' library(scda)
+#'
+#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADTTE <- synthetic_cdisc_data("latest")$adtte
+#'
+#' app <- init(
+#'   data = cdisc_data(
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+#'     check = TRUE
+#'   ),
+#'   modules = root_modules(
+#'     tm_data_table(
+#'       dt_args = list(extensions = c("Buttons", "ColReorder", "FixedHeader")),
+#'       dt_options = list(
+#'         searching = FALSE,
+#'         pageLength = 30,
+#'         lengthMenu = c(5, 15, 25, 50, 100),
+#'         scrollX = TRUE,
+#'         dom = "lBrtip",
+#'         buttons = c("copy", "csv", "excel", "pdf", "print"),
+#'         colReorder = TRUE,
+#'         fixedHeader = TRUE
+#'       )
+#'     )
+#'   )
+#' )
+#' \dontrun{
+#' shinyApp(app$ui, app$server)
+#' }
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
                           datasets_selected = character(0),
