@@ -61,7 +61,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL) {
-
+  logger::log_info("Initializing tm_a_pca")
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
 
@@ -207,6 +207,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width) {
+  logger::log_shiny_input_changes()
   response <- dat
 
   for (i in seq_along(response)) {

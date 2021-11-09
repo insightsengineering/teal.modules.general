@@ -2,6 +2,9 @@
 
 * Added R version requirement, R >= 3.6.
 
+## Enhancements
+* Added support for logging with the `logger` package and added info level logs upon initialization of a module.
+
 # teal.modules.general 0.2.11
 
 ### New features

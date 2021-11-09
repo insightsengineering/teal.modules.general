@@ -40,6 +40,7 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
                                 pre_output = NULL,
                                 post_output = NULL) {
+  logger::log_info("Initializing tm_variable_browser")
   stop_if_not(is_character_single(label),
               is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
   )
@@ -903,8 +904,6 @@ get_plotted_data <- function(input, plot_var, datasets) {
   type <- input$raw_or_filtered
   df <- datasets$get_data(dataset_name, filtered = type)
 
-  .log("plot/summarize variable", varname, "for data", dataset_name, "(", `if`(type, "filtered", "raw"), ")")
-
   var_description <- get_var_description(datasets = datasets, dataset_name = dataset_name, var_name = varname)
   list(data = df[[varname]], var_description = var_description)
 }
@@ -936,8 +935,6 @@ render_tabset_panel_content <- function(datanames, output, datasets, input, colu
 #' @param dataset_name (`character`) the name of the dataset contained in the rendered tab
 #' @inheritParams render_tabset_panel_content
 render_single_tab <- function(dataset_name, output, datasets, input, columns_names, plot_var) {
-  .log("variable label table:", dataset_name)
-
   render_tab_header(dataset_name, output, datasets)
 
   render_tab_table(

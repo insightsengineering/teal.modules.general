@@ -143,6 +143,7 @@ tm_data_table <- function(label = "Data Table",
                             scrollX = TRUE),
                           pre_output = NULL,
                           post_output = NULL) {
+  logger::log_info("Initializing tm_data_table")
   stop_if_not(
     is_character_single(label),
     is.list(variables_selected),
@@ -342,8 +343,6 @@ srv_data_table <- function(input,
     variables <- input$variables
 
     validate(need(variables, "need valid variable names"))
-
-    .log("data table update", dataname)
 
     df <- datasets$get_data(
       dataname,
