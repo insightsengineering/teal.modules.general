@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9003
+# teal.modules.general 0.2.11.9004
 
 * Added R version requirement, R >= 3.6.
 * Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
