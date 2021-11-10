@@ -115,7 +115,7 @@ app <- init(
           "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
         )
       ),
-      datasets_selected = c("ADLB", "ADSL")
+      datasets_selected = c("ADTTE", "ADLB", "ADSL")
     )
   )
 )
