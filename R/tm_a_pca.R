@@ -207,7 +207,6 @@ ui_a_pca <- function(id, ...) {
 }
 
 srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width) {
-  logger::log_shiny_input_changes()
   response <- dat
 
   for (i in seq_along(response)) {
