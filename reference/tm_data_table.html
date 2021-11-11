@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9004</span>
       </span>
     </div>
 
@@ -245,7 +245,6 @@ output to put the output into context. For example the
 <span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
 <span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span>
 
-
 <span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
   data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
     <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
@@ -260,12 +259,6 @@ output to put the output into context. For example the
           <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,
           <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"ARM"</span>, <span class='st'>"ARMCD"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CNSR"</span>
         <span class='op'>)</span>
-      <span class='op'>)</span>,
-      dt_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        searching <span class='op'>=</span> <span class='cn'>FALSE</span>,
-        pageLength <span class='op'>=</span> <span class='fl'>30</span>,
-        lengthMenu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>15</span>, <span class='fl'>30</span>, <span class='fl'>100</span><span class='op'>)</span>,
-        scrollX <span class='op'>=</span> <span class='cn'>TRUE</span>
       <span class='op'>)</span>
     <span class='op'>)</span>
   <span class='op'>)</span>
@@ -274,33 +267,6 @@ output to put the output into context. For example the
 <span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
 <span class='op'>}</span>
 
-<span class='co'># datasets: different subsets of long dataset</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-<span class='va'>ADLB</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adlb</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADLB"</span>, <span class='va'>ADLB</span>, code <span class='op'>=</span> <span class='st'>"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb"</span><span class='op'>)</span>,
-    check <span class='op'>=</span> <span class='cn'>TRUE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_data_table</span><span class='op'>(</span>
-      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span>,
-        ADLB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-          <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,
-          <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"AVISIT"</span>, <span class='st'>"AVISITN"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CHG"</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
 <span class='co'># datasets: subsetting or changing order of datasets inside tm_data_table</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
 
@@ -324,7 +290,7 @@ output to put the output into context. For example the
           <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"AVISIT"</span>, <span class='st'>"AVISITN"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CHG"</span>
         <span class='op'>)</span>
       <span class='op'>)</span>,
-      datasets_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ADLB"</span>, <span class='st'>"ADSL"</span><span class='op'>)</span>
+      datasets_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='st'>"ADLB"</span>, <span class='st'>"ADSL"</span><span class='op'>)</span>
     <span class='op'>)</span>
   <span class='op'>)</span>
 <span class='op'>)</span>
@@ -332,6 +298,37 @@ output to put the output into context. For example the
 <span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
 <span class='op'>}</span>
 
+<span class='co'># advanced usage of DT options and extensions</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
+
+<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
+<span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span>
+
+<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
+  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
+    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
+    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,
+    check <span class='op'>=</span> <span class='cn'>TRUE</span>
+  <span class='op'>)</span>,
+  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
+    <span class='fu'>tm_data_table</span><span class='op'>(</span>
+      dt_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>extensions <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Buttons"</span>, <span class='st'>"ColReorder"</span>, <span class='st'>"FixedHeader"</span><span class='op'>)</span><span class='op'>)</span>,
+      dt_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+        searching <span class='op'>=</span> <span class='cn'>FALSE</span>,
+        pageLength <span class='op'>=</span> <span class='fl'>30</span>,
+        lengthMenu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>15</span>, <span class='fl'>25</span>, <span class='fl'>50</span>, <span class='fl'>100</span><span class='op'>)</span>,
+        scrollX <span class='op'>=</span> <span class='cn'>TRUE</span>,
+        dom <span class='op'>=</span> <span class='st'>"lBrtip"</span>,
+        buttons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"copy"</span>, <span class='st'>"csv"</span>, <span class='st'>"excel"</span>, <span class='st'>"pdf"</span>, <span class='st'>"print"</span><span class='op'>)</span>,
+        colReorder <span class='op'>=</span> <span class='cn'>TRUE</span>,
+        fixedHeader <span class='op'>=</span> <span class='cn'>TRUE</span>
+      <span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>)</span>
+<span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
