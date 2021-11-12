@@ -93,7 +93,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_width = NULL,
                               pre_output = NULL,
                               post_output = NULL) {
-
+  logger::log_info("Initializing tm_g_distribution")
   if (!is.null(dist_var) && !is_class_list("data_extract_spec")(dist_var)) {
     dist_var <- list(dist_var)
   }

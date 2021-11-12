@@ -33,6 +33,7 @@ tm_missing_data <- function(label = "Missing data",
                             plot_width = NULL,
                             pre_output = NULL,
                             post_output = NULL) {
+  logger::log_info("Initializing tm_missing_data")
   stopifnot(is_character_single(label))
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)

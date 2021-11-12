@@ -42,6 +42,7 @@ Imports:
     htmlwidgets,
     jsonlite,
     lattice,
+    logger,
     MASS,
     methods,
     rlang,
@@ -66,7 +67,7 @@ Suggests:
     scda(>= 0.1.1),
     test.nest (>= 0.2.11),
     testthat (>= 2.0)
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
