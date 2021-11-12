@@ -759,7 +759,7 @@ plot_var_summary <- function(var,
       )
     } else {
       p <-
-        ggplot(data.frame(var), aes(x = forcats::fct_infreq(var))) +
+        ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count") +
         xlab(var_lab) +
         theme_light() +
