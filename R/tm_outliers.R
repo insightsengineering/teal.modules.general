@@ -212,11 +212,20 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width) {
   init_chunks()
 
-  merged_data <- data_merge_module(
+  vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
+  selector_list <- reactive({selector_list_creator(vars, datasets)})
+
+  reactive_select_input <- reactive({
+    if(length(selector_list()$categorical_var()$select) > 0) {
+      selector_list()
+    } else {
+      list(outlier_var = selector_list()$outlier_var)
+    }
+  })
+
+  merged_data <- data_merge_module_srv(
+    selector_list = reactive_select_input,
     datasets = datasets,
-    data_extract = list(outlier_var, categorical_var),
-    input_id = c("outlier_var", "categorical_var"),
-    # left_join is used instead of inner_join
     merge_function = "dplyr::left_join"
   )
 

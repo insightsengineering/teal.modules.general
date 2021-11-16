@@ -203,8 +203,8 @@ srv_tm_g_association <- function(input,
     input_id = c("ref", "vars")
   )
 
-
-  vars_ordered <- get_input_order("vars", vars[[1]]$dataname)
+  vars_extract <- data_extract_module_srv("vars", datasets = datasets, vars)
+  vars_ordered <- reactive({vars_extract()$input_order})
 
   chunks_reactive <- reactive({
     chunks_reset()
@@ -213,9 +213,9 @@ srv_tm_g_association <- function(input,
     ANL <- chunks_get_var("ANL") # nolint
     validate_has_data(ANL, 3)
 
-    ref_name <- as.vector(merged_data()$columns_source$ref)
     vars_names <- vars_ordered()
 
+    ref_name <- as.vector(merged_data()$columns_source$ref)
     association <- input$association
     show_dist <- input$show_dist
     log_transformation <- input$log_transformation

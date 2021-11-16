@@ -156,12 +156,6 @@ srv_g_scatterplotmatrix <- function(input,
     input_id = "variables"
   )
 
-  variables_ordered <- sapply(
-    sapply(variables, function(x) x$dataname),
-    function(x) get_input_order("variables", x),
-    USE.NAMES = TRUE
-  )
-
   # plot
   plot_r <- reactive({
 
@@ -183,10 +177,19 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
+    variables_ordered <- data_extract_module_srv(
+      id = "variables",
+      datasets = datasets,
+      data_extract = variables[[which(sapply(variables, function(x) x$dataname) == input[["variables-dataset"]])]]
+      )()$input_order
+
+    variables_ordered <- list(variables_ordered)
+    names(variables_ordered) <- input[["variables-dataset"]]
+
     cols_names <- if (length(variables) == 1) {
-      variables_ordered[[1]]()
+      variables_ordered[[1]]
     } else {
-      variables_ordered[[input[["variables-dataset"]]]]()
+      variables_ordered[[input[["variables-dataset"]]]]
     }
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
