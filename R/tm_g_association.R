@@ -205,7 +205,9 @@ srv_tm_g_association <- function(input,
   )
 
   vars_extract <- data_extract_module_srv("vars", datasets = datasets, vars)
-  vars_ordered <- reactive({vars_extract()$input_order})
+  vars_ordered <- reactive({
+    vars_extract()$input_order
+  })
 
   chunks_reactive <- reactive({
     chunks_reset()

@@ -180,7 +180,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     )
   })
 
-  x_ordered <- reactive({x_de_r()$input_order})
+  x_ordered <- reactive({
+    x_de_r()$input_order
+  })
 
   create_table <- reactive({
     chunks_reset()

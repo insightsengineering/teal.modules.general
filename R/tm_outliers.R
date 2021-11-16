@@ -214,10 +214,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   init_chunks()
 
   vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-  selector_list <- reactive({selector_list_creator(vars, datasets)})
+  selector_list <- reactive({
+    selector_list_creator(vars, datasets)
+  })
 
   reactive_select_input <- reactive({
-    if(length(selector_list()$categorical_var()$select) > 0) {
+    if (length(selector_list()$categorical_var()$select) > 0) {
       selector_list()
     } else {
       list(outlier_var = selector_list()$outlier_var)
