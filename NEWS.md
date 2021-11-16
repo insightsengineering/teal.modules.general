@@ -4,7 +4,7 @@
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
 * Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
 * Updated `tm_outliers` module to adopt the new `data_merge_module_srv` module.
-* Updated `tm_g_association`, `tm_g_scatterplotmatrix` and `tm_t_crosstable` to adopt the new `data_extract_module_srv` 
+* Updated `tm_g_association`, `tm_g_scatterplotmatrix` and `tm_t_crosstable` to use the new `data_extract_module_srv` 
 module to get input order.
 
 ## Enhancements
