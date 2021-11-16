@@ -79,6 +79,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggtheme = gg_themes,
                           pre_output = NULL,
                           post_output = NULL) {
+  logger::log_info("Initializing tm_g_response")
   if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }

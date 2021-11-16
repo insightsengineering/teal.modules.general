@@ -102,7 +102,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggtheme = gg_themes,
                            pre_output = NULL,
                            post_output = NULL) {
-
+  logger::log_info("Initializing tm_g_bivariate")
   ggtheme <- match.arg(ggtheme)
 
   stop_if_not(

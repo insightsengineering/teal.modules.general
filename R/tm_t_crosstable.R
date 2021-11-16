@@ -73,6 +73,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL) {
+  logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),

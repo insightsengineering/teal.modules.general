@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.11.9005
+Version: 0.2.11.9007
 Date: 2021-10-13
 Authors@R: c(
     person("NEST", , , "nestcicd@roche.com", role = c("aut", "cre")),
@@ -42,6 +42,7 @@ Imports:
     htmlwidgets,
     jsonlite,
     lattice,
+    logger,
     MASS,
     methods,
     rlang,
@@ -66,7 +67,7 @@ Suggests:
     scda(>= 0.1.1),
     test.nest (>= 0.2.11),
     testthat (>= 2.0)
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true

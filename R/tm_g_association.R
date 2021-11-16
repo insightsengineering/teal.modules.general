@@ -76,6 +76,7 @@ tm_g_association <- function(label = "Association",
                              association_theme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL) {
+  logger::log_info("Initializing tm_g_association")
   if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
   }

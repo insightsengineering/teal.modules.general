@@ -63,6 +63,7 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_width = NULL,
                         pre_output = NULL,
                         post_output = NULL) {
+  logger::log_info("Initializing tm_outliers")
   if (!is_class_list("data_extract_spec")(outlier_var)) {
     outlier_var <- list(outlier_var)
   }

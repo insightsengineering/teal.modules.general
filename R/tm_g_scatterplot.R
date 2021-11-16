@@ -133,6 +133,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              pre_output = NULL,
                              post_output = NULL,
                              table_dec = 4) {
+  logger::log_info("Initializing tm_g_scatterplot")
   if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
