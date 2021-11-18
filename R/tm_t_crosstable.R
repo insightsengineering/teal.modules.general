@@ -151,20 +151,12 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  x_de_r <- data_extract_module_srv(
-    id = "x",
-    datasets = datasets,
-    data_extract_spec = x
-  )
+  selector_list <- reactive({
+    selector_list_creator(data_extract = list(x = x, y = y), datasets = datasets)
+  })
 
-  y_de_r <- data_extract_module_srv(
-    id = "y",
-    datasets = datasets,
-    data_extract_spec = y
-  )
-
-  observeEvent(list(x_de_r(), y_de_r()), {
-    if (identical(x_de_r()$dataname, y_de_r()$dataname)) {
+  observeEvent(list(selector_list()$x(), selector_list()$y()), {
+    if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
       shinyjs::hide("join_fun")
     } else {
       shinyjs::show("join_fun")
@@ -172,16 +164,15 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   merged_data_r <- reactive({
-    data_merge_module(
+    data_merge_module_srv(
       datasets = datasets,
-      data_extract = list(x, y),
-      input_id = c("x", "y"),
+      selector_list = selector_list,
       merge_function = input$join_fun
     )
   })
 
   x_ordered <- reactive({
-    x_de_r()$input_order
+    selector_list()$x()$select_ordered
   })
 
   create_table <- reactive({

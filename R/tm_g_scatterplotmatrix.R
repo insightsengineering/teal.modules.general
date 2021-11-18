@@ -151,10 +151,13 @@ srv_g_scatterplotmatrix <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module(
+  selector_list <- reactive({
+    selector_list_creator(data_extract = list(variables = variables), datasets = datasets)
+  })
+
+  merged_data <- data_merge_module_srv(
     datasets = datasets,
-    data_extract = list(variables),
-    input_id = "variables"
+    selector_list = selector_list
   )
 
   # plot
@@ -178,20 +181,7 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    variables_ordered <- data_extract_module_srv(
-      id = "variables",
-      datasets = datasets,
-      data_extract = variables[[which(sapply(variables, function(x) x$dataname) == input[["variables-dataset"]])]]
-      )()$input_order
-
-    variables_ordered <- list(variables_ordered)
-    names(variables_ordered) <- input[["variables-dataset"]]
-
-    cols_names <- if (length(variables) == 1) {
-      variables_ordered[[1]]
-    } else {
-      variables_ordered[[input[["variables-dataset"]]]]
-    }
+    cols_names <- selector_list()$variable()$select_ordered
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)

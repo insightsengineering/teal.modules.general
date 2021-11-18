@@ -198,16 +198,14 @@ srv_tm_g_association <- function(input,
 
   init_chunks()
 
-  merged_data <- data_merge_module(
-    datasets = datasets,
-    data_extract = list(ref, vars),
-    input_id = c("ref", "vars")
-  )
-
-  vars_extract <- data_extract_module_srv("vars", datasets = datasets, vars)
-  vars_ordered <- reactive({
-    vars_extract()$input_order
+  selector_list <- reactive({
+    selector_list_creator(data_extract = list(ref = ref, vars = vars), datasets = datasets)
   })
+
+  merged_data <- data_merge_module_srv(
+    datasets = datasets,
+    selector_list = selector_list
+  )
 
   chunks_reactive <- reactive({
     chunks_reset()
@@ -216,7 +214,7 @@ srv_tm_g_association <- function(input,
     ANL <- chunks_get_var("ANL") # nolint
     validate_has_data(ANL, 3)
 
-    vars_names <- vars_ordered()
+    vars_names <- selector_list()$vars()$select_ordered
 
     ref_name <- as.vector(merged_data()$columns_source$ref)
     association <- input$association
