@@ -170,7 +170,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   x_ordered <- reactive({
-    selector_list()$x()$select_ordered
+    selector_list$x()$select_ordered
   })
 
   create_table <- reactive({
