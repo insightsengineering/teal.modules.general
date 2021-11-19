@@ -3,7 +3,7 @@
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
 * Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
-* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `data_merge_module_srv` module.
+* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `data_merge_srv` module.
 * Removed `input_id` argument from all `data_merge_module` calls in all modules.
 
 ## Enhancements

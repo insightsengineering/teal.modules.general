@@ -151,12 +151,10 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  selector_list <- reactive({
-    data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
-  })
+  selector_list <- data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
-  observeEvent(list(selector_list()$x(), selector_list()$y()), {
-    if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
+  observeEvent(list(selector_list$x(), selector_list$y()), {
+    if (identical(selector_list$x()$dataname, selector_list$y()$dataname)) {
       shinyjs::hide("join_fun")
     } else {
       shinyjs::show("join_fun")
@@ -164,7 +162,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   merged_data_r <- reactive({
-    data_merge_module_srv(
+    data_merge_srv(
       datasets = datasets,
       selector_list = selector_list,
       merge_function = input$join_fun

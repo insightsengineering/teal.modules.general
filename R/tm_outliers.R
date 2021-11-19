@@ -226,7 +226,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
   })
 
-  merged_data <- data_merge_module_srv(
+  merged_data <- data_merge_srv(
     selector_list = reactive_select_input,
     datasets = datasets,
     merge_function = "dplyr::left_join"
