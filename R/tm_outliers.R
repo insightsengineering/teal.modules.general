@@ -215,7 +215,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
   vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
   selector_list <- reactive({
-    selector_list_creator(vars, datasets)
+    data_extract_multiple_srv(vars, datasets)
   })
 
   reactive_select_input <- reactive({

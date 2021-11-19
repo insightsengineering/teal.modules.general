@@ -152,7 +152,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
   selector_list <- reactive({
-    selector_list_creator(data_extract = list(x = x, y = y), datasets = datasets)
+    data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
   })
 
   observeEvent(list(selector_list()$x(), selector_list()$y()), {

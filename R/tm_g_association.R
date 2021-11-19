@@ -199,7 +199,7 @@ srv_tm_g_association <- function(input,
   init_chunks()
 
   selector_list <- reactive({
-    selector_list_creator(data_extract = list(ref = ref, vars = vars), datasets = datasets)
+    data_extract_multiple_srv(data_extract = list(ref = ref, vars = vars), datasets = datasets)
   })
 
   merged_data <- data_merge_module_srv(
