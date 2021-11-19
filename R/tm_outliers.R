@@ -217,7 +217,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   selector_list <- data_extract_multiple_srv(vars, datasets)
 
   reactive_select_input <- reactive({
-    if (length(selector_list()$categorical_var()$select) > 0) {
     if (length(selector_list$categorical_var()$select) > 0) {
       selector_list
     } else {
