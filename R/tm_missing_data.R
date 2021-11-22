@@ -807,14 +807,14 @@ srv_missing_data <- function(input,
           dplyr::filter(group_var_name %in% group_vals) %>%
           dplyr::summarise_all(cell_values) %>%
           tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
-          dplyr::mutate(out = paste0(group_var_name, ": ", out)) %>%
           dplyr::mutate(
-            `Variable label` = "Placeholder",
+            out = paste0(group_var_name, ": ", out),
             altered_group_var = dplyr::if_else(group_var_name == "", "''", group_var)
           ) %>%
-          dplyr::select(altered_group_var, Variable, `Variable label`, out) %>%
+          dplyr::select(altered_group_var, Variable, out) %>%
           tidyr::pivot_wider(names_from = altered_group_var, values_from = out, values_fn = list) %>%
-          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE)),
+          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE)) %>%
+          dplyr::select(Variable, `Variable label`, group_var_name),
         env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
       ))
     } else {
