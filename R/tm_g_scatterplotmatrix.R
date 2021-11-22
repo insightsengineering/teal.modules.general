@@ -179,7 +179,7 @@ srv_g_scatterplotmatrix <- function(input,
       "na.fail"
     }
 
-    cols_names <- selector_list$variable()$select_ordered
+    cols_names <- selector_list()$variable()$select_ordered
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
     validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)

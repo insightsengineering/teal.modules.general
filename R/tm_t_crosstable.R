@@ -153,8 +153,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
   selector_list <- data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
-  observeEvent(list(selector_list$x(), selector_list$y()), {
-    if (identical(selector_list$x()$dataname, selector_list$y()$dataname)) {
+  observeEvent(list(selector_list()$x(), selector_list()$y()), {
+    if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
       shinyjs::hide("join_fun")
     } else {
       shinyjs::show("join_fun")
@@ -170,7 +170,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   x_ordered <- reactive({
-    selector_list$x()$select_ordered
+    selector_list()$x()$select_ordered
   })
 
   create_table <- reactive({
