@@ -813,8 +813,7 @@ srv_missing_data <- function(input,
           ) %>%
           dplyr::select(altered_group_var, Variable, out) %>%
           tidyr::pivot_wider(names_from = altered_group_var, values_from = out, values_fn = list) %>%
-          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE)) %>%
-          dplyr::select(Variable, `Variable label`, group_var_name),
+          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable),
         env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
       ))
     } else {
