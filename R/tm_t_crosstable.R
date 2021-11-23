@@ -8,6 +8,7 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
+#' @param basic_table_args additional arguments transferred to `rtables::basic_table`. Defaults to `list()`, empty list.
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
 #' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.
@@ -72,7 +73,8 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_percentage = TRUE,
                             show_total = TRUE,
                             pre_output = NULL,
-                            post_output = NULL) {
+                            post_output = NULL,
+                            basic_table_args = list()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
@@ -84,7 +86,9 @@ tm_t_crosstable <- function(label = "Cross Table",
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
       (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-    )
+    ),
+    list((length(basic_table_args) == 0) || all(names(basic_table) %in% formalArgs(rtables::basic_table)),
+         "Please validate basic_table_args arguments names")
   )
 
   ui_args <- as.list(environment())
@@ -92,7 +96,8 @@ tm_t_crosstable <- function(label = "Cross Table",
   server_args <- list(
     label = label,
     x = x,
-    y = y
+    y = y,
+    basic_table_args
   )
 
   module(
@@ -148,7 +153,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   )
 }
 
-srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
+srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basic_table_args) {
   init_chunks()
 
   x_de_r <- callModule(
@@ -239,7 +244,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
 
     chunks_push(substitute(
       expr = {
-        lyt <- rtables::basic_table() %>%
+        lyt <- basic_tables %>%
           split_call %>%
           rtables::add_colcounts() %>%
           tern::summarize_vars(
@@ -251,6 +256,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
           )
       },
       env = list(
+        basic_tables = as.call(c(list(quote(rtables::basic_table)), basic_table_args)),
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(

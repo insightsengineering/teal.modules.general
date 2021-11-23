@@ -4,6 +4,7 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
+#' @inheritParams ggplot2_params
 #' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
@@ -81,7 +82,17 @@ tm_a_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID") {
+                            default_outlier_label = "USUBJID",
+                            ggplot2_args = list(
+                              `Response vs Regressor` = list(labs = list(), theme = list()),
+                              `Residuals vs Fitted` = list(labs = list(), theme = list()),
+                              `Normal Q-Q` = list(labs = list(), theme = list()),
+                              `Scale-Location` =  list(labs = list(), theme = list()),
+                              `Cook's distance` =  list(labs = list(), theme = list()),
+                              `Residuals vs Leverage` =  list(labs = list(), theme = list()),
+                              `Cook's dist vs Leverage` =  list(labs = list(), theme = list())
+                              )
+                            ) {
   logger::log_info("Initializing tm_a_regression")
   if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
@@ -104,7 +115,12 @@ tm_a_regression <- function(label = "Regression Analysis",
     is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_input
     is_character_single(ggtheme),
-    is_character_single(default_outlier_label)
+    is_character_single(default_outlier_label),
+    # Only theme is validated as labs even in ggplot2 is not.
+    # Most of labs args are passed by ..., not named arguments.
+    list(all(vapply(ggplot2_args,
+               function(x) (length(x$theme) == 0) || all(names(x$theme) %in% formalArgs(ggplot2::theme)),
+               logical(1))), "Please validate theme arguments names")
     )
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -124,7 +140,8 @@ tm_a_regression <- function(label = "Regression Analysis",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, default_outlier_label = default_outlier_label)),
+      list(plot_height = plot_height, plot_width = plot_width, default_outlier_label = default_outlier_label,
+           ggplot2_args = ggplot2_args)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -141,7 +158,7 @@ ui_a_regression <- function(id, ...) {
     "Scale-Location",
     "Cook's distance",
     "Residuals vs Leverage",
-    "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
+    "Cook's dist vs Leverage"
   )
 
   standard_layout(
@@ -223,6 +240,7 @@ srv_a_regression <- function(input,
                              regressor,
                              plot_height,
                              plot_width,
+                             ggplot2_args,
                              default_outlier_label) {
   init_chunks()
 
@@ -448,17 +466,22 @@ srv_a_regression <- function(input,
         )
       }
 
+      xlabel <- varname_w_label(regression_var()$regressor, ANL)
+      ylabel <- varname_w_label(regression_var()$response, ANL)
+
       chunks_push(
         id = "plot_0_b",
         expression = substitute(
           expr = {
-            g_final <- gg + xlab(xlabel) + ylab(ylabel) + ggtitle("Response vs Regressor") + ggtheme_call
+
+            g_final <- gg + labs + ggtheme_call + themes
             print(g_final)
           },
           env = list(
-            xlabel = varname_w_label(regression_var()$regressor, ANL),
-            ylabel = varname_w_label(regression_var()$response, ANL),
-            ggtheme_call = call(paste0("theme_", ggtheme))
+            ggtheme_call = call(paste0("theme_", ggtheme)),
+            labs = as.call(c(list(quote(labs)), ggplot2_args[["Response vs Regressor"]]$labs,
+                             title = "Response vs Regressor", x = xlabel, y = ylabel)),
+            themes = as.call(c(list(quote(theme)), ggplot2_args[["Response vs Regressor"]]$theme))
           )
         )
       )
@@ -497,14 +520,18 @@ srv_a_regression <- function(input,
         expr = {
           smoothy <- smooth(data$.fitted, data$.resid)
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Fitted values\nlm(", reg_form, ")"),
-            y = "Residuals",
-            title = input_type
-          ) + ggtheme_call
+          g_final <- g_base +
+            labs + ggtheme_call + themes
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)), ggplot2_args[["Residuals vs Fitted"]]$labs,
+                                                   x = quote(paste0("Fitted values\nlm(",reg_form, ")")),
+                                                   y = "Residuals",
+                                                   title = "Residuals vs Fitted")),
+                   themes = as.call(c(list(quote(theme)), ggplot2_args[["Residuals vs Fitted"]]$theme))
+        )
       ))
     }
 
@@ -536,14 +563,18 @@ srv_a_regression <- function(input,
       chunks_push(id = "plot_2", expression = substitute(
         expr = {
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Theoretical Quantiles\nlm(", reg_form, ")"),
-            y = "Standardized residuals",
-            title = input_type
-          ) + ggtheme_call
+          g_final <- g_base + labs + ggtheme_call + themes
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)),
+                                    ggplot2_args[["Normal Q-Q"]]$labs,
+                                    x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+                                    y = "Standardized residuals",
+                                    title = "Normal Q-Q")),
+                   themes = as.call(c(list(quote(theme)),
+                                      ggplot2_args[["Normal Q-Q"]]$theme)))
       ))
     }
 
@@ -563,14 +594,16 @@ srv_a_regression <- function(input,
         expr = {
           smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Fitted values\nlm(", reg_form, ")"),
-            y = expression(sqrt(abs(`Standardized residuals`))),
-            title = input_type
-          ) + ggtheme_call
+          g_final <- g_base + labs + ggtheme_call + themes
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)), ggplot2_args[["Scale-Location"]]$labs,
+                                    x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+                                    y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+                                    title = "Scale-Location")),
+                   themes = as.call(c(list(quote(theme)), ggplot2_args[["Scale-Location"]]$theme)))
       ))
     }
 
@@ -608,15 +641,17 @@ srv_a_regression <- function(input,
       chunks_push(id = "plot_4", expression = substitute(
         expr = {
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Obs. number\nlm(", reg_form, ")"),
-            y = "Cook's distance",
-            title = input_type
-          ) +
-            ggtheme_call
+          g_final <- g_base + labs+
+            ggtheme_call + themes
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)), ggplot2_args[["Cook's distance"]]$labs,
+                                    x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+                                    y = "Cook's distance",
+                                    title = "Cook's distance")),
+                   themes = as.call(c(list(quote(theme)), ggplot2_args[["Cook's distance"]]$theme)))
       ))
     }
 
@@ -649,15 +684,17 @@ srv_a_regression <- function(input,
         expr = {
           smoothy <- smooth(data$.hat, data$.stdresid)
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Standardized residuals\nlm(", reg_form, ")"),
-            y = "Leverage",
-            title = input_type
-          ) +
+          g_final <- g_base + labs + themes
             ggtheme_call
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)), ggplot2_args[["Residuals vs Leverage"]]$labs,
+                                    x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+                                    y = "Leverage",
+                                    title = "Residuals vs Leverage")),
+                   themes = as.call(c(list(quote(theme)), ggplot2_args[["Residuals vs Leverage"]]$theme)))
       ))
     }
 
@@ -685,15 +722,16 @@ srv_a_regression <- function(input,
         expr = {
           smoothy <- smooth(data$.hat, data$.cooksd)
           g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Leverage\nlm(", reg_form, ")"),
-            y = "Cooks's distance",
-            title = input_type
-          ) +
-            ggtheme_call
+          g_final <- g_base + labs + ggtheme_call + themes
           print(g_final)
         },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
+        env = list(plot = plot,
+                   ggtheme_call = call(paste0("theme_", ggtheme)),
+                   labs = as.call(c(list(quote(labs)), ggplot2_args[["Cook's dist vs Leverage"]]$labs,
+                                    x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+                                    y = "Cooks's distance",
+                                    title = "Cook's dist vs Leverage")),
+                   themes = as.call(c(list(quote(theme)), ggplot2_args[["Cook's dist vs Leverage"]]$theme)))
       ))
     }
 
@@ -702,12 +740,12 @@ srv_a_regression <- function(input,
     } else {
       plot_base()
       switch(input_type,
-        "Residuals vs Fitted"  = plot_type_1(),
+        "Residuals vs Fitted" = plot_type_1(),
         "Normal Q-Q" = plot_type_2(),
         "Scale-Location" =  plot_type_3(),
         "Cook's distance" =  plot_type_4(),
         "Residuals vs Leverage" =  plot_type_5(),
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii])" =  plot_type_6()
+        "Cook's dist vs Leverage" =  plot_type_6()
       )
     }
 
