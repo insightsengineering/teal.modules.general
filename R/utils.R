@@ -231,3 +231,55 @@ shape_names <- c(
   paste("triangle down", c("open", "filled")),
   "plus", "cross", "asterisk"
 )
+
+
+chunks_push_ggplot2_args <- function(id,
+                                     ggplot2_args,
+                                     plot_name = "default",
+                                     chunk_plot_name = as.name("gg"),
+                                     nest_ggplot2_args = NULL,
+                                     default_theme = NULL) {
+  ggplot2_args_f <- list()
+  # the order is important, as specific per plot labs have a priority
+  labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
+  labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+
+  theme_args <- c(ggplot2_args[[plot_name]]$theme, ggplot2_args[["default"]]$theme, nest_ggplot2_args$theme)
+  theme_args <- if (is.null(theme_args)) NULL else theme_args[!duplicated(names(theme_args))]
+
+  ggplot2_args_f <- list(labs = labs_args, theme = theme_args)
+
+  is_null_ggtheme <- is.null(default_theme)
+  is_null_labs <- is.null(labs_args)
+  is_null_theme <- is.null(theme_args)
+
+  labs_theme_expr <- chunk_plot_name
+
+  if (!is_null_labs) {
+    labs_f <- as.call(c(list(quote(labs)), ggplot2_args_f$labs))
+    labs_theme_expr <- bquote(.(labs_theme_expr) + .(labs_f))
+  }
+
+  if (!is_null_ggtheme) {
+    default_theme <- call(paste0("theme_", default_theme))
+    labs_theme_expr <- bquote(.(labs_theme_expr) + .(default_theme))
+  }
+
+  if (!is_null_theme) {
+    theme_f <- as.call(c(list(quote(theme)), ggplot2_args_f$theme))
+    labs_theme_expr <- bquote(.(labs_theme_expr) + .(theme_f))
+  }
+
+  chunks_push(
+    id = id,
+    expression = substitute(
+      expr = {
+        g_final <- ggplot_expr
+        print(g_final)
+      },
+      env = list(
+        ggplot_expr = labs_theme_expr
+      )
+    )
+  )
+}

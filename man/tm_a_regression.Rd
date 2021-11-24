@@ -17,11 +17,7 @@ tm_a_regression(
   post_output = NULL,
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
-  ggplot2_args = list(`Response vs Regressor` = list(labs = list(), theme = list()),
-    `Residuals vs Fitted` = list(labs = list(), theme = list()), `Normal Q-Q` = list(labs
-    = list(), theme = list()), `Scale-Location` = list(labs = list(), theme = list()),
-    `Cook's distance` = list(labs = list(), theme = list()), `Residuals vs Leverage` = list(labs = list(), theme = list()), `Cook's
-    dist vs Leverage` = list(labs = list(), theme = list()))
+  ggplot2_args = list(default = list(labs = list(), theme = list()))
 )
 }
 \arguments{
@@ -59,21 +55,24 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.}
-
-\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
-
-\item{ggplot2_args}{(\code{list}) A list of lists for each module plot.
-It should be of the form like `list(
+\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
 \item Normal Q-Q
 \item Scale-Location
-\item Cooks distance
+\item Cook's distance
 \item Residuals vs Leverage
-\item Cooks dist vs Leverage
+\item Cook's dist vs Leverage
 }}
+
+\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+
+\item{ggplot2_args}{optional (\code{list}) a list of the form, \code{list(default = list(labs = list(), theme = list()))}.
+These arguments have a priority over default one for each plot in the module.
+When a custom setup for each plot is needed then a list with named lists,
+\code{list( "default" = list(labs = list(), theme = list()), "Response vs Regressor" = list(labs = list(), theme = list()), ....)}.
+The names for each individual plot should follow the list in the \code{default_plot_type} argument description.}
 }
 \description{
 Scatterplot and Regression Model
