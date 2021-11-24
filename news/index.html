@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9008</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9009</span>
       </span>
     </div>
 
@@ -132,26 +132,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -177,15 +157,16 @@ Other releases
       
     </div>
 
-    <div id="tealmodulesgeneral-02119008" class="section level1">
-<h1 class="page-header" data-toc-text="0.2.11.9008">
-<a href="#tealmodulesgeneral-02119008" class="anchor"></a>teal.modules.general 0.2.11.9008</h1>
+    <div id="tealmodulesgeneral-02119009" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.11.9009">
+<a href="#tealmodulesgeneral-02119009" class="anchor"></a>teal.modules.general 0.2.11.9009</h1>
 <ul>
 <li>Added R version requirement, R &gt;= 3.6.</li>
 <li>Used browser-side processing in <code>tm_data_table</code> so that <code>Buttons</code> extension could download full table. Added example for advanced usage of <code>DT</code> in the module.</li>
 <li>Fixed an error in <code>tm_variable_browser</code> when the selected column is <code><a href="https://rdrr.io/r/base/logical.html">logical(1)</a></code>.</li>
 <li>Added support for <code>NA</code> level in grouping variable in “By variable levels” table inside <code>tm_missing_data</code>.</li>
 <li>Added informative labels for each level of grouping variable in “By variable levels” table inside <code>tm_missing_data</code>.</li>
+<li>Added ability to sort by <code>Variable</code> and <code>Type</code> in <code>tm_variable_browser</code> by separating the variable type icons into their own column.</li>
 <li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code>data_merge_srv</code> and <code>data_extract_multiple_srv</code> modules.</li>
 <li>Removed <code>input_id</code> argument from all <code>data_merge_module</code> calls in all modules.</li>
 </ul>
