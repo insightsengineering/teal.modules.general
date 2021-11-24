@@ -214,13 +214,13 @@ ui_g_bivariate <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_input(
+      data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
@@ -247,7 +247,7 @@ ui_g_bivariate <- function(id, ...) {
             condition = paste0("input['", ns("facetting"), "']"),
             div(
               if (!is.null(args$row_facet)) {
-                data_extract_input(
+                data_extract_ui(
                   id = ns("row_facet"),
                   label = "Row facetting variable",
                   data_extract_spec = args$row_facet,
@@ -255,7 +255,7 @@ ui_g_bivariate <- function(id, ...) {
                 )
               },
               if (!is.null(args$col_facet)) {
-                data_extract_input(
+                data_extract_ui(
                   id = ns("col_facet"),
                   label = "Column facetting variable",
                   data_extract_spec = args$col_facet,
@@ -277,13 +277,13 @@ ui_g_bivariate <- function(id, ...) {
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
             div(
-              data_extract_input(
+              data_extract_ui(
                 id = ns("color"),
                 label = "Outline color by variable",
                 data_extract_spec = args$color,
                 is_single_dataset = is_single_dataset_value
               ),
-              data_extract_input(
+              data_extract_ui(
                 id = ns("fill"),
                 label = "Fill color by variable",
                 data_extract_spec = args$fill,
@@ -291,7 +291,7 @@ ui_g_bivariate <- function(id, ...) {
               ),
               div(
                 id = ns("size_settings"),
-                data_extract_input(
+                data_extract_ui(
                   id = ns("size"),
                   label = "Size of points by variable (only if x and y are numeric)",
                   data_extract_spec = args$size,

@@ -130,13 +130,13 @@ ui_tm_g_association <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("ref", "vars")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("ref"),
         label = "Reference variable",
         data_extract_spec = args$ref,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_input(
+      data_extract_ui(
         id = ns("vars"),
         label = "Associated variables",
         data_extract_spec = args$vars,

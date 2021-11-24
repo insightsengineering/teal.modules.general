@@ -154,20 +154,20 @@ ui_g_response <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("response"),
         label = "Response variable",
         data_extract_spec = args$response,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_input(
+      data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$row_facet)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -175,7 +175,7 @@ ui_g_response <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,

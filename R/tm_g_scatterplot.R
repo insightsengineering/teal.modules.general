@@ -216,20 +216,20 @@ ui_g_scatterplot <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_input(
+      data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$color_by)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("color_by"),
           label = "Color by variable",
           data_extract_spec = args$color_by,
@@ -237,7 +237,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$size_by)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("size_by"),
           label = "Size by variable",
           data_extract_spec = args$size_by,
@@ -245,7 +245,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$row_facet)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -253,7 +253,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,

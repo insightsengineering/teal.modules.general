@@ -160,7 +160,7 @@ ui_distribution <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("dist_var", "strata_var")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("dist_i"),
         label = "Variable",
         data_extract_spec = args$dist_var,
@@ -168,7 +168,7 @@ ui_distribution <- function(id, ...) {
       ),
       if (!is.null(args$group_var)) {
         tagList(
-          data_extract_input(
+          data_extract_ui(
             id = ns("group_i"),
             label = "Group by",
             data_extract_spec = args$group_var,
@@ -190,7 +190,7 @@ ui_distribution <- function(id, ...) {
         )
       },
       if (!is.null(args$strata_var)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("strata_i"),
           label = "Stratify by",
           data_extract_spec = args$strata_var,

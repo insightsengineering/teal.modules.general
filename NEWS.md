@@ -9,6 +9,9 @@
 ## Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 
+## Miscellaneous
+* Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
+
 # teal.modules.general 0.2.11
 
 ### New features
