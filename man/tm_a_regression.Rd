@@ -59,7 +59,12 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
+\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.}
+
+\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+
+\item{ggplot2_args}{(\code{list}) A list of lists for each module plot.
+It should be of the form like `list(
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
@@ -69,10 +74,6 @@ output to put the output into context. For example the
 \item Residuals vs Leverage
 \item Cooks dist vs Leverage
 }}
-
-\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
-
-\item{ggplot2_args}{(\code{list}) A list of lists for each module plot.}
 }
 \description{
 Scatterplot and Regression Model

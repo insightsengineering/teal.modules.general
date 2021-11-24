@@ -17,17 +17,6 @@
 #' @name shared_params
 NULL
 
-#' Additional ggplot2 arguments
-#'
-#' @description Contains arguments that are shared between multiple functions
-#'   in the package to avoid repetition using `inheritParams`.
-#'   It has to be separated from `shared_params` as not all NEST modules is using ggplot2.
-#'
-#' @param ggplot2_args (\code{list}) A list of lists for each module plot.
-#'
-#' @name ggplot2_params
-NULL
-
 #' Add axis labels that show facetting variable
 #'
 #' Add axis labels that show facetting variable

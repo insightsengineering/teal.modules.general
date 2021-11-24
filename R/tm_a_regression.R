@@ -4,7 +4,6 @@
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
-#' @inheritParams ggplot2_params
 #' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
@@ -17,6 +16,17 @@
 #'   vector of length three with `c(value, min, max)`.
 #' @param default_outlier_label optional, (`character`) The default column selected to label outliers.
 #' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
+#' @param ggplot2_args (\code{list}) A list of lists for each module plot.
+#' It should be of the form like `list(
+#' "all" =
+# "Response vs Regressor" = list(labs = list(), theme = list()),
+# "Residuals vs Fitted" = list(labs = list(), theme = list()),
+# "Normal Q-Q" = list(labs = list(), theme = list()),
+# "Scale-Location" =  list(labs = list(), theme = list()),
+# "Cook's distance" =  list(labs = list(), theme = list()),
+# "Residuals vs Leverage" =  list(labs = list(), theme = list()),
+# "Cook's dist vs Leverage" =  list(labs = list(), theme = list())
+# )`
 #'
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
@@ -84,6 +94,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             ggplot2_args = list(
+                              "default" = list(),
                               `Response vs Regressor` = list(labs = list(), theme = list()),
                               `Residuals vs Fitted` = list(labs = list(), theme = list()),
                               `Normal Q-Q` = list(labs = list(), theme = list()),
