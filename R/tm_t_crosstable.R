@@ -151,42 +151,37 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  x_de_r <- callModule(
-    data_extract_module,
-    id = "x",
-    datasets = datasets,
-    data_extract_spec = x
-  )
+  selector_list <- data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
-  y_de_r <- callModule(
-    data_extract_module,
-    id = "y",
-    datasets = datasets,
-    data_extract_spec = y
-  )
-
-  observeEvent(list(x_de_r(), y_de_r()), {
-    if (identical(x_de_r()$dataname, y_de_r()$dataname)) {
+  observeEvent(list(selector_list()$x(), selector_list()$y()), {
+    if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
       shinyjs::hide("join_fun")
     } else {
       shinyjs::show("join_fun")
     }
   })
 
-  merged_data_r <- reactive({
-    data_merge_module(
-      datasets = datasets,
-      data_extract = list(x, y),
-      input_id = c("x", "y"),
-      merge_function = input$join_fun
-    )
+  merge_function <- reactive({
+    if (is.null(input$merge_fun)) {
+      "dplyr::full_join"
+    } else {
+      input$merge_fun
+    }
   })
 
-  x_ordered <- get_input_order("x", x$dataname)
+  merged_data_r <- data_merge_srv(
+    datasets = datasets,
+    selector_list = selector_list,
+    merge_function = merge_function
+  )
+
+  x_ordered <- reactive({
+    selector_list()$x()$select_ordered
+  })
 
   create_table <- reactive({
     chunks_reset()
-    chunks_push_data_merge(merged_data_r()())
+    chunks_push_data_merge(merged_data_r())
 
     ANL <- chunks_get_var("ANL") # nolint
 
@@ -194,7 +189,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
     validate_has_data(ANL, 3)
 
     x_name <- x_ordered()
-    y_name <- as.vector(merged_data_r()()$columns_source$y)
+    y_name <- as.vector(merged_data_r()$columns_source$y)
 
     validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
     validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
@@ -298,9 +293,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   show_r_code_title <- reactive(
     paste(
       "Cross-Table of",
-      paste0(merged_data_r()()$columns_source$x, collapse = ", "),
+      paste0(merged_data_r()$columns_source$x, collapse = ", "),
       "vs.",
-      merged_data_r()()$columns_source$y
+      merged_data_r()$columns_source$y
     )
   )
 

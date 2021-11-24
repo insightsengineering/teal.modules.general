@@ -6,6 +6,8 @@
 * Added support for `NA` level in grouping variable in "By variable levels" table inside `tm_missing_data`.
 * Added informative labels for each level of grouping variable in "By variable levels" table inside `tm_missing_data`.
 * Added ability to sort by `Variable` and `Type` in `tm_variable_browser`, separating the variable type icons into their own column. 
+* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `data_merge_srv` and `data_extract_multiple_srv` modules.
+* Removed `input_id` argument from all `data_merge_module` calls in all modules.
 
 ## Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.

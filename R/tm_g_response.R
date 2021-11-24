@@ -228,8 +228,7 @@ srv_g_response <- function(input,
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = data_extract,
-    input_id = names(data_extract)
+    data_extract = data_extract
   )
 
   plot_r <- reactive({
