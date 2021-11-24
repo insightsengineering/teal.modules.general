@@ -5,6 +5,7 @@
 * Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
 * Added support for `NA` level in grouping variable in "By variable levels" table inside `tm_missing_data`.
 * Added informative labels for each level of grouping variable in "By variable levels" table inside `tm_missing_data`.
+* Added ability to sort by `Variable` and `Type` in `tm_variable_browser`, separating the variable type icons into their own column. 
 
 ## Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
