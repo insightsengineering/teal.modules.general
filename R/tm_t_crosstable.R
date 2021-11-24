@@ -170,9 +170,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   })
 
   merged_data_r <- data_merge_srv(
-      datasets = datasets,
-      selector_list = selector_list,
-      merge_function = merge_function
+    datasets = datasets,
+    selector_list = selector_list,
+    merge_function = merge_function
   )
 
   x_ordered <- reactive({
