@@ -524,7 +524,7 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.fitted, data$.resid)
-            g = plot
+            g <- plot
             g_final <- ggplot_expr
             print(g_final)
           },
