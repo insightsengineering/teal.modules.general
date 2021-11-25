@@ -104,16 +104,6 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   ggtheme <- match.arg(ggtheme)
 
-  plot_choices <- c(
-    "Response vs Regressor",
-    "Residuals vs Fitted",
-    "Normal Q-Q",
-    "Scale-Location",
-    "Cook's distance",
-    "Residuals vs Leverage",
-    "Cook's dist vs Leverage"
-  )
-
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(response),
@@ -129,15 +119,17 @@ tm_a_regression <- function(label = "Regression Analysis",
     is_character_single(default_outlier_label)
     )
 
-  is_list_ggplot2_args <- is.list(ggplot2_args)
-  is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
-  is_nested_ggplot2_args <- (names(ggplot2_args) != c("labs", "theme")) &&
-    all(vapply(ggplot2_args, function(x) inherits(x, "ggplot_args"), logical(1)))
-
-  stop_if_not(
-    is_list_ggplot2_args,
-    is_ggplot2_args || (is_nested_ggplot2_args && all(names(ggplot2_args) %in% c("default", plot_choices)))
+  plot_choices <- c(
+    "Response vs Regressor",
+    "Residuals vs Fitted",
+    "Normal Q-Q",
+    "Scale-Location",
+    "Cook's distance",
+    "Residuals vs Leverage",
+    "Cook's dist vs Leverage"
   )
+
+  validate_ggplot2_args(ggplot2_args, plot_names = plot_choices)
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
