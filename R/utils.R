@@ -315,12 +315,13 @@ ggplot_args <- function(labs = list(), theme = list()) {
   stop_if_not(
     list(is.list(labs), "labs has to be a list"),
     list(is.list(theme), "theme has to be a list"),
-    list(!anyDuplicated(names(labs)), "labs argument has not to have any duplicated fields"),
-    list(!anyDuplicated(names(theme)), "theme argument has not to have any duplicated fields")
+    list(!anyDuplicated(names(labs)), "labs argument has to have unique fields"),
+    list(!anyDuplicated(names(theme)), "theme argument has to have unique fields")
   )
 
   ggplot2_theme <- formalArgs(ggplot2::theme)
-  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"), formalArgs(ggplot2::labs))
+  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"),
+                    formalArgs(ggplot2::labs))
 
   stop_if_not(
     list((length(theme) == 0) || all(names(theme) %in% ggplot2_theme), "Please validate theme arguments names"),
@@ -328,6 +329,22 @@ ggplot_args <- function(labs = list(), theme = list()) {
   )
 
   structure(list(labs = labs, theme = theme), class = "ggplot_args")
+}
+
+basic_table_args <- function(table_args) {
+  stop_if_not(
+    list(is.list(table_args), "table_args has to be a list"),
+    list(!anyDuplicated(names(table_args)), "table_args argument has to have unique fields")
+  )
+
+  basic_table_formals <- formalArgs(rtables::basic_table)
+
+  stop_if_not(
+    list((length(table_args) == 0) || all(names(table_args) %in% basic_table_formals),
+         "Please validate table_args arguments names")
+  )
+
+  structure(table_args, class = "basic_table_args")
 }
 
 #' Additional validation for ggplot2_args argument
