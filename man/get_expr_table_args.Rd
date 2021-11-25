@@ -10,6 +10,13 @@ get_expr_table_args(
   nest_table_args = NULL
 )
 }
+\arguments{
+\item{basic_table_args}{(`basic_table_args`)}
+
+\item{table_name}{(`character`)}
+
+\item{nest_table_args}{(`basic_table_args`)}
+}
 \description{
-function
+a function
 }
