@@ -24,12 +24,13 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional (`list`) a list of the form, `list(default = list(labs = list(), theme = list()))`.
+#' @param ggplot2_args optional (`ggplot_args`) a `ggplot_args` or named list of `ggplot_args`.
+#'  For global setup a direct usage is recommended.`ggplot_args(labs = list(), theme = list())`.
 #'  These arguments have a priority over default one for each plot in the module.
-#'  When a custom setup for each plot is needed then a list with named lists,
+#'  When a custom setup for each plot is needed then a named list with `ggplot_args`,
 #'  `list(
-#'  "default" = list(labs = list(), theme = list()),
-#'  "Response vs Regressor" = list(labs = list(), theme = list()),
+#'  "default" = ggplot_args(labs = list(), theme = list()),
+#'  "Response vs Regressor" = ggplot_args(labs = list(), theme = list()),
 #'  ....)`.
 #'  The names for each individual plot should follow the list in the `default_plot_type` argument description.
 #'
@@ -103,9 +104,6 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   ggtheme <- match.arg(ggtheme)
 
-  ggplot2_theme <- formalArgs(ggplot2::theme)
-  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"), formalArgs(ggplot2::labs))
-
   plot_choices <- c(
     "Response vs Regressor",
     "Residuals vs Fitted",
@@ -128,15 +126,19 @@ tm_a_regression <- function(label = "Regression Analysis",
     is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_input
     is_character_single(ggtheme),
-    is_character_single(default_outlier_label),
-    list(all(vapply(ggplot2_args,
-               function(x) (length(x$theme) == 0) || all(names(x$theme) %in% ggplot2_theme),
-               logical(1))), "Please validate theme arguments names"),
-    list(all(vapply(ggplot2_args,
-                    function(x) (length(x$labs) == 0) || all(names(x$labs) %in% ggplot2_labs),
-                    logical(1))), "Please validate labs arguments names"),
-    all(names(ggplot2_args) %in% c("default", plot_choices))
+    is_character_single(default_outlier_label)
     )
+
+  is_list_ggplot2_args <- is.list(ggplot2_args)
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
+  is_nested_ggplot2_args <- (names(ggplot2_args) != c("labs", "theme")) &&
+    all(vapply(ggplot2_args, function(x) inherits(x, "ggplot_args"), logical(1)))
+
+  stop_if_not(
+    is_list_ggplot2_args,
+    is_ggplot2_args || (is_nested_ggplot2_args && all(names(ggplot2_args) %in% c("default", plot_choices)))
+  )
+
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
@@ -449,7 +451,7 @@ srv_a_regression <- function(input,
         }
       }
 
-      nest_ggplot2_args <- list(labs = list(title = "Response vs Regressor",
+      nest_ggplot2_args <- ggplot_args(labs = list(title = "Response vs Regressor",
                                             x = varname_w_label(regression_var()$regressor, ANL),
                                             y = varname_w_label(regression_var()$response, ANL)),
                                 theme = list())
@@ -506,10 +508,10 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      nest_ggplot2_args <- list(
+      nest_ggplot2_args <- ggplot_args(labs = list(
         x = quote(paste0("Fitted values\nlm(",reg_form, ")")),
         y = "Residuals",
-        title = "Residuals vs Fitted")
+        title = "Residuals vs Fitted"))
 
       labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -558,9 +560,9 @@ srv_a_regression <- function(input,
         )
       }
 
-      nest_ggplot2_args <- list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+      nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
                                 y = "Standardized residuals",
-                                title = "Normal Q-Q")
+                                title = "Normal Q-Q"))
 
       labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -596,9 +598,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      nest_ggplot2_args <- list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+      nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
                                 y = quote(expression(sqrt(abs(`Standardized residuals`)))),
-                                title = "Scale-Location")
+                                title = "Scale-Location"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                chunk_plot_name = as.name("g"),
@@ -653,9 +655,9 @@ srv_a_regression <- function(input,
         )
       }
 
-      nest_ggplot2_args <- list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+      nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
                                 y = "Cook's distance",
-                                title = "Cook's distance")
+                                title = "Cook's distance"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -704,9 +706,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      nest_ggplot2_args <- list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+      nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
                                 y = "Leverage",
-                                title = "Residuals vs Leverage")
+                                title = "Residuals vs Leverage"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -750,9 +752,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      nest_ggplot2_args <- list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+      nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
                                 y = "Cooks's distance",
-                                title = "Cook's dist vs Leverage")
+                                title = "Cook's dist vs Leverage"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),

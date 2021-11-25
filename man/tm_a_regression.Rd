@@ -17,7 +17,7 @@ tm_a_regression(
   post_output = NULL,
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
-  ggplot2_args = list(default = list(labs = list(), theme = list()))
+  ggplot2_args = ggplot_args(labs = list(), theme = list())
 )
 }
 \arguments{
@@ -68,10 +68,11 @@ output to put the output into context. For example the
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{ggplot2_args}{optional (\code{list}) a list of the form, \code{list(default = list(labs = list(), theme = list()))}.
+\item{ggplot2_args}{optional (\code{ggplot_args}) a \code{ggplot_args} or named list of \code{ggplot_args}.
+For global setup a direct usage is recommended.\code{ggplot_args(labs = list(), theme = list())}.
 These arguments have a priority over default one for each plot in the module.
-When a custom setup for each plot is needed then a list with named lists,
-\code{list( "default" = list(labs = list(), theme = list()), "Response vs Regressor" = list(labs = list(), theme = list()), ....)}.
+When a custom setup for each plot is needed then a named list with \code{ggplot_args},
+\code{list( "default" = ggplot_args(labs = list(), theme = list()), "Response vs Regressor" = ggplot_args(labs = list(), theme = list()), ....)}.
 The names for each individual plot should follow the list in the \code{default_plot_type} argument description.}
 }
 \description{

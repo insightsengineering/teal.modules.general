@@ -232,19 +232,45 @@ shape_names <- c(
   "plus", "cross", "asterisk"
 )
 
-
+#' Adding ggplot2_args into `ggplot2`
+#'
+#' @description internal function to aggregate and reduce the `ggplot2_args`.
+#' The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
+#'
+#' @param ggplot2_args (`list`) of the class `ggplot_args` or a list of list of the class `ggplot_args`
+#' @param plot_name (`character`) name of the plot. This is used when working which multi-plot modules.
+#' @param chunk_plot_name (`symbol`) name of the main plot to which we will be adding labs and theme, chunks.
+#' @param nest_ggplot2_args (`list`) of the class `ggplot_args` with nest default setup for theme and labs.
+#' @param ggtheme (`character`) name of the `ggplot2` to be used, e.g. `"dark"`.
+#'
 get_expr_ggplot2_args <- function(ggplot2_args,
                                   plot_name = "default",
                                   chunk_plot_name = as.name("gg"),
                                   nest_ggplot2_args = NULL,
                                   ggtheme = NULL) {
-  ggplot2_args_f <- list()
-  # the order is important, as specific per plot labs have a priority
-  labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
-  labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  stop_if_not(inherits(nest_ggplot2_args, "ggplot_args"))
 
-  theme_args <- c(ggplot2_args[[plot_name]]$theme, ggplot2_args[["default"]]$theme, nest_ggplot2_args$theme)
-  theme_args <- if (is.null(theme_args)) NULL else theme_args[!duplicated(names(theme_args))]
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
+
+  ggplot2_args_f <- list()
+
+  if (is_ggplot2_args) {
+    labs_args <- c(ggplot2_args$labs, nest_ggplot2_args$labs)
+    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  } else {
+    # the order is important, as specific per plot labs have a priority
+    labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
+    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  }
+
+  if (is_ggplot2_args) {
+    theme_args <- c(ggplot2_args$theme, nest_ggplot2_args$theme)
+    theme_args <- if (is.null(theme_args)) NULL else theme_args[!duplicated(names(theme_args))]
+  } else {
+    # the order is important, as specific per plot theme have a priority
+    theme_args <- c(ggplot2_args[[plot_name]]$theme, ggplot2_args[["default"]]$theme, nest_ggplot2_args$theme)
+    theme_args <- if (is.null(theme_args)) NULL else theme_args[!duplicated(names(theme_args))]
+  }
 
   ggplot2_args_f <- list(labs = labs_args, theme = theme_args)
 
@@ -266,4 +292,36 @@ get_expr_ggplot2_args <- function(ggplot2_args,
   }
 
   labs_theme_expr
+}
+
+#' Building a list of the class ggplot_args
+#'
+#' @description this function has to be used to build an input for a `ggplot2_args` argument.
+#' The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
+#' The input is validated to match its `ggplot2` equivalent.
+#'
+#' @param labs (named `list`) where all fields have to match `ggplot2::labs` arguments.
+#' @param theme (named `list`) where all fields have to match `ggplot2::theme` arguments.
+#'
+#' @return (`list`) with the class `ggplot_args`.
+#'
+#' @export
+ggplot_args <- function(labs = list(), theme = list()) {
+
+  stop_if_not(
+    list(is.list(labs), "labs has to be a list"),
+    list(is.list(theme), "theme has to be a list"),
+    list(!anyDuplicated(names(labs)), "labs argument has not to have any duplicated fields"),
+    list(!anyDuplicated(names(theme)), "theme argument has not to have any duplicated fields")
+  )
+
+  ggplot2_theme <- formalArgs(ggplot2::theme)
+  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"), formalArgs(ggplot2::labs))
+
+  stop_if_not(
+    list((length(theme) == 0) || all(names(theme) %in% ggplot2_theme), "Please validate theme arguments names"),
+    list((length(labs) == 0) || all(names(labs) %in% ggplot2_labs), "Please validate labs arguments names")
+  )
+
+  structure(list(labs = labs, theme = theme), class = "ggplot_args")
 }
