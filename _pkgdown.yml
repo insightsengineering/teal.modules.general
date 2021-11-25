@@ -33,6 +33,12 @@ reference:
       - add_facet_labels
       - create_sparklines
       - get_scatterplotmatrix_stats
+      - basic_table_args_fun
+      - get_expr_ggplot2_args
+      - get_expr_table_args
+      - ggplot_args
+      - validate_basic_table_args
+      - validate_ggplot2_args
 
   - title: Unexported functions
     contents:

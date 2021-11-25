@@ -12,7 +12,7 @@
 #'  For global setup a direct usage is recommended.`basic_table_args()`.
 #'  These arguments have a priority over default one for each plot in the module.
 #'  When a custom setup for each plot is needed then a named list with `basic_table_args`,
-#'  Defaults to empty list of the class `basic_table_args`, `basic_table_args_fun()`.
+#'  Defaults to empty list of the class `basic_table_args`, build with `table_args()`.
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
 #' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.
@@ -78,7 +78,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL,
-                            basic_table_args = basic_table_args_fun()) {
+                            basic_table_args = table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
