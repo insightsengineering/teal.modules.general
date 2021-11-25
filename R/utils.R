@@ -233,12 +233,11 @@ shape_names <- c(
 )
 
 
-chunks_push_ggplot2_args <- function(id,
-                                     ggplot2_args,
-                                     plot_name = "default",
-                                     chunk_plot_name = as.name("gg"),
-                                     nest_ggplot2_args = NULL,
-                                     default_theme = NULL) {
+get_expr_ggplot2_args <- function(ggplot2_args,
+                                  plot_name = "default",
+                                  chunk_plot_name = as.name("gg"),
+                                  nest_ggplot2_args = NULL,
+                                  ggtheme = NULL) {
   ggplot2_args_f <- list()
   # the order is important, as specific per plot labs have a priority
   labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
@@ -256,8 +255,8 @@ chunks_push_ggplot2_args <- function(id,
     labs_theme_expr <- bquote(.(labs_theme_expr) + .(labs_f))
   }
 
-  if (length(default_theme) != 0) {
-    default_theme <- call(paste0("theme_", default_theme))
+  if (length(ggtheme) != 0) {
+    default_theme <- call(paste0("theme_", ggtheme))
     labs_theme_expr <- bquote(.(labs_theme_expr) + .(default_theme))
   }
 
@@ -266,16 +265,5 @@ chunks_push_ggplot2_args <- function(id,
     labs_theme_expr <- bquote(.(labs_theme_expr) + .(theme_f))
   }
 
-  chunks_push(
-    id = id,
-    expression = substitute(
-      expr = {
-        g_final <- ggplot_expr
-        print(g_final)
-      },
-      env = list(
-        ggplot_expr = labs_theme_expr
-      )
-    )
-  )
+  labs_theme_expr
 }
