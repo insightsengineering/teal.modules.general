@@ -350,7 +350,7 @@ basic_table_args <- function(table_args) {
 #' Additional validation for ggplot2_args argument
 validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
-  is_nested_ggplot2_args <- (names(ggplot2_args) != c("labs", "theme")) &&
+  is_nested_ggplot2_args <- is.list(ggplot2_args) && !is_ggplot2_args &&
     all(vapply(ggplot2_args, function(x) inherits(x, "ggplot_args"), logical(1)))
 
   stop_if_not(
@@ -362,13 +362,11 @@ validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
   )
 }
 
-
-
 #' Additional validation for ggplot2_args argument
 validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
   is_basic_table_args <- inherits(basic_table_args, "basic_table_args")
-  is_nested_basic_table_args <- (names(basic_table_args) != c("labs", "theme")) &&
-    all(vapply(basic_table_args, function(x) inherits(x, "ggplot_args"), logical(1)))
+  is_nested_basic_table_args <- is.list(basic_table_args) && !is_basic_table_args &&
+    all(vapply(basic_table_args, function(x) inherits(x, "basic_table_args"), logical(1)))
 
   stop_if_not(
     list(is_basic_table_args || (is_nested_basic_table_args &&
