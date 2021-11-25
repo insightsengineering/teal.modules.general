@@ -74,7 +74,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL,
-                            basic_table_args = basic_table_args()) {
+                            basic_table_args = basic_table_args_fun()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
@@ -86,9 +86,7 @@ tm_t_crosstable <- function(label = "Cross Table",
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
       (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-    ),
-    list((length(basic_table_args) == 0) || all(names(basic_table) %in% formalArgs(rtables::basic_table)),
-         "Please validate basic_table_args arguments names")
+    )
   )
 
   validate_basic_table_args(basic_table_args)
@@ -253,7 +251,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
           )
       },
       env = list(
-        basic_tables = as.call(c(list(quote(rtables::basic_table)), basic_table_args)),
+        basic_tables = get_expr_table_args(basic_table_args),
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(

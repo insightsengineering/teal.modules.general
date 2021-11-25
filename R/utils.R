@@ -251,9 +251,10 @@ get_expr_ggplot2_args <- function(ggplot2_args,
                                   nest_ggplot2_args = NULL,
                                   ggtheme = NULL) {
 
-  stop_if_not(is.null(nest_ggplot2_args) || inherits(nest_ggplot2_args, "ggplot_args"),
-              is.name(chunk_plot_name),
-              is.character(plot_name))
+  stop_if_not(
+    is.null(nest_ggplot2_args) || inherits(nest_ggplot2_args, "ggplot_args"),
+    is.name(chunk_plot_name),
+    is.character(plot_name))
 
   is_ggplot_args <- inherits(ggplot2_args, "ggplot_args")
 
@@ -321,18 +322,23 @@ ggplot_args <- function(labs = list(), theme = list()) {
   )
 
   ggplot2_theme <- formalArgs(ggplot2::theme)
-  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"),
-                    formalArgs(ggplot2::labs))
+  ggplot2_labs <- c(getFromNamespace(".all_aesthetics", "ggplot2"), formalArgs(ggplot2::labs))
 
   stop_if_not(
-    list((length(theme) == 0) || all(names(theme) %in% ggplot2_theme), "Please validate theme arguments names"),
-    list((length(labs) == 0) || all(names(labs) %in% ggplot2_labs), "Please validate labs arguments names")
-  )
+    list(
+      (length(theme) == 0) || all(names(theme) %in% ggplot2_theme),
+      "Please validate theme arguments names"
+      ),
+    list(
+      (length(labs) == 0) || all(names(labs) %in% ggplot2_labs),
+      "Please validate labs arguments names"
+      )
+    )
 
   structure(list(labs = labs, theme = theme), class = "ggplot_args")
 }
 
-basic_table_args <- function(...) {
+basic_table_args_fun <- function(...) {
 
   table_args <- list(...)
 
@@ -369,16 +375,17 @@ validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
 #' Additional validation for \code{basic_table_args} argument
 validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
   is_basic_table_args <- inherits(basic_table_args, "basic_table_args")
-  is_nested_basic_table_args <- is.list(basic_table_args) && !is_basic_table_args &&
+  is_nested_table_args <- is.list(basic_table_args) && !is_basic_table_args &&
     all(vapply(basic_table_args, function(x) inherits(x, "basic_table_args"), logical(1)))
 
   stop_if_not(
-    list(is_basic_table_args || (is_nested_basic_table_args &&
-                                   (all(names(basic_table_args) %in% c("default", plot_names)))),
-         paste0("Please use the basic_table_args() function to generate input for basic_table_args argument.\n",
-                "basic_table_args argument has to be basic_table_args class or named list of such objects.\n",
-                "If it is a named list then each name has to be one of ",
-                paste(c("default", table_names), collapse = ", ")))
+    list(
+      is_basic_table_args || (is_nested_table_args && (all(names(basic_table_args) %in% c("default", plot_names)))),
+      paste0("Please use the basic_table_args() function to generate input for basic_table_args argument.\n",
+             "basic_table_args argument has to be basic_table_args class or named list of such objects.\n",
+             "If it is a named list then each name has to be one of ",
+             paste(c("default", table_names), collapse = ", "))
+      )
   )
 }
 
@@ -387,30 +394,27 @@ validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
 #' @export
 get_expr_table_args <- function(basic_table_args,
                                 table_name = "default",
-                                chunk_table_name = as.name("tt"),
                                 nest_table_args = NULL) {
-  stop_if_not(is.null(nest_ggplot2_args) || inherits(nest_ggplot2_args, "ggplot_args"),
-              is.name(chunk_plot_name),
-              is.character(plot_name))
+  stop_if_not(
+    is.null(nest_table_args) || inherits(nest_table_args, "ggplot_args"),
+    is.character(table_name)
+    )
 
-  is_ggplot_args <- inherits(ggplot2_args, "ggplot_args")
+  is_table_args <- inherits(basic_table_args, "basic_table_args")
 
-  ggplot2_args_f <- list()
-
-  if (is_ggplot_args) {
-    labs_args <- c(ggplot2_args$labs, nest_ggplot2_args$labs)
-    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  if (is_table_args) {
+    table_args <- c(basic_table_args, nest_table_args)
+    table_args <- if (is.null(table_args)) NULL else table_args[!duplicated(names(table_args))]
   } else {
     # the order is important, as specific per plot labs have a priority
-    labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
-    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+    table_args <- c(basic_table_args[[table_name]], basic_table_args[["default"]], nest_table_args)
+    table_args <- if (is.null(table_args)) NULL else table_args[!duplicated(names(table_args))]
   }
 
-  labs_theme_expr <- chunk_plot_name
+  labs_theme_expr <- quote(rtables::basic_table())
 
-  if (length(labs_args) != 0) {
-    labs_f <- as.call(c(list(quote(labs)), ggplot2_args_f$labs))
-    labs_theme_expr <- bquote(.(labs_theme_expr) + .(labs_f))
+  if (length(table_args) != 0) {
+    labs_theme_expr <- as.call(c(list(quote(rtables::basic_table)), table_args))
   }
 
   labs_theme_expr
