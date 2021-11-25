@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_expr_ggplot2_args}
 \alias{get_expr_ggplot2_args}
-\title{Transform ggplot2_args into `ggplot2` expression}
+\title{Transform \code{ggplot2_args} into \code{ggplot2} expression}
 \usage{
 get_expr_ggplot2_args(
   ggplot2_args,
@@ -13,20 +13,20 @@ get_expr_ggplot2_args(
 )
 }
 \arguments{
-\item{ggplot2_args}{(`list`) of the class `ggplot_args` or a list of list of the class `ggplot_args`}
+\item{ggplot2_args}{(`list`) of the class \code{ggplot_args} or a list of list of the class \code{ggplot_args}.}
 
 \item{plot_name}{(`character`) name of the plot. This is used when working with multi-plot modules.}
 
 \item{chunk_plot_name}{(`symbol`) name of the main plot to which we will be adding labs and theme, chunks.}
 
-\item{nest_ggplot2_args}{(`list`) of the class `ggplot_args` with nest default setup for theme and labs.}
+\item{nest_ggplot2_args}{(`list`) of the class \code{ggplot_args} with nest default setup for theme and labs.}
 
-\item{ggtheme}{(`character`) name of the `ggplot2` to be used, e.g. `"dark"`.}
+\item{ggtheme}{(`character`) name of the \code{ggplot2} to be used, e.g. `"dark"`.}
 }
 \value{
 (`expression`) the chunk_plot_name expanded with non empty labs/theme.
 }
 \description{
-internal function to aggregate and reduce the `ggplot2_args`.
-The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
+internal function to aggregate and reduce the \code{ggplot2_args}.
+The \code{ggplot2_args} argument is part of every module which contains any \code{ggplot2} graphics.
 }

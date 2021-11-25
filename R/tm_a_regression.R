@@ -444,9 +444,9 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(title = "Response vs Regressor",
-                                            x = varname_w_label(regression_var()$regressor, ANL),
-                                            y = varname_w_label(regression_var()$response, ANL)),
-                                theme = list())
+                                                   x = varname_w_label(regression_var()$regressor, ANL),
+                                                   y = varname_w_label(regression_var()$response, ANL)),
+                                       theme = list())
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -506,10 +506,10 @@ srv_a_regression <- function(input,
         title = "Residuals vs Fitted"))
 
       labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
-                                                  chunk_plot_name = as.name("g"),
-                                                  ggplot2_args = ggplot2_args,
-                                                  nest_ggplot2_args = nest_ggplot2_args,
-                                                  ggtheme = ggtheme)
+                                               chunk_plot_name = as.name("g"),
+                                               ggplot2_args = ggplot2_args,
+                                               nest_ggplot2_args = nest_ggplot2_args,
+                                               ggtheme = ggtheme)
 
       chunks_push(
         id =  "plot_1",
@@ -553,14 +553,14 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
-                                y = "Standardized residuals",
-                                title = "Normal Q-Q"))
+                                                   y = "Standardized residuals",
+                                                   title = "Normal Q-Q"))
 
       labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
-                                                  chunk_plot_name = as.name("g"),
-                                                  ggplot2_args = ggplot2_args,
-                                                  nest_ggplot2_args = nest_ggplot2_args,
-                                                  ggtheme = ggtheme)
+                                               chunk_plot_name = as.name("g"),
+                                               ggplot2_args = ggplot2_args,
+                                               nest_ggplot2_args = nest_ggplot2_args,
+                                               ggtheme = ggtheme)
 
       chunks_push(
         id =  "plot_2",
@@ -591,14 +591,14 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-                                y = quote(expression(sqrt(abs(`Standardized residuals`)))),
-                                title = "Scale-Location"))
+                                                   y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+                                                   title = "Scale-Location"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
-                                               chunk_plot_name = as.name("g"),
-                                               ggplot2_args = ggplot2_args,
-                                               nest_ggplot2_args = nest_ggplot2_args,
-                                               ggtheme = ggtheme)
+                                                  chunk_plot_name = as.name("g"),
+                                                  ggplot2_args = ggplot2_args,
+                                                  nest_ggplot2_args = nest_ggplot2_args,
+                                                  ggtheme = ggtheme)
 
       chunks_push(
         id =  "plot_3",
@@ -648,8 +648,8 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
-                                y = "Cook's distance",
-                                title = "Cook's distance"))
+                                                   y = "Cook's distance",
+                                                   title = "Cook's distance"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -699,8 +699,8 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
-                                y = "Leverage",
-                                title = "Residuals vs Leverage"))
+                                                   y = "Leverage",
+                                                   title = "Residuals vs Leverage"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),
@@ -745,8 +745,8 @@ srv_a_regression <- function(input,
       }
 
       nest_ggplot2_args <- ggplot_args(labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
-                                y = "Cooks's distance",
-                                title = "Cook's dist vs Leverage"))
+                                                   y = "Cooks's distance",
+                                                   title = "Cook's dist vs Leverage"))
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(plot_name = input$plot_type,
                                                   chunk_plot_name = as.name("g"),

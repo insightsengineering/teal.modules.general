@@ -2,10 +2,10 @@
 % Please edit documentation in R/utils.R
 \name{validate_ggplot2_args}
 \alias{validate_ggplot2_args}
-\title{Additional validation for ggplot2_args argument}
+\title{Additional validation for \code{ggplot2_args} argument}
 \usage{
 validate_ggplot2_args(ggplot2_args, plot_names = NULL)
 }
 \description{
-Additional validation for ggplot2_args argument
+Additional validation for \code{ggplot2_args} argument
 }

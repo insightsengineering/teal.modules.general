@@ -74,7 +74,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL,
-                            basic_table_args = list()) {
+                            basic_table_args = basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
@@ -91,13 +91,15 @@ tm_t_crosstable <- function(label = "Cross Table",
          "Please validate basic_table_args arguments names")
   )
 
+  validate_basic_table_args(basic_table_args)
+
   ui_args <- as.list(environment())
 
   server_args <- list(
     label = label,
     x = x,
     y = y,
-    basic_table_args
+    basic_table_args = basic_table_args
   )
 
   module(

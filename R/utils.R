@@ -232,24 +232,25 @@ shape_names <- c(
   "plus", "cross", "asterisk"
 )
 
-#' Transform ggplot2_args into `ggplot2` expression
+#' Transform \code{ggplot2_args} into \code{ggplot2} expression
 #'
-#' @description internal function to aggregate and reduce the `ggplot2_args`.
-#' The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
+#' @description internal function to aggregate and reduce the \code{ggplot2_args}.
+#' The \code{ggplot2_args} argument is part of every module which contains any \code{ggplot2} graphics.
 #'
-#' @param ggplot2_args (`list`) of the class `ggplot_args` or a list of list of the class `ggplot_args`
+#' @param ggplot2_args (`list`) of the class \code{ggplot_args} or a list of list of the class \code{ggplot_args}.
 #' @param plot_name (`character`) name of the plot. This is used when working with multi-plot modules.
 #' @param chunk_plot_name (`symbol`) name of the main plot to which we will be adding labs and theme, chunks.
-#' @param nest_ggplot2_args (`list`) of the class `ggplot_args` with nest default setup for theme and labs.
-#' @param ggtheme (`character`) name of the `ggplot2` to be used, e.g. `"dark"`.
+#' @param nest_ggplot2_args (`list`) of the class \code{ggplot_args} with nest default setup for theme and labs.
+#' @param ggtheme (`character`) name of the \code{ggplot2} to be used, e.g. `"dark"`.
 #'
 #' @return (`expression`) the chunk_plot_name expanded with non empty labs/theme.
-#'
+#' @export
 get_expr_ggplot2_args <- function(ggplot2_args,
                                   plot_name = "default",
                                   chunk_plot_name = as.name("gg"),
                                   nest_ggplot2_args = NULL,
                                   ggtheme = NULL) {
+
   stop_if_not(is.null(nest_ggplot2_args) || inherits(nest_ggplot2_args, "ggplot_args"),
               is.name(chunk_plot_name),
               is.character(plot_name))
@@ -298,16 +299,16 @@ get_expr_ggplot2_args <- function(ggplot2_args,
   labs_theme_expr
 }
 
-#' Building a list of the class ggplot_args
+#' Building a list of the class \code{ggplot_args}
 #'
-#' @description this function has to be used to build an input for a `ggplot2_args` argument.
-#' The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
-#' The input is validated to match its `ggplot2` equivalent.
+#' @description This function has to be used to build an input for a \code{ggplot2_args} argument.
+#' The \code{ggplot2_args} argument is part of every module which contains any \code{ggplot2} graphics.
+#' The input is validated to match its \code{ggplot2} equivalent.
 #'
-#' @param labs (named `list`) where all fields have to match `ggplot2::labs` arguments.
-#' @param theme (named `list`) where all fields have to match `ggplot2::theme` arguments.
+#' @param labs (named `list`) where all fields have to match \code{ggplot2::labs} arguments.
+#' @param theme (named `list`) where all fields have to match \code{ggplot2::theme} arguments.
 #'
-#' @return (`list`) with the class `ggplot_args`.
+#' @return (`list`) with the class \code{ggplot_args}.
 #'
 #' @export
 ggplot_args <- function(labs = list(), theme = list()) {
@@ -331,7 +332,10 @@ ggplot_args <- function(labs = list(), theme = list()) {
   structure(list(labs = labs, theme = theme), class = "ggplot_args")
 }
 
-basic_table_args <- function(table_args) {
+basic_table_args <- function(...) {
+
+  table_args <- list(...)
+
   stop_if_not(
     list(is.list(table_args), "table_args has to be a list"),
     list(!anyDuplicated(names(table_args)), "table_args argument has to have unique fields")
@@ -347,7 +351,7 @@ basic_table_args <- function(table_args) {
   structure(table_args, class = "basic_table_args")
 }
 
-#' Additional validation for ggplot2_args argument
+#' Additional validation for \code{ggplot2_args} argument
 validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
   is_nested_ggplot2_args <- is.list(ggplot2_args) && !is_ggplot2_args &&
@@ -356,13 +360,13 @@ validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
   stop_if_not(
     list(is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_names)))),
          paste0("Please use the ggplot2_args() function to generate input for ggplot2_args argument.\n",
-         "ggplot2_args argument has to be ggplot_args class or named list of such objects.\n",
-         "If it is a named list then each name has to be one of ",
-         paste(c("default", plot_names), collapse = ", ")))
+                "ggplot2_args argument has to be ggplot_args class or named list of such objects.\n",
+                "If it is a named list then each name has to be one of ",
+                paste(c("default", plot_names), collapse = ", ")))
   )
 }
 
-#' Additional validation for basic_table_args argument
+#' Additional validation for \code{basic_table_args} argument
 validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
   is_basic_table_args <- inherits(basic_table_args, "basic_table_args")
   is_nested_basic_table_args <- is.list(basic_table_args) && !is_basic_table_args &&
@@ -378,3 +382,36 @@ validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
   )
 }
 
+#' Transform \code{basic_table_args} into \code{basic_table} expression
+#' @description function
+#' @export
+get_expr_table_args <- function(basic_table_args,
+                                table_name = "default",
+                                chunk_table_name = as.name("tt"),
+                                nest_table_args = NULL) {
+  stop_if_not(is.null(nest_ggplot2_args) || inherits(nest_ggplot2_args, "ggplot_args"),
+              is.name(chunk_plot_name),
+              is.character(plot_name))
+
+  is_ggplot_args <- inherits(ggplot2_args, "ggplot_args")
+
+  ggplot2_args_f <- list()
+
+  if (is_ggplot_args) {
+    labs_args <- c(ggplot2_args$labs, nest_ggplot2_args$labs)
+    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  } else {
+    # the order is important, as specific per plot labs have a priority
+    labs_args <- c(ggplot2_args[[plot_name]]$labs, ggplot2_args[["default"]]$labs, nest_ggplot2_args$labs)
+    labs_args <- if (is.null(labs_args)) NULL else labs_args[!duplicated(names(labs_args))]
+  }
+
+  labs_theme_expr <- chunk_plot_name
+
+  if (length(labs_args) != 0) {
+    labs_f <- as.call(c(list(quote(labs)), ggplot2_args_f$labs))
+    labs_theme_expr <- bquote(.(labs_theme_expr) + .(labs_f))
+  }
+
+  labs_theme_expr
+}

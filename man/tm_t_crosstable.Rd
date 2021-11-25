@@ -12,7 +12,7 @@ tm_t_crosstable(
   show_total = TRUE,
   pre_output = NULL,
   post_output = NULL,
-  basic_table_args = list()
+  basic_table_args = basic_table_args()
 )
 }
 \arguments{

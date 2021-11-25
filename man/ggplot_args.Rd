@@ -2,20 +2,20 @@
 % Please edit documentation in R/utils.R
 \name{ggplot_args}
 \alias{ggplot_args}
-\title{Building a list of the class ggplot_args}
+\title{Building a list of the class \code{ggplot_args}}
 \usage{
 ggplot_args(labs = list(), theme = list())
 }
 \arguments{
-\item{labs}{(named `list`) where all fields have to match `ggplot2::labs` arguments.}
+\item{labs}{(named `list`) where all fields have to match \code{ggplot2::labs} arguments.}
 
-\item{theme}{(named `list`) where all fields have to match `ggplot2::theme` arguments.}
+\item{theme}{(named `list`) where all fields have to match \code{ggplot2::theme} arguments.}
 }
 \value{
-(`list`) with the class `ggplot_args`.
+(`list`) with the class \code{ggplot_args}.
 }
 \description{
-this function has to be used to build an input for a `ggplot2_args` argument.
-The `ggplot2_args` argument is part of every module which contains any `ggplot2` graphics.
-The input is validated to match its `ggplot2` equivalent.
+This function has to be used to build an input for a \code{ggplot2_args} argument.
+The \code{ggplot2_args} argument is part of every module which contains any \code{ggplot2} graphics.
+The input is validated to match its \code{ggplot2} equivalent.
 }
