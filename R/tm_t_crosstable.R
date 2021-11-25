@@ -8,7 +8,11 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param basic_table_args additional arguments transferred to `rtables::basic_table`. Defaults to `list()`, empty list.
+#' @param basic_table_args optional (`basic_table_args`) a `basic_table_args` or named list of `basic_table_args`.
+#'  For global setup a direct usage is recommended.`basic_table_args()`.
+#'  These arguments have a priority over default one for each plot in the module.
+#'  When a custom setup for each plot is needed then a named list with `basic_table_args`,
+#'  Defaults to empty list of the class `basic_table_args`, `basic_table_args_fun()`.
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
 #' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.

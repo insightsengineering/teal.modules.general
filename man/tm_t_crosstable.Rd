@@ -12,7 +12,7 @@ tm_t_crosstable(
   show_total = TRUE,
   pre_output = NULL,
   post_output = NULL,
-  basic_table_args = basic_table_args()
+  basic_table_args = basic_table_args_fun()
 )
 }
 \arguments{
@@ -37,7 +37,11 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{basic_table_args}{additional arguments transferred to \code{rtables::basic_table}. Defaults to \code{list()}, empty list.}
+\item{basic_table_args}{optional (\code{basic_table_args}) a \code{basic_table_args} or named list of \code{basic_table_args}.
+For global setup a direct usage is recommended.\code{basic_table_args()}.
+These arguments have a priority over default one for each plot in the module.
+When a custom setup for each plot is needed then a named list with \code{basic_table_args},
+Defaults to empty list of the class \code{basic_table_args}, \code{basic_table_args_fun()}.}
 }
 \description{
 Create a simple cross-table
