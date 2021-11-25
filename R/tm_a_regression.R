@@ -245,8 +245,7 @@ srv_a_regression <- function(input,
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = list(response, regressor),
-    input_id = c("response", "regressor")
+    data_extract = list(response = response, regressor = regressor)
   )
 
   regression_var <- reactive(

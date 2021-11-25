@@ -990,6 +990,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
     if (is.null(df) || ncol(df) == 0) {
       columns_names[[dataset_name]] <- character(0)
       data.frame(
+        Type = character(0),
         Variable = character(0),
         Label = character(0),
         Missings = character(0),
@@ -1030,7 +1031,8 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         USE.NAMES = FALSE)
 
       data.frame(
-        Variable = paste(icons, names(labels)),
+        Type = icons,
+        Variable = names(labels),
         Label = labels,
         Missings = missings,
         Sparklines = sparklines_html,
@@ -1042,9 +1044,6 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
   rownames = FALSE,
   selection = list(mode = "single", target = "row", selected = 1),
   options = list(
-    columnDefs = list(
-      list(orderable = FALSE, className = "details-control", targets = 0)
-    ),
     fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
     pageLength = input[[paste0(table_ui_id, "_rows")]]
   ))
