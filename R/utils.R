@@ -349,7 +349,6 @@ basic_table_args <- function(table_args) {
 
 #' Additional validation for ggplot2_args argument
 validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
-  is_list_ggplot2_args <- is.list(ggplot2_args)
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot_args")
   is_nested_ggplot2_args <- (names(ggplot2_args) != c("labs", "theme")) &&
     all(vapply(ggplot2_args, function(x) inherits(x, "ggplot_args"), logical(1)))
@@ -362,3 +361,22 @@ validate_ggplot2_args <- function(ggplot2_args, plot_names = NULL) {
          paste(c("default", plot_names), collapse = ", ")))
   )
 }
+
+
+
+#' Additional validation for ggplot2_args argument
+validate_basic_table_args <- function(basic_table_args, table_names = NULL) {
+  is_basic_table_args <- inherits(basic_table_args, "basic_table_args")
+  is_nested_basic_table_args <- (names(basic_table_args) != c("labs", "theme")) &&
+    all(vapply(basic_table_args, function(x) inherits(x, "ggplot_args"), logical(1)))
+
+  stop_if_not(
+    list(is_basic_table_args || (is_nested_basic_table_args &&
+                                   (all(names(basic_table_args) %in% c("default", plot_names)))),
+         paste0("Please use the ggplot2_args() function to generate input for ggplot2_args argument.\n",
+                "ggplot2_args argument has to be ggplot_args class or named list of such objects.\n",
+                "If it is a named list then each name has to be one of ",
+                paste(c("default", table_names), collapse = ", ")))
+  )
+}
+
