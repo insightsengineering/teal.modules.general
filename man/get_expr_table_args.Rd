@@ -11,11 +11,11 @@ get_expr_table_args(
 )
 }
 \arguments{
-\item{basic_table_args}{(`basic_table_args`)}
+\item{basic_table_args}{(\code{basic_table_args})}
 
 \item{table_name}{(`character`)}
 
-\item{nest_table_args}{(`basic_table_args`)}
+\item{nest_table_args}{(\code{basic_table_args})}
 }
 \description{
 a function
