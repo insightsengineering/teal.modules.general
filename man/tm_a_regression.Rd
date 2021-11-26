@@ -17,7 +17,7 @@ tm_a_regression(
   post_output = NULL,
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
-  ggplot2_args = ggplot_args(labs = list(), theme = list())
+  ggplot2_args = teal.devel::ggplot_args(labs = list(), theme = list())
 )
 }
 \arguments{
@@ -68,13 +68,16 @@ output to put the output into context. For example the
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{ggplot2_args}{optional (\code{ggplot_args}) a \code{ggplot_args} or named list of \code{ggplot_args}.
+\item{ggplot2_args}{optional (\code{ggplot_args}) or named list of \code{ggplot_args}.
+The \code{teal.devel::ggplot_args()} function has to be used to get a \code{ggplot_args} object.
 For global setup a direct usage is recommended, \code{ggplot_args(labs = list(), theme = list())}.
 These arguments have a priority over default one for each plot in the module.
 When a custom setup for each plot is needed then a named list with \code{ggplot_args},
 \code{list( "default" = ggplot_args(labs = list(), theme = list()), "Response vs Regressor" = ggplot_args(labs = list(), theme = list()), ....)}.
-The names for each individual plot should follow the list in the \code{default_plot_type} argument description
-Defaults to empty list of the class \code{ggplot2_args}, \code{ggplot_args(labs = list(), theme = list())}.}
+The names for each individual plot should follow the list in the \code{default_plot_type} argument description.
+The argument is merged with options variable \code{teal.ggplot2_args}.
+\code{options} variable is used when we want to share the same setup between different modules.
+Defaults to empty list of the class \code{ggplot2_args}, \code{teal.devel::ggplot_args(labs = list(), theme = list())}.}
 }
 \description{
 Scatterplot and Regression Model

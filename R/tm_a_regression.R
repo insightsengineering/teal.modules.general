@@ -24,7 +24,8 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional (`ggplot_args`) a `ggplot_args` or named list of `ggplot_args`.
+#' @param ggplot2_args optional (`ggplot_args`) or named list of `ggplot_args`.
+#'  The `teal.devel::ggplot_args()` function has to be used to get a `ggplot_args` object.
 #'  For global setup a direct usage is recommended, `ggplot_args(labs = list(), theme = list())`.
 #'  These arguments have a priority over default one for each plot in the module.
 #'  When a custom setup for each plot is needed then a named list with `ggplot_args`,
@@ -32,8 +33,10 @@
 #'  "default" = ggplot_args(labs = list(), theme = list()),
 #'  "Response vs Regressor" = ggplot_args(labs = list(), theme = list()),
 #'  ....)`.
-#'  The names for each individual plot should follow the list in the `default_plot_type` argument description
-#'  Defaults to empty list of the class `ggplot2_args`, `ggplot_args(labs = list(), theme = list())`.
+#'  The names for each individual plot should follow the list in the `default_plot_type` argument description.
+#'  The argument is merged with options variable `teal.ggplot2_args`.
+#'  \code{options} variable is used when we want to share the same setup between different modules.
+#'  Defaults to empty list of the class `ggplot2_args`, `teal.devel::ggplot_args(labs = list(), theme = list())`.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
@@ -92,7 +95,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
-                            ggplot2_args = ggplot_args(labs = list(), theme = list())
+                            ggplot2_args = teal.devel::ggplot_args(labs = list(), theme = list())
                             ) {
 
   logger::log_info("Initializing tm_a_regression")
