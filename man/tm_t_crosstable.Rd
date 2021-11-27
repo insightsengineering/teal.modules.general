@@ -45,6 +45,13 @@ When a custom setup for each plot is needed then a named list with \code{basic_t
 Nevertheless this module has only one table.
 The argument is merged with options variable \code{teal.basic_table_args}.
 \code{options} variable is used when we want to share the same setup between different modules.
+The priority of argument sources, in order:
+\enumerate{
+\item \code{basic_table_args} argument provided by the end user.
+\item System variable, \code{options()} variable \code{teal.basic_table_args}.
+\item Module creator setup.
+}
+
 Defaults to empty list of the class \code{basic_table_args}, build with \code{teal.devel::table_args()}.}
 }
 \description{

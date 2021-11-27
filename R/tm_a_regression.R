@@ -36,6 +36,14 @@
 #'  The names for each individual plot should follow the list in the `default_plot_type` argument description.
 #'  The argument is merged with options variable `teal.ggplot2_args`.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
+#'
+#'  The priority of argument sources, in order:
+#'
+#'  1. `ggplot2_args` argument provided by the end user.
+#'  For multi-plot case, per plot and then default setup.
+#'  2. System variable, `options()` variable `teal.ggplot2_args`.
+#'  3. Module creator setup.
+#'
 #'  Defaults to empty list of the class `ggplot2_args`, `teal.devel::ggplot_args(labs = list(), theme = list())`.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via

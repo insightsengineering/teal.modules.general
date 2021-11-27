@@ -16,6 +16,12 @@
 #'  Nevertheless this module has only one table.
 #'  The argument is merged with options variable `teal.basic_table_args`.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
+#'  The priority of argument sources, in order:
+#'
+#'  1. `basic_table_args` argument provided by the end user.
+#'  2. System variable, `options()` variable `teal.basic_table_args`.
+#'  3. Module creator setup.
+#'
 #'  Defaults to empty list of the class `basic_table_args`, build with `teal.devel::table_args()`.
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
@@ -245,9 +251,11 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
-    expr_basic_table_args <- get_expr_table_args(basic_table_args_default = basic_table_args$default,
-                                                 basic_table_args_plot = NULL,
-                                                 basic_table_args_developer = NULL)
+    expr_basic_table_args <- get_expr_table_args(
+      basic_table_args_default = basic_table_args$default,
+      basic_table_args_table = NULL,
+      basic_table_args_developer = NULL
+      )
 
     chunks_push(substitute(
       expr = {

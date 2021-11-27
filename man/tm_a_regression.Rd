@@ -77,6 +77,15 @@ When a custom setup for each plot is needed then a named list with \code{ggplot_
 The names for each individual plot should follow the list in the \code{default_plot_type} argument description.
 The argument is merged with options variable \code{teal.ggplot2_args}.
 \code{options} variable is used when we want to share the same setup between different modules.
+
+The priority of argument sources, in order:
+\enumerate{
+\item \code{ggplot2_args} argument provided by the end user.
+For multi-plot case, per plot and then default setup.
+\item System variable, \code{options()} variable \code{teal.ggplot2_args}.
+\item Module creator setup.
+}
+
 Defaults to empty list of the class \code{ggplot2_args}, \code{teal.devel::ggplot_args(labs = list(), theme = list())}.}
 }
 \description{
