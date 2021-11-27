@@ -133,7 +133,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Cook's dist vs Leverage"
   )
 
-  validate_ggplot2_args(ggplot2_args, plot_names = plot_choices)
+  ggplot2_args <- validate_ggplot2_args(ggplot2_args, plot_names = plot_choices)
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -455,10 +455,10 @@ srv_a_regression <- function(input,
         )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
         )
 
@@ -516,13 +516,13 @@ srv_a_regression <- function(input,
         title = "Residuals vs Fitted")
         )
 
-      labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
+      gg_labs_theme_expr <- get_expr_ggplot2_args(
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_1",
@@ -534,7 +534,7 @@ srv_a_regression <- function(input,
             print(g_final)
           },
           env = list(plot = plot,
-                     ggplot_expr = labs_theme_expr)
+                     ggplot_expr = gg_labs_theme_expr)
         )
       )
     }
@@ -571,13 +571,13 @@ srv_a_regression <- function(input,
                     title = "Normal Q-Q")
         )
 
-      labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
+      gg_labs_theme_expr <- get_expr_ggplot2_args(
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_2",
@@ -588,7 +588,7 @@ srv_a_regression <- function(input,
             print(g_final)
           },
           env = list(plot = plot,
-                     ggplot_expr = labs_theme_expr)
+                     ggplot_expr = gg_labs_theme_expr)
         )
       )
 
@@ -614,12 +614,12 @@ srv_a_regression <- function(input,
         )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_3",
@@ -675,12 +675,12 @@ srv_a_regression <- function(input,
         )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_4",
@@ -730,12 +730,12 @@ srv_a_regression <- function(input,
         )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_5",
@@ -780,12 +780,12 @@ srv_a_regression <- function(input,
         )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
-        plot_name = input$plot_type,
         chunk_plot_name = as.name("g"),
-        ggplot2_args = ggplot2_args,
-        dev_ggplot2_args = dev_ggplot2_args,
+        ggplot2_args_default = ggplot2_args$default,
+        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
+        ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id =  "plot_6",

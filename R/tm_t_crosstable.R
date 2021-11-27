@@ -97,7 +97,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     )
   )
 
-  validate_basic_table_args(basic_table_args)
+  basic_table_args <- validate_basic_table_args(basic_table_args)
 
   ui_args <- as.list(environment())
 
@@ -245,6 +245,10 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
+    expr_basic_table_args <- get_expr_table_args(basic_table_args_default = basic_table_args$default,
+                                                 basic_table_args_plot = NULL,
+                                                 basic_table_args_developer = NULL)
+
     chunks_push(substitute(
       expr = {
         lyt <- basic_tables %>%
@@ -259,7 +263,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
           )
       },
       env = list(
-        basic_tables = get_expr_table_args(basic_table_args),
+        basic_tables = expr_basic_table_args,
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(
