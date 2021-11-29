@@ -295,8 +295,7 @@ srv_distribution <- function(input,
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract = list(dist_var, strata_var, group_var),
-    input_id = c("dist_i", "strata_i", "group_i")
+    data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
   )
 
   observeEvent(list(

@@ -327,17 +327,8 @@ srv_g_scatterplot <- function(input,
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract  = Reduce(
-      f = append,
-      init = list(x, y),
-      x = list(color_by, size_by, row_facet, col_facet)
-    ),
-    input_id = c(
-      "x", "y",
-      if_not_null(color_by, "color_by"),
-      if_not_null(size_by, "size_by"),
-      if_not_null(row_facet, "row_facet"),
-      if_not_null(col_facet, "col_facet")),
+    data_extract  = list(x = x, y = y,
+      color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
     merge_function = "dplyr::inner_join"
   )
 

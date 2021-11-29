@@ -222,8 +222,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   anl_data <- data_merge_module(
     datasets = datasets,
-    data_extract = list(dat),
-    input_id = c("dat")
+    data_extract = list(dat = dat)
   )
 
   response_data <- data_merge_module(
