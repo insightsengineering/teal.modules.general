@@ -255,7 +255,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       basic_table_args_default = basic_table_args$default,
       basic_table_args_table = NULL,
       basic_table_args_developer = NULL
-      )
+    )
 
     chunks_push(substitute(
       expr = {
