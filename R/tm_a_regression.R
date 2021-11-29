@@ -519,10 +519,11 @@ srv_a_regression <- function(input,
 
       dev_ggplot2_args <- ggplot_args(
         labs = list(
-        x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-        y = "Residuals",
-        title = "Residuals vs Fitted")
+          x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+          y = "Residuals",
+          title = "Residuals vs Fitted"
         )
+      )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
         chunk_plot_name = as.name("g"),
