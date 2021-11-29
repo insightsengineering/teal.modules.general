@@ -151,15 +151,13 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  x_de_r <- callModule(
-    data_extract_srv,
+  x_de_r <- data_extract_srv(
     id = "x",
     datasets = datasets,
     data_extract_spec = x
   )
 
-  y_de_r <- callModule(
-    data_extract_srv,
+  y_de_r <- data_extract_srv(
     id = "y",
     datasets = datasets,
     data_extract_spec = y
