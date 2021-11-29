@@ -127,7 +127,7 @@ ui_a_pca <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args["dat"]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("dat"),
         label = "Data selection",
         data_extract_spec = args$dat,
@@ -168,7 +168,7 @@ ui_a_pca <- function(id, ...) {
           conditionalPanel(
             condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
             list(
-              data_extract_input(
+              data_extract_ui(
                 id = ns("response"),
                 label = "Color by",
                 data_extract_spec = color_selector,
