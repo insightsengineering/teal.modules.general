@@ -143,8 +143,8 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(list(x, y)),
-      data_extract_input(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
-      data_extract_input(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
+      data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
+      data_extract_ui(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
       optionalSelectInput(
         ns("join_fun"),
         label = "Row to Column type of join",

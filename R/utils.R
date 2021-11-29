@@ -203,8 +203,8 @@ varname_w_label <- function(var_names,
   }
 }
 
-#' Extract html id for data_extract_input
-#' @description The data_extract_input is located under extended html id.
+#' Extract html id for data_extract_ui
+#' @description The data_extract_ui is located under extended html id.
 #'   We could not use \code{ns("original id")} for reference, as it is extended with specific suffixes.
 #' @param varname character original html id.
 #'   This will be mostly retrieved with \code{ns("original id")} in ui or

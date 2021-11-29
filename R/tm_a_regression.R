@@ -126,7 +126,7 @@ tm_a_regression <- function(label = "Regression Analysis",
       "Response variable should not allow multiple selection"
       ),
     is_class_list("data_extract_spec")(regressor),
-    # No check necessary for regressor and response, as checked in data_extract_input
+    # No check necessary for regressor and response, as checked in data_extract_ui
     is_character_single(ggtheme),
     is_character_single(default_outlier_label)
     )
@@ -181,13 +181,13 @@ ui_a_regression <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("response", "regressor")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("response"),
         label = "Response variable",
         data_extract_spec = args$response,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_input(
+      data_extract_ui(
         id = ns("regressor"),
         label = "Regressor variables",
         data_extract_spec = args$regressor,

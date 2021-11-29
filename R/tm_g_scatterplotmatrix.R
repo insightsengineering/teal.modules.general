@@ -107,7 +107,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args$variables),
-      data_extract_input(
+      data_extract_ui(
         id = ns("variables"),
         label = "Variables",
         data_extract_spec = args$variables,
