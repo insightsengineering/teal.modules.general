@@ -456,11 +456,12 @@ srv_a_regression <- function(input,
       }
 
       dev_ggplot2_args <- ggplot_args(
-        labs = list(title = "Response vs Regressor",
-        x = varname_w_label(regression_var()$regressor, ANL),
-        y = varname_w_label(regression_var()$response, ANL)),
-        theme = list()
+        labs = list(
+          title = "Response vs Regressor",
+          x = varname_w_label(regression_var()$regressor, ANL),
+          y = varname_w_label(regression_var()$response, ANL)
         )
+      )
 
       gg_labs_theme_expr <- get_expr_ggplot2_args(
         chunk_plot_name = as.name("g"),
@@ -468,7 +469,7 @@ srv_a_regression <- function(input,
         ggplot2_args_plot = ggplot2_args[[input$plot_type]],
         ggplot2_args_developer = dev_ggplot2_args,
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id = "plot_0",
