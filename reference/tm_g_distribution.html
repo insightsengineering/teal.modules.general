@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9009</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9010</span>
       </span>
     </div>
 
@@ -133,26 +133,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -225,10 +205,10 @@ Defaults to density (<code>FALSE</code>).</p></td>
     </tr>
     <tr>
       <th>bins</th>
-      <td><p>optional, (<code><a href='https://rdrr.io/r/base/integer.html'>integer(1)</a></code> or <code><a href='https://rdrr.io/r/base/integer.html'>integer(3)</a></code>) If scalar then the histogram bins will have a fixed size.
+      <td><p>optional, (<code>integer(1)</code> or <code>integer(3)</code>) If scalar then the histogram bins will have a fixed size.
 If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
-vector of length three with <code><a href='https://rdrr.io/r/base/c.html'>c(value, min, max)</a></code>.
-Defaults to <code><a href='https://rdrr.io/r/base/c.html'>c(30L, 1L, 100L)</a></code>.</p></td>
+vector of length three with <code>c(value, min, max)</code>.
+Defaults to <code>c(30L, 1L, 100L)</code>.</p></td>
     </tr>
     <tr>
       <th>plot_height</th>
@@ -258,66 +238,68 @@ output to put the output into context. For example the
     <p>Module to analyze and explore univariate variable distribution</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Example with non-clinical data</span>
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>teal_data</span><span class='op'>(</span><span class='fu'>dataset</span><span class='op'>(</span><span class='st'>"iris"</span>, <span class='va'>iris</span><span class='op'>)</span><span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    <span class='fu'>tm_g_distribution</span><span class='op'>(</span>
-      dist_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span>
-        dataname <span class='op'>=</span> <span class='st'>"iris"</span>,
-        select <span class='op'>=</span> <span class='fu'>select_spec</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>, <span class='st'>"Petal.Length"</span><span class='op'>)</span>
-      <span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:33.8853 pid:2443 teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-<span class='co'># Example with clinical data</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-
-<span class='va'>vars1</span> <span class='op'>&lt;-</span> <span class='fu'>choices_selected</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='va'>ADSL</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ARM"</span>, <span class='st'>"COUNTRY"</span>, <span class='st'>"SEX"</span><span class='op'>)</span><span class='op'>)</span>, selected <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span><span class='op'>)</span>,
-    code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span>,
-    check <span class='op'>=</span> <span class='cn'>FALSE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_g_distribution</span><span class='op'>(</span>
-      dist_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span>
-        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,
-        select <span class='op'>=</span> <span class='fu'>select_spec</span><span class='op'>(</span>
-          choices <span class='op'>=</span> <span class='fu'>variable_choices</span><span class='op'>(</span><span class='va'>ADSL</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AGE"</span>, <span class='st'>"BMRKR1"</span><span class='op'>)</span><span class='op'>)</span>,
-          selected <span class='op'>=</span> <span class='st'>"BMRKR1"</span>,
-          multiple <span class='op'>=</span> <span class='cn'>FALSE</span>,
-          fixed <span class='op'>=</span> <span class='cn'>FALSE</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>,
-      strata_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span>
-        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,
-        filter <span class='op'>=</span> <span class='fu'>filter_spec</span><span class='op'>(</span>
-          vars <span class='op'>=</span> <span class='va'>vars1</span>,
-          multiple <span class='op'>=</span> <span class='cn'>TRUE</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>,
-      group_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span>
-        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,
-        filter <span class='op'>=</span> <span class='fu'>filter_spec</span><span class='op'>(</span>
-          vars <span class='op'>=</span> <span class='va'>vars1</span>,
-          multiple <span class='op'>=</span> <span class='cn'>TRUE</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:34.7187 pid:2443 teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Example with non-clinical data</span></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>teal_data</span><span class='op'>(</span><span class='fu'>dataset</span><span class='op'>(</span><span class='st'>"iris"</span>, <span class='va'>iris</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_g_distribution</span><span class='op'>(</span></span>
+<span class='r-in'>      dist_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span></span>
+<span class='r-in'>        dataname <span class='op'>=</span> <span class='st'>"iris"</span>,</span>
+<span class='r-in'>        select <span class='op'>=</span> <span class='fu'>select_spec</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>, <span class='st'>"Petal.Length"</span><span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:42.0813 pid:1237 teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example with clinical data</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>vars1</span> <span class='op'>&lt;-</span> <span class='fu'>choices_selected</span><span class='op'>(</span><span class='fu'>variable_choices</span><span class='op'>(</span><span class='va'>ADSL</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ARM"</span>, <span class='st'>"COUNTRY"</span>, <span class='st'>"SEX"</span><span class='op'>)</span><span class='op'>)</span>, selected <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span><span class='op'>)</span>,</span>
+<span class='r-in'>    code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span>,</span>
+<span class='r-in'>    check <span class='op'>=</span> <span class='cn'>FALSE</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_g_distribution</span><span class='op'>(</span></span>
+<span class='r-in'>      dist_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span></span>
+<span class='r-in'>        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,</span>
+<span class='r-in'>        select <span class='op'>=</span> <span class='fu'>select_spec</span><span class='op'>(</span></span>
+<span class='r-in'>          choices <span class='op'>=</span> <span class='fu'>variable_choices</span><span class='op'>(</span><span class='va'>ADSL</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AGE"</span>, <span class='st'>"BMRKR1"</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>          selected <span class='op'>=</span> <span class='st'>"BMRKR1"</span>,</span>
+<span class='r-in'>          multiple <span class='op'>=</span> <span class='cn'>FALSE</span>,</span>
+<span class='r-in'>          fixed <span class='op'>=</span> <span class='cn'>FALSE</span></span>
+<span class='r-in'>        <span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span>,</span>
+<span class='r-in'>      strata_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span></span>
+<span class='r-in'>        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,</span>
+<span class='r-in'>        filter <span class='op'>=</span> <span class='fu'>filter_spec</span><span class='op'>(</span></span>
+<span class='r-in'>          vars <span class='op'>=</span> <span class='va'>vars1</span>,</span>
+<span class='r-in'>          multiple <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>        <span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span>,</span>
+<span class='r-in'>      group_var <span class='op'>=</span> <span class='fu'>data_extract_spec</span><span class='op'>(</span></span>
+<span class='r-in'>        dataname <span class='op'>=</span> <span class='st'>"ADSL"</span>,</span>
+<span class='r-in'>        filter <span class='op'>=</span> <span class='fu'>filter_spec</span><span class='op'>(</span></span>
+<span class='r-in'>          vars <span class='op'>=</span> <span class='va'>vars1</span>,</span>
+<span class='r-in'>          multiple <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>        <span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:43.0003 pid:1237 teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

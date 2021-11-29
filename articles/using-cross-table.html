@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9009</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9010</span>
       </span>
     </div>
 
@@ -88,26 +88,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -132,7 +112,7 @@ Other releases
       <h1 data-toc-skip>Using cross table</h1>
                         <h4 class="author">Dawid Kałędkowski</h4>
             
-            <h4 class="date">2021-11-24</h4>
+            <h4 class="date">2021-11-29</h4>
       
       
       <div class="hidden name"><code>using-cross-table.Rmd</code></div>
@@ -175,11 +155,11 @@ Other releases
 </ol>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span>
-<span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="op">%&gt;%</span> 
+<span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>TRTDUR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">TRTEDTM</span> <span class="op">-</span> <span class="va">TRTSDTM</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adrs</span>
 <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adtte</span>
-<span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adlb</span> <span class="op">%&gt;%</span>
+<span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adlb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CHGC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
     <span class="va">CHG</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"N"</span>,
     <span class="va">CHG</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"P"</span>,
@@ -191,15 +171,15 @@ Other releases
 <a href="#section-create-an-app-variable" class="anchor"></a>Create an <code>app</code> variable</h2>
 <p>This is the most important section. We will use the <code><a href="https://rdrr.io/pkg/teal/man/init.html">teal::init</a></code> function to create an app. The data will be handed over using <code><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html">teal::cdisc_data</a></code>. The app itself will be constructed by multiple calls of <code>tm_t_crosstable</code> using different combinations of data sets.</p>
 <div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span>
-  data <span class="op">=</span> <span class="fu">cdisc_data</span><span class="op">(</span>
-    <span class="fu">cdisc_dataset</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class="op">)</span>,
-    <span class="fu">dataset</span><span class="op">(</span><span class="st">"ADSL2"</span>, <span class="va">ADSL2</span>, keys <span class="op">=</span> <span class="fu">get_cdisc_keys</span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>, 
+<code class="sourceCode R"><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/init.html">init</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html">cdisc_data</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/dataset.html">dataset</a></span><span class="op">(</span><span class="st">"ADSL2"</span>, <span class="va">ADSL2</span>, keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/get_cdisc_keys.html">get_cdisc_keys</a></span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>, 
       code <span class="op">=</span> <span class="st">"ADSL2 &lt;- synthetic_cdisc_data(\"latest\")$adsl %&gt;% 
               mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"</span><span class="op">)</span>,
-    <span class="fu">cdisc_dataset</span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- synthetic_cdisc_data(\"latest\")$adrs"</span><span class="op">)</span>,
-    <span class="fu">cdisc_dataset</span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class="op">)</span>,
-    <span class="fu">cdisc_dataset</span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>, 
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- synthetic_cdisc_data(\"latest\")$adrs"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>, 
     code <span class="op">=</span> <span class="st">"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb %&gt;%
             mutate(CHGC = as.factor(case_when(
             CHG &lt; 1 ~ 'N',
@@ -208,26 +188,26 @@ Other releases
             )))"</span><span class="op">)</span>,
     check <span class="op">=</span> <span class="cn">TRUE</span>
   <span class="op">)</span>,
-  modules <span class="op">=</span> <span class="fu">root_modules</span><span class="op">(</span>
-    <span class="fu">modules</span><span class="op">(</span>
+  modules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/root_modules.html">root_modules</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/modules.html">modules</a></span><span class="op">(</span>
       label <span class="op">=</span> <span class="st">"Cross table"</span>,
       <span class="fu"><a href="../reference/tm_t_crosstable.html">tm_t_crosstable</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Single wide dataset"</span>,
-        x <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span>
+        x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html">data_extract_spec</a></span><span class="op">(</span>
           <span class="st">"ADSL"</span>,
-          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span>
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html">select_spec</a></span><span class="op">(</span>
             label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>
           <span class="op">)</span>
         <span class="op">)</span>,
-        y <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span>
+        y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html">data_extract_spec</a></span><span class="op">(</span>
           <span class="st">"ADSL"</span>,
-          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span>
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html">select_spec</a></span><span class="op">(</span>
             label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -237,32 +217,32 @@ Other releases
 
       <span class="fu"><a href="../reference/tm_t_crosstable.html">tm_t_crosstable</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Same long datasets (different subsets)"</span>,
-        x <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span>
+        x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html">data_extract_spec</a></span><span class="op">(</span>
           dataname <span class="op">=</span> <span class="st">"ADLB"</span>,
-          filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span>
+          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/filter_spec.html">filter_spec</a></span><span class="op">(</span>
             vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,
-            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/value_choices.html">value_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>
           <span class="op">)</span>,
-          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span>
-            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADLB</span><span class="op">)</span>,
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html">select_spec</a></span><span class="op">(</span>
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="st">"AVISIT"</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>,
             label <span class="op">=</span> <span class="st">"Select variable:"</span>
           <span class="op">)</span>
         <span class="op">)</span>,
-        y <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span>
+        y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html">data_extract_spec</a></span><span class="op">(</span>
           dataname <span class="op">=</span> <span class="st">"ADLB"</span>,
-          filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span>
+          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/filter_spec.html">filter_spec</a></span><span class="op">(</span>
             vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,
-            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/value_choices.html">value_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>
           <span class="op">)</span>,
-          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span>
-            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADLB</span><span class="op">)</span>,
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html">select_spec</a></span><span class="op">(</span>
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="st">"LOQFL"</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -279,8 +259,8 @@ Other releases
 <a href="#section-run-the-app" class="anchor"></a>Run the app</h2>
 <p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shiny::shinyApp</a></code> call will let you run the app. Note that app is only displayed when running this code inside an R session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><iframe data-deferred-src="app41fa0255def33378a85ff8af9fed63a5/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><iframe data-deferred-src="app0e7e120a38a2880ebc6ed114ed7d39a5/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
   </div>
 

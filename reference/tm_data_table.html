@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9009</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9010</span>
       </span>
     </div>
 
@@ -133,26 +133,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -222,7 +202,7 @@ If vector of length zero (default) then all datasets are shown.</p></td>
     <tr>
       <th>dt_options</th>
       <td><p>(named <code>list</code>) The <code>options</code> argument to <code><a href='https://rdrr.io/pkg/DT/man/datatable.html'>DT::datatable</a></code>. By default
-<code><a href='https://rdrr.io/r/base/list.html'>list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)</a></code></p></td>
+<code>list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)</code></p></td>
     </tr>
     <tr>
       <th>pre_output</th>
@@ -239,117 +219,121 @@ output to put the output into context. For example the
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
-    check <span class='op'>=</span> <span class='cn'>TRUE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_data_table</span><span class='op'>(</span>
-      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span><span class='op'>)</span>,
-      dt_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>caption <span class='op'>=</span> <span class='st'>"ADSL Table Caption"</span><span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:18.2411 pid:2443 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-<span class='co'># two-datasets example</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-<span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,
-    check <span class='op'>=</span> <span class='cn'>TRUE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_data_table</span><span class='op'>(</span>
-      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span>,
-        ADTTE <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-          <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,
-          <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"ARM"</span>, <span class='st'>"ARMCD"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CNSR"</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:21.6884 pid:2443 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-<span class='co'># datasets: subsetting or changing order of datasets inside tm_data_table</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-<span class='va'>ADLB</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adlb</span>
-<span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADLB"</span>, <span class='va'>ADLB</span>, code <span class='op'>=</span> <span class='st'>"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb"</span><span class='op'>)</span>,
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,
-    check <span class='op'>=</span> <span class='cn'>TRUE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_data_table</span><span class='op'>(</span>
-      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span>,
-        ADLB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-          <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,
-          <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"AVISIT"</span>, <span class='st'>"AVISITN"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CHG"</span>
-        <span class='op'>)</span>
-      <span class='op'>)</span>,
-      datasets_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='st'>"ADLB"</span>, <span class='st'>"ADSL"</span><span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:26.6044 pid:2443 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-<span class='co'># advanced usage of DT options and extensions</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span>
-
-<span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span>
-<span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span>
-
-<span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span>
-  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span>
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,
-    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,
-    check <span class='op'>=</span> <span class='cn'>TRUE</span>
-  <span class='op'>)</span>,
-  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span>
-    <span class='fu'>tm_data_table</span><span class='op'>(</span>
-      dt_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>extensions <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Buttons"</span>, <span class='st'>"ColReorder"</span>, <span class='st'>"FixedHeader"</span><span class='op'>)</span><span class='op'>)</span>,
-      dt_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        searching <span class='op'>=</span> <span class='cn'>FALSE</span>,
-        pageLength <span class='op'>=</span> <span class='fl'>30</span>,
-        lengthMenu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>15</span>, <span class='fl'>25</span>, <span class='fl'>50</span>, <span class='fl'>100</span><span class='op'>)</span>,
-        scrollX <span class='op'>=</span> <span class='cn'>TRUE</span>,
-        dom <span class='op'>=</span> <span class='st'>"lBrtip"</span>,
-        buttons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"copy"</span>, <span class='st'>"csv"</span>, <span class='st'>"excel"</span>, <span class='st'>"pdf"</span>, <span class='st'>"print"</span><span class='op'>)</span>,
-        colReorder <span class='op'>=</span> <span class='cn'>TRUE</span>,
-        fixedHeader <span class='op'>=</span> <span class='cn'>TRUE</span>
-      <span class='op'>)</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-11-24 15:02:29.5152 pid:2443 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    check <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_data_table</span><span class='op'>(</span></span>
+<span class='r-in'>      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>      dt_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>caption <span class='op'>=</span> <span class='st'>"ADSL Table Caption"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:23.5242 pid:1237 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># two-datasets example</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span></span>
+<span class='r-in'><span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    check <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_data_table</span><span class='op'>(</span></span>
+<span class='r-in'>      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>        ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span>,</span>
+<span class='r-in'>        ADTTE <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span></span>
+<span class='r-in'>          <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,</span>
+<span class='r-in'>          <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"ARM"</span>, <span class='st'>"ARMCD"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CNSR"</span></span>
+<span class='r-in'>        <span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:27.5304 pid:1237 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># datasets: subsetting or changing order of datasets inside tm_data_table</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span></span>
+<span class='r-in'><span class='va'>ADLB</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adlb</span></span>
+<span class='r-in'><span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADLB"</span>, <span class='va'>ADLB</span>, code <span class='op'>=</span> <span class='st'>"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    check <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_data_table</span><span class='op'>(</span></span>
+<span class='r-in'>      variables_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>        ADSL <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>, <span class='st'>"AGE"</span>, <span class='st'>"SEX"</span><span class='op'>)</span>,</span>
+<span class='r-in'>        ADLB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span></span>
+<span class='r-in'>          <span class='st'>"STUDYID"</span>, <span class='st'>"USUBJID"</span>, <span class='st'>"SUBJID"</span>, <span class='st'>"SITEID"</span>,</span>
+<span class='r-in'>          <span class='st'>"PARAM"</span>, <span class='st'>"PARAMCD"</span>, <span class='st'>"AVISIT"</span>, <span class='st'>"AVISITN"</span>, <span class='st'>"AVAL"</span>, <span class='st'>"CHG"</span></span>
+<span class='r-in'>        <span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span>,</span>
+<span class='r-in'>      datasets_selected <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='st'>"ADLB"</span>, <span class='st'>"ADSL"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:33.2643 pid:1237 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># advanced usage of DT options and extensions</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>scda</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ADSL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adsl</span></span>
+<span class='r-in'><span class='va'>ADTTE</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html'>synthetic_cdisc_data</a></span><span class='op'>(</span><span class='st'>"latest"</span><span class='op'>)</span><span class='op'>$</span><span class='va'>adtte</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>app</span> <span class='op'>&lt;-</span> <span class='fu'>init</span><span class='op'>(</span></span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='fu'>cdisc_data</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADSL"</span>, <span class='va'>ADSL</span>, code <span class='op'>=</span> <span class='st'>"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'>cdisc_dataset</span><span class='op'>(</span><span class='st'>"ADTTE"</span>, <span class='va'>ADTTE</span>, code <span class='op'>=</span> <span class='st'>"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    check <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  modules <span class='op'>=</span> <span class='fu'>root_modules</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>tm_data_table</span><span class='op'>(</span></span>
+<span class='r-in'>      dt_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>extensions <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Buttons"</span>, <span class='st'>"ColReorder"</span>, <span class='st'>"FixedHeader"</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>      dt_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>        searching <span class='op'>=</span> <span class='cn'>FALSE</span>,</span>
+<span class='r-in'>        pageLength <span class='op'>=</span> <span class='fl'>30</span>,</span>
+<span class='r-in'>        lengthMenu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>15</span>, <span class='fl'>25</span>, <span class='fl'>50</span>, <span class='fl'>100</span><span class='op'>)</span>,</span>
+<span class='r-in'>        scrollX <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
+<span class='r-in'>        dom <span class='op'>=</span> <span class='st'>"lBrtip"</span>,</span>
+<span class='r-in'>        buttons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"copy"</span>, <span class='st'>"csv"</span>, <span class='st'>"excel"</span>, <span class='st'>"pdf"</span>, <span class='st'>"print"</span><span class='op'>)</span>,</span>
+<span class='r-in'>        colReorder <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
+<span class='r-in'>        fixedHeader <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>      <span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-29 15:40:36.7317 pid:1237 teal.modules.general fun:tm_data_table [INFO] Initializing tm_data_table</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
