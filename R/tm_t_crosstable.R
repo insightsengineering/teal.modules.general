@@ -151,17 +151,8 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y) {
   init_chunks()
 
-  x_de_r <- data_extract_srv(
-    id = "x",
-    datasets = datasets,
-    data_extract_spec = x
-  )
-
-  y_de_r <- data_extract_srv(
-    id = "y",
-    datasets = datasets,
-    data_extract_spec = y
-  )
+  x_de_r <- data_extract_srv(id = "x", datasets = datasets, data_extract_spec = x)
+  y_de_r <- data_extract_srv(id = "y", datasets = datasets, data_extract_spec = y)
 
   observeEvent(list(x_de_r(), y_de_r()), {
     if (identical(x_de_r()$dataname, y_de_r()$dataname)) {
