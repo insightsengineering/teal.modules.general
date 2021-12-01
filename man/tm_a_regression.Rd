@@ -129,7 +129,8 @@ app <- init(
           multiple = TRUE,
           fixed = FALSE
         )
-      )
+      ),
+      ggplot2_args = ggplot2_args(labs = list("caption" = "NEST PROJECT"))
     )
   )
 )

@@ -69,7 +69,8 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       )
+#'       ),
+#'      basic_table_args = teal.devel::basic_table_args(main_footer = "NEST PROJECT")
 #'     )
 #'   )
 #' )
@@ -247,7 +248,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
-    expr_basic_table_args <- parse_table_args(basic_table_args = resolve_table_args(basic_table_args))
+    expr_basic_table_args <- parse_basic_table_args(
+      basic_table_args = resolve_basic_table_args(basic_table_args)
+    )
 
     chunks_push(substitute(
       expr = {
