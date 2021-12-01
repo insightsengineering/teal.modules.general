@@ -12,7 +12,7 @@
 #'  The `teal.devel::table_args()` function has to be used to get `basic_table_args` object.
 #'  For global setup a direct usage is recommended.`basic_table_args()`.
 #'  These arguments have a priority over default one for each plot in the module.
-#'  When a custom setup for each plot is needed then a named list with `basic_table_args`.
+#'  When a custom setup for each plot is needed then a named list with `basic_table_args` is required.
 #'  Nevertheless this module has only one table.
 #'  The argument is merged with options variable `teal.basic_table_args`.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
@@ -88,7 +88,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL,
-                            basic_table_args = teal.devel::table_args()) {
+                            basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
@@ -103,7 +103,11 @@ tm_t_crosstable <- function(label = "Cross Table",
     )
   )
 
-  basic_table_args <- validate_basic_table_args(basic_table_args)
+  utils.nest::stop_if_not(
+    inherits(basic_table_args, "basic_table_args") ||
+      (utils.nest::is_class_list("basic_table_args")(basic_table_args) &&
+         all(names(basic_table_args) %in% c("default")))
+  )
 
   ui_args <- as.list(environment())
 
@@ -251,11 +255,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
-    expr_basic_table_args <- get_expr_table_args(
-      basic_table_args_default = basic_table_args$default,
-      basic_table_args_table = NULL,
-      basic_table_args_developer = NULL
-      )
+    expr_basic_table_args <- parse_table_args(basic_table_args = resolve_table_args(basic_table_args))
 
     chunks_push(substitute(
       expr = {

@@ -24,14 +24,14 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional (`ggplot_args`) or named list of `ggplot_args`.
-#'  The `teal.devel::ggplot_args()` function has to be used to get a `ggplot_args` object.
-#'  For global setup a direct usage is recommended, `ggplot_args(labs = list(), theme = list())`.
+#' @param ggplot2_args optional (`ggplot2_args`) or named list of `ggplot2_args`.
+#'  The `teal.devel::ggplot2_args()` function has to be used to get a `ggplot2_args` object.
+#'  For global setup a direct usage is recommended, `ggplot2_args(labs = list(), theme = list())`.
 #'  These arguments have a priority over default one for each plot in the module.
-#'  When a custom setup for each plot is needed then a named list with `ggplot_args`,
+#'  When a custom setup for each plot is needed then a named list with `ggplot2_args` is required as follows:
 #'  `list(
-#'  "default" = ggplot_args(labs = list(), theme = list()),
-#'  "Response vs Regressor" = ggplot_args(labs = list(), theme = list()),
+#'  "default" = ggplot2_args(labs = list(), theme = list()),
+#'  "Response vs Regressor" = ggplot2_args(labs = list(), theme = list()),
 #'  ....)`.
 #'  The names for each individual plot should follow the list in the `default_plot_type` argument description.
 #'  The argument is merged with options variable `teal.ggplot2_args`.
@@ -44,7 +44,7 @@
 #'  2. System variable, `options()` variable `teal.ggplot2_args`.
 #'  3. Module creator setup.
 #'
-#'  Defaults to empty list of the class `ggplot2_args`, `teal.devel::ggplot_args(labs = list(), theme = list())`.
+#'  Defaults to empty list of the class `ggplot2_args`, `teal.devel::ggplot2_args(labs = list(), theme = list())`.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
@@ -103,7 +103,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
-                            ggplot2_args = teal.devel::ggplot_args(labs = list(), theme = list())
+                            ggplot2_args = teal.devel::ggplot2_args(labs = list(), theme = list())
                             ) {
 
   logger::log_info("Initializing tm_a_regression")
@@ -141,7 +141,18 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Cook's dist vs Leverage"
   )
 
-  ggplot2_args <- validate_ggplot2_args(ggplot2_args, plot_names = plot_choices)
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0("Please use the teal.devel::table_args() function to generate input for basic_table_args argument.\n",
+             "basic_table_args argument has to be a list of a basic_table_args class or named list of such objects.\n",
+             "If it is a named list then each name has to be one of ",
+             paste(c("default", plot_choices), collapse = ", "))
+    )
+  )
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -455,18 +466,18 @@ srv_a_regression <- function(input,
         }
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(title = "Response vs Regressor",
         x = varname_w_label(regression_var()$regressor, ANL),
         y = varname_w_label(regression_var()$response, ANL)),
         theme = list()
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
         )
 
@@ -517,18 +528,18 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(
         x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
         y = "Residuals",
         title = "Residuals vs Fitted")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -573,17 +584,17 @@ srv_a_regression <- function(input,
         )
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
                     y = "Standardized residuals",
                     title = "Normal Q-Q")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -615,17 +626,17 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
                     y = quote(expression(sqrt(abs(`Standardized residuals`)))),
                     title = "Scale-Location")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -676,17 +687,17 @@ srv_a_regression <- function(input,
         )
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
                     y = "Cook's distance",
                     title = "Cook's distance")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -731,17 +742,17 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
                     y = "Leverage",
                     title = "Residuals vs Leverage")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -781,17 +792,17 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot_args(
+      dev_ggplot2_args <- ggplot2_args(
         labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
                     y = "Cooks's distance",
                     title = "Cook's dist vs Leverage")
         )
 
-      gg_labs_theme_expr <- get_expr_ggplot2_args(
-        chunk_plot_name = as.name("g"),
-        ggplot2_args_default = ggplot2_args$default,
-        ggplot2_args_plot = ggplot2_args[[input$plot_type]],
-        ggplot2_args_developer = dev_ggplot2_args,
+      gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
+        user_default_args = ggplot2_args$default,
+        user_plot_args = ggplot2_args[[input$plot_type]],
+        plot_default_args = dev_ggplot2_args),
+        chunk_plot_name = "g",
         ggtheme = ggtheme
       )
 
