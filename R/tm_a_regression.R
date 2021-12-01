@@ -476,22 +476,23 @@ srv_a_regression <- function(input,
         }
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(title = "Response vs Regressor",
-        x = varname_w_label(regression_var()$regressor, ANL),
-        y = varname_w_label(regression_var()$response, ANL)),
-        theme = list()
-        )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(title = "Response vs Regressor",
+                        x = varname_w_label(regression_var()$regressor, ANL),
+                        y = varname_w_label(regression_var()$response, ANL)),
+            theme = list()
+          )
         ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
+
+      plot_expr <- plot %>% deparse() %>% paste(collapse = "") %>%
+        append(deparse(gg_labs_theme_expr) %>% paste(collapse = "")) %>%
+        paste(collapse = " + ") %>% {paste0(c("g <- ", .))} %>% parse(text = .)
 
       chunks_push(
         id = "plot_0",
@@ -499,12 +500,10 @@ srv_a_regression <- function(input,
           expr = {
             class(fit$residuals) <- NULL
             data <- fortify(fit)
-            g <- plot
-            g <- gg_expr
+            plot_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_expr = gg_labs_theme_expr)
+          env = list(plot_call = plot_expr[[1]])
         )
       )
 
@@ -540,36 +539,69 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(
-          x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-          y = "Residuals",
-          title = "Residuals vs Fitted"
-        )
-      )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = "Residuals",
+              title = "Residuals vs Fitted"
+            )
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
 
-      chunks_push(
-        id =  "plot_1",
-        expression = substitute(
-          expr = {
-            smoothy <- smooth(data$.fitted, data$.resid)
-            g <- plot
-            g <- ggplot_expr
-            print(g)
-          },
-          env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+      if (!is.null(gg_labs_theme_expr$labs)) {
+        chunks_push(
+          id =  "plot_1a",
+          expression = substitute(
+            expr = {
+              smoothy <- smooth(data$.fitted, data$.resid)
+              g <- plot
+              g <- + ggplot_expr_labs
+              print(g)
+            },
+            env = list(plot = plot,
+                       ggplot_expr_labs = gg_labs_theme_expr$labs)
+          )
         )
-      )
+      }
+
+      if (!is.null(gg_labs_theme_expr$theme)) {
+        chunks_push(
+          id =  "plot_1b",
+          expression = substitute(
+            expr = {
+              smoothy <- smooth(data$.fitted, data$.resid)
+              g <- plot + ggplot_expr_theme
+              print(g)
+            },
+            env = list(plot = plot,
+                       ggplot_expr_theme = gg_labs_theme_expr$them)
+          )
+        )
+      }
+
+
+      if (!is.null(gg_labs_theme_expr$theme)) {
+        chunks_push(
+          id =  "plot_1b",
+          expression = substitute(
+            expr = {
+              smoothy <- smooth(data$.fitted, data$.resid)
+              g <- plot + ggplot_expr_theme
+              print(g)
+            },
+            env = list(plot = plot,
+                       ggplot_expr_theme = gg_labs_theme_expr$them)
+          )
+        )
+      }
+
     }
 
     plot_type_2 <- function() {
@@ -598,17 +630,16 @@ srv_a_regression <- function(input,
         )
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
-                    y = "Standardized residuals",
-                    title = "Normal Q-Q")
-        )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+                        y = "Standardized residuals",
+                        title = "Normal Q-Q")
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
@@ -641,17 +672,18 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-                    y = quote(expression(sqrt(abs(`Standardized residuals`)))),
-                    title = "Scale-Location")
-        )
+      dev_ggplot2_args <-
 
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
           user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_default_args = ggplot2_args$default,
+          plot_default_args = ggplot2_args(
+            labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+                        y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+                        title = "Scale-Location")
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
@@ -703,17 +735,16 @@ srv_a_regression <- function(input,
         )
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
-                    y = "Cook's distance",
-                    title = "Cook's distance")
-        )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+                        y = "Cook's distance",
+                        title = "Cook's distance")
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
@@ -759,17 +790,16 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
-                    y = "Leverage",
-                    title = "Residuals vs Leverage")
-        )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
           user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_default_args = ggplot2_args$default,
+          plot_default_args = ggplot2_args(
+            labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+                        y = "Leverage",
+                        title = "Residuals vs Leverage")
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
@@ -788,7 +818,6 @@ srv_a_regression <- function(input,
         )
       )
     }
-
 
     plot_type_6 <- function() {
       shinyjs::show("size")
@@ -810,17 +839,16 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <- ggplot2_args(
-        labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
-                    y = "Cooks's distance",
-                    title = "Cook's dist vs Leverage")
-        )
-
       gg_labs_theme_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_default_args = ggplot2_args$default,
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+                        y = "Cooks's distance",
+                        title = "Cook's dist vs Leverage")
+          )
+          ),
         plot_name = "g",
         ggtheme = ggtheme
       )
@@ -831,7 +859,6 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
-            g <- ggplot_expr
             print(g)
           },
           env = list(plot = plot,
