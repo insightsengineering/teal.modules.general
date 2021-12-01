@@ -472,6 +472,7 @@ srv_a_regression <- function(input,
         y = varname_w_label(regression_var()$response, ANL)),
         theme = list()
         )
+      )
 
       gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
         user_default_args = ggplot2_args$default,
@@ -479,7 +480,7 @@ srv_a_regression <- function(input,
         plot_default_args = dev_ggplot2_args),
         chunk_plot_name = "g",
         ggtheme = ggtheme
-        )
+      )
 
       chunks_push(
         id = "plot_0",
@@ -530,10 +531,11 @@ srv_a_regression <- function(input,
 
       dev_ggplot2_args <- ggplot2_args(
         labs = list(
-        x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-        y = "Residuals",
-        title = "Residuals vs Fitted")
+          x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+          y = "Residuals",
+          title = "Residuals vs Fitted"
         )
+      )
 
       gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
         user_default_args = ggplot2_args$default,
