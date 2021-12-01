@@ -24,27 +24,32 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional (`ggplot2_args`) or named list of `ggplot2_args`.
+#' @param ggplot2_args optional (`ggplot2_args`) object or named list of them.
 #'  The `teal.devel::ggplot2_args()` function has to be used to get a `ggplot2_args` object.
-#'  For global setup a direct usage is recommended, `ggplot2_args(labs = list(), theme = list())`.
-#'  These arguments have a priority over default one for each plot in the module.
-#'  When a custom setup for each plot is needed then a named list with `ggplot2_args` is required as follows:
+#'  For global setup a direct usage of the `ggplot2_args()` function is recommended,
+#'  not wrapped into the named `list()`.
+#'  Named list with `ggplot2_args` is required as follows:
 #'  `list(
 #'  "default" = ggplot2_args(labs = list(), theme = list()),
-#'  "Response vs Regressor" = ggplot2_args(labs = list(), theme = list()),
-#'  ....)`.
-#'  The names for each individual plot should follow the list in the `default_plot_type` argument description.
-#'  The argument is merged with options variable `teal.ggplot2_args`.
+#'  "Response vs Regressor" = ggplot2_args(labs = list(subtitle = "USER_PLOT_SUBTITLE_RvsR")),
+#'  "Residuals vs Fitted" = ggplot2_args(),
+#'  "Normal Q-Q" = ggplot2_args(),
+#'  "Scale-Location" = ggplot2_args(),
+#'  "Cook's distance" = ggplot2_args(),
+#'  "Residuals vs Leverage" = ggplot2_args(),
+#'  "Cook's dist vs Leverage" = ggplot2_args())`.
+#'  Only the `"default"` field is required when a named list of `ggplot2_args` is provided.
+#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
 #'
 #'  The priority of argument sources, in order:
 #'
-#'  1. `ggplot2_args` argument provided by the end user.
-#'  For multi-plot case, per plot and then default setup.
+#'  1. `ggplot2_args` argument provided by the end user, per plot and then default setup.
 #'  2. System variable, `options()` variable `teal.ggplot2_args`.
 #'  3. Module creator setup.
 #'
-#'  Defaults to empty list of the class `ggplot2_args`, `teal.devel::ggplot2_args(labs = list(), theme = list())`.
+#'  Defaults to named list with one `ggplot2_args` object,
+#'   `teal.devel::ggplot2_args(labs = list(), theme = list())`.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
@@ -142,6 +147,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
 
   stop_if_not(
@@ -153,6 +159,9 @@ tm_a_regression <- function(label = "Regression Analysis",
              paste(c("default", plot_choices), collapse = ", "))
     )
   )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
 
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
@@ -472,7 +481,6 @@ srv_a_regression <- function(input,
         y = varname_w_label(regression_var()$response, ANL)),
         theme = list()
         )
-      )
 
       gg_labs_theme_expr <- parse_ggplot2_args(resolve_ggplot2_args(
         user_default_args = ggplot2_args$default,

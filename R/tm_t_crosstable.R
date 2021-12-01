@@ -8,13 +8,9 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param basic_table_args optional (`basic_table_args`) a `basic_table_args` or named list of `basic_table_args`.
-#'  The `teal.devel::table_args()` function has to be used to get `basic_table_args` object.
-#'  For global setup a direct usage is recommended.`basic_table_args()`.
-#'  These arguments have a priority over default one for each plot in the module.
-#'  When a custom setup for each plot is needed then a named list with `basic_table_args` is required.
-#'  Nevertheless this module has only one table.
-#'  The argument is merged with options variable `teal.basic_table_args`.
+#' @param basic_table_args optional (`basic_table_args`) a `basic_table_args`.
+#'  The `teal.devel::basic_table_args()` function has to be used to get a `basic_table_args` object.
+#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
 #'  The priority of argument sources, in order:
 #'
@@ -103,11 +99,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     )
   )
 
-  utils.nest::stop_if_not(
-    inherits(basic_table_args, "basic_table_args") ||
-      (utils.nest::is_class_list("basic_table_args")(basic_table_args) &&
-         all(names(basic_table_args) %in% c("default")))
-  )
+  utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
 
   ui_args <- as.list(environment())
 

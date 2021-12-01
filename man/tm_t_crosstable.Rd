@@ -12,7 +12,7 @@ tm_t_crosstable(
   show_total = TRUE,
   pre_output = NULL,
   post_output = NULL,
-  basic_table_args = teal.devel::table_args()
+  basic_table_args = teal.devel::basic_table_args()
 )
 }
 \arguments{
@@ -37,13 +37,9 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{basic_table_args}{optional (\code{basic_table_args}) a \code{basic_table_args} or named list of \code{basic_table_args}.
-The \code{teal.devel::table_args()} function has to be used to get \code{basic_table_args} object.
-For global setup a direct usage is recommended.\code{basic_table_args()}.
-These arguments have a priority over default one for each plot in the module.
-When a custom setup for each plot is needed then a named list with \code{basic_table_args}.
-Nevertheless this module has only one table.
-The argument is merged with options variable \code{teal.basic_table_args}.
+\item{basic_table_args}{optional (\code{basic_table_args}) a \code{basic_table_args}.
+The \code{teal.devel::basic_table_args()} function has to be used to get a \code{basic_table_args} object.
+The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 \code{options} variable is used when we want to share the same setup between different modules.
 The priority of argument sources, in order:
 \enumerate{
