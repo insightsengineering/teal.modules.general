@@ -24,21 +24,12 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional (`ggplot2_args`) object or named list of them.
-#'  The `teal.devel::ggplot2_args()` function has to be used to get a `ggplot2_args` object.
-#'  For global setup a direct usage of the `ggplot2_args()` function is recommended,
-#'  not wrapped into the named `list()`.
-#'  Named list with `ggplot2_args` is required as follows:
-#'  `list(
-#'  "default" = ggplot2_args(labs = list(), theme = list()),
-#'  "Response vs Regressor" = ggplot2_args(labs = list(subtitle = "USER_PLOT_SUBTITLE_RvsR")),
-#'  "Residuals vs Fitted" = ggplot2_args(),
-#'  "Normal Q-Q" = ggplot2_args(),
-#'  "Scale-Location" = ggplot2_args(),
-#'  "Cook's distance" = ggplot2_args(),
-#'  "Residuals vs Leverage" = ggplot2_args(),
-#'  "Cook's dist vs Leverage" = ggplot2_args())`.
-#'  Only the `"default"` field is required when a named list of `ggplot2_args` is provided.
+#' @param ggplot2_args optional, `ggplot2_args` object created by [`teal.devel::ggplot2_args()`] 
+#'  with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+#'  For more details see the help vignette:
+#'  `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
+#'  List names should match the following: `"Response vs Regressor", "Residuals vs Fitted", 
+#'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
 #'
