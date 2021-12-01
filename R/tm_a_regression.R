@@ -487,7 +487,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -550,7 +550,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -605,7 +605,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -647,7 +647,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -708,7 +708,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -763,7 +763,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -813,7 +813,7 @@ srv_a_regression <- function(input,
         user_default_args = ggplot2_args$default,
         user_plot_args = ggplot2_args[[input$plot_type]],
         plot_default_args = dev_ggplot2_args),
-        chunk_plot_name = "g",
+        plot_name = "g",
         ggtheme = ggtheme
       )
 
