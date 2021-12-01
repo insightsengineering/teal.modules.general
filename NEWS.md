@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9010
+# teal.modules.general 0.2.11.9011
 
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
@@ -11,6 +11,9 @@
 
 ## Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
+
+## Miscellaneous
+* Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
 
 # teal.modules.general 0.2.11
 

@@ -126,14 +126,14 @@ ui_outliers <- function(id, ...) {
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
       datanames_input(args[c("outlier_var", "categorical_var")]),
-      data_extract_input(
+      data_extract_ui(
         id = ns("outlier_var"),
         label = "Variable",
         data_extract_spec = args$outlier_var,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$categorical_var)) {
-        data_extract_input(
+        data_extract_ui(
           id = ns("categorical_var"),
           label = "Categorical factor",
           data_extract_spec = args$categorical_var,
