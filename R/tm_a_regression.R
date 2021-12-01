@@ -487,7 +487,8 @@ srv_a_regression <- function(input,
         resolve_ggplot2_args(
           user_default_args = ggplot2_args$default,
           user_plot_args = ggplot2_args[[input$plot_type]],
-          plot_default_args = dev_ggplot2_args),
+          plot_default_args = dev_ggplot2_args
+        ),
         plot_name = "g",
         ggtheme = ggtheme
       )
