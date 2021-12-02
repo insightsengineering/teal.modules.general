@@ -463,9 +463,11 @@ srv_a_regression <- function(input,
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(title = "Response vs Regressor",
-                        x = varname_w_label(regression_var()$regressor, ANL),
-                        y = varname_w_label(regression_var()$response, ANL)),
+            labs = list(
+              title = "Response vs Regressor",
+              x = varname_w_label(regression_var()$regressor, ANL),
+              y = varname_w_label(regression_var()$response, ANL)
+              ),
             theme = list()
           )
         ),
