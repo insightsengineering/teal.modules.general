@@ -542,7 +542,7 @@ srv_a_regression <- function(input,
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
               g <- plot
-              g<- gg_args_expr
+              g <- gg_args_expr
               print(g)
             },
             env = list(plot = plot,
