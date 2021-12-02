@@ -91,7 +91,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
-                            ggplot2_args = teal.devel::ggplot2_args(labs = list(), theme = list())
+                            ggplot2_args = teal.devel::ggplot2_args()
                             ) {
 
   logger::log_info("Initializing tm_a_regression")
