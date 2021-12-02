@@ -37,18 +37,12 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{basic_table_args}{optional (\code{basic_table_args}) a \code{basic_table_args}.
-The \code{teal.devel::basic_table_args()} function has to be used to get a \code{basic_table_args} object.
+\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.devel:basic_table_args]{teal.devel::basic_table_args()}}
+with settings for the module table.
+For more details see the help vignette:
+\code{vignette("Custom basic_table arguments module", package = "teal.devel")}
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
-\code{options} variable is used when we want to share the same setup between different modules.
-The priority of argument sources, in order:
-\enumerate{
-\item \code{basic_table_args} argument provided by the end user.
-\item System variable, \code{options()} variable \code{teal.basic_table_args}.
-\item Module creator setup.
-}
-
-Defaults to empty list of the class \code{basic_table_args}, build with \code{teal.devel::table_args()}.}
+\code{options} variable is used when we want to share the same setup between different modules.}
 }
 \description{
 Create a simple cross-table

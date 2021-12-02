@@ -458,7 +458,7 @@ srv_a_regression <- function(input,
         }
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -472,20 +472,18 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      plot_expr <- plot %>% deparse() %>% paste(collapse = "") %>%
-        append(deparse(gg_labs_theme_expr) %>% paste(collapse = "")) %>%
-        paste(collapse = " + ") %>% {paste0(c("g <- ", .))} %>% parse(text = .)
-
       chunks_push(
         id = "plot_0",
         expression = substitute(
           expr = {
             class(fit$residuals) <- NULL
             data <- fortify(fit)
-            plot_call
+            g <- plot
+            g <- gg_args_expr
             print(g)
           },
-          env = list(plot_call = plot_expr[[1]])
+          env = list(plot = plot,
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
         )
       )
 
@@ -521,7 +519,7 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -533,56 +531,25 @@ srv_a_regression <- function(input,
             )
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
-      if (!is.null(gg_labs_theme_expr$labs)) {
         chunks_push(
           id =  "plot_1a",
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot
-              g <- + ggplot_expr_labs
+              g <- plot + gg_args_expr
               print(g)
             },
             env = list(plot = plot,
-                       ggplot_expr_labs = gg_labs_theme_expr$labs)
+                       gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr))
+                       )
           )
         )
-      }
-
-      if (!is.null(gg_labs_theme_expr$theme)) {
-        chunks_push(
-          id =  "plot_1b",
-          expression = substitute(
-            expr = {
-              smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot + ggplot_expr_theme
-              print(g)
-            },
-            env = list(plot = plot,
-                       ggplot_expr_theme = gg_labs_theme_expr$them)
-          )
-        )
-      }
 
 
-      if (!is.null(gg_labs_theme_expr$theme)) {
-        chunks_push(
-          id =  "plot_1b",
-          expression = substitute(
-            expr = {
-              smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot + ggplot_expr_theme
-              print(g)
-            },
-            env = list(plot = plot,
-                       ggplot_expr_theme = gg_labs_theme_expr$them)
-          )
-        )
-      }
+
 
     }
 
@@ -612,7 +579,7 @@ srv_a_regression <- function(input,
         )
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -622,7 +589,6 @@ srv_a_regression <- function(input,
                         title = "Normal Q-Q")
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -631,11 +597,11 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             g <- plot
-            g <- ggplot_expr
+            g <- gg_args_expr
             print(g)
           },
           env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
         )
       )
 
@@ -656,17 +622,16 @@ srv_a_regression <- function(input,
 
       dev_ggplot2_args <-
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          user_default_args = ggplot2_args$default,
-          plot_default_args = ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
             labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
                         y = quote(expression(sqrt(abs(`Standardized residuals`)))),
                         title = "Scale-Location")
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -676,11 +641,11 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
-            g <- ggplot_expr
+            g <- ggplot_args_expr
             print(g)
           },
           env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
         )
       )
     }
@@ -717,7 +682,7 @@ srv_a_regression <- function(input,
         )
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -727,7 +692,6 @@ srv_a_regression <- function(input,
                         title = "Cook's distance")
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -736,11 +700,11 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             g <- plot
-            g <- ggplot_expr
+            g <- ggplot_args_expr
             print(g)
           },
           env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
         )
       )
 
@@ -772,17 +736,16 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot_args = ggplot2_args[[input$plot_type]],
-          user_default_args = ggplot2_args$default,
-          plot_default_args = ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
             labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
                         y = "Leverage",
                         title = "Residuals vs Leverage")
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -792,11 +755,12 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
-            g <- ggplot_expr
+            g <- ggplot_args_expr
             print(g)
           },
           env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+
         )
       )
     }
@@ -821,7 +785,7 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_labs_theme_expr <- parse_ggplot2_args(
+      gg_args_expr <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -831,7 +795,6 @@ srv_a_regression <- function(input,
                         title = "Cook's dist vs Leverage")
           )
           ),
-        plot_name = "g",
         ggtheme = ggtheme
       )
 
@@ -841,10 +804,11 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
+            g <- gg_args_expr
             print(g)
           },
           env = list(plot = plot,
-                     ggplot_expr = gg_labs_theme_expr)
+                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
         )
       )
 

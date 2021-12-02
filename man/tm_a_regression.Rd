@@ -68,25 +68,13 @@ output to put the output into context. For example the
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{ggplot2_args}{optional (\code{ggplot2_args}) object or named list of them.
-The \code{teal.devel::ggplot2_args()} function has to be used to get a \code{ggplot2_args} object.
-For global setup a direct usage of the \code{ggplot2_args()} function is recommended,
-not wrapped into the named \code{list()}.
-Named list with \code{ggplot2_args} is required as follows:
-\code{list( "default" = ggplot2_args(labs = list(), theme = list()), "Response vs Regressor" = ggplot2_args(labs = list(subtitle = "USER_PLOT_SUBTITLE_RvsR")), "Residuals vs Fitted" = ggplot2_args(), "Normal Q-Q" = ggplot2_args(), "Scale-Location" = ggplot2_args(), "Cook's distance" = ggplot2_args(), "Residuals vs Leverage" = ggplot2_args(), "Cook's dist vs Leverage" = ggplot2_args())}.
-Only the \code{"default"} field is required when a named list of \code{ggplot2_args} is provided.
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+For more details see the help vignette:
+\code{vignette("Custom ggplot2 arguments module", package = "teal.devel")}
+List names should match the following: \verb{"Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
-\code{options} variable is used when we want to share the same setup between different modules.
-
-The priority of argument sources, in order:
-\enumerate{
-\item \code{ggplot2_args} argument provided by the end user, per plot and then default setup.
-\item System variable, \code{options()} variable \code{teal.ggplot2_args}.
-\item Module creator setup.
-}
-
-Defaults to named list with one \code{ggplot2_args} object,
-\code{teal.devel::ggplot2_args(labs = list(), theme = list())}.}
+\code{options} variable is used when we want to share the same setup between different modules.}
 }
 \description{
 Scatterplot and Regression Model
