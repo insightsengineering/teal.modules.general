@@ -541,7 +541,8 @@ srv_a_regression <- function(input,
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot + gg_args_expr
+              g <- plot
+              g<- gg_args_expr
               print(g)
             },
             env = list(plot = plot,
@@ -643,7 +644,7 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
-            g <- ggplot_args_expr
+            g <- gg_args_expr
             print(g)
           },
           env = list(plot = plot,
@@ -702,7 +703,7 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             g <- plot
-            g <- ggplot_args_expr
+            g <- gg_args_expr
             print(g)
           },
           env = list(plot = plot,
@@ -757,7 +758,7 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
-            g <- ggplot_args_expr
+            g <- gg_args_expr
             print(g)
           },
           env = list(plot = plot,
