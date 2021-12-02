@@ -244,10 +244,6 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
-    expr_basic_table_args <- parse_basic_table_args(
-      basic_table_args = resolve_basic_table_args(basic_table_args)
-    )
-
     chunks_push(substitute(
       expr = {
         lyt <- basic_tables %>%
@@ -262,7 +258,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
           )
       },
       env = list(
-        basic_tables = expr_basic_table_args,
+        basic_tables = parse_basic_table_args(
+          basic_table_args = resolve_basic_table_args(basic_table_args)
+        ),
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(
