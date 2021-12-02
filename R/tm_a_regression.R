@@ -457,7 +457,7 @@ srv_a_regression <- function(input,
         }
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -480,11 +480,11 @@ srv_a_regression <- function(input,
             class(fit$residuals) <- NULL
             data <- fortify(fit)
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
         )
       )
 
@@ -520,7 +520,7 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -541,11 +541,11 @@ srv_a_regression <- function(input,
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
               g <- plot
-              g <- gg_args_expr
+              g <- gg_args_call
               print(g)
             },
             env = list(plot = plot,
-                       gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr))
+                       gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
                        )
           )
         )
@@ -581,7 +581,7 @@ srv_a_regression <- function(input,
         )
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -599,11 +599,11 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
         )
       )
 
@@ -624,7 +624,7 @@ srv_a_regression <- function(input,
 
       dev_ggplot2_args <-
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -643,11 +643,11 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
         )
       )
     }
@@ -684,7 +684,7 @@ srv_a_regression <- function(input,
         )
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -702,11 +702,11 @@ srv_a_regression <- function(input,
         expression = substitute(
           expr = {
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
         )
       )
 
@@ -738,7 +738,7 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -757,11 +757,11 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
 
         )
       )
@@ -787,7 +787,7 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_expr <- parse_ggplot2_args(
+      gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
@@ -806,11 +806,11 @@ srv_a_regression <- function(input,
           expr = {
             smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
-            g <- gg_args_expr
+            g <- gg_args_call
             print(g)
           },
           env = list(plot = plot,
-                     gg_args_expr = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_expr)))
+                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
         )
       )
 
