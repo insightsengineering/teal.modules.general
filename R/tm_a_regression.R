@@ -31,7 +31,6 @@
 #'  List names should match the following: `"default", "Response vs Regressor", "Residuals vs Fitted",
 #'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
-#'  \code{options} variable is used when we want to share the same setup between different modules.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.

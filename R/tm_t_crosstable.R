@@ -13,7 +13,6 @@
 #'  For more details see the help vignette:
 #'  `vignette("Custom basic_table arguments module", package = "teal.devel")`
 #'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
-#'  \code{options} variable is used when we want to share the same setup between different modules.
 #'
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.

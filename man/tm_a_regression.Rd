@@ -17,7 +17,7 @@ tm_a_regression(
   post_output = NULL,
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
-  ggplot2_args = teal.devel::ggplot2_args(labs = list(), theme = list())
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -73,8 +73,7 @@ with settings for all the plots or named list of \code{ggplot2_args} objects for
 For more details see the help vignette:
 \code{vignette("Custom ggplot2 arguments module", package = "teal.devel")}
 List names should match the following: \verb{"default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
-\code{options} variable is used when we want to share the same setup between different modules.}
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.}
 }
 \description{
 Scatterplot and Regression Model

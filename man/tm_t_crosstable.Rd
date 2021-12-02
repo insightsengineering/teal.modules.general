@@ -41,8 +41,7 @@ output to put the output into context. For example the
 with settings for the module table.
 For more details see the help vignette:
 \code{vignette("Custom basic_table arguments module", package = "teal.devel")}
-The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
-\code{options} variable is used when we want to share the same setup between different modules.}
+The argument is merged with options variable \code{teal.basic_table_args} and default module setup.}
 }
 \description{
 Create a simple cross-table
