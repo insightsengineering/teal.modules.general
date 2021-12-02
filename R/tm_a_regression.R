@@ -24,23 +24,14 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional, `ggplot2_args` object created by [`teal.devel::ggplot2_args()`] 
+#' @param ggplot2_args optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
 #'  with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 #'  For more details see the help vignette:
 #'  `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-#'  List names should match the following: `"Response vs Regressor", "Residuals vs Fitted", 
+#'  List names should match the following: `"Response vs Regressor", "Residuals vs Fitted",
 #'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'  \code{options} variable is used when we want to share the same setup between different modules.
-#'
-#'  The priority of argument sources, in order:
-#'
-#'  1. `ggplot2_args` argument provided by the end user, per plot and then default setup.
-#'  2. System variable, `options()` variable `teal.ggplot2_args`.
-#'  3. Module creator setup.
-#'
-#'  Defaults to named list with one `ggplot2_args` object,
-#'   `teal.devel::ggplot2_args(labs = list(), theme = list())`.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
