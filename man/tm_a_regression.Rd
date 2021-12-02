@@ -68,11 +68,11 @@ output to put the output into context. For example the
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[=ggplot2_args]{ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 For more details see the help vignette:
 \code{vignette("Custom ggplot2 arguments module", package = "teal.devel")}
-List names should match the following: \verb{"Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
+List names should match the following: \verb{"default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 \code{options} variable is used when we want to share the same setup between different modules.}
 }
