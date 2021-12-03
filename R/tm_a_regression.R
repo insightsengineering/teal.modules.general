@@ -135,10 +135,12 @@ tm_a_regression <- function(label = "Regression Analysis",
   stop_if_not(
     list(
       is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
-      paste0("Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
-             "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
-             "If it is a named list then each name has to be one of ",
-             paste(c("default", plot_choices), collapse = ", "))
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
     )
   )
 
@@ -163,9 +165,13 @@ tm_a_regression <- function(label = "Regression Analysis",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, default_outlier_label = default_outlier_label,
-           ggplot2_args = ggplot2_args)
-      ),
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        default_outlier_label = default_outlier_label,
+        ggplot2_args = ggplot2_args
+      )
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -483,11 +489,12 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
-
     }
 
     plot_base <- function() {
@@ -531,28 +538,25 @@ srv_a_regression <- function(input,
               title = "Residuals vs Fitted"
             )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
-        chunks_push(
-          id =  "plot_1a",
-          expression = substitute(
-            expr = {
-              smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot
-              g <- gg_args_call
-              print(g)
-            },
-            env = list(plot = plot,
-                       gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
-                       )
+      chunks_push(
+        id =  "plot_1a",
+        expression = substitute(
+          expr = {
+            smoothy <- smooth(data$.fitted, data$.resid)
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
           )
         )
-
-
-
-
+      )
     }
 
     plot_type_2 <- function() {
@@ -586,11 +590,13 @@ srv_a_regression <- function(input,
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
-                        y = "Standardized residuals",
-                        title = "Normal Q-Q")
+            labs = list(
+              x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+              y = "Standardized residuals",
+              title = "Normal Q-Q"
+            )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
@@ -602,11 +608,12 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
-
     }
 
     plot_type_3 <- function() {
@@ -622,18 +629,18 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      dev_ggplot2_args <-
-
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-                        y = quote(expression(sqrt(abs(`Standardized residuals`)))),
-                        title = "Scale-Location")
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+              title = "Scale-Location"
+            )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
@@ -646,8 +653,10 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
     }
@@ -689,11 +698,13 @@ srv_a_regression <- function(input,
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
-                        y = "Cook's distance",
-                        title = "Cook's distance")
+            labs = list(
+              x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+              y = "Cook's distance",
+              title = "Cook's distance"
+            )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
@@ -705,11 +716,12 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
-
     }
 
 
@@ -743,11 +755,13 @@ srv_a_regression <- function(input,
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
-                        y = "Leverage",
-                        title = "Residuals vs Leverage")
+            labs = list(
+              x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+              y = "Leverage",
+              title = "Residuals vs Leverage"
+            )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
@@ -760,9 +774,10 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
-
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
     }
@@ -792,11 +807,13 @@ srv_a_regression <- function(input,
           user_plot = ggplot2_args[[input$plot_type]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
-            labs = list(x = quote(paste0("Leverage\nlm(", reg_form, ")")),
-                        y = "Cooks's distance",
-                        title = "Cook's dist vs Leverage")
+            labs = list(
+              x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+              y = "Cooks's distance",
+              title = "Cook's dist vs Leverage"
+            )
           )
-          ),
+        ),
         ggtheme = ggtheme
       )
 
@@ -809,11 +826,12 @@ srv_a_regression <- function(input,
             g <- gg_args_call
             print(g)
           },
-          env = list(plot = plot,
-                     gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs)))
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
         )
       )
-
     }
 
     if (input_type == "Response vs Regressor") {
