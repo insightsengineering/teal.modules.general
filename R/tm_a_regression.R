@@ -16,14 +16,21 @@
 #'   vector of length three with `c(value, min, max)`.
 #' @param default_outlier_label optional, (`character`) The default column selected to label outliers.
 #' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
-#'
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
 #' 3. Normal Q-Q
 #' 4. Scale-Location
-#' 5. Cooks distance
+#' 5. Cook's distance
 #' 6. Residuals vs Leverage
-#' 7. Cooks dist vs Leverage
+#' 7. Cook's dist vs Leverage
+#'
+#' @param ggplot2_args optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+#'  with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+#'  For more details see the help vignette:
+#'  `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
+#'  List names should match the following: `"default", "Response vs Regressor", "Residuals vs Fitted",
+#'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
+#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
@@ -63,7 +70,8 @@
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list("caption" = "NEST PROJECT"))
 #'     )
 #'   )
 #' )
@@ -81,7 +89,10 @@ tm_a_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID") {
+                            default_outlier_label = "USUBJID",
+                            ggplot2_args = teal.devel::ggplot2_args()
+                            ) {
+
   logger::log_info("Initializing tm_a_regression")
   if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
@@ -106,12 +117,42 @@ tm_a_regression <- function(label = "Regression Analysis",
     is_character_single(ggtheme),
     is_character_single(default_outlier_label)
     )
+
+  plot_choices <- c(
+    "Response vs Regressor",
+    "Residuals vs Fitted",
+    "Normal Q-Q",
+    "Scale-Location",
+    "Cook's distance",
+    "Residuals vs Leverage",
+    "Cook's dist vs Leverage"
+  )
+
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
+    )
+  )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
+
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
   # Send ui args
   args <- as.list(environment())
-
+  args[["plot_choices"]] <- plot_choices
   data_extract_list <- list(
     regressor = regressor,
     response = response
@@ -124,7 +165,13 @@ tm_a_regression <- function(label = "Regression Analysis",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, default_outlier_label = default_outlier_label)),
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        default_outlier_label = default_outlier_label,
+        ggplot2_args = ggplot2_args
+      )
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -133,16 +180,6 @@ ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- is_single_dataset(args$regressor, args$response)
-
-  plot_choices <- c(
-    "Response vs Regressor",
-    "Residuals vs Fitted",
-    "Normal Q-Q",
-    "Scale-Location",
-    "Cook's distance",
-    "Residuals vs Leverage",
-    "Cook's dist vs Leverage h[ii]/(1 - h[ii])"
-  )
 
   standard_layout(
     output = white_small_well(tags$div(
@@ -167,8 +204,8 @@ ui_a_regression <- function(id, ...) {
       radioButtons(
         ns("plot_type"),
         label = "Plot type:",
-        choices = plot_choices,
-        selected = plot_choices[args$default_plot_type]
+        choices = args$plot_choices,
+        selected = args$plot_choices[args$default_plot_type]
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       shinyjs::hidden(optionalSliderInput(
@@ -223,6 +260,7 @@ srv_a_regression <- function(input,
                              regressor,
                              plot_height,
                              plot_width,
+                             ggplot2_args,
                              default_outlier_label) {
   init_chunks()
 
@@ -413,17 +451,6 @@ srv_a_regression <- function(input,
             env = list(plot = plot, outlier_label = outlier_label())
           )
         }
-        chunks_push(
-          id = "plot_0_a",
-          expression = substitute(
-            expr = {
-              class(fit$residuals) <- NULL
-              data <- fortify(fit)
-              gg <- plot
-            },
-            env = list(plot = plot)
-          )
-        )
       } else {
         shinyjs::hide("size")
         shinyjs::hide("alpha")
@@ -434,30 +461,37 @@ srv_a_regression <- function(input,
         if (show_outlier) {
           plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
         }
-        chunks_push(
-          id = "plot_0_a",
-          expression = substitute(
-            expr = {
-              class(fit$residuals) <- NULL
-              data <- fortify(fit)
-              gg <- plot
-            },
-            env = list(plot = plot)
-          )
-        )
       }
 
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              title = "Response vs Regressor",
+              x = varname_w_label(regression_var()$regressor, ANL),
+              y = varname_w_label(regression_var()$response, ANL)
+              ),
+            theme = list()
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
       chunks_push(
-        id = "plot_0_b",
+        id = "plot_0",
         expression = substitute(
           expr = {
-            g_final <- gg + xlab(xlabel) + ylab(ylabel) + ggtitle("Response vs Regressor") + ggtheme_call
-            print(g_final)
+            class(fit$residuals) <- NULL
+            data <- fortify(fit)
+            g <- plot
+            g <- gg_args_call
+            print(g)
           },
           env = list(
-            xlabel = varname_w_label(regression_var()$regressor, ANL),
-            ylabel = varname_w_label(regression_var()$response, ANL),
-            ggtheme_call = call(paste0("theme_", ggtheme))
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
           )
         )
       )
@@ -492,19 +526,37 @@ srv_a_regression <- function(input,
       if (show_outlier) {
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_1", expression = substitute(
-        expr = {
-          smoothy <- smooth(data$.fitted, data$.resid)
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Fitted values\nlm(", reg_form, ")"),
-            y = "Residuals",
-            title = input_type
-          ) + ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
+
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = "Residuals",
+              title = "Residuals vs Fitted"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_1a",
+        expression = substitute(
+          expr = {
+            smoothy <- smooth(data$.fitted, data$.resid)
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
     }
 
     plot_type_2 <- function() {
@@ -532,18 +584,36 @@ srv_a_regression <- function(input,
           env = list(plot = plot, label_col = label_col())
         )
       }
-      chunks_push(id = "plot_2", expression = substitute(
-        expr = {
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Theoretical Quantiles\nlm(", reg_form, ")"),
-            y = "Standardized residuals",
-            title = input_type
-          ) + ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
+
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+              y = "Standardized residuals",
+              title = "Normal Q-Q"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_2",
+        expression = substitute(
+          expr = {
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
     }
 
     plot_type_3 <- function() {
@@ -558,19 +628,37 @@ srv_a_regression <- function(input,
       if (show_outlier) {
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_3", expression = substitute(
-        expr = {
-          smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Fitted values\nlm(", reg_form, ")"),
-            y = expression(sqrt(abs(`Standardized residuals`))),
-            title = input_type
-          ) + ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
+
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+              title = "Scale-Location"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_3",
+        expression = substitute(
+          expr = {
+            smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
     }
 
     plot_type_4 <- function() {
@@ -604,19 +692,36 @@ srv_a_regression <- function(input,
           env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
         )
       }
-      chunks_push(id = "plot_4", expression = substitute(
-        expr = {
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Obs. number\nlm(", reg_form, ")"),
-            y = "Cook's distance",
-            title = input_type
-          ) +
-            ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
+
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+              y = "Cook's distance",
+              title = "Cook's distance"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_4",
+        expression = substitute(
+          expr = {
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
     }
 
 
@@ -644,22 +749,38 @@ srv_a_regression <- function(input,
       if (show_outlier) {
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_5", expression = substitute(
-        expr = {
-          smoothy <- smooth(data$.hat, data$.stdresid)
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Standardized residuals\nlm(", reg_form, ")"),
-            y = "Leverage",
-            title = input_type
-          ) +
-            ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
-    }
 
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+              y = "Leverage",
+              title = "Residuals vs Leverage"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_5",
+        expression = substitute(
+          expr = {
+            smoothy <- smooth(data$.hat, data$.stdresid)
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
+    }
 
     plot_type_6 <- function() {
       shinyjs::show("size")
@@ -680,20 +801,37 @@ srv_a_regression <- function(input,
       if (show_outlier) {
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
-      chunks_push(id = "plot_6", expression = substitute(
-        expr = {
-          smoothy <- smooth(data$.hat, data$.cooksd)
-          g_base <- plot
-          g_final <- g_base + labs(
-            x = paste0("Leverage\nlm(", reg_form, ")"),
-            y = "Cooks's distance",
-            title = input_type
-          ) +
-            ggtheme_call
-          print(g_final)
-        },
-        env = list(plot = plot, input_type = input_type, ggtheme_call = call(paste0("theme_", ggtheme)))
-      ))
+
+      gg_args_exprs <- parse_ggplot2_args(
+        resolve_ggplot2_args(
+          user_plot = ggplot2_args[[input$plot_type]],
+          user_default = ggplot2_args$default,
+          module_plot = ggplot2_args(
+            labs = list(
+              x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+              y = "Cooks's distance",
+              title = "Cook's dist vs Leverage"
+            )
+          )
+        ),
+        ggtheme = ggtheme
+      )
+
+      chunks_push(
+        id =  "plot_6",
+        expression = substitute(
+          expr = {
+            smoothy <- smooth(data$.hat, data$.cooksd)
+            g <- plot
+            g <- gg_args_call
+            print(g)
+          },
+          env = list(
+            plot = plot,
+            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+          )
+        )
+      )
     }
 
     if (input_type == "Response vs Regressor") {
@@ -701,12 +839,12 @@ srv_a_regression <- function(input,
     } else {
       plot_base()
       switch(input_type,
-        "Residuals vs Fitted"  = plot_type_1(),
+        "Residuals vs Fitted" = plot_type_1(),
         "Normal Q-Q" = plot_type_2(),
         "Scale-Location" =  plot_type_3(),
         "Cook's distance" =  plot_type_4(),
         "Residuals vs Leverage" =  plot_type_5(),
-        "Cook's dist vs Leverage h[ii]/(1 - h[ii])" =  plot_type_6()
+        "Cook's dist vs Leverage" =  plot_type_6()
       )
     }
 

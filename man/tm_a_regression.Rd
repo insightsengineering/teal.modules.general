@@ -16,7 +16,8 @@ tm_a_regression(
   pre_output = NULL,
   post_output = NULL,
   default_plot_type = 1,
-  default_outlier_label = "USUBJID"
+  default_outlier_label = "USUBJID",
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -60,12 +61,19 @@ output to put the output into context. For example the
 \item Residuals vs Fitted
 \item Normal Q-Q
 \item Scale-Location
-\item Cooks distance
+\item Cook's distance
 \item Residuals vs Leverage
-\item Cooks dist vs Leverage
+\item Cook's dist vs Leverage
 }}
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+For more details see the help vignette:
+\code{vignette("Custom ggplot2 arguments module", package = "teal.devel")}
+List names should match the following: \verb{"default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.}
 }
 \description{
 Scatterplot and Regression Model
@@ -108,7 +116,8 @@ app <- init(
           multiple = TRUE,
           fixed = FALSE
         )
-      )
+      ),
+      ggplot2_args = teal.devel::ggplot2_args(labs = list("caption" = "NEST PROJECT"))
     )
   )
 )
