@@ -135,8 +135,8 @@ tm_a_regression <- function(label = "Regression Analysis",
   stop_if_not(
     list(
       is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
-      paste0("Please use the teal.devel::table_args() function to generate input for basic_table_args argument.\n",
-             "basic_table_args argument has to be a list of a basic_table_args class or named list of such objects.\n",
+      paste0("Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+             "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
              "If it is a named list then each name has to be one of ",
              paste(c("default", plot_choices), collapse = ", "))
     )
