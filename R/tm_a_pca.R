@@ -411,7 +411,9 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           legend.spacing.y = quote(unit(-5, "pt")),
           legend.title = quote(element_text(vjust = 8)),
           axis.text.x = bquote(element_text(angle = .(angle_value), hjust = .(hjust_value))),
-          text = bquote(element_text(size = .(font_size)))))
+          text = bquote(element_text(size = .(font_size)))
+          )
+        )
     )
 
     parsed_ggplot2_args <- parse_ggplot2_args(
@@ -426,7 +428,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
             dplyr::as_tibble(rownames = "metric") %>%
             tidyr::gather("component", "value", -metric) %>%
-            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = T))))
+            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE))))
 
           g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
             geom_bar(
@@ -477,8 +479,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
     font_size <- input$font_size #nolint
 
-    angle = ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
-    hjust = ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
     all_ggplot2_args <- resolve_ggplot2_args(
       user_plot = ggplot2_args[[input$plot_type]],
@@ -487,7 +489,9 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         labs = list(),
         theme = list(
           axis.text.x = element_text(angle = angle, hjust = hjust),
-          text = element_text(size = font_size)))
+          text = element_text(size = font_size)
+          )
+        )
     )
 
     parsed_ggplot2_args <- parse_ggplot2_args(
@@ -647,8 +651,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
       chunks_push(
         id = "pca_plot_response_base",
-        substitute({response <- RP[[resp_col]]},
-                   env = list(resp_col = resp_col))
+        substitute({
+          response <- RP[[resp_col]]
+          }, env = list(resp_col = resp_col)
+          )
       )
 
       dev_labs <- list(color = varname_w_label(resp_col, rp))
@@ -699,19 +705,25 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
                                     aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
                                     data = rot_vars,
                                     lineend = "round", linejoin = "round",
-                                    arrow = arrow(length = unit(0.5, "cm"))) ),
-                                bquote(geom_label(
-                                  aes_string(x = .(x_axis), y = .(y_axis), label = "label"),
-                                  data = rot_vars,
+                                    arrow = arrow(length = unit(0.5, "cm")))
+                                  ),
+                                bquote(
+                                  geom_label(
+                                    aes_string(
+                                      x = .(x_axis),
+                                      y = .(y_axis),
+                                      label = "label"
+                                      ),
+                                    data = rot_vars,
                                   nudge_y = 0.1,
-                                  fontface = "bold")),
+                                  fontface = "bold")
+                                  ),
                                 bquote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
       )
     }
 
-    angle = ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
-    hjust = ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
-    font_size = font_size
+    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
     dev_ggplot2_args <- ggplot2_args(
       labs = dev_labs,
@@ -763,8 +775,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
     font_size <- input$font_size #nolint
 
-    angle = ifelse(rotate_xaxis_labels, 45, 0)
-    hjust = ifelse(rotate_xaxis_labels, 1, 0.5)
+    angle <- ifelse(rotate_xaxis_labels, 45, 0)
+    hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)
 
     dev_ggplot2_args <- ggplot2_args(
       theme = list(

@@ -23,6 +23,7 @@ tm_g_bivariate(
   rotate_xaxis_labels = FALSE,
   swap_axes = FALSE,
   ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL
 )
@@ -134,7 +135,8 @@ app <- init(
           multiple = FALSE,
           fixed = FALSE
         )
-      )
+      ),
+      ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PROJECT"))
     )
   )
 )

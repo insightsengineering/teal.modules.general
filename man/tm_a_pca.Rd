@@ -10,6 +10,7 @@ tm_a_pca(
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   rotate_xaxis_labels = FALSE,
   font_size = c(12, 8, 20),
   alpha = c(1, 0, 1),
@@ -82,7 +83,8 @@ app <- teal::init(
                  multiple = TRUE
                ),
                filter = NULL
-             )
+             ),
+             ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
     )
   )
 )
