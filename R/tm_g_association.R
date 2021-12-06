@@ -75,7 +75,8 @@ tm_g_association <- function(label = "Association",
                              distribution_theme = gg_themes,
                              association_theme = gg_themes,
                              pre_output = NULL,
-                             post_output = NULL) {
+                             post_output = NULL,
+                             ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
   if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
@@ -114,7 +115,6 @@ tm_g_association <- function(label = "Association",
     filters = get_extract_datanames(data_extract_list)
   )
 }
-
 
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)

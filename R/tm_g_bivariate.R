@@ -76,7 +76,7 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )

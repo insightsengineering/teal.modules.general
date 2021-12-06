@@ -14,7 +14,8 @@ tm_g_association(
   distribution_theme = gg_themes,
   association_theme = gg_themes,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
