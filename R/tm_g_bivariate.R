@@ -75,7 +75,8 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -100,6 +101,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
                            ggtheme = gg_themes,
+                           ggplot2_args = teal.devel::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
@@ -157,6 +159,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+
   if (color_settings) {
     if (is.null(color)) {
       color <- `if`(inherits(x, "list"), x, list(x))
@@ -194,7 +198,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(data_extract_list,
+                    list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -346,7 +351,8 @@ srv_g_bivariate <- function(input,
                             fill,
                             size,
                             plot_height,
-                            plot_width) {
+                            plot_width,
+                            ggplot2_args) {
   init_chunks()
   data_extract <- stats::setNames(
     list(x, y),
@@ -456,11 +462,12 @@ srv_g_bivariate <- function(input,
       x_label = varname_w_label(x_name, ANL),
       y_label = varname_w_label(y_name, ANL),
       freq = !use_density,
-      theme = call(paste0("theme_", ggtheme)),
+      theme = ggtheme,
       rotate_xaxis_labels = rotate_xaxis_labels,
       swap_axes = swap_axes,
       alpha = alpha,
-      size = size
+      size = size,
+      ggplot2_args = ggplot2_args
     )
 
     facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
@@ -558,11 +565,12 @@ bivariate_plot_call <- function(data_name,
                                 x_label = NULL,
                                 y_label = NULL,
                                 freq = TRUE,
-                                theme = quote(theme_gray()),
+                                theme = "gray",
                                 rotate_xaxis_labels = FALSE,
                                 swap_axes = FALSE,
                                 alpha = double(0),
-                                size = 2) {
+                                size = 2,
+                                ggplot2_args = teal.devel::ggplot2_args()) {
   supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
   validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
@@ -575,7 +583,8 @@ bivariate_plot_call <- function(data_name,
     rotate_xaxis_labels = rotate_xaxis_labels,
     swap_axes = swap_axes,
     alpha = alpha,
-    size = size
+    size = size,
+    ggplot2_args = ggplot2_args
   )
 
   if (is_character_empty(x)) {
@@ -638,11 +647,12 @@ substitute_q <- function(x, env) {
 bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE,
-                                  theme = quote(theme_gray()),
+                                  theme = "gray",
                                   rotate_xaxis_labels = FALSE,
                                   swap_axes = FALSE,
                                   size = double(0),
-                                  alpha = double(0)) {
+                                  alpha = double(0),
+                                  ggplot2_args = teal.devel::ggplot2_args()) {
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
 
@@ -663,18 +673,12 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     stop("either x or y is required")
   }
 
-  reduce_plot_call_internal <- function(x, y) {
-    call("+", x, y)
-  }
   reduce_plot_call <- function(...) {
-    args <- list(...)
-    Reduce(reduce_plot_call_internal, args)
+    args <- Filter(Negate(is.null), list(...))
+    utils.nest::calls_combine_by("+", args)
   }
 
-  plot_call <- reduce_plot_call(
-    quote(.ggplotcall),
-    theme
-  )
+  plot_call <- quote(.ggplotcall)
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
@@ -695,7 +699,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
 
-    plot_call <- reduce_plot_call(plot_call, quote(xlab(.xlab)))
   } else if (x_class == "NULL" && y_class == "numeric") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
 
@@ -714,7 +717,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
 
-    plot_call <- reduce_plot_call(plot_call, quote(xlab(.ylab)))
   } else if (x_class == "factor" && y_class == "NULL") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .x)))
 
@@ -732,7 +734,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
 
-    plot_call <- reduce_plot_call(plot_call, quote(xlab(.xlab)))
   } else if (x_class == "NULL" && y_class == "factor") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
 
@@ -750,7 +751,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
 
-    plot_call <- reduce_plot_call(plot_call, quote(xlab(.ylab)))
     # Numeric Plots
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
@@ -761,53 +761,62 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         !is.null(size),
         quote(geom_point(alpha = .alpha, size = .size, pch = 21)),
         quote(geom_point(alpha = .alpha, pch = 21))
-        ),
-      quote(ylab(.ylab)),
-      quote(xlab(.xlab))
+        )
     )
   } else if (x_class == "numeric" && y_class == "factor") {
-    # ggplot2 boxplot does not create a proper boxplot if the x-axis variable is not a factor
-    # we circumvent this by exchanging `x` and `y` and then flipping the coordinates
-    # nolint start
-    # ggplot(mtcars) + geom_boxplot(aes(x = hp, y = as.factor(cyl))) does not create proper boxplot
-    # ggplot(mtcars) + geom_boxplot(aes(x = as.factor(cyl), y = hp)) + coord_flip() this works
-    # nolint end
-    # we invert it because we automatically swap it and may need to flip it back
-    swap_axes <- !swap_axes
     plot_call <- reduce_plot_call(
       plot_call,
-      quote(aes(x = .y, y = .x)),
-      quote(geom_boxplot()),
-      quote(ylab(.xlab)),
-      quote(xlab(.ylab))
+      quote(aes(x = .x, y = .y)),
+      quote(geom_boxplot())
     )
   } else if (x_class == "factor" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
       quote(aes(x = .x, y = .y)),
-      quote(geom_boxplot()),
-      quote(ylab(.ylab)),
-      quote(xlab(.xlab))
+      quote(geom_boxplot())
     )
 
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      quote(geom_mosaic(aes(x = product(.x), fill = .y), na.rm = TRUE)),
-      quote(ylab(.ylab)),
-      quote(xlab(.xlab))
+      quote(geom_mosaic(aes(x = product(.x), fill = .y), na.rm = TRUE))
     )
   } else {
     stop("x y type combination not allowed")
   }
 
-  if (swap_axes) {
-    plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
+  if (is.null(x_class)) {
+    module_plot_args <- ggplot2_args(labs = list(x = quote(.ylab)))
+
+  } else if (is.null(y_class)) {
+    module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab)))
+
+  } else {
+    module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab), y = quote(.ylab)))
   }
 
   if (rotate_xaxis_labels) {
-    plot_call <- reduce_plot_call(plot_call, quote(theme(axis.text.x = element_text(angle = 45, hjust = 1))))
+    module_plot_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+  }
+
+
+  all_ggplot2_args <- resolve_ggplot2_args(
+    user_plot = ggplot2_args,
+    module_plot = module_plot_args
+  )
+
+  parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
+
+  plot_call <- reduce_plot_call(
+    plot_call,
+    parsed_ggplot2_args$labs,
+    parsed_ggplot2_args$ggtheme,
+    parsed_ggplot2_args$theme
+    )
+
+  if (swap_axes) {
+    plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
   }
 
   return(plot_call)
