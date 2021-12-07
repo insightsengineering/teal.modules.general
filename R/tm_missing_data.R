@@ -6,7 +6,6 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
-#'
 #' @export
 #'
 #' @examples
@@ -22,7 +21,7 @@
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     tm_missing_data()
+#'     tm_missing_data(ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
 #'   )
 #' )
 #' \dontrun{
@@ -31,6 +30,8 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            ggtheme = gg_themes,
+                            ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
@@ -38,17 +39,45 @@ tm_missing_data <- function(label = "Missing data",
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
+  ggtheme <- match.arg(ggtheme)
+  stop_if_not(is_character_single(ggtheme))
+
+  plot_choices <- c(
+    "Boxplot",
+    "Density plot",
+    "Cumulative distribution plot"
+  )
+
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
+    )
+  )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
+
   module(
     label,
     server = srv_page_missing_data,
-    server_args = list(plot_height = plot_height, plot_width = plot_width),
+    server_args = list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
     ui = ui_page_missing_data,
     filters = "all",
-    ui_args = list(pre_output = pre_output, post_output = post_output)
+    ui_args = list(pre_output = pre_output, post_output = post_output, ggtheme = ggtheme)
   )
 }
 
-ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL) {
+ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL, ggtheme) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -94,7 +123,11 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
           function(x) {
             conditionalPanel(
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(id = ns(x), summary_per_patient = if_subject_plot)
+              encoding_missing_data(
+                id = ns(x),
+                summary_per_patient = if_subject_plot,
+                ggtheme = ggtheme
+                )
             )
           }
         )
@@ -110,7 +143,8 @@ srv_page_missing_data <- function(input,
                                   session,
                                   datasets,
                                   plot_height,
-                                  plot_width) {
+                                  plot_width,
+                                  ggplot2_args) {
   lapply(
     datasets$datanames(),
     function(x) {
@@ -120,7 +154,8 @@ srv_page_missing_data <- function(input,
         datasets = datasets,
         dataname = x,
         plot_height = plot_height,
-        plot_width = plot_width
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args
       )
     }
   )
@@ -194,7 +229,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
 }
 
 #' @importFrom shinyWidgets checkboxGroupButtons
-encoding_missing_data <- function(id, summary_per_patient = FALSE) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
   ns <- NS(id)
 
   tagList(
@@ -259,6 +294,16 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
         )
       )
     ),
+    panel_item(
+      title = "Plot settings",
+      optionalSelectInput(
+        inputId = ns("ggtheme"),
+        label = "Theme (by ggplot):",
+        choices = gg_themes,
+        selected = ggtheme,
+        multiple = FALSE
+      )
+    ),
     hr(),
     get_rcode_ui(ns("rcode"))
   )
@@ -271,7 +316,8 @@ srv_missing_data <- function(input,
                              datasets,
                              dataname,
                              plot_height,
-                             plot_width) {
+                             plot_width,
+                             ggplot2_args) {
   init_chunks()
 
   prev_group_by_var <- reactiveVal("")

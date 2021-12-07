@@ -574,24 +574,6 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
   )
 
-  parsed_ggplot2_args_r <- reactive({
-    dev_ggplot2_args <- ggplot2_args(
-      labs = list(color = "Is outlier?"),
-      theme = list(legend.position = "top")
-    )
-
-    all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[[input$tabs]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = input$ggtheme
-    )
-  })
-
   # boxplot/violinplot #nolint
   box_plot_r_chunks <- reactive({
 
@@ -661,15 +643,31 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Boxplot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     boxplot_r_stack_push(substitute(
       expr = g <- plot_call +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
         labs + ggthemes + themes,
       env = list(
         plot_call = plot_call,
-        labs = parsed_ggplot2_args_r()$labs,
-        ggthemes = parsed_ggplot2_args_r()$ggtheme,
-        themes = parsed_ggplot2_args_r()$theme
+        labs = parsed_ggplot2_args$labs,
+        ggthemes = parsed_ggplot2_args$ggtheme,
+        themes = parsed_ggplot2_args$theme
         )
     ))
 
@@ -721,14 +719,30 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Density plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     density_r_stack_push(
       substitute(
         expr = g <- plot_call + labs + ggthemes + themes,
         env = list(
           plot_call = plot_call,
-          labs = parsed_ggplot2_args_r()$labs,
-          themes = parsed_ggplot2_args_r()$theme,
-          ggthemes = parsed_ggplot2_args_r()$ggtheme
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme,
+          ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
       )
@@ -831,6 +845,22 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Cumulative distribution plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     cumulative_r_stack_push(substitute(
       expr = g <- plot_call +
         geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
@@ -839,9 +869,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(
         plot_call = plot_call,
         outlier_var_name = as.name(outlier_var),
-        labs = parsed_ggplot2_args_r()$labs,
-        themes = parsed_ggplot2_args_r()$theme,
-        ggthemes = parsed_ggplot2_args_r()$ggtheme
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
         )
     ))
 

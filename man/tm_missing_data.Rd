@@ -8,6 +8,8 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
+  ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL
 )
@@ -20,6 +22,11 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
@@ -44,7 +51,7 @@ app <- init(
     check = TRUE
   ),
   modules = root_modules(
-    tm_missing_data()
+    tm_missing_data(ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
   )
 )
 \dontrun{
