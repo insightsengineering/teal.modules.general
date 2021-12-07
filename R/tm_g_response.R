@@ -359,8 +359,6 @@ srv_g_response <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    labs() + theme(legend.position = "bottom")
-
     x_label <- varname_w_label(x, ANL)
     y_label <- varname_w_label(resp_var, ANL, prefix = "Proportion of ")
     fill_label <- varname_w_label(resp_var, ANL)

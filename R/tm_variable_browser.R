@@ -30,7 +30,10 @@
 #'     check = TRUE
 #'   ),
 #'   root_modules(
-#'     tm_variable_browser(label = "Variable browser")
+#'     tm_variable_browser(
+#'     label = "Variable browser",
+#'     ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+#'     )
 #'   )
 #' )
 #' \dontrun{
@@ -39,11 +42,14 @@
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
                                 pre_output = NULL,
-                                post_output = NULL) {
+                                post_output = NULL,
+                                ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
   stop_if_not(is_character_single(label),
               is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
   )
+
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   datasets_selected <- unique(datasets_selected)
 
@@ -52,7 +58,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
-    server_args = list(datasets_selected = datasets_selected),
+    server_args = list(datasets_selected = datasets_selected, ggplot2_args = ggplot2_args),
     ui_args = list(
       datasets_selected = datasets_selected,
       pre_output = pre_output,
@@ -160,7 +166,7 @@ ui_variable_browser <- function(id,
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
-srv_variable_browser <- function(input, output, session, datasets, datasets_selected) {
+srv_variable_browser <- function(input, output, session, datasets, datasets_selected, ggplot2_args) {
 
   # if there are < this number of unique records then a numeric
   # variable can be treated as a factor and all factors with < this groups
@@ -341,7 +347,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       numeric_as_factor = treat_numeric_as_factor(),
       display_density = display_density,
       outlier_definition = outlier_definition,
-      records_for_factor = .unique_records_for_factor
+      records_for_factor = .unique_records_for_factor,
+      ggplot2_args = ggplot2_args
     )
   })
 
@@ -735,13 +742,14 @@ plot_var_summary <- function(var,
   numeric_as_factor,
   display_density = is.numeric(var),
   outlier_definition,
-  records_for_factor) {
+  records_for_factor,
+  ggplot2_args) {
 
   stopifnot(is_logical_single(display_density))
 
   grid::grid.newpage()
 
-  plot_grob <- if (is.factor(var) || is.character(var) || is.logical(var)) {
+  plot_main <- if (is.factor(var) || is.character(var) || is.logical(var)) {
     groups <- unique(as.character(var))
     len_groups <- length(groups)
     if (len_groups >= records_for_factor) {
@@ -760,12 +768,7 @@ plot_var_summary <- function(var,
     } else {
       p <-
         ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
-        geom_bar(stat = "count") +
-        xlab(var_lab) +
-        theme_light() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-      ggplotGrob(p)
+        geom_bar(stat = "count")
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
@@ -777,12 +780,8 @@ plot_var_summary <- function(var,
 
     if (numeric_as_factor) {
       var <- factor(var, levels = sort(unique(var)))
-      p <- qplot(var) +
-        xlab(var_lab) +
-        theme_light() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-    }
-    else {
+      p <- qplot(var)
+    } else {
       # remove outliers
       if (outlier_definition != 0) {
         q1_q3 <- quantile(var, probs = c(0.25, 0.75), type = 2)
@@ -796,8 +795,6 @@ plot_var_summary <- function(var,
         validate(need(length(var) > 1,
           "At least two data points must remain after removing outliers for this graph to be displayed"))
       }
-
-
       ## histogram
       binwidth <- get_bin_width(var)
       p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
@@ -808,9 +805,7 @@ plot_var_summary <- function(var,
             labels = scales::percent,
             name = "proportion (in %)"
           )
-        ) +
-        xlab(var_lab) +
-        theme_light()
+        )
 
       if (display_density) {
         p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
@@ -825,19 +820,13 @@ plot_var_summary <- function(var,
           color = "black"
         )
       }
+      p
     }
-    ggplotGrob(p)
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
-
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
-      geom_histogram(binwidth = binwidth) +
-      xlab(var_lab) +
-      theme_light() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-    ggplotGrob(p)
+      geom_histogram(binwidth = binwidth)
   } else {
     grid::textGrob(
       paste(strwrap(
@@ -848,10 +837,45 @@ plot_var_summary <- function(var,
     )
   }
 
+  dev_ggplot2_args <- ggplot2_args(
+    labs = list(x = var_lab),
+    theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
+  )
 
+  all_ggplot2_args <- resolve_ggplot2_args(
+    ggplot2_args,
+    module_plot = dev_ggplot2_args
+  )
 
-  grid::grid.draw(plot_grob)
-  plot_grob
+  if (is.ggplot(plot_main)) {
+    if (is.numeric(var) && !numeric_as_factor) {
+      #numeric not asfactor
+      plot_main <- plot_main +
+        theme_light() +
+        list(labs = do.call(
+          "labs",
+          all_ggplot2_args$labs
+        ))
+    } else {
+      #factor low number of levels OR numeric as factor OR Date
+      plot_main <- plot_main +
+        theme_light() +
+        list(
+          labs = do.call(
+            "labs",
+            all_ggplot2_args$labs
+            ),
+          theme = do.call(
+            "theme",
+            all_ggplot2_args$theme
+          )
+        )
+    }
+    plot_main <- ggplotGrob(plot_main)
+  }
+
+  grid::grid.draw(plot_main)
+  plot_main
 }
 
 #' Returns a short variable description.
