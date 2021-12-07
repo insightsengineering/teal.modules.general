@@ -174,7 +174,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         } else {
           files <- list.files(path, full.names = TRUE, include.dirs = TRUE)
           out <- lapply(files, function(x) tree_list(x))
-          out <- unlist(out, recursive = F)
+          out <- unlist(out, recursive = FALSE)
           if (!is_empty(files)) names(out) <- basename(files)
           out
         }

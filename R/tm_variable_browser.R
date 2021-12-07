@@ -848,6 +848,8 @@ plot_var_summary <- function(var,
     )
   }
 
+
+
   grid::grid.draw(plot_grob)
   plot_grob
 }

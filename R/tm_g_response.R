@@ -271,13 +271,13 @@ srv_g_response <- function(input,
 
     if (swap_axes) {
       chunks_push(expression = substitute(
-        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)),
+        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), #nolint
         env = list(x = x, x_cl = x_cl)
       ))
     }
 
     chunks_push(expression = substitute(
-      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]),
+      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), #nolint
       env = list(resp_var = resp_var)
     ))
     # nolint start

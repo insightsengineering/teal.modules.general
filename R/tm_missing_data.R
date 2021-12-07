@@ -314,7 +314,7 @@ srv_missing_data <- function(input,
 
     if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
       common_stack_push(substitute(
-        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]],
+        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]], #nolint
         env = list(group_var = group_var, anl_name = as.name(anl_name))
       ))
     }
@@ -464,7 +464,7 @@ srv_missing_data <- function(input,
     if (input$any_na) {
       new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
       summary_stack_push(substitute(
-        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE),
+        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE), #nolint
         env = list(new_col_name = new_col_name)
       ))
     }

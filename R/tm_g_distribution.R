@@ -32,7 +32,8 @@
 #'       dist_var = data_extract_spec(
 #'         dataname = "iris",
 #'         select = select_spec(variable_choices("iris"), "Petal.Length")
-#'       )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -76,7 +77,8 @@
 #'           vars = vars1,
 #'           multiple = TRUE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -88,6 +90,8 @@ tm_g_distribution <- function(label = "Distribution Module",
                               strata_var = NULL,
                               group_var = NULL,
                               freq = FALSE,
+                              ggtheme = gg_themes,
+                              ggplot2_args = teal.devel::ggplot2_args(),
                               bins = c(30L, 1L, 100L),
                               plot_height = c(600, 200, 2000),
                               plot_width = NULL,
@@ -112,14 +116,42 @@ tm_g_distribution <- function(label = "Distribution Module",
     min = 1L,
     max = Inf
   )
+
+  ggtheme <- match.arg(ggtheme)
+
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
     is_logical_single(freq),
+    is_character_single(ggtheme),
     (is_integer_vector(bins, 3, 3) && is.null(check_slider_input(bins))) || is_integer_single(bins)
   )
+
+  plot_choices <- c(
+    "Histogram",
+    "QQplot"
+  )
+
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
+    )
+  )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -132,7 +164,10 @@ tm_g_distribution <- function(label = "Distribution Module",
   module(
     label = label,
     server = srv_distribution,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      ),
     ui = ui_distribution,
     ui_args = args,
     filters = get_extract_datanames(data_extract_list)
@@ -273,8 +308,18 @@ ui_distribution <- function(id, ...) {
           label = "Overlay params table",
           value = TRUE
         )
+      ),
+      panel_item(
+        title = "Plot settings",
+        optionalSelectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = gg_themes,
+          selected = args$ggtheme,
+          multiple = FALSE
+        )
       )
-    ),
+      ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -289,7 +334,8 @@ srv_distribution <- function(input,
                              strata_var,
                              group_var,
                              plot_height,
-                             plot_width) {
+                             plot_width,
+                             ggplot2_args) {
 
   init_chunks()
 
@@ -490,6 +536,7 @@ srv_distribution <- function(input,
       input$main_type
       input$bins
       input$add_dens
+      input$ggtheme
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -524,6 +571,7 @@ srv_distribution <- function(input,
       main_type_var <- input$main_type
       bins_var <- input$bins
       add_dens_var <- input$add_dens
+      ggtheme <- input$ggtheme
 
       m_type <- if (main_type_var == "Density") "..density.." else "..count.."
       m_type2 <- if (main_type_var == "Density") {
@@ -641,13 +689,12 @@ srv_distribution <- function(input,
         )
       }
 
-      if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
-        if (length(t_dist) != 0 && m_type == "..density..") {
+      if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
+          length(t_dist) != 0 && m_type == "..density..") {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")
           )
-
           plot_call <- substitute(
             expr = plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
@@ -657,8 +704,7 @@ srv_distribution <- function(input,
               size = 2,
               args = params
             ) +
-              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
-              theme(legend.position = "right"),
+              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
             env = list(
               plot_call = plot_call,
               dist_var = dist_var,
@@ -666,15 +712,32 @@ srv_distribution <- function(input,
               mapped_dist = unname(map_dist[t_dist])
             )
           )
-        }
       }
 
-      distplot_stack_push(substitute(
-        expr = g <- plot_call,
-        env = list(plot_call = plot_call)
-      ))
+      dev_ggplot2_args <- ggplot2_args()
 
-      distplot_stack_push(quote(print(g)))
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Histogram"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args,
+      )
+
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      distplot_stack_push(substitute(
+        expr = {
+          g <- plot_call
+          g <- exprs_ggplot2_args
+          print(g)
+          },
+        env = list(
+          plot_call = plot_call,
+          exprs_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("g")), parsed_ggplot2_args))
+          )
+      ))
 
       chunks_safe_eval(distplot_stack)
 
@@ -689,6 +752,7 @@ srv_distribution <- function(input,
       input$scales_type
       input$add_stats_plot
       input$qq_line
+      input$ggtheme
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -719,6 +783,7 @@ srv_distribution <- function(input,
 
       scales_type <- input$scales_type
       add_stats_plot <- input$add_stats_plot
+      ggtheme <- input$ggtheme
 
       validate(need(t_dist, "Please select the theoretical distribution."))
       validate_dist_parameters(t_dist, dist_param1, dist_param2)
@@ -833,12 +898,30 @@ srv_distribution <- function(input,
         )
       }
 
-      qqplot_stack_push(substitute(
-        expr = g <- plot_call,
-        env = list(plot_call = plot_call)
-      ))
+      dev_ggplot2_args <- ggplot2_args()
 
-      qqplot_stack_push(quote(print(g)))
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["QQplot"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args,
+      )
+
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      qqplot_stack_push(substitute(
+        expr = {
+          g <- plot_call
+          g <- exprs_ggplot2_args
+          print(g)
+        },
+        env = list(
+          plot_call = plot_call,
+          exprs_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("g")), parsed_ggplot2_args))
+        )
+      ))
 
       chunks_safe_eval(qqplot_stack)
 

@@ -109,7 +109,7 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PTOJECT"))
+#'       ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -601,8 +601,8 @@ srv_g_scatterplot <- function(input,
       )
     }
 
-    y_label = ifelse(is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
-    x_label = varname_w_label(x_var, ANL)
+    y_label <- ifelse(is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- ggplot2_args(
       labs = list(y = y_label, x = x_label),
@@ -610,7 +610,10 @@ srv_g_scatterplot <- function(input,
     )
 
     if (rotate_xaxis_labels) {
-      dev_ggplot2_args$theme <- c(dev_ggplot2_args$theme, quote(element_text(angle = 45, hjust = 1)))
+      dev_ggplot2_args$theme <- c(
+        dev_ggplot2_args$theme,
+        list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+        )
     }
 
     all_ggplot2_args <- resolve_ggplot2_args(
