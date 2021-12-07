@@ -59,8 +59,8 @@
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
-#'       )
-#'     )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
 #'   )
 #' )
 #' \dontrun{
@@ -76,7 +76,7 @@ tm_g_association <- function(label = "Association",
                              association_theme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL,
-                             ggplot2_args = teal.devel::ggplot2_args()) {
+                             ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))) {
   logger::log_info("Initializing tm_g_association")
   if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
@@ -99,6 +99,30 @@ tm_g_association <- function(label = "Association",
   association_theme <- match.arg(association_theme)
   stopifnot(is_character_single(association_theme))
 
+  plot_choices <- c(
+    "Bivariate plot 1",
+    "Bivariate plot 2"
+  )
+
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
+    )
+  )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
+
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -111,7 +135,10 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -194,7 +221,8 @@ srv_tm_g_association <- function(input,
                                  ref,
                                  vars,
                                  plot_height,
-                                 plot_width) {
+                                 plot_width,
+                                 ggplot2_args) {
 
   init_chunks()
 
@@ -255,17 +283,24 @@ srv_tm_g_association <- function(input,
       ref_cl_name <- as.name(ref_name)
       ref_cl_lbl <- varname_w_label(ref_name, ANL)
     }
+
+    user_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Bivariate plot 1"]],
+      user_default = ggplot2_args$default
+    )
+
     ref_call <- bivariate_plot_call(
       data_name = "ANL",
       x = ref_cl_name,
       x_class = ref_class,
       x_label = ref_cl_lbl,
       freq = !show_dist,
-      theme = call(paste0("theme_", distribution_theme)),
+      theme = distribution_theme,
       rotate_xaxis_labels = rotate_xaxis_labels,
       swap_axes = FALSE,
       size = size,
-      alpha = alpha
+      alpha = alpha,
+      ggplot2_args = user_ggplot2_args
     )
 
     # association
@@ -303,6 +338,12 @@ srv_tm_g_association <- function(input,
         var_cl_name <- as.name(var_i)
         var_cl_lbl <- varname_w_label(var_i, ANL)
       }
+
+      user_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Bivariate plot 2"]],
+        user_default = ggplot2_args$default
+      )
+
       bivariate_plot_call(
         data_name = "ANL",
         x = ref_cl_name,
@@ -311,12 +352,13 @@ srv_tm_g_association <- function(input,
         y_class = var_class,
         x_label = ref_cl_lbl,
         y_label = var_cl_lbl,
-        theme = call(paste0("theme_", association_theme)),
+        theme = association_theme,
         freq = !show_dist,
         rotate_xaxis_labels = rotate_xaxis_labels,
         swap_axes = swap_axes,
         alpha = alpha,
-        size = size
+        size = size,
+        ggplot2_args = user_ggplot2_args
       )
     })
 

@@ -799,16 +799,16 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     ggplot_exprs <- c(list(
       quote(ggplot(pca_rot)),
       bquote(geom_bar(aes_string(x = "Variable", y = .(pc)), stat = "identity", color = "black", fill = "lightblue")),
-      bquote(geom_text(
-          aes(
-            x = Variable,
-            y = .(as.name(pc)),
-            label = round(.(as.name(pc)), 3),
-            vjust = ifelse(.(as.name(pc)) > 0, -0.5, 1.3)
-          )
+      bquote(
+        geom_text(
+          aes(x = Variable,
+              y = .(as.name(pc)),
+              label = round(.(as.name(pc)), 3),
+              vjust = ifelse(.(as.name(pc)) > 0, -0.5, 1.3)
+              )
           )
         )
-    ),
+      ),
       parsed_ggplot2_args$labs,
       parsed_ggplot2_args$ggtheme,
       parsed_ggplot2_args$theme

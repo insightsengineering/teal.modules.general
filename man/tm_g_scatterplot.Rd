@@ -22,7 +22,8 @@ tm_g_scatterplot(
   ggtheme = gg_themes,
   pre_output = NULL,
   post_output = NULL,
-  table_dec = 4
+  table_dec = 4,
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -163,7 +164,8 @@ app <- init(
           multiple = FALSE,
           fixed = FALSE
         )
-      )
+      ),
+      ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PTOJECT"))
     )
   )
 )

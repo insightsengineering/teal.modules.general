@@ -15,7 +15,7 @@ tm_g_association(
   association_theme = gg_themes,
   pre_output = NULL,
   post_output = NULL,
-  ggplot2_args = teal.devel::ggplot2_args()
+  ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 )
 }
 \arguments{
@@ -97,8 +97,8 @@ app <- init(
           multiple = TRUE,
           fixed = FALSE
         )
-      )
-    )
+      ),
+      ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
   )
 )
 \dontrun{

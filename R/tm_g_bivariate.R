@@ -198,12 +198,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
     ui_args = args,
-    server_args = c(data_extract_list,
-                    list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
-
 
 #' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
@@ -750,7 +751,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         quote(ylab("Proportion"))
       )
     }
-
     # Numeric Plots
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
@@ -799,7 +799,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   if (rotate_xaxis_labels) {
     module_plot_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
   }
-
 
   all_ggplot2_args <- resolve_ggplot2_args(
     user_plot = ggplot2_args,

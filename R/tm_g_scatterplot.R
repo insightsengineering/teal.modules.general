@@ -108,7 +108,8 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = ggplot2_args(labs = list(caption = "NEST_PTOJECT"))
 #'     )
 #'   )
 #' )
@@ -132,7 +133,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggtheme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL,
-                             table_dec = 4) {
+                             table_dec = 4,
+                             ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
   if (!is_class_list("data_extract_spec")(x)) {
     x <- list(x)
@@ -177,6 +179,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -195,7 +199,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec)),
+      list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec, ggplot2_args = ggplot2_args)
+      ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -322,7 +327,8 @@ srv_g_scatterplot <- function(input,
                               col_facet,
                               plot_height,
                               plot_width,
-                              table_dec) {
+                              table_dec,
+                              ggplot2_args) {
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -473,8 +479,7 @@ srv_g_scatterplot <- function(input,
       substitute(
         expr = plot_call +
           aes(x = x_name, y = y_name, color = color_by_var_name) +
-          geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value) +
-          labs(color = color_labs),
+          geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
         env = list(
           plot_call = plot_call,
           x_name = as.name(x_var),
@@ -482,29 +487,10 @@ srv_g_scatterplot <- function(input,
           color_by_var_name = as.name(color_by_var),
           alpha_value = alpha,
           point_sizes = point_sizes,
-          shape_value = shape,
-          color_labs = varname_w_label(color_by_var, ANL)
+          shape_value = shape
         )
       )
     }
-
-    plot_call <- substitute(
-      expr = plot_call +
-        ylab(y_label) +
-        xlab(x_label) +
-        ggtheme_call +
-        theme(
-          legend.position = "bottom",
-          axis.text.x = axis_text_x
-        ),
-      env = list(
-        plot_call = plot_call,
-        y_label = varname_w_label(y_var, ANL),
-        x_label = varname_w_label(x_var, ANL),
-        ggtheme_call = call(paste0("theme_", ggtheme)),
-        axis_text_x = if (rotate_xaxis_labels) quote(element_text(angle = 45, hjust = 1))
-      )
-    )
 
     if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
 
@@ -614,6 +600,40 @@ srv_g_scatterplot <- function(input,
         env = list(plot_call = plot_call, group_colour = if (!is_empty(color_by_var)) TRUE else FALSE)
       )
     }
+
+    y_label = ifelse(is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    x_label = varname_w_label(x_var, ANL)
+
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(y = y_label, x = x_label),
+      theme = list(legend.position = "bottom")
+    )
+
+    if (rotate_xaxis_labels) {
+      dev_ggplot2_args$theme <- c(dev_ggplot2_args$theme, quote(element_text(angle = 45, hjust = 1)))
+    }
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
+
+    #ggplot2_args
+
+    plot_call <- substitute(
+      expr = plot_call +
+        labs +
+        ggthemes +
+        themes,
+      env = list(
+        plot_call = plot_call,
+        labs = parsed_ggplot2_args$labs,
+        ggthemes = parsed_ggplot2_args$ggtheme,
+        themes = parsed_ggplot2_args$theme
+      )
+    )
 
     plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
     chunks_push(plot_call)

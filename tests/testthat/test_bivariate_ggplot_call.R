@@ -9,7 +9,7 @@ test_that("bivariate_ggplot_call with numerics", {
   )
   expect_match(
     bivariate_ggplot_call("numeric", "factor") %>% deparse(width.cutoff = 300),
-    "coord_flip()"
+    "geom_boxplot()"
   )
   expect_match(
     bivariate_ggplot_call("factor", "numeric") %>% deparse(width.cutoff = 300),
@@ -75,6 +75,7 @@ test_that("bivariate_ggplot_call with single data numeric", {
     "Density"
   )
 })
+
 test_that("bivariate_ggplot_call with single data factor", {
   expect_match(
     bivariate_ggplot_call("factor", "NULL") %>% deparse(width.cutoff = 300),
