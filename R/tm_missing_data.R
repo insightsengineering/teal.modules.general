@@ -6,6 +6,8 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to \code{classic}.
 #' @export
 #'
 #' @examples
@@ -30,7 +32,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = gg_themes,
+                            ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void", "test"),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
@@ -43,9 +45,11 @@ tm_missing_data <- function(label = "Missing data",
   stop_if_not(is_character_single(ggtheme))
 
   plot_choices <- c(
-    "Boxplot",
-    "Density plot",
-    "Cumulative distribution plot"
+    "Summary Observations",
+    "Summary Patients",
+    "Combination Main",
+    "Combination Histogram",
+    "By Subject"
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
@@ -546,7 +550,23 @@ srv_missing_data <- function(input,
       summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
     }
 
-    summary_stack_push(quote(
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "Variable", y = "Missing observations"),
+      theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Summary Observations"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
+    summary_stack_push(substitute(
       p1 <- summary_plot_obs %>%
         ggplot() +
         aes(
@@ -566,13 +586,15 @@ srv_missing_data <- function(input,
           hjust = 1,
           color = "black"
         ) +
-        labs(
-          x = "Variable",
-          y = "Missing observations"
-        ) +
-        theme_classic() +
-        theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
-        coord_flip()
+        labs +
+        ggthemes +
+        themes +
+        coord_flip(),
+      env = list(
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
+      )
     ))
 
     if (isTRUE(input$if_patients_plot)) {
@@ -597,7 +619,27 @@ srv_missing_data <- function(input,
         )
       )
 
-      summary_stack_push(quote(
+      dev_ggplot2_args <- ggplot2_args(
+        labs = list(x = "", y = "Missing patients"),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_text(angle = 45, hjust = 1)),
+          axis.text.y = quote(element_blank())
+          )
+      )
+
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Summary Patients"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = input$ggtheme
+      )
+
+      summary_stack_push(substitute(
         p2 <- summary_plot_patients %>%
           ggplot() +
           aes_(
@@ -612,22 +654,20 @@ srv_missing_data <- function(input,
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing")
           ) +
-          labs(
-            x = "",
-            y = "Missing patients"
-          ) +
           geom_text(
             aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
             hjust = 1,
             color = "black"
           ) +
-          theme_classic() +
-          theme(
-            legend.position = "bottom",
-            axis.text.x = element_text(angle = 45, hjust = 1),
-            axis.text.y = element_blank()
-          ) +
-          coord_flip()
+          labs +
+          ggthemes +
+          themes +
+          coord_flip(),
+        env = list(
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme,
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
       ))
 
       summary_stack_push(quote({
@@ -734,16 +774,57 @@ srv_missing_data <- function(input,
         extract2(1)
     ))
 
-    combination_stack_push(quote({
+    dev_ggplot2_args1 <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(
+        legend.position = "bottom",
+        axis.text.x = quote(element_blank())
+      )
+    )
+
+    all_ggplot2_args1 <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Combinations Histogram"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args1
+    )
+
+    parsed_ggplot2_args1 <- parse_ggplot2_args(
+      all_ggplot2_args1,
+      ggtheme = "void"
+    )
+
+    dev_ggplot2_args2 <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(
+        legend.position = "bottom",
+        axis.text.x = quote(element_blank()),
+        axis.ticks = quote(element_blank()),
+        panel.grid.major = quote(element_blank())
+      )
+    )
+
+    all_ggplot2_args2 <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Combinations Main"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args2
+    )
+
+    parsed_ggplot2_args2 <- parse_ggplot2_args(
+      all_ggplot2_args2,
+      ggtheme = input$ggtheme
+    )
+
+    combination_stack_push(substitute({
       p1 <- data_combination_plot_cutoff %>%
         dplyr::select(id, n) %>%
         dplyr::distinct() %>%
         ggplot(aes(x = id, y = n)) +
         geom_bar(stat = "identity", fill = "#ff2951ff") +
-        ylab("") + xlab("") + theme_void() +
-        theme(axis.text.x = element_blank()) +
         geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
-        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))
+        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))  +
+        labs1 +
+        ggthemes1 +
+        themes1
 
       graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
       graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
@@ -756,17 +837,12 @@ srv_missing_data <- function(input,
           values = c("grey90", "#ff2951ff"),
           labels = c("Present", "Missing")
         ) +
-        labs(x = "", y = "") +
-        theme_classic() +
-        theme(
-          legend.position = "bottom",
-          axis.text.x = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_blank()
-        ) +
         geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
         geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-        coord_flip()
+        coord_flip() +
+        labs2 +
+        ggthemes2 +
+        themes2
 
       g1 <- ggplotGrob(p1)
       g2 <- ggplotGrob(p2)
@@ -775,7 +851,14 @@ srv_missing_data <- function(input,
       g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
       grid::grid.newpage()
       grid::grid.draw(g)
-    }))
+    }, env = list(
+      labs1 = parsed_ggplot2_args1$labs,
+      themes1 = parsed_ggplot2_args1$theme,
+      ggthemes1 = parsed_ggplot2_args1$ggtheme,
+      labs2 = parsed_ggplot2_args2$labs,
+      themes2 = parsed_ggplot2_args2$theme,
+      ggthemes2 = parsed_ggplot2_args2$ggtheme
+    )))
 
     chunks_safe_eval(combination_stack)
     combination_stack
@@ -932,27 +1015,44 @@ srv_missing_data <- function(input,
       })
     )
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["By Subject"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     by_subject_stack_push(
-      quote({
+      substitute({
         g <- ggplot(summary_plot_patients, aes(
           x = factor(id, levels = order_subjects),
           y = create_cols_labels(col), fill = isna)
         ) +
           geom_raster() +
-          theme_classic() +
           scale_fill_manual(
             name = "",
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing (at least one)")
           ) +
-          ylab("") +
-          xlab("") +
-          theme(
-            legend.position = "bottom",
-            axis.text.x = element_blank()
-          )
+          labs +
+          ggthemes +
+          themes
         print(g)
-      })
+      }, env = list(
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      )
     )
 
     chunks_safe_eval(by_subject_stack)
