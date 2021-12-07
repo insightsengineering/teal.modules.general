@@ -48,7 +48,8 @@
 #'           selected = value_choices(ADSL, vars$selected),
 #'           multiple = TRUE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -59,6 +60,8 @@
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
+                        ggtheme = gg_themes,
+                        ggplot2_args = teal.devel::ggplot2_args(),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
@@ -71,11 +74,39 @@ tm_outliers <- function(label = "Outliers Module",
     categorical_var <- list(categorical_var)
   }
 
+  ggtheme <- match.arg(ggtheme)
+
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(outlier_var),
+    is_character_single(ggtheme),
     is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
   )
+
+  plot_choices <- c(
+    "Boxplot",
+    "Density plot",
+    "Cumulative distribution plot"
+  )
+
+  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
+
+  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
+
+  stop_if_not(
+    list(
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
+      paste0(
+        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
+        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
+        "If it is a named list then each name has to be one of ",
+        paste(c("default", plot_choices), collapse = ", ")
+      )
+    )
+  )
+
+  # Important step, so we could easily consume it later
+  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -87,7 +118,10 @@ tm_outliers <- function(label = "Outliers Module",
   module(
     label = label,
     server = srv_outliers,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      ),
     ui = ui_outliers,
     ui_args = args,
     filters = get_extract_datanames(data_extract_list)
@@ -201,6 +235,16 @@ ui_outliers <- function(id, ...) {
           ),
           uiOutput(ns("ui_outlier_help"))
         )
+      ),
+      panel_item(
+        title = "Plot settings",
+        optionalSelectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = gg_themes,
+          selected = args$ggtheme,
+          multiple = FALSE
+        )
       )
     ),
     forms = get_rcode_ui(ns("rcode")),
@@ -210,7 +254,7 @@ ui_outliers <- function(id, ...) {
 }
 
 srv_outliers <- function(input, output, session, datasets, outlier_var,
-                         categorical_var, plot_height, plot_width) {
+                         categorical_var, plot_height, plot_width, ggplot2_args) {
   init_chunks()
 
   vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
@@ -530,6 +574,24 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
   )
 
+  parsed_ggplot2_args_r <- reactive({
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[[input$tabs]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+  })
+
   # boxplot/violinplot #nolint
   box_plot_r_chunks <- reactive({
 
@@ -598,13 +660,19 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         )
       )
     }
+
     boxplot_r_stack_push(substitute(
       expr = g <- plot_call +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
-      env = list(plot_call = plot_call)
+        labs + ggthemes + themes,
+      env = list(
+        plot_call = plot_call,
+        labs = parsed_ggplot2_args_r()$labs,
+        ggthemes = parsed_ggplot2_args_r()$ggtheme,
+        themes = parsed_ggplot2_args_r()$theme
+        )
     ))
+
     boxplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(boxplot_r_stack)
     boxplot_r_stack
@@ -640,9 +708,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ggplot(aes(x = outlier_var_name)) +
         geom_density() +
         geom_rug(data = ANL_OUTLIER, aes(x = outlier_var_name, color = is_outlier_selected)) +
-        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
+        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")),
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
@@ -655,7 +721,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
-    density_r_stack_push(substitute(expr = g <- plot_call, env = list(plot_call = plot_call)))
+    density_r_stack_push(
+      substitute(
+        expr = g <- plot_call + labs + ggthemes + themes,
+        env = list(
+          plot_call = plot_call,
+          labs = parsed_ggplot2_args_r()$labs,
+          themes = parsed_ggplot2_args_r()$theme,
+          ggthemes = parsed_ggplot2_args_r()$ggtheme
+          )
+        )
+      )
     density_r_stack_push(quote(print(g)))
     chunks_safe_eval(density_r_stack)
     density_r_stack
@@ -759,9 +835,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       expr = g <- plot_call +
         geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
-      env = list(plot_call = plot_call, outlier_var_name = as.name(outlier_var))
+        labs + ggthemes + themes,
+      env = list(
+        plot_call = plot_call,
+        outlier_var_name = as.name(outlier_var),
+        labs = parsed_ggplot2_args_r()$labs,
+        themes = parsed_ggplot2_args_r()$theme,
+        ggthemes = parsed_ggplot2_args_r()$ggtheme
+        )
     ))
 
     cumulative_r_stack_push(quote(print(g)))
