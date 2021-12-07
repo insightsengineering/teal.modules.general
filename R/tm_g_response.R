@@ -308,20 +308,14 @@ srv_g_response <- function(input,
     # nolint end
 
     plot_call <- substitute(
-      expr = ANL2 %>%
-        ggplot() +
-        aes(x = x_cl, y = ns) +
+      expr =
+        ggplot(ANL2, aes(x = x_cl, y = ns)) +
         geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
       env = list(
         x_cl = x_cl,
         resp_cl = resp_cl,
         arg_position = arg_position
       )
-    )
-
-    plot_call <- substitute(
-      expr = plot_call + labs(fill = fill_label) + theme(legend.position = "bottom"),
-      env = list(plot_call = plot_call, fill_label = varname_w_label(resp_var, ANL))
     )
 
     if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
@@ -365,10 +359,16 @@ srv_g_response <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
+    labs() + theme(legend.position = "bottom")
+
     x_label <- varname_w_label(x, ANL)
     y_label <- varname_w_label(resp_var, ANL, prefix = "Proportion of ")
+    fill_label <- varname_w_label(resp_var, ANL)
 
-    dev_ggplot2_args <- ggplot2_args(labs = list(x = x_label, y = y_label))
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = x_label, y = y_label, fill = fill_label),
+      theme = list(legend.position = "bottom")
+      )
 
     if (rotate_xaxis_labels) {
       dev_ggplot2_args$theme <- c(dev_ggplot2_args, list(axis.text.x = quote(element_text(angle = 45, hjust = 1))))
@@ -385,12 +385,13 @@ srv_g_response <- function(input,
     )
 
     plot_call <- substitute(expr = {
-      p <- plot_call
-      p <- expr_ggplot2_args
+      p <- plot_call + labs + themes + ggthemes
       print(p)
       }, env = list(
         plot_call = plot_call,
-        expr_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("p")), parsed_ggplot2_args))
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
         )
       )
 

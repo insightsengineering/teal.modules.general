@@ -536,7 +536,7 @@ srv_distribution <- function(input,
       input$main_type
       input$bins
       input$add_dens
-      input$ggtheme
+      is.null(input$ggtheme)
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -572,6 +572,8 @@ srv_distribution <- function(input,
       bins_var <- input$bins
       add_dens_var <- input$add_dens
       ggtheme <- input$ggtheme
+
+      validate(need(ggtheme, "Please select a theme."))
 
       m_type <- if (main_type_var == "Density") "..density.." else "..count.."
       m_type2 <- if (main_type_var == "Density") {
@@ -752,7 +754,7 @@ srv_distribution <- function(input,
       input$scales_type
       input$add_stats_plot
       input$qq_line
-      input$ggtheme
+      is.null(input$ggtheme)
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -785,6 +787,7 @@ srv_distribution <- function(input,
       add_stats_plot <- input$add_stats_plot
       ggtheme <- input$ggtheme
 
+      validate(need(ggtheme, "Please select a theme."))
       validate(need(t_dist, "Please select the theoretical distribution."))
       validate_dist_parameters(t_dist, dist_param1, dist_param2)
 
