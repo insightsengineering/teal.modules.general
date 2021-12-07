@@ -8,7 +8,8 @@ tm_variable_browser(
   label = "Variable Browser",
   datasets_selected = character(0),
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -47,7 +48,10 @@ app <- init(
     check = TRUE
   ),
   root_modules(
-    tm_variable_browser(label = "Variable browser")
+    tm_variable_browser(
+    label = "Variable browser",
+    ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+    )
   )
 )
 \dontrun{

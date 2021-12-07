@@ -10,7 +10,8 @@ plot_var_summary(
   numeric_as_factor,
   display_density = is.numeric(var),
   outlier_definition,
-  records_for_factor
+  records_for_factor,
+  ggplot2_args
 )
 }
 \arguments{

@@ -317,8 +317,8 @@ ui_distribution <- function(id, ...) {
           choices = gg_themes,
           selected = args$ggtheme,
           multiple = FALSE
+          )
         )
-      )
       ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
