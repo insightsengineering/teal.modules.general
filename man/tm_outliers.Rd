@@ -30,6 +30,12 @@ categorical factor to split the selected outlier variables on.}
 \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
+\item{ggplot2_args}{(`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for the module table.
+For more details see the help vignette:
+`vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}
 

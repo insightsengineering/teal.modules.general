@@ -63,6 +63,12 @@ for a slider encoding the plot width.}
 \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
+\item{ggplot2_args}{(`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for the module table.
+For more details see the help vignette:
+`vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
 
