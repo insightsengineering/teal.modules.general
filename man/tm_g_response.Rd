@@ -18,7 +18,8 @@ tm_g_response(
   plot_width = NULL,
   ggtheme = gg_themes,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -109,7 +110,8 @@ app <- init(
           multiple = FALSE,
           fixed = FALSE
         )
-      )
+      ),
+      ggplot2_args = teal.devel::ggplot2_args()
     )
   )
 )

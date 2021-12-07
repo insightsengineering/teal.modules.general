@@ -306,7 +306,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         common_stack_push(
           substitute(
             expr = {
-              ANL[[categorical_var]] <- dplyr::if_else(
+              ANL[[categorical_var]] <- dplyr::if_else( #nolint
                 is.na(ANL[[categorical_var]]),
                 "NA",
                 as.character(ANL[[categorical_var]])
@@ -904,7 +904,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     # removing unused column ASAP
-    ANL_OUTLIER$order <- ANL$order <- NULL
+    ANL_OUTLIER$order <- ANL$order <- NULL #nolint
 
     display_table <- if (!is.null(plot_brush)) {
       if (!is_empty(categorical_var)) {
@@ -919,14 +919,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         if (tab == "Boxplot") {
           # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
           # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
-          ANL[[plot_brush$mapping$x]] <- "Entire dataset"
+          ANL[[plot_brush$mapping$x]] <- "Entire dataset" #nolint
         }
       }
       # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
       # so they need to be computed and attached to ANL
       if (tab == "Density plot") {
         plot_brush$mapping$y <- "density"
-        ANL$density <- plot_brush$ymin # either ymin or ymax will work
+        ANL$density <- plot_brush$ymin #nolint #either ymin or ymax will work
       } else if (tab == "Cumulative distribution plot") {
         plot_brush$mapping$y <- "cdf"
         if (!is_empty(categorical_var)) {
@@ -934,7 +934,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
             dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
         } else {
-          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) #nolint
         }
       }
       brushed_rows <- brushedPoints(ANL, plot_brush)

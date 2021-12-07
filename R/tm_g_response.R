@@ -58,7 +58,8 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       )
+#'       ),
+#'       ggplot2_args = teal.devel::ggplot2_args()
 #'     )
 #'   )
 #' )
@@ -78,7 +79,9 @@ tm_g_response <- function(label = "Response Plot",
                           plot_width = NULL,
                           ggtheme = gg_themes,
                           pre_output = NULL,
-                          post_output = NULL) {
+                          post_output = NULL,
+                          ggplot2_args = teal.devel::ggplot2_args()
+                          ) {
   logger::log_info("Initializing tm_g_response")
   if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
@@ -123,6 +126,8 @@ tm_g_response <- function(label = "Response Plot",
   check_slider_input(plot_height, allow_null = FALSE)
   check_slider_input(plot_width)
 
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -137,7 +142,10 @@ tm_g_response <- function(label = "Response Plot",
     server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -220,7 +228,8 @@ srv_g_response <- function(input,
                            row_facet,
                            col_facet,
                            plot_height,
-                           plot_width) {
+                           plot_width,
+                           ggplot2_args) {
   init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
@@ -262,7 +271,7 @@ srv_g_response <- function(input,
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
-    arg_position <- if (freq) "stack" else "fill" # nolint
+    arg_position <- if (freq) "stack" else "fill" #nolint
 
     rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) #nolint
     colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) #nolint
@@ -298,6 +307,10 @@ srv_g_response <- function(input,
       env = list(x_cl = x_cl, rowf = rowf, colf = colf)
     ))
     # nolint end
+
+
+
+
     plot_call <- substitute(
       expr = ANL2 %>%
         ggplot() +
@@ -368,6 +381,9 @@ srv_g_response <- function(input,
     if (!is.null(facet_cl)) {
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
+
+
+
 
     plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
 
