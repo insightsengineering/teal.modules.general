@@ -17,9 +17,9 @@ tm_g_response(
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
   ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   pre_output = NULL,
-  post_output = NULL,
-  ggplot2_args = teal.devel::ggplot2_args()
+  post_output = NULL
 )
 }
 \arguments{
@@ -111,7 +111,7 @@ app <- init(
           fixed = FALSE
         )
       ),
-      ggplot2_args = teal.devel::ggplot2_args()
+      ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
     )
   )
 )

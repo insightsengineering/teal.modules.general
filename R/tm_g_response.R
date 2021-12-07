@@ -59,7 +59,7 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args()
+#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
 #'     )
 #'   )
 #' )
@@ -78,10 +78,9 @@ tm_g_response <- function(label = "Response Plot",
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
                           ggtheme = gg_themes,
+                          ggplot2_args = teal.devel::ggplot2_args(),
                           pre_output = NULL,
-                          post_output = NULL,
-                          ggplot2_args = teal.devel::ggplot2_args()
-                          ) {
+                          post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
   if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
@@ -308,24 +307,15 @@ srv_g_response <- function(input,
     ))
     # nolint end
 
-
-
-
     plot_call <- substitute(
       expr = ANL2 %>%
         ggplot() +
         aes(x = x_cl, y = ns) +
-        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position) +
-        xlab(x_label) +
-        ylab(y_label) +
-        ggtheme_call,
+        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
       env = list(
         x_cl = x_cl,
         resp_cl = resp_cl,
-        arg_position = arg_position,
-        x_label = varname_w_label(x, ANL),
-        y_label = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
-        ggtheme_call = call(paste0("theme_", ggtheme))
+        arg_position = arg_position
       )
     )
 
@@ -369,30 +359,42 @@ srv_g_response <- function(input,
       plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
     }
 
-    if (rotate_xaxis_labels) {
-      plot_call <- substitute(
-        expr = plot_call + theme(axis.text.x = element_text(angle = 45, hjust = 1)),
-        env = list(plot_call = plot_call)
-      )
-    }
-
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
+    x_label <- varname_w_label(x, ANL)
+    y_label <- varname_w_label(resp_var, ANL, prefix = "Proportion of ")
 
+    dev_ggplot2_args <- ggplot2_args(labs = list(x = x_label, y = y_label))
 
+    if (rotate_xaxis_labels) {
+      dev_ggplot2_args$theme <- c(dev_ggplot2_args, list(axis.text.x = quote(element_text(angle = 45, hjust = 1))))
+    }
 
-    plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = ggtheme
+    )
+
+    plot_call <- substitute(expr = {
+      p <- plot_call
+      p <- expr_ggplot2_args
+      print(p)
+      }, env = list(
+        plot_call = plot_call,
+        expr_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("p")), parsed_ggplot2_args))
+        )
+      )
 
     chunks_push(expression = plot_call, id = "plotCall")
-
-    # explicitly calling print on the plot inside the chunk evaluates
-    # the ggplot call and therefore catches errors
-    plot_print_call <- quote(print(p))
-    chunks_push(plot_print_call)
 
     chunks_safe_eval()
   })
