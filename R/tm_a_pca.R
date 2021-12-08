@@ -73,7 +73,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
   } else {
     checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
-    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3] .var.name = "alpha")
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
   }
 
   if (length(size) == 1) {
