@@ -92,9 +92,10 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_class_list("data_extract_spec")(vars))
   stopifnot(is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[c(2, 1, 3)], sorted = TRUE, .var.name = "plot_height")
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[c(2, 1, 3)], sorted = TRUE, null.ok = TRUE, .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width")
   distribution_theme <- match.arg(distribution_theme)
   stopifnot(is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)

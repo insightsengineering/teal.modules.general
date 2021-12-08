@@ -73,27 +73,28 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
   } else {
     checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
-    checkmate::assert_numeric(alpha[c(2, 1, 3)], sorted = TRUE, .var.name = "alpha")
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3] .var.name = "alpha")
   }
 
   if (length(size) == 1) {
     checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE, lower = 1, upper = 8)
   } else {
     checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE, lower = 1, upper = 8)
-    checkmate::assert_numeric(size[c(2, 1, 3)], sorted = TRUE, .var.name = "size")
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
   }
 
   if (length(font_size) == 1) {
     checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
   } else {
     checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-    checkmate::assert_numeric(font_size[c(2, 1, 3)], sorted = TRUE, .var.name = "font_size")
+    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
   }
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[c(2, 1, 3)], sorted = TRUE, .var.name = "plot_height")
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[c(2, 1, 3)], sorted = TRUE, null.ok = TRUE, .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width")
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)

@@ -110,7 +110,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
   } else {
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
-    checkmate::assert_numeric(bins[c(2, 1, 3)], sorted = TRUE, .var.name = "bins")
+    checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
 
   stop_if_not(
