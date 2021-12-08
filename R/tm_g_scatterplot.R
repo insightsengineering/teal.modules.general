@@ -172,8 +172,20 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     is_numeric_single(table_dec)
   )
 
-  check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
-  check_slider_input(size, allow_null = FALSE, allow_single = TRUE)
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[c(2, 1, 3)], sorted = TRUE, .var.name = "alpha")
+  }
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[c(2, 1, 3)], sorted = TRUE, .var.name = "size")
+  }
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[c(2, 1, 3)], sorted = TRUE, .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)

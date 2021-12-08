@@ -69,9 +69,26 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   stopifnot(is_character_single(ggtheme))
   stopifnot(is_logical_single(rotate_xaxis_labels))
 
-  check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE, min = 0, max = 1)
-  check_slider_input(size, allow_null = FALSE, allow_single = TRUE, min = 1, max = 8)
-  check_slider_input(font_size, allow_null = FALSE, allow_single = TRUE, min = 8, max = 20)
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
+    checkmate::assert_numeric(alpha[c(2, 1, 3)], sorted = TRUE, .var.name = "alpha")
+  }
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE, lower = 1, upper = 8)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE, lower = 1, upper = 8)
+    checkmate::assert_numeric(size[c(2, 1, 3)], sorted = TRUE, .var.name = "size")
+  }
+
+  if (length(font_size) == 1) {
+    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+  } else {
+    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+    checkmate::assert_numeric(font_size[c(2, 1, 3)], sorted = TRUE, .var.name = "font_size")
+  }
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[c(2, 1, 3)], sorted = TRUE, .var.name = "plot_height")
