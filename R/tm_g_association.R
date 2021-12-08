@@ -19,6 +19,9 @@
 #'   `gg_themes` is defined internally as
 #'   `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`
 #'
+#' @templateVar ggnames `c("default", "Bivariate1", "Bivariate2")`
+#' @template ggplot2_args_multi
+#'
 #' @note For more examples, please see the vignette "Using association plot" via
 #'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
 #' @export
@@ -100,8 +103,8 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_character_single(association_theme))
 
   plot_choices <- c(
-    "Bivariate plot 1",
-    "Bivariate plot 2"
+    "Bivariate1",
+    "Bivariate2"
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
@@ -285,7 +288,7 @@ srv_tm_g_association <- function(input,
     }
 
     user_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Bivariate plot 1"]],
+      user_plot = ggplot2_args[["Bivariate1"]],
       user_default = ggplot2_args$default
     )
 
@@ -340,7 +343,7 @@ srv_tm_g_association <- function(input,
       }
 
       user_ggplot2_args <- resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Bivariate plot 2"]],
+        user_plot = ggplot2_args[["Bivariate2"]],
         user_default = ggplot2_args$default
       )
 

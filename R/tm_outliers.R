@@ -11,6 +11,9 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical factor to split the selected outlier variables on.
 #'
+#' @templateVar ggnames `c("default", "Boxplot","Density plot","Cumulative distribution plot")`
+#' @template ggplot2_args_multi
+#'
 #' @export
 #'
 #' @examples

@@ -21,6 +21,10 @@
 #'   vector of length three with `c(value, min, max)`.
 #'   Defaults to `c(30L, 1L, 100L)`.
 #'
+#' @templateVar ggnames `c("default", "Histogram", "QQplot")`
+#' @template ggplot2_args_multi
+#'
+#'
 #' @export
 #'
 #' @examples

@@ -36,12 +36,6 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
-
-\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.devel:basic_table_args]{teal.devel::basic_table_args()}}
-with settings for the module table.
-For more details see the help vignette:
-\code{vignette("Custom basic_table arguments module", package = "teal.devel")}
-The argument is merged with options variable \code{teal.basic_table_args} and default module setup.}
 }
 \description{
 Create a simple cross-table

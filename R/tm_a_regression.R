@@ -24,13 +24,9 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-#'  with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-#'  For more details see the help vignette:
-#'  `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-#'  List names should match the following: `"default", "Response vs Regressor", "Residuals vs Fitted",
-#'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
-#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#' @templateVar ggnames `c("default", "Response vs Regressor", "Residuals vs Fitted",
+#' "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
+#' @template ggplot2_args_multi
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.

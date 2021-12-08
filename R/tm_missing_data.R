@@ -8,6 +8,10 @@
 #'
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
 #'   All themes can be chosen by the user. Defaults to \code{classic}.
+#'
+#' @templateVar ggnames `c("default", "Summary Observations", "Summary_Patients", "Combination_Main", "Combination Histogram", "By Subject")` # nolint
+#' @template ggplot2_args_multi
+#'
 #' @export
 #'
 #' @examples
@@ -32,7 +36,17 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void", "test"),
+                            ggtheme = c(
+                              "classic",
+                              "gray",
+                              "bw",
+                              "linedraw",
+                              "light",
+                              "dark",
+                              "minimal",
+                              "void",
+                              "test"
+                              ),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {

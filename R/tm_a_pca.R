@@ -16,6 +16,8 @@
 #'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
 #'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
 #'
+#' @templateVar ggnames `c("default", "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`
+#' @template ggplot2_args_multi
 #'
 #' @export
 #'

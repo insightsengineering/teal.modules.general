@@ -18,6 +18,11 @@
 #'  For more details see the help vignette:
 #'  `vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#' @param basic_table_args (`basic_table_args`) object created by [`teal.devel::basic_table_args()`]
+#'  with settings for the module table.
+#'  For more details see the help vignette:
+#'  `vignette("Custom basic_table arguments module", package = "teal.devel")`
+#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
 #' @name shared_params
 NULL

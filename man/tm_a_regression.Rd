@@ -48,12 +48,12 @@ vector of length three with \code{c(value, min, max)}.}
 \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
-\code{vignette("Custom ggplot2 arguments module", package = "teal.devel")}
-List names should match the following: \verb{"default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"}
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.}
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`
+List names should match the following: \code{\code{c("default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")}}.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

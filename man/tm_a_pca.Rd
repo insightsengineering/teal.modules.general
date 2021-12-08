@@ -36,10 +36,11 @@ for a slider encoding the plot width.}
 \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
-\item{ggplot2_args}{(`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for the module table.
+\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
-`vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`
+List names should match the following: \code{\code{c("default", "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")}}.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not

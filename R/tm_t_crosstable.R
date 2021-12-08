@@ -8,11 +8,6 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param basic_table_args (`basic_table_args`) object created by [`teal.devel::basic_table_args()`]
-#'  with settings for the module table.
-#'  For more details see the help vignette:
-#'  `vignette("Custom basic_table arguments module", package = "teal.devel")`
-#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
