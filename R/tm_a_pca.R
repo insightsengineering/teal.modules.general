@@ -73,8 +73,10 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   check_slider_input(size, allow_null = FALSE, allow_single = TRUE, min = 1, max = 8)
   check_slider_input(font_size, allow_null = FALSE, allow_single = TRUE, min = 8, max = 20)
 
-  check_slider_input(plot_height, allow_null = FALSE)
-  check_slider_input(plot_width)
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[c(2, 1, 3)], sorted = TRUE, .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(plot_width[c(2, 1, 3)], sorted = TRUE, null.ok = TRUE, .var.name = "plot_width")
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
