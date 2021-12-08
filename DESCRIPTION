@@ -28,6 +28,7 @@ Depends:
     teal (>= 0.10.0)
 Imports:
     broom,
+    checkmate,
     colourpicker,
     digest,
     dplyr,
