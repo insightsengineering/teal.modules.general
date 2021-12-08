@@ -40,7 +40,8 @@ All themes can be chosen by the user. Defaults to \code{gray}.}
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-List names should match the following: \code{\code{c("default", "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")}}.
+List names should match the following:
+`c("default", "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
@@ -90,8 +91,7 @@ app <- teal::init(
                  multiple = TRUE
                ),
                filter = NULL
-             ),
-             ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+             )
     )
   )
 )

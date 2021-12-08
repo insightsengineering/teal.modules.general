@@ -21,7 +21,7 @@
 #'   vector of length three with `c(value, min, max)`.
 #'   Defaults to `c(30L, 1L, 100L)`.
 #'
-#' @templateVar ggnames `c("default", "Histogram", "QQplot")`
+#' @templateVar ggnames "Histogram", "QQplot"
 #' @template ggplot2_args_multi
 #'
 #'
@@ -36,8 +36,7 @@
 #'       dist_var = data_extract_spec(
 #'         dataname = "iris",
 #'         select = select_spec(variable_choices("iris"), "Petal.Length")
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+#'       )
 #'     )
 #'   )
 #' )

@@ -59,8 +59,7 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       ),
-#'      basic_table_args = teal.devel::basic_table_args(main_footer = "NEST PROJECT")
+#'       )
 #'     )
 #'   )
 #' )

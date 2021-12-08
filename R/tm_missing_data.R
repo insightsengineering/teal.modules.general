@@ -9,7 +9,7 @@
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
 #'   All themes can be chosen by the user. Defaults to \code{classic}.
 #'
-#' @templateVar ggnames `c("default", "Summary Observations", "Summary_Patients", "Combination_Main", "Combination Histogram", "By Subject")` # nolint
+#' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
 #'
 #' @export
@@ -27,7 +27,7 @@
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     tm_missing_data(ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
+#'     tm_missing_data()
 #'   )
 #' )
 #' \dontrun{
@@ -58,13 +58,7 @@ tm_missing_data <- function(label = "Missing data",
   ggtheme <- match.arg(ggtheme)
   stop_if_not(is_character_single(ggtheme))
 
-  plot_choices <- c(
-    "Summary Observations",
-    "Summary Patients",
-    "Combination Main",
-    "Combination Histogram",
-    "By Subject"
-  )
+  plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
 
@@ -570,7 +564,7 @@ srv_missing_data <- function(input,
     )
 
     all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Summary Observations"]],
+      user_plot = ggplot2_args[["Summary Obs"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
@@ -797,7 +791,7 @@ srv_missing_data <- function(input,
     )
 
     all_ggplot2_args1 <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Combinations Histogram"]],
+      user_plot = ggplot2_args[["Combinations Hist"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args1
     )

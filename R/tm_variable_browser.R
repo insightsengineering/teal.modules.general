@@ -30,10 +30,7 @@
 #'     check = TRUE
 #'   ),
 #'   root_modules(
-#'     tm_variable_browser(
-#'     label = "Variable browser",
-#'     ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
-#'     )
+#'     tm_variable_browser(label = "Variable browser")
 #'   )
 #' )
 #' \dontrun{

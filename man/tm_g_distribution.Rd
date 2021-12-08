@@ -43,7 +43,8 @@ All themes can be chosen by the user. Defaults to \code{gray}.}
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-List names should match the following: \code{\code{c("default", "Histogram", "QQplot")}}.
+List names should match the following:
+`c("default", "Histogram", "QQplot")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{bins}{optional, (\code{integer(1)} or \code{integer(3)}) If scalar then the histogram bins will have a fixed size.
@@ -79,8 +80,7 @@ app <- init(
       dist_var = data_extract_spec(
         dataname = "iris",
         select = select_spec(variable_choices("iris"), "Petal.Length")
-      ),
-      ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+      )
     )
   )
 )

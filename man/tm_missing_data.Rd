@@ -31,7 +31,8 @@ All themes can be chosen by the user. Defaults to \code{classic}.}
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-List names should match the following: \code{`c("default", "Summary Observations", "Summary_Patients", "Combination_Main", "Combination Histogram", "By Subject")` # nolint}.
+List names should match the following:
+`c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
@@ -57,7 +58,7 @@ app <- init(
     check = TRUE
   ),
   modules = root_modules(
-    tm_missing_data(ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
+    tm_missing_data()
   )
 )
 \dontrun{

@@ -11,7 +11,7 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical factor to split the selected outlier variables on.
 #'
-#' @templateVar ggnames `c("default", "Boxplot","Density plot","Cumulative distribution plot")`
+#' @templateVar ggnames "Boxplot","Density plot","Cumulative distribution plot"
 #' @template ggplot2_args_multi
 #'
 #' @export
@@ -51,8 +51,7 @@
 #'           selected = value_choices(ADSL, vars$selected),
 #'           multiple = TRUE
 #'         )
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+#'       )
 #'     )
 #'   )
 #' )

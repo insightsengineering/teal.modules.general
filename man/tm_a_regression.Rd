@@ -52,7 +52,8 @@ All themes can be chosen by the user. Defaults to \code{gray}.}
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-List names should match the following: \code{\code{c("default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")}}.
+List names should match the following:
+`c("default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage"", "Cook's dist vs Leverage")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
@@ -116,8 +117,7 @@ app <- init(
           multiple = TRUE,
           fixed = FALSE
         )
-      ),
-      ggplot2_args = teal.devel::ggplot2_args(labs = list("caption" = "NEST PROJECT"))
+      )
     )
   )
 )

@@ -34,7 +34,8 @@ All themes can be chosen by the user. Defaults to \code{gray}.}
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-List names should match the following: \code{`c("default", "Boxplot","Density plot","Cumulative distribution plot")`}.
+List names should match the following:
+`c("default", "Boxplot","Density plot","Cumulative distribution plot")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
@@ -88,8 +89,7 @@ app <- init(
           selected = value_choices(ADSL, vars$selected),
           multiple = TRUE
         )
-      ),
-      ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+      )
     )
   )
 )

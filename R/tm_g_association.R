@@ -19,7 +19,7 @@
 #'   `gg_themes` is defined internally as
 #'   `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`
 #'
-#' @templateVar ggnames `c("default", "Bivariate1", "Bivariate2")`
+#' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
 #'
 #' @note For more examples, please see the vignette "Using association plot" via
@@ -62,8 +62,7 @@
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT")))
+#'       )
 #'   )
 #' )
 #' \dontrun{

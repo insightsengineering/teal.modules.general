@@ -24,8 +24,7 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @templateVar ggnames `c("default", "Response vs Regressor", "Residuals vs Fitted",
-#' "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
+#' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
@@ -66,8 +65,7 @@
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list("caption" = "NEST PROJECT"))
+#'       )
 #'     )
 #'   )
 #' )
@@ -877,3 +875,8 @@ srv_a_regression <- function(input,
     )
   )
 }
+
+regression_names <- paste0(
+  '"Response vs Regressor", "Residuals vs Fitted", ',
+  '"Scale-Location", "Cook\'s distance", "Residuals vs Leverage"", "Cook\'s dist vs Leverage"'
+)
