@@ -106,6 +106,7 @@ app <- init(
           fixed = FALSE
         )
       )
+    )
   )
 )
 \dontrun{

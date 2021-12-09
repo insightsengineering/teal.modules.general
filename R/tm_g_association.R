@@ -63,6 +63,7 @@
 #'           fixed = FALSE
 #'         )
 #'       )
+#'     )
 #'   )
 #' )
 #' \dontrun{
