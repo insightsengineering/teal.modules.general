@@ -847,13 +847,21 @@ plot_var_summary <- function(var,
   )
 
   plot_main <- plot_main + theme_light()
-  plot_main <- plot_main + list(labs = do.call("labs", all_ggplot2_args$labs))
 
   if (is.ggplot(plot_main)) {
-    if (!(is.numeric(var) && !numeric_as_factor)) {
+    if (is.numeric(var) && !numeric_as_factor) {
+      # numeric not as factor
+      plot_main <- plot_main +
+        theme_light() +
+        list(labs = do.call("labs", all_ggplot2_args$labs))
+    } else {
       #factor low number of levels OR numeric as factor OR Date
       plot_main <- plot_main +
-        list(theme = do.call("theme", all_ggplot2_args$theme))
+        theme_light() +
+        list(
+          labs = do.call("labs", all_ggplot2_args$labs),
+          theme = do.call("theme", all_ggplot2_args$theme)
+        )
     }
     plot_main <- ggplotGrob(plot_main)
   }
