@@ -846,8 +846,6 @@ plot_var_summary <- function(var,
     module_plot = dev_ggplot2_args
   )
 
-  plot_main <- plot_main + theme_light()
-
   if (is.ggplot(plot_main)) {
     if (is.numeric(var) && !numeric_as_factor) {
       # numeric not as factor
