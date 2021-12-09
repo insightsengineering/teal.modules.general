@@ -790,10 +790,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
 
   if (is.null(x_class)) {
     module_plot_args <- ggplot2_args(labs = list(x = quote(.ylab)))
-
   } else if (is.null(y_class)) {
     module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab)))
-
   } else {
     module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab), y = quote(.ylab)))
   }
