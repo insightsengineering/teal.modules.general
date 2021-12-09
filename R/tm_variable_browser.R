@@ -846,7 +846,7 @@ plot_var_summary <- function(var,
 
   if (is.ggplot(plot_main)) {
     if (is.numeric(var) && !numeric_as_factor) {
-      #numeric not asfactor
+      # numeric not as factor
       plot_main <- plot_main +
         theme_light() +
         list(labs = do.call(

@@ -637,8 +637,6 @@ srv_g_scatterplot <- function(input,
 
     parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
 
-    #ggplot2_args
-
     plot_call <- substitute(
       expr = plot_call +
         labs +
