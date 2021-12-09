@@ -9,6 +9,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
@@ -723,6 +724,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 #' Plot variable
 #'
 #' Creates summary plot with statistics relevant to data type.
+#' @inheritParams shared_params
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
