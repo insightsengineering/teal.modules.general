@@ -121,7 +121,6 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-  
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
@@ -137,7 +136,6 @@ tm_g_distribution <- function(label = "Distribution Module",
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
 
   stop_if_not(

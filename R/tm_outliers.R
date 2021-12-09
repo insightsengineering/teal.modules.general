@@ -92,7 +92,6 @@ tm_outliers <- function(label = "Outliers Module",
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
 
   stop_if_not(
