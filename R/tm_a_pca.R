@@ -16,7 +16,7 @@
 #'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
 #'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
 #'
-#' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
+#' @templateVar ggnames "elbow", "circle", "biplot", "pc_var"
 #' @template ggplot2_args_multi
 #'
 #' @export
@@ -114,12 +114,12 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
   stop_if_not(
     list(
-      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", names(plot_choices))))),
+      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
       paste0(
         "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
         "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
         "If it is a named list then each name has to be one of ",
-        paste(c("default", names(plot_choices)), collapse = ", ")
+        paste(c("default", plot_choices), collapse = ", ")
       )
     )
   )
