@@ -173,10 +173,25 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     is_numeric_single(table_dec)
   )
 
-  check_slider_input(alpha, allow_null = FALSE, allow_single = TRUE)
-  check_slider_input(size, allow_null = FALSE, allow_single = TRUE)
-  check_slider_input(plot_height, allow_null = FALSE)
-  check_slider_input(plot_width)
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width")
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 

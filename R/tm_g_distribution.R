@@ -112,24 +112,23 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (!is_class_list("data_extract_spec")(group_var)) {
     group_var <- list_or_null(group_var)
   }
-  check_slider_input(
-    bins,
-    allow_null = FALSE,
-    allow_single = TRUE,
-    min = 1L,
-    max = Inf
-  )
 
   ggtheme <- match.arg(ggtheme)
 
+  if (length(bins) == 1) {
+    checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
+  } else {
+    checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
+    checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
+  }
+  
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
-    is_logical_single(freq),
     is_character_single(ggtheme),
-    (is_integer_vector(bins, 3, 3) && is.null(check_slider_input(bins))) || is_integer_single(bins)
+    is_logical_single(freq)
   )
 
   plot_choices <- c(

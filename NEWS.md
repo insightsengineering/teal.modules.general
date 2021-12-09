@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9013
+# teal.modules.general 0.2.11.9014
 
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
@@ -16,6 +16,7 @@
 
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
+* Replaced calls to `utils.nest::check_slider_input` with `checkmate::assert_numeric`.
 
 # teal.modules.general 0.2.11
 
