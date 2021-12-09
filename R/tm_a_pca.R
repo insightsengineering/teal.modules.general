@@ -128,8 +128,6 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   args <- as.list(environment())
 
-  args$plot_choices <- plot_choices
-
   data_extract_list <- list(dat = dat)
 
   module(
@@ -137,11 +135,14 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     server = srv_a_pca,
     ui = ui_a_pca,
     ui_args = args,
-    server_args = c(data_extract_list, list(
-      plot_height = plot_height,
-      plot_width = plot_width,
-      ggplot2_args = ggplot2_args
-      )),
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args
+        )
+      ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
