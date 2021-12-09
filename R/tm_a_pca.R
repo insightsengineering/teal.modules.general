@@ -111,9 +111,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
-
   stop_if_not(
     list(
       is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", names(plot_choices))))),
@@ -125,7 +123,6 @@ tm_a_pca <- function(label = "Principal Component Analysis",
       )
     )
   )
-
   # Important step, so we could easily consume it later
   if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
 
