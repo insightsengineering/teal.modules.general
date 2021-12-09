@@ -64,9 +64,7 @@ tm_missing_data <- function(label = "Missing data",
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
   is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
-
   stop_if_not(
     list(
       is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
@@ -78,7 +76,6 @@ tm_missing_data <- function(label = "Missing data",
       )
     )
   )
-
   # Important step, so we could easily consume it later
   if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
 
