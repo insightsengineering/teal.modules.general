@@ -41,7 +41,7 @@ with settings for all the plots or named list of `ggplot2_args` objects for plot
 For more details see the help vignette:
 `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
 List names should match the following:
-`c("default", "elbow", "circle", "biplot", "pc_var")`.
+`c("default", "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`.
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not

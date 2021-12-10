@@ -16,7 +16,7 @@
 #'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
 #'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
 #'
-#' @templateVar ggnames "elbow", "circle", "biplot", "pc_var"
+#' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
 #' @export
@@ -104,10 +104,10 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   }
 
   plot_choices <- c(
-    "Elbow plot" = "elbow",
-    "Circle plot" = "circle",
-    "Biplot" = "biplot",
-    "Eigenvector plot" = "pc_var"
+    "Elbow plot",
+    "Circle plot",
+    "Biplot",
+    "Eigenvector plot"
   )
 
   is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
@@ -193,7 +193,7 @@ ui_a_pca <- function(id, ...) {
             ns("plot_type"),
             label = "Plot type",
             choices = args$plot_choices,
-            selected = args$plot_choices["Elbow plot"]
+            selected = args$plot_choices[1]
           )
         ),
         panel_item(
@@ -212,7 +212,7 @@ ui_a_pca <- function(id, ...) {
           collapsed = FALSE,
           uiOutput(ns("plot_settings")),
           conditionalPanel(
-            condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
+            condition = paste0("input['", ns("plot_type"), "'] == 'Biplot'"),
             list(
               data_extract_ui(
                 id = ns("response"),
@@ -230,7 +230,13 @@ ui_a_pca <- function(id, ...) {
           collapsed = TRUE,
           conditionalPanel(
             condition =
-              paste0("input['", ns("plot_type"), "'] == 'elbow' || input['", ns("plot_type"), "'] == 'pc_var'"),
+              paste0(
+                "input['",
+                ns("plot_type"),
+                "'] == 'Elbow Plot' || input['",
+                ns("plot_type"),
+                "'] == 'Eigenvector plot'"
+                ),
             list(
               checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
               )
@@ -389,7 +395,13 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     tagList(
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'biplot' || input['", ns("plot_type"), "'] == 'circle'"),
+        condition = paste0(
+          "input['",
+          ns("plot_type"),
+          "'] == 'Biplot' || input['",
+          ns("plot_type"),
+          "'] == 'Circle plot'"
+          ),
         list(
           optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
           optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
@@ -400,7 +412,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         )
       ),
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'elbow'"),
+        condition = paste0("input['", ns("plot_type"), "'] == 'Elbow plot'"),
         helpText("No plot specific settings available.")
       ),
       conditionalPanel(
@@ -859,20 +871,20 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_reset()
     chunks_push_chunks(computation())
 
-    if (input$plot_type == "elbow") {
+    if (input$plot_type == "Elbow plot") {
       plot_elbow()
 
-    } else if (input$plot_type == "circle") {
+    } else if (input$plot_type == "Circle plot") {
       plot_circle()
 
-    } else if (input$plot_type == "biplot") {
+    } else if (input$plot_type == "Biplot") {
       if (length(response_data()$columns_source$response) > 0) {
         chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
       }
 
       plot_biplot()
 
-    } else if (input$plot_type == "pc_var") {
+    } else if (input$plot_type == "Eigenvector plot") {
       plot_pc_var()
 
     } else {
