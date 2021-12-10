@@ -788,21 +788,23 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     stop("x y type combination not allowed")
   }
 
-  if (is.null(x_class)) {
-    module_plot_args <- ggplot2_args(labs = list(x = quote(.ylab)))
+  labs_base <- if (is.null(x_class)) {
+    list(x = quote(.ylab))
   } else if (is.null(y_class)) {
-    module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab)))
+    list(x = quote(.xlab))
   } else {
-    module_plot_args <- ggplot2_args(labs = list(x = quote(.xlab), y = quote(.ylab)))
+    list(x = quote(.xlab), y = quote(.ylab))
   }
 
+  dev_ggplot2_args <- ggplot2_args(labs = labs_base)
+
   if (rotate_xaxis_labels) {
-    module_plot_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+    dev_ggplot2_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
   }
 
   all_ggplot2_args <- resolve_ggplot2_args(
     user_plot = ggplot2_args,
-    module_plot = module_plot_args
+    module_plot = dev_ggplot2_args
   )
 
   parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
