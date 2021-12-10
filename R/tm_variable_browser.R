@@ -213,7 +213,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
     type <- input$raw_or_filtered
     req(data, varname, is.logical(type))
 
-    df <- datasets$get_data(data, filtered = type)
+    df <- datasets$get_data(data, filtered = type) %>%
+      tern::df_explicit_na()
 
     numeric_ui <- tagList(
       fluidRow(
@@ -890,7 +891,8 @@ validate_input <- function(input, plot_var, datasets) {
     validate(need(varname, "No variable selected"))
     validate(need(is.logical(type), "Select what type of data to plot"))
 
-    df <- datasets$get_data(dataset_name, filtered = type)
+    df <- datasets$get_data(dataset_name, filtered = type) %>%
+      tern::df_explicit_na()
     validate_has_data(df, 1)
     validate_has_variable(varname = varname, data = df, "Variable not available")
 
@@ -902,7 +904,8 @@ get_plotted_data <- function(input, plot_var, datasets) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[input$tabset_panel]]
   type <- input$raw_or_filtered
-  df <- datasets$get_data(dataset_name, filtered = type)
+  df <- datasets$get_data(dataset_name, filtered = type) %>%
+    tern::df_explicit_na()
 
   var_description <- get_var_description(datasets = datasets, dataset_name = dataset_name, var_name = varname)
   list(data = df[[varname]], var_description = var_description)
@@ -954,7 +957,8 @@ render_single_tab <- function(dataset_name, output, datasets, input, columns_nam
 render_tab_header <- function(dataset_name, output, datasets) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
-    df <- datasets$get_data(dataset_name, filtered = FALSE)
+    df <- datasets$get_data(dataset_name, filtered = FALSE) %>%
+      tern::df_explicit_na()
     key <- datasets$get_keys(dataset_name)
     sprintf(
       "Dataset with %s unique key rows and %s variables",
@@ -977,7 +981,8 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
   output[[table_ui_id]] <- DT::renderDataTable({
-    df <- datasets$get_data(dataset_name, filtered = FALSE)
+    df <- datasets$get_data(dataset_name, filtered = FALSE) %>%
+      tern::df_explicit_na()
 
     df_vars <- if (isTRUE(input$show_parent_vars)) {
       datasets$get_varnames(dataset_name)
