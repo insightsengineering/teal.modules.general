@@ -432,19 +432,21 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
     hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
+      theme = list(
+        legend.position = "right",
+        legend.spacing.y = quote(unit(-5, "pt")),
+        legend.title = quote(element_text(vjust = 8)),
+        axis.text.x = bquote(element_text(angle = .(angle_value), hjust = .(hjust_value))),
+        text = bquote(element_text(size = .(font_size)))
+      )
+    )
+
     all_ggplot2_args <- resolve_ggplot2_args(
       user_plot = ggplot2_args[[input$plot_type]],
       user_default = ggplot2_args$default,
-      module_plot = ggplot2_args(
-        labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
-        theme = list(
-          legend.position = "right",
-          legend.spacing.y = quote(unit(-5, "pt")),
-          legend.title = quote(element_text(vjust = 8)),
-          axis.text.x = bquote(element_text(angle = .(angle_value), hjust = .(hjust_value))),
-          text = bquote(element_text(size = .(font_size)))
-          )
-        )
+      module_plot = dev_ggplot2_args
     )
 
     parsed_ggplot2_args <- parse_ggplot2_args(
@@ -513,16 +515,18 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
     hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(),
+      theme = list(
+        axis.text.x = element_text(angle = angle, hjust = hjust),
+        text = element_text(size = font_size)
+      )
+    )
+
     all_ggplot2_args <- resolve_ggplot2_args(
       user_plot = ggplot2_args[[input$plot_type]],
       user_default = ggplot2_args$default,
-      module_plot = ggplot2_args(
-        labs = list(),
-        theme = list(
-          axis.text.x = element_text(angle = angle, hjust = hjust),
-          text = element_text(size = font_size)
-          )
-        )
+      module_plot = dev_ggplot2_args
     )
 
     parsed_ggplot2_args <- parse_ggplot2_args(
