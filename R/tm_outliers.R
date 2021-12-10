@@ -270,7 +270,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   merged_data <- data_merge_srv(
     selector_list = reactive_select_input,
     datasets = datasets,
-    merge_function = "dplyr::left_join"
+    merge_function = "dplyr::inner_join"
   )
 
   is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
