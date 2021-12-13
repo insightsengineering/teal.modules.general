@@ -121,25 +121,16 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Residuals vs Leverage",
     "Cook's dist vs Leverage"
   )
-
-  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
-  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
-
-  stop_if_not(
-    list(
-      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
-      paste0(
-        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
-        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
-        "If it is a named list then each name has to be one of ",
-        paste(c("default", plot_choices), collapse = ", ")
-      )
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
     )
   )
-
   # Important step, so we could easily consume it later
-  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
