@@ -103,12 +103,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     dat <- list(dat)
   }
 
-  plot_choices <- c(
-    "Elbow plot",
-    "Circle plot",
-    "Biplot",
-    "Eigenvector plot"
-  )
+  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
   checkmate::assert(
