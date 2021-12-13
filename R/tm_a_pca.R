@@ -220,14 +220,11 @@ ui_a_pca <- function(id, ...) {
           title = "Plot settings",
           collapsed = TRUE,
           conditionalPanel(
-            condition =
-              paste0(
-                "input['",
-                ns("plot_type"),
-                "'] == 'Elbow Plot' || input['",
-                ns("plot_type"),
-                "'] == 'Eigenvector plot'"
-                ),
+            condition = sprintf(
+              "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+              ns("plot_type"),
+              ns("plot_type")
+              ),
             list(
               checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
               )
