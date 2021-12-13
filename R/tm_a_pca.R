@@ -403,7 +403,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         )
       ),
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'Elbow plot'"),
+        condition = sprintf("input['%'] == 'Elbow plot'", ns("plot_type")),
         helpText("No plot specific settings available.")
       ),
       conditionalPanel(
