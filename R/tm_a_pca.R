@@ -391,13 +391,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     tagList(
       conditionalPanel(
-        condition = paste0(
-          "input['",
-          ns("plot_type"),
-          "'] == 'Biplot' || input['",
-          ns("plot_type"),
-          "'] == 'Circle plot'"
-          ),
+        condition = sprintf("input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
+                      ns("plot_type"), ns("plot_type")),
         list(
           optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
           optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
