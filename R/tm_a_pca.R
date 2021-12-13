@@ -639,7 +639,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         pca_plot_biplot_expr,
         substitute(
           geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
-          list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)  
+          list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
           )
       )
       dev_labs <- list()
@@ -654,12 +654,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
       response <- rp[[resp_col]]
 
-      aes_biplot <- bquote(aes_string(x = .(x_axis), y = .(y_axis), color = "response"))
+      aes_biplot <- substitute(
+        aes_string(x = x_axis, y = y_axis, color = "response"),
+        env = list(x_axis = x_axis, y_axis = y_axis)
+      )
 
       chunks_push(
         id = "pca_plot_response_base",
         substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col)
-          )
+        )
       )
 
       dev_labs <- list(color = varname_w_label(resp_col, rp))
@@ -698,7 +701,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
       pca_plot_biplot_expr <- c(
         pca_plot_biplot_expr,
-        bquote(geom_point(.(aes_biplot), data = pca_rot, alpha = .(alpha), size = .(size))),
+        substitute(
+          geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
+          env = list(aes_biplot = aes_biplot, alpha = alpha, size = size)
+        ),
         scales_biplot
       )
     }
@@ -723,7 +729,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
                                   nudge_y = 0.1,
                                   fontface = "bold")
                                   ),
-                                bquote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
+                                quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
       )
     }
 
@@ -759,7 +765,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       expression = substitute({
         g <- plot_call
         print(g)
-      }, env = list(
+      },
+      env = list(
         plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
       )
       )
@@ -803,15 +810,20 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     ggplot_exprs <- c(list(
       quote(ggplot(pca_rot)),
-      bquote(geom_bar(aes_string(x = "Variable", y = .(pc)), stat = "identity", color = "black", fill = "lightblue")),
-      bquote(
+      substitute(
+        geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue"),
+        env = list(pc = pc)
+      ),
+      substitute(
         geom_text(
-          aes(x = Variable,
-              y = .(as.name(pc)),
-              label = round(.(as.name(pc)), 3),
-              vjust = ifelse(.(as.name(pc)) > 0, -0.5, 1.3)
-              )
-          )
+          aes(
+            x = Variable,
+            y = pc_name,
+            label = round(pc_name, 3),
+            vjust = ifelse(pc_name > 0, -0.5, 1.3)
+            )
+          ),
+        env = list(pc_name = as.name(pc))
         )
       ),
       parsed_ggplot2_args$labs,
