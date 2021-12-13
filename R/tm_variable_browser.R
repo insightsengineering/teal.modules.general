@@ -1110,12 +1110,10 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(
-    sprintf(
-      "function(sparkline, options, field) {
+    sprintf("function(sparkline, options, field) {
         return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
         }",
       jsonlite::toJSON(labels),
-      jsonlite::toJSON(counts)
-    )
+      jsonlite::toJSON(counts))
   )
 }
