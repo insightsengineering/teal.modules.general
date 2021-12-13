@@ -629,9 +629,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       chunks_push(
         id = "pca_plot_vars_rot_3",
         expression = substitute(
-          expr = {
-            rot_vars <- rot_vars %>% dplyr::filter(label %in% variables)
-            },
+          expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
           env = list(variables = variables)
         )
       )
