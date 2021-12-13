@@ -203,7 +203,7 @@ ui_a_pca <- function(id, ...) {
           collapsed = FALSE,
           uiOutput(ns("plot_settings")),
           conditionalPanel(
-            condition = paste0("input['", ns("plot_type"), "'] == 'Biplot'"),
+            condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
             list(
               data_extract_ui(
                 id = ns("response"),
