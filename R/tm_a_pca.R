@@ -711,23 +711,25 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     if (!is.null(input$variables)) {
       pca_plot_biplot_expr <- c(pca_plot_biplot_expr,
-                                bquote(
+                                substitute(
                                   geom_segment(
-                                    aes_string(x = "xstart", y = "ystart", xend = .(x_axis), yend = .(y_axis)),
+                                    aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
                                     data = rot_vars,
                                     lineend = "round", linejoin = "round",
-                                    arrow = arrow(length = unit(0.5, "cm")))
+                                    arrow = arrow(length = unit(0.5, "cm"))),
+                                  env = list(x_axis = x_axis, y_axis = y_axis)
                                   ),
-                                bquote(
+                                substitute(
                                   geom_label(
                                     aes_string(
-                                      x = .(x_axis),
-                                      y = .(y_axis),
+                                      x = x_axis,
+                                      y = y_axis,
                                       label = "label"
                                       ),
                                     data = rot_vars,
                                   nudge_y = 0.1,
-                                  fontface = "bold")
+                                  fontface = "bold"),
+                                  env = list(x_axis = x_axis, y_axis = y_axis)
                                   ),
                                 quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
       )
