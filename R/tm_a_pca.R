@@ -443,14 +443,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       )
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[[input$plot_type]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
     parsed_ggplot2_args <- parse_ggplot2_args(
-      all_ggplot2_args,
+      resolve_ggplot2_args(
+        user_plot = ggplot2_args[[input$plot_type]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      ),
       ggtheme = ggtheme
     )
 
