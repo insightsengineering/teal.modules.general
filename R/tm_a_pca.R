@@ -640,16 +640,9 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     if (length(resp_col) == 0) {
       pca_plot_biplot_expr <- c(
         pca_plot_biplot_expr,
-        bquote(
-          geom_point(
-            aes_string(
-              x = .(x_axis),
-              y = .(y_axis)
-              ),
-            data = pca_rot,
-            alpha = .(alpha),
-            size = .(size)
-            )
+        substitute(
+          geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
+          list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)  
           )
       )
       dev_labs <- list()
