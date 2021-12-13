@@ -787,8 +787,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot_final",
-      expression = substitute(
-        {
+      expression = substitute({
           g <- plot_call
           print(g)
         },
@@ -913,15 +912,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   )
 
   # tables ----
-  output$tbl_importance <- renderTable(
-    {
-      req("importance" %in% input$tables_display)
-      chunks_stack <- computation()
-      chunks_get_var("tbl_importance", chunks = chunks_stack)
-    },
-    bordered = TRUE,
-    align = "c",
-    digits = 3
+  output$tbl_importance <- renderTable({
+    req("importance" %in% input$tables_display)
+    chunks_stack <- computation()
+    chunks_get_var("tbl_importance", chunks = chunks_stack)
+  },
+  bordered = TRUE,
+  align = "c",
+  digits = 3
   )
 
   output$tbl_importance_ui <- renderUI({
@@ -933,15 +931,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     )
   })
 
-  output$tbl_eigenvector <- renderTable(
-    {
-      req("eigenvector" %in% input$tables_display)
-      chunks_stack <- computation()
-      chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
-    },
-    bordered = TRUE,
-    align = "c",
-    digits = 3
+  output$tbl_eigenvector <- renderTable({
+    req("eigenvector" %in% input$tables_display)
+    chunks_stack <- computation()
+    chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
+  },
+  bordered = TRUE,
+  align = "c",
+  digits = 3
   )
 
   output$tbl_eigenvector_ui <- renderUI({

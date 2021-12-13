@@ -1000,8 +1000,7 @@ render_tab_header <- function(dataset_name, output, datasets) {
 render_tab_table <- function(dataset_name, output, datasets, input, columns_names) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
-  output[[table_ui_id]] <- DT::renderDataTable(
-    {
+  output[[table_ui_id]] <- DT::renderDataTable({
       df <- datasets$get_data(dataset_name, filtered = FALSE)
 
       df_vars <- if (isTRUE(input$show_parent_vars)) {

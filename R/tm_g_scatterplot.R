@@ -639,10 +639,7 @@ srv_g_scatterplot <- function(input,
     )
 
     if (rotate_xaxis_labels) {
-      dev_ggplot2_args$theme <- c(
-        dev_ggplot2_args$theme,
-        list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
-      )
+      dev_ggplot2_args$theme$`themeaxis.text.x` <- quote(element_text(angle = 45, hjust = 1))
     }
 
     all_ggplot2_args <- resolve_ggplot2_args(

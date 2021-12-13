@@ -80,8 +80,7 @@
 #'           vars = vars1,
 #'           multiple = TRUE
 #'         )
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+#'       )
 #'     )
 #'   )
 #' )
@@ -331,39 +330,37 @@ srv_distribution <- function(input,
     data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
   )
 
-  observeEvent(list(
-    input$t_dist,
-    input$params_reset,
-    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
-  ),
-  {
-    if (length(input$t_dist) != 0) {
-      dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+  observeEvent(list(input$t_dist,
+                    input$params_reset,
+                    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]),
+               { # nolint
+                 if (length(input$t_dist) != 0) {
+                   dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
-      get_dist_params <- function(x, dist) {
-        if (dist == "unif") {
-          res <- as.list(range(x))
-          names(res) <- c("min", "max")
-          return(res)
-        }
-        tryCatch(
-          as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-          error = function(e) list(param1 = NA, param2 = NA)
-        )
-      }
-      ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-      params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
-      params_vec <- round(unname(unlist(params)), 2)
-      params_names <- names(params)
+                   get_dist_params <- function(x, dist) {
+                     if (dist == "unif") {
+                       res <- as.list(range(x))
+                       names(res) <- c("min", "max")
+                       return(res)
+                     }
+                     tryCatch(
+                       as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+                       error = function(e) list(param1 = NA, param2 = NA)
+                     )
+                   }
+                   ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+                   params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
+                   params_vec <- round(unname(unlist(params)), 2)
+                   params_names <- names(params)
 
-      updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-      updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-    } else {
-      updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-      updateNumericInput(session, "dist_param2", label = "param2", value = NA)
-    }
-  },
-  ignoreInit = TRUE
+                   updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+                   updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+                 } else {
+                   updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+                   updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+                 }
+               },
+               ignoreInit = TRUE
   )
 
   merge_vars <- reactive({
@@ -454,8 +451,7 @@ srv_distribution <- function(input,
       )
       params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-      common_stack_push(substitute(
-        {
+      common_stack_push(substitute({
           params <- as.list(c(dist_param1, dist_param2))
           names(params) <- params_names_raw
         },
@@ -721,13 +717,9 @@ srv_distribution <- function(input,
       distplot_stack_push(substitute(
         expr = {
           g <- plot_call
-          g <- exprs_ggplot2_args
           print(g)
         },
-        env = list(
-          plot_call = plot_call,
-          exprs_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("g")), parsed_ggplot2_args))
-        )
+        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
       chunks_safe_eval(distplot_stack)
@@ -825,9 +817,7 @@ srv_distribution <- function(input,
 
       plot_call <- substitute(
         expr = plot_call +
-          stat_qq(distribution = mapped_dist, dparams = params) +
-          xlab("theoretical") +
-          ylab("sample"),
+          stat_qq(distribution = mapped_dist, dparams = params),
         env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
       )
 
@@ -893,7 +883,8 @@ srv_distribution <- function(input,
 
       all_ggplot2_args <- resolve_ggplot2_args(
         user_plot = ggplot2_args[["QQplot"]],
-        user_default = ggplot2_args$default
+        user_default = ggplot2_args$default,
+        module_plot = ggplot2_args(labs = list(x = "theoretical", y = "sample"))
       )
 
       parsed_ggplot2_args <- parse_ggplot2_args(
@@ -904,13 +895,9 @@ srv_distribution <- function(input,
       qqplot_stack_push(substitute(
         expr = {
           g <- plot_call
-          g <- exprs_ggplot2_args
           print(g)
         },
-        env = list(
-          plot_call = plot_call,
-          exprs_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("g")), parsed_ggplot2_args))
-        )
+        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
       chunks_safe_eval(qqplot_stack)

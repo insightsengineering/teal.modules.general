@@ -124,8 +124,7 @@ app <- init(
           vars = vars1,
           multiple = TRUE
         )
-      ),
-      ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))
+      )
     )
   )
 )

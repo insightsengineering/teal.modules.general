@@ -36,17 +36,8 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = c(
-                              "classic",
-                              "gray",
-                              "bw",
-                              "linedraw",
-                              "light",
-                              "dark",
-                              "minimal",
-                              "void",
-                              "test"
-                            ),
+                            ggtheme = c("classic", "gray", "bw", "linedraw",
+                                        "light", "dark", "minimal", "void", "test"),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
@@ -823,8 +814,7 @@ srv_missing_data <- function(input,
       ggtheme = input$ggtheme
     )
 
-    combination_stack_push(substitute(
-      {
+    combination_stack_push(substitute({
         p1 <- data_combination_plot_cutoff %>%
           dplyr::select(id, n) %>%
           dplyr::distinct() %>%
@@ -1045,23 +1035,21 @@ srv_missing_data <- function(input,
     )
 
     by_subject_stack_push(
-      substitute(
-        {
-          g <- ggplot(summary_plot_patients, aes(
-            x = factor(id, levels = order_subjects),
-            y = create_cols_labels(col), fill = isna
-          )) +
-            geom_raster() +
-            scale_fill_manual(
-              name = "",
-              values = c("grey90", "#ff2951ff"),
-              labels = c("Present", "Missing (at least one)")
-            ) +
-            labs +
-            ggthemes +
-            themes
-          print(g)
-        },
+      substitute({
+        g <- ggplot(summary_plot_patients, aes(
+          x = factor(id, levels = order_subjects),
+          y = create_cols_labels(col), fill = isna
+        )) +
+          geom_raster() +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing (at least one)")
+          ) +
+          labs +
+          ggthemes +
+          themes
+        print(g)},
         env = list(
           labs = parsed_ggplot2_args$labs,
           themes = parsed_ggplot2_args$theme,
@@ -1080,8 +1068,7 @@ srv_missing_data <- function(input,
     chunks_get_var(var = "g")
   })
 
-  output$levels_table <- DT::renderDataTable(
-    {
+  output$levels_table <- DT::renderDataTable({
       if (is_empty(input$variables_select)) {
         # so that zeroRecords message gets printed
         # using tibble as it supports weird column names, such as " "

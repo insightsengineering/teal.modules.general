@@ -368,12 +368,12 @@ srv_g_response <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    x_label <- varname_w_label(x, ANL)
-    y_label <- varname_w_label(resp_var, ANL, prefix = "Proportion of ")
-    fill_label <- varname_w_label(resp_var, ANL)
-
     dev_ggplot2_args <- ggplot2_args(
-      labs = list(x = x_label, y = y_label, fill = fill_label),
+      labs = list(
+        x = varname_w_label(x, ANL),
+        y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
+        fill = varname_w_label(resp_var, ANL)
+      ),
       theme = list(legend.position = "bottom")
     )
 

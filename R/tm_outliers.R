@@ -397,8 +397,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
     common_stack_push(substitute(
       expr = {
-        ANL_OUTLIER <- anl_call %>%
-          # nolint
+        ANL_OUTLIER <- anl_call %>% # nolint
           group_expr() %>%
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
@@ -553,8 +552,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     list(common_stack = common_stack)
   })
 
-  output$summary_table <- DT::renderDataTable(
-    {
+  output$summary_table <- DT::renderDataTable({
       suppressWarnings(
         chunks_get_var("summary_table", common_code_chunks()$common_stack)
       )
@@ -987,8 +985,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     )
   })
 
-  output$table_ui <- DT::renderDataTable(
-    {
+  output$table_ui <- DT::renderDataTable({
       tab <- input$tabs
       req(tab) # tab is NULL upon app launch, hence will crash without this statement
       outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
@@ -1020,7 +1017,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           if (tab == "Boxplot") {
             plot_brush$mapping$x <- categorical_var
           } else {
-            # the other plots use facetting, so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
+            # the other plots use facetting
+            # so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
             plot_brush$mapping$panelvar1 <- categorical_var
           }
         } else {

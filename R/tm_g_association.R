@@ -79,7 +79,7 @@ tm_g_association <- function(label = "Association",
                              association_theme = gg_themes,
                              pre_output = NULL,
                              post_output = NULL,
-                             ggplot2_args = teal.devel::ggplot2_args(labs = list(caption = "NEST_PROJECT"))) {
+                             ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
   if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
