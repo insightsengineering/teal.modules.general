@@ -109,23 +109,29 @@ tm_g_response <- function(label = "Response Plot",
     is_character_single(ggtheme),
     list(
       all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-      "'response' should not allow empty values"),
+      "'response' should not allow empty values"
+    ),
     list(
       all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-      "'response' should not allow multiple selection"),
+      "'response' should not allow multiple selection"
+    ),
     list(
       all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-      "'x' should not allow empty values"),
+      "'x' should not allow empty values"
+    ),
     list(
       all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-      "'x' should not allow multiple selection")
+      "'x' should not allow multiple selection"
     )
+  )
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
@@ -146,7 +152,7 @@ tm_g_response <- function(label = "Response Plot",
     server_args = c(
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
-      ),
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -272,22 +278,22 @@ srv_g_response <- function(input,
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
-    arg_position <- if (freq) "stack" else "fill" #nolint
+    arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) #nolint
-    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) #nolint
-    resp_cl <- as.name(resp_var) #nolint
-    x_cl <- as.name(x) #nolint
+    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
+    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
+    resp_cl <- as.name(resp_var) # nolint
+    x_cl <- as.name(x) # nolint
 
     if (swap_axes) {
       chunks_push(expression = substitute(
-        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), #nolint
+        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
         env = list(x = x, x_cl = x_cl)
       ))
     }
 
     chunks_push(expression = substitute(
-      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), #nolint
+      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
       env = list(resp_var = resp_var)
     ))
     # nolint start
@@ -312,7 +318,7 @@ srv_g_response <- function(input,
     plot_call <- substitute(
       expr =
         ggplot(ANL2, aes(x = x_cl, y = ns)) +
-        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
       env = list(
         x_cl = x_cl,
         resp_cl = resp_cl,
@@ -331,7 +337,8 @@ srv_g_response <- function(input,
             col = "white",
             vjust = "middle",
             hjust = "middle",
-            position = position_anl2_value)  +
+            position = position_anl2_value
+          ) +
           geom_text(
             data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
             hjust = hjust_value,
@@ -368,7 +375,7 @@ srv_g_response <- function(input,
     dev_ggplot2_args <- ggplot2_args(
       labs = list(x = x_label, y = y_label, fill = fill_label),
       theme = list(legend.position = "bottom")
-      )
+    )
 
     if (rotate_xaxis_labels) {
       dev_ggplot2_args$theme <- c(dev_ggplot2_args, list(axis.text.x = quote(element_text(angle = 45, hjust = 1))))
@@ -387,13 +394,12 @@ srv_g_response <- function(input,
     plot_call <- substitute(expr = {
       p <- plot_call + labs + themes + ggthemes
       print(p)
-      }, env = list(
-        plot_call = plot_call,
-        labs = parsed_ggplot2_args$labs,
-        themes = parsed_ggplot2_args$theme,
-        ggthemes = parsed_ggplot2_args$ggtheme
-        )
-      )
+    }, env = list(
+      plot_call = plot_call,
+      labs = parsed_ggplot2_args$labs,
+      themes = parsed_ggplot2_args$theme,
+      ggthemes = parsed_ggplot2_args$ggtheme
+    ))
 
     chunks_push(expression = plot_call, id = "plotCall")
 

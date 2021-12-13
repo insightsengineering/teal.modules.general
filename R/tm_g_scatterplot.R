@@ -169,7 +169,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
-      "`max_deg` must be a finite whole number greater than zero"),
+      "`max_deg` must be a finite whole number greater than zero"
+    ),
     is_numeric_single(table_dec)
   )
 
@@ -190,8 +191,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
@@ -214,7 +217,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     server_args = c(
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec, ggplot2_args = ggplot2_args)
-      ),
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -223,7 +226,8 @@ ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
   is_single_dataset_value <- is_single_dataset(
-    args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet)
+    args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
+  )
 
   standard_layout(
     output = white_small_well(
@@ -309,8 +313,10 @@ ui_g_scatterplot <- function(id, ...) {
             div(
               style = "display: inline-block; width: 70%",
               optionalSliderInput(
-                ns("pos"), "Stats Position", min = 0, max = 1, value = 1, ticks = FALSE, step = .01)
-              ),
+                ns("pos"), "Stats Position",
+                min = 0, max = 1, value = 1, ticks = FALSE, step = .01
+              )
+            ),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
           ),
           optionalSelectInput(
@@ -347,8 +353,10 @@ srv_g_scatterplot <- function(input,
 
   merged_data <- data_merge_module(
     datasets = datasets,
-    data_extract  = list(x = x, y = y,
-      color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
+    data_extract = list(
+      x = x, y = y,
+      color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
+    ),
     merge_function = "dplyr::inner_join"
   )
 
@@ -419,10 +427,12 @@ srv_g_scatterplot <- function(input,
     validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
       is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
-      "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"))
+      "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+    ))
     validate(need(
       is_empty(col_facet_name) || any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
-      "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"))
+      "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+    ))
     if (add_density && !is_empty(color_by_var)) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
@@ -445,7 +455,8 @@ srv_g_scatterplot <- function(input,
       validate(need(
         !add_density,
         "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
-        or remove facetting."))
+        or remove facetting."
+      ))
     }
 
     point_sizes <- if (!is_empty(size_by_var)) {
@@ -462,10 +473,13 @@ srv_g_scatterplot <- function(input,
       paste0(
         "ANL %>% dplyr::group_by(",
         paste(
-          c(if (!is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+          c(
+            if (!is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
             row_facet_name,
-            col_facet_name),
-          collapse = ", "),
+            col_facet_name
+          ),
+          collapse = ", "
+        ),
         ") %>% dplyr::mutate(n = dplyr::n()) %>% dplyr::ungroup()"
       )
     } else {
@@ -542,7 +556,8 @@ srv_g_scatterplot <- function(input,
         expr = plot_call + label_geom,
         env = list(
           plot_call = plot_call,
-          label_geom = label_geom)
+          label_geom = label_geom
+        )
       )
     }
 
@@ -627,7 +642,7 @@ srv_g_scatterplot <- function(input,
       dev_ggplot2_args$theme <- c(
         dev_ggplot2_args$theme,
         list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
-        )
+      )
     }
 
     all_ggplot2_args <- resolve_ggplot2_args(
@@ -653,8 +668,8 @@ srv_g_scatterplot <- function(input,
     plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
     chunks_push(plot_call)
 
-    #explicitly calling print on the plot inside the chunk evaluates
-    #the ggplot call and therefore catches errors
+    # explicitly calling print on the plot inside the chunk evaluates
+    # the ggplot call and therefore catches errors
     plot_print_call <- quote(print(p))
     chunks_push(plot_print_call)
     chunks_safe_eval()
@@ -689,7 +704,8 @@ srv_g_scatterplot <- function(input,
     DT::formatRound(
       DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
       numeric_cols,
-      table_dec)
+      table_dec
+    )
   })
 
   callModule(

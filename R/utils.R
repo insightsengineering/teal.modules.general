@@ -48,7 +48,7 @@ NULL
 #' library(grid)
 #'
 #' p <- ggplot(mtcars) +
-#' aes(x = mpg, y = disp) +
+#'   aes(x = mpg, y = disp) +
 #'   geom_point() +
 #'   facet_grid(gear ~ cyl)
 #' p
@@ -189,14 +189,11 @@ varname_w_label <- function(var_names,
                             wrap_width = 80,
                             prefix = NULL,
                             suffix = NULL) {
-
   add_label <- function(var_names) {
-
     label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
       paste0(prefix, label, " [", var_names, "]", suffix)
-
     } else {
       var_names
     }
@@ -204,10 +201,8 @@ varname_w_label <- function(var_names,
 
   if (length(var_names) < 1) {
     NULL
-
   } else if (length(var_names) == 1) {
     stringr::str_wrap(add_label(var_names), width = wrap_width)
-
   } else if (length(var_names) > 1) {
     stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
   }

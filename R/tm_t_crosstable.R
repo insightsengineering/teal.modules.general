@@ -85,7 +85,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     is_logical_single(show_total),
     list(
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-      (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     )
   )
@@ -241,7 +241,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     chunks_push(substitute(
       expr = {
         lyt <- basic_tables %>%
-          split_call %>%
+          split_call() %>%
           rtables::add_colcounts() %>%
           tern::summarize_vars(
             vars = x_name,
@@ -258,7 +258,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(
-              y_name, split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+              y_name,
+              split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
             ),
             env = list(y_name = y_name)
           )

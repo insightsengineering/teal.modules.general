@@ -109,7 +109,6 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
-
   temp_dir <- tempfile()
   if (!dir.exists(temp_dir)) {
     dir.create(temp_dir, recursive = TRUE)
@@ -117,16 +116,17 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   addResourcePath(basename(temp_dir), temp_dir)
 
   test_path_text <- function(selected_path, type) {
-    out <- tryCatch({
-      if (type != "url") {
-        selected_path <- normalizePath(selected_path, winslash = "/")
+    out <- tryCatch(
+      {
+        if (type != "url") {
+          selected_path <- normalizePath(selected_path, winslash = "/")
+        }
+        readLines(con = selected_path)
+      },
+      error = function(cond) FALSE,
+      warning = function(cond) {
+        `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
       }
-      readLines(con = selected_path)
-    },
-    error = function(cond) FALSE,
-    warning = function(cond) {
-     `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
-    }
     )
   }
 

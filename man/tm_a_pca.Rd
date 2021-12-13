@@ -78,24 +78,26 @@ ADSL <- synthetic_cdisc_data("latest")$adsl
 
 app <- teal::init(
   data = cdisc_data(cdisc_dataset(
-   "ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+    "ADSL", ADSL,
+    code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
   ),
-                    check = TRUE),
+  check = TRUE
+  ),
   modules = root_modules(
-    tm_a_pca("PCA",
-             data_extract_spec(
-               dataname = "ADSL",
-               select = select_spec(
-                 choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
-                 selected = c("BMRKR1", "AGE"),
-                 multiple = TRUE
-               ),
-               filter = NULL
-             )
+    tm_a_pca(
+      "PCA",
+      data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+          selected = c("BMRKR1", "AGE"),
+          multiple = TRUE
+        ),
+        filter = NULL
+      )
     )
   )
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }

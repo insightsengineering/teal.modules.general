@@ -84,9 +84,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID"
-                            ) {
-
+                            default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
   if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
@@ -103,14 +101,14 @@ tm_a_regression <- function(label = "Regression Analysis",
     list(
       all(vapply(response, function(x) {
         !isTRUE(x$select$multiple)
-        }, logical(1))),
+      }, logical(1))),
       "Response variable should not allow multiple selection"
-      ),
+    ),
     is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_ui
     is_character_single(ggtheme),
     is_character_single(default_outlier_label)
-    )
+  )
 
   plot_choices <- c(
     "Response vs Regressor",
@@ -135,8 +133,10 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   # Send ui args
   args <- as.list(environment())
@@ -206,13 +206,15 @@ ui_a_regression <- function(id, ...) {
             span(
               class = "tooltiptext",
               paste(
-              "Use the slider to choose the cut-off value to define outliers.",
-              "Points with a Cook's distance greater than",
-              "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+                "Use the slider to choose the cut-off value to define outliers.",
+                "Points with a Cook's distance greater than",
+                "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
               )
             )
           )
-        ), min = 1, max = 10, value = 9, ticks = FALSE, step = .1)),
+        ),
+        min = 1, max = 10, value = 9, ticks = FALSE, step = .1
+      )),
       shinyjs::hidden(optionalSelectInput(
         ns("label_var"),
         multiple = FALSE,
@@ -260,7 +262,8 @@ srv_a_regression <- function(input,
   regression_var <- reactive(
     list(
       response = as.vector(merged_data()$columns_source$response),
-      regressor = as.vector(merged_data()$columns_source$regressor))
+      regressor = as.vector(merged_data()$columns_source$regressor)
+    )
   )
 
   # sets chunk object and populates it with data merge call and fit expression
@@ -279,24 +282,26 @@ srv_a_regression <- function(input,
       need(
         length(regression_var()$regressor) > 0,
         "At least one regressor should be selected."
-        )
       )
+    )
     validate(
       need(
         length(regression_var()$response) == 1,
         "Response variable should be of length one."
-        )
       )
+    )
     validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
     validate(
       need(
         input$plot_type != "Response vs Regressor" || length(regression_var()$regressor) == 1,
         "Response vs Regressor is only provided for exactly one regressor"
-        )
       )
+    )
 
     validate_has_data(
-      ANL[, c(regression_var()$response, regression_var()$regressor)], 10, complete = TRUE, allow_inf = FALSE)
+      ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
+      complete = TRUE, allow_inf = FALSE
+    )
 
     form <- stats::as.formula(
       paste(
@@ -327,9 +332,12 @@ srv_a_regression <- function(input,
       for (regressor in names(fit$contrasts)) {
         alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
         names(fit$coefficients) <- gsub(
-          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients))
-      }}),
-      chunks = chunks_stack)
+          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
+        )
+      }
+    }),
+    chunks = chunks_stack
+    )
 
     chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
 
@@ -358,7 +366,8 @@ srv_a_regression <- function(input,
         inputId = "outlier",
         min = 1,
         max = max_outlier,
-        value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
+        value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9
+      )
     }
 
     chunks_stack
@@ -370,7 +379,8 @@ srv_a_regression <- function(input,
       expr = dplyr::if_else(
         data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
         as.character(stats::na.omit(ANL)[[label_var]]),
-        "") %>%
+        ""
+      ) %>%
         dplyr::if_else(is.na(.), "cooksd == NaN", .),
       env = list(outliers = input$outlier, label_var = input$label_var)
     )
@@ -425,7 +435,7 @@ srv_a_regression <- function(input,
           expr = ggplot(
             fit$model[, 2:1],
             aes_string(regressor, response)
-            ) +
+          ) +
             geom_point(size = size, alpha = alpha) +
             stat_smooth(
               method = "lm",
@@ -443,7 +453,8 @@ srv_a_regression <- function(input,
         shinyjs::hide("size")
         shinyjs::hide("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) + geom_boxplot(),
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
+            geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
         if (show_outlier) {
@@ -460,7 +471,7 @@ srv_a_regression <- function(input,
               title = "Response vs Regressor",
               x = varname_w_label(regression_var()$regressor, ANL),
               y = varname_w_label(regression_var()$response, ANL)
-              ),
+            ),
             theme = list()
           )
         ),
@@ -531,7 +542,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_1a",
+        id = "plot_1a",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.fitted, data$.resid)
@@ -589,7 +600,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_2",
+        id = "plot_2",
         expression = substitute(
           expr = {
             g <- plot
@@ -633,7 +644,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_3",
+        id = "plot_3",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
@@ -653,7 +664,8 @@ srv_a_regression <- function(input,
       shinyjs::hide("size")
       shinyjs::show("alpha")
       plot <- substitute(
-        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) + geom_col(alpha = alpha),
+        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
+          geom_col(alpha = alpha),
         env = list(alpha = alpha)
       )
       if (show_outlier) {
@@ -662,9 +674,11 @@ srv_a_regression <- function(input,
             geom_hline(
               yintercept = c(
                 outlier * mean(data$.cooksd, na.rm = TRUE),
-                mean(data$.cooksd, na.rm = TRUE)),
+                mean(data$.cooksd, na.rm = TRUE)
+              ),
               color = "red",
-              linetype = "dashed") +
+              linetype = "dashed"
+            ) +
             geom_text(
               aes(
                 x = 0,
@@ -673,9 +687,11 @@ srv_a_regression <- function(input,
                 vjust = -1,
                 hjust = 0,
                 color = "red",
-                angle = 90),
+                angle = 90
+              ),
               parse = TRUE,
-              show.legend = FALSE) +
+              show.legend = FALSE
+            ) +
             outlier_label,
           env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
         )
@@ -697,7 +713,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_4",
+        id = "plot_4",
         expression = substitute(
           expr = {
             g <- plot
@@ -754,7 +770,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_5",
+        id = "plot_5",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.hat, data$.stdresid)
@@ -806,7 +822,7 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_6",
+        id = "plot_6",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.hat, data$.cooksd)

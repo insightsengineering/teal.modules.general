@@ -156,12 +156,11 @@ tm_g_distribution <- function(label = "Distribution Module",
     server_args = c(
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
-      ),
+    ),
     ui = ui_distribution,
     ui_args = args,
     filters = get_extract_datanames(data_extract_list)
   )
-
 }
 
 ui_distribution <- function(id, ...) {
@@ -274,19 +273,19 @@ ui_distribution <- function(id, ...) {
       panel_item(
         "Tests",
         optionalSelectInput(ns("dist_tests"),
-                            "Tests:",
-                            choices = c(
-                              "Shapiro-Wilk",
-                              "t-test (two-samples, not paired)",
-                              "one-way ANOVA",
-                              "Fligner-Killeen",
-                              "F-test",
-                              "Kolmogorov-Smirnov (one-sample)",
-                              "Anderson-Darling (one-sample)",
-                              "Cramer-von Mises (one-sample)",
-                              "Kolmogorov-Smirnov (two-samples)"
-                            ),
-                            selected = NULL
+          "Tests:",
+          choices = c(
+            "Shapiro-Wilk",
+            "t-test (two-samples, not paired)",
+            "one-way ANOVA",
+            "Fligner-Killeen",
+            "F-test",
+            "Kolmogorov-Smirnov (one-sample)",
+            "Anderson-Darling (one-sample)",
+            "Cramer-von Mises (one-sample)",
+            "Kolmogorov-Smirnov (two-samples)"
+          ),
+          selected = NULL
         )
       ),
       panel_item(
@@ -306,9 +305,9 @@ ui_distribution <- function(id, ...) {
           choices = gg_themes,
           selected = args$ggtheme,
           multiple = FALSE
-          )
         )
-      ),
+      )
+    ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -325,7 +324,6 @@ srv_distribution <- function(input,
                              plot_height,
                              plot_width,
                              ggplot2_args) {
-
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -337,7 +335,8 @@ srv_distribution <- function(input,
     input$t_dist,
     input$params_reset,
     input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
-  ), {
+  ),
+  {
     if (length(input$t_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
@@ -376,12 +375,14 @@ srv_distribution <- function(input,
     s_var_name <- if (length(s_var)) as.name(s_var) else NULL
     g_var_name <- if (length(g_var)) as.name(g_var) else NULL
 
-    list(dist_var = dist_var,
-         s_var = s_var,
-         g_var = g_var,
-         dist_var_name = dist_var_name,
-         s_var_name = s_var_name,
-         g_var_name = g_var_name)
+    list(
+      dist_var = dist_var,
+      s_var = s_var,
+      g_var = g_var,
+      dist_var_name = dist_var_name,
+      s_var_name = s_var_name,
+      g_var_name = g_var_name
+    )
   })
 
   # common chunks ----
@@ -453,16 +454,17 @@ srv_distribution <- function(input,
       )
       params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-      common_stack_push(substitute({
-        params <- as.list(c(dist_param1, dist_param2))
-        names(params) <- params_names_raw
-      },
-      env = list(
-        dist_param1 = dist_param1,
-        dist_param2 = dist_param2,
-        t_dist = t_dist,
-        params_names_raw = params_names_raw
-      )
+      common_stack_push(substitute(
+        {
+          params <- as.list(c(dist_param1, dist_param2))
+          names(params) <- params_names_raw
+        },
+        env = list(
+          dist_param1 = dist_param1,
+          dist_param2 = dist_param2,
+          t_dist = t_dist,
+          params_names_raw = params_names_raw
+        )
       ))
     }
 
@@ -662,10 +664,11 @@ srv_distribution <- function(input,
           ))
         }
 
-        label <-  if (!is_empty(g_var)) {
+        label <- if (!is_empty(g_var)) {
           substitute(
             expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name))
+            env = list(g_var = g_var, g_var_name = g_var_name)
+          )
         } else {
           substitute(expr = tb, env = list())
         }
@@ -681,28 +684,28 @@ srv_distribution <- function(input,
       }
 
       if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-          length(t_dist) != 0 && m_type == "..density..") {
-          map_dist <- stats::setNames(
-            c("dnorm", "dlnorm", "dgamma", "dunif"),
-            c("normal", "lognormal", "gamma", "unif")
+        length(t_dist) != 0 && m_type == "..density..") {
+        map_dist <- stats::setNames(
+          c("dnorm", "dlnorm", "dgamma", "dunif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+        plot_call <- substitute(
+          expr = plot_call + stat_function(
+            data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
+            aes(x, color = color),
+            fun = mapped_dist,
+            n = ndensity,
+            size = 2,
+            args = params
+          ) +
+            scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
+          env = list(
+            plot_call = plot_call,
+            dist_var = dist_var,
+            ndensity = ndensity,
+            mapped_dist = unname(map_dist[t_dist])
           )
-          plot_call <- substitute(
-            expr = plot_call + stat_function(
-              data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-              aes(x, color = color),
-              fun = mapped_dist,
-              n = ndensity,
-              size = 2,
-              args = params
-            ) +
-              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
-            env = list(
-              plot_call = plot_call,
-              dist_var = dist_var,
-              ndensity = ndensity,
-              mapped_dist = unname(map_dist[t_dist])
-            )
-          )
+        )
       }
 
       all_ggplot2_args <- resolve_ggplot2_args(
@@ -720,11 +723,11 @@ srv_distribution <- function(input,
           g <- plot_call
           g <- exprs_ggplot2_args
           print(g)
-          },
+        },
         env = list(
           plot_call = plot_call,
           exprs_ggplot2_args = utils.nest::calls_combine_by("+", c(list(as.name("g")), parsed_ggplot2_args))
-          )
+        )
       ))
 
       chunks_safe_eval(distplot_stack)
@@ -851,10 +854,11 @@ srv_distribution <- function(input,
           ))
         }
 
-        label <-  if (!is_empty(g_var)) {
+        label <- if (!is_empty(g_var)) {
           substitute(
             expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name))
+            env = list(g_var = g_var, g_var_name = g_var_name)
+          )
         } else {
           substitute(expr = tb, env = list())
         }
@@ -978,13 +982,16 @@ srv_distribution <- function(input,
       )) {
         validate(need(s_var, "Please select stratify variable."))
         if (is_empty(g_var) && !is_empty(s_var)) {
-          validate(need(length(unique(ANL[[s_var]])) == 2,
-                        "Please select stratify variable with 2 levels."
+          validate(need(
+            length(unique(ANL[[s_var]])) == 2,
+            "Please select stratify variable with 2 levels."
           ))
         }
         if (!is_empty(g_var) && !is_empty(s_var)) {
-          validate(need(all(stats::na.omit(as.vector(tapply(
-            ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))),
+          validate(need(
+            all(stats::na.omit(as.vector(tapply(
+              ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
+            ) == 2))),
             "Please select stratify variable with 2 levels, per each group."
           ))
         }
@@ -1042,8 +1049,7 @@ srv_distribution <- function(input,
         groups = c(g_var)
       )
 
-      tests_base <- switch(
-        dist_tests,
+      tests_base <- switch(dist_tests,
         "Kolmogorov-Smirnov (one-sample)" = sks_args,
         "Shapiro-Wilk" = ssw_args,
         "Fligner-Killeen" = mfil_args,
@@ -1189,7 +1195,7 @@ srv_distribution <- function(input,
 #' @noRd
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
   switch(dist_type,
-    "normal" =  {
+    "normal" = {
       validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
     },
     "lognormal" = {

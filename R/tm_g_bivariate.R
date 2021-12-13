@@ -124,33 +124,33 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     is_character_single(ggtheme),
     list(
       (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-      (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
+        (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
-      ),
+    ),
     list(
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-      (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
-      ),
+    ),
     list(
       is.null(color) ||
-      ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-      (is_class_list("data_extract_spec")(color) &&
-        all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
+        ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
+          (is_class_list("data_extract_spec")(color) &&
+            all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
-      ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-      (is_class_list("data_extract_spec")(fill) &&
-        all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
+        ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
+          (is_class_list("data_extract_spec")(fill) &&
+            all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
-      ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-      (is_class_list("data_extract_spec")(size) &&
-        all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
+        ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
+          (is_class_list("data_extract_spec")(size) &&
+            all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"
     )
   )
@@ -158,8 +158,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
@@ -179,7 +181,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   } else {
     stop_if_not(list(
       is.null(color) && is.null(fill) && is.null(size),
-      "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."))
+      "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
+    ))
   }
 
   args <- as.list(environment())
@@ -203,7 +206,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     server_args = c(
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
-      ),
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -212,7 +215,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- is_single_dataset(
-    args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size)
+    args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size
+  )
 
   ns <- NS(id)
   standard_layout(
@@ -323,11 +327,13 @@ ui_g_bivariate <- function(id, ...) {
             multiple = FALSE
           ),
           sliderInput(
-            ns("alpha"), "Opacity Scatterplot:", min = 0, max = 1,
+            ns("alpha"), "Opacity Scatterplot:",
+            min = 0, max = 1,
             step = .05, value = .5, ticks = FALSE
           ),
           sliderInput(
-            ns("fixed_size"), "Scatterplot point size:", min = 1, max = 8,
+            ns("fixed_size"), "Scatterplot point size:",
+            min = 1, max = 8,
             step = 1, value = 2, ticks = FALSE
           ),
           checkboxInput(ns("add_lines"), "Add lines"),
@@ -701,7 +707,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         quote(ylab("Density"))
       )
     }
-
   } else if (x_class == "NULL" && y_class == "numeric") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
 
@@ -719,7 +724,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         quote(ylab("Density"))
       )
     }
-
   } else if (x_class == "factor" && y_class == "NULL") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .x)))
 
@@ -736,7 +740,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         quote(ylab("Proportion"))
       )
     }
-
   } else if (x_class == "NULL" && y_class == "factor") {
     plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
 
@@ -763,7 +766,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         !is.null(size),
         quote(geom_point(alpha = .alpha, size = .size, pch = 21)),
         quote(geom_point(alpha = .alpha, pch = 21))
-        )
+      )
     )
   } else if (x_class == "numeric" && y_class == "factor") {
     plot_call <- reduce_plot_call(
@@ -814,7 +817,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     parsed_ggplot2_args$labs,
     parsed_ggplot2_args$ggtheme,
     parsed_ggplot2_args$theme
-    )
+  )
 
   if (swap_axes) {
     plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
@@ -873,9 +876,9 @@ coloring_ggplot_call <- function(colour,
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-             is_point && is_character_empty(size)) {
+    is_point && is_character_empty(size)) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  }  else if (!is_character_empty(colour) && !is_character_empty(fill) &&
+  } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
     (!is_point || is_character_empty(size))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),

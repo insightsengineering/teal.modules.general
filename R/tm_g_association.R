@@ -92,14 +92,17 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_class_list("data_extract_spec")(ref))
   stop_if_not(list(
     all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
-    "'ref' should not allow multiple selection"))
+    "'ref' should not allow multiple selection"
+  ))
   stopifnot(is_class_list("data_extract_spec")(vars))
   stopifnot(is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
   distribution_theme <- match.arg(distribution_theme)
   stopifnot(is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)
@@ -132,7 +135,7 @@ tm_g_association <- function(label = "Association",
     server_args = c(
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
-      ),
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -217,7 +220,6 @@ srv_tm_g_association <- function(input,
                                  plot_height,
                                  plot_width,
                                  ggplot2_args) {
-
   init_chunks()
 
   selector_list <- data_extract_multiple_srv(data_extract = list(ref = ref, vars = vars), datasets = datasets)
