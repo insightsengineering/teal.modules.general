@@ -661,9 +661,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
       chunks_push(
         id = "pca_plot_response_base",
-        substitute({
-          response <- RP[[resp_col]]
-          }, env = list(resp_col = resp_col)
+        substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col)
           )
       )
 
