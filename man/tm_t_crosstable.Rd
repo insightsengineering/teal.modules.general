@@ -37,7 +37,7 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{basic_table_args}{(`basic_table_args`) object created by [`teal.devel::basic_table_args()`]
+\item{basic_table_args}{(`basic_table_args`) object created by [teal.devel::basic_table_args()]
 with settings for the module table.
 For more details see the help vignette:
 `vignette("Custom basic_table arguments module", package = "teal.devel")`

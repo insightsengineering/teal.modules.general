@@ -84,8 +84,8 @@ output to put the output into context. For example the
 
 \item{table_dec}{optional, (\code{integer}) Number of decimal places used to round numeric values in the table.}
 
-\item{ggplot2_args}{(`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for the module table.
+\item{ggplot2_args}{(`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
+with settings for the module plot.
 For more details see the help vignette:
 `vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
