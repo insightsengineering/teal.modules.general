@@ -566,6 +566,7 @@ srv_g_bivariate <- function(input,
 #'
 #' bivariate_plot_call("ANL", "BAGE", "RACE", "numeric", "factor")
 #' bivariate_plot_call("ANL", "BAGE", character(0), "numeric", "NULL")
+#'
 bivariate_plot_call <- function(data_name,
                                 x = character(0),
                                 y = character(0),
@@ -584,17 +585,6 @@ bivariate_plot_call <- function(data_name,
   validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
-  cl <- bivariate_ggplot_call(
-    x_class = x_class,
-    y_class = y_class,
-    freq = freq,
-    theme = theme,
-    rotate_xaxis_labels = rotate_xaxis_labels,
-    swap_axes = swap_axes,
-    alpha = alpha,
-    size = size,
-    ggplot2_args = ggplot2_args
-  )
 
   if (is_character_empty(x)) {
     x <- x_label <- "-"
@@ -607,20 +597,22 @@ bivariate_plot_call <- function(data_name,
     y <- if (is.call(y)) y else as.name(y)
   }
 
-  cl_plot <- substitute_q(
-    cl,
-    list(
-      .ggplotcall = substitute(expr = ggplot(data_name), env = list(data_name = as.name(data_name))),
-      .x = x,
-      .y = y,
-      .xlab = x_label,
-      .ylab = y_label,
-      .alpha = alpha,
-      .size = size
-    )
+  cl <- bivariate_ggplot_call(
+    x_class = x_class,
+    y_class = y_class,
+    freq = freq,
+    theme = theme,
+    rotate_xaxis_labels = rotate_xaxis_labels,
+    swap_axes = swap_axes,
+    alpha = alpha,
+    size = size,
+    ggplot2_args = ggplot2_args,
+    x = x,
+    y = y,
+    xlab = x_label,
+    ylab = y_label,
+    data_name = data_name
   )
-
-  cl_plot
 }
 
 substitute_q <- function(x, env) {
@@ -661,6 +653,11 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
                                   swap_axes = FALSE,
                                   size = double(0),
                                   alpha = double(0),
+                                  x = NULL,
+                                  y = NULL,
+                                  xlab = "-",
+                                  ylab = "-",
+                                  data_name = "ANL",
                                   ggplot2_args = teal.devel::ggplot2_args()) {
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
@@ -687,11 +684,11 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     utils.nest::calls_combine_by("+", args)
   }
 
-  plot_call <- quote(.ggplotcall)
+  plot_call <- bquote(ggplot(.(as.name(data_name))))
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, quote(aes(x = .x)))
+    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(x))))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -708,7 +705,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "NULL" && y_class == "numeric") {
-    plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
+    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(y))))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -725,7 +722,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "factor" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, quote(aes(x = .x)))
+    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(x))))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -741,7 +738,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "NULL" && y_class == "factor") {
-    plot_call <- reduce_plot_call(plot_call, quote(aes(x = .y)))
+    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(y))))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -764,20 +761,20 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
-        quote(geom_point(alpha = .alpha, size = .size, pch = 21)),
-        quote(geom_point(alpha = .alpha, pch = 21))
+        bquote(geom_point(alpha = .(alpha), size = .(size), pch = 21)),
+        bquote(geom_point(alpha = .(alpha), pch = 21))
       )
     )
   } else if (x_class == "numeric" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      quote(aes(x = .x, y = .y)),
+      bquote(aes(x = .(x), y = .(y))),
       quote(geom_boxplot())
     )
   } else if (x_class == "factor" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
-      quote(aes(x = .x, y = .y)),
+      bquote(aes(x = .(x), y = .(y))),
       quote(geom_boxplot())
     )
 
@@ -785,18 +782,18 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      quote(geom_mosaic(aes(x = product(.x), fill = .y), na.rm = TRUE))
+      bquote(geom_mosaic(aes(x = product(.(x)), fill = .(y)), na.rm = TRUE))
     )
   } else {
     stop("x y type combination not allowed")
   }
 
   labs_base <- if (is.null(x_class)) {
-    list(x = quote(.ylab))
+    list(x = bquote(.(ylab)))
   } else if (is.null(y_class)) {
-    list(x = quote(.xlab))
+    list(x = bquote(.(xlab)))
   } else {
-    list(x = quote(.xlab), y = quote(.ylab))
+    list(x = bquote(.(xlab)), y = bquote(.(ylab)))
   }
 
   dev_ggplot2_args <- ggplot2_args(labs = labs_base)

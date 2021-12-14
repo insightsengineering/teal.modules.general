@@ -241,7 +241,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     chunks_push(substitute(
       expr = {
         lyt <- basic_tables %>%
-          split_call() %>%
+          split_call %>%
           rtables::add_colcounts() %>%
           tern::summarize_vars(
             vars = x_name,
