@@ -684,11 +684,11 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     utils.nest::calls_combine_by("+", args)
   }
 
-  plot_call <- bquote(ggplot(.(as.name(data_name))))
+  plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(x))))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -705,7 +705,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "NULL" && y_class == "numeric") {
-    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(y))))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -722,7 +722,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "factor" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(x))))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -738,7 +738,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       )
     }
   } else if (x_class == "NULL" && y_class == "factor") {
-    plot_call <- reduce_plot_call(plot_call, bquote(aes(x = .(y))))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
@@ -757,7 +757,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
-      bquote(aes(x = .(x), y = .(y))),
+      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
@@ -765,19 +765,12 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         bquote(geom_point(alpha = .(alpha), pch = 21))
       )
     )
-  } else if (x_class == "numeric" && y_class == "factor") {
+  } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric"))  {
     plot_call <- reduce_plot_call(
       plot_call,
-      bquote(aes(x = .(x), y = .(y))),
+      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
       quote(geom_boxplot())
     )
-  } else if (x_class == "factor" && y_class == "numeric") {
-    plot_call <- reduce_plot_call(
-      plot_call,
-      bquote(aes(x = .(x), y = .(y))),
-      quote(geom_boxplot())
-    )
-
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
