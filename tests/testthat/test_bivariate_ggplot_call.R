@@ -1,6 +1,7 @@
 test_that("bivariate_ggplot_call with numerics", {
   expect_match(
-    bivariate_ggplot_call("numeric", "numeric") %>% deparse(width.cutoff = 300),
+    bivariate_ggplot_call("numeric", "numeric", alpha = quote(.alpha), size = quote(.size)) %>%
+      deparse(width.cutoff = 300),
     "geom_point\\(alpha = \\.alpha\\, size = \\.size\\, pch = 21)"
   )
   expect_match(
@@ -94,3 +95,4 @@ test_that("bivariate_ggplot_call with single data factor", {
     "Proportion"
   )
 })
+
