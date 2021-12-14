@@ -378,7 +378,7 @@ srv_g_response <- function(input,
     )
 
     if (rotate_xaxis_labels) {
-      dev_ggplot2_args$theme <- c(dev_ggplot2_args, list(axis.text.x = quote(element_text(angle = 45, hjust = 1))))
+      dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
     }
 
     all_ggplot2_args <- resolve_ggplot2_args(
@@ -392,7 +392,7 @@ srv_g_response <- function(input,
     )
 
     plot_call <- substitute(expr = {
-      p <- plot_call + labs + themes + ggthemes
+      p <- plot_call + labs  + ggthemes + themes
       print(p)
     }, env = list(
       plot_call = plot_call,

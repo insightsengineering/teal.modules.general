@@ -1101,7 +1101,7 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
   iqr <- qntls[3] - qntls[2]
-  binwidth <- max(scaling_factor * iqr / length(x_vec)^(1 / 3), sqrt(qntls[4] - qntls[1]))
+  binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
   # to ensure at least two bins when variable span is very small
   x_span <- diff(range(x_vec))
