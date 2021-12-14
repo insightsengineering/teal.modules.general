@@ -761,8 +761,10 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
-        bquote(geom_point(alpha = .(alpha), size = .(size), pch = 21)),
-        bquote(geom_point(alpha = .(alpha), pch = 21))
+        substitute(geom_point(alpha = alphaval, size = sizeval, pch = 21),
+                   env = list(alphaval = alpha, sizeval = size)),
+        substitute(geom_point(alpha = alphaval, pch = 21),
+                   env = list(alphaval = alpha)),
       )
     )
   } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric"))  {
