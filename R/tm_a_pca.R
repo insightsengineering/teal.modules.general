@@ -99,8 +99,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
   )
 
   if (!is_class_list("data_extract_spec")(dat)) {
@@ -685,8 +685,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       dev_labs <- list(color = varname_w_label(resp_col, rp))
 
       if (is.character(response) ||
-        is.factor(response) ||
-        (is.numeric(response) && length(unique(response)) <= 6)) {
+          is.factor(response) ||
+          (is.numeric(response) && length(unique(response)) <= 6)) {
         scales_biplot <- quote(scale_color_brewer(palette = "Dark2"))
 
         chunks_push(
@@ -784,12 +784,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_push(
       id = "pca_plot_final",
       expression = substitute({
-          g <- plot_call
-          print(g)
-        },
-        env = list(
-          plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
-        )
+        g <- plot_call
+        print(g)
+      },
+      env = list(
+        plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
+      )
       )
     )
 

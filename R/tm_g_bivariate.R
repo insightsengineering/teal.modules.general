@@ -135,22 +135,22 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     list(
       is.null(color) ||
         ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-          (is_class_list("data_extract_spec")(color) &&
-            all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
+           (is_class_list("data_extract_spec")(color) &&
+              all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
         ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-          (is_class_list("data_extract_spec")(fill) &&
-            all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
+           (is_class_list("data_extract_spec")(fill) &&
+              all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
         ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-          (is_class_list("data_extract_spec")(size) &&
-            all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
+           (is_class_list("data_extract_spec")(size) &&
+              all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"
     )
   )
@@ -159,8 +159,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -848,9 +848,9 @@ facet_ggplot_call <- function(row_facet = character(0),
     NULL
   } else if (!is_character_empty(row_facet) && !is_character_empty(col_facet)) {
     call("facet_grid",
-      rows = call_fun_dots("vars", row_facet),
-      cols = call_fun_dots("vars", col_facet),
-      scales = scales
+         rows = call_fun_dots("vars", row_facet),
+         cols = call_fun_dots("vars", col_facet),
+         scales = scales
     )
   } else if (is_character_empty(row_facet) && !is_character_empty(col_facet)) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
@@ -864,37 +864,37 @@ coloring_ggplot_call <- function(colour,
                                  size,
                                  is_point = FALSE) {
   if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+      is_point && !is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && is_character_empty(size)) {
+             is_point && is_character_empty(size)) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+             (!is_point || is_character_empty(size))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
   } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+             (!is_point || is_character_empty(size))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+             (!is_point || is_character_empty(size))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+             is_point && !is_character_empty(size)) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+             is_point && !is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
   } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+             is_point && !is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
