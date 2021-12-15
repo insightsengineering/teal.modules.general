@@ -266,7 +266,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         list(
           checkboxInput(session$ns("numeric_as_factor"),
                         "Treat variable as factor",
-                        value = if_null(isolate(input$numeric_as_factor), unique_entries < .unique_records_default_as_factor)
+                        value = if_null(isolate(input$numeric_as_factor),
+                                        unique_entries < .unique_records_default_as_factor)
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
