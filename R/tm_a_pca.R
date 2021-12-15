@@ -510,10 +510,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
     dev_ggplot2_args <- ggplot2_args(
-      labs = list(),
       theme = list(
-        axis.text.x = element_text(angle = angle, hjust = hjust),
-        text = element_text(size = font_size)
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
       )
     )
 
