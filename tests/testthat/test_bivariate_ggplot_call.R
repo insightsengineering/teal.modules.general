@@ -95,4 +95,3 @@ test_that("bivariate_ggplot_call with single data factor", {
     "Proportion"
   )
 })
-

@@ -464,7 +464,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Response vs Regressor"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -528,7 +528,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Residuals vs Fitted"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -586,7 +586,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Normal Q-Q"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -630,7 +630,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Scale-Location"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -699,7 +699,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Cook's distance"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -756,7 +756,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Residuals vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -808,7 +808,7 @@ srv_a_regression <- function(input,
 
       gg_args_exprs <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(

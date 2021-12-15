@@ -403,7 +403,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         )
       ),
       conditionalPanel(
-        condition = sprintf("input['%'] == 'Elbow plot'", ns("plot_type")),
+        condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
         helpText("No plot specific settings available.")
       ),
       conditionalPanel(
@@ -429,14 +429,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         legend.position = "right",
         legend.spacing.y = quote(unit(-5, "pt")),
         legend.title = quote(element_text(vjust = 8)),
-        axis.text.x = bquote(element_text(angle = .(angle_value), hjust = .(hjust_value))),
-        text = bquote(element_text(size = .(font_size)))
+        axis.text.x = substitute(element_text(angle = angle_value, hjust = hjust_value),
+                                 list(angle_value = angle_value, hjust_value = hjust_value)),
+        text = substitute(element_text(size = font_size), list(font_size = font_size))
       )
     )
 
     parsed_ggplot2_args <- parse_ggplot2_args(
       resolve_ggplot2_args(
-        user_plot = ggplot2_args[[input$plot_type]],
+        user_plot = ggplot2_args[["Elbow plot"]],
         user_default = ggplot2_args$default,
         module_plot = dev_ggplot2_args
       ),
@@ -517,7 +518,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     )
 
     all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[[input$plot_type]],
+      user_plot = ggplot2_args[["Circle plot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
@@ -758,13 +759,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     dev_ggplot2_args <- ggplot2_args(
       labs = dev_labs,
       theme = list(
-        text = bquote(element_text(size = .(font_size))),
-        axis.text.x = bquote(element_text(angle = .(angle), hjust = .(hjust)))
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
       )
     )
 
     all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[[input$plot_type]],
+      user_plot = ggplot2_args[["Biplot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
@@ -811,13 +813,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     dev_ggplot2_args <- ggplot2_args(
       theme = list(
-        text = bquote(element_text(size = .(font_size))),
-        axis.text.x = bquote(element_text(angle = .(angle), hjust = .(hjust)))
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
       )
     )
 
     all_ggplot2_args <- resolve_ggplot2_args(
-      user_plot = ggplot2_args[[input$plot_type]],
+      user_plot = ggplot2_args[["Eigenvector plot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )

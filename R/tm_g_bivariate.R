@@ -777,18 +777,20 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      bquote(geom_mosaic(aes(x = product(.(x)), fill = .(y)), na.rm = TRUE))
+      substitute(geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
+                 env = list())
     )
   } else {
     stop("x y type combination not allowed")
   }
 
   labs_base <- if (is.null(x_class)) {
-    list(x = bquote(.(ylab)))
+    list(x = substitute(ylab, list(ylab = ylab)))
   } else if (is.null(y_class)) {
-    list(x = bquote(.(xlab)))
+    list(x = substitute(xlab, list(xlab = xlab)))
   } else {
-    list(x = bquote(.(xlab)), y = bquote(.(ylab)))
+    list(x = substitute(xlab, list(xlab = xlab)),
+         y = substitute(ylab, list(ylab = ylab)))
   }
 
   dev_ggplot2_args <- ggplot2_args(labs = labs_base)
