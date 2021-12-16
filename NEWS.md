@@ -13,6 +13,7 @@
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in `tm_a_regression`.
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
+* Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
 
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
