@@ -778,7 +778,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     plot_call <- reduce_plot_call(
       plot_call,
       substitute(geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
-                 env = list())
+                 env = list(xval = x, yval = y))
     )
   } else {
     stop("x y type combination not allowed")
