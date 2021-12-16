@@ -100,14 +100,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
                             lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
-  )
+                            .var.name = "plot_width")
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
   }
-
-  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
   checkmate::assert(
@@ -684,34 +681,33 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
       dev_labs <- list(color = varname_w_label(resp_col, rp))
 
-      if (is.character(response) ||
+      scales_biplot <- if (is.character(response) ||
           is.factor(response) ||
           (is.numeric(response) && length(unique(response)) <= 6)) {
-        scales_biplot <- quote(scale_color_brewer(palette = "Dark2"))
-
         chunks_push(
           id = "pca_plot_response",
           quote(pca_rot$response <- as.factor(response))
         )
+        quote(scale_color_brewer(palette = "Dark2"))
       } else if (class(response) == "Date") {
-        scales_biplot <- quote(
+        chunks_push(
+          id = "pca_plot_response",
+          quote(pca_rot$response <- numeric(response))
+        )
+
+        quote(
           scale_color_gradient(
             low = "darkred",
             high = "lightblue",
             labels = function(x) as.Date(x, origin = "1970-01-01")
           )
         )
-
-        chunks_push(
-          id = "pca_plot_response",
-          quote(pca_rot$response <- numeric(response))
-        )
       } else {
-        scales_biplot <- quote(scale_color_gradient(low = "darkred", high = "lightblue"))
         chunks_push(
           id = "pca_plot_response",
           quote(pca_rot$response <- response)
         )
+        quote(scale_color_gradient(low = "darkred", high = "lightblue"))
       }
 
       pca_plot_biplot_expr <- c(
