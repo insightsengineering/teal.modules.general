@@ -761,6 +761,7 @@ plot_var_summary <- function(var,
       p <-
         ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
+        scale_fill_manual(values=c("gray50", "tan")) +
         xlab(var_lab) +
         theme_light() +
         theme(axis.text.x = element_text(angle = 45, hjust = 1))
