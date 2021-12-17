@@ -772,7 +772,7 @@ plot_var_summary <- function(var,
     } else {
         ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan")) +
+        scale_fill_manual(values = c("gray50", "tan"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
