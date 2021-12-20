@@ -588,26 +588,28 @@ srv_distribution <- function(input,
         )
       } else if (length(s_var) == 0 && length(g_var) != 0) {
         substitute(
-          expr = ggplot(ANL, aes(dist_var_name)) +
+          expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
             geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
             facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
           env = list(
             m_type = m_type,
             bins_var = bins_var,
             dist_var_name = dist_var_name,
+            g_var = g_var,
             g_var_name = g_var_name,
             scales_raw = tolower(scales_type)
           )
         )
       } else {
         substitute(
-          expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+          expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
             geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
             facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
           env = list(
             m_type = m_type,
             bins_var = bins_var,
             dist_var_name = dist_var_name,
+            g_var = g_var,
             s_var = s_var,
             g_var_name = g_var_name,
             s_var_name = s_var_name,
@@ -761,20 +763,22 @@ srv_distribution <- function(input,
         )
       } else if (length(s_var) == 0 && length(g_var) != 0) {
         substitute(
-          expr = ggplot(ANL, aes_string(sample = dist_var)) +
+          expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var)) +
             facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
           env = list(
             dist_var = dist_var,
+            g_var = g_var,
             g_var_name = g_var_name,
             scales_raw = tolower(scales_type)
           )
         )
       } else {
         substitute(
-          expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)) +
+          expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var, color = s_var)) +
             facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
           env = list(
             dist_var = dist_var,
+            g_var = g_var,
             s_var = s_var,
             g_var_name = g_var_name,
             scales_raw = tolower(scales_type)
