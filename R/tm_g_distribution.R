@@ -174,7 +174,7 @@ ui_distribution <- function(id, ...) {
         tabPanel("Histogram", plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      h3("Summary statistics"),
+      h3("Statistics Table"),
       DT::dataTableOutput(ns("summary_table")),
       h3("Tests"),
       DT::dataTableOutput(ns("t_stats"))
@@ -289,12 +289,7 @@ ui_distribution <- function(id, ...) {
       ),
       panel_item(
         "Statistics Table",
-        sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
-        checkboxInput(
-          ns("add_stats_plot"),
-          label = "Overlay params table",
-          value = TRUE
-        )
+        sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
       ),
       panel_item(
         title = "Plot settings",
@@ -349,7 +344,7 @@ srv_distribution <- function(input,
                      )
                    }
                    ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-                   params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
+                   params <- get_dist_params(as.numeric(na.omit(ANL[[dist_var2]])), input$t_dist)
                    params_vec <- round(unname(unlist(params)), 2)
                    params_names <- names(params)
 
@@ -416,8 +411,8 @@ srv_distribution <- function(input,
         )
       )
       common_stack_push(substitute(
-        expr = ANL <- ANL %>% dplyr::mutate(g_var_name := forcats::fct_explicit_na(as.factor(g_var_name))), # nolint
-        env = list(g_var_name = g_var_name)
+        expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
+        env = list(g_var = g_var)
       ))
     }
 
@@ -429,8 +424,8 @@ srv_distribution <- function(input,
         )
       )
       common_stack_push(substitute(
-        expr = ANL <- ANL %>% dplyr::mutate(s_var_name := forcats::fct_explicit_na(as.factor(s_var_name))), # nolint
-        env = list(s_var_name = s_var_name)
+        expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
+        env = list(s_var = s_var)
       ))
     }
 
@@ -640,34 +635,11 @@ srv_distribution <- function(input,
         )
       }
 
-      if (add_stats_plot) {
-        datas <- if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-          distplot_stack_push(substitute(
-            expr = {
-              df_params <- as.data.frame(append(params, list(name = t_dist)))
-            },
-            env = list(t_dist = t_dist)
-          ))
-
-          quote(data.frame(
-            x = c(0.7, 0), y = c(1, 1),
-            tb = I(c(list(df_params = df_params), list(summary_table = summary_table)))
-          ))
-        } else {
-          quote(data.frame(
-            x = 0, y = 1,
-            tb = I(list(summary_table = summary_table))
-          ))
-        }
-
-        label <- if (!is_empty(g_var)) {
-          substitute(
-            expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name)
-          )
-        } else {
-          substitute(expr = tb, env = list())
-        }
+      if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
+        distplot_stack_push(substitute(df_params <- as.data.frame(append(params, list(name = t_dist))),
+                                       env = list(t_dist = t_dist)))
+        datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
+        label <- quote(tb)
 
         plot_call <- substitute(
           expr = plot_call + ggpp::geom_table_npc(
@@ -821,37 +793,11 @@ srv_distribution <- function(input,
         env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
       )
 
-      if (add_stats_plot) {
-        datas <- if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qqplot_stack_push(substitute(
-            expr = {
-              df_params <- as.data.frame(append(params, list(name = t_dist)))
-            },
-            env = list(t_dist = t_dist)
-          ))
-
-          quote(data.frame(
-            x = c(0.7, 0), y = c(1, 1),
-            tb = I(c(
-              list(df_params = df_params),
-              list(summary_table = summary_table)
-            ))
-          ))
-        } else {
-          quote(data.frame(
-            x = 0, y = 1,
-            tb = I(list(summary_table = summary_table))
-          ))
-        }
-
-        label <- if (!is_empty(g_var)) {
-          substitute(
-            expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name)
-          )
-        } else {
-          substitute(expr = tb, env = list())
-        }
+      if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
+        qqplot_stack_push(substitute(df_params <- as.data.frame(append(params, list(name = t_dist))),
+                                     env = list(t_dist = t_dist)))
+        datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
+        label <- quote(tb)
 
         plot_call <- substitute(
           expr = plot_call +
