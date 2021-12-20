@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9015</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9016</span>
       </span>
     </div>
 
@@ -88,26 +88,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -132,7 +112,7 @@ Other releases
       <h1 data-toc-skip>Using bivariate plot</h1>
                         <h4 class="author">Dawid Kałędkowski</h4>
             
-            <h4 class="date">2021-12-16</h4>
+            <h4 class="date">2021-12-20</h4>
       
       
       <div class="hidden name"><code>using-bivariate-plot.Rmd</code></div>
@@ -174,12 +154,12 @@ Other releases
 <code>ADLB</code> A long data set with lab measurements for each subject</li>
 </ol>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span>
-<span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+<code class="sourceCode R"><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="co">#nolint</span>
+<span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co">#nolint</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>TRTDUR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">TRTEDTM</span> <span class="op">-</span> <span class="va">TRTSDTM</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adrs</span>
-<span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adtte</span>
-<span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adlb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+<span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adrs</span> <span class="co">#nolint</span>
+<span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adtte</span> <span class="co">#nolint</span>
+<span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adlb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co">#nolint</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CHGC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
     <span class="va">CHG</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"N"</span>,
     <span class="va">CHG</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"P"</span>,
@@ -194,12 +174,12 @@ Other releases
 <code class="sourceCode R"><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/init.html">init</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html">cdisc_data</a></span><span class="op">(</span>
     <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/dataset.html">dataset</a></span><span class="op">(</span><span class="st">"ADSL2"</span>, <span class="va">ADSL2</span>, keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/get_cdisc_keys.html">get_cdisc_keys</a></span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>, 
-      code <span class="op">=</span> <span class="st">"ADSL2 &lt;- synthetic_cdisc_data(\"latest\")$adsl %&gt;% 
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/dataset.html">dataset</a></span><span class="op">(</span><span class="st">"ADSL2"</span>, <span class="va">ADSL2</span>, keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/get_cdisc_keys.html">get_cdisc_keys</a></span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>,
+      code <span class="op">=</span> <span class="st">"ADSL2 &lt;- synthetic_cdisc_data(\"latest\")$adsl %&gt;%
               mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- synthetic_cdisc_data(\"latest\")$adrs"</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- synthetic_cdisc_data(\"latest\")$adtte"</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>, 
+    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>,
     code <span class="op">=</span> <span class="st">"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb %&gt;%
             mutate(CHGC = as.factor(case_when(
             CHG &lt; 1 ~ 'N',
@@ -392,7 +372,6 @@ Other releases
         plot_height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">200</span>, <span class="fl">2000</span><span class="op">)</span>,
         ggtheme <span class="op">=</span> <span class="st">"gray"</span>
       <span class="op">)</span>,
-      
       <span class="fu"><a href="../reference/tm_g_bivariate.html">tm_g_bivariate</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Wide and long datasets"</span>,
         x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html">data_extract_spec</a></span><span class="op">(</span>
@@ -749,7 +728,7 @@ Other releases
 <p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shiny::shinyApp</a></code> call will let you run the app. Note that app is only displayed when running this code inside an R session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><iframe data-deferred-src="app397e213fd3a327b5e91340e34b1c8c1d/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app101c26a53e4159fd0cce3185c46542d3/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
   </div>
 

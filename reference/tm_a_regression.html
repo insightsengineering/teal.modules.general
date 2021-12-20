@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9015</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9016</span>
       </span>
     </div>
 
@@ -133,26 +133,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -192,11 +172,11 @@ Other releases
   alpha <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>,
   size <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>8</span><span class='op'>)</span>,
   ggtheme <span class='op'>=</span> <span class='va'>gg_themes</span>,
+  ggplot2_args <span class='op'>=</span> <span class='fu'>teal.devel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html'>ggplot2_args</a></span><span class='op'>(</span><span class='op'>)</span>,
   pre_output <span class='op'>=</span> <span class='cn'>NULL</span>,
   post_output <span class='op'>=</span> <span class='cn'>NULL</span>,
   default_plot_type <span class='op'>=</span> <span class='fl'>1</span>,
-  default_outlier_label <span class='op'>=</span> <span class='st'>"USUBJID"</span>,
-  ggplot2_args <span class='op'>=</span> <span class='fu'>teal.devel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html'>ggplot2_args</a></span><span class='op'>(</span><span class='op'>)</span>
+  default_outlier_label <span class='op'>=</span> <span class='st'>"USUBJID"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -246,6 +226,16 @@ vector of length three with <code>c(value, min, max)</code>.</p></td>
 All themes can be chosen by the user. Defaults to <code>gray</code>.</p></td>
     </tr>
     <tr>
+      <th>ggplot2_args</th>
+      <td><p>optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+For more details see the help vignette:
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
+List names should match the following:<br />
+`c("default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage"", "Cook's dist vs Leverage")`.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.</p></td>
+    </tr>
+    <tr>
       <th>pre_output</th>
       <td><p>optional, <code>shiny.tag</code> with text placed before the
 output to put the output into context. For example a title.</p></td>
@@ -271,15 +261,6 @@ output to put the output into context. For example the
     <tr>
       <th>default_outlier_label</th>
       <td><p>optional, (<code>character</code>) The default column selected to label outliers.</p></td>
-    </tr>
-    <tr>
-      <th>ggplot2_args</th>
-      <td><p>optional, (<code>ggplot2_args</code>) object created by <code><a href='https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html'>teal.devel::ggplot2_args()</a></code>
-with settings for all the plots or named list of <code>ggplot2_args</code> objects for plot-specific settings.
-For more details see the help vignette:
-<code>vignette("Custom ggplot2 arguments module", package = "teal.devel")</code>
-List names should match the following: <code>"default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"</code>
-The argument is merged with options variable <code>teal.ggplot2_args</code> and default module setup.</p></td>
     </tr>
     </table>
 
@@ -322,12 +303,11 @@ The argument is merged with options variable <code>teal.ggplot2_args</code> and 
 <span class='r-in'>          multiple <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
 <span class='r-in'>          fixed <span class='op'>=</span> <span class='cn'>FALSE</span></span>
 <span class='r-in'>        <span class='op'>)</span></span>
-<span class='r-in'>      <span class='op'>)</span>,</span>
-<span class='r-in'>      ggplot2_args <span class='op'>=</span> <span class='fu'>teal.devel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html'>ggplot2_args</a></span><span class='op'>(</span>labs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='st'>"caption"</span> <span class='op'>=</span> <span class='st'>"NEST PROJECT"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'>      <span class='op'>)</span></span>
 <span class='r-in'>    <span class='op'>)</span></span>
 <span class='r-in'>  <span class='op'>)</span></span>
 <span class='r-in'><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-16 14:40:14.7941 pid:1155 token: teal.modules.general fun:tm_a_regression [INFO] Initializing tm_a_regression</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-20 09:50:09.0971 pid:1156 token: teal.modules.general fun:tm_a_regression [INFO] Initializing tm_a_regression</span>
 <span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
 <span class='r-in'><span class='op'>}</span></span>

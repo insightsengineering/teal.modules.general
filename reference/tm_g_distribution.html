@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9015</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11.9016</span>
       </span>
     </div>
 
@@ -133,26 +133,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="../pre-release/index.html">pre-release</a></li>
-   <li><a href="../v0.2.11/index.html">v0.2.11</a></li>
-   <li><a href="../v0.2.10/index.html">v0.2.10</a></li>
-   <li><a href="../v0.2.9/index.html">v0.2.9</a></li>
-   <li><a href="../v0.2.8/index.html">v0.2.8</a></li>
-   <li><a href="../v0.2.7/index.html">v0.2.7</a></li>
-   <li><a href="../v0.2.6/index.html">v0.2.6</a></li>
-   <li><a href="../v0.2.5/index.html">v0.2.5</a></li>
-   <li><a href="../v0.2.4/index.html">v0.2.4</a></li>
-   <li><a href="../v0.2.3/index.html">v0.2.3</a></li>
-   <li><a href="../v0.2.2/index.html">v0.2.2</a></li>
-   <li><a href="../v0.1.0/index.html">v0.1.0</a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -189,6 +169,8 @@ Other releases
   strata_var <span class='op'>=</span> <span class='cn'>NULL</span>,
   group_var <span class='op'>=</span> <span class='cn'>NULL</span>,
   freq <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ggtheme <span class='op'>=</span> <span class='va'>gg_themes</span>,
+  ggplot2_args <span class='op'>=</span> <span class='fu'>teal.devel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html'>ggplot2_args</a></span><span class='op'>(</span><span class='op'>)</span>,
   bins <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>30L</span>, <span class='fl'>1L</span>, <span class='fl'>100L</span><span class='op'>)</span>,
   plot_height <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>600</span>, <span class='fl'>200</span>, <span class='fl'>2000</span><span class='op'>)</span>,
   plot_width <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -222,6 +204,23 @@ Which data columns to use for faceting rows.</p></td>
       <th>freq</th>
       <td><p>optional, (<code>logical</code>) Whether to display frequency (<code>TRUE</code>) or density (<code>FALSE</code>).
 Defaults to density (<code>FALSE</code>).</p></td>
+    </tr>
+    <tr>
+      <th>ggtheme</th>
+      <td><p>optional, (<code>character</code>) <code>ggplot</code> Theme to be used by default.
+<code>gg_themes</code> is defined internally as
+<code>c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")</code>
+All themes can be chosen by the user. Defaults to <code>gray</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ggplot2_args</th>
+      <td><p>optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+For more details see the help vignette:
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
+List names should match the following:<br />
+`c("default", "Histogram", "QQplot")`.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.</p></td>
     </tr>
     <tr>
       <th>bins</th>
@@ -270,7 +269,7 @@ output to put the output into context. For example the
 <span class='r-in'>    <span class='op'>)</span></span>
 <span class='r-in'>  <span class='op'>)</span></span>
 <span class='r-in'><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-16 14:40:33.2406 pid:1155 token: teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-20 09:50:34.2347 pid:1156 token: teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
 <span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
 <span class='r-in'><span class='op'>}</span></span>
@@ -315,7 +314,7 @@ output to put the output into context. For example the
 <span class='r-in'>    <span class='op'>)</span></span>
 <span class='r-in'>  <span class='op'>)</span></span>
 <span class='r-in'><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-16 14:40:34.0784 pid:1155 token: teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-12-20 09:50:35.3906 pid:1156 token: teal.modules.general fun:tm_g_distribution [INFO] Initializing tm_g_distribution</span>
 <span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'><span class='fu'>shinyApp</span><span class='op'>(</span><span class='va'>app</span><span class='op'>$</span><span class='va'>ui</span>, <span class='va'>app</span><span class='op'>$</span><span class='va'>server</span><span class='op'>)</span></span>
 <span class='r-in'><span class='op'>}</span></span>
