@@ -10,6 +10,8 @@ tm_g_distribution(
   strata_var = NULL,
   group_var = NULL,
   freq = FALSE,
+  ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   bins = c(30L, 1L, 100L),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -31,6 +33,19 @@ Which data columns to use for faceting rows.}
 
 \item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+All themes can be chosen by the user. Defaults to \code{gray}.}
+
+\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+For more details see the help vignette:
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
+List names should match the following:\cr
+`c("default", "Histogram", "QQplot")`.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{bins}{optional, (\code{integer(1)} or \code{integer(3)}) If scalar then the histogram bins will have a fixed size.
 If a slider should be presented to adjust the number of histogram bins dynamically then it can be a

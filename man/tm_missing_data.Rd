@@ -8,6 +8,9 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
+  ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void",
+    "test"),
+  ggplot2_args = teal.devel::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL
 )
@@ -20,6 +23,17 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+All themes can be chosen by the user. Defaults to \code{classic}.}
+
+\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+For more details see the help vignette:
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
+List names should match the following:\cr
+`c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

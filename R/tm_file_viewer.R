@@ -109,7 +109,6 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(input, output, session, datasets, input_path) {
-
   temp_dir <- tempfile()
   if (!dir.exists(temp_dir)) {
     dir.create(temp_dir, recursive = TRUE)
@@ -118,15 +117,15 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
   test_path_text <- function(selected_path, type) {
     out <- tryCatch({
-      if (type != "url") {
-        selected_path <- normalizePath(selected_path, winslash = "/")
+        if (type != "url") {
+          selected_path <- normalizePath(selected_path, winslash = "/")
+        }
+        readLines(con = selected_path)
+      },
+      error = function(cond) FALSE,
+      warning = function(cond) {
+        `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
       }
-      readLines(con = selected_path)
-    },
-    error = function(cond) FALSE,
-    warning = function(cond) {
-     `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
-    }
     )
   }
 
@@ -174,7 +173,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         } else {
           files <- list.files(path, full.names = TRUE, include.dirs = TRUE)
           out <- lapply(files, function(x) tree_list(x))
-          out <- unlist(out, recursive = F)
+          out <- unlist(out, recursive = FALSE)
           if (!is_empty(files)) names(out) <- basename(files)
           out
         }

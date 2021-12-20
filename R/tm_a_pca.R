@@ -16,6 +16,8 @@
 #'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
 #'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
 #'
+#' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
+#' @template ggplot2_args_multi
 #'
 #' @export
 #'
@@ -28,24 +30,26 @@
 #'
 #' app <- teal::init(
 #'   data = cdisc_data(cdisc_dataset(
-#'    "ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+#'     "ADSL", ADSL,
+#'     code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
 #'   ),
-#'                     check = TRUE),
+#'   check = TRUE
+#'   ),
 #'   modules = root_modules(
-#'     tm_a_pca("PCA",
-#'              data_extract_spec(
-#'                dataname = "ADSL",
-#'                select = select_spec(
-#'                  choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
-#'                  selected = c("BMRKR1", "AGE"),
-#'                  multiple = TRUE
-#'                ),
-#'                filter = NULL
-#'              )
+#'     tm_a_pca(
+#'       "PCA",
+#'       data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+#'           selected = c("BMRKR1", "AGE"),
+#'           multiple = TRUE
+#'         ),
+#'         filter = NULL
+#'       )
 #'     )
 #'   )
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -55,6 +59,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
                      ggtheme = gg_themes,
+                     ggplot2_args = teal.devel::ggplot2_args(),
                      rotate_xaxis_labels = FALSE,
                      font_size = c(12, 8, 20),
                      alpha = c(1, 0, 1),
@@ -93,12 +98,25 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+  checkmate::assert_numeric(plot_width[1],
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
                             .var.name = "plot_width")
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
   }
+
+  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
+    )
+  )
+  # Important step, so we could easily consume it later
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -109,7 +127,14 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     server = srv_a_pca,
     ui = ui_a_pca,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args
+      )
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -126,13 +151,6 @@ ui_a_pca <- function(id, ...) {
     color_selector[[i]]$select$always_selected <- NULL
     color_selector[[i]]$select$selected <- NULL
   }
-
-  plot_choices <- c(
-    "Elbow plot" = "elbow",
-    "Circle plot" = "circle",
-    "Biplot" = "biplot",
-    "Eigenvector plot" = "pc_var"
-  )
 
   standard_layout(
     output = white_small_well(
@@ -166,8 +184,8 @@ ui_a_pca <- function(id, ...) {
           radioButtons(
             ns("plot_type"),
             label = "Plot type",
-            choices = plot_choices,
-            selected = plot_choices["Elbow plot"]
+            choices = args$plot_choices,
+            selected = args$plot_choices[1]
           )
         ),
         panel_item(
@@ -175,18 +193,20 @@ ui_a_pca <- function(id, ...) {
           radioButtons(
             ns("standardization"), "Standardization",
             choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
-            selected = "center_scale"),
+            selected = "center_scale"
+          ),
           radioButtons(
             ns("na_action"), "NA action",
             choices = c("None" = "none", "Drop" = "drop"),
-            selected = "none")
+            selected = "none"
+          )
         ),
         panel_item(
           title = "Selected plot specific settings",
           collapsed = FALSE,
           uiOutput(ns("plot_settings")),
           conditionalPanel(
-            condition = paste0("input['", ns("plot_type"), "'] == 'biplot'"),
+            condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
             list(
               data_extract_ui(
                 id = ns("response"),
@@ -203,12 +223,11 @@ ui_a_pca <- function(id, ...) {
           title = "Plot settings",
           collapsed = TRUE,
           conditionalPanel(
-            condition =
-              paste0("input['", ns("plot_type"), "'] == 'elbow' || input['", ns("plot_type"), "'] == 'pc_var'"),
-            list(
-              checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels)
-              )
-            ),
+            condition = sprintf("input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+                                ns("plot_type"),
+                                ns("plot_type")),
+            list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
+          ),
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -216,7 +235,7 @@ ui_a_pca <- function(id, ...) {
             selected = gg_themes[1],
             multiple = FALSE
           ),
-          optionalSliderInputValMinMax(ns("font_size"),  "Font Size", args$font_size, ticks = FALSE)
+          optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
         )
       )
     ),
@@ -226,7 +245,7 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width) {
+srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width, ggplot2_args) {
   response <- dat
 
   for (i in seq_along(response)) {
@@ -234,8 +253,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     response[[i]]$select$always_selected <- NULL
     response[[i]]$select$selected <- NULL
     response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
-    response[[1]]$select$choices <- setdiff(response[[1]]$select$choices,
-                                            datasets$get_keys(response[[i]]$dataname))
+    response[[1]]$select$choices <- setdiff(
+      response[[1]]$select$choices,
+      datasets$get_keys(response[[i]]$dataname)
+    )
   }
 
   init_chunks()
@@ -259,7 +280,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     keep_cols <- as.character(anl_data()$columns_source$dat)
     na_action <- input$na_action
     standardization <- input$standardization
-    center <- standardization %in% c("center", "center_scale") #nolint
+    center <- standardization %in% c("center", "center_scale") # nolint
     scale <- standardization == "center_scale"
 
     validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
@@ -267,7 +288,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_reset(chunks = chunks_stack)
     chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
 
-    ANL <- anl_data()$data() #nolint
+    ANL <- anl_data()$data() # nolint
 
     validate_has_data(ANL, 10)
     validate_has_elements(keep_cols, "Please select columns")
@@ -277,8 +298,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     ))
     validate(need(
       na_action != "none" | !anyNA(ANL[keep_cols]),
-      paste("There are NAs in the dataset. Please deal with them in preprocessing",
-            'or select "Drop" in the NA actions inside the encodings panel (left).')
+      paste(
+        "There are NAs in the dataset. Please deal with them in preprocessing",
+        'or select "Drop" in the NA actions inside the encodings panel (left).'
+      )
     ))
 
     chunks_push(
@@ -313,7 +336,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         ),
         msg = paste0(
           "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
-          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"),
+          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
+        ),
         chunks = chunks_stack
       )
     }
@@ -363,18 +387,20 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     tagList(
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'biplot' || input['", ns("plot_type"), "'] == 'circle'"),
+        condition = sprintf("input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
+                            ns("plot_type"), ns("plot_type")),
         list(
           optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
           optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
           optionalSelectInput(
             ns("variables"), "Original coordinates",
             choices = chcs_vars, selected = chcs_vars,
-            multiple = TRUE)
+            multiple = TRUE
+          )
         )
       ),
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'elbow'"),
+        condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
         helpText("No plot specific settings available.")
       ),
       conditionalPanel(
@@ -388,8 +414,32 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   plot_elbow <- function() {
     ggtheme <- input$ggtheme
     validate(need(ggtheme, "Please select a theme."))
-    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
-    font_size <- input$font_size #nolint
+    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+    font_size <- input$font_size # nolint
+
+    angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+    hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
+      theme = list(
+        legend.position = "right",
+        legend.spacing.y = quote(unit(-5, "pt")),
+        legend.title = quote(element_text(vjust = 8)),
+        axis.text.x = substitute(element_text(angle = angle_value, hjust = hjust_value),
+                                 list(angle_value = angle_value, hjust_value = hjust_value)),
+        text = substitute(element_text(size = font_size), list(font_size = font_size))
+      )
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Elbow plot"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      ),
+      ggtheme = ggtheme
+    )
 
     chunks_push(
       id = "pca_plot",
@@ -398,38 +448,35 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
             dplyr::as_tibble(rownames = "metric") %>%
             tidyr::gather("component", "value", -metric) %>%
-            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = T))))
+            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE))))
 
           g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
             geom_bar(
               aes(fill = "Single variance"),
               data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
               color = "black",
-              stat = "identity") +
+              stat = "identity"
+            ) +
             geom_point(
               aes(color = "Cumulative variance"),
-              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
+              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
+            ) +
             geom_line(
               aes(group = 1, color = "Cumulative variance"),
-              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) +
-            ggtheme_call +
-            labs(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend") +
+              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
+            ) +
+            labs +
             scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
             scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-            theme(
-              legend.position = "right",
-              legend.spacing.y = unit(-5, "pt"),
-              legend.title = element_text(vjust = 8)) +
-            theme(axis.text.x = element_text(angle = angle_value, hjust = hjust_value)) +
-            theme(text = element_text(size = font_size))
+            ggthemes +
+            themes
 
           print(g)
         },
         env = list(
-          ggtheme_call = call(paste0("theme_", ggtheme)),
-          angle_value = ifelse(rotate_xaxis_labels, 45, 0),
-          hjust_value = ifelse(rotate_xaxis_labels, 1, 0.5),
-          font_size = font_size
+          ggthemes = parsed_ggplot2_args$ggtheme,
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme
         )
       )
     )
@@ -442,18 +489,41 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     validate(
       need(input$x_axis, "Need additional plot settings - x axis"),
       need(input$y_axis, "Need additional plot settings - y axis"),
-      need(input$variables, "Need additional plot settings - variables"))
+      need(input$variables, "Need additional plot settings - variables")
+    )
     validate(need(input$x_axis != input$y_axis, "Please choose different X and Y axes."))
 
-    x_axis <- input$x_axis #nolint
-    y_axis <- input$y_axis #nolint
-    variables <- input$variables #nolint
+    x_axis <- input$x_axis # nolint
+    y_axis <- input$y_axis # nolint
+    variables <- input$variables # nolint
 
     ggtheme <- input$ggtheme
     validate(need(ggtheme, "Please select a theme."))
 
-    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
-    font_size <- input$font_size #nolint
+    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+    font_size <- input$font_size # nolint
+
+    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+    dev_ggplot2_args <- ggplot2_args(
+      theme = list(
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
+      )
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Circle plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = ggtheme
+    )
 
     chunks_push(
       id = "pca_plot",
@@ -473,22 +543,22 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
             geom_label(
               aes_string(x = x_axis, y = y_axis, label = "label"),
               nudge_x = 0.1, nudge_y = 0.05,
-              fontface = "bold") +
+              fontface = "bold"
+            ) +
             geom_path(aes(x, y, group = 1), data = circle_data) +
             geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
-            ggtheme_call +
-            theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
-            theme(text = element_text(size = font_size))
+            labs +
+            ggthemes +
+            themes
           print(g)
         },
         env = list(
           x_axis = x_axis,
           y_axis = y_axis,
           variables = variables,
-          ggtheme_call = call(paste0("theme_", ggtheme)),
-          angle = ifelse(rotate_xaxis_labels, 45, 0),
-          hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
-          font_size = font_size
+          ggthemes = parsed_ggplot2_args$ggtheme,
+          labs = utils.nest::if_null(parsed_ggplot2_args$labs, quote(labs())),
+          themes = parsed_ggplot2_args$theme
         )
       )
     )
@@ -500,23 +570,25 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   plot_biplot <- function() {
     validate(
       need(input$x_axis, "Need additional plot settings - x axis"),
-      need(input$y_axis, "Need additional plot settings - y axis"))
+      need(input$y_axis, "Need additional plot settings - y axis")
+    )
     validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
 
     rd <- response_data()
+
     resp_col <- as.character(rd$columns_source$response)
-    x_axis <- input$x_axis #nolint
-    y_axis <- input$y_axis #nolint
-    variables <- input$variables #nolint
+    x_axis <- input$x_axis # nolint
+    y_axis <- input$y_axis # nolint
+    variables <- input$variables # nolint
     pca <- chunks_get_var("pca")
 
     ggtheme <- input$ggtheme
     validate(need(ggtheme, "Please select a theme."))
 
-    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
+    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
     alpha <- input$alpha # nolint
     size <- input$size # nolint
-    font_size <- input$font_size #nolint
+    font_size <- input$font_size # nolint
 
     chunks_push(
       id = "pca_plot_data_rot",
@@ -553,8 +625,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
                 tibble::column_to_rownames("label") %>%
                 sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
                 tibble::rownames_to_column("label") %>%
-                dplyr::mutate(xstart = mean(pca$x[, x_axis], na.rm = TRUE),
-                              ystart = mean(pca$x[, y_axis], na.rm = TRUE))
+                dplyr::mutate(
+                  xstart = mean(pca$x[, x_axis], na.rm = TRUE),
+                  ystart = mean(pca$x[, y_axis], na.rm = TRUE)
+                )
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
           )
@@ -572,131 +646,147 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       )
     }
 
+    pca_plot_biplot_expr <- list(quote(ggplot()))
+
     if (length(resp_col) == 0) {
-      chunks_push(
-        id = "pca_plot_biplot",
+      pca_plot_biplot_expr <- c(
+        pca_plot_biplot_expr,
         substitute(
-          expr = {
-            g <- ggplot() +
-              geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size) +
-              ggtheme_call +
-              theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
-              theme(text = element_text(size = font_size))
-          },
-          env = list(
-            x_axis = x_axis,
-            y_axis = y_axis,
-            alpha = alpha,
-            size = size,
-            ggtheme_call = call(paste0("theme_", ggtheme)),
-            angle = ifelse(rotate_xaxis_labels, 45, 0),
-            hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
-            font_size = font_size
-          )
+          geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
+          list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
         )
       )
+      dev_labs <- list()
     } else {
       ANL <- chunks_get_var("ANL") # nolint
       validate(need(
         !resp_col %in% colnames(ANL),
-        "Response column must be different from the original variables (that were used for PCA)."))
-
+        "Response column must be different from the original variables (that were used for PCA)."
+      ))
       rp <- chunks_get_var("RP")
+
       rp_keys <- setdiff(colnames(rp), as.character(unlist(rd$columns_source))) # nolint
 
       response <- rp[[resp_col]]
 
-      chunks_push(
-        id = "pca_plot_response",
-        expression = if (is.character(response) ||
-                         is.factor(response) ||
-                         (is.numeric(response) && length(unique(response)) <= 6)) {
-          substitute(
-            expr = {
-              response <- RP[[resp_col]]
-              pca_rot$response <- as.factor(response)
-              scale_colors <- scale_color_brewer(palette = "Dark2")
-              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
-            },
-            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
-          )
-        } else if (class(response) == "Date") {
-          substitute(
-            expr = {
-              response <- RP[[resp_col]]
-              pca_rot$response <- as.numeric(response)
-              scale_colors <- scale_color_gradient(
-                low = "darkred",
-                high = "lightblue",
-                labels = function(x) as.Date(x, origin = "1970-01-01"))
-              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
-            },
-            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
-          )
-        } else {
-          substitute(
-            expr = {
-              response <- RP[[resp_col]]
-              pca_rot$response <- response
-              scale_colors <- scale_color_gradient(low = "darkred", high = "lightblue")
-              aes_biplot <- aes_string(x = x_axis, y = y_axis, color = "response")
-            },
-            env = list(resp_col = resp_col, x_axis = x_axis, y_axis = y_axis)
-          )
-        }
+      aes_biplot <- substitute(
+        aes_string(x = x_axis, y = y_axis, color = "response"),
+        env = list(x_axis = x_axis, y_axis = y_axis)
       )
 
       chunks_push(
-        id = "pca_plot_biplot",
-        expression = substitute(
-          expr = {
-            g <- ggplot() +
-              geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size) +
-              scale_colors +
-              ggtheme_call +
-              labs(color = color) +
-              theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
-              theme(text = element_text(size = font_size))
-          },
-          env = list(
-            alpha = alpha,
-            size = size,
-            ggtheme_call = call(paste0("theme_", ggtheme)),
-            color = varname_w_label(resp_col, rp),
-            angle = ifelse(rotate_xaxis_labels, 45, 0),
-            hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
-            font_size = font_size
+        id = "pca_plot_response_base",
+        substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col))
+      )
+
+      dev_labs <- list(color = varname_w_label(resp_col, rp))
+
+      scales_biplot <- if (is.character(response) ||
+          is.factor(response) ||
+          (is.numeric(response) && length(unique(response)) <= 6)) {
+        chunks_push(
+          id = "pca_plot_response",
+          quote(pca_rot$response <- as.factor(response))
+        )
+        quote(scale_color_brewer(palette = "Dark2"))
+      } else if (class(response) == "Date") {
+        chunks_push(
+          id = "pca_plot_response",
+          quote(pca_rot$response <- numeric(response))
+        )
+
+        quote(
+          scale_color_gradient(
+            low = "darkred",
+            high = "lightblue",
+            labels = function(x) as.Date(x, origin = "1970-01-01")
           )
         )
+      } else {
+        chunks_push(
+          id = "pca_plot_response",
+          quote(pca_rot$response <- response)
+        )
+        quote(scale_color_gradient(low = "darkred", high = "lightblue"))
+      }
+
+      pca_plot_biplot_expr <- c(
+        pca_plot_biplot_expr,
+        substitute(
+          geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
+          env = list(aes_biplot = aes_biplot, alpha = alpha, size = size)
+        ),
+        scales_biplot
       )
     }
 
     if (!is.null(input$variables)) {
-      chunks_push(
-        id = "pca_plot_arrow_plot",
-        expression = substitute(
-          expr = {
-            g <- g +
-              geom_segment(
-                aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
-                data = rot_vars,
-                lineend = "round", linejoin = "round",
-                arrow = arrow(length = unit(0.5, "cm"))) +
-              geom_label(
-                aes_string(x = x_axis, y = y_axis, label = "label"),
-                data = rot_vars,
-                nudge_y = 0.1,
-                fontface = "bold") +
-              geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5)
-          },
+      pca_plot_biplot_expr <- c(
+        pca_plot_biplot_expr,
+        substitute(
+          geom_segment(
+            aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
+            data = rot_vars,
+            lineend = "round", linejoin = "round",
+            arrow = arrow(length = unit(0.5, "cm"))
+          ),
           env = list(x_axis = x_axis, y_axis = y_axis)
-        )
+        ),
+        substitute(
+          geom_label(
+            aes_string(
+              x = x_axis,
+              y = y_axis,
+              label = "label"
+            ),
+            data = rot_vars,
+            nudge_y = 0.1,
+            fontface = "bold"
+          ),
+          env = list(x_axis = x_axis, y_axis = y_axis)
+        ),
+        quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
       )
     }
 
+    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+    dev_ggplot2_args <- ggplot2_args(
+      labs = dev_labs,
+      theme = list(
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
+      )
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Biplot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = ggtheme
+    )
+
+    pca_plot_biplot_expr <- c(
+      pca_plot_biplot_expr,
+      parsed_ggplot2_args
+    )
+
     chunks_push(
       id = "pca_plot_final",
-      expression = quote(print(g))
+      expression = substitute({
+        g <- plot_call
+        print(g)
+      },
+      env = list(
+        plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
+      )
+      )
     )
 
     invisible(NULL)
@@ -706,13 +796,59 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   plot_pc_var <- function() {
     validate(need(input$pc, "Need additional plot settings - PC"))
 
-    pc <- input$pc #nolint
+    pc <- input$pc # nolint
 
     ggtheme <- input$ggtheme
     validate(need(ggtheme, "Please select a theme."))
 
-    rotate_xaxis_labels <- input$rotate_xaxis_labels #nolint
-    font_size <- input$font_size #nolint
+    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+    font_size <- input$font_size # nolint
+
+    angle <- ifelse(rotate_xaxis_labels, 45, 0)
+    hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)
+
+    dev_ggplot2_args <- ggplot2_args(
+      theme = list(
+        text = substitute(element_text(size = font_size), list(font_size = font_size)),
+        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
+                                 list(angle_val = angle, hjust_val = hjust))
+      )
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Eigenvector plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = ggtheme
+    )
+
+    ggplot_exprs <- c(
+      list(
+        quote(ggplot(pca_rot)),
+        substitute(
+          geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue"),
+          env = list(pc = pc)
+        ),
+        substitute(
+          geom_text(
+            aes(
+              x = Variable,
+              y = pc_name,
+              label = round(pc_name, 3),
+              vjust = ifelse(pc_name > 0, -0.5, 1.3)
+            )
+          ),
+          env = list(pc_name = as.name(pc))
+        )
+      ),
+      parsed_ggplot2_args$labs,
+      parsed_ggplot2_args$ggtheme,
+      parsed_ggplot2_args$theme
+    )
 
     chunks_push(
       id = "pca_plot",
@@ -721,29 +857,13 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
             dplyr::as_tibble(rownames = "Variable")
 
-          g <- ggplot(pca_rot) +
-            geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue") +
-            geom_text(
-              aes_q(
-                x = quote(Variable),
-                y = as.name(pc),
-                label = quote(round(pc_sym, 3)),
-                vjust = quote(ifelse(pc_sym > 0, -0.5, 1.3))
-              )
-            ) +
-            ggtheme_call +
-            theme(axis.text.x = element_text(angle = angle, hjust = hjust)) +
-            theme(text = element_text(size = font_size))
+          g <- plot_call
 
           print(g)
         },
         env = list(
           pc = pc,
-          pc_sym = rlang::sym(pc),
-          ggtheme_call = call(paste0("theme_", ggtheme)),
-          angle = ifelse(rotate_xaxis_labels, 45, 0),
-          hjust = ifelse(rotate_xaxis_labels, 1, 0.5),
-          font_size = font_size
+          plot_call = utils.nest::calls_combine_by("+", ggplot_exprs)
         )
       )
     )
@@ -756,22 +876,18 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_reset()
     chunks_push_chunks(computation())
 
-    if (input$plot_type == "elbow") {
+    if (input$plot_type == "Elbow plot") {
       plot_elbow()
-
-    } else if (input$plot_type == "circle") {
+    } else if (input$plot_type == "Circle plot") {
       plot_circle()
-
-    } else if (input$plot_type == "biplot") {
+    } else if (input$plot_type == "Biplot") {
       if (length(response_data()$columns_source$response) > 0) {
         chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
       }
 
       plot_biplot()
-
-    } else if (input$plot_type == "pc_var") {
+    } else if (input$plot_type == "Eigenvector plot") {
       plot_pc_var()
-
     } else {
       stop("Unknown plot")
     }
@@ -793,7 +909,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     req("importance" %in% input$tables_display)
     chunks_stack <- computation()
     chunks_get_var("tbl_importance", chunks = chunks_stack)
-  }, bordered = TRUE, align = "c", digits = 3)
+  },
+  bordered = TRUE,
+  align = "c",
+  digits = 3
+  )
 
   output$tbl_importance_ui <- renderUI({
     req("importance" %in% input$tables_display)
@@ -808,7 +928,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     req("eigenvector" %in% input$tables_display)
     chunks_stack <- computation()
     chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
-  }, bordered = TRUE, align = "c", digits = 3)
+  },
+  bordered = TRUE,
+  align = "c",
+  digits = 3
+  )
 
   output$tbl_eigenvector_ui <- renderUI({
     req("eigenvector" %in% input$tables_display)
@@ -818,7 +942,6 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       align = "center"
     )
   })
-
 
   callModule(
     get_rcode_srv,

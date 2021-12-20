@@ -3,16 +3,12 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable X - row values.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
-#' @param basic_table_args (`basic_table_args`) object created by [`teal.devel::basic_table_args()`]
-#'  with settings for the module table.
-#'  For more details see the help vignette:
-#'  `vignette("Custom basic_table arguments module", package = "teal.devel")`
-#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
 #' @param show_percentage optional, (`logical`) Whether to show percentages
 #'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
@@ -64,8 +60,7 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
-#'       ),
-#'      basic_table_args = teal.devel::basic_table_args(main_footer = "NEST PROJECT")
+#'       )
 #'     )
 #'   )
 #' )
@@ -90,7 +85,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     is_logical_single(show_total),
     list(
       (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-      (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     )
   )
@@ -263,7 +258,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
         split_call = if (show_total) {
           substitute(
             expr = rtables::split_cols_by(
-              y_name, split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+              y_name,
+              split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
             ),
             env = list(y_name = y_name)
           )

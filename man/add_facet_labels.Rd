@@ -28,7 +28,7 @@ library(ggplot2)
 library(grid)
 
 p <- ggplot(mtcars) +
-aes(x = mpg, y = disp) +
+  aes(x = mpg, y = disp) +
   geom_point() +
   facet_grid(gear ~ cyl)
 p

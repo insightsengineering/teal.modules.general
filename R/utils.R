@@ -13,6 +13,16 @@
 #'   \code{gg_themes} is defined internally as
 #'   \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 #'   All themes can be chosen by the user. Defaults to \code{gray}.
+#' @param ggplot2_args (`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
+#'  with settings for the module plot.
+#'  For more details see the help vignette:
+#'  `vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#' @param basic_table_args (`basic_table_args`) object created by [teal.devel::basic_table_args()]
+#'  with settings for the module table.
+#'  For more details see the help vignette:
+#'  `vignette("Custom basic_table arguments module", package = "teal.devel")`
+#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
 #' @name shared_params
 NULL
@@ -38,7 +48,7 @@ NULL
 #' library(grid)
 #'
 #' p <- ggplot(mtcars) +
-#' aes(x = mpg, y = disp) +
+#'   aes(x = mpg, y = disp) +
 #'   geom_point() +
 #'   facet_grid(gear ~ cyl)
 #' p
@@ -179,14 +189,11 @@ varname_w_label <- function(var_names,
                             wrap_width = 80,
                             prefix = NULL,
                             suffix = NULL) {
-
   add_label <- function(var_names) {
-
     label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
       paste0(prefix, label, " [", var_names, "]", suffix)
-
     } else {
       var_names
     }
@@ -194,10 +201,8 @@ varname_w_label <- function(var_names,
 
   if (length(var_names) < 1) {
     NULL
-
   } else if (length(var_names) == 1) {
     stringr::str_wrap(add_label(var_names), width = wrap_width)
-
   } else if (length(var_names) > 1) {
     stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
   }

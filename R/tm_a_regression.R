@@ -24,13 +24,8 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #'
-#' @param ggplot2_args optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-#'  with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-#'  For more details see the help vignette:
-#'  `vignette("Custom ggplot2 arguments module", package = "teal.devel")`
-#'  List names should match the following: `"default", "Response vs Regressor", "Residuals vs Fitted",
-#'  "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"`
-#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#' @templateVar ggnames `r regression_names`
+#' @template ggplot2_args_multi
 #'
 #' @note For more examples, please see the vignette "Using regression plots" via
 #'   `vignette("using-regression-plots", package = "teal.modules.general")`.
@@ -70,8 +65,7 @@
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
-#'       ),
-#'       ggplot2_args = teal.devel::ggplot2_args(labs = list("caption" = "NEST PROJECT"))
+#'       )
 #'     )
 #'   )
 #' )
@@ -86,13 +80,11 @@ tm_a_regression <- function(label = "Regression Analysis",
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
                             ggtheme = gg_themes,
+                            ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID",
-                            ggplot2_args = teal.devel::ggplot2_args()
-                            ) {
-
+                            default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
   if (!is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
@@ -109,14 +101,14 @@ tm_a_regression <- function(label = "Regression Analysis",
     list(
       all(vapply(response, function(x) {
         !isTRUE(x$select$multiple)
-        }, logical(1))),
+      }, logical(1))),
       "Response variable should not allow multiple selection"
-      ),
+    ),
     is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_ui
     is_character_single(ggtheme),
     is_character_single(default_outlier_label)
-    )
+  )
 
   plot_choices <- c(
     "Response vs Regressor",
@@ -127,31 +119,24 @@ tm_a_regression <- function(label = "Regression Analysis",
     "Residuals vs Leverage",
     "Cook's dist vs Leverage"
   )
-
-  is_ggplot2_args <- inherits(ggplot2_args, "ggplot2_args")
-
-  is_nested_ggplot2_args <- utils.nest::is_class_list("ggplot2_args")(ggplot2_args)
-
-  stop_if_not(
-    list(
-      is_ggplot2_args || (is_nested_ggplot2_args && (all(names(ggplot2_args) %in% c("default", plot_choices)))),
-      paste0(
-        "Please use the teal.devel::ggplot2_args() function to generate input for ggplot2_args argument.\n",
-        "ggplot2_args argument has to be a ggplot2_args class or named list of such objects.\n",
-        "If it is a named list then each name has to be one of ",
-        paste(c("default", plot_choices), collapse = ", ")
-      )
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
     )
   )
-
   # Important step, so we could easily consume it later
-  if (is_ggplot2_args) ggplot2_args <- list(default = ggplot2_args)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
+  )
 
   # Send ui args
   args <- as.list(environment())
@@ -221,13 +206,15 @@ ui_a_regression <- function(id, ...) {
             span(
               class = "tooltiptext",
               paste(
-              "Use the slider to choose the cut-off value to define outliers.",
-              "Points with a Cook's distance greater than",
-              "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+                "Use the slider to choose the cut-off value to define outliers.",
+                "Points with a Cook's distance greater than",
+                "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
               )
             )
           )
-        ), min = 1, max = 10, value = 9, ticks = FALSE, step = .1)),
+        ),
+        min = 1, max = 10, value = 9, ticks = FALSE, step = .1
+      )),
       shinyjs::hidden(optionalSelectInput(
         ns("label_var"),
         multiple = FALSE,
@@ -275,7 +262,8 @@ srv_a_regression <- function(input,
   regression_var <- reactive(
     list(
       response = as.vector(merged_data()$columns_source$response),
-      regressor = as.vector(merged_data()$columns_source$regressor))
+      regressor = as.vector(merged_data()$columns_source$regressor)
+    )
   )
 
   # sets chunk object and populates it with data merge call and fit expression
@@ -294,24 +282,26 @@ srv_a_regression <- function(input,
       need(
         length(regression_var()$regressor) > 0,
         "At least one regressor should be selected."
-        )
       )
+    )
     validate(
       need(
         length(regression_var()$response) == 1,
         "Response variable should be of length one."
-        )
       )
+    )
     validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
     validate(
       need(
         input$plot_type != "Response vs Regressor" || length(regression_var()$regressor) == 1,
         "Response vs Regressor is only provided for exactly one regressor"
-        )
       )
+    )
 
     validate_has_data(
-      ANL[, c(regression_var()$response, regression_var()$regressor)], 10, complete = TRUE, allow_inf = FALSE)
+      ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
+      complete = TRUE, allow_inf = FALSE
+    )
 
     form <- stats::as.formula(
       paste(
@@ -342,9 +332,12 @@ srv_a_regression <- function(input,
       for (regressor in names(fit$contrasts)) {
         alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
         names(fit$coefficients) <- gsub(
-          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients))
-      }}),
-      chunks = chunks_stack)
+          paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
+        )
+      }
+    }),
+    chunks = chunks_stack
+    )
 
     chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
 
@@ -373,7 +366,8 @@ srv_a_regression <- function(input,
         inputId = "outlier",
         min = 1,
         max = max_outlier,
-        value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
+        value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9
+      )
     }
 
     chunks_stack
@@ -385,7 +379,8 @@ srv_a_regression <- function(input,
       expr = dplyr::if_else(
         data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
         as.character(stats::na.omit(ANL)[[label_var]]),
-        "") %>%
+        ""
+      ) %>%
         dplyr::if_else(is.na(.), "cooksd == NaN", .),
       env = list(outliers = input$outlier, label_var = input$label_var)
     )
@@ -440,7 +435,7 @@ srv_a_regression <- function(input,
           expr = ggplot(
             fit$model[, 2:1],
             aes_string(regressor, response)
-            ) +
+          ) +
             geom_point(size = size, alpha = alpha) +
             stat_smooth(
               method = "lm",
@@ -458,7 +453,8 @@ srv_a_regression <- function(input,
         shinyjs::hide("size")
         shinyjs::hide("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) + geom_boxplot(),
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
+            geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
         if (show_outlier) {
@@ -466,16 +462,16 @@ srv_a_regression <- function(input,
         }
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Response vs Regressor"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
               title = "Response vs Regressor",
               x = varname_w_label(regression_var()$regressor, ANL),
               y = varname_w_label(regression_var()$response, ANL)
-              ),
+            ),
             theme = list()
           )
         ),
@@ -489,12 +485,10 @@ srv_a_regression <- function(input,
             class(fit$residuals) <- NULL
             data <- fortify(fit)
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -530,9 +524,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Residuals vs Fitted"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -546,17 +540,15 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_1a",
+        id = "plot_1a",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.fitted, data$.resid)
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -588,9 +580,9 @@ srv_a_regression <- function(input,
         )
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Normal Q-Q"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -604,16 +596,14 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_2",
+        id = "plot_2",
         expression = substitute(
           expr = {
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -632,9 +622,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Scale-Location"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -648,17 +638,15 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_3",
+        id = "plot_3",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -668,7 +656,8 @@ srv_a_regression <- function(input,
       shinyjs::hide("size")
       shinyjs::show("alpha")
       plot <- substitute(
-        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) + geom_col(alpha = alpha),
+        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
+          geom_col(alpha = alpha),
         env = list(alpha = alpha)
       )
       if (show_outlier) {
@@ -677,9 +666,11 @@ srv_a_regression <- function(input,
             geom_hline(
               yintercept = c(
                 outlier * mean(data$.cooksd, na.rm = TRUE),
-                mean(data$.cooksd, na.rm = TRUE)),
+                mean(data$.cooksd, na.rm = TRUE)
+              ),
               color = "red",
-              linetype = "dashed") +
+              linetype = "dashed"
+            ) +
             geom_text(
               aes(
                 x = 0,
@@ -688,17 +679,19 @@ srv_a_regression <- function(input,
                 vjust = -1,
                 hjust = 0,
                 color = "red",
-                angle = 90),
+                angle = 90
+              ),
               parse = TRUE,
-              show.legend = FALSE) +
+              show.legend = FALSE
+            ) +
             outlier_label,
           env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
         )
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Cook's distance"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -712,16 +705,14 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_4",
+        id = "plot_4",
         expression = substitute(
           expr = {
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -753,9 +744,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Residuals vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -769,17 +760,15 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_5",
+        id = "plot_5",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -805,9 +794,9 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      gg_args_exprs <- parse_ggplot2_args(
+      parsed_ggplot2_args <- parse_ggplot2_args(
         resolve_ggplot2_args(
-          user_plot = ggplot2_args[[input$plot_type]],
+          user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
             labs = list(
@@ -821,17 +810,15 @@ srv_a_regression <- function(input,
       )
 
       chunks_push(
-        id =  "plot_6",
+        id = "plot_6",
         expression = substitute(
           expr = {
             smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
-            g <- gg_args_call
             print(g)
           },
           env = list(
-            plot = plot,
-            gg_args_call = utils.nest::calls_combine_by("+", c(as.name("g"), gg_args_exprs))
+            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -842,12 +829,12 @@ srv_a_regression <- function(input,
     } else {
       plot_base()
       switch(input_type,
-        "Residuals vs Fitted" = plot_type_1(),
-        "Normal Q-Q" = plot_type_2(),
-        "Scale-Location" =  plot_type_3(),
-        "Cook's distance" =  plot_type_4(),
-        "Residuals vs Leverage" =  plot_type_5(),
-        "Cook's dist vs Leverage" =  plot_type_6()
+             "Residuals vs Fitted" = plot_type_1(),
+             "Normal Q-Q" = plot_type_2(),
+             "Scale-Location" =  plot_type_3(),
+             "Cook's distance" =  plot_type_4(),
+             "Residuals vs Leverage" =  plot_type_5(),
+             "Cook's dist vs Leverage" =  plot_type_6()
       )
     }
 
@@ -884,3 +871,8 @@ srv_a_regression <- function(input,
     )
   )
 }
+
+regression_names <- paste0(
+  '"Response vs Regressor", "Residuals vs Fitted", ',
+  '"Scale-Location", "Cook\'s distance", "Residuals vs Leverage"", "Cook\'s dist vs Leverage"'
+)

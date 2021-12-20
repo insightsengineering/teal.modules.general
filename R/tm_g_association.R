@@ -19,6 +19,9 @@
 #'   `gg_themes` is defined internally as
 #'   `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`
 #'
+#' @templateVar ggnames "Bivariate1", "Bivariate2"
+#' @template ggplot2_args_multi
+#'
 #' @note For more examples, please see the vignette "Using association plot" via
 #'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
 #' @export
@@ -75,7 +78,8 @@ tm_g_association <- function(label = "Association",
                              distribution_theme = gg_themes,
                              association_theme = gg_themes,
                              pre_output = NULL,
-                             post_output = NULL) {
+                             post_output = NULL,
+                             ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
   if (!is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
@@ -88,18 +92,33 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_class_list("data_extract_spec")(ref))
   stop_if_not(list(
     all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
-    "'ref' should not allow multiple selection"))
+    "'ref' should not allow multiple selection"
+  ))
   stopifnot(is_class_list("data_extract_spec")(vars))
   stopifnot(is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
+  )
   distribution_theme <- match.arg(distribution_theme)
   stopifnot(is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)
   stopifnot(is_character_single(association_theme))
+
+  plot_choices <- c("Bivariate1", "Bivariate2")
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
+    )
+  )
+  # Important step, so we could easily consume it later
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -113,11 +132,13 @@ tm_g_association <- function(label = "Association",
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
-
 
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
@@ -146,16 +167,16 @@ ui_tm_g_association <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       checkboxInput(ns("association"),
-        "Association with the reference variable",
-        value = args$show_association
+                    "Association with the reference variable",
+                    value = args$show_association
       ),
       checkboxInput(ns("show_dist"),
-        "Distribution",
-        value = FALSE
+                    "Distribution",
+                    value = FALSE
       ),
       checkboxInput(ns("log_transformation"),
-        "Log transformed",
-        value = FALSE
+                    "Log transformed",
+                    value = FALSE
       ),
       panel_group(
         panel_item(
@@ -197,8 +218,8 @@ srv_tm_g_association <- function(input,
                                  ref,
                                  vars,
                                  plot_height,
-                                 plot_width) {
-
+                                 plot_width,
+                                 ggplot2_args) {
   init_chunks()
 
   selector_list <- data_extract_multiple_srv(data_extract = list(ref = ref, vars = vars), datasets = datasets)
@@ -258,17 +279,24 @@ srv_tm_g_association <- function(input,
       ref_cl_name <- as.name(ref_name)
       ref_cl_lbl <- varname_w_label(ref_name, ANL)
     }
+
+    user_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Bivariate1"]],
+      user_default = ggplot2_args$default
+    )
+
     ref_call <- bivariate_plot_call(
       data_name = "ANL",
       x = ref_cl_name,
       x_class = ref_class,
       x_label = ref_cl_lbl,
       freq = !show_dist,
-      theme = call(paste0("theme_", distribution_theme)),
+      theme = distribution_theme,
       rotate_xaxis_labels = rotate_xaxis_labels,
       swap_axes = FALSE,
       size = size,
-      alpha = alpha
+      alpha = alpha,
+      ggplot2_args = user_ggplot2_args
     )
 
     # association
@@ -306,6 +334,12 @@ srv_tm_g_association <- function(input,
         var_cl_name <- as.name(var_i)
         var_cl_lbl <- varname_w_label(var_i, ANL)
       }
+
+      user_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Bivariate2"]],
+        user_default = ggplot2_args$default
+      )
+
       bivariate_plot_call(
         data_name = "ANL",
         x = ref_cl_name,
@@ -314,12 +348,13 @@ srv_tm_g_association <- function(input,
         y_class = var_class,
         x_label = ref_cl_lbl,
         y_label = var_cl_lbl,
-        theme = call(paste0("theme_", association_theme)),
+        theme = association_theme,
         freq = !show_dist,
         rotate_xaxis_labels = rotate_xaxis_labels,
         swap_axes = swap_axes,
         alpha = alpha,
-        size = size
+        size = size,
+        ggplot2_args = user_ggplot2_args
       )
     })
 

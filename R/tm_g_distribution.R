@@ -21,6 +21,10 @@
 #'   vector of length three with `c(value, min, max)`.
 #'   Defaults to `c(30L, 1L, 100L)`.
 #'
+#' @templateVar ggnames "Histogram", "QQplot"
+#' @template ggplot2_args_multi
+#'
+#'
 #' @export
 #'
 #' @examples
@@ -88,6 +92,8 @@ tm_g_distribution <- function(label = "Distribution Module",
                               strata_var = NULL,
                               group_var = NULL,
                               freq = FALSE,
+                              ggtheme = gg_themes,
+                              ggplot2_args = teal.devel::ggplot2_args(),
                               bins = c(30L, 1L, 100L),
                               plot_height = c(600, 200, 2000),
                               plot_width = NULL,
@@ -106,20 +112,34 @@ tm_g_distribution <- function(label = "Distribution Module",
     group_var <- list_or_null(group_var)
   }
 
+  ggtheme <- match.arg(ggtheme)
+
   if (length(bins) == 1) {
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
   } else {
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
+    is_character_single(ggtheme),
     is_logical_single(freq)
   )
+
+  plot_choices <- c("Histogram", "QQplot")
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
+    )
+  )
+  # Important step, so we could easily consume it later
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -132,12 +152,14 @@ tm_g_distribution <- function(label = "Distribution Module",
   module(
     label = label,
     server = srv_distribution,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+    ),
     ui = ui_distribution,
     ui_args = args,
     filters = get_extract_datanames(data_extract_list)
   )
-
 }
 
 ui_distribution <- function(id, ...) {
@@ -273,6 +295,16 @@ ui_distribution <- function(id, ...) {
           label = "Overlay params table",
           value = TRUE
         )
+      ),
+      panel_item(
+        title = "Plot settings",
+        optionalSelectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = gg_themes,
+          selected = args$ggtheme,
+          multiple = FALSE
+        )
       )
     ),
     forms = get_rcode_ui(ns("rcode")),
@@ -289,8 +321,8 @@ srv_distribution <- function(input,
                              strata_var,
                              group_var,
                              plot_height,
-                             plot_width) {
-
+                             plot_width,
+                             ggplot2_args) {
   init_chunks()
 
   merged_data <- data_merge_module(
@@ -298,38 +330,37 @@ srv_distribution <- function(input,
     data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
   )
 
-  observeEvent(list(
-    input$t_dist,
-    input$params_reset,
-    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
-  ), {
-    if (length(input$t_dist) != 0) {
-      dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+  observeEvent(list(input$t_dist,
+                    input$params_reset,
+                    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]),
+               { # nolint
+                 if (length(input$t_dist) != 0) {
+                   dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
-      get_dist_params <- function(x, dist) {
-        if (dist == "unif") {
-          res <- as.list(range(x))
-          names(res) <- c("min", "max")
-          return(res)
-        }
-        tryCatch(
-          as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-          error = function(e) list(param1 = NA, param2 = NA)
-        )
-      }
-      ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-      params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
-      params_vec <- round(unname(unlist(params)), 2)
-      params_names <- names(params)
+                   get_dist_params <- function(x, dist) {
+                     if (dist == "unif") {
+                       res <- as.list(range(x))
+                       names(res) <- c("min", "max")
+                       return(res)
+                     }
+                     tryCatch(
+                       as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+                       error = function(e) list(param1 = NA, param2 = NA)
+                     )
+                   }
+                   ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+                   params <- get_dist_params(ANL[[dist_var2]], input$t_dist)
+                   params_vec <- round(unname(unlist(params)), 2)
+                   params_names <- names(params)
 
-      updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-      updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-    } else {
-      updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-      updateNumericInput(session, "dist_param2", label = "param2", value = NA)
-    }
-  },
-  ignoreInit = TRUE
+                   updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+                   updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+                 } else {
+                   updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+                   updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+                 }
+               },
+               ignoreInit = TRUE
   )
 
   merge_vars <- reactive({
@@ -341,12 +372,14 @@ srv_distribution <- function(input,
     s_var_name <- if (length(s_var)) as.name(s_var) else NULL
     g_var_name <- if (length(g_var)) as.name(g_var) else NULL
 
-    list(dist_var = dist_var,
-         s_var = s_var,
-         g_var = g_var,
-         dist_var_name = dist_var_name,
-         s_var_name = s_var_name,
-         g_var_name = g_var_name)
+    list(
+      dist_var = dist_var,
+      s_var = s_var,
+      g_var = g_var,
+      dist_var_name = dist_var_name,
+      s_var_name = s_var_name,
+      g_var_name = g_var_name
+    )
   })
 
   # common chunks ----
@@ -490,6 +523,7 @@ srv_distribution <- function(input,
       input$main_type
       input$bins
       input$add_dens
+      is.null(input$ggtheme)
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -524,6 +558,9 @@ srv_distribution <- function(input,
       main_type_var <- input$main_type
       bins_var <- input$bins
       add_dens_var <- input$add_dens
+      ggtheme <- input$ggtheme
+
+      validate(need(ggtheme, "Please select a theme."))
 
       m_type <- if (main_type_var == "Density") "..density.." else "..count.."
       m_type2 <- if (main_type_var == "Density") {
@@ -623,10 +660,11 @@ srv_distribution <- function(input,
           ))
         }
 
-        label <-  if (!is_empty(g_var)) {
+        label <- if (!is_empty(g_var)) {
           substitute(
             expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name))
+            env = list(g_var = g_var, g_var_name = g_var_name)
+          )
         } else {
           substitute(expr = tb, env = list())
         }
@@ -641,40 +679,48 @@ srv_distribution <- function(input,
         )
       }
 
-      if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density..") {
-        if (length(t_dist) != 0 && m_type == "..density..") {
-          map_dist <- stats::setNames(
-            c("dnorm", "dlnorm", "dgamma", "dunif"),
-            c("normal", "lognormal", "gamma", "unif")
+      if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
+          length(t_dist) != 0 && m_type == "..density..") {
+        map_dist <- stats::setNames(
+          c("dnorm", "dlnorm", "dgamma", "dunif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+        plot_call <- substitute(
+          expr = plot_call + stat_function(
+            data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
+            aes(x, color = color),
+            fun = mapped_dist,
+            n = ndensity,
+            size = 2,
+            args = params
+          ) +
+            scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
+          env = list(
+            plot_call = plot_call,
+            dist_var = dist_var,
+            ndensity = ndensity,
+            mapped_dist = unname(map_dist[t_dist])
           )
-
-          plot_call <- substitute(
-            expr = plot_call + stat_function(
-              data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-              aes(x, color = color),
-              fun = mapped_dist,
-              n = ndensity,
-              size = 2,
-              args = params
-            ) +
-              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color") +
-              theme(legend.position = "right"),
-            env = list(
-              plot_call = plot_call,
-              dist_var = dist_var,
-              ndensity = ndensity,
-              mapped_dist = unname(map_dist[t_dist])
-            )
-          )
-        }
+        )
       }
 
-      distplot_stack_push(substitute(
-        expr = g <- plot_call,
-        env = list(plot_call = plot_call)
-      ))
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Histogram"]],
+        user_default = ggplot2_args$default
+      )
 
-      distplot_stack_push(quote(print(g)))
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      distplot_stack_push(substitute(
+        expr = {
+          g <- plot_call
+          print(g)
+        },
+        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+      ))
 
       chunks_safe_eval(distplot_stack)
 
@@ -689,6 +735,7 @@ srv_distribution <- function(input,
       input$scales_type
       input$add_stats_plot
       input$qq_line
+      is.null(input$ggtheme)
     },
     valueExpr = {
       # Create a private stack for this function only.
@@ -719,7 +766,9 @@ srv_distribution <- function(input,
 
       scales_type <- input$scales_type
       add_stats_plot <- input$add_stats_plot
+      ggtheme <- input$ggtheme
 
+      validate(need(ggtheme, "Please select a theme."))
       validate(need(t_dist, "Please select the theoretical distribution."))
       validate_dist_parameters(t_dist, dist_param1, dist_param2)
 
@@ -768,9 +817,7 @@ srv_distribution <- function(input,
 
       plot_call <- substitute(
         expr = plot_call +
-          stat_qq(distribution = mapped_dist, dparams = params) +
-          xlab("theoretical") +
-          ylab("sample"),
+          stat_qq(distribution = mapped_dist, dparams = params),
         env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
       )
 
@@ -797,10 +844,11 @@ srv_distribution <- function(input,
           ))
         }
 
-        label <-  if (!is_empty(g_var)) {
+        label <- if (!is_empty(g_var)) {
           substitute(
             expr = split(tb$summary_table, tb$summary_table$g_var_name, drop = TRUE),
-            env = list(g_var = g_var, g_var_name = g_var_name))
+            env = list(g_var = g_var, g_var_name = g_var_name)
+          )
         } else {
           substitute(expr = tb, env = list())
         }
@@ -833,12 +881,24 @@ srv_distribution <- function(input,
         )
       }
 
-      qqplot_stack_push(substitute(
-        expr = g <- plot_call,
-        env = list(plot_call = plot_call)
-      ))
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["QQplot"]],
+        user_default = ggplot2_args$default,
+        module_plot = ggplot2_args(labs = list(x = "theoretical", y = "sample"))
+      )
 
-      qqplot_stack_push(quote(print(g)))
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      qqplot_stack_push(substitute(
+        expr = {
+          g <- plot_call
+          print(g)
+        },
+        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+      ))
 
       chunks_safe_eval(qqplot_stack)
 
@@ -909,13 +969,16 @@ srv_distribution <- function(input,
       )) {
         validate(need(s_var, "Please select stratify variable."))
         if (is_empty(g_var) && !is_empty(s_var)) {
-          validate(need(length(unique(ANL[[s_var]])) == 2,
-                        "Please select stratify variable with 2 levels."
+          validate(need(
+            length(unique(ANL[[s_var]])) == 2,
+            "Please select stratify variable with 2 levels."
           ))
         }
         if (!is_empty(g_var) && !is_empty(s_var)) {
-          validate(need(all(stats::na.omit(as.vector(tapply(
-            ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))),
+          validate(need(
+            all(stats::na.omit(as.vector(tapply(
+              ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
+            ) == 2))),
             "Please select stratify variable with 2 levels, per each group."
           ))
         }
@@ -973,17 +1036,16 @@ srv_distribution <- function(input,
         groups = c(g_var)
       )
 
-      tests_base <- switch(
-        dist_tests,
-        "Kolmogorov-Smirnov (one-sample)" = sks_args,
-        "Shapiro-Wilk" = ssw_args,
-        "Fligner-Killeen" = mfil_args,
-        "one-way ANOVA" = manov_args,
-        "t-test (two-samples, not paired)" = mt_args,
-        "F-test" = mv_args,
-        "Kolmogorov-Smirnov (two-samples)" = mks_args,
-        "Anderson-Darling (one-sample)" = sad_args,
-        "Cramer-von Mises (one-sample)" = scvm_args
+      tests_base <- switch(dist_tests,
+                           "Kolmogorov-Smirnov (one-sample)" = sks_args,
+                           "Shapiro-Wilk" = ssw_args,
+                           "Fligner-Killeen" = mfil_args,
+                           "one-way ANOVA" = manov_args,
+                           "t-test (two-samples, not paired)" = mt_args,
+                           "F-test" = mv_args,
+                           "Kolmogorov-Smirnov (two-samples)" = mks_args,
+                           "Anderson-Darling (one-sample)" = sad_args,
+                           "Cramer-von Mises (one-sample)" = scvm_args
       )
 
       env <- list(
@@ -1120,19 +1182,19 @@ srv_distribution <- function(input,
 #' @noRd
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
   switch(dist_type,
-    "normal" =  {
-      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
-    },
-    "lognormal" = {
-      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
-    },
-    "gamma" = {
-      validate(need(
-        dist_param1 > 0 && dist_param2 > 0,
-        "k and theta parameters of the gamma distribution need to be positive"
-      ))
-    },
-    "unif" = NULL
+         "normal" = {
+           validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
+         },
+         "lognormal" = {
+           validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
+         },
+         "gamma" = {
+           validate(need(
+             dist_param1 > 0 && dist_param2 > 0,
+             "k and theta parameters of the gamma distribution need to be positive"
+           ))
+         },
+         "unif" = NULL
   )
   NULL
 }

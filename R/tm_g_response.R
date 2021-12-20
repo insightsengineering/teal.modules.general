@@ -77,6 +77,7 @@ tm_g_response <- function(label = "Response Plot",
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
                           ggtheme = gg_themes,
+                          ggplot2_args = teal.devel::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
@@ -108,23 +109,31 @@ tm_g_response <- function(label = "Response Plot",
     is_character_single(ggtheme),
     list(
       all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-      "'response' should not allow empty values"),
+      "'response' should not allow empty values"
+    ),
     list(
       all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-      "'response' should not allow multiple selection"),
+      "'response' should not allow multiple selection"
+    ),
     list(
       all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-      "'x' should not allow empty values"),
+      "'x' should not allow empty values"
+    ),
     list(
       all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-      "'x' should not allow multiple selection")
+      "'x' should not allow multiple selection"
     )
+  )
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
+  )
+
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   args <- as.list(environment())
 
@@ -140,7 +149,10 @@ tm_g_response <- function(label = "Response Plot",
     server = srv_g_response,
     ui = ui_g_response,
     ui_args = args,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+    ),
     filters = get_extract_datanames(data_extract_list)
   )
 }
@@ -223,7 +235,8 @@ srv_g_response <- function(input,
                            row_facet,
                            col_facet,
                            plot_height,
-                           plot_width) {
+                           plot_width,
+                           ggplot2_args) {
   init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
@@ -267,20 +280,20 @@ srv_g_response <- function(input,
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) #nolint
-    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) #nolint
-    resp_cl <- as.name(resp_var) #nolint
-    x_cl <- as.name(x) #nolint
+    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
+    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
+    resp_cl <- as.name(resp_var) # nolint
+    x_cl <- as.name(x) # nolint
 
     if (swap_axes) {
       chunks_push(expression = substitute(
-        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)),
+        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
         env = list(x = x, x_cl = x_cl)
       ))
     }
 
     chunks_push(expression = substitute(
-      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]),
+      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
       env = list(resp_var = resp_var)
     ))
     # nolint start
@@ -301,27 +314,16 @@ srv_g_response <- function(input,
       env = list(x_cl = x_cl, rowf = rowf, colf = colf)
     ))
     # nolint end
+
     plot_call <- substitute(
-      expr = ANL2 %>%
-        ggplot() +
-        aes(x = x_cl, y = ns) +
-        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position) +
-        xlab(x_label) +
-        ylab(y_label) +
-        ggtheme_call,
+      expr =
+        ggplot(ANL2, aes(x = x_cl, y = ns)) +
+        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
       env = list(
         x_cl = x_cl,
         resp_cl = resp_cl,
-        arg_position = arg_position,
-        x_label = varname_w_label(x, ANL),
-        y_label = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
-        ggtheme_call = call(paste0("theme_", ggtheme))
+        arg_position = arg_position
       )
-    )
-
-    plot_call <- substitute(
-      expr = plot_call + labs(fill = fill_label) + theme(legend.position = "bottom"),
-      env = list(plot_call = plot_call, fill_label = varname_w_label(resp_var, ANL))
     )
 
     if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
@@ -335,7 +337,8 @@ srv_g_response <- function(input,
             col = "white",
             vjust = "middle",
             hjust = "middle",
-            position = position_anl2_value)  +
+            position = position_anl2_value
+          ) +
           geom_text(
             data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
             hjust = hjust_value,
@@ -359,27 +362,46 @@ srv_g_response <- function(input,
       plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
     }
 
-    if (rotate_xaxis_labels) {
-      plot_call <- substitute(
-        expr = plot_call + theme(axis.text.x = element_text(angle = 45, hjust = 1)),
-        env = list(plot_call = plot_call)
-      )
-    }
-
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
 
     if (!is.null(facet_cl)) {
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(
+        x = varname_w_label(x, ANL),
+        y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
+        fill = varname_w_label(resp_var, ANL)
+      ),
+      theme = list(legend.position = "bottom")
+    )
+
+    if (rotate_xaxis_labels) {
+      dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
+    }
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = ggtheme
+    )
+
+    plot_call <- substitute(expr = {
+      p <- plot_call + labs  + ggthemes + themes
+      print(p)
+    }, env = list(
+      plot_call = plot_call,
+      labs = parsed_ggplot2_args$labs,
+      themes = parsed_ggplot2_args$theme,
+      ggthemes = parsed_ggplot2_args$ggtheme
+    ))
 
     chunks_push(expression = plot_call, id = "plotCall")
-
-    # explicitly calling print on the plot inside the chunk evaluates
-    # the ggplot call and therefore catches errors
-    plot_print_call <- quote(print(p))
-    chunks_push(plot_print_call)
 
     chunks_safe_eval()
   })

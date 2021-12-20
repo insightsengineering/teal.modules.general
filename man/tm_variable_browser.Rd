@@ -8,7 +8,8 @@ tm_variable_browser(
   label = "Variable Browser",
   datasets_selected = character(0),
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  ggplot2_args = teal.devel::ggplot2_args()
 )
 }
 \arguments{
@@ -24,6 +25,12 @@ output to put the output into context. For example a title.}
 \item{post_output}{optional, \code{shiny.tag} with text placed after the
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
+
+\item{ggplot2_args}{(`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
+with settings for the module plot.
+For more details see the help vignette:
+`vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 }
 \description{
 The variable browser provides a table with variable names and labels and a

@@ -6,6 +6,11 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
+#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
+#'   All themes can be chosen by the user. Defaults to \code{classic}.
+#'
+#' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
+#' @template ggplot2_args_multi
 #'
 #' @export
 #'
@@ -31,6 +36,9 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            ggtheme = c("classic", "gray", "bw", "linedraw",
+                                        "light", "dark", "minimal", "void", "test"),
+                            ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
@@ -38,20 +46,37 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width"
+  )
+
+  ggtheme <- match.arg(ggtheme)
+  stop_if_not(is_character_single(ggtheme))
+
+  plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
+    )
+  )
+  # Important step, so we could easily consume it later
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   module(
     label,
     server = srv_page_missing_data,
-    server_args = list(plot_height = plot_height, plot_width = plot_width),
+    server_args = list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
     ui = ui_page_missing_data,
     filters = "all",
-    ui_args = list(pre_output = pre_output, post_output = post_output)
+    ui_args = list(pre_output = pre_output, post_output = post_output, ggtheme = ggtheme)
   )
 }
 
-ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL) {
+ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL, ggtheme) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -97,7 +122,11 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
           function(x) {
             conditionalPanel(
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(id = ns(x), summary_per_patient = if_subject_plot)
+              encoding_missing_data(
+                id = ns(x),
+                summary_per_patient = if_subject_plot,
+                ggtheme = ggtheme
+              )
             )
           }
         )
@@ -113,7 +142,8 @@ srv_page_missing_data <- function(input,
                                   session,
                                   datasets,
                                   plot_height,
-                                  plot_width) {
+                                  plot_width,
+                                  ggplot2_args) {
   lapply(
     datasets$datanames(),
     function(x) {
@@ -123,7 +153,8 @@ srv_page_missing_data <- function(input,
         datasets = datasets,
         dataname = x,
         plot_height = plot_height,
-        plot_width = plot_width
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args
       )
     }
   )
@@ -141,8 +172,10 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
           "sorted by magnitude."
         )),
-        p('The "summary per patients" graph is showing how many subjects have at least one missing observation',
-          "for each variable. It will be most useful for panel datasets.")
+        p(
+          'The "summary per patients" graph is showing how many subjects have at least one missing observation',
+          "for each variable. It will be most useful for panel datasets."
+        )
       )
     ),
     tabPanel(
@@ -183,8 +216,8 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
             "values of a specific variable then the appropriate cell in the graph is marked as missing."
           ))
         )
-      )
-    ))
+      ))
+    )
   }
 
   do.call(
@@ -197,7 +230,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
 }
 
 #' @importFrom shinyWidgets checkboxGroupButtons
-encoding_missing_data <- function(id, summary_per_patient = FALSE) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
   ns <- NS(id)
 
   tagList(
@@ -205,7 +238,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
     actionButton(
       ns("filter_na"),
       span(style = "white-space: normal;", "Select only vars with missings"),
-      width = "100%"),
+      width = "100%"
+    ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
       checkboxInput(
@@ -262,6 +296,16 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
         )
       )
     ),
+    panel_item(
+      title = "Plot settings",
+      optionalSelectInput(
+        inputId = ns("ggtheme"),
+        label = "Theme (by ggplot):",
+        choices = gg_themes,
+        selected = ggtheme,
+        multiple = FALSE
+      )
+    ),
     hr(),
     get_rcode_ui(ns("rcode"))
   )
@@ -274,7 +318,8 @@ srv_missing_data <- function(input,
                              datasets,
                              dataname,
                              plot_height,
-                             plot_width) {
+                             plot_width,
+                             ggplot2_args) {
   init_chunks()
 
   prev_group_by_var <- reactiveVal("")
@@ -317,7 +362,7 @@ srv_missing_data <- function(input,
 
     if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
       common_stack_push(substitute(
-        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]],
+        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]], # nolint
         env = list(group_var = group_var, anl_name = as.name(anl_name))
       ))
     }
@@ -401,7 +446,8 @@ srv_missing_data <- function(input,
     all_choices <- variable_choices(raw_data())
     cat_choices <- all_choices[!sapply(raw_data(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
     validate(
-      need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with"))
+      need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
+    )
     optionalSelectInput(
       session$ns("group_by_var"),
       label = "Group by variable",
@@ -426,8 +472,8 @@ srv_missing_data <- function(input,
     selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
       prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
     } else if (!is.null(prev_choices) &&
-      !any(prev_choices %in% choices) &&
-      isolate(prev_group_by_var()) == input$group_by_var) {
+               !any(prev_choices %in% choices) &&
+               isolate(prev_group_by_var()) == input$group_by_var) {
       # if not any previously selected value is available and the grouping variable is the same,
       # then display NULL
       NULL
@@ -467,7 +513,7 @@ srv_missing_data <- function(input,
     if (input$any_na) {
       new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
       summary_stack_push(substitute(
-        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE),
+        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE), # nolint
         env = list(new_col_name = new_col_name)
       ))
     }
@@ -486,8 +532,9 @@ srv_missing_data <- function(input,
         dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100),
       env = list(data_frame_call = if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
         quote(tibble::as_tibble(ANL_FILTERED))
-        } else quote(ANL_FILTERED)
-      )
+      } else {
+        quote(ANL_FILTERED)
+      })
     ))
 
     # x axis ordering according to number of missing values and alphabet
@@ -503,7 +550,23 @@ srv_missing_data <- function(input,
       summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
     }
 
-    summary_stack_push(quote(
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "Variable", y = "Missing observations"),
+      theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Summary Obs"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
+    summary_stack_push(substitute(
       p1 <- summary_plot_obs %>%
         ggplot() +
         aes(
@@ -523,13 +586,15 @@ srv_missing_data <- function(input,
           hjust = 1,
           color = "black"
         ) +
-        labs(
-          x = "Variable",
-          y = "Missing observations"
-        ) +
-        theme_classic() +
-        theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1)) +
-        coord_flip()
+        labs +
+        ggthemes +
+        themes +
+        coord_flip(),
+      env = list(
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
+      )
     ))
 
     if (isTRUE(input$if_patients_plot)) {
@@ -554,7 +619,27 @@ srv_missing_data <- function(input,
         )
       )
 
-      summary_stack_push(quote(
+      dev_ggplot2_args <- ggplot2_args(
+        labs = list(x = "", y = "Missing patients"),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_text(angle = 45, hjust = 1)),
+          axis.text.y = quote(element_blank())
+        )
+      )
+
+      all_ggplot2_args <- resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Summary Patients"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = input$ggtheme
+      )
+
+      summary_stack_push(substitute(
         p2 <- summary_plot_patients %>%
           ggplot() +
           aes_(
@@ -569,22 +654,20 @@ srv_missing_data <- function(input,
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing")
           ) +
-          labs(
-            x = "",
-            y = "Missing patients"
-          ) +
           geom_text(
             aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
             hjust = 1,
             color = "black"
           ) +
-          theme_classic() +
-          theme(
-            legend.position = "bottom",
-            axis.text.x = element_text(angle = 45, hjust = 1),
-            axis.text.y = element_blank()
-          ) +
-          coord_flip()
+          labs +
+          ggthemes +
+          themes +
+          coord_flip(),
+        env = list(
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme,
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
       ))
 
       summary_stack_push(quote({
@@ -691,16 +774,57 @@ srv_missing_data <- function(input,
         extract2(1)
     ))
 
-    combination_stack_push(quote({
+    dev_ggplot2_args1 <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(
+        legend.position = "bottom",
+        axis.text.x = quote(element_blank())
+      )
+    )
+
+    all_ggplot2_args1 <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Combinations Hist"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args1
+    )
+
+    parsed_ggplot2_args1 <- parse_ggplot2_args(
+      all_ggplot2_args1,
+      ggtheme = "void"
+    )
+
+    dev_ggplot2_args2 <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(
+        legend.position = "bottom",
+        axis.text.x = quote(element_blank()),
+        axis.ticks = quote(element_blank()),
+        panel.grid.major = quote(element_blank())
+      )
+    )
+
+    all_ggplot2_args2 <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Combinations Main"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args2
+    )
+
+    parsed_ggplot2_args2 <- parse_ggplot2_args(
+      all_ggplot2_args2,
+      ggtheme = input$ggtheme
+    )
+
+    combination_stack_push(substitute({
       p1 <- data_combination_plot_cutoff %>%
         dplyr::select(id, n) %>%
         dplyr::distinct() %>%
         ggplot(aes(x = id, y = n)) +
         geom_bar(stat = "identity", fill = "#ff2951ff") +
-        ylab("") + xlab("") + theme_void() +
-        theme(axis.text.x = element_blank()) +
         geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
-        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5))
+        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+        labs1 +
+        ggthemes1 +
+        themes1
 
       graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
       graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
@@ -713,26 +837,30 @@ srv_missing_data <- function(input,
           values = c("grey90", "#ff2951ff"),
           labels = c("Present", "Missing")
         ) +
-        labs(x = "", y = "") +
-        theme_classic() +
-        theme(
-          legend.position = "bottom",
-          axis.text.x = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_blank()
-        ) +
         geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
         geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-        coord_flip()
+        coord_flip() +
+        labs2 +
+        ggthemes2 +
+        themes2
 
       g1 <- ggplotGrob(p1)
       g2 <- ggplotGrob(p2)
 
       g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-      g$heights[7] <- grid::unit(0.2, "null") #rescale to get the bar chart smaller
+      g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
       grid::grid.newpage()
       grid::grid.draw(g)
-    }))
+    },
+    env = list(
+      labs1 = parsed_ggplot2_args1$labs,
+      themes1 = parsed_ggplot2_args1$theme,
+      ggthemes1 = parsed_ggplot2_args1$ggtheme,
+      labs2 = parsed_ggplot2_args2$labs,
+      themes2 = parsed_ggplot2_args2$theme,
+      ggthemes2 = parsed_ggplot2_args2$ggtheme
+    )
+    ))
 
     chunks_safe_eval(combination_stack)
     combination_stack
@@ -768,9 +896,11 @@ srv_missing_data <- function(input,
     group_var <- input$group_by_var
 
     validate(
-      need(is.null(group_var) ||
-        nrow(unique(anl_filtered[, group_var])) < 100,
-        "Please select group-by variable with fewer than 100 unique values")
+      need(
+        is.null(group_var) ||
+          nrow(unique(anl_filtered[, group_var])) < 100,
+        "Please select group-by variable with fewer than 100 unique values"
+      )
     )
 
     group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
@@ -885,31 +1015,47 @@ srv_missing_data <- function(input,
 
         summary_plot_patients <- summary_plot_patients %>%
           tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
-
       })
     )
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(x = "", y = ""),
+      theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["By Subject"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     by_subject_stack_push(
-      quote({
+      substitute({
         g <- ggplot(summary_plot_patients, aes(
           x = factor(id, levels = order_subjects),
-          y = create_cols_labels(col), fill = isna)
-        ) +
+          y = create_cols_labels(col), fill = isna
+        )) +
           geom_raster() +
-          theme_classic() +
           scale_fill_manual(
             name = "",
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing (at least one)")
           ) +
-          ylab("") +
-          xlab("") +
-          theme(
-            legend.position = "bottom",
-            axis.text.x = element_blank()
-          )
-        print(g)
-      })
+          labs +
+          ggthemes +
+          themes
+        print(g)},
+        env = list(
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme,
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      )
     )
 
     chunks_safe_eval(by_subject_stack)
@@ -932,7 +1078,8 @@ srv_missing_data <- function(input,
       chunks_push_chunks(table_chunks())
       chunks_get_var("summary_data")
     }
-  }, options =  list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
+  },
+  options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
   )
 
   callModule(

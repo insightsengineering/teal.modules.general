@@ -83,8 +83,10 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   args <- as.list(environment())
   module(
@@ -121,11 +123,13 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         panel_item(
           title = "Plot settings",
           sliderInput(
-            ns("alpha"), "Opacity:", min = 0, max = 1,
+            ns("alpha"), "Opacity:",
+            min = 0, max = 1,
             step = .05, value = .5, ticks = FALSE
           ),
           sliderInput(
-            ns("cex"), "Points size:", min = 0.2, max = 3,
+            ns("cex"), "Points size:",
+            min = 0.2, max = 3,
             step = .05, value = .65, ticks = FALSE
           ),
           checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
@@ -133,10 +137,11 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             ns("cor_method"), "Select Correlation Method",
             choiceNames = c("Pearson", "Kendall", "Spearman"),
             choiceValues = c("pearson", "kendall", "spearman"),
-            inline = TRUE),
+            inline = TRUE
+          ),
           checkboxInput(ns("cor_na_omit"), "Omit Missing Values", value = TRUE)
-          )
         )
+      )
     ),
     forms = get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
@@ -151,7 +156,6 @@ srv_g_scatterplotmatrix <- function(input,
                                     variables,
                                     plot_height,
                                     plot_width) {
-
   init_chunks()
 
   selector_list <- data_extract_multiple_srv(data_extract = list(variables = variables), datasets = datasets)
@@ -163,7 +167,6 @@ srv_g_scatterplotmatrix <- function(input,
 
   # plot
   plot_r <- reactive({
-
     chunks_reset()
     chunks_push_data_merge(merged_data())
 
@@ -333,18 +336,19 @@ srv_g_scatterplotmatrix <- function(input,
 #' set.seed(1)
 #' x <- runif(25, 0, 1)
 #' y <- runif(25, 0, 1)
-#' x[c(3,10,18)] <- NA
+#' x[c(3, 10, 18)] <- NA
 #'
 #' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson",
-#'   na.action = na.fail))
+#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
+#'   method = "pearson",
+#'   na.action = na.fail
+#' ))
 get_scatterplotmatrix_stats <- function(x, y,
                                         .f = stats::cor.test,
                                         .f_args = list(),
                                         round_stat = 2,
                                         round_pval = 4) {
   if (is.numeric(x) && is.numeric(y)) {
-
     stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
 
     if (anyNA(stat)) {
@@ -352,12 +356,13 @@ get_scatterplotmatrix_stats <- function(x, y,
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
       return(paste(c(
         paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-        paste0("P:", round(stat$p.value, round_pval))),
-        collapse = "\n"))
+        paste0("P:", round(stat$p.value, round_pval))
+      ),
+      collapse = "\n"
+      ))
     } else {
       stop("function not supported")
     }
-
   } else {
     if ("method" %in% names(.f_args)) {
       if (.f_args$method == "pearson") {
@@ -372,5 +377,4 @@ get_scatterplotmatrix_stats <- function(x, y,
     }
     return("-")
   }
-
 }

@@ -49,9 +49,11 @@ stats::cor.test(~ x + y,  na.action = "na.fail")
 set.seed(1)
 x <- runif(25, 0, 1)
 y <- runif(25, 0, 1)
-x[c(3,10,18)] <- NA
+x[c(3, 10, 18)] <- NA
 
 get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
-get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson",
-  na.action = na.fail))
+get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
+  method = "pearson",
+  na.action = na.fail
+))
 }

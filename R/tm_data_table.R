@@ -137,7 +137,8 @@ tm_data_table <- function(label = "Data Table",
                             searching = FALSE,
                             pageLength = 30,
                             lengthMenu = c(5, 15, 30, 100),
-                            scrollX = TRUE),
+                            scrollX = TRUE
+                          ),
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
@@ -145,24 +146,21 @@ tm_data_table <- function(label = "Data Table",
     is_character_single(label),
     is.list(variables_selected),
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
-
     utils.nest::is_fully_named_list(dt_args),
     utils.nest::is_fully_named_list(dt_options),
-
     is_empty(variables_selected) ||
       (!is.null(names(variables_selected)) &&
-      all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
-      all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
-      all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
-      all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
-
+        all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
+        all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
+        all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
+        all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
     is_empty(datasets_selected) ||
       (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
-      all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
-
+        all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
     list(
       is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
-      "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))")
+      "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))"
+    )
   )
 
   module(
@@ -357,12 +355,12 @@ srv_data_table <- function(input,
     }
 
     dt_args$options <- dt_options
-    if (!is.null(input$dt_rows))
-      dt_args$options$pageLength <- input$dt_rows #nolint
+    if (!is.null(input$dt_rows)) {
+      dt_args$options$pageLength <- input$dt_rows # nolint
+    }
     dt_args$data <- dataframe_selected
 
     do.call(DT::datatable, dt_args)
-
   })
 }
 

@@ -37,9 +37,9 @@ Inside this app 5 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADRS <- synthetic_cdisc_data("latest")$adrs
-ADLB <- synthetic_cdisc_data("latest")$adlb
+ADSL <- synthetic_cdisc_data("latest")$adsl #nolint
+ADRS <- synthetic_cdisc_data("latest")$adrs #nolint
+ADLB <- synthetic_cdisc_data("latest")$adlb #nolint
 ```
 
 ## Create an `app` variable

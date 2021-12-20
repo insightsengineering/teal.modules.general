@@ -11,6 +11,9 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical factor to split the selected outlier variables on.
 #'
+#' @templateVar ggnames "Boxplot","Density plot","Cumulative distribution plot"
+#' @template ggplot2_args_multi
+#'
 #' @export
 #'
 #' @examples
@@ -59,6 +62,8 @@
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
+                        ggtheme = gg_themes,
+                        ggplot2_args = teal.devel::ggplot2_args(),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
@@ -71,11 +76,26 @@ tm_outliers <- function(label = "Outliers Module",
     categorical_var <- list(categorical_var)
   }
 
+  ggtheme <- match.arg(ggtheme)
+
   stop_if_not(
     is_character_single(label),
     is_class_list("data_extract_spec")(outlier_var),
+    is_character_single(ggtheme),
     is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
   )
+
+  plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
+  checkmate::assert(
+    checkmate::check_class(ggplot2_args, "ggplot2_args"),
+    checkmate::assert(
+      combine = "or",
+      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
+      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
+    )
+  )
+  # Important step, so we could easily consume it later
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   args <- as.list(environment())
 
@@ -87,7 +107,10 @@ tm_outliers <- function(label = "Outliers Module",
   module(
     label = label,
     server = srv_outliers,
-    server_args = c(data_extract_list, list(plot_height = plot_height, plot_width = plot_width)),
+    server_args = c(
+      data_extract_list,
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+    ),
     ui = ui_outliers,
     ui_args = args,
     filters = get_extract_datanames(data_extract_list)
@@ -201,6 +224,16 @@ ui_outliers <- function(id, ...) {
           ),
           uiOutput(ns("ui_outlier_help"))
         )
+      ),
+      panel_item(
+        title = "Plot settings",
+        optionalSelectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = gg_themes,
+          selected = args$ggtheme,
+          multiple = FALSE
+        )
       )
     ),
     forms = get_rcode_ui(ns("rcode")),
@@ -210,7 +243,7 @@ ui_outliers <- function(id, ...) {
 }
 
 srv_outliers <- function(input, output, session, datasets, outlier_var,
-                         categorical_var, plot_height, plot_width) {
+                         categorical_var, plot_height, plot_width, ggplot2_args) {
   init_chunks()
 
   vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
@@ -306,7 +339,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         common_stack_push(
           substitute(
             expr = {
-              ANL[[categorical_var]] <- dplyr::if_else(
+              ANL[[categorical_var]] <- dplyr::if_else( # nolint
                 is.na(ANL[[categorical_var]]),
                 "NA",
                 as.character(ANL[[categorical_var]])
@@ -385,7 +418,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
               iqr <- q1_q3[2] - q1_q3[1]
               !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                  outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
             }),
             env = list(
               outlier_var_name = as.name(outlier_var),
@@ -494,7 +527,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             dplyr::arrange(order)
           summary_table <- summary_table_pre %>%
             dplyr::select(
-              categorical_var_name, Outliers = display_str, Missings = display_str_na, Total = total_in_cat
+              categorical_var_name,
+              Outliers = display_str, Missings = display_str_na, Total = total_in_cat
             ) %>%
             dplyr::mutate_all(as.character) %>%
             tidyr::pivot_longer(-categorical_var_name) %>%
@@ -598,13 +632,35 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         )
       )
     }
+
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Boxplot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     boxplot_r_stack_push(substitute(
       expr = g <- plot_call +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
-      env = list(plot_call = plot_call)
+        labs + ggthemes + themes,
+      env = list(
+        plot_call = plot_call,
+        labs = parsed_ggplot2_args$labs,
+        ggthemes = parsed_ggplot2_args$ggtheme,
+        themes = parsed_ggplot2_args$theme
+      )
     ))
+
     boxplot_r_stack_push(quote(print(g)))
     chunks_safe_eval(boxplot_r_stack)
     boxplot_r_stack
@@ -640,9 +696,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         ggplot(aes(x = outlier_var_name)) +
         geom_density() +
         geom_rug(data = ANL_OUTLIER, aes(x = outlier_var_name, color = is_outlier_selected)) +
-        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
+        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")),
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
@@ -655,7 +709,33 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
-    density_r_stack_push(substitute(expr = g <- plot_call, env = list(plot_call = plot_call)))
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Density plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
+    density_r_stack_push(
+      substitute(
+        expr = g <- plot_call + labs + ggthemes + themes,
+        env = list(
+          plot_call = plot_call,
+          labs = parsed_ggplot2_args$labs,
+          themes = parsed_ggplot2_args$theme,
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      )
+    )
     density_r_stack_push(quote(print(g)))
     chunks_safe_eval(density_r_stack)
     density_r_stack
@@ -709,7 +789,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ) %>%
               dplyr::filter(!is.na(is_outlier_selected))
           },
-          env = list(outlier_var = outlier_var))
+          env = list(outlier_var = outlier_var)
+        )
       )
       plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
@@ -741,13 +822,15 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
                 dplyr::left_join(
                   ecdf_df,
                   anl_outlier2,
-                  by = dplyr::setdiff(names(ecdf_df), "y")) %>%
+                  by = dplyr::setdiff(names(ecdf_df), "y")
+                ) %>%
                   dplyr::filter(!is.na(is_outlier_selected))
               }
             )
             outlier_points <- do.call(rbind, all_categories)
           },
-          env = list(anl = ANL, categorical_var = categorical_var, outlier_var = outlier_var))
+          env = list(anl = ANL, categorical_var = categorical_var, outlier_var = outlier_var)
+        )
       )
       plot_call <- substitute(
         expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
@@ -755,13 +838,34 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
+    dev_ggplot2_args <- ggplot2_args(
+      labs = list(color = "Is outlier?"),
+      theme = list(legend.position = "top")
+    )
+
+    all_ggplot2_args <- resolve_ggplot2_args(
+      user_plot = ggplot2_args[["Cumulative distribution plot"]],
+      user_default = ggplot2_args$default,
+      module_plot = dev_ggplot2_args
+    )
+
+    parsed_ggplot2_args <- parse_ggplot2_args(
+      all_ggplot2_args,
+      ggtheme = input$ggtheme
+    )
+
     cumulative_r_stack_push(substitute(
       expr = g <- plot_call +
         geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
         scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-        labs(color = "Is outlier?") +
-        theme(legend.position = "top"),
-      env = list(plot_call = plot_call, outlier_var_name = as.name(outlier_var))
+        labs + ggthemes + themes,
+      env = list(
+        plot_call = plot_call,
+        outlier_var_name = as.name(outlier_var),
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
+      )
     ))
 
     cumulative_r_stack_push(quote(print(g)))
@@ -877,7 +981,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       session,
       inputId = "table_ui_columns",
       choices = dplyr::setdiff(choices, names(ANL_OUTLIER)),
-      selected = isolate(input$table_ui_columns))
+      selected = isolate(input$table_ui_columns)
+    )
   })
 
   output$table_ui <- DT::renderDataTable({
@@ -904,7 +1009,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     # removing unused column ASAP
-    ANL_OUTLIER$order <- ANL$order <- NULL
+    ANL_OUTLIER$order <- ANL$order <- NULL # nolint
 
     display_table <- if (!is.null(plot_brush)) {
       if (!is_empty(categorical_var)) {
@@ -912,21 +1017,22 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         if (tab == "Boxplot") {
           plot_brush$mapping$x <- categorical_var
         } else {
-          # the other plots use facetting, so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
+          # the other plots use facetting
+          # so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
           plot_brush$mapping$panelvar1 <- categorical_var
         }
       } else {
         if (tab == "Boxplot") {
           # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
           # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
-          ANL[[plot_brush$mapping$x]] <- "Entire dataset"
+          ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint
         }
       }
       # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
       # so they need to be computed and attached to ANL
       if (tab == "Density plot") {
         plot_brush$mapping$y <- "density"
-        ANL$density <- plot_brush$ymin # either ymin or ymax will work
+        ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
       } else if (tab == "Cumulative distribution plot") {
         plot_brush$mapping$y <- "cdf"
         if (!is_empty(categorical_var)) {
@@ -934,7 +1040,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
             dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
         } else {
-          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
         }
       }
       brushed_rows <- brushedPoints(ANL, plot_brush)
@@ -962,10 +1068,15 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     data <- datasets$get_data(dataname)
     dplyr::left_join(
       display_table,
-      dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))), by = keys) %>%
+      dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))),
+      by = keys
+    ) %>%
       dplyr::select(union(names(display_table), input$table_ui_columns))
-  }, options = list(searching = FALSE, language = list(
-    zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"),
+  },
+  options = list(
+    searching = FALSE, language = list(
+      zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
+    ),
     pageLength = input$table_ui_rows
   )
   )

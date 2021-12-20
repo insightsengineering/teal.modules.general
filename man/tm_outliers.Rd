@@ -8,6 +8,8 @@ tm_outliers(
   label = "Outliers Module",
   outlier_var,
   categorical_var = NULL,
+  ggtheme = gg_themes,
+  ggplot2_args = teal.devel::ggplot2_args(),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -22,6 +24,19 @@ variable to consider for the outliers analysis.}
 
 \item{categorical_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
 categorical factor to split the selected outlier variables on.}
+
+\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\code{gg_themes} is defined internally as
+\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+All themes can be chosen by the user. Defaults to \code{gray}.}
+
+\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
+with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
+For more details see the help vignette:
+`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
+List names should match the following:\cr
+`c("default", "Boxplot","Density plot","Cumulative distribution plot")`.
+The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot height.}

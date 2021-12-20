@@ -9,6 +9,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
@@ -39,11 +40,15 @@
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
                                 pre_output = NULL,
-                                post_output = NULL) {
+                                post_output = NULL,
+                                ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
-  stop_if_not(is_character_single(label),
-              is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
+  stop_if_not(
+    is_character_single(label),
+    is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
   )
+
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   datasets_selected <- unique(datasets_selected)
 
@@ -52,7 +57,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
-    server_args = list(datasets_selected = datasets_selected),
+    server_args = list(datasets_selected = datasets_selected, ggplot2_args = ggplot2_args),
     ui_args = list(
       datasets_selected = datasets_selected,
       pre_output = pre_output,
@@ -94,16 +99,20 @@ ui_variable_browser <- function(id,
                           style = "margin-top: 15px;",
                           textOutput(ns(paste0("dataset_summary_", dataname)))
                         ),
-                        div(style = "margin-top: 15px;",
-                          get_dt_rows(ns(paste0(
-                            "variable_browser_", dataname
-                          )),
-                          ns(
-                            paste0("variable_browser_", dataname, "_rows")
-                          )),
+                        div(
+                          style = "margin-top: 15px;",
+                          get_dt_rows(
+                            ns(paste0(
+                              "variable_browser_", dataname
+                            )),
+                            ns(
+                              paste0("variable_browser_", dataname, "_rows")
+                            )
+                          ),
                           DT::dataTableOutput(ns(paste0(
                             "variable_browser_", dataname
-                          )), width = "100%"))
+                          )), width = "100%")
+                        )
                       )
                     }
                   ),
@@ -160,7 +169,7 @@ ui_variable_browser <- function(id,
 
 #' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
-srv_variable_browser <- function(input, output, session, datasets, datasets_selected) {
+srv_variable_browser <- function(input, output, session, datasets, datasets_selected, ggplot2_args) {
 
   # if there are < this number of unique records then a numeric
   # variable can be treated as a factor and all factors with < this groups
@@ -256,8 +265,10 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
-            "Treat variable as factor",
-            value = if_null(isolate(input$numeric_as_factor), unique_entries < .unique_records_default_as_factor)),
+                        "Treat variable as factor",
+                        value = if_null(isolate(input$numeric_as_factor),
+                                        unique_entries < .unique_records_default_as_factor)
+          ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
       } else if (unique_entries > 0) {
@@ -341,7 +352,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       numeric_as_factor = treat_numeric_as_factor(),
       display_density = display_density,
       outlier_definition = outlier_definition,
-      records_for_factor = .unique_records_for_factor
+      records_for_factor = .unique_records_for_factor,
+      ggplot2_args = ggplot2_args
     )
   })
 
@@ -478,7 +490,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
     barWidth = bar_width,
     barSpacing = bar_spacing,
     tooltipFormatter = custom_sparkline_formatter(labels, counts)
-    )
+  )
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
@@ -519,7 +531,7 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
     barWidth = bar_width,
     barSpacing = bar_spacing,
     tooltipFormatter = custom_sparkline_formatter(labels, counts)
-    )
+  )
 }
 
 
@@ -599,8 +611,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
     barWidth = bar_width,
     barSpacing = bar_spacing,
     tooltipFormatter = custom_sparkline_formatter(names(counts), as.vector(counts))
-    )
-
+  )
 }
 
 #' Generates the \code{sparkline} HTML code
@@ -638,10 +649,10 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolin
 #' @param dt_rows \code{numeric} current/latest DT page length
 #' @return text with simple statistics.
 var_summary_table <- function(x, numeric_as_factor, dt_rows) {
-  if (is.null(dt_rows))
+  if (is.null(dt_rows)) {
     dt_rows <- 10
+  }
   if (is.numeric(x) && !numeric_as_factor) {
-
     req(!any(is.infinite(x)))
 
     qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75), type = 2), 2)
@@ -719,6 +730,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 #' Plot variable
 #'
 #' Creates summary plot with statistics relevant to data type.
+#' @inheritParams shared_params
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
@@ -731,17 +743,17 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 #' @return plot
 #'
 plot_var_summary <- function(var,
-  var_lab,
-  numeric_as_factor,
-  display_density = is.numeric(var),
-  outlier_definition,
-  records_for_factor) {
-
+                             var_lab,
+                             numeric_as_factor,
+                             display_density = is.numeric(var),
+                             outlier_definition,
+                             records_for_factor,
+                             ggplot2_args) {
   stopifnot(is_logical_single(display_density))
 
   grid::grid.newpage()
 
-  plot_grob <- if (is.factor(var) || is.character(var) || is.logical(var)) {
+  plot_main <- if (is.factor(var) || is.character(var) || is.logical(var)) {
     groups <- unique(as.character(var))
     len_groups <- length(groups)
     if (len_groups >= records_for_factor) {
@@ -758,15 +770,9 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      p <-
         ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan")) +
-        xlab(var_lab) +
-        theme_light() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-      ggplotGrob(p)
+        scale_fill_manual(values = c("gray50", "tan"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
@@ -778,12 +784,8 @@ plot_var_summary <- function(var,
 
     if (numeric_as_factor) {
       var <- factor(var, levels = sort(unique(var)))
-      p <- qplot(var) +
-        xlab(var_lab) +
-        theme_light() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-    }
-    else {
+      p <- qplot(var)
+    } else {
       # remove outliers
       if (outlier_definition != 0) {
         q1_q3 <- quantile(var, probs = c(0.25, 0.75), type = 2)
@@ -791,14 +793,16 @@ plot_var_summary <- function(var,
         number_records <- length(var)
         var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
         number_outliers <- number_records - length(var)
-        outlier_text <- paste0(number_outliers, " outliers (",
+        outlier_text <- paste0(
+          number_outliers, " outliers (",
           round(number_outliers / number_records * 100, 2),
-          "% of non-missing records) not shown")
-        validate(need(length(var) > 1,
-          "At least two data points must remain after removing outliers for this graph to be displayed"))
+          "% of non-missing records) not shown"
+        )
+        validate(need(
+          length(var) > 1,
+          "At least two data points must remain after removing outliers for this graph to be displayed"
+        ))
       }
-
-
       ## histogram
       binwidth <- get_bin_width(var)
       p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
@@ -809,9 +813,7 @@ plot_var_summary <- function(var,
             labels = scales::percent,
             name = "proportion (in %)"
           )
-        ) +
-        xlab(var_lab) +
-        theme_light()
+        )
 
       if (display_density) {
         p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
@@ -826,19 +828,13 @@ plot_var_summary <- function(var,
           color = "black"
         )
       }
+      p
     }
-    ggplotGrob(p)
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
-
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
     p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
-      geom_histogram(binwidth = binwidth) +
-      xlab(var_lab) +
-      theme_light() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-    ggplotGrob(p)
+      geom_histogram(binwidth = binwidth)
   } else {
     grid::textGrob(
       paste(strwrap(
@@ -849,8 +845,36 @@ plot_var_summary <- function(var,
     )
   }
 
-  grid::grid.draw(plot_grob)
-  plot_grob
+  dev_ggplot2_args <- ggplot2_args(
+    labs = list(x = var_lab),
+    theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
+  )
+
+  all_ggplot2_args <- resolve_ggplot2_args(
+    ggplot2_args,
+    module_plot = dev_ggplot2_args
+  )
+
+  if (is.ggplot(plot_main)) {
+    if (is.numeric(var) && !numeric_as_factor) {
+      # numeric not as factor
+      plot_main <- plot_main +
+        theme_light() +
+        list(labs = do.call("labs", all_ggplot2_args$labs))
+    } else {
+      # factor low number of levels OR numeric as factor OR Date
+      plot_main <- plot_main +
+        theme_light() +
+        list(
+          labs = do.call("labs", all_ggplot2_args$labs),
+          theme = do.call("theme", all_ggplot2_args$theme)
+        )
+    }
+    plot_main <- ggplotGrob(plot_main)
+  }
+
+  grid::grid.draw(plot_main)
+  plot_main
 }
 
 #' Returns a short variable description.
@@ -919,11 +943,11 @@ get_plotted_data <- function(input, plot_var, datasets) {
 #' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
 render_tabset_panel_content <- function(datanames, output, datasets, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
-    input = input,
-    output = output,
-    datasets = datasets,
-    columns_names = columns_names,
-    plot_var = plot_var
+         input = input,
+         output = output,
+         datasets = datasets,
+         columns_names = columns_names,
+         plot_var = plot_var
   )
 }
 
@@ -996,7 +1020,8 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         Label = character(0),
         Missings = character(0),
         Sparklines = character(0),
-        stringsAsFactors = FALSE)
+        stringsAsFactors = FALSE
+      )
     } else {
       # extract data variable labels
       labels <- stats::setNames(
@@ -1029,7 +1054,8 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         df,
         create_sparklines,
         FUN.VALUE = character(1),
-        USE.NAMES = FALSE)
+        USE.NAMES = FALSE
+      )
 
       data.frame(
         Type = icons,
@@ -1047,7 +1073,8 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
   options = list(
     fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
     pageLength = input[[paste0(table_ui_id, "_rows")]]
-  ))
+  )
+  )
 }
 
 #' Creates observers updating the currently selected column
@@ -1084,12 +1111,10 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(
-    sprintf(
-      "function(sparkline, options, field) {
+    sprintf("function(sparkline, options, field) {
         return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
         }",
-      jsonlite::toJSON(labels),
-      jsonlite::toJSON(counts)
-    )
+            jsonlite::toJSON(labels),
+            jsonlite::toJSON(counts))
   )
 }
