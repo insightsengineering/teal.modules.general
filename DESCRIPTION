@@ -1,10 +1,10 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.11.9017
+Version: 0.2.11.9018
 Date: 2021-10-13
 Authors@R: c(
-    person("NEST", , , "nestcicd@roche.com", role = c("aut", "cre")),
+    person("NEST", , , "basel.nestcicd@roche.com", role = c("aut", "cre")),
     person("Adrian", "Waddell", , "adrian.waddell@roche.com", role = "aut"),
     person("Pawel", "Rucki", , "pawel.rucki@contractors.roche.com", role = "aut"),
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@contractors.roche.com", role = "aut"),
