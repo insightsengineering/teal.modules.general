@@ -18,6 +18,7 @@
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
 * Replaced calls to `utils.nest::check_slider_input` with `checkmate::assert_numeric`.
+* Removed the overlay statistics table in `tm_g_distribution`.
 
 # teal.modules.general 0.2.11
 
