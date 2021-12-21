@@ -513,7 +513,6 @@ srv_distribution <- function(input,
   dist_plot_r_chunks <- eventReactive(
     eventExpr = {
       common_code_chunks()
-      input$add_stats_plot
       input$scales_type
       input$main_type
       input$bins
@@ -547,7 +546,6 @@ srv_distribution <- function(input,
       dist_param1 <- input$dist_param1
       dist_param2 <- input$dist_param2
 
-      add_stats_plot <- input$add_stats_plot # nolint
       scales_type <- input$scales_type
       ndensity <- 512
       main_type_var <- input$main_type
@@ -707,7 +705,6 @@ srv_distribution <- function(input,
     eventExpr = {
       common_code_chunks()
       input$scales_type
-      input$add_stats_plot
       input$qq_line
       is.null(input$ggtheme)
     },
@@ -739,7 +736,6 @@ srv_distribution <- function(input,
       dist_param2 <- input$dist_param2
 
       scales_type <- input$scales_type
-      add_stats_plot <- input$add_stats_plot
       ggtheme <- input$ggtheme
 
       validate(need(ggtheme, "Please select a theme."))
