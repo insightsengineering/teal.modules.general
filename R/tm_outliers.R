@@ -398,14 +398,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(substitute(
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
-          group_expr %>%
+          group_expr() %>%
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
-          calculate_outliers %>%
-          ungroup_expr %>%
+          calculate_outliers() %>%
+          ungroup_expr() %>%
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
@@ -555,13 +555,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   output$summary_table <- DT::renderDataTable({
     suppressWarnings(
       chunks_get_var("summary_table", common_code_chunks()$common_stack)
+    )},
+    options = list(
+      dom = "t",
+      autoWidth = TRUE,
+      columnDefs = list(list(width = "200px", targets = "_all"))
     )
-  },
-  options = list(
-    dom = "t",
-    autoWidth = TRUE,
-    columnDefs = list(list(width = "200px", targets = "_all"))
-  )
   )
 
   # boxplot/violinplot #nolint
@@ -1071,14 +1070,13 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))),
       by = keys
     ) %>%
-      dplyr::select(union(names(display_table), input$table_ui_columns))
-  },
-  options = list(
-    searching = FALSE, language = list(
-      zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
-    ),
-    pageLength = input$table_ui_rows
-  )
+      dplyr::select(union(names(display_table), input$table_ui_columns))},
+    options = list(
+      searching = FALSE, language = list(
+        zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
+      ),
+      pageLength = input$table_ui_rows
+    )
   )
 
   output$total_outliers <- renderUI({

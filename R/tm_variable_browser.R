@@ -266,8 +266,10 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         list(
           checkboxInput(session$ns("numeric_as_factor"),
                         "Treat variable as factor",
-                        value = if_null(isolate(input$numeric_as_factor),
-                                        unique_entries < .unique_records_default_as_factor)
+                        value = if_null(
+                          isolate(input$numeric_as_factor),
+                          unique_entries < .unique_records_default_as_factor
+                        )
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
@@ -770,7 +772,7 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-        ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
+      ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
         scale_fill_manual(values = c("gray50", "tan"))
     }
@@ -1065,15 +1067,14 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         Sparklines = sparklines_html,
         stringsAsFactors = FALSE
       )
-    }
-  },
-  escape = FALSE,
-  rownames = FALSE,
-  selection = list(mode = "single", target = "row", selected = 1),
-  options = list(
-    fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-    pageLength = input[[paste0(table_ui_id, "_rows")]]
-  )
+    }},
+    escape = FALSE,
+    rownames = FALSE,
+    selection = list(mode = "single", target = "row", selected = 1),
+    options = list(
+      fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+      pageLength = input[[paste0(table_ui_id, "_rows")]]
+    )
   )
 }
 
@@ -1102,7 +1103,7 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
   iqr <- qntls[3] - qntls[2]
-  binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
+  binwidth <- max(scaling_factor * iqr / length(x_vec)^(1 / 3), sqrt(qntls[4] - qntls[1]))
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
   # to ensure at least two bins when variable span is very small
   x_span <- diff(range(x_vec))
@@ -1111,10 +1112,12 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(
-    sprintf("function(sparkline, options, field) {
+    sprintf(
+      "function(sparkline, options, field) {
         return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
         }",
-            jsonlite::toJSON(labels),
-            jsonlite::toJSON(counts))
+      jsonlite::toJSON(labels),
+      jsonlite::toJSON(counts)
+    )
   )
 }

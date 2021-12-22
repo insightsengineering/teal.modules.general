@@ -134,8 +134,8 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
   # Send ui args
@@ -829,12 +829,12 @@ srv_a_regression <- function(input,
     } else {
       plot_base()
       switch(input_type,
-             "Residuals vs Fitted" = plot_type_1(),
-             "Normal Q-Q" = plot_type_2(),
-             "Scale-Location" =  plot_type_3(),
-             "Cook's distance" =  plot_type_4(),
-             "Residuals vs Leverage" =  plot_type_5(),
-             "Cook's dist vs Leverage" =  plot_type_6()
+        "Residuals vs Fitted" = plot_type_1(),
+        "Normal Q-Q" = plot_type_2(),
+        "Scale-Location" =  plot_type_3(),
+        "Cook's distance" =  plot_type_4(),
+        "Residuals vs Leverage" =  plot_type_5(),
+        "Cook's dist vs Leverage" =  plot_type_6()
       )
     }
 

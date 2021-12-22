@@ -120,10 +120,9 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         if (type != "url") {
           selected_path <- normalizePath(selected_path, winslash = "/")
         }
-        readLines(con = selected_path)
-      },
-      error = function(cond) FALSE,
-      warning = function(cond) {
+        readLines(con = selected_path)},
+        error = function(cond) FALSE,
+        warning = function(cond) {
         `if`(grepl("^incomplete final line found on", cond[[1]]), suppressWarnings(eval(cond[[2]])), FALSE)
       }
     )

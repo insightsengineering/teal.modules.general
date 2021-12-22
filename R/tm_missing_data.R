@@ -36,8 +36,10 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = c("classic", "gray", "bw", "linedraw",
-                                        "light", "dark", "minimal", "void", "test"),
+                            ggtheme = c(
+                              "classic", "gray", "bw", "linedraw",
+                              "light", "dark", "minimal", "void", "test"
+                            ),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
@@ -850,16 +852,15 @@ srv_missing_data <- function(input,
       g <- gridExtra::gtable_rbind(g1, g2, size = "last")
       g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
       grid::grid.newpage()
-      grid::grid.draw(g)
-    },
-    env = list(
-      labs1 = parsed_ggplot2_args1$labs,
-      themes1 = parsed_ggplot2_args1$theme,
-      ggthemes1 = parsed_ggplot2_args1$ggtheme,
-      labs2 = parsed_ggplot2_args2$labs,
-      themes2 = parsed_ggplot2_args2$theme,
-      ggthemes2 = parsed_ggplot2_args2$ggtheme
-    )
+      grid::grid.draw(g)},
+      env = list(
+        labs1 = parsed_ggplot2_args1$labs,
+        themes1 = parsed_ggplot2_args1$theme,
+        ggthemes1 = parsed_ggplot2_args1$ggtheme,
+        labs2 = parsed_ggplot2_args2$labs,
+        themes2 = parsed_ggplot2_args2$theme,
+        ggthemes2 = parsed_ggplot2_args2$ggtheme
+      )
     ))
 
     chunks_safe_eval(combination_stack)
@@ -1077,9 +1078,8 @@ srv_missing_data <- function(input,
       chunks_reset()
       chunks_push_chunks(table_chunks())
       chunks_get_var("summary_data")
-    }
-  },
-  options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
+    }},
+    options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
   )
 
   callModule(
