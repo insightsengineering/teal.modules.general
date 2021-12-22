@@ -68,7 +68,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
   stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
+  stopifnot(is_class_list("data_extract_spec")(dat) || methods::is(dat, "data_extract_spec"))
 
   ggtheme <- match.arg(ggtheme)
   stopifnot(is_character_single(ggtheme))

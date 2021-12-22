@@ -122,7 +122,7 @@ ui_variable_browser <- function(id,
           ),
           { # nolint
             x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-            if (is(datasets, "CDISCFilteredData")) {
+            if (methods::is(datasets, "CDISCFilteredData")) {
               x
             } else {
               shinyjs::hidden(x)
@@ -569,9 +569,6 @@ create_sparklines.logical <- function(arr, ...) { # nousage # nolint
 #' @param bar_width \code{numeric} width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
-#' @importFrom jsonlite toJSON
-#' @importFrom htmlwidgets JS
 #'
 #' @export
 #'

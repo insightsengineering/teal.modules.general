@@ -80,7 +80,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   ns <- NS(id)
   datanames <- datasets$datanames()
 
-  if_subject_plot <- is(datasets, "CDISCFilteredData")
+  if_subject_plot <- methods::is(datasets, "CDISCFilteredData")
 
   standard_layout(
     output = white_small_well(
@@ -229,7 +229,6 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
-#' @importFrom shinyWidgets checkboxGroupButtons
 encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
   ns <- NS(id)
 

@@ -79,12 +79,12 @@ tm_t_crosstable <- function(label = "Cross Table",
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
     is_character_single(label),
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
+    is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
+    is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
     is_logical_single(show_percentage),
     is_logical_single(show_total),
     list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     )

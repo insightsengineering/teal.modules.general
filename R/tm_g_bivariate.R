@@ -42,7 +42,6 @@
 #' For more examples, please see the vignette "Using bivariate plot" via
 #'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
-#' @importFrom methods is
 #' @export
 #'
 #' @examples
