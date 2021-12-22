@@ -17,7 +17,6 @@
 #' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
 #'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @export
-#' @importFrom DT datatable
 #' @examples
 #' library(scda)
 #'
@@ -324,7 +323,6 @@ ui_data_table <- function(id,
 
 #' @importFrom dplyr count
 #' @importFrom rlang !!! syms
-#' @importFrom DT datatable
 srv_data_table <- function(input,
                            output,
                            session,

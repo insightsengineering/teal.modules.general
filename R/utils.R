@@ -66,7 +66,6 @@ NULL
 #' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL))
 #' }
 #'
-#' @importFrom grid grid.newpage grid.draw pushViewport upViewport plotViewport viewport grid.grabExpr
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
     is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),
@@ -76,7 +75,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }
-  grid.grabExpr({
+  grid::grid.grabExpr({
     g <- ggplotGrob(p)
 
     # we are going to replace these, so we make sure they have nothing in them
@@ -89,32 +88,32 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     yaxis_label_grob$children[[1]]$label <- paste(yfacet_label, collapse = " & ")
     yaxis_label_grob$children[[1]]$rot <- 270
 
-    top_height <- if (is.null(xfacet_label)) 0 else unit(2, "line")
-    right_width <- if (is.null(yfacet_label)) 0 else unit(2, "line")
+    top_height <- if (is.null(xfacet_label)) 0 else grid::unit(2, "line")
+    right_width <- if (is.null(yfacet_label)) 0 else grid::unit(2, "line")
 
-    grid.newpage()
-    pushViewport(plotViewport(margins = c(0, 0, top_height, right_width), name = "ggplot"))
-    grid.draw(g)
-    upViewport(1)
+    grid::grid.newpage()
+    grid::pushViewport(grid::plotViewport(margins = c(0, 0, top_height, right_width), name = "ggplot"))
+    grid::grid.draw(g)
+    grid::upViewport(1)
 
     # draw x facet
     if (!is.null(xfacet_label)) {
-      pushViewport(viewport(
-        x = 0, y = unit(1, "npc") - top_height, width = unit(1, "npc"),
+      grid::pushViewport(grid::viewport(
+        x = 0, y = grid::unit(1, "npc") - top_height, width = grid::unit(1, "npc"),
         height = top_height, just = c("left", "bottom"), name = "topxaxis"
       ))
-      grid.draw(xaxis_label_grob)
-      upViewport(1)
+      grid::grid.draw(xaxis_label_grob)
+      grid::upViewport(1)
     }
 
     # draw y facet
     if (!is.null(yfacet_label)) {
-      pushViewport(viewport(
-        x = unit(1, "npc") - unit(as.numeric(right_width) / 2, "line"), y = 0, width = right_width,
-        height = unit(1, "npc"), just = c("left", "bottom"), name = "rightyaxis"
+      grid::pushViewport(grid::viewport(
+        x = grid::unit(1, "npc") - grid::unit(as.numeric(right_width) / 2, "line"), y = 0, width = right_width,
+        height = grid::unit(1, "npc"), just = c("left", "bottom"), name = "rightyaxis"
       ))
-      grid.draw(yaxis_label_grob)
-      upViewport(1)
+      grid::grid.draw(yaxis_label_grob)
+      grid::upViewport(1)
     }
   })
 }

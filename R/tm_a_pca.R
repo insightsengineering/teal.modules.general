@@ -424,7 +424,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
       theme = list(
         legend.position = "right",
-        legend.spacing.y = quote(unit(-5, "pt")),
+        legend.spacing.y = quote(grid::unit(-5, "pt")),
         legend.title = quote(element_text(vjust = 8)),
         axis.text.x = substitute(element_text(angle = angle_value, hjust = hjust_value),
                                  list(angle_value = angle_value, hjust_value = hjust_value)),
@@ -728,7 +728,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
             aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
             data = rot_vars,
             lineend = "round", linejoin = "round",
-            arrow = arrow(length = unit(0.5, "cm"))
+            arrow = grid::arrow(length = grid::unit(0.5, "cm"))
           ),
           env = list(x_axis = x_axis, y_axis = y_axis)
         ),

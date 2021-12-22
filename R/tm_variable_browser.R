@@ -165,8 +165,6 @@ ui_variable_browser <- function(id,
   )
 }
 
-
-#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
 #' @importFrom utils capture.output str
 srv_variable_browser <- function(input, output, session, datasets, datasets_selected, ggplot2_args) {
 
