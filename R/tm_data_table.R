@@ -142,22 +142,22 @@ tm_data_table <- function(label = "Data Table",
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
   stop_if_not(
-    is_character_single(label),
+    utils.nest::is_character_single(label),
     is.list(variables_selected),
-    is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
+    utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected),
     utils.nest::is_fully_named_list(dt_args),
     utils.nest::is_fully_named_list(dt_options),
-    is_empty(variables_selected) ||
+    utils.nest::is_empty(variables_selected) ||
       (!is.null(names(variables_selected)) &&
         all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
         all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
         all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
-    is_empty(datasets_selected) ||
+    utils.nest::is_empty(datasets_selected) ||
       (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
     list(
-      is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
+      utils.nest::is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
       "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))"
     )
   )
@@ -369,7 +369,7 @@ srv_data_table <- function(input,
 get_datanames_selected <- function(datasets, datasets_selected) {
   datanames <- datasets$datanames()
 
-  if (!is_character_empty(datasets_selected)) {
+  if (!utils.nest::is_character_empty(datasets_selected)) {
     stopifnot(all(datasets_selected %in% datanames))
     datanames <- datasets_selected
   }

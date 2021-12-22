@@ -43,8 +43,8 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
   stop_if_not(
-    is_character_single(label),
-    is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
+    utils.nest::is_character_single(label),
+    utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected)
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -972,7 +972,7 @@ render_tab_header <- function(dataset_name, output, datasets) {
     key <- datasets$get_keys(dataset_name)
     sprintf(
       "Dataset with %s unique key rows and %s variables",
-      nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
+      nrow(unique(`if`(!utils.nest::is_empty(key), df[, key, drop = FALSE], df))),
       ncol(df)
     )
   })

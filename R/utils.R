@@ -68,8 +68,8 @@ NULL
 #'
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
-    is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),
-    is.null(yfacet_label) || is_character_vector(yfacet_label, min_length = 1),
+    is.null(xfacet_label) || utils.nest::is_character_vector(xfacet_label, min_length = 1),
+    is.null(yfacet_label) || utils.nest::is_character_vector(yfacet_label, min_length = 1),
     methods::is(p, "ggplot")
   )
   if (is.null(xfacet_label) && is.null(yfacet_label)) {

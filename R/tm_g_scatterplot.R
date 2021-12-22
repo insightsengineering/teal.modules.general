@@ -135,37 +135,40 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
-  if (!is_class_list("data_extract_spec")(x)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is_class_list("data_extract_spec")(y)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(y)) {
     y <- list(y)
   }
-  if (!is_class_list("data_extract_spec")(color_by)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(color_by)) {
     color_by <- list_or_null(color_by)
   }
-  if (!is_class_list("data_extract_spec")(size_by)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(size_by)) {
     size_by <- list_or_null(size_by)
   }
-  if (!is_class_list("data_extract_spec")(row_facet)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(row_facet)) {
     row_facet <- list_or_null(row_facet)
   }
-  if (!is_class_list("data_extract_spec")(col_facet)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(col_facet)) {
     col_facet <- list_or_null(col_facet)
   }
 
   ggtheme <- match.arg(ggtheme)
 
   stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(x),
-    is_class_list("data_extract_spec")(y),
-    list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),
-    is.null(size_by) || is_class_list("data_extract_spec")(size_by),
-    is.null(color_by) || is_class_list("data_extract_spec")(color_by),
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
-    is_character_single(ggtheme),
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(x),
+    utils.nest::is_class_list("data_extract_spec")(y),
+    list(
+      utils.nest::is_character_vector(shape) && length(shape) > 0,
+      "`shape` must be a character vector of length 1 or more"
+    ),
+    is.null(size_by) || utils.nest::is_class_list("data_extract_spec")(size_by),
+    is.null(color_by) || utils.nest::is_class_list("data_extract_spec")(color_by),
+    is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
+    is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
+    utils.nest::is_character_single(ggtheme),
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
@@ -364,18 +367,18 @@ srv_g_scatterplot <- function(input,
     ANL <- merged_data()$data() # nolint
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
-    !is_empty(x_var) && !is_empty(y_var) && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
+    !utils.nest::is_empty(x_var) && !utils.nest::is_empty(y_var) && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
   })
 
   add_trend_line <- reactive({
     smoothing_degree <- as.integer(input$smoothing_degree)
-    trend_line_is_applicable() && !is_empty(smoothing_degree)
+    trend_line_is_applicable() && !utils.nest::is_empty(smoothing_degree)
   })
 
   if (!is.null(color_by)) {
     observeEvent(merged_data()$columns_source$color_by, {
       color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      if (!is_empty(color_by_var)) {
+      if (!utils.nest::is_empty(color_by_var)) {
         shinyjs::hide("color")
       } else {
         shinyjs::show("color")
@@ -426,14 +429,14 @@ srv_g_scatterplot <- function(input,
     validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
     validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
-      is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      utils.nest::is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
       "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
     validate(need(
-      is_empty(col_facet_name) || any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      utils.nest::is_empty(col_facet_name) || any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
       "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
-    if (add_density && !is_empty(color_by_var)) {
+    if (add_density && !utils.nest::is_empty(color_by_var)) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
@@ -459,7 +462,7 @@ srv_g_scatterplot <- function(input,
       ))
     }
 
-    point_sizes <- if (!is_empty(size_by_var)) {
+    point_sizes <- if (!utils.nest::is_empty(size_by_var)) {
       validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
       substitute(
         expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
@@ -474,7 +477,7 @@ srv_g_scatterplot <- function(input,
         "ANL %>% dplyr::group_by(",
         paste(
           c(
-            if (!is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+            if (!utils.nest::is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
             row_facet_name,
             col_facet_name
           ),
@@ -488,7 +491,7 @@ srv_g_scatterplot <- function(input,
 
     plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-    plot_call <- if (is_empty(color_by_var)) {
+    plot_call <- if (utils.nest::is_empty(color_by_var)) {
       substitute(
         expr = plot_call +
           aes(x = x_name, y = y_name) +
@@ -626,11 +629,11 @@ srv_g_scatterplot <- function(input,
           type = "density",
           groupColour = group_colour
         ),
-        env = list(plot_call = plot_call, group_colour = if (!is_empty(color_by_var)) TRUE else FALSE)
+        env = list(plot_call = plot_call, group_colour = if (!utils.nest::is_empty(color_by_var)) TRUE else FALSE)
       )
     }
 
-    y_label <- ifelse(is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    y_label <- ifelse(utils.nest::is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
     x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- ggplot2_args(

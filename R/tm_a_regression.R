@@ -86,28 +86,28 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
-  if (!is_class_list("data_extract_spec")(regressor)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(regressor)) {
     regressor <- list(regressor)
   }
-  if (!is_class_list("data_extract_spec")(response)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
 
   ggtheme <- match.arg(ggtheme)
 
   stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(response),
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(response),
     list(
       all(vapply(response, function(x) {
         !isTRUE(x$select$multiple)
       }, logical(1))),
       "Response variable should not allow multiple selection"
     ),
-    is_class_list("data_extract_spec")(regressor),
+    utils.nest::is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_ui
-    is_character_single(ggtheme),
-    is_character_single(default_outlier_label)
+    utils.nest::is_character_single(ggtheme),
+    utils.nest::is_character_single(default_outlier_label)
   )
 
   plot_choices <- c(

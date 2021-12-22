@@ -67,11 +67,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(dat) || methods::is(dat, "data_extract_spec"))
+  stopifnot(utils.nest::is_character_single(label))
+  stopifnot(utils.nest::is_class_list("data_extract_spec")(dat) || methods::is(dat, "data_extract_spec"))
 
   ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
+  stopifnot(utils.nest::is_character_single(ggtheme))
   stopifnot(is_logical_single(rotate_xaxis_labels))
 
   if (length(alpha) == 1) {
@@ -102,7 +102,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                             lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
                             .var.name = "plot_width")
 
-  if (!is_class_list("data_extract_spec")(dat)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
   }
 

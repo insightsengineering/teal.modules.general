@@ -100,15 +100,15 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
-  if (!is.null(dist_var) && !is_class_list("data_extract_spec")(dist_var)) {
+  if (!is.null(dist_var) && !utils.nest::is_class_list("data_extract_spec")(dist_var)) {
     dist_var <- list(dist_var)
   }
 
-  if (!is_class_list("data_extract_spec")(strata_var)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(strata_var)) {
     strata_var <- list_or_null(strata_var)
   }
 
-  if (!is_class_list("data_extract_spec")(group_var)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(group_var)) {
     group_var <- list_or_null(group_var)
   }
 
@@ -121,11 +121,11 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
   stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
-    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
-    is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
-    is_character_single(ggtheme),
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
+    is.null(strata_var) || (utils.nest::is_class_list("data_extract_spec")(strata_var)),
+    is.null(group_var) || (utils.nest::is_class_list("data_extract_spec")(group_var)),
+    utils.nest::is_character_single(ggtheme),
     is_logical_single(freq)
   )
 
@@ -403,7 +403,7 @@ srv_distribution <- function(input,
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
-    if (!is_empty(g_var)) {
+    if (!utils.nest::is_empty(g_var)) {
       validate(
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
@@ -416,7 +416,7 @@ srv_distribution <- function(input,
       ))
     }
 
-    if (!is_empty(s_var)) {
+    if (!utils.nest::is_empty(s_var)) {
       validate(
         need(
           inherits(ANL[[s_var]], c("integer", "factor", "character")),
@@ -891,7 +891,7 @@ srv_distribution <- function(input,
 
       validate(need(dist_tests, "Please select a test"))
 
-      if ((!is_empty(s_var) || !is_empty(g_var))) {
+      if ((!utils.nest::is_empty(s_var) || !utils.nest::is_empty(g_var))) {
         counts <- ANL %>%
           dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
           dplyr::summarise(n = dplyr::n())
@@ -914,13 +914,13 @@ srv_distribution <- function(input,
         "Kolmogorov-Smirnov (two-samples)"
       )) {
         validate(need(s_var, "Please select stratify variable."))
-        if (is_empty(g_var) && !is_empty(s_var)) {
+        if (utils.nest::is_empty(g_var) && !utils.nest::is_empty(s_var)) {
           validate(need(
             length(unique(ANL[[s_var]])) == 2,
             "Please select stratify variable with 2 levels."
           ))
         }
-        if (!is_empty(g_var) && !is_empty(s_var)) {
+        if (!utils.nest::is_empty(g_var) && !utils.nest::is_empty(s_var)) {
           validate(need(
             all(stats::na.omit(as.vector(tapply(
               ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
@@ -1007,7 +1007,7 @@ srv_distribution <- function(input,
         s_var_name = s_var_name
       )
 
-      if ((is_empty(s_var) && is_empty(g_var))) {
+      if ((utils.nest::is_empty(s_var) && utils.nest::is_empty(g_var))) {
         test_stack_push(
           substitute(
             expr = {

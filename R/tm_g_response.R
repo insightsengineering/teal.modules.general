@@ -81,32 +81,32 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
-  if (!is_class_list("data_extract_spec")(response)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
-  if (!is_class_list("data_extract_spec")(x)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(x)) {
     x <- list(x)
   }
-  if (!is_class_list("data_extract_spec")(row_facet)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(row_facet)) {
     row_facet <- list_or_null(row_facet)
   }
-  if (!is_class_list("data_extract_spec")(col_facet)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(col_facet)) {
     col_facet <- list_or_null(col_facet)
   }
 
   ggtheme <- match.arg(ggtheme)
 
   stop_if_not(
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
-    is_character_single(label),
-    is_class_list("data_extract_spec")(response),
-    is_class_list("data_extract_spec")(x),
+    is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
+    is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(response),
+    utils.nest::is_class_list("data_extract_spec")(x),
     is_logical_single(coord_flip),
     is_logical_single(count_labels),
     is_logical_single(rotate_xaxis_labels),
     is_logical_single(freq),
-    is_character_single(ggtheme),
+    utils.nest::is_character_single(ggtheme),
     list(
       all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
       "'response' should not allow empty values"
@@ -280,8 +280,8 @@ srv_g_response <- function(input,
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
-    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
+    rowf <- if (utils.nest::is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
+    colf <- if (utils.nest::is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
     resp_cl <- as.name(resp_var) # nolint
     x_cl <- as.name(x) # nolint
 

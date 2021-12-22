@@ -42,7 +42,7 @@ tm_missing_data <- function(label = "Missing data",
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
-  stopifnot(is_character_single(label))
+  stopifnot(utils.nest::is_character_single(label))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -52,7 +52,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 
   ggtheme <- match.arg(ggtheme)
-  stop_if_not(is_character_single(ggtheme))
+  stop_if_not(utils.nest::is_character_single(ggtheme))
 
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert(
@@ -498,7 +498,7 @@ srv_missing_data <- function(input,
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
 
     # Create a private stack for this function only.
     summary_stack <- chunks$new()
@@ -737,7 +737,7 @@ srv_missing_data <- function(input,
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
@@ -967,7 +967,7 @@ srv_missing_data <- function(input,
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
     # Create a private stack for this function only.
     by_subject_stack <- chunks$new()
     by_subject_stack_push <- function(...) {
@@ -981,7 +981,7 @@ srv_missing_data <- function(input,
     by_subject_stack_push(substitute(
       expr = parent_keys <- keys,
       env = list(keys = `if`(
-        is_empty(datasets$get_parentname(dataname)),
+        utils.nest::is_empty(datasets$get_parentname(dataname)),
         keys,
         datasets$get_keys(datasets$get_parentname(dataname))
       ))
@@ -1068,7 +1068,7 @@ srv_missing_data <- function(input,
   })
 
   output$levels_table <- DT::renderDataTable({
-    if (is_empty(input$variables_select)) {
+    if (utils.nest::is_empty(input$variables_select)) {
       # so that zeroRecords message gets printed
       # using tibble as it supports weird column names, such as " "
       tibble::tibble(` ` = logical(0))

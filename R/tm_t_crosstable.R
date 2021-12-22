@@ -76,14 +76,14 @@ tm_t_crosstable <- function(label = "Cross Table",
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
   stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
     is_logical_single(show_percentage),
     is_logical_single(show_total),
     list(
       (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (utils.nest::is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     )
   )
@@ -195,8 +195,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     x_name <- x_ordered()
     y_name <- as.vector(merged_data_r()$columns_source$y)
 
-    validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
-    validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
+    validate(need(!utils.nest::is_character_empty(x_name), "Please define column for row variable that is not empty."))
+    validate(need(!utils.nest::is_character_empty(y_name), "Please define column for column variable that is not empty."))
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
