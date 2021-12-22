@@ -165,7 +165,6 @@ ui_variable_browser <- function(id,
   )
 }
 
-#' @importFrom utils capture.output str
 srv_variable_browser <- function(input, output, session, datasets, datasets_selected, ggplot2_args) {
 
   # if there are < this number of unique records then a numeric
@@ -390,7 +389,6 @@ var_missings_info <- function(x) {
 #'
 #' @export
 #'
-#' @importFrom sparkline spk_chr
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
@@ -572,7 +570,6 @@ create_sparklines.logical <- function(arr, ...) { # nousage # nolint
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
-#' @importFrom sparkline spk_chr
 #' @importFrom jsonlite toJSON
 #' @importFrom htmlwidgets JS
 #'
@@ -616,8 +613,6 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
-#' @importFrom sparkline spk_chr
 #'
 #' @export
 #'

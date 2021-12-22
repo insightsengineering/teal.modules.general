@@ -179,7 +179,6 @@ tm_data_table <- function(label = "Data Table",
 
 
 # ui page module
-#' @importFrom utils head
 ui_page_data_table <- function(id,
                                datasets,
                                selected,
@@ -234,7 +233,7 @@ ui_page_data_table <- function(id,
                 selected <- if (!is.null(selected[[x]])) {
                   selected[[x]]
                 } else {
-                  head(choices)
+                  utils::head(choices)
                 }
                 tabPanel(
                   title = x,
