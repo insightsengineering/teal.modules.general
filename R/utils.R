@@ -182,7 +182,6 @@ list_or_null <- function(obj) {
 #'
 #' varname_w_label("AGE", ADSL)
 #' }
-#' @importFrom stringr str_wrap
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,

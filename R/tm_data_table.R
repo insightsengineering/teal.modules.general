@@ -320,7 +320,6 @@ ui_data_table <- function(id,
 }
 
 
-#' @importFrom dplyr count
 #' @importFrom rlang !!! syms
 srv_data_table <- function(input,
                            output,
@@ -346,7 +345,7 @@ srv_data_table <- function(input,
     validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
     dataframe_selected <- if (if_distinct()) {
-      count(df, !!!syms(variables))
+      dplyr::count(df, !!!syms(variables))
     } else {
       df[variables]
     }
