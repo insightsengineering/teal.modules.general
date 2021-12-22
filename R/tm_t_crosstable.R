@@ -88,7 +88,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     )
   )
 
-  utils.nest::utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
+  utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
 
   ui_args <- as.list(environment())
 
