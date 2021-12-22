@@ -96,16 +96,16 @@ tm_g_response <- function(label = "Response Plot",
 
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
     is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(response),
     utils.nest::is_class_list("data_extract_spec")(x),
-    is_logical_single(coord_flip),
-    is_logical_single(count_labels),
-    is_logical_single(rotate_xaxis_labels),
-    is_logical_single(freq),
+    utils.nest::is_logical_single(coord_flip),
+    utils.nest::is_logical_single(count_labels),
+    utils.nest::is_logical_single(rotate_xaxis_labels),
+    utils.nest::is_logical_single(freq),
     utils.nest::is_character_single(ggtheme),
     list(
       all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
@@ -257,8 +257,8 @@ srv_g_response <- function(input,
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    row_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$row_facet, character(0)))
+    col_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$col_facet, character(0)))
 
     validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
     validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))

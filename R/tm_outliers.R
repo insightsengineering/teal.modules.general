@@ -78,7 +78,7 @@ tm_outliers <- function(label = "Outliers Module",
 
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(outlier_var),
     utils.nest::is_character_single(ggtheme),
@@ -971,7 +971,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   dataname <- if (!is.function(datasets$get_parentname)) {
     dataname
   } else {
-    if_empty(datasets$get_parentname(dataname), dataname)
+    utils.nest::if_empty(datasets$get_parentname(dataname), dataname)
   }
   choices <- variable_choices(datasets$get_data(dataname))
 

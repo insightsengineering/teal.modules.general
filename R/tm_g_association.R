@@ -90,12 +90,12 @@ tm_g_association <- function(label = "Association",
 
   stopifnot(utils.nest::is_character_single(label))
   stopifnot(utils.nest::is_class_list("data_extract_spec")(ref))
-  stop_if_not(list(
+  utils.nest::stop_if_not(list(
     all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
     "'ref' should not allow multiple selection"
   ))
   stopifnot(utils.nest::is_class_list("data_extract_spec")(vars))
-  stopifnot(is_logical_single(show_association))
+  stopifnot(utils.nest::is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)

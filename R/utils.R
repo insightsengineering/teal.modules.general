@@ -188,7 +188,7 @@ varname_w_label <- function(var_names,
                             prefix = NULL,
                             suffix = NULL) {
   add_label <- function(var_names) {
-    label <- vapply(dataset[var_names], function(x) if_null(attr(x, "label"), ""), character(1))
+    label <- vapply(dataset[var_names], function(x) utils.nest::if_null(attr(x, "label"), ""), character(1))
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
       paste0(prefix, label, " [", var_names, "]", suffix)

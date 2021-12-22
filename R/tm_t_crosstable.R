@@ -75,12 +75,12 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
     utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
-    is_logical_single(show_percentage),
-    is_logical_single(show_total),
+    utils.nest::is_logical_single(show_percentage),
+    utils.nest::is_logical_single(show_total),
     list(
       (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
@@ -88,7 +88,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     )
   )
 
-  utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
+  utils.nest::utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
 
   ui_args <- as.list(environment())
 

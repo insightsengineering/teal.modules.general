@@ -105,7 +105,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   logger::log_info("Initializing tm_g_bivariate")
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
     utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
@@ -114,12 +114,12 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || methods::is(color, "data_extract_spec"),
     is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || methods::is(fill, "data_extract_spec"),
     is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || methods::is(size, "data_extract_spec"),
-    is_logical_single(use_density),
-    is_logical_single(color_settings),
-    is_logical_single(free_x_scales),
-    is_logical_single(free_y_scales),
-    is_logical_single(rotate_xaxis_labels),
-    is_logical_single(swap_axes),
+    utils.nest::is_logical_single(use_density),
+    utils.nest::is_logical_single(color_settings),
+    utils.nest::is_logical_single(free_x_scales),
+    utils.nest::is_logical_single(free_y_scales),
+    utils.nest::is_logical_single(rotate_xaxis_labels),
+    utils.nest::is_logical_single(swap_axes),
     utils.nest::is_character_single(ggtheme),
     list(
       (methods::is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
@@ -178,7 +178,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
-    stop_if_not(list(
+    utils.nest::stop_if_not(list(
       is.null(color) && is.null(fill) && is.null(size),
       "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
     ))
@@ -408,8 +408,8 @@ srv_g_bivariate <- function(input,
     ANL <- teal.devel::chunks_get_var("ANL") # nolint
     teal.devel::validate_has_data(ANL, 3)
 
-    x_name <- if_null(as.vector(merged_data()$columns_source$x), character(0))
-    y_name <- if_null(as.vector(merged_data()$columns_source$y), character(0))
+    x_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$x), character(0))
+    y_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$y), character(0))
 
     validate(
       need(
@@ -477,7 +477,7 @@ srv_g_bivariate <- function(input,
       ggplot2_args = ggplot2_args
     )
 
-    facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+    facetting <- (utils.nest::if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
 
     if (facetting) {
       facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)

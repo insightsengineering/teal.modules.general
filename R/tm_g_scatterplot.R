@@ -156,7 +156,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(x),
     utils.nest::is_class_list("data_extract_spec")(y),
@@ -169,12 +169,12 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
     is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
     utils.nest::is_character_single(ggtheme),
-    list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
+    list(utils.nest::is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
       "`max_deg` must be a finite whole number greater than zero"
     ),
-    is_numeric_single(table_dec)
+    utils.nest::is_numeric_single(table_dec)
   )
 
   if (length(alpha) == 1) {
@@ -408,8 +408,8 @@ srv_g_scatterplot <- function(input,
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
     size_by_var <- as.vector(merged_data()$columns_source$size_by)
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    row_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$row_facet, character(0)))
+    col_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$col_facet, character(0)))
     alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
@@ -417,7 +417,7 @@ srv_g_scatterplot <- function(input,
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
     color <- input$color # nolint
-    shape <- if_empty_string(if_null(input$shape, "circle"), "circle") # nolint
+    shape <- if_empty_string(utils.nest::if_null(input$shape, "circle"), "circle") # nolint
     smoothing_degree <- as.integer(input$smoothing_degree)
     ci <- input$ci # nolint
 

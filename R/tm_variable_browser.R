@@ -42,7 +42,7 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected)
   )
@@ -227,7 +227,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("display_density"),
             label = "Show density",
-            value = if_null(isolate(input$display_density), TRUE),
+            value = utils.nest::if_null(isolate(input$display_density), TRUE),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -238,7 +238,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("remove_outliers"),
             label = "Remove outliers",
-            value = if_null(isolate(input$remove_outliers), FALSE),
+            value = utils.nest::if_null(isolate(input$remove_outliers), FALSE),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -262,7 +262,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         list(
           checkboxInput(session$ns("numeric_as_factor"),
                         "Treat variable as factor",
-                        value = if_null(isolate(input$numeric_as_factor),
+                        value = utils.nest::if_null(isolate(input$numeric_as_factor),
                                         unique_entries < .unique_records_default_as_factor)
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
@@ -332,8 +332,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
 
 
   variable_plot_r <- reactive({
-    display_density <- if_null(input$display_density, FALSE)
-    remove_outliers <- if_null(input$remove_outliers, FALSE)
+    display_density <- utils.nest::if_null(input$display_density, FALSE)
+    remove_outliers <- utils.nest::if_null(input$remove_outliers, FALSE)
 
     if (remove_outliers) {
       req(input$outlier_definition_slider)
@@ -738,7 +738,7 @@ plot_var_summary <- function(var,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  stopifnot(is_logical_single(display_density))
+  stopifnot(utils.nest::is_logical_single(display_density))
 
   grid::grid.newpage()
 
@@ -1017,7 +1017,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         ulapply(
           df,
           function(x) {
-            if_null(attr(x, "label"), "")
+            utils.nest::if_null(attr(x, "label"), "")
           }
         ),
         names(df)

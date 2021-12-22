@@ -120,13 +120,13 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (utils.nest::is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (utils.nest::is_class_list("data_extract_spec")(group_var)),
     utils.nest::is_character_single(ggtheme),
-    is_logical_single(freq)
+    utils.nest::is_logical_single(freq)
   )
 
   plot_choices <- c("Histogram", "QQplot")

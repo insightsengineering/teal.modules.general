@@ -43,7 +43,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
     input_path <- list()
   }
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_character_list(input_path, 0) || utils.nest::is_character_vector(input_path)
   )

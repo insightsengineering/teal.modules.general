@@ -72,7 +72,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   ggtheme <- match.arg(ggtheme)
   stopifnot(utils.nest::is_character_single(ggtheme))
-  stopifnot(is_logical_single(rotate_xaxis_labels))
+  stopifnot(utils.nest::is_logical_single(rotate_xaxis_labels))
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -557,7 +557,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           y_axis = y_axis,
           variables = variables,
           ggthemes = parsed_ggplot2_args$ggtheme,
-          labs = utils.nest::if_null(parsed_ggplot2_args$labs, quote(labs())),
+          labs = utils.nest::utils.nest::if_null(parsed_ggplot2_args$labs, quote(labs())),
           themes = parsed_ggplot2_args$theme
         )
       )

@@ -52,7 +52,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 
   ggtheme <- match.arg(ggtheme)
-  stop_if_not(utils.nest::is_character_single(ggtheme))
+  utils.nest::stop_if_not(utils.nest::is_character_single(ggtheme))
 
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert(
@@ -451,7 +451,7 @@ srv_missing_data <- function(input,
       session$ns("group_by_var"),
       label = "Group by variable",
       choices = cat_choices,
-      selected = if_null(
+      selected = utils.nest::if_null(
         isolate(input$group_by_var),
         cat_choices[1]
       ),
@@ -600,7 +600,7 @@ srv_missing_data <- function(input,
       keys <- data_keys()
       summary_stack_push(substitute(
         expr = parent_keys <- keys,
-        env = list(keys = datasets$get_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+        env = list(keys = datasets$get_keys(utils.nest::if_empty(datasets$get_parentname(dataname), dataname)))
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(

@@ -95,7 +95,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(response),
     list(
@@ -348,7 +348,7 @@ srv_a_regression <- function(input,
       selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
         isolate(input$label_var)
       } else {
-        if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
+        utils.nest::if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
       }
       updateOptionalSelectInput(
         session = session,

@@ -141,7 +141,7 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
-  stop_if_not(
+  utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
     is.list(variables_selected),
     utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected),
