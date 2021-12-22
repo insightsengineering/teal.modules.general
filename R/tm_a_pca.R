@@ -99,8 +99,9 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
@@ -612,7 +613,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         id = "pca_plot_vars_rot_1",
         expression = substitute(
           expr = {
-            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
+            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot^2))^(1 / 4)
             v_scale <- rowSums(pca$rotation^2)
 
             rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
@@ -690,8 +691,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       dev_labs <- list(color = varname_w_label(resp_col, rp))
 
       scales_biplot <- if (is.character(response) ||
-                           is.factor(response) ||
-                           (is.numeric(response) && length(unique(response)) <= 6)) {
+        is.factor(response) ||
+        (is.numeric(response) && length(unique(response)) <= 6)) {
         chunks_push(
           id = "pca_plot_response",
           quote(pca_rot$response <- as.factor(response))
@@ -789,9 +790,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot_final",
-      expression = substitute({
-        g <- plot_call
-        print(g)},
+      expression = substitute(
+        { # nolint
+          g <- plot_call
+          print(g)
+        },
         env = list(
           plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
         )
@@ -916,10 +919,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   )
 
   # tables ----
-  output$tbl_importance <- renderTable({
-    req("importance" %in% input$tables_display)
-    chunks_stack <- computation()
-    chunks_get_var("tbl_importance", chunks = chunks_stack)},
+  output$tbl_importance <- renderTable(
+    { # nolint
+      req("importance" %in% input$tables_display)
+      chunks_stack <- computation()
+      chunks_get_var("tbl_importance", chunks = chunks_stack)
+    },
     bordered = TRUE,
     align = "c",
     digits = 3
@@ -934,10 +939,12 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     )
   })
 
-  output$tbl_eigenvector <- renderTable({
-    req("eigenvector" %in% input$tables_display)
-    chunks_stack <- computation()
-    chunks_get_var("tbl_eigenvector", chunks = chunks_stack)},
+  output$tbl_eigenvector <- renderTable(
+    { # nolint
+      req("eigenvector" %in% input$tables_display)
+      chunks_stack <- computation()
+      chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
+    },
     bordered = TRUE,
     align = "c",
     digits = 3
