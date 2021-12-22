@@ -345,7 +345,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     teal.devel::chunks_push(
       id = "pca_3",
       expression = substitute(
-        expr = pca <- summary(prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
+        expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
         env = list(center = center, scale = scale)
       ),
       chunks = chunks_stack

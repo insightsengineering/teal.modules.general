@@ -437,7 +437,7 @@ srv_a_regression <- function(input,
             aes_string(regressor, response)
           ) +
             geom_point(size = size, alpha = alpha) +
-            stat_smooth(
+            stat_stats::smooth(
               method = "lm",
               formula = y ~ x,
               se = FALSE
@@ -543,7 +543,7 @@ srv_a_regression <- function(input,
         id = "plot_1a",
         expression = substitute(
           expr = {
-            smoothy <- smooth(data$.fitted, data$.resid)
+            smoothy <- stats::smooth(data$.fitted, data$.resid)
             g <- plot
             print(g)
           },
@@ -641,7 +641,7 @@ srv_a_regression <- function(input,
         id = "plot_3",
         expression = substitute(
           expr = {
-            smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+            smoothy <- stats::smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
             print(g)
           },
@@ -763,7 +763,7 @@ srv_a_regression <- function(input,
         id = "plot_5",
         expression = substitute(
           expr = {
-            smoothy <- smooth(data$.hat, data$.stdresid)
+            smoothy <- stats::smooth(data$.hat, data$.stdresid)
             g <- plot
             print(g)
           },
@@ -813,7 +813,7 @@ srv_a_regression <- function(input,
         id = "plot_6",
         expression = substitute(
           expr = {
-            smoothy <- smooth(data$.hat, data$.cooksd)
+            smoothy <- stats::smooth(data$.hat, data$.cooksd)
             g <- plot
             print(g)
           },

@@ -599,7 +599,7 @@ srv_g_scatterplot <- function(input,
           shinyjs::hide("label_pos")
         }
         plot_call <- substitute(
-          expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
+          expr = plot_call + geom_stats::smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
           env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
         )
       }
