@@ -344,7 +344,7 @@ srv_distribution <- function(input,
                      )
                    }
                    ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-                   params <- get_dist_params(as.numeric(na.omit(ANL[[dist_var2]])), input$t_dist)
+                   params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
                    params_vec <- round(unname(unlist(params)), 2)
                    params_names <- names(params)
 
@@ -466,10 +466,10 @@ srv_distribution <- function(input,
             summary_table <- ANL %>%
               dplyr::summarise(
                 min = round(min(dist_var_name, na.rm = TRUE), roundn),
-                median = round(median(dist_var_name, na.rm = TRUE), roundn),
+                median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
                 mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
                 max = round(max(dist_var_name, na.rm = TRUE), roundn),
-                sd = round(sd(dist_var_name, na.rm = TRUE), roundn),
+                sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
                 count = dplyr::n()
               )
           },
@@ -488,10 +488,10 @@ srv_distribution <- function(input,
               dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
               dplyr::summarise(
                 min = round(min(dist_var_name, na.rm = TRUE), roundn),
-                median = round(median(dist_var_name, na.rm = TRUE), roundn),
+                median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
                 mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
                 max = round(max(dist_var_name, na.rm = TRUE), roundn),
-                sd = round(sd(dist_var_name, na.rm = TRUE), roundn),
+                sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
                 count = dplyr::n()
               )
           },
@@ -963,7 +963,7 @@ srv_distribution <- function(input,
       )
       manov_args <- list(
         test = quote(stats::aov),
-        args = bquote(list(formula(.(dist_var_name) ~ .(s_var_name)), .)),
+        args = bquote(list(stats::formula(.(dist_var_name) ~ .(s_var_name)), .)),
         groups = c(g_var)
       )
       mt_args <- list(

@@ -208,9 +208,6 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
-
-#' @importFrom grid grid.newpage grid.draw
-#' @importFrom shinyjs show hide
 srv_tm_g_association <- function(input,
                                  output,
                                  session,

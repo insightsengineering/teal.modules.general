@@ -429,7 +429,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           substitute(
             expr = dplyr::mutate(
               is_outlier_selected = abs(outlier_var_name - mean(outlier_var_name)) /
-                sd(outlier_var_name) > outlier_definition_param
+                stats::sd(outlier_var_name) > outlier_definition_param
             ),
             env = list(
               outlier_var_name = as.name(outlier_var),
