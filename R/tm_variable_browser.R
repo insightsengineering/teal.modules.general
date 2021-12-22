@@ -100,7 +100,7 @@ ui_variable_browser <- function(id,
                         ),
                         div(
                           style = "margin-top: 15px;",
-                          get_dt_rows(
+                          teal.devel::get_dt_rows(
                             ns(paste0(
                               "variable_browser_", dataname
                             )),
@@ -155,7 +155,7 @@ ui_variable_browser <- function(id,
           ),
           plot_with_settings_ui(ns("variable_plot")),
           br(),
-          get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
+          teal.devel::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
           DT::dataTableOutput(ns("variable_summary_table"))
         )
       )
@@ -839,7 +839,7 @@ plot_var_summary <- function(var,
     theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
   )
 
-  all_ggplot2_args <- resolve_ggplot2_args(
+  all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
   )
@@ -905,7 +905,7 @@ validate_input <- function(input, plot_var, datasets) {
     validate(need(is.logical(type), "Select what type of data to plot"))
 
     df <- datasets$get_data(dataset_name, filtered = type)
-    validate_has_data(df, 1)
+    teal.devel::validate_has_data(df, 1)
     validate_has_variable(varname = varname, data = df, "Variable not available")
 
     TRUE

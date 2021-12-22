@@ -160,14 +160,14 @@ tm_a_regression <- function(label = "Regression Analysis",
         ggplot2_args = ggplot2_args
       )
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(args$regressor, args$response)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$regressor, args$response)
 
   standard_layout(
     output = white_small_well(tags$div(
@@ -252,9 +252,9 @@ srv_a_regression <- function(input,
                              plot_width,
                              ggplot2_args,
                              default_outlier_label) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = list(response = response, regressor = regressor)
   )
@@ -268,14 +268,14 @@ srv_a_regression <- function(input,
 
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
-    chunks_stack <- chunks$new()
+    chunks_stack <- teal.devel::chunks$new()
 
-    chunks_reset(chunks = chunks_stack)
+    teal.devel::chunks_reset(chunks = chunks_stack)
 
     chunks_push_chunks(merged_data()$chunks, chunks = chunks_stack)
 
-    ANL <- chunks_get_var("ANL", chunks = chunks_stack) # nolint
-    validate_has_data(ANL, 10)
+    ANL <- teal.devel::chunks_get_var("ANL", chunks = chunks_stack) # nolint
+    teal.devel::validate_has_data(ANL, 10)
 
     # validation
     validate(
@@ -298,7 +298,7 @@ srv_a_regression <- function(input,
       )
     )
 
-    validate_has_data(
+    teal.devel::validate_has_data(
       ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
       complete = TRUE, allow_inf = FALSE
     )
@@ -314,21 +314,21 @@ srv_a_regression <- function(input,
       )
     )
 
-    chunks_push_new_line(chunks = chunks_stack)
+    teal.devel::chunks_push_new_line(chunks = chunks_stack)
 
-    chunks_push(
+    teal.devel::chunks_push(
       id = "form",
       expression = substitute(expr = form <- formula, env = list(formula = form)),
       chunks = chunks_stack
     )
 
-    chunks_push(
+    teal.devel::chunks_push(
       id = "fit_lm",
       expression = quote(fit <- stats::lm(form, data = ANL)) %>% methods::substituteDirect(list(form = form)),
       chunks = chunks_stack
     )
 
-    chunks_push(quote({
+    teal.devel::chunks_push(quote({
       for (regressor in names(fit$contrasts)) {
         alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
         names(fit$coefficients) <- gsub(
@@ -339,9 +339,9 @@ srv_a_regression <- function(input,
     chunks = chunks_stack
     )
 
-    chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
+    teal.devel::chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
 
-    chunks_safe_eval(chunks = chunks_stack)
+    teal.devel::chunks_safe_eval(chunks = chunks_stack)
 
     if (input$show_outlier) {
       opts <- variable_choices(ANL)
@@ -411,14 +411,14 @@ srv_a_regression <- function(input,
     input_type <- input$plot_type
     show_outlier <- input$show_outlier
 
-    chunks_reset()
+    teal.devel::chunks_reset()
     chunks_push_chunks(fit())
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
     plot_type_0 <- function() {
-      fit <- chunks_get_var("fit") # chunk already evaluated
-      ANL <- chunks_get_var("ANL") # nolint
+      fit <- teal.devel::chunks_get_var("fit") # chunk already evaluated
+      ANL <- teal.devel::chunks_get_var("ANL") # nolint
 
       stopifnot(ncol(fit$model) == 2)
 
@@ -462,8 +462,8 @@ srv_a_regression <- function(input,
         }
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Response vs Regressor"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -478,7 +478,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_0",
         expression = substitute(
           expr = {
@@ -495,7 +495,7 @@ srv_a_regression <- function(input,
     }
 
     plot_base <- function() {
-      chunks_push(id = "plot_0_c", expression = quote({
+      teal.devel::chunks_push(id = "plot_0_c", expression = quote({
         class(fit$residuals) <- NULL
 
         data <- fortify(fit)
@@ -524,8 +524,8 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Residuals vs Fitted"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -539,7 +539,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_1a",
         expression = substitute(
           expr = {
@@ -580,8 +580,8 @@ srv_a_regression <- function(input,
         )
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Normal Q-Q"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -595,7 +595,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_2",
         expression = substitute(
           expr = {
@@ -622,8 +622,8 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Scale-Location"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -637,7 +637,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_3",
         expression = substitute(
           expr = {
@@ -689,8 +689,8 @@ srv_a_regression <- function(input,
         )
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Cook's distance"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -704,7 +704,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_4",
         expression = substitute(
           expr = {
@@ -744,8 +744,8 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Residuals vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -759,7 +759,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_5",
         expression = substitute(
           expr = {
@@ -794,8 +794,8 @@ srv_a_regression <- function(input,
         plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
       }
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
-        resolve_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
           user_default = ggplot2_args$default,
           module_plot = ggplot2_args(
@@ -809,7 +809,7 @@ srv_a_regression <- function(input,
         ggtheme = ggtheme
       )
 
-      chunks_push(
+      teal.devel::chunks_push(
         id = "plot_6",
         expression = substitute(
           expr = {
@@ -838,11 +838,11 @@ srv_a_regression <- function(input,
       )
     }
 
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
   })
 
 
-  code_header <- reactive(chunks_get_var("form", chunks = fit()))
+  code_header <- reactive(teal.devel::chunks_get_var("form", chunks = fit()))
 
   # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
@@ -853,17 +853,17 @@ srv_a_regression <- function(input,
     width = plot_width
   )
 
-  fitted <- reactive(chunks_get_var("fit", chunks = fit()))
+  fitted <- reactive(teal.devel::chunks_get_var("fit", chunks = fit()))
 
   output$text <- renderText({
     paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
   })
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(response, regressor)),
+    datanames = teal.devel::get_extract_datanames(list(response, regressor)),
     modal_title = "R code for the regression plot",
     code_header = paste0(
       "Regression plot of ",

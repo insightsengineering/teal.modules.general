@@ -8,8 +8,6 @@
 #' @import shiny
 #' @import shinyTree
 #' @import teal
-#' @import teal.devel
-#' @import utils.nest
 #' @import magrittr
 #'
 #'

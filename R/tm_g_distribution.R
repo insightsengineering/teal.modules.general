@@ -158,14 +158,14 @@ tm_g_distribution <- function(label = "Distribution Module",
     ),
     ui = ui_distribution,
     ui_args = args,
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_distribution <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-  is_single_dataset_value <- is_single_dataset(args$dist_var, args$strata_var, args$group_var)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
 
   standard_layout(
     output = tagList(
@@ -318,9 +318,9 @@ srv_distribution <- function(input,
                              plot_height,
                              plot_width,
                              ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
   )
@@ -380,14 +380,14 @@ srv_distribution <- function(input,
   # common chunks ----
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
-    common_stack <- chunks$new()
+    common_stack <- teal.devel::chunks$new()
 
     common_stack_push <- function(...) {
-      chunks_push(..., chunks = common_stack)
+      teal.devel::chunks_push(..., chunks = common_stack)
     }
 
-    chunks_push_data_merge(isolate(merged_data()), common_stack)
-    ANL <- chunks_get_var("ANL", common_stack) # nolint
+    teal.devel::chunks_push_data_merge(isolate(merged_data()), common_stack)
+    ANL <- teal.devel::chunks_get_var("ANL", common_stack) # nolint
 
     dist_var <- merge_vars()$dist_var
     s_var <- merge_vars()$s_var
@@ -431,7 +431,7 @@ srv_distribution <- function(input,
 
     validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
-    validate_has_data(ANL, 1, complete = TRUE)
+    teal.devel::validate_has_data(ANL, 1, complete = TRUE)
 
     if (length(t_dist) != 0) {
       map_distr_nams <- data.frame(
@@ -504,7 +504,7 @@ srv_distribution <- function(input,
       )
     }
 
-    chunks_safe_eval(chunks = common_stack)
+    teal.devel::chunks_safe_eval(chunks = common_stack)
 
     common_stack
   })
@@ -523,16 +523,16 @@ srv_distribution <- function(input,
       # Create a private stack for this function only.
       distplot_stack <- chunks$new()
 
-      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
-        params <- chunks_get_var("params", common_code_chunks())
+        params <- teal.devel::chunks_get_var("params", common_code_chunks())
       }
-      summary_table <- chunks_get_var("summary_table", common_code_chunks()) # nolint
+      summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks()) # nolint
 
-      chunks_reset(chunks = distplot_stack)
+      teal.devel::chunks_reset(chunks = distplot_stack)
 
       distplot_stack_push <- function(...) {
-        chunks_push(..., chunks = distplot_stack)
+        teal.devel::chunks_push(..., chunks = distplot_stack)
       }
 
       # isolated as common chunks already triggered the reactivity
@@ -676,12 +676,12 @@ srv_distribution <- function(input,
         )
       }
 
-      all_ggplot2_args <- resolve_ggplot2_args(
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
         user_plot = ggplot2_args[["Histogram"]],
         user_default = ggplot2_args$default
       )
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
         all_ggplot2_args,
         ggtheme = ggtheme
       )
@@ -694,7 +694,7 @@ srv_distribution <- function(input,
         env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
-      chunks_safe_eval(distplot_stack)
+      teal.devel::chunks_safe_eval(distplot_stack)
 
       distplot_stack
     }
@@ -712,16 +712,16 @@ srv_distribution <- function(input,
       # Create a private stack for this function only.
       qqplot_stack <- chunks$new()
 
-      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
-        params <- chunks_get_var("params", common_code_chunks())
+        params <- teal.devel::chunks_get_var("params", common_code_chunks())
       }
-      summary_table <- chunks_get_var("summary_table", common_code_chunks())
+      summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks())
 
-      chunks_reset(chunks = qqplot_stack)
+      teal.devel::chunks_reset(chunks = qqplot_stack)
 
       qqplot_stack_push <- function(...) {
-        chunks_push(..., chunks = qqplot_stack)
+        teal.devel::chunks_push(..., chunks = qqplot_stack)
       }
 
       # isolated as common chunks already triggered the reactivity
@@ -827,13 +827,13 @@ srv_distribution <- function(input,
         )
       }
 
-      all_ggplot2_args <- resolve_ggplot2_args(
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
         user_plot = ggplot2_args[["QQplot"]],
         user_default = ggplot2_args$default,
         module_plot = ggplot2_args(labs = list(x = "theoretical", y = "sample"))
       )
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
         all_ggplot2_args,
         ggtheme = ggtheme
       )
@@ -846,7 +846,7 @@ srv_distribution <- function(input,
         env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
-      chunks_safe_eval(qqplot_stack)
+      teal.devel::chunks_safe_eval(qqplot_stack)
 
       qqplot_stack
     }
@@ -865,15 +865,15 @@ srv_distribution <- function(input,
       # Create a private stack for this function only.
       test_stack <- chunks$new()
 
-      ANL <- chunks_get_var("ANL", common_code_chunks()) # nolint
+      ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
-        params <- chunks_get_var("params", common_code_chunks())
+        params <- teal.devel::chunks_get_var("params", common_code_chunks())
       }
 
-      chunks_reset(chunks = test_stack)
+      teal.devel::chunks_reset(chunks = test_stack)
 
       test_stack_push <- function(...) {
-        chunks_push(..., chunks = test_stack)
+        teal.devel::chunks_push(..., chunks = test_stack)
       }
 
       dist_var <- merge_vars()$dist_var
@@ -1035,7 +1035,7 @@ srv_distribution <- function(input,
         )
       }
 
-      chunks_safe_eval(test_stack)
+      teal.devel::chunks_safe_eval(test_stack)
 
       test_stack
     }
@@ -1047,33 +1047,33 @@ srv_distribution <- function(input,
     tab <- input$tabs
     req(tab) # tab is NULL upon app launch, hence will crash without this statement
 
-    chunks_reset()
-    chunks_push_chunks(common_code_chunks())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(common_code_chunks())
     # wrapped in if since test chunk could lead into validate error - we do want to continue
-    `if`(!is_error(test_r_chunks()), chunks_push_chunks(test_r_chunks()))
+    `if`(!is_error(test_r_chunks()), teal.devel::chunks_push_chunks(test_r_chunks()))
     if (tab == "Histogram") {
-      chunks_push_chunks(dist_plot_r_chunks())
+      teal.devel::chunks_push_chunks(dist_plot_r_chunks())
     } else if (tab == "QQplot") {
-      chunks_push_chunks(qq_plot_r_chunks())
+      teal.devel::chunks_push_chunks(qq_plot_r_chunks())
     }
   })
 
 
   dist_r <- reactive({
-    chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
+    teal.devel::chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
   })
 
   qq_r <- reactive({
-    chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
+    teal.devel::chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
   })
 
   tests_r <- reactive({
-    chunks_get_var(var = "test_stats", chunks = test_r_chunks())
+    teal.devel::chunks_get_var(var = "test_stats", chunks = test_r_chunks())
   })
 
 
   output$summary_table <- DT::renderDataTable(
-    expr = chunks_get_var("summary_table", chunks = common_code_chunks()),
+    expr = teal.devel::chunks_get_var("summary_table", chunks = common_code_chunks()),
     options = list(
       autoWidth = TRUE,
       columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1106,10 +1106,10 @@ srv_distribution <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(dist_var, strata_var, group_var)),
+    datanames = teal.devel::get_extract_datanames(list(dist_var, strata_var, group_var)),
     modal_title = "R Code for distribution",
     code_header = "Distribution"
   )

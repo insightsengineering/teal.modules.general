@@ -95,13 +95,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
     server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
-    filters = get_extract_datanames(variables)
+    filters = teal.devel::get_extract_datanames(variables)
   )
 }
 
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(args$variables)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$variables)
   ns <- NS(id)
   standard_layout(
     output = white_small_well(
@@ -156,22 +156,22 @@ srv_g_scatterplotmatrix <- function(input,
                                     variables,
                                     plot_height,
                                     plot_width) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  selector_list <- data_extract_multiple_srv(data_extract = list(variables = variables), datasets = datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(variables = variables), datasets = datasets)
 
-  merged_data <- data_merge_srv(
+  merged_data <- teal.devel::data_merge_srv(
     datasets = datasets,
     selector_list = selector_list
   )
 
   # plot
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 10)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 10)
 
     alpha <- input$alpha # nolint
     cex <- input$cex # nolint
@@ -188,7 +188,7 @@ srv_g_scatterplotmatrix <- function(input,
     cols_names <- selector_list()$variable()$select_ordered
 
     validate(need(length(cols_names) > 1, "Need at least 2 columns."))
-    validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 
     # get labels and proper variable names
     varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
@@ -196,14 +196,14 @@ srv_g_scatterplotmatrix <- function(input,
     # check character columns. If any, then those are converted to factors
     check_char <- vapply(ANL[, cols_names], is.character, logical(1))
     if (any(check_char)) {
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = ANL <- ANL[, cols_names] %>% # nolint
           dplyr::mutate_if(is.character, as.factor) %>%
           droplevels(),
         env = list(cols_names = cols_names)
       ))
     } else {
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = ANL <- ANL[, cols_names] %>% # nolint
           droplevels(),
         env = list(cols_names = cols_names)
@@ -217,7 +217,7 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::show("cor_use")
       shinyjs::show("cor_na_omit")
 
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = {
           plot <- lattice::splom(
             ANL,
@@ -257,12 +257,12 @@ srv_g_scatterplotmatrix <- function(input,
       shinyjs::hide("cor_method")
       shinyjs::hide("cor_use")
       shinyjs::hide("cor_na_omit")
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
         env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
       ))
     }
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
   })
 
   # Insert the plot into a plot_with_settings module
@@ -302,10 +302,10 @@ srv_g_scatterplotmatrix <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(variables)),
+    datanames = teal.devel::get_extract_datanames(list(variables)),
     modal_title = show_r_code_title(),
     code_header = show_r_code_title()
   )

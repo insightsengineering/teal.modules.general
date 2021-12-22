@@ -153,14 +153,14 @@ tm_g_response <- function(label = "Response Plot",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_g_response <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
 
   standard_layout(
     output = white_small_well(
@@ -237,22 +237,22 @@ srv_g_response <- function(input,
                            plot_height,
                            plot_width,
                            ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = data_extract
   )
 
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 10)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 10)
 
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
@@ -268,7 +268,7 @@ srv_g_response <- function(input,
     validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
 
 
-    validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
@@ -286,19 +286,19 @@ srv_g_response <- function(input,
     x_cl <- as.name(x) # nolint
 
     if (swap_axes) {
-      chunks_push(expression = substitute(
+      teal.devel::chunks_push(expression = substitute(
         expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
         env = list(x = x, x_cl = x_cl)
       ))
     }
 
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
       env = list(resp_var = resp_var)
     ))
     # nolint start
     # rowf and colf will be a NULL if not set by a user
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL2 <- ANL %>%
         dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
         dplyr::summarise(ns = dplyr::n()) %>%
@@ -307,7 +307,7 @@ srv_g_response <- function(input,
       env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
     ))
 
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL3 <- ANL %>%
         dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
         dplyr::summarise(ns = dplyr::n()),
@@ -381,12 +381,12 @@ srv_g_response <- function(input,
       dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
     }
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = ggtheme
     )
@@ -401,9 +401,9 @@ srv_g_response <- function(input,
       ggthemes = parsed_ggplot2_args$ggtheme
     ))
 
-    chunks_push(expression = plot_call, id = "plotCall")
+    teal.devel::chunks_push(expression = plot_call, id = "plotCall")
 
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
   })
 
   # Insert the plot into a plot_with_settings module from teal.devel
@@ -416,10 +416,10 @@ srv_g_response <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(response, x, row_facet, col_facet)),
+    datanames = teal.devel::get_extract_datanames(list(response, x, row_facet, col_facet)),
     modal_title = "R Code for Response Plot"
   )
 }
