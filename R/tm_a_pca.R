@@ -100,8 +100,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
                             lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
-  )
+                            .var.name = "plot_width")
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)

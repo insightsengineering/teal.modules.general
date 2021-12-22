@@ -159,9 +159,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
-  )
+                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+                            .var.name = "plot_width")
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
@@ -760,10 +759,12 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
-        substitute(geom_point(alpha = alphaval, size = sizeval, pch = 21),
+        substitute(
+          geom_point(alpha = alphaval, size = sizeval, pch = 21),
           env = list(alphaval = alpha, sizeval = size)
         ),
-        substitute(geom_point(alpha = alphaval, pch = 21),
+        substitute(
+          geom_point(alpha = alphaval, pch = 21),
           env = list(alphaval = alpha)
         ),
       )
@@ -778,7 +779,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
+      substitute(
+        geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
         env = list(xval = x, yval = y)
       )
     )
@@ -851,7 +853,8 @@ facet_ggplot_call <- function(row_facet = character(0),
   if (is_character_empty(row_facet) && is_character_empty(col_facet)) {
     NULL
   } else if (!is_character_empty(row_facet) && !is_character_empty(col_facet)) {
-    call("facet_grid",
+    call(
+      "facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
