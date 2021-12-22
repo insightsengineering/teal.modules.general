@@ -17,8 +17,6 @@
 #' @note For more examples, please see the vignette "Using cross table" via
 #'   `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
-#' @importFrom tern summarize_vars
-#'
 #' @export
 #'
 #' @examples

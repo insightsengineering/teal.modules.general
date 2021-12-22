@@ -197,7 +197,7 @@ ui_g_response <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         )
       },
-      radioGroupButtons(
+      shinyWidgets::radioGroupButtons(
         inputId = ns("freq"),
         label = NULL,
         choices = c("frequency", "density"),

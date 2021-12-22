@@ -107,13 +107,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   stop_if_not(
     is_character_single(label),
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"),
-    is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"),
-    is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"),
-    is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"),
+    is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
+    is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
+    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || methods::is(row_facet, "data_extract_spec"),
+    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || methods::is(col_facet, "data_extract_spec"),
+    is.null(color) || is_class_list("data_extract_spec")(color) || methods::is(color, "data_extract_spec"),
+    is.null(fill) || is_class_list("data_extract_spec")(fill) || methods::is(fill, "data_extract_spec"),
+    is.null(size) || is_class_list("data_extract_spec")(size) || methods::is(size, "data_extract_spec"),
     is_logical_single(use_density),
     is_logical_single(color_settings),
     is_logical_single(free_x_scales),
@@ -122,32 +122,32 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     is_logical_single(swap_axes),
     is_character_single(ggtheme),
     list(
-      (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
+      (methods::is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
         (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
     ),
     list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     ),
     list(
       is.null(color) ||
-        ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
+        ((methods::is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
            (is_class_list("data_extract_spec")(color) &&
               all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
-        ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
+        ((methods::is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
            (is_class_list("data_extract_spec")(fill) &&
               all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
-        ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
+        ((methods::is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
            (is_class_list("data_extract_spec")(size) &&
               all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"
@@ -210,7 +210,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   )
 }
 
-#' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- is_single_dataset(
@@ -241,7 +240,7 @@ ui_g_bivariate <- function(id, ...) {
         condition =
           "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
           $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        radioGroupButtons(
+        shinyWidgets::radioGroupButtons(
           inputId = ns("use_density"),
           label = NULL,
           choices = c("frequency", "density"),
@@ -253,7 +252,7 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Facetting"),
-          switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
             div(
@@ -284,7 +283,7 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Color settings"),
-          switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
             div(
