@@ -123,12 +123,14 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     utils.nest::is_character_single(ggtheme),
     list(
       (methods::is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
+        (utils.nest::is_class_list("data_extract_spec")(x) &&
+           all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
     ),
     list(
       (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (utils.nest::is_class_list("data_extract_spec")(y) &&
+           all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     ),
     list(

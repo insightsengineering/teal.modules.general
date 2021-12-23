@@ -219,7 +219,10 @@ srv_tm_g_association <- function(input,
                                  ggplot2_args) {
   teal.devel::init_chunks()
 
-  selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(ref = ref, vars = vars), datasets = datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(
+    data_extract = list(ref = ref, vars = vars),
+    datasets = datasets
+  )
 
   merged_data <- teal.devel::data_merge_srv(
     datasets = datasets,

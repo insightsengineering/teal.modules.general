@@ -429,11 +429,13 @@ srv_g_scatterplot <- function(input,
     validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
     validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
-      utils.nest::is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      utils.nest::is_empty(row_facet_name) ||
+        any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
       "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
     validate(need(
-      utils.nest::is_empty(col_facet_name) || any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      utils.nest::is_empty(col_facet_name) ||
+        any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
       "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
     if (add_density && !utils.nest::is_empty(color_by_var)) {
@@ -477,7 +479,8 @@ srv_g_scatterplot <- function(input,
         "ANL %>% dplyr::group_by(",
         paste(
           c(
-            if (!utils.nest::is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+            if (!utils.nest::is_empty(color_by_var) &&
+                inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
             row_facet_name,
             col_facet_name
           ),
@@ -633,7 +636,11 @@ srv_g_scatterplot <- function(input,
       )
     }
 
-    y_label <- ifelse(utils.nest::is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    y_label <- ifelse(
+      utils.nest::is_empty(color_by_var),
+      varname_w_label(y_var, ANL),
+      varname_w_label(color_by_var, ANL)
+    )
     x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- teal.devel::ggplot2_args(

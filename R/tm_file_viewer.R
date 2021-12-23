@@ -217,7 +217,11 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
 
         output$output <- renderUI({
           validate(
-            need(!isTRUE(file.info(selected_path)$isdir) && !utils.nest::is_empty(selected_path), "Please select a single file.")
+            need(
+              !isTRUE(file.info(selected_path)$isdir) &&
+                !utils.nest::is_empty(selected_path),
+              "Please select a single file."
+            )
           )
           display_file(selected_path)
         })
