@@ -437,7 +437,7 @@ srv_a_regression <- function(input,
             aes_string(regressor, response)
           ) +
             geom_point(size = size, alpha = alpha) +
-            stat_stats::smooth(
+            stat_smooth(
               method = "lm",
               formula = y ~ x,
               se = FALSE
