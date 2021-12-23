@@ -829,8 +829,7 @@ srv_a_regression <- function(input,
       plot_type_0()
     } else {
       plot_base()
-      switch(
-        input_type,
+      switch(input_type,
         "Residuals vs Fitted" = plot_type_1(),
         "Normal Q-Q" = plot_type_2(),
         "Scale-Location" =  plot_type_3(),
