@@ -71,7 +71,9 @@ app <- init(
     ),
     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
-    cdisc_dataset("ADLB", ADLB,
+    cdisc_dataset(
+      "ADLB",
+      ADLB,
       code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',

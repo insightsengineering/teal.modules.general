@@ -271,7 +271,8 @@ ui_distribution <- function(id, ...) {
       ),
       panel_item(
         "Tests",
-        optionalSelectInput(ns("dist_tests"),
+        optionalSelectInput(
+          ns("dist_tests"),
           "Tests:",
           choices = c(
             "Shapiro-Wilk",
@@ -989,7 +990,8 @@ srv_distribution <- function(input,
         groups = c(g_var)
       )
 
-      tests_base <- switch(dist_tests,
+      tests_base <- switch(
+        dist_tests,
         "Kolmogorov-Smirnov (one-sample)" = sks_args,
         "Shapiro-Wilk" = ssw_args,
         "Fligner-Killeen" = mfil_args,
@@ -1134,7 +1136,8 @@ srv_distribution <- function(input,
 #' @return NULL
 #' @noRd
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
-  switch(dist_type,
+  switch(
+    dist_type,
     "normal" = {
       validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
     },
