@@ -232,30 +232,30 @@ ui_g_scatterplot <- function(id, ...) {
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  standard_layout(
-    output = white_small_well(
-      plot_with_settings_ui(id = ns("scatter_plot")),
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      teal.devel::plot_with_settings_ui(id = ns("scatter_plot")),
       tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
       teal.devel::get_dt_rows(ns("data_table"), ns("data_table_rows")),
       DT::dataTableOutput(ns("data_table"), width = "100%")
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$color_by)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("color_by"),
           label = "Color by variable",
           data_extract_spec = args$color_by,
@@ -263,7 +263,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$size_by)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("size_by"),
           label = "Size by variable",
           data_extract_spec = args$size_by,
@@ -271,7 +271,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$row_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -279,15 +279,15 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,
           is_single_dataset = is_single_dataset_value
         )
       },
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSelectInput(
@@ -332,7 +332,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -417,7 +417,7 @@ srv_g_scatterplot <- function(input,
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
     color <- input$color # nolint
-    shape <- if_empty_string(utils.nest::if_null(input$shape, "circle"), "circle") # nolint
+    shape <- utils.nest::if_empty_string(utils.nest::if_null(input$shape, "circle"), "circle") # nolint
     smoothing_degree <- as.integer(input$smoothing_degree)
     ci <- input$ci # nolint
 
@@ -636,7 +636,7 @@ srv_g_scatterplot <- function(input,
     y_label <- ifelse(utils.nest::is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
     x_label <- varname_w_label(x_var, ANL)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(y = y_label, x = x_label),
       theme = list(legend.position = "bottom")
     )
@@ -678,7 +678,7 @@ srv_g_scatterplot <- function(input,
 
   # Insert the plot into a plot_with_settings module from teal.devel
   brush <- callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "scatter_plot",
     plot_r = plot_r,
     height = plot_height,
@@ -698,7 +698,7 @@ srv_g_scatterplot <- function(input,
 
     merged_data <- isolate(teal.devel::chunks_get_var("ANL"))
 
-    brushed_df <- clean_brushedPoints(merged_data, plot_brush)
+    brushed_df <- teal.devel::clean_brushedPoints(merged_data, plot_brush)
     numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
 
     DT::formatRound(

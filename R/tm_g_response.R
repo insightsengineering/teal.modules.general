@@ -162,27 +162,27 @@ ui_g_response <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.devel::is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
 
-  standard_layout(
-    output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"))
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      teal.devel::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
+      teal.devel::data_extract_ui(
         id = ns("response"),
         label = "Response variable",
         data_extract_spec = args$response,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$row_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -190,7 +190,7 @@ ui_g_response <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,
@@ -204,8 +204,8 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
@@ -220,7 +220,7 @@ ui_g_response <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -368,7 +368,7 @@ srv_g_response <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(
         x = varname_w_label(x, ANL),
         y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
@@ -408,7 +408,7 @@ srv_g_response <- function(input,
 
   # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,

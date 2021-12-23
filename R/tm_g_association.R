@@ -145,22 +145,22 @@ ui_tm_g_association <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.devel::is_single_dataset(args$ref, args$vars)
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_with_settings_ui(id = ns("myplot"))
+      teal.devel::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("ref", "vars")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("ref", "vars")]),
+      teal.devel::data_extract_ui(
         id = ns("ref"),
         label = "Reference variable",
         data_extract_spec = args$ref,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("vars"),
         label = "Associated variables",
         data_extract_spec = args$vars,
@@ -178,8 +178,8 @@ ui_tm_g_association <- function(id, ...) {
                     "Log transformed",
                     value = FALSE
       ),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Scatterplot opacity:", c(0.5, 0, 1), ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Scatterplot points size:", c(2, 1, 8), ticks = FALSE),
@@ -202,7 +202,7 @@ ui_tm_g_association <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -371,13 +371,13 @@ srv_tm_g_association <- function(input,
 
   plot_r <- reactive({
     teal.devel::chunks_uneval()
-    teal.devel::chunks_reactive()
+    chunks_reactive()
     teal.devel::chunks_safe_eval()
     teal.devel::chunks_get_var(var = "p")
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,
@@ -385,7 +385,7 @@ srv_tm_g_association <- function(input,
   )
 
   output$title <- renderText({
-    teal.devel::chunks_reactive()
+    chunks_reactive()
     teal.devel::chunks_get_var("title")
   })
 

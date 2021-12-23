@@ -83,7 +83,9 @@ tm_t_crosstable <- function(label = "Cross Table",
     utils.nest::is_logical_single(show_total),
     list(
       (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+        (utils.nest::is_class_list("data_extract_spec")(y) &&
+           all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))
+        ),
       "y variable should not allow multiple selection"
     )
   )
@@ -120,16 +122,16 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     "Right Join" = "dplyr::right_join"
   )
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       textOutput(ns("title")),
-      table_with_settings_ui(ns("table"))
+      teal.devel::table_with_settings_ui(ns("table"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(list(x, y)),
-      data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
-      data_extract_ui(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
+      teal.devel::datanames_input(list(x, y)),
+      teal.devel::data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
+      teal.devel::data_extract_ui(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
       optionalSelectInput(
         ns("join_fun"),
         label = "Row to Column type of join",
@@ -138,15 +140,15 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
         multiple = FALSE
       ),
       tags$hr(),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = pre_output,
     post_output = post_output
   )
@@ -196,7 +198,12 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     y_name <- as.vector(merged_data_r()$columns_source$y)
 
     validate(need(!utils.nest::is_character_empty(x_name), "Please define column for row variable that is not empty."))
-    validate(need(!utils.nest::is_character_empty(y_name), "Please define column for column variable that is not empty."))
+    validate(
+      need(
+        !utils.nest::is_character_empty(y_name),
+        "Please define column for column variable that is not empty."
+      )
+    )
 
     teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
@@ -293,7 +300,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
   })
 
   callModule(
-    table_with_settings_srv,
+    teal.devel::table_with_settings_srv,
     id = "table",
     table_r = table
   )

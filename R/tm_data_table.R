@@ -166,7 +166,7 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    filters = if_character_empty(datasets_selected, "all"),
+    filters = utils.nest::if_character_empty(datasets_selected, "all"),
     server_args = list(datasets_selected = datasets_selected, dt_args = dt_args, dt_options = dt_options),
     ui_args = list(
       selected = variables_selected,
@@ -188,7 +188,7 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
-  standard_layout(
+  teal.devel::standard_layout(
     output = tagList(
       fluidRow(
         column(

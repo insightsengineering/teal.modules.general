@@ -167,12 +167,12 @@ ui_distribution <- function(id, ...) {
   ns <- NS(id)
   is_single_dataset_value <- teal.devel::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
 
-  standard_layout(
+  teal.devel::standard_layout(
     output = tagList(
       tabsetPanel(
         id = ns("tabs"),
-        tabPanel("Histogram", plot_with_settings_ui(id = ns("hist_plot"))),
-        tabPanel("QQplot", plot_with_settings_ui(id = ns("qq_plot")))
+        tabPanel("Histogram", teal.devel::plot_with_settings_ui(id = ns("hist_plot"))),
+        tabPanel("QQplot", teal.devel::plot_with_settings_ui(id = ns("qq_plot")))
       ),
       h3("Statistics Table"),
       DT::dataTableOutput(ns("summary_table")),
@@ -181,8 +181,8 @@ ui_distribution <- function(id, ...) {
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("dist_var", "strata_var")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("dist_var", "strata_var")]),
+      teal.devel::data_extract_ui(
         id = ns("dist_i"),
         label = "Variable",
         data_extract_spec = args$dist_var,
@@ -190,7 +190,7 @@ ui_distribution <- function(id, ...) {
       ),
       if (!is.null(args$group_var)) {
         tagList(
-          data_extract_ui(
+          teal.devel::data_extract_ui(
             id = ns("group_i"),
             label = "Group by",
             data_extract_spec = args$group_var,
@@ -212,17 +212,17 @@ ui_distribution <- function(id, ...) {
         )
       },
       if (!is.null(args$strata_var)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("strata_i"),
           label = "Stratify by",
           data_extract_spec = args$strata_var,
           is_single_dataset = is_single_dataset_value
         )
       },
-      panel_group(
+      teal.devel::panel_group(
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
-          panel_item(
+          teal.devel::panel_item(
             "Histogram",
             optionalSliderInputValMinMax(ns("bins"), "Bins", args$bins, ticks = FALSE, step = 1),
             shinyWidgets::prettyRadioButtons(
@@ -239,14 +239,14 @@ ui_distribution <- function(id, ...) {
         ),
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
-          panel_item(
+          teal.devel::panel_item(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             collapsed = FALSE
           )
         )
       ),
-      panel_item(
+      teal.devel::panel_item(
         "Theoretical Distribution",
         optionalSelectInput(
           ns("t_dist"),
@@ -269,7 +269,7 @@ ui_distribution <- function(id, ...) {
         span(actionButton(ns("params_reset"), "Reset params")),
         collapsed = FALSE
       ),
-      panel_item(
+      teal.devel::panel_item(
         "Tests",
         optionalSelectInput(ns("dist_tests"),
                             "Tests:",
@@ -287,11 +287,11 @@ ui_distribution <- function(id, ...) {
                             selected = NULL
         )
       ),
-      panel_item(
+      teal.devel::panel_item(
         "Statistics Table",
         sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
       ),
-      panel_item(
+      teal.devel::panel_item(
         title = "Plot settings",
         optionalSelectInput(
           inputId = ns("ggtheme"),
@@ -302,7 +302,7 @@ ui_distribution <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -830,7 +830,7 @@ srv_distribution <- function(input,
       all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
         user_plot = ggplot2_args[["QQplot"]],
         user_default = ggplot2_args$default,
-        module_plot = ggplot2_args(labs = list(x = "theoretical", y = "sample"))
+        module_plot = teal.devel::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
       )
 
       parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
@@ -1050,7 +1050,7 @@ srv_distribution <- function(input,
     teal.devel::chunks_reset()
     teal.devel::chunks_push_chunks(common_code_chunks())
     # wrapped in if since test chunk could lead into validate error - we do want to continue
-    `if`(!is_error(test_r_chunks()), teal.devel::chunks_push_chunks(test_r_chunks()))
+    `if`(!utils.nest::is_error(test_r_chunks()), teal.devel::chunks_push_chunks(test_r_chunks()))
     if (tab == "Histogram") {
       teal.devel::chunks_push_chunks(dist_plot_r_chunks())
     } else if (tab == "QQplot") {
@@ -1082,7 +1082,7 @@ srv_distribution <- function(input,
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "hist_plot",
     plot_r = dist_r,
     height = plot_height,
@@ -1091,7 +1091,7 @@ srv_distribution <- function(input,
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "qq_plot",
     plot_r = qq_r,
     height = plot_height,

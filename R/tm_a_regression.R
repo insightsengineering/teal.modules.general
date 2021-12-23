@@ -169,21 +169,21 @@ ui_a_regression <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.devel::is_single_dataset(args$regressor, args$response)
 
-  standard_layout(
-    output = white_small_well(tags$div(
-      plot_with_settings_ui(id = ns("myplot")),
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(tags$div(
+      teal.devel::plot_with_settings_ui(id = ns("myplot")),
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("response", "regressor")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("response", "regressor")]),
+      teal.devel::data_extract_ui(
         id = ns("response"),
         label = "Response variable",
         data_extract_spec = args$response,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("regressor"),
         label = "Regressor variables",
         data_extract_spec = args$regressor,
@@ -220,8 +220,8 @@ ui_a_regression <- function(id, ...) {
         multiple = FALSE,
         label = "Outlier label"
       )),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
@@ -235,7 +235,7 @@ ui_a_regression <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -272,7 +272,7 @@ srv_a_regression <- function(input,
 
     teal.devel::chunks_reset(chunks = chunks_stack)
 
-    chunks_push_chunks(merged_data()$chunks, chunks = chunks_stack)
+    teal.devel::chunks_push_chunks(merged_data()$chunks, chunks = chunks_stack)
 
     ANL <- teal.devel::chunks_get_var("ANL", chunks = chunks_stack) # nolint
     teal.devel::validate_has_data(ANL, 10)
@@ -412,7 +412,7 @@ srv_a_regression <- function(input,
     show_outlier <- input$show_outlier
 
     teal.devel::chunks_reset()
-    chunks_push_chunks(fit())
+    teal.devel::chunks_push_chunks(fit())
 
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
@@ -466,7 +466,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Response vs Regressor"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               title = "Response vs Regressor",
               x = varname_w_label(regression_var()$regressor, ANL),
@@ -528,7 +528,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Residuals vs Fitted"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
               y = "Residuals",
@@ -584,7 +584,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Normal Q-Q"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
               y = "Standardized residuals",
@@ -626,7 +626,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Scale-Location"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
               y = quote(expression(sqrt(abs(`Standardized residuals`)))),
@@ -693,7 +693,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Cook's distance"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
               y = "Cook's distance",
@@ -748,7 +748,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Residuals vs Leverage"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
               y = "Leverage",
@@ -798,7 +798,7 @@ srv_a_regression <- function(input,
         teal.devel::resolve_ggplot2_args(
           user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
           user_default = ggplot2_args$default,
-          module_plot = ggplot2_args(
+          module_plot = teal.devel::ggplot2_args(
             labs = list(
               x = quote(paste0("Leverage\nlm(", reg_form, ")")),
               y = "Cooks's distance",
@@ -846,7 +846,7 @@ srv_a_regression <- function(input,
 
   # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,

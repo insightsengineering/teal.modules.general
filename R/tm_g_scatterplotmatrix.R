@@ -103,24 +103,24 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.devel::is_single_dataset(args$variables)
   ns <- NS(id)
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       textOutput(ns("message")),
       br(),
-      plot_with_settings_ui(id = ns("myplot"))
+      teal.devel::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args$variables),
-      data_extract_ui(
+      teal.devel::datanames_input(args$variables),
+      teal.devel::data_extract_ui(
         id = ns("variables"),
         label = "Variables",
         data_extract_spec = args$variables,
         is_single_dataset = is_single_dataset_value
       ),
       hr(),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           sliderInput(
             ns("alpha"), "Opacity:",
@@ -143,7 +143,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -158,7 +158,10 @@ srv_g_scatterplotmatrix <- function(input,
                                     plot_width) {
   teal.devel::init_chunks()
 
-  selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(variables = variables), datasets = datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(
+    data_extract = list(variables = variables),
+    datasets = datasets
+  )
 
   merged_data <- teal.devel::data_merge_srv(
     datasets = datasets,
@@ -267,7 +270,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   # Insert the plot into a plot_with_settings module
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,

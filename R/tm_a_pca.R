@@ -152,27 +152,27 @@ ui_a_pca <- function(id, ...) {
     color_selector[[i]]$select$selected <- NULL
   }
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       tags$div(
         uiOutput(ns("tbl_importance_ui")),
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
         hr(),
-        plot_with_settings_ui(id = ns("pca_plot"))
+        teal.devel::plot_with_settings_ui(id = ns("pca_plot"))
       )
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args["dat"]),
-      data_extract_ui(
+      teal.devel::datanames_input(args["dat"]),
+      teal.devel::data_extract_ui(
         id = ns("dat"),
         label = "Data selection",
         data_extract_spec = args$dat,
         is_single_dataset = is_single_dataset_value
       ),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Display",
           collapsed = FALSE,
           checkboxGroupInput(
@@ -188,7 +188,7 @@ ui_a_pca <- function(id, ...) {
             selected = args$plot_choices[1]
           )
         ),
-        panel_item(
+        teal.devel::panel_item(
           title = "Pre-processing",
           radioButtons(
             ns("standardization"), "Standardization",
@@ -201,14 +201,14 @@ ui_a_pca <- function(id, ...) {
             selected = "none"
           )
         ),
-        panel_item(
+        teal.devel::panel_item(
           title = "Selected plot specific settings",
           collapsed = FALSE,
           uiOutput(ns("plot_settings")),
           conditionalPanel(
             condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
             list(
-              data_extract_ui(
+              teal.devel::data_extract_ui(
                 id = ns("response"),
                 label = "Color by",
                 data_extract_spec = color_selector,
@@ -219,7 +219,7 @@ ui_a_pca <- function(id, ...) {
             )
           )
         ),
-        panel_item(
+        teal.devel::panel_item(
           title = "Plot settings",
           collapsed = TRUE,
           conditionalPanel(
@@ -239,7 +239,7 @@ ui_a_pca <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -291,7 +291,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     ANL <- anl_data()$data() # nolint
 
     teal.devel::validate_has_data(ANL, 10)
-    validate_has_elements(keep_cols, "Please select columns")
+    teal.devel::validate_has_elements(keep_cols, "Please select columns")
     validate(need(
       all(vapply(ANL[keep_cols], function(x) is.numeric(x) && !is.infinite(x), logical(1))),
       "PCA is only defined for (finite) numeric columns."
@@ -329,7 +329,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     }
 
     if (scale) {
-      chunks_validate_custom(
+      teal.devel::chunks_validate_custom(
         substitute(
           expr = vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
           env = list(keep_cols = keep_cols)
@@ -420,7 +420,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
     hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
       theme = list(
         legend.position = "right",
@@ -506,7 +506,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
     hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
         axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
@@ -752,7 +752,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
     hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = dev_labs,
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
@@ -807,7 +807,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     angle <- ifelse(rotate_xaxis_labels, 45, 0)
     hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
         axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
@@ -896,7 +896,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "pca_plot",
     plot_r = plot_r,
     height = plot_height,

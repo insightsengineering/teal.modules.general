@@ -75,13 +75,13 @@ ui_variable_browser <- function(id,
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
-  standard_layout(
+  teal.devel::standard_layout(
     output = fluidRow(
       htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
       column(
         6,
         # variable browser
-        white_small_well(
+        teal.devel::white_small_well(
           do.call(
             tabsetPanel,
             c(
@@ -132,7 +132,7 @@ ui_variable_browser <- function(id,
       ),
       column(
         6,
-        white_small_well(
+        teal.devel::white_small_well(
           div(
             class = "clearfix",
             style = "margin: 15px 15px 0px 15px;",
@@ -153,7 +153,7 @@ ui_variable_browser <- function(id,
             style = "margin: 0px 15px 15px 15px;",
             uiOutput(ns("ui_numeric_display"))
           ),
-          plot_with_settings_ui(ns("variable_plot")),
+          teal.devel::plot_with_settings_ui(ns("variable_plot")),
           br(),
           teal.devel::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
           DT::dataTableOutput(ns("variable_summary_table"))
@@ -354,7 +354,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "variable_plot",
     plot_r = variable_plot_r,
     height =  c(500, 200, 2000)
@@ -834,7 +834,7 @@ plot_var_summary <- function(var,
     )
   }
 
-  dev_ggplot2_args <- ggplot2_args(
+  dev_ggplot2_args <- teal.devel::ggplot2_args(
     labs = list(x = var_lab),
     theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
   )
@@ -879,7 +879,7 @@ plot_var_summary <- function(var,
 #' @param var_name (`character`) the name of the variable
 get_var_description <- function(datasets, dataset_name, var_name) {
   varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
-  d_var_name <- paste0(if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
+  d_var_name <- paste0(utils.nest::if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
   d_var_name
 }
 
@@ -906,7 +906,7 @@ validate_input <- function(input, plot_var, datasets) {
 
     df <- datasets$get_data(dataset_name, filtered = type)
     teal.devel::validate_has_data(df, 1)
-    validate_has_variable(varname = varname, data = df, "Variable not available")
+    teal.devel::validate_has_variable(varname = varname, data = df, "Variable not available")
 
     TRUE
   })
@@ -1014,7 +1014,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
     } else {
       # extract data variable labels
       labels <- stats::setNames(
-        ulapply(
+        utils.nest::ulapply(
           df,
           function(x) {
             utils.nest::if_null(attr(x, "label"), "")

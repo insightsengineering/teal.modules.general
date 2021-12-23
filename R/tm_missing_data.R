@@ -82,8 +82,8 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
 
   if_subject_plot <- methods::is(datasets, "CDISCFilteredData")
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       div(
         style = "display: flex;",
         column(
@@ -166,7 +166,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   tab_list <- list(
     tabPanel(
       "Summary",
-      plot_with_settings_ui(id = ns("summary_plot")),
+      teal.devel::plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
@@ -180,7 +180,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "Combinations",
-      plot_with_settings_ui(id = ns("combination_plot")),
+      teal.devel::plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
         p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
@@ -207,7 +207,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       tab_list,
       list(tabPanel(
         "Grouped by Subject",
-        plot_with_settings_ui(id = ns("by_subject_plot")),
+        teal.devel::plot_with_settings_ui(id = ns("by_subject_plot")),
         helpText(
           p(paste(
             "This graph shows the missingness with respect to subjects rather than individual rows of the",
@@ -295,7 +295,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
         )
       )
     ),
-    panel_item(
+    teal.devel::panel_item(
       title = "Plot settings",
       optionalSelectInput(
         inputId = ns("ggtheme"),
@@ -306,7 +306,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       )
     ),
     hr(),
-    get_rcode_ui(ns("rcode"))
+    teal.devel::get_rcode_ui(ns("rcode"))
   )
 }
 
@@ -549,7 +549,7 @@ srv_missing_data <- function(input,
       summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(x = "Variable", y = "Missing observations"),
       theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
     )
@@ -618,7 +618,7 @@ srv_missing_data <- function(input,
         )
       )
 
-      dev_ggplot2_args <- ggplot2_args(
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
         labs = list(x = "", y = "Missing patients"),
         theme = list(
           legend.position = "bottom",
@@ -773,7 +773,7 @@ srv_missing_data <- function(input,
         extract2(1)
     ))
 
-    dev_ggplot2_args1 <- ggplot2_args(
+    dev_ggplot2_args1 <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(
         legend.position = "bottom",
@@ -792,7 +792,7 @@ srv_missing_data <- function(input,
       ggtheme = "void"
     )
 
-    dev_ggplot2_args2 <- ggplot2_args(
+    dev_ggplot2_args2 <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(
         legend.position = "bottom",
@@ -1017,7 +1017,7 @@ srv_missing_data <- function(input,
       })
     )
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
     )
@@ -1082,14 +1082,14 @@ srv_missing_data <- function(input,
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "summary_plot",
     plot_r = summary_plot_r,
     height = plot_height,
     width = plot_width
   )
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "combination_plot",
     plot_r = combination_plot_r,
     height = plot_height,
@@ -1097,7 +1097,7 @@ srv_missing_data <- function(input,
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "by_subject_plot",
     plot_r = by_subject_plot_r,
     height = plot_height,
