@@ -817,7 +817,7 @@ srv_missing_data <- function(input,
     )
 
     combination_stack_push(substitute(
-      { # nolint
+      expr = {
         p1 <- data_combination_plot_cutoff %>%
           dplyr::select(id, n) %>%
           dplyr::distinct() %>%
@@ -1039,7 +1039,7 @@ srv_missing_data <- function(input,
 
     by_subject_stack_push(
       substitute(
-        { # nolint
+        expr = {
           g <- ggplot(summary_plot_patients, aes(
             x = factor(id, levels = order_subjects),
             y = create_cols_labels(col), fill = isna
@@ -1074,7 +1074,7 @@ srv_missing_data <- function(input,
   })
 
   output$levels_table <- DT::renderDataTable(
-    { # nolint
+    expr = {
       if (is_empty(input$variables_select)) {
         # so that zeroRecords message gets printed
         # using tibble as it supports weird column names, such as " "

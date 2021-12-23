@@ -330,7 +330,7 @@ srv_distribution <- function(input,
     input$params_reset,
     input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
   ),
-  { # nolint
+  expr = {
     if (length(input$t_dist) != 0) {
       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
@@ -449,7 +449,7 @@ srv_distribution <- function(input,
       params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
       common_stack_push(substitute(
-        { # nolint
+        expr = {
           params <- as.list(c(dist_param1, dist_param2))
           names(params) <- params_names_raw
         },

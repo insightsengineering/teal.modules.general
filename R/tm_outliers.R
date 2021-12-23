@@ -553,7 +553,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   })
 
   output$summary_table <- DT::renderDataTable(
-    { # nolint
+    expr = {
       suppressWarnings(
         chunks_get_var("summary_table", common_code_chunks()$common_stack)
       )
@@ -987,7 +987,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   })
 
   output$table_ui <- DT::renderDataTable(
-    { # nolint
+    expr = {
       tab <- input$tabs
       req(tab) # tab is NULL upon app launch, hence will crash without this statement
       outlier_var <- as.vector(merged_data()$columns_source$outlier_var)

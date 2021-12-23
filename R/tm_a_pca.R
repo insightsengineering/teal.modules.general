@@ -791,7 +791,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     chunks_push(
       id = "pca_plot_final",
       expression = substitute(
-        { # nolint
+        expr = {
           g <- plot_call
           print(g)
         },
@@ -920,7 +920,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # tables ----
   output$tbl_importance <- renderTable(
-    { # nolint
+    expr = {
       req("importance" %in% input$tables_display)
       chunks_stack <- computation()
       chunks_get_var("tbl_importance", chunks = chunks_stack)
@@ -940,7 +940,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   })
 
   output$tbl_eigenvector <- renderTable(
-    { # nolint
+    expr = {
       req("eigenvector" %in% input$tables_display)
       chunks_stack <- computation()
       chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
