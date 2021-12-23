@@ -109,8 +109,12 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     utils.nest::is_character_single(label),
     utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
     utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
-    is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet) || methods::is(row_facet, "data_extract_spec"),
-    is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet) || methods::is(col_facet, "data_extract_spec"),
+    is.null(row_facet) ||
+      utils.nest::is_class_list("data_extract_spec")(row_facet) ||
+      methods::is(row_facet, "data_extract_spec"),
+    is.null(col_facet) ||
+      utils.nest::is_class_list("data_extract_spec")(col_facet) ||
+      methods::is(col_facet, "data_extract_spec"),
     is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || methods::is(color, "data_extract_spec"),
     is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || methods::is(fill, "data_extract_spec"),
     is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || methods::is(size, "data_extract_spec"),
