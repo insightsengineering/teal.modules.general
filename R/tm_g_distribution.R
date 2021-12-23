@@ -521,7 +521,7 @@ srv_distribution <- function(input,
     },
     valueExpr = {
       # Create a private stack for this function only.
-      distplot_stack <- chunks$new()
+      distplot_stack <- teal.devel::chunks$new()
 
       ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
@@ -710,7 +710,7 @@ srv_distribution <- function(input,
     },
     valueExpr = {
       # Create a private stack for this function only.
-      qqplot_stack <- chunks$new()
+      qqplot_stack <- teal.devel::chunks$new()
 
       ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
@@ -863,7 +863,7 @@ srv_distribution <- function(input,
     },
     valueExpr = {
       # Create a private stack for this function only.
-      test_stack <- chunks$new()
+      test_stack <- teal.devel::chunks$new()
 
       ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
       if ("params" %in% common_code_chunks()$ls()) {
