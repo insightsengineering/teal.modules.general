@@ -614,7 +614,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         expression = substitute(
           expr = {
             r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
-            v_scale <- rowSums(pca$rotation^2)
+            v_scale <- rowSums(pca$rotation ^ 2)
 
             rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
               dplyr::as_tibble(rownames = "label") %>%
