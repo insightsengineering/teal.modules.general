@@ -613,7 +613,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         id = "pca_plot_vars_rot_1",
         expression = substitute(
           expr = {
-            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot^2))^(1 / 4)
+            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
             v_scale <- rowSums(pca$rotation^2)
 
             rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
