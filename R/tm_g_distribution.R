@@ -271,20 +271,21 @@ ui_distribution <- function(id, ...) {
       ),
       panel_item(
         "Tests",
-        optionalSelectInput(ns("dist_tests"),
-                            "Tests:",
-                            choices = c(
-                              "Shapiro-Wilk",
-                              "t-test (two-samples, not paired)",
-                              "one-way ANOVA",
-                              "Fligner-Killeen",
-                              "F-test",
-                              "Kolmogorov-Smirnov (one-sample)",
-                              "Anderson-Darling (one-sample)",
-                              "Cramer-von Mises (one-sample)",
-                              "Kolmogorov-Smirnov (two-samples)"
-                            ),
-                            selected = NULL
+        optionalSelectInput(
+          ns("dist_tests"),
+          "Tests:",
+          choices = c(
+            "Shapiro-Wilk",
+            "t-test (two-samples, not paired)",
+            "one-way ANOVA",
+            "Fligner-Killeen",
+            "F-test",
+            "Kolmogorov-Smirnov (one-sample)",
+            "Anderson-Darling (one-sample)",
+            "Cramer-von Mises (one-sample)",
+            "Kolmogorov-Smirnov (two-samples)"
+          ),
+          selected = NULL
         )
       ),
       panel_item(
@@ -325,37 +326,39 @@ srv_distribution <- function(input,
     data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
   )
 
-  observeEvent(list(input$t_dist,
-                    input$params_reset,
-                    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]),
-               { # nolint
-                 if (length(input$t_dist) != 0) {
-                   dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+  observeEvent(list(
+    input$t_dist,
+    input$params_reset,
+    input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
+  ),
+  expr = {
+    if (length(input$t_dist) != 0) {
+      dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
-                   get_dist_params <- function(x, dist) {
-                     if (dist == "unif") {
-                       res <- as.list(range(x))
-                       names(res) <- c("min", "max")
-                       return(res)
-                     }
-                     tryCatch(
-                       as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-                       error = function(e) list(param1 = NA, param2 = NA)
-                     )
-                   }
-                   ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-                   params <- get_dist_params(as.numeric(na.omit(ANL[[dist_var2]])), input$t_dist)
-                   params_vec <- round(unname(unlist(params)), 2)
-                   params_names <- names(params)
+      get_dist_params <- function(x, dist) {
+        if (dist == "unif") {
+          res <- as.list(range(x))
+          names(res) <- c("min", "max")
+          return(res)
+        }
+        tryCatch(
+          as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+          error = function(e) list(param1 = NA, param2 = NA)
+        )
+      }
+      ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+      params <- get_dist_params(as.numeric(na.omit(ANL[[dist_var2]])), input$t_dist)
+      params_vec <- round(unname(unlist(params)), 2)
+      params_names <- names(params)
 
-                   updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-                   updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-                 } else {
-                   updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-                   updateNumericInput(session, "dist_param2", label = "param2", value = NA)
-                 }
-               },
-               ignoreInit = TRUE
+      updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+      updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+    } else {
+      updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+      updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+    }
+  },
+  ignoreInit = TRUE
   )
 
   merge_vars <- reactive({
@@ -446,16 +449,17 @@ srv_distribution <- function(input,
       )
       params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-      common_stack_push(substitute({
-        params <- as.list(c(dist_param1, dist_param2))
-        names(params) <- params_names_raw
-      },
-      env = list(
-        dist_param1 = dist_param1,
-        dist_param2 = dist_param2,
-        t_dist = t_dist,
-        params_names_raw = params_names_raw
-      )
+      common_stack_push(substitute(
+        expr = {
+          params <- as.list(c(dist_param1, dist_param2))
+          names(params) <- params_names_raw
+        },
+        env = list(
+          dist_param1 = dist_param1,
+          dist_param2 = dist_param2,
+          t_dist = t_dist,
+          params_names_raw = params_names_raw
+        )
       ))
     }
 
@@ -636,8 +640,10 @@ srv_distribution <- function(input,
       }
 
       if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-        distplot_stack_push(substitute(df_params <- as.data.frame(append(params, list(name = t_dist))),
-                                       env = list(t_dist = t_dist)))
+        distplot_stack_push(substitute(
+          df_params <- as.data.frame(append(params, list(name = t_dist))),
+          env = list(t_dist = t_dist)
+        ))
         datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
         label <- quote(tb)
 
@@ -652,7 +658,7 @@ srv_distribution <- function(input,
       }
 
       if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-          length(t_dist) != 0 && m_type == "..density..") {
+        length(t_dist) != 0 && m_type == "..density..") {
         map_dist <- stats::setNames(
           c("dnorm", "dlnorm", "dgamma", "dunif"),
           c("normal", "lognormal", "gamma", "unif")
@@ -794,8 +800,10 @@ srv_distribution <- function(input,
       )
 
       if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-        qqplot_stack_push(substitute(df_params <- as.data.frame(append(params, list(name = t_dist))),
-                                     env = list(t_dist = t_dist)))
+        qqplot_stack_push(substitute(
+          df_params <- as.data.frame(append(params, list(name = t_dist))),
+          env = list(t_dist = t_dist)
+        ))
         datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
         label <- quote(tb)
 
@@ -983,15 +991,15 @@ srv_distribution <- function(input,
       )
 
       tests_base <- switch(dist_tests,
-                           "Kolmogorov-Smirnov (one-sample)" = sks_args,
-                           "Shapiro-Wilk" = ssw_args,
-                           "Fligner-Killeen" = mfil_args,
-                           "one-way ANOVA" = manov_args,
-                           "t-test (two-samples, not paired)" = mt_args,
-                           "F-test" = mv_args,
-                           "Kolmogorov-Smirnov (two-samples)" = mks_args,
-                           "Anderson-Darling (one-sample)" = sad_args,
-                           "Cramer-von Mises (one-sample)" = scvm_args
+        "Kolmogorov-Smirnov (one-sample)" = sks_args,
+        "Shapiro-Wilk" = ssw_args,
+        "Fligner-Killeen" = mfil_args,
+        "one-way ANOVA" = manov_args,
+        "t-test (two-samples, not paired)" = mt_args,
+        "F-test" = mv_args,
+        "Kolmogorov-Smirnov (two-samples)" = mks_args,
+        "Anderson-Darling (one-sample)" = sad_args,
+        "Cramer-von Mises (one-sample)" = scvm_args
       )
 
       env <- list(
@@ -1128,19 +1136,19 @@ srv_distribution <- function(input,
 #' @noRd
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
   switch(dist_type,
-         "normal" = {
-           validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
-         },
-         "lognormal" = {
-           validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
-         },
-         "gamma" = {
-           validate(need(
-             dist_param1 > 0 && dist_param2 > 0,
-             "k and theta parameters of the gamma distribution need to be positive"
-           ))
-         },
-         "unif" = NULL
+    "normal" = {
+      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
+    },
+    "lognormal" = {
+      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
+    },
+    "gamma" = {
+      validate(need(
+        dist_param1 > 0 && dist_param2 > 0,
+        "k and theta parameters of the gamma distribution need to be positive"
+      ))
+    },
+    "unif" = NULL
   )
   NULL
 }

@@ -191,9 +191,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -441,8 +442,8 @@ srv_g_scatterplot <- function(input,
       ))
       validate(need(
         !(inherits(ANL[[color_by_var]], "Date") ||
-            inherits(ANL[[color_by_var]], "POSIXct") ||
-            inherits(ANL[[color_by_var]], "POSIXlt")),
+          inherits(ANL[[color_by_var]], "POSIXct") ||
+          inherits(ANL[[color_by_var]], "POSIXlt")),
         "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
       ))

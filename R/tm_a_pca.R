@@ -98,9 +98,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width")
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
+  )
 
   if (!is_class_list("data_extract_spec")(dat)) {
     dat <- list(dat)
@@ -223,9 +225,11 @@ ui_a_pca <- function(id, ...) {
           title = "Plot settings",
           collapsed = TRUE,
           conditionalPanel(
-            condition = sprintf("input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
-                                ns("plot_type"),
-                                ns("plot_type")),
+            condition = sprintf(
+              "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+              ns("plot_type"),
+              ns("plot_type")
+            ),
             list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
           ),
           optionalSelectInput(
@@ -387,8 +391,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     tagList(
       conditionalPanel(
-        condition = sprintf("input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
-                            ns("plot_type"), ns("plot_type")),
+        condition = sprintf(
+          "input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
+          ns("plot_type"), ns("plot_type")
+        ),
         list(
           optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
           optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
@@ -426,8 +432,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         legend.position = "right",
         legend.spacing.y = quote(unit(-5, "pt")),
         legend.title = quote(element_text(vjust = 8)),
-        axis.text.x = substitute(element_text(angle = angle_value, hjust = hjust_value),
-                                 list(angle_value = angle_value, hjust_value = hjust_value)),
+        axis.text.x = substitute(
+          element_text(angle = angle_value, hjust = hjust_value),
+          list(angle_value = angle_value, hjust_value = hjust_value)
+        ),
         text = substitute(element_text(size = font_size), list(font_size = font_size))
       )
     )
@@ -509,8 +517,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     dev_ggplot2_args <- ggplot2_args(
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
-                                 list(angle_val = angle, hjust_val = hjust))
+        axis.text.x = substitute(
+          element_text(angle = angle_val, hjust = hjust_val),
+          list(angle_val = angle, hjust_val = hjust)
+        )
       )
     )
 
@@ -604,8 +614,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         id = "pca_plot_vars_rot_1",
         expression = substitute(
           expr = {
-            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4)
-            v_scale <- rowSums(pca$rotation ^ 2)
+            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
+            v_scale <- rowSums(pca$rotation ^ 2) # styler: off
 
             rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
               dplyr::as_tibble(rownames = "label") %>%
@@ -682,8 +692,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       dev_labs <- list(color = varname_w_label(resp_col, rp))
 
       scales_biplot <- if (is.character(response) ||
-          is.factor(response) ||
-          (is.numeric(response) && length(unique(response)) <= 6)) {
+        is.factor(response) ||
+        (is.numeric(response) && length(unique(response)) <= 6)) {
         chunks_push(
           id = "pca_plot_response",
           quote(pca_rot$response <- as.factor(response))
@@ -756,8 +766,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       labs = dev_labs,
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
-                                 list(angle_val = angle, hjust_val = hjust))
+        axis.text.x = substitute(
+          element_text(angle = angle_val, hjust = hjust_val),
+          list(angle_val = angle, hjust_val = hjust)
+        )
       )
     )
 
@@ -779,13 +791,14 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
     chunks_push(
       id = "pca_plot_final",
-      expression = substitute({
-        g <- plot_call
-        print(g)
-      },
-      env = list(
-        plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
-      )
+      expression = substitute(
+        expr = {
+          g <- plot_call
+          print(g)
+        },
+        env = list(
+          plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
+        )
       )
     )
 
@@ -810,8 +823,10 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     dev_ggplot2_args <- ggplot2_args(
       theme = list(
         text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(element_text(angle = angle_val, hjust = hjust_val),
-                                 list(angle_val = angle, hjust_val = hjust))
+        axis.text.x = substitute(
+          element_text(angle = angle_val, hjust = hjust_val),
+          list(angle_val = angle, hjust_val = hjust)
+        )
       )
     )
 
@@ -905,14 +920,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
   )
 
   # tables ----
-  output$tbl_importance <- renderTable({
-    req("importance" %in% input$tables_display)
-    chunks_stack <- computation()
-    chunks_get_var("tbl_importance", chunks = chunks_stack)
-  },
-  bordered = TRUE,
-  align = "c",
-  digits = 3
+  output$tbl_importance <- renderTable(
+    expr = {
+      req("importance" %in% input$tables_display)
+      chunks_stack <- computation()
+      chunks_get_var("tbl_importance", chunks = chunks_stack)
+    },
+    bordered = TRUE,
+    align = "c",
+    digits = 3
   )
 
   output$tbl_importance_ui <- renderUI({
@@ -924,14 +940,15 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
     )
   })
 
-  output$tbl_eigenvector <- renderTable({
-    req("eigenvector" %in% input$tables_display)
-    chunks_stack <- computation()
-    chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
-  },
-  bordered = TRUE,
-  align = "c",
-  digits = 3
+  output$tbl_eigenvector <- renderTable(
+    expr = {
+      req("eigenvector" %in% input$tables_display)
+      chunks_stack <- computation()
+      chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
+    },
+    bordered = TRUE,
+    align = "c",
+    digits = 3
   )
 
   output$tbl_eigenvector_ui <- renderUI({

@@ -116,7 +116,8 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   addResourcePath(basename(temp_dir), temp_dir)
 
   test_path_text <- function(selected_path, type) {
-    out <- tryCatch({
+    out <- tryCatch(
+      expr = {
         if (type != "url") {
           selected_path <- normalizePath(selected_path, winslash = "/")
         }
