@@ -659,7 +659,7 @@ srv_distribution <- function(input,
       }
 
       if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-          length(t_dist) != 0 && m_type == "..density..") {
+        length(t_dist) != 0 && m_type == "..density..") {
         map_dist <- stats::setNames(
           c("dnorm", "dlnorm", "dgamma", "dunif"),
           c("normal", "lognormal", "gamma", "unif")
@@ -992,15 +992,15 @@ srv_distribution <- function(input,
       )
 
       tests_base <- switch(dist_tests,
-                           "Kolmogorov-Smirnov (one-sample)" = sks_args,
-                           "Shapiro-Wilk" = ssw_args,
-                           "Fligner-Killeen" = mfil_args,
-                           "one-way ANOVA" = manov_args,
-                           "t-test (two-samples, not paired)" = mt_args,
-                           "F-test" = mv_args,
-                           "Kolmogorov-Smirnov (two-samples)" = mks_args,
-                           "Anderson-Darling (one-sample)" = sad_args,
-                           "Cramer-von Mises (one-sample)" = scvm_args
+        "Kolmogorov-Smirnov (one-sample)" = sks_args,
+        "Shapiro-Wilk" = ssw_args,
+        "Fligner-Killeen" = mfil_args,
+        "one-way ANOVA" = manov_args,
+        "t-test (two-samples, not paired)" = mt_args,
+        "F-test" = mv_args,
+        "Kolmogorov-Smirnov (two-samples)" = mks_args,
+        "Anderson-Darling (one-sample)" = sad_args,
+        "Cramer-von Mises (one-sample)" = scvm_args
       )
 
       env <- list(
@@ -1137,19 +1137,19 @@ srv_distribution <- function(input,
 #' @noRd
 validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
   switch(dist_type,
-         "normal" = {
-           validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
-         },
-         "lognormal" = {
-           validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
-         },
-         "gamma" = {
-           validate(need(
-             dist_param1 > 0 && dist_param2 > 0,
-             "k and theta parameters of the gamma distribution need to be positive"
-           ))
-         },
-         "unif" = NULL
+    "normal" = {
+      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
+    },
+    "lognormal" = {
+      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
+    },
+    "gamma" = {
+      validate(need(
+        dist_param1 > 0 && dist_param2 > 0,
+        "k and theta parameters of the gamma distribution need to be positive"
+      ))
+    },
+    "unif" = NULL
   )
   NULL
 }
