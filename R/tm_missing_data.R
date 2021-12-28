@@ -36,8 +36,10 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = c("classic", "gray", "bw", "linedraw",
-                                        "light", "dark", "minimal", "void", "test"),
+                            ggtheme = c(
+                              "classic", "gray", "bw", "linedraw",
+                              "light", "dark", "minimal", "void", "test"
+                            ),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL) {
@@ -46,9 +48,10 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
   ggtheme <- match.arg(ggtheme)
@@ -471,8 +474,8 @@ srv_missing_data <- function(input,
     selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
       prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
     } else if (!is.null(prev_choices) &&
-               !any(prev_choices %in% choices) &&
-               isolate(prev_group_by_var()) == input$group_by_var) {
+      !any(prev_choices %in% choices) &&
+      isolate(prev_group_by_var()) == input$group_by_var) {
       # if not any previously selected value is available and the grouping variable is the same,
       # then display NULL
       NULL
@@ -813,52 +816,53 @@ srv_missing_data <- function(input,
       ggtheme = input$ggtheme
     )
 
-    combination_stack_push(substitute({
-      p1 <- data_combination_plot_cutoff %>%
-        dplyr::select(id, n) %>%
-        dplyr::distinct() %>%
-        ggplot(aes(x = id, y = n)) +
-        geom_bar(stat = "identity", fill = "#ff2951ff") +
-        geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
-        ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
-        labs1 +
-        ggthemes1 +
-        themes1
+    combination_stack_push(substitute(
+      expr = {
+        p1 <- data_combination_plot_cutoff %>%
+          dplyr::select(id, n) %>%
+          dplyr::distinct() %>%
+          ggplot(aes(x = id, y = n)) +
+          geom_bar(stat = "identity", fill = "#ff2951ff") +
+          geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
+          ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+          labs1 +
+          ggthemes1 +
+          themes1
 
-      graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
-      graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
+        graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
+        graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
 
-      p2 <- data_combination_plot_cutoff %>% ggplot() +
-        aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-        geom_tile(alpha = 0.85, height = 0.95) +
-        scale_fill_manual(
-          name = "",
-          values = c("grey90", "#ff2951ff"),
-          labels = c("Present", "Missing")
-        ) +
-        geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-        geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-        coord_flip() +
-        labs2 +
-        ggthemes2 +
-        themes2
+        p2 <- data_combination_plot_cutoff %>% ggplot() +
+          aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+          geom_tile(alpha = 0.85, height = 0.95) +
+          scale_fill_manual(
+            name = "",
+            values = c("grey90", "#ff2951ff"),
+            labels = c("Present", "Missing")
+          ) +
+          geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+          geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+          coord_flip() +
+          labs2 +
+          ggthemes2 +
+          themes2
 
-      g1 <- ggplotGrob(p1)
-      g2 <- ggplotGrob(p2)
+        g1 <- ggplotGrob(p1)
+        g2 <- ggplotGrob(p2)
 
-      g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-      g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
-      grid::grid.newpage()
-      grid::grid.draw(g)
-    },
-    env = list(
-      labs1 = parsed_ggplot2_args1$labs,
-      themes1 = parsed_ggplot2_args1$theme,
-      ggthemes1 = parsed_ggplot2_args1$ggtheme,
-      labs2 = parsed_ggplot2_args2$labs,
-      themes2 = parsed_ggplot2_args2$theme,
-      ggthemes2 = parsed_ggplot2_args2$ggtheme
-    )
+        g <- gridExtra::gtable_rbind(g1, g2, size = "last")
+        g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
+        grid::grid.newpage()
+        grid::grid.draw(g)
+      },
+      env = list(
+        labs1 = parsed_ggplot2_args1$labs,
+        themes1 = parsed_ggplot2_args1$theme,
+        ggthemes1 = parsed_ggplot2_args1$ggtheme,
+        labs2 = parsed_ggplot2_args2$labs,
+        themes2 = parsed_ggplot2_args2$theme,
+        ggthemes2 = parsed_ggplot2_args2$ggtheme
+      )
     ))
 
     teal.devel::chunks_safe_eval(combination_stack)
@@ -1034,21 +1038,23 @@ srv_missing_data <- function(input,
     )
 
     by_subject_stack_push(
-      substitute({
-        g <- ggplot(summary_plot_patients, aes(
-          x = factor(id, levels = order_subjects),
-          y = create_cols_labels(col), fill = isna
-        )) +
-          geom_raster() +
-          scale_fill_manual(
-            name = "",
-            values = c("grey90", "#ff2951ff"),
-            labels = c("Present", "Missing (at least one)")
-          ) +
-          labs +
-          ggthemes +
-          themes
-        print(g)},
+      substitute(
+        expr = {
+          g <- ggplot(summary_plot_patients, aes(
+            x = factor(id, levels = order_subjects),
+            y = create_cols_labels(col), fill = isna
+          )) +
+            geom_raster() +
+            scale_fill_manual(
+              name = "",
+              values = c("grey90", "#ff2951ff"),
+              labels = c("Present", "Missing (at least one)")
+            ) +
+            labs +
+            ggthemes +
+            themes
+          print(g)
+        },
         env = list(
           labs = parsed_ggplot2_args$labs,
           themes = parsed_ggplot2_args$theme,
@@ -1067,18 +1073,19 @@ srv_missing_data <- function(input,
     teal.devel::chunks_get_var(var = "g")
   })
 
-  output$levels_table <- DT::renderDataTable({
-    if (utils.nest::is_empty(input$variables_select)) {
-      # so that zeroRecords message gets printed
-      # using tibble as it supports weird column names, such as " "
-      tibble::tibble(` ` = logical(0))
-    } else {
-      teal.devel::chunks_reset()
-      teal.devel::chunks_push_chunks(table_chunks())
-      teal.devel::chunks_get_var("summary_data")
-    }
-  },
-  options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
+  output$levels_table <- DT::renderDataTable(
+    expr = {
+      if (utils.nest::is_empty(input$variables_select)) {
+        # so that zeroRecords message gets printed
+        # using tibble as it supports weird column names, such as " "
+        tibble::tibble(` ` = logical(0))
+      } else {
+        teal.devel::chunks_reset()
+        teal.devel::chunks_push_chunks(table_chunks())
+        teal.devel::chunks_get_var("summary_data")
+      }
+    },
+    options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
   )
 
   callModule(

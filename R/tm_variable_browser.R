@@ -261,9 +261,11 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
-                        "Treat variable as factor",
-                        value = utils.nest::if_null(isolate(input$numeric_as_factor),
-                                        unique_entries < .unique_records_default_as_factor)
+            "Treat variable as factor",
+            value = utils.nest::if_null(
+              isolate(input$numeric_as_factor),
+              unique_entries < .unique_records_default_as_factor
+            )
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
@@ -759,7 +761,7 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-        ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
+      ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
         scale_fill_manual(values = c("gray50", "tan"))
     }
@@ -932,11 +934,11 @@ get_plotted_data <- function(input, plot_var, datasets) {
 #' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
 render_tabset_panel_content <- function(datanames, output, datasets, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
-         input = input,
-         output = output,
-         datasets = datasets,
-         columns_names = columns_names,
-         plot_var = plot_var
+    input = input,
+    output = output,
+    datasets = datasets,
+    columns_names = columns_names,
+    plot_var = plot_var
   )
 }
 
@@ -990,16 +992,39 @@ render_tab_header <- function(dataset_name, output, datasets) {
 render_tab_table <- function(dataset_name, output, datasets, input, columns_names) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
-  output[[table_ui_id]] <- DT::renderDataTable({
-    df <- datasets$get_data(dataset_name, filtered = FALSE)
+  output[[table_ui_id]] <- DT::renderDataTable(
+    expr = {
+      df <- datasets$get_data(dataset_name, filtered = FALSE)
 
-    df_vars <- if (isTRUE(input$show_parent_vars)) {
-      datasets$get_varnames(dataset_name)
-    } else {
-      datasets$get_filterable_varnames(dataset_name)
-    }
+      df_vars <- if (isTRUE(input$show_parent_vars)) {
+        datasets$get_varnames(dataset_name)
+      } else {
+        datasets$get_filterable_varnames(dataset_name)
+      }
 
-    df <- df[df_vars]
+      df <- df[df_vars]
+
+      if (is.null(df) || ncol(df) == 0) {
+        columns_names[[dataset_name]] <- character(0)
+        data.frame(
+          Type = character(0),
+          Variable = character(0),
+          Label = character(0),
+          Missings = character(0),
+          Sparklines = character(0),
+          stringsAsFactors = FALSE
+        )
+      } else {
+        # extract data variable labels
+        labels <- stats::setNames(
+          ulapply(
+            df,
+            function(x) {
+              if_null(attr(x, "label"), "")
+            }
+          ),
+          names(df)
+        )
 
     if (is.null(df) || ncol(df) == 0) {
       columns_names[[dataset_name]] <- character(0)
@@ -1022,47 +1047,47 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         ),
         names(df)
       )
-
+      
       columns_names[[dataset_name]] <- names(labels)
 
-      # calculate number of missing values
-      missings <- vapply(
-        df,
-        var_missings_info,
-        FUN.VALUE = character(1),
-        USE.NAMES = FALSE
-      )
+        # calculate number of missing values
+        missings <- vapply(
+          df,
+          var_missings_info,
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
 
-      # get icons proper for the data types
-      icons <- stats::setNames(teal:::variable_types(df), colnames(df))
-      icons[intersect(datasets$get_keys(dataset_name), colnames(df))] <- "primary_key"
-      icons <- teal:::variable_type_icons(icons)
+        # get icons proper for the data types
+        icons <- stats::setNames(teal:::variable_types(df), colnames(df))
+        icons[intersect(datasets$get_keys(dataset_name), colnames(df))] <- "primary_key"
+        icons <- teal:::variable_type_icons(icons)
 
-      # generate sparklines
-      sparklines_html <- vapply(
-        df,
-        create_sparklines,
-        FUN.VALUE = character(1),
-        USE.NAMES = FALSE
-      )
+        # generate sparklines
+        sparklines_html <- vapply(
+          df,
+          create_sparklines,
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
 
-      data.frame(
-        Type = icons,
-        Variable = names(labels),
-        Label = labels,
-        Missings = missings,
-        Sparklines = sparklines_html,
-        stringsAsFactors = FALSE
-      )
-    }
-  },
-  escape = FALSE,
-  rownames = FALSE,
-  selection = list(mode = "single", target = "row", selected = 1),
-  options = list(
-    fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-    pageLength = input[[paste0(table_ui_id, "_rows")]]
-  )
+        data.frame(
+          Type = icons,
+          Variable = names(labels),
+          Label = labels,
+          Missings = missings,
+          Sparklines = sparklines_html,
+          stringsAsFactors = FALSE
+        )
+      }
+    },
+    escape = FALSE,
+    rownames = FALSE,
+    selection = list(mode = "single", target = "row", selected = 1),
+    options = list(
+      fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+      pageLength = input[[paste0(table_ui_id, "_rows")]]
+    )
   )
 }
 
@@ -1091,7 +1116,7 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
   iqr <- qntls[3] - qntls[2]
-  binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1]))
+  binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1])) # styler: off
   binwidth <- ifelse(binwidth == 0, 1, binwidth)
   # to ensure at least two bins when variable span is very small
   x_span <- diff(range(x_vec))
@@ -1100,10 +1125,12 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(
-    sprintf("function(sparkline, options, field) {
+    sprintf(
+      "function(sparkline, options, field) {
         return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
         }",
-            jsonlite::toJSON(labels),
-            jsonlite::toJSON(counts))
+      jsonlite::toJSON(labels),
+      jsonlite::toJSON(counts)
+    )
   )
 }

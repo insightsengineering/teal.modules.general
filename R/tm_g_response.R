@@ -128,9 +128,10 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -318,7 +319,7 @@ srv_g_response <- function(input,
     plot_call <- substitute(
       expr =
         ggplot(ANL2, aes(x = x_cl, y = ns)) +
-        geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
       env = list(
         x_cl = x_cl,
         resp_cl = resp_cl,
@@ -392,7 +393,7 @@ srv_g_response <- function(input,
     )
 
     plot_call <- substitute(expr = {
-      p <- plot_call + labs  + ggthemes + themes
+      p <- plot_call + labs + ggthemes + themes
       print(p)
     }, env = list(
       plot_call = plot_call,

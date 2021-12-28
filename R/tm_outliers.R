@@ -418,7 +418,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
               q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
               iqr <- q1_q3[2] - q1_q3[1]
               !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                  outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
             }),
             env = list(
               outlier_var_name = as.name(outlier_var),
@@ -552,16 +552,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     list(common_stack = common_stack)
   })
 
-  output$summary_table <- DT::renderDataTable({
-    suppressWarnings(
-      teal.devel::chunks_get_var("summary_table", common_code_chunks()$common_stack)
+  output$summary_table <- DT::renderDataTable(
+    expr = {
+      suppressWarnings(
+        teal.devel::chunks_get_var("summary_table", common_code_chunks()$common_stack)
+      )
+    },
+    options = list(
+      dom = "t",
+      autoWidth = TRUE,
+      columnDefs = list(list(width = "200px", targets = "_all"))
     )
-  },
-  options = list(
-    dom = "t",
-    autoWidth = TRUE,
-    columnDefs = list(list(width = "200px", targets = "_all"))
-  )
   )
 
   # boxplot/violinplot #nolint
@@ -985,64 +986,67 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     )
   })
 
-  output$table_ui <- DT::renderDataTable({
-    tab <- input$tabs
-    req(tab) # tab is NULL upon app launch, hence will crash without this statement
-    outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-    categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+  output$table_ui <- DT::renderDataTable(
+    expr = {
+      tab <- input$tabs
+      req(tab) # tab is NULL upon app launch, hence will crash without this statement
+      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
-    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
-    ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-    ANL_NO_NA <- suppressWarnings(teal.devel::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
-    if (!is.null(ANL_NO_NA)) {
-      ANL <- ANL_NO_NA # nolint
-    }
-    plot_brush <- if (tab == "Boxplot") {
-      box_plot_plot_r()
-      box_brush$brush()
-    } else if (tab == "Density plot") {
-      density_plot_plot_r()
-      density_brush$brush()
-    } else if (tab == "Cumulative distribution plot") {
-      cumulative_plot_plot_r()
-      cum_density_brush$brush()
-    }
-
-    # removing unused column ASAP
-    ANL_OUTLIER$order <- ANL$order <- NULL # nolint
-
-    display_table <- if (!is.null(plot_brush)) {
-      if (!utils.nest::is_empty(categorical_var)) {
-        # due to reordering, the x-axis label may be changed to something like "reorder(categorical_var, order)"
-        if (tab == "Boxplot") {
-          plot_brush$mapping$x <- categorical_var
-        } else {
-          # the other plots use facetting
-          # so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
-          plot_brush$mapping$panelvar1 <- categorical_var
-        }
-      } else {
-        if (tab == "Boxplot") {
-          # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
-          # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
-          ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint
-        }
+      ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+      ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
+      ANL_NO_NA <- suppressWarnings(teal.devel::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
+      if (!is.null(ANL_NO_NA)) {
+        ANL <- ANL_NO_NA # nolint
       }
-      # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
-      # so they need to be computed and attached to ANL
-      if (tab == "Density plot") {
-        plot_brush$mapping$y <- "density"
-        ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
+      plot_brush <- if (tab == "Boxplot") {
+        box_plot_plot_r()
+        box_brush$brush()
+      } else if (tab == "Density plot") {
+        density_plot_plot_r()
+        density_brush$brush()
       } else if (tab == "Cumulative distribution plot") {
-        plot_brush$mapping$y <- "cdf"
+        cumulative_plot_plot_r()
+        cum_density_brush$brush()
+      }
+
+      # removing unused column ASAP
+      ANL_OUTLIER$order <- ANL$order <- NULL # nolint
+
+      display_table <- if (!is.null(plot_brush)) {
         if (!utils.nest::is_empty(categorical_var)) {
-          ANL <- ANL %>% # nolint
-            dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
-            dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
+          # due to reordering, the x-axis label may be changed to something like "reorder(categorical_var, order)"
+          if (tab == "Boxplot") {
+            plot_brush$mapping$x <- categorical_var
+          } else {
+            # the other plots use facetting
+            # so it is panelvar1 that gets relabelled to "reorder(categorical_var, order)"
+            plot_brush$mapping$panelvar1 <- categorical_var
+          }
+        } else {
+          if (tab == "Boxplot") {
+            # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
+            # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
+            ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint
+          }
+        }
+
+        # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
+        # so they need to be computed and attached to ANL
+        if (tab == "Density plot") {
+          plot_brush$mapping$y <- "density"
+          ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
+        } else if (tab == "Cumulative distribution plot") {
+          plot_brush$mapping$y <- "cdf"
+          if (!utils.nest::is_empty(categorical_var)) {
+            ANL <- ANL %>% # nolint
+              dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
+              dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
         } else {
           ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
         }
       }
+          
       brushed_rows <- brushedPoints(ANL, plot_brush)
       if (nrow(brushed_rows) > 0) {
         # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
@@ -1054,31 +1058,57 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
         } else if (tab == "Boxplot" && utils.nest::is_empty(categorical_var)) {
           brushed_rows[[plot_brush$mapping$x]] <- NULL
         }
-        # is_outlier_selected is part of ANL_OUTLIER so needed here
-        brushed_rows$is_outlier_selected <- TRUE
-        dplyr::intersect(ANL_OUTLIER, brushed_rows)
+        # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
+        # so they need to be computed and attached to ANL
+        if (tab == "Density plot") {
+          plot_brush$mapping$y <- "density"
+          ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
+        } else if (tab == "Cumulative distribution plot") {
+          plot_brush$mapping$y <- "cdf"
+          if (!is_empty(categorical_var)) {
+            ANL <- ANL %>% # nolint
+              dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
+              dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
+          } else {
+            ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
+          }
+        }
+        brushed_rows <- brushedPoints(ANL, plot_brush)
+        if (nrow(brushed_rows) > 0) {
+          # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
+          # so that dplyr::intersect will work
+          if (tab == "Density plot") {
+            brushed_rows$density <- NULL
+          } else if (tab == "Cumulative distribution plot") {
+            brushed_rows$cdf <- NULL
+          } else if (tab == "Boxplot" && is_empty(categorical_var)) {
+            brushed_rows[[plot_brush$mapping$x]] <- NULL
+          }
+          # is_outlier_selected is part of ANL_OUTLIER so needed here
+          brushed_rows$is_outlier_selected <- TRUE
+          dplyr::intersect(ANL_OUTLIER, brushed_rows)
+        } else {
+          ANL_OUTLIER[0, ]
+        }
       } else {
-        ANL_OUTLIER[0, ]
+        ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
       }
-    } else {
-      ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
-    }
-    display_table$is_outlier_selected <- NULL
-    keys <- datasets$get_keys(dataname)
-    data <- datasets$get_data(dataname)
-    dplyr::left_join(
-      display_table,
-      dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))),
-      by = keys
-    ) %>%
-      dplyr::select(union(names(display_table), input$table_ui_columns))
-  },
-  options = list(
-    searching = FALSE, language = list(
-      zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
-    ),
-    pageLength = input$table_ui_rows
-  )
+      display_table$is_outlier_selected <- NULL
+      keys <- datasets$get_keys(dataname)
+      data <- datasets$get_data(dataname)
+      dplyr::left_join(
+        display_table,
+        dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))),
+        by = keys
+      ) %>%
+        dplyr::select(union(names(display_table), input$table_ui_columns))
+    },
+    options = list(
+      searching = FALSE, language = list(
+        zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
+      ),
+      pageLength = input$table_ui_rows
+    )
   )
 
   output$total_outliers <- renderUI({

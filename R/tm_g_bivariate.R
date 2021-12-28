@@ -163,9 +163,10 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(plot_width[1],
-                            lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-                            .var.name = "plot_width"
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -570,7 +571,6 @@ srv_g_bivariate <- function(input,
 #'
 #' bivariate_plot_call("ANL", "BAGE", "RACE", "numeric", "factor")
 #' bivariate_plot_call("ANL", "BAGE", character(0), "numeric", "NULL")
-#'
 bivariate_plot_call <- function(data_name,
                                 x = character(0),
                                 y = character(0),
@@ -765,13 +765,17 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
-        substitute(geom_point(alpha = alphaval, size = sizeval, pch = 21),
-                   env = list(alphaval = alpha, sizeval = size)),
-        substitute(geom_point(alpha = alphaval, pch = 21),
-                   env = list(alphaval = alpha)),
+        substitute(
+          geom_point(alpha = alphaval, size = sizeval, pch = 21),
+          env = list(alphaval = alpha, sizeval = size)
+        ),
+        substitute(
+          geom_point(alpha = alphaval, pch = 21),
+          env = list(alphaval = alpha)
+        ),
       )
     )
-  } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric"))  {
+  } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric")) {
     plot_call <- reduce_plot_call(
       plot_call,
       substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
@@ -781,8 +785,10 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
-                 env = list(xval = x, yval = y))
+      substitute(
+        geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
+        env = list(xval = x, yval = y)
+      )
     )
   } else {
     stop("x y type combination not allowed")
@@ -793,8 +799,10 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   } else if (is.null(y_class)) {
     list(x = substitute(xlab, list(xlab = xlab)))
   } else {
-    list(x = substitute(xlab, list(xlab = xlab)),
-         y = substitute(ylab, list(ylab = ylab)))
+    list(
+      x = substitute(xlab, list(xlab = xlab)),
+      y = substitute(ylab, list(ylab = ylab))
+    )
   }
 
   dev_ggplot2_args <- teal.devel::ggplot2_args(labs = labs_base)

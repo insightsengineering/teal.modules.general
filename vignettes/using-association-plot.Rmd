@@ -39,12 +39,12 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- synthetic_cdisc_data("latest")$adsl #nolint
-ADSL2 <- synthetic_cdisc_data("latest")$adsl %>% #nolint
+ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
+ADSL2 <- synthetic_cdisc_data("latest")$adsl %>% # nolint
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- synthetic_cdisc_data("latest")$adrs #nolint
-ADTTE <- synthetic_cdisc_data("latest")$adtte #nolint
-ADLB <- synthetic_cdisc_data("latest")$adlb %>% #nolint
+ADRS <- synthetic_cdisc_data("latest")$adrs # nolint
+ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
+ADLB <- synthetic_cdisc_data("latest")$adlb %>% # nolint
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
@@ -63,25 +63,31 @@ combinations of data sets.
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    dataset("ADSL2", ADSL2, keys = get_cdisc_keys("ADSL"),
+    dataset(
+      "ADSL2",
+      ADSL2,
+      keys = get_cdisc_keys("ADSL"),
       code = "ADSL2 <- synthetic_cdisc_data(\"latest\")$adsl %>%
-              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"),
+              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
+    ),
     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
-    cdisc_dataset("ADLB", ADLB,
-    code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb %>%
+    cdisc_dataset(
+      "ADLB",
+      ADLB,
+      code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
             TRUE ~ '-'
-            )))"),
+            )))"
+    ),
     check = TRUE
   ),
-    modules = root_modules(
+  modules = root_modules(
     # tm_g_association ----
     modules(
       label = "Association plot",
-
       tm_g_association(
         label = "Single wide dataset",
         ref = data_extract_spec(
@@ -104,7 +110,6 @@ app <- init(
           )
         )
       ),
-
       tm_g_association(
         label = "Two wide datasets",
         ref = data_extract_spec(
@@ -128,7 +133,6 @@ app <- init(
           )
         )
       ),
-
       tm_g_association(
         label = "Multiple different long datasets",
         ref = data_extract_spec(
@@ -176,7 +180,6 @@ app <- init(
           )
         )
       ),
-
       tm_g_association(
         label = "Wide and long datasets",
         ref = data_extract_spec(
@@ -216,7 +219,6 @@ app <- init(
           )
         )
       ),
-
       tm_g_association(
         label = "Same long datasets (same subsets)",
         ref = data_extract_spec(
@@ -240,7 +242,6 @@ app <- init(
           )
         )
       ),
-
       tm_g_association(
         label = "Same long datasets (different subsets)",
         ref = data_extract_spec(
