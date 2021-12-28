@@ -107,17 +107,17 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
-    utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
     is.null(row_facet) ||
       utils.nest::is_class_list("data_extract_spec")(row_facet) ||
-      methods::is(row_facet, "data_extract_spec"),
+      inherits(row_facet, "data_extract_spec"),
     is.null(col_facet) ||
       utils.nest::is_class_list("data_extract_spec")(col_facet) ||
-      methods::is(col_facet, "data_extract_spec"),
-    is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || methods::is(color, "data_extract_spec"),
-    is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || methods::is(fill, "data_extract_spec"),
-    is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || methods::is(size, "data_extract_spec"),
+      inherits(col_facet, "data_extract_spec"),
+    is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || inherits(color, "data_extract_spec"),
+    is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || inherits(fill, "data_extract_spec"),
+    is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || inherits(size, "data_extract_spec"),
     utils.nest::is_logical_single(use_density),
     utils.nest::is_logical_single(color_settings),
     utils.nest::is_logical_single(free_x_scales),
@@ -126,34 +126,34 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     utils.nest::is_logical_single(swap_axes),
     utils.nest::is_character_single(ggtheme),
     list(
-      (methods::is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
+      (inherits(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(x) &&
           all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
     ),
     list(
-      (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(y) &&
           all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     ),
     list(
       is.null(color) ||
-        ((methods::is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
+        ((inherits(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
           (utils.nest::is_class_list("data_extract_spec")(color) &&
             all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
-        ((methods::is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
+        ((inherits(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
           (utils.nest::is_class_list("data_extract_spec")(fill) &&
             all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
-        ((methods::is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
+        ((inherits(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
           (utils.nest::is_class_list("data_extract_spec")(size) &&
             all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"

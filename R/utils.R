@@ -70,7 +70,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   stopifnot(
     is.null(xfacet_label) || utils.nest::is_character_vector(xfacet_label, min_length = 1),
     is.null(yfacet_label) || utils.nest::is_character_vector(yfacet_label, min_length = 1),
-    methods::is(p, "ggplot")
+    inherits(p, "ggplot")
   )
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
@@ -79,8 +79,8 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     g <- ggplotGrob(p)
 
     # we are going to replace these, so we make sure they have nothing in them
-    stopifnot(methods::is(g$grobs[[grep("xlab-t", g$layout$name, fixed = TRUE)]], "zeroGrob"))
-    stopifnot(methods::is(g$grobs[[grep("ylab-r", g$layout$name, fixed = TRUE)]], "zeroGrob"))
+    stopifnot(inherits(g$grobs[[grep("xlab-t", g$layout$name, fixed = TRUE)]], "zeroGrob"))
+    stopifnot(inherits(g$grobs[[grep("ylab-r", g$layout$name, fixed = TRUE)]], "zeroGrob"))
 
     xaxis_label_grob <- g$grobs[[grep("xlab-b", g$layout$name, fixed = TRUE)]]
     xaxis_label_grob$children[[1]]$label <- paste(xfacet_label, collapse = " & ")

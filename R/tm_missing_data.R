@@ -83,7 +83,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   ns <- NS(id)
   datanames <- datasets$datanames()
 
-  if_subject_plot <- methods::is(datasets, "CDISCFilteredData")
+  if_subject_plot <- inherits(datasets, "CDISCFilteredData")
 
   teal.devel::standard_layout(
     output = teal.devel::white_small_well(

@@ -122,7 +122,7 @@ ui_variable_browser <- function(id,
           ),
           { # nolint
             x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-            if (methods::is(datasets, "CDISCFilteredData")) {
+            if (inherits(datasets, "CDISCFilteredData")) {
               x
             } else {
               shinyjs::hidden(x)

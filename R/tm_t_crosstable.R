@@ -77,12 +77,12 @@ tm_t_crosstable <- function(label = "Cross Table",
   logger::log_info("Initializing tm_t_crosstable")
   utils.nest::stop_if_not(
     utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(x) || methods::is(x, "data_extract_spec"),
-    utils.nest::is_class_list("data_extract_spec")(y) || methods::is(y, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
     utils.nest::is_logical_single(show_percentage),
     utils.nest::is_logical_single(show_total),
     list(
-      (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(y) &&
           all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))
         ),
