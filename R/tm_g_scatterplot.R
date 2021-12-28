@@ -481,7 +481,9 @@ srv_g_scatterplot <- function(input,
         paste(
           c(
             if (!utils.nest::is_empty(color_by_var) &&
-                inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+              inherits(ANL[[color_by_var]], c("factor", "character"))) {
+              color_by_var
+            },
             row_facet_name,
             col_facet_name
           ),

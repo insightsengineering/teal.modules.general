@@ -398,14 +398,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(substitute(
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
-          group_expr %>%
+          group_expr() %>%
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
-          calculate_outliers %>%
-          ungroup_expr %>%
+          calculate_outliers() %>%
+          ungroup_expr() %>%
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
@@ -1042,28 +1042,28 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ANL <- ANL %>% # nolint
               dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
               dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
-        } else {
-          ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
+          } else {
+            ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
+          }
         }
-      }
 
-      brushed_rows <- brushedPoints(ANL, plot_brush)
-      if (nrow(brushed_rows) > 0) {
-        # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
-        # so that dplyr::intersect will work
-        if (tab == "Density plot") {
-          brushed_rows$density <- NULL
-        } else if (tab == "Cumulative distribution plot") {
-          brushed_rows$cdf <- NULL
-        } else if (tab == "Boxplot" && utils.nest::is_empty(categorical_var)) {
-          brushed_rows[[plot_brush$mapping$x]] <- NULL
+        brushed_rows <- brushedPoints(ANL, plot_brush)
+        if (nrow(brushed_rows) > 0) {
+          # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
+          # so that dplyr::intersect will work
+          if (tab == "Density plot") {
+            brushed_rows$density <- NULL
+          } else if (tab == "Cumulative distribution plot") {
+            brushed_rows$cdf <- NULL
+          } else if (tab == "Boxplot" && utils.nest::is_empty(categorical_var)) {
+            brushed_rows[[plot_brush$mapping$x]] <- NULL
+          }
+          # is_outlier_selected is part of ANL_OUTLIER so needed here
+          brushed_rows$is_outlier_selected <- TRUE
+          dplyr::intersect(ANL_OUTLIER, brushed_rows)
+        } else {
+          ANL_OUTLIER[0, ]
         }
-        # is_outlier_selected is part of ANL_OUTLIER so needed here
-        brushed_rows$is_outlier_selected <- TRUE
-        dplyr::intersect(ANL_OUTLIER, brushed_rows)
-      } else {
-        ANL_OUTLIER[0, ]
-      }
       } else {
         ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
       }

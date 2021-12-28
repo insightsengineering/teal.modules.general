@@ -332,33 +332,33 @@ srv_distribution <- function(input,
     input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
   ),
   expr = {
-     if (length(input$t_dist) != 0) {
-       dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+    if (length(input$t_dist) != 0) {
+      dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
-       get_dist_params <- function(x, dist) {
-         if (dist == "unif") {
-           res <- as.list(range(x))
-           names(res) <- c("min", "max")
-           return(res)
-         }
-         tryCatch(
-           as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-           error = function(e) list(param1 = NA, param2 = NA)
-         )
-       }
-       ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-       params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
-       params_vec <- round(unname(unlist(params)), 2)
-       params_names <- names(params)
+      get_dist_params <- function(x, dist) {
+        if (dist == "unif") {
+          res <- as.list(range(x))
+          names(res) <- c("min", "max")
+          return(res)
+        }
+        tryCatch(
+          as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+          error = function(e) list(param1 = NA, param2 = NA)
+        )
+      }
+      ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+      params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
+      params_vec <- round(unname(unlist(params)), 2)
+      params_names <- names(params)
 
-       updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-       updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-     } else {
-       updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-       updateNumericInput(session, "dist_param2", label = "param2", value = NA)
-     }
-   },
-   ignoreInit = TRUE
+      updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+      updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+    } else {
+      updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+      updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+    }
+  },
+  ignoreInit = TRUE
   )
 
   merge_vars <- reactive({

@@ -692,8 +692,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
       dev_labs <- list(color = varname_w_label(resp_col, rp))
 
       scales_biplot <- if (is.character(response) ||
-          is.factor(response) ||
-          (is.numeric(response) && length(unique(response)) <= 6)) {
+        is.factor(response) ||
+        (is.numeric(response) && length(unique(response)) <= 6)) {
         teal.devel::chunks_push(
           id = "pca_plot_response",
           quote(pca_rot$response <- as.factor(response))

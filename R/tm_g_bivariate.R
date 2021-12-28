@@ -128,34 +128,34 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     list(
       (methods::is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(x) &&
-           all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
+          all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
     ),
     list(
       (methods::is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
         (utils.nest::is_class_list("data_extract_spec")(y) &&
-           all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     ),
     list(
       is.null(color) ||
         ((methods::is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-           (utils.nest::is_class_list("data_extract_spec")(color) &&
-              all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
+          (utils.nest::is_class_list("data_extract_spec")(color) &&
+            all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
         ((methods::is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-           (utils.nest::is_class_list("data_extract_spec")(fill) &&
-              all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
+          (utils.nest::is_class_list("data_extract_spec")(fill) &&
+            all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
         ((methods::is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-           (utils.nest::is_class_list("data_extract_spec")(size) &&
-              all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
+          (utils.nest::is_class_list("data_extract_spec")(size) &&
+            all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"
     )
   )
@@ -860,9 +860,9 @@ facet_ggplot_call <- function(row_facet = character(0),
     NULL
   } else if (!utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
     call("facet_grid",
-         rows = call_fun_dots("vars", row_facet),
-         cols = call_fun_dots("vars", col_facet),
-         scales = scales
+      rows = call_fun_dots("vars", row_facet),
+      cols = call_fun_dots("vars", col_facet),
+      scales = scales
     )
   } else if (utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
@@ -876,37 +876,37 @@ coloring_ggplot_call <- function(colour,
                                  size,
                                  is_point = FALSE) {
   if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-      is_point && !utils.nest::is_character_empty(size)) {
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-             is_point && utils.nest::is_character_empty(size)) {
+    is_point && utils.nest::is_character_empty(size)) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-             (!is_point || utils.nest::is_character_empty(size))) {
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
   } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-             (!is_point || utils.nest::is_character_empty(size))) {
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-             (!is_point || utils.nest::is_character_empty(size))) {
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-             is_point && !utils.nest::is_character_empty(size)) {
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-             is_point && !utils.nest::is_character_empty(size)) {
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
   } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-             is_point && !utils.nest::is_character_empty(size)) {
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
