@@ -1004,28 +1004,6 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
 
       df <- df[df_vars]
 
-      if (is.null(df) || ncol(df) == 0) {
-        columns_names[[dataset_name]] <- character(0)
-        data.frame(
-          Type = character(0),
-          Variable = character(0),
-          Label = character(0),
-          Missings = character(0),
-          Sparklines = character(0),
-          stringsAsFactors = FALSE
-        )
-      } else {
-        # extract data variable labels
-        labels <- stats::setNames(
-          ulapply(
-            df,
-            function(x) {
-              if_null(attr(x, "label"), "")
-            }
-          ),
-          names(df)
-        )
-
     if (is.null(df) || ncol(df) == 0) {
       columns_names[[dataset_name]] <- character(0)
       data.frame(
@@ -1047,7 +1025,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         ),
         names(df)
       )
-      
+
       columns_names[[dataset_name]] <- names(labels)
 
         # calculate number of missing values
