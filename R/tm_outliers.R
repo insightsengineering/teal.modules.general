@@ -404,8 +404,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
-          calculate_outliers() %>%
-          ungroup_expr() %>%
+          calculate_outliers %>%
+          ungroup_expr %>%
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
