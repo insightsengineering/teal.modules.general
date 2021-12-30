@@ -8,7 +8,7 @@
 #' @import shiny
 #' @import shinyTree
 #' @import teal
-#' @import magrittr
+#' @import magrittr %>%
 #'
 #'
 #' @docType package
