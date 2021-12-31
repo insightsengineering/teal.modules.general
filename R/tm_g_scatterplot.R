@@ -155,9 +155,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   }
 
   ggtheme <- match.arg(ggtheme)
-
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_character_single(label),
     is_class_list("data_extract_spec")(x),
     is_class_list("data_extract_spec")(y),
     list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),

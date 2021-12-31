@@ -121,8 +121,8 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_character_single(label),
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),

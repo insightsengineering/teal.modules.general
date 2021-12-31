@@ -94,10 +94,10 @@ tm_a_regression <- function(label = "Regression Analysis",
   }
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  checkmate::assert_character(label, len = 1)
   ggtheme <- match.arg(ggtheme)
 
   stop_if_not(
-    is_character_single(label),
     is_class_list("data_extract_spec")(response),
     list(
       all(vapply(response, function(x) {

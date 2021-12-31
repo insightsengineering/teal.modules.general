@@ -43,8 +43,8 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_character_single(label),
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
   )
 

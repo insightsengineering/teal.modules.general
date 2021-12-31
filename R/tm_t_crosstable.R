@@ -77,8 +77,8 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_character_single(label),
     is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
     is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
     is_logical_single(show_percentage),

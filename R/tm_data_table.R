@@ -142,8 +142,8 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_character_single(label),
     is.list(variables_selected),
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
     utils.nest::is_fully_named_list(dt_args),

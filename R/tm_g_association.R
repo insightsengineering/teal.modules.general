@@ -89,7 +89,7 @@ tm_g_association <- function(label = "Association",
   }
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  stopifnot(is_character_single(label))
+  checkmate::assert_character(label, len = 1)
   stopifnot(is_class_list("data_extract_spec")(ref))
   stop_if_not(list(
     all(vapply(ref, function(x) !(x$select$multiple), logical(1))),

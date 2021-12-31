@@ -93,13 +93,12 @@ tm_g_response <- function(label = "Response Plot",
   if (!is_class_list("data_extract_spec")(col_facet)) {
     col_facet <- list_or_null(col_facet)
   }
-
+  checkmate::assert_character(label, len = 1)
   ggtheme <- match.arg(ggtheme)
-
+  checkmate::assert_character(label, len = 1)
   stop_if_not(
     is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
     is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
-    is_character_single(label),
     is_class_list("data_extract_spec")(response),
     is_class_list("data_extract_spec")(x),
     is_logical_single(coord_flip),

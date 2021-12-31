@@ -69,7 +69,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   logger::log_info("Initializing tm_a_pca")
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  stopifnot(is_character_single(label))
+  checkmate::assert_character(label, len = 1)
   stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
 
   ggtheme <- match.arg(ggtheme)
