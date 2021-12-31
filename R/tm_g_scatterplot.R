@@ -135,36 +135,26 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
-  if (!is_class_list("data_extract_spec")(x)) {
-    x <- list(x)
-  }
-  if (!is_class_list("data_extract_spec")(y)) {
-    y <- list(y)
-  }
-  if (!is_class_list("data_extract_spec")(color_by)) {
-    color_by <- list_or_null(color_by)
-  }
-  if (!is_class_list("data_extract_spec")(size_by)) {
-    size_by <- list_or_null(size_by)
-  }
-  if (!is_class_list("data_extract_spec")(row_facet)) {
-    row_facet <- list_or_null(row_facet)
-  }
-  if (!is_class_list("data_extract_spec")(col_facet)) {
-    col_facet <- list_or_null(col_facet)
-  }
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y)) y <- list(y)
+  if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
+  if (inherits(size_by, "data_extract_spec")) size_by <- list(size_by)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
 
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
+
+  checkmate::assert_list(x, types = "data_extract_spec")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+
   stop_if_not(
-    is_class_list("data_extract_spec")(x),
-    is_class_list("data_extract_spec")(y),
     list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),
-    is.null(size_by) || is_class_list("data_extract_spec")(size_by),
-    is.null(color_by) || is_class_list("data_extract_spec")(color_by),
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,

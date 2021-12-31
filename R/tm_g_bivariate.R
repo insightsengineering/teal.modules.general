@@ -104,54 +104,46 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  if (inherits(color, "data_extract_spec")) color <- list(color)
+  if (inherits(fill, "data_extract_spec")) fill <- list(fill)
+  if (inherits(size, "data_extract_spec")) size <- list(size)
+
+  checkmate::assert_list(x, types = "data_extract_spec")
+  if (!all(vapply(x, function(x) !(x$select$multiple), logical(1))))
+    stop("'x' should not allow multiple selection")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  if (!all(vapply(y, function(x) !(x$select$multiple), logical(1))))
+    stop("'y' should not allow multiple selection")
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(row_facet, function(x) !(x$select$multiple), logical(1))))
+    stop("'row_facet' should not allow multiple selection")
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(col_facet, function(x) !(x$select$multiple), logical(1))))
+    stop("'col_facet' should not allow multiple selection")
+  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(color, function(x) !(x$select$multiple), logical(1))))
+    stop("'color' should not allow multiple selection")
+  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(fill, function(x) !(x$select$multiple), logical(1))))
+    stop("'fill' should not allow multiple selection")
+  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(size, function(x) !(x$select$multiple), logical(1))))
+    stop("'size' should not allow multiple selection")
+
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
   stop_if_not(
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"),
-    is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"),
-    is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"),
-    is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"),
     is_logical_single(use_density),
     is_logical_single(color_settings),
     is_logical_single(free_x_scales),
     is_logical_single(free_y_scales),
     is_logical_single(rotate_xaxis_labels),
-    is_logical_single(swap_axes),
-    list(
-      (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-        (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
-      "x variable should not allow multiple selection"
-    ),
-    list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
-      "y variable should not allow multiple selection"
-    ),
-    list(
-      is.null(color) ||
-        ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-          (is_class_list("data_extract_spec")(color) &&
-            all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "color variable should not allow multiple selection"
-    ),
-    list(
-      is.null(fill) ||
-        ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-          (is_class_list("data_extract_spec")(fill) &&
-            all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "fill variable should not allow multiple selection"
-    ),
-    list(
-      is.null(size) ||
-        ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-          (is_class_list("data_extract_spec")(size) &&
-            all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "size variable should not allow multiple selection"
-    )
+    is_logical_single(swap_axes)
   )
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
@@ -167,20 +159,17 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   if (color_settings) {
     if (is.null(color)) {
-      color <- `if`(inherits(x, "list"), x, list(x))
       color[[1]]$select <- select_spec(choices = color[[1]]$select$choices, selected = NULL)
     }
     if (is.null(fill)) {
-      fill <- `if`(inherits(x, "list"), x, list(x))
       fill[[1]]$select <- select_spec(choices = fill[[1]]$select$choices, selected = NULL)
     }
     if (is.null(size)) {
-      size <- `if`(inherits(x, "list"), x, list(x))
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
     stop_if_not(list(
-      is.null(color) && is.null(fill) && is.null(size),
+      is.null(c(color, fill, size)),
       "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
     ))
   }

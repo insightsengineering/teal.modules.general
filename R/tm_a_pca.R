@@ -67,10 +67,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
+  if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_character(label, len = 1)
-  stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
+  checkmate::check_list(dat, types = "data_extract_spec")
 
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
@@ -105,10 +106,6 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
     .var.name = "plot_width"
   )
-
-  if (!is_class_list("data_extract_spec")(dat)) {
-    dat <- list(dat)
-  }
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")

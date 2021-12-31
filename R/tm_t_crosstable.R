@@ -77,17 +77,18 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
+
   checkmate::assert_character(label, len = 1)
+  checkmate::assert_list(x, types = "data_extract_spec")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  if (!all(vapply(y, function(x) !("" %in% x$select$choices), logical(1))))
+    stop("'y' should not allow empty values")
+
   stop_if_not(
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
     is_logical_single(show_percentage),
-    is_logical_single(show_total),
-    list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
-      "y variable should not allow multiple selection"
-    )
+    is_logical_single(show_total)
   )
 
   utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))

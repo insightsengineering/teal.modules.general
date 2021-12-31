@@ -81,21 +81,15 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
-  if (!is_class_list("data_extract_spec")(ref)) {
-    ref <- list(ref)
-  }
-  if (!is_class_list("data_extract_spec")(vars)) {
-    vars <- list(vars)
-  }
+  if (inherits(ref, "data_extract_spec")) ref <- list(ref)
+  if (inherits(vars, "data_extract_spec")) vars <- list(vars)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_character(label, len = 1)
-  stopifnot(is_class_list("data_extract_spec")(ref))
-  stop_if_not(list(
-    all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
-    "'ref' should not allow multiple selection"
-  ))
-  stopifnot(is_class_list("data_extract_spec")(vars))
+  checkmate::assert_list(ref, types = "data_extract_spec")
+  if (!all(vapply(ref, function(x) !(x$select$multiple), logical(1))))
+    stop("'ref' should not allow multiple selection")
+  checkmate::assert_list(vars, types = "data_extract_spec")
   stopifnot(is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")

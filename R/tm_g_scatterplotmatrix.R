@@ -74,12 +74,10 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    pre_output = NULL,
                                    post_output = NULL) {
   logger::log_info("Initializing tm_g_scatterplotmatrix")
-  if (!is_class_list("data_extract_spec")(variables)) {
-    variables <- list(variables)
-  }
+  if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
   checkmate::assert_character(label, len = 1)
-  stopifnot(is_class_list("data_extract_spec")(variables))
+  checkmate::assert_list(variables, types = "data_extract_spec")
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)

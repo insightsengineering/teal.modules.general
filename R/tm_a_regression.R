@@ -86,27 +86,18 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
-  if (!is_class_list("data_extract_spec")(regressor)) {
-    regressor <- list(regressor)
-  }
-  if (!is_class_list("data_extract_spec")(response)) {
-    response <- list(response)
-  }
+  if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
+  if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_character(label, len = 1)
+  checkmate::assert_list(response, types = "data_extract_spec")
+  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1))))
+    stop("'response' should not allow multiple selection")
+  checkmate::assert_list(regressor, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   stop_if_not(
-    is_class_list("data_extract_spec")(response),
-    list(
-      all(vapply(response, function(x) {
-        !isTRUE(x$select$multiple)
-      }, logical(1))),
-      "Response variable should not allow multiple selection"
-    ),
-    is_class_list("data_extract_spec")(regressor),
-    # No check necessary for regressor and response, as checked in data_extract_ui
     is_character_single(default_outlier_label)
   )
 

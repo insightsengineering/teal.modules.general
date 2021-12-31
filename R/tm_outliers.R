@@ -69,21 +69,15 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
+  if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
+  if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-  if (!is_class_list("data_extract_spec")(outlier_var)) {
-    outlier_var <- list(outlier_var)
-  }
-  if (!is.null(categorical_var) && !is_class_list("data_extract_spec")(categorical_var)) {
-    categorical_var <- list(categorical_var)
-  }
 
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
-  stop_if_not(
-    is_class_list("data_extract_spec")(outlier_var),
-    is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
-  )
+  checkmate::assert_list(outlier_var, types = "data_extract_spec")
+  checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
 
   plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")

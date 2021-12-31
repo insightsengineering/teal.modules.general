@@ -100,17 +100,9 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
-  if (!is.null(dist_var) && !is_class_list("data_extract_spec")(dist_var)) {
-    dist_var <- list(dist_var)
-  }
-
-  if (!is_class_list("data_extract_spec")(strata_var)) {
-    strata_var <- list_or_null(strata_var)
-  }
-
-  if (!is_class_list("data_extract_spec")(group_var)) {
-    group_var <- list_or_null(group_var)
-  }
+  if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
+  if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
+  if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
@@ -123,10 +115,11 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
   checkmate::assert_character(label, len = 1)
+  checkmate::check_list(dist_var, "data_extract_spec")
+  checkmate::check_false(dist_var[[1]]$select$multiple)
+  checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
   stop_if_not(
-    is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
-    is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
-    is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
     is_logical_single(freq)
   )
 

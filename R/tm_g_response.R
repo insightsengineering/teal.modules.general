@@ -81,46 +81,30 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
-  if (!is_class_list("data_extract_spec")(response)) {
-    response <- list(response)
-  }
-  if (!is_class_list("data_extract_spec")(x)) {
-    x <- list(x)
-  }
-  if (!is_class_list("data_extract_spec")(row_facet)) {
-    row_facet <- list_or_null(row_facet)
-  }
-  if (!is_class_list("data_extract_spec")(col_facet)) {
-    col_facet <- list_or_null(col_facet)
-  }
+  if (inherits(response, "data_extract_spec")) response <- list(response)
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list_or_null(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list_or_null(col_facet)
   checkmate::assert_character(label, len = 1)
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
+  checkmate::assert_list(response, types = "data_extract_spec")
+  if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))))
+    stop("'response' should not allow empty values")
+  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1))))
+    stop("'x' should not allow multiple selection")
+  checkmate::assert_list(x, types = "data_extract_spec")
+  if (!all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))))
+    stop("'x' should not allow empty values")
+  if (!all(vapply(x, function(x) !(x$select$multiple), logical(1))))
+    stop("'x' should not allow multiple selection")
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   stop_if_not(
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
-    is_class_list("data_extract_spec")(response),
-    is_class_list("data_extract_spec")(x),
     is_logical_single(coord_flip),
     is_logical_single(count_labels),
     is_logical_single(rotate_xaxis_labels),
-    is_logical_single(freq),
-    list(
-      all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-      "'response' should not allow empty values"
-    ),
-    list(
-      all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-      "'response' should not allow multiple selection"
-    ),
-    list(
-      all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-      "'x' should not allow empty values"
-    ),
-    list(
-      all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-      "'x' should not allow multiple selection"
-    )
+    is_logical_single(freq)
   )
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
