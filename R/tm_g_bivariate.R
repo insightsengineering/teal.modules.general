@@ -42,7 +42,6 @@
 #' For more examples, please see the vignette "Using bivariate plot" via
 #'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
-#' @importFrom methods is
 #' @export
 #'
 #' @examples
@@ -106,50 +105,56 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   logger::log_info("Initializing tm_g_bivariate")
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
-    is.null(row_facet) || is_class_list("data_extract_spec")(row_facet) || is(row_facet, "data_extract_spec"),
-    is.null(col_facet) || is_class_list("data_extract_spec")(col_facet) || is(col_facet, "data_extract_spec"),
-    is.null(color) || is_class_list("data_extract_spec")(color) || is(color, "data_extract_spec"),
-    is.null(fill) || is_class_list("data_extract_spec")(fill) || is(fill, "data_extract_spec"),
-    is.null(size) || is_class_list("data_extract_spec")(size) || is(size, "data_extract_spec"),
-    is_logical_single(use_density),
-    is_logical_single(color_settings),
-    is_logical_single(free_x_scales),
-    is_logical_single(free_y_scales),
-    is_logical_single(rotate_xaxis_labels),
-    is_logical_single(swap_axes),
-    is_character_single(ggtheme),
+  utils.nest::stop_if_not(
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
+    is.null(row_facet) ||
+      utils.nest::is_class_list("data_extract_spec")(row_facet) ||
+      inherits(row_facet, "data_extract_spec"),
+    is.null(col_facet) ||
+      utils.nest::is_class_list("data_extract_spec")(col_facet) ||
+      inherits(col_facet, "data_extract_spec"),
+    is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || inherits(color, "data_extract_spec"),
+    is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || inherits(fill, "data_extract_spec"),
+    is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || inherits(size, "data_extract_spec"),
+    utils.nest::is_logical_single(use_density),
+    utils.nest::is_logical_single(color_settings),
+    utils.nest::is_logical_single(free_x_scales),
+    utils.nest::is_logical_single(free_y_scales),
+    utils.nest::is_logical_single(rotate_xaxis_labels),
+    utils.nest::is_logical_single(swap_axes),
+    utils.nest::is_character_single(ggtheme),
     list(
-      (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-        (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
+      (inherits(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
+        (utils.nest::is_class_list("data_extract_spec")(x) &&
+          all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
       "x variable should not allow multiple selection"
     ),
     list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+        (utils.nest::is_class_list("data_extract_spec")(y) &&
+          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
       "y variable should not allow multiple selection"
     ),
     list(
       is.null(color) ||
-        ((is(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-          (is_class_list("data_extract_spec")(color) &&
+        ((inherits(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
+          (utils.nest::is_class_list("data_extract_spec")(color) &&
             all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "color variable should not allow multiple selection"
     ),
     list(
       is.null(fill) ||
-        ((is(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-          (is_class_list("data_extract_spec")(fill) &&
+        ((inherits(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
+          (utils.nest::is_class_list("data_extract_spec")(fill) &&
             all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "fill variable should not allow multiple selection"
     ),
     list(
       is.null(size) ||
-        ((is(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-          (is_class_list("data_extract_spec")(size) &&
+        ((inherits(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
+          (utils.nest::is_class_list("data_extract_spec")(size) &&
             all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
       "size variable should not allow multiple selection"
     )
@@ -180,7 +185,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
-    stop_if_not(list(
+    utils.nest::stop_if_not(list(
       is.null(color) && is.null(fill) && is.null(size),
       "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
     ))
@@ -208,32 +213,31 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
-#' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(
+  is_single_dataset_value <- teal.devel::is_single_dataset(
     args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size
   )
 
   ns <- NS(id)
-  standard_layout(
-    output = white_small_well(
-      tags$div(plot_with_settings_ui(id = ns("myplot")))
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      tags$div(teal.devel::plot_with_settings_ui(id = ns("myplot")))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
@@ -243,7 +247,7 @@ ui_g_bivariate <- function(id, ...) {
         condition =
           "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
           $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        radioGroupButtons(
+        shinyWidgets::radioGroupButtons(
           inputId = ns("use_density"),
           label = NULL,
           choices = c("frequency", "density"),
@@ -255,12 +259,12 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Facetting"),
-          switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
             div(
               if (!is.null(args$row_facet)) {
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("row_facet"),
                   label = "Row facetting variable",
                   data_extract_spec = args$row_facet,
@@ -268,7 +272,7 @@ ui_g_bivariate <- function(id, ...) {
                 )
               },
               if (!is.null(args$col_facet)) {
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("col_facet"),
                   label = "Column facetting variable",
                   data_extract_spec = args$col_facet,
@@ -286,17 +290,17 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Color settings"),
-          switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
             div(
-              data_extract_ui(
+              teal.devel::data_extract_ui(
                 id = ns("color"),
                 label = "Outline color by variable",
                 data_extract_spec = args$color,
                 is_single_dataset = is_single_dataset_value
               ),
-              data_extract_ui(
+              teal.devel::data_extract_ui(
                 id = ns("fill"),
                 label = "Fill color by variable",
                 data_extract_spec = args$fill,
@@ -304,7 +308,7 @@ ui_g_bivariate <- function(id, ...) {
               ),
               div(
                 id = ns("size_settings"),
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("size"),
                   label = "Size of points by variable (only if x and y are numeric)",
                   data_extract_spec = args$size,
@@ -315,8 +319,8 @@ ui_g_bivariate <- function(id, ...) {
           )
         )
       },
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
@@ -341,7 +345,7 @@ ui_g_bivariate <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -363,7 +367,7 @@ srv_g_bivariate <- function(input,
                             plot_height,
                             plot_width,
                             ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
   data_extract <- stats::setNames(
     list(x, y),
     c("x", "y")
@@ -399,24 +403,24 @@ srv_g_bivariate <- function(input,
     )
   }
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = data_extract
   )
 
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 3)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 3)
 
-    x_name <- if_null(as.vector(merged_data()$columns_source$x), character(0))
-    y_name <- if_null(as.vector(merged_data()$columns_source$y), character(0))
+    x_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$x), character(0))
+    y_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$y), character(0))
 
     validate(
       need(
-        !is_character_empty(x_name) || !is_character_empty(y_name),
+        !utils.nest::is_character_empty(x_name) || !utils.nest::is_character_empty(y_name),
         "x-variable and y-variable aren't correctly specified. At least one should be valid."
       )
     )
@@ -434,7 +438,7 @@ srv_g_bivariate <- function(input,
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
 
-    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && !is_empty(x_name)
+    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && !utils.nest::is_empty(x_name)
 
     if (is_scatterplot) {
       shinyjs::show("alpha")
@@ -460,15 +464,15 @@ srv_g_bivariate <- function(input,
     }
 
 
-    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
     cl <- bivariate_plot_call(
       data_name = "ANL",
       x = x_name,
       y = y_name,
-      x_class = ifelse(!is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
-      y_class = ifelse(!is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
+      x_class = ifelse(!utils.nest::is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
+      y_class = ifelse(!utils.nest::is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
       x_label = varname_w_label(x_name, ANL),
       y_label = varname_w_label(y_name, ANL),
       freq = !use_density,
@@ -480,7 +484,7 @@ srv_g_bivariate <- function(input,
       ggplot2_args = ggplot2_args
     )
 
-    facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+    facetting <- (utils.nest::if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
 
     if (facetting) {
       facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
@@ -517,17 +521,17 @@ srv_g_bivariate <- function(input,
       }
     }
 
-    chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
+    teal.devel::chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
 
     # Add labels to facets
     nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-      chunks_push(quote(print(p)))
-      chunks_safe_eval()
+      teal.devel::chunks_push(quote(print(p)))
+      teal.devel::chunks_safe_eval()
     } else {
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = {
           # Add facetting labels
           # optional: grid.newpage() #nolintr
@@ -536,13 +540,13 @@ srv_g_bivariate <- function(input,
         },
         env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
       ))
-      chunks_safe_eval()
-      chunks_get_var("g")
+      teal.devel::chunks_safe_eval()
+      teal.devel::chunks_get_var("g")
     }
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,
@@ -550,10 +554,10 @@ srv_g_bivariate <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
+    datanames = teal.devel::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
     modal_title = "R Code for a Bivariate plot"
   )
 }
@@ -586,12 +590,12 @@ bivariate_plot_call <- function(data_name,
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
 
-  if (is_character_empty(x)) {
+  if (utils.nest::is_character_empty(x)) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (is_character_empty(y)) {
+  if (utils.nest::is_character_empty(y)) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)
@@ -801,18 +805,18 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     )
   }
 
-  dev_ggplot2_args <- ggplot2_args(labs = labs_base)
+  dev_ggplot2_args <- teal.devel::ggplot2_args(labs = labs_base)
 
   if (rotate_xaxis_labels) {
     dev_ggplot2_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
   }
 
-  all_ggplot2_args <- resolve_ggplot2_args(
+  all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
     user_plot = ggplot2_args,
     module_plot = dev_ggplot2_args
   )
 
-  parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
+  parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
 
   plot_call <- reduce_plot_call(
     plot_call,
@@ -852,18 +856,17 @@ facet_ggplot_call <- function(row_facet = character(0),
     "fixed"
   }
 
-  if (is_character_empty(row_facet) && is_character_empty(col_facet)) {
+  if (utils.nest::is_character_empty(row_facet) && utils.nest::is_character_empty(col_facet)) {
     NULL
-  } else if (!is_character_empty(row_facet) && !is_character_empty(col_facet)) {
-    call(
-      "facet_grid",
+  } else if (!utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
+    call("facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
-  } else if (is_character_empty(row_facet) && !is_character_empty(col_facet)) {
+  } else if (utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-  } else if (!is_character_empty(row_facet) && is_character_empty(col_facet)) {
+  } else if (!utils.nest::is_character_empty(row_facet) && utils.nest::is_character_empty(col_facet)) {
     call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
@@ -872,38 +875,38 @@ coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
                                  is_point = FALSE) {
-  if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && is_character_empty(size)) {
+  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
+    is_point && utils.nest::is_character_empty(size)) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
-  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
+    (!is_point || utils.nest::is_character_empty(size))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
-  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
+    is_point && !utils.nest::is_character_empty(size)) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))

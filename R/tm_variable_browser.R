@@ -14,7 +14,6 @@
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
 #'
-#' @importFrom stats quantile sd
 #'
 #' @export
 #'
@@ -43,9 +42,9 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
-  stop_if_not(
-    is_character_single(label),
-    is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
+  utils.nest::stop_if_not(
+    utils.nest::is_character_single(label),
+    utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected)
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -76,13 +75,13 @@ ui_variable_browser <- function(id,
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
-  standard_layout(
+  teal.devel::standard_layout(
     output = fluidRow(
       htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
       column(
         6,
         # variable browser
-        white_small_well(
+        teal.devel::white_small_well(
           do.call(
             tabsetPanel,
             c(
@@ -101,7 +100,7 @@ ui_variable_browser <- function(id,
                         ),
                         div(
                           style = "margin-top: 15px;",
-                          get_dt_rows(
+                          teal.devel::get_dt_rows(
                             ns(paste0(
                               "variable_browser_", dataname
                             )),
@@ -123,7 +122,7 @@ ui_variable_browser <- function(id,
           ),
           { # nolint
             x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-            if (is(datasets, "CDISCFilteredData")) {
+            if (inherits(datasets, "CDISCFilteredData")) {
               x
             } else {
               shinyjs::hidden(x)
@@ -133,7 +132,7 @@ ui_variable_browser <- function(id,
       ),
       column(
         6,
-        white_small_well(
+        teal.devel::white_small_well(
           div(
             class = "clearfix",
             style = "margin: 15px 15px 0px 15px;",
@@ -154,9 +153,9 @@ ui_variable_browser <- function(id,
             style = "margin: 0px 15px 15px 15px;",
             uiOutput(ns("ui_numeric_display"))
           ),
-          plot_with_settings_ui(ns("variable_plot")),
+          teal.devel::plot_with_settings_ui(ns("variable_plot")),
           br(),
-          get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
+          teal.devel::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
           DT::dataTableOutput(ns("variable_summary_table"))
         )
       )
@@ -166,9 +165,6 @@ ui_variable_browser <- function(id,
   )
 }
 
-
-#' @importFrom grid convertWidth grid.draw grid.newpage textGrob unit
-#' @importFrom utils capture.output str
 srv_variable_browser <- function(input, output, session, datasets, datasets_selected, ggplot2_args) {
 
   # if there are < this number of unique records then a numeric
@@ -231,7 +227,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("display_density"),
             label = "Show density",
-            value = if_null(isolate(input$display_density), TRUE),
+            value = utils.nest::if_null(isolate(input$display_density), TRUE),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -242,7 +238,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("remove_outliers"),
             label = "Remove outliers",
-            value = if_null(isolate(input$remove_outliers), FALSE),
+            value = utils.nest::if_null(isolate(input$remove_outliers), FALSE),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -266,7 +262,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         list(
           checkboxInput(session$ns("numeric_as_factor"),
             "Treat variable as factor",
-            value = if_null(
+            value = utils.nest::if_null(
               isolate(input$numeric_as_factor),
               unique_entries < .unique_records_default_as_factor
             )
@@ -338,8 +334,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
 
 
   variable_plot_r <- reactive({
-    display_density <- if_null(input$display_density, FALSE)
-    remove_outliers <- if_null(input$remove_outliers, FALSE)
+    display_density <- utils.nest::if_null(input$display_density, FALSE)
+    remove_outliers <- utils.nest::if_null(input$remove_outliers, FALSE)
 
     if (remove_outliers) {
       req(input$outlier_definition_slider)
@@ -360,7 +356,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "variable_plot",
     plot_r = variable_plot_r,
     height =  c(500, 200, 2000)
@@ -395,7 +391,6 @@ var_missings_info <- function(x) {
 #'
 #' @export
 #'
-#' @importFrom sparkline spk_chr
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
@@ -577,10 +572,6 @@ create_sparklines.logical <- function(arr, ...) { # nousage # nolint
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
-#' @importFrom sparkline spk_chr
-#' @importFrom jsonlite toJSON
-#' @importFrom htmlwidgets JS
-#'
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
@@ -622,8 +613,6 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
-#' @importFrom sparkline spk_chr
-#'
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
@@ -657,7 +646,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
   if (is.numeric(x) && !numeric_as_factor) {
     req(!any(is.infinite(x)))
 
-    qvals <- round(quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75), type = 2), 2)
+    qvals <- round(stats::quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75), type = 2), 2)
     # classical central tendency measures
 
     summary <-
@@ -670,7 +659,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
           round(mean(x, na.rm = TRUE), 2),
           qvals[3],
           round(max(x, na.rm = TRUE), 2),
-          round(sd(x, na.rm = TRUE), 2),
+          round(stats::sd(x, na.rm = TRUE), 2),
           length(x[!is.na(x)])
         )
       )
@@ -751,7 +740,7 @@ plot_var_summary <- function(var,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  stopifnot(is_logical_single(display_density))
+  stopifnot(utils.nest::is_logical_single(display_density))
 
   grid::grid.newpage()
 
@@ -790,7 +779,7 @@ plot_var_summary <- function(var,
     } else {
       # remove outliers
       if (outlier_definition != 0) {
-        q1_q3 <- quantile(var, probs = c(0.25, 0.75), type = 2)
+        q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2)
         iqr <- q1_q3[2] - q1_q3[1]
         number_records <- length(var)
         var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
@@ -847,12 +836,12 @@ plot_var_summary <- function(var,
     )
   }
 
-  dev_ggplot2_args <- ggplot2_args(
+  dev_ggplot2_args <- teal.devel::ggplot2_args(
     labs = list(x = var_lab),
     theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
   )
 
-  all_ggplot2_args <- resolve_ggplot2_args(
+  all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
   )
@@ -892,7 +881,7 @@ plot_var_summary <- function(var,
 #' @param var_name (`character`) the name of the variable
 get_var_description <- function(datasets, dataset_name, var_name) {
   varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
-  d_var_name <- paste0(if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
+  d_var_name <- paste0(utils.nest::if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
   d_var_name
 }
 
@@ -918,8 +907,8 @@ validate_input <- function(input, plot_var, datasets) {
     validate(need(is.logical(type), "Select what type of data to plot"))
 
     df <- datasets$get_data(dataset_name, filtered = type)
-    validate_has_data(df, 1)
-    validate_has_variable(varname = varname, data = df, "Variable not available")
+    teal.devel::validate_has_data(df, 1)
+    teal.devel::validate_has_variable(varname = varname, data = df, "Variable not available")
 
     TRUE
   })
@@ -985,7 +974,7 @@ render_tab_header <- function(dataset_name, output, datasets) {
     key <- datasets$get_keys(dataset_name)
     sprintf(
       "Dataset with %s unique key rows and %s variables",
-      nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
+      nrow(unique(`if`(!utils.nest::is_empty(key), df[, key, drop = FALSE], df))),
       ncol(df)
     )
   })
@@ -1028,10 +1017,10 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
       } else {
         # extract data variable labels
         labels <- stats::setNames(
-          ulapply(
+          utils.nest::ulapply(
             df,
             function(x) {
-              if_null(attr(x, "label"), "")
+              utils.nest::if_null(attr(x, "label"), "")
             }
           ),
           names(df)
@@ -1103,7 +1092,7 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
 
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
-  qntls <- quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
+  qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
   iqr <- qntls[3] - qntls[2]
   binwidth <- max(scaling_factor * iqr / length(x_vec) ^ (1 / 3), sqrt(qntls[4] - qntls[1])) # styler: off
   binwidth <- ifelse(binwidth == 0, 1, binwidth)

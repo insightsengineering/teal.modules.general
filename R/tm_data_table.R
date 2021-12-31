@@ -17,7 +17,6 @@
 #' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
 #'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @export
-#' @importFrom DT datatable
 #' @examples
 #' library(scda)
 #'
@@ -142,23 +141,23 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
-  stop_if_not(
-    is_character_single(label),
+  utils.nest::stop_if_not(
+    utils.nest::is_character_single(label),
     is.list(variables_selected),
-    is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
+    utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected),
     utils.nest::is_fully_named_list(dt_args),
     utils.nest::is_fully_named_list(dt_options),
-    is_empty(variables_selected) ||
+    utils.nest::is_empty(variables_selected) ||
       (!is.null(names(variables_selected)) &&
         all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
         all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
         all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
-    is_empty(datasets_selected) ||
+    utils.nest::is_empty(datasets_selected) ||
       (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
     list(
-      is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
+      utils.nest::is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
       "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))"
     )
   )
@@ -167,7 +166,7 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    filters = if_character_empty(datasets_selected, "all"),
+    filters = utils.nest::if_character_empty(datasets_selected, "all"),
     server_args = list(datasets_selected = datasets_selected, dt_args = dt_args, dt_options = dt_options),
     ui_args = list(
       selected = variables_selected,
@@ -180,7 +179,6 @@ tm_data_table <- function(label = "Data Table",
 
 
 # ui page module
-#' @importFrom utils head
 ui_page_data_table <- function(id,
                                datasets,
                                selected,
@@ -190,7 +188,7 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
-  standard_layout(
+  teal.devel::standard_layout(
     output = tagList(
       fluidRow(
         column(
@@ -235,7 +233,7 @@ ui_page_data_table <- function(id,
                 selected <- if (!is.null(selected[[x]])) {
                   selected[[x]]
                 } else {
-                  head(choices)
+                  utils::head(choices)
                 }
                 tabPanel(
                   title = x,
@@ -304,7 +302,7 @@ ui_data_table <- function(id,
   }
 
   tagList(
-    get_dt_rows(ns("data_table"), ns("dt_rows")),
+    teal.devel::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
       teal::optionalSelectInput(
         ns("variables"),
@@ -321,10 +319,6 @@ ui_data_table <- function(id,
   )
 }
 
-
-#' @importFrom dplyr count
-#' @importFrom rlang !!! syms
-#' @importFrom DT datatable
 srv_data_table <- function(input,
                            output,
                            session,
@@ -349,7 +343,7 @@ srv_data_table <- function(input,
     validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
     dataframe_selected <- if (if_distinct()) {
-      count(df, !!!syms(variables))
+      dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
     } else {
       df[variables]
     }
@@ -373,7 +367,7 @@ srv_data_table <- function(input,
 get_datanames_selected <- function(datasets, datasets_selected) {
   datanames <- datasets$datanames()
 
-  if (!is_character_empty(datasets_selected)) {
+  if (!utils.nest::is_character_empty(datasets_selected)) {
     stopifnot(all(datasets_selected %in% datanames))
     datanames <- datasets_selected
   }

@@ -44,7 +44,7 @@ tm_missing_data <- function(label = "Missing data",
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
-  stopifnot(is_character_single(label))
+  stopifnot(utils.nest::is_character_single(label))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -55,7 +55,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 
   ggtheme <- match.arg(ggtheme)
-  stop_if_not(is_character_single(ggtheme))
+  utils.nest::stop_if_not(utils.nest::is_character_single(ggtheme))
 
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert(
@@ -83,10 +83,10 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   ns <- NS(id)
   datanames <- datasets$datanames()
 
-  if_subject_plot <- is(datasets, "CDISCFilteredData")
+  if_subject_plot <- inherits(datasets, "CDISCFilteredData")
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       div(
         style = "display: flex;",
         column(
@@ -169,7 +169,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   tab_list <- list(
     tabPanel(
       "Summary",
-      plot_with_settings_ui(id = ns("summary_plot")),
+      teal.devel::plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
         p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
@@ -183,7 +183,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "Combinations",
-      plot_with_settings_ui(id = ns("combination_plot")),
+      teal.devel::plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
         p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
@@ -201,7 +201,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By variable levels",
-      get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
+      teal.devel::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
       DT::dataTableOutput(ns("levels_table"))
     )
   )
@@ -210,7 +210,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       tab_list,
       list(tabPanel(
         "Grouped by Subject",
-        plot_with_settings_ui(id = ns("by_subject_plot")),
+        teal.devel::plot_with_settings_ui(id = ns("by_subject_plot")),
         helpText(
           p(paste(
             "This graph shows the missingness with respect to subjects rather than individual rows of the",
@@ -232,7 +232,6 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
-#' @importFrom shinyWidgets checkboxGroupButtons
 encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
   ns <- NS(id)
 
@@ -299,7 +298,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
         )
       )
     ),
-    panel_item(
+    teal.devel::panel_item(
       title = "Plot settings",
       optionalSelectInput(
         inputId = ns("ggtheme"),
@@ -310,7 +309,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       )
     ),
     hr(),
-    get_rcode_ui(ns("rcode"))
+    teal.devel::get_rcode_ui(ns("rcode"))
   )
 }
 
@@ -323,7 +322,7 @@ srv_missing_data <- function(input,
                              plot_height,
                              plot_width,
                              ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
   prev_group_by_var <- reactiveVal("")
 
@@ -343,15 +342,15 @@ srv_missing_data <- function(input,
   # chunks needed by all three outputs stored here
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
-    common_stack <- chunks$new()
+    common_stack <- teal.devel::chunks$new()
     common_stack_push <- function(...) {
-      chunks_push(..., chunks = common_stack)
+      teal.devel::chunks_push(..., chunks = common_stack)
     }
 
     anl_name <- paste0(dataname, "_FILTERED")
     anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
     assign(anl_name, anl_filtered)
-    chunks_reset(chunks = common_stack)
+    teal.devel::chunks_reset(chunks = common_stack)
     group_var <- input$group_by_var
 
     if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
@@ -389,7 +388,7 @@ srv_missing_data <- function(input,
         column_labels_value = c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name)
       )
     ))
-    chunks_safe_eval(chunks = common_stack)
+    teal.devel::chunks_safe_eval(chunks = common_stack)
     common_stack
   })
 
@@ -455,7 +454,7 @@ srv_missing_data <- function(input,
       session$ns("group_by_var"),
       label = "Group by variable",
       choices = cat_choices,
-      selected = if_null(
+      selected = utils.nest::if_null(
         isolate(input$group_by_var),
         cat_choices[1]
       ),
@@ -501,17 +500,17 @@ srv_missing_data <- function(input,
 
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    teal.devel::validate_has_data(data(), 1)
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
 
     # Create a private stack for this function only.
-    summary_stack <- chunks$new()
+    summary_stack <- teal.devel::chunks$new()
     summary_stack_push <- function(...) {
-      chunks_push(..., chunks = summary_stack)
+      teal.devel::chunks_push(..., chunks = summary_stack)
     }
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks(), chunks = summary_stack)
+    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = summary_stack)
 
     if (input$any_na) {
       new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
@@ -553,18 +552,18 @@ srv_missing_data <- function(input,
       summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(x = "Variable", y = "Missing observations"),
       theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Summary Obs"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = input$ggtheme
     )
@@ -604,7 +603,7 @@ srv_missing_data <- function(input,
       keys <- data_keys()
       summary_stack_push(substitute(
         expr = parent_keys <- keys,
-        env = list(keys = datasets$get_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+        env = list(keys = datasets$get_keys(utils.nest::if_empty(datasets$get_parentname(dataname), dataname)))
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
@@ -622,7 +621,7 @@ srv_missing_data <- function(input,
         )
       )
 
-      dev_ggplot2_args <- ggplot2_args(
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
         labs = list(x = "", y = "Missing patients"),
         theme = list(
           legend.position = "bottom",
@@ -631,13 +630,13 @@ srv_missing_data <- function(input,
         )
       )
 
-      all_ggplot2_args <- resolve_ggplot2_args(
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
         user_plot = ggplot2_args[["Summary Patients"]],
         user_default = ggplot2_args$default,
         module_plot = dev_ggplot2_args
       )
 
-      parsed_ggplot2_args <- parse_ggplot2_args(
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
         all_ggplot2_args,
         ggtheme = input$ggtheme
       )
@@ -688,23 +687,23 @@ srv_missing_data <- function(input,
     }
 
     summary_stack_push(quote(grid::grid.draw(g)))
-    chunks_safe_eval(summary_stack)
+    teal.devel::chunks_safe_eval(summary_stack)
     summary_stack
   })
 
   summary_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(summary_plot_chunks())
-    chunks_get_var(var = "g")
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(summary_plot_chunks())
+    teal.devel::chunks_get_var(var = "g")
   })
 
   combination_cutoff_chunks <- reactive({
-    combination_cutoff_stack <- chunks$new()
+    combination_cutoff_stack <- teal.devel::chunks$new()
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
+    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
 
-    chunks_push(
+    teal.devel::chunks_push(
       quote({
         combination_cutoff <- ANL_FILTERED %>%
           dplyr::mutate_all(is.na) %>%
@@ -715,12 +714,12 @@ srv_missing_data <- function(input,
       chunks = combination_cutoff_stack
     )
 
-    chunks_safe_eval(combination_cutoff_stack)
+    teal.devel::chunks_safe_eval(combination_cutoff_stack)
     combination_cutoff_stack
   })
 
   output$cutoff <- renderUI({
-    x <- chunks_get_var("combination_cutoff", combination_cutoff_chunks())$n
+    x <- teal.devel::chunks_get_var("combination_cutoff", combination_cutoff_chunks())$n
 
     # select 10-th from the top
     n <- length(x)
@@ -740,17 +739,17 @@ srv_missing_data <- function(input,
 
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    teal.devel::validate_has_data(data(), 1)
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
-    combination_stack <- chunks$new()
+    combination_stack <- teal.devel::chunks$new()
     combination_stack_push <- function(...) {
-      chunks_push(..., chunks = combination_stack)
+      teal.devel::chunks_push(..., chunks = combination_stack)
     }
 
-    chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
+    teal.devel::chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
 
     combination_stack_push(substitute(
       expr = data_combination_plot_cutoff <- combination_cutoff %>%
@@ -777,7 +776,7 @@ srv_missing_data <- function(input,
         extract2(1)
     ))
 
-    dev_ggplot2_args1 <- ggplot2_args(
+    dev_ggplot2_args1 <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(
         legend.position = "bottom",
@@ -785,18 +784,18 @@ srv_missing_data <- function(input,
       )
     )
 
-    all_ggplot2_args1 <- resolve_ggplot2_args(
+    all_ggplot2_args1 <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Combinations Hist"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args1
     )
 
-    parsed_ggplot2_args1 <- parse_ggplot2_args(
+    parsed_ggplot2_args1 <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args1,
       ggtheme = "void"
     )
 
-    dev_ggplot2_args2 <- ggplot2_args(
+    dev_ggplot2_args2 <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(
         legend.position = "bottom",
@@ -806,13 +805,13 @@ srv_missing_data <- function(input,
       )
     )
 
-    all_ggplot2_args2 <- resolve_ggplot2_args(
+    all_ggplot2_args2 <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Combinations Main"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args2
     )
 
-    parsed_ggplot2_args2 <- parse_ggplot2_args(
+    parsed_ggplot2_args2 <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args2,
       ggtheme = input$ggtheme
     )
@@ -866,31 +865,31 @@ srv_missing_data <- function(input,
       )
     ))
 
-    chunks_safe_eval(combination_stack)
+    teal.devel::chunks_safe_eval(combination_stack)
     combination_stack
   })
 
   combination_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(combination_plot_chunks())
-    chunks_get_var(var = "g")
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(combination_plot_chunks())
+    teal.devel::chunks_get_var(var = "g")
   })
 
   table_chunks <- reactive({
     req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
+    teal.devel::validate_has_data(data(), 1)
 
     # Create a private stack for this function only.
-    table_stack <- chunks$new()
+    table_stack <- teal.devel::chunks$new()
     table_stack_push <- function(...) {
-      chunks_push(..., chunks = table_stack)
+      teal.devel::chunks_push(..., chunks = table_stack)
     }
 
     # Add common code into this stack
-    chunks_push_chunks(common_code_chunks(), chunks = table_stack)
+    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = table_stack)
 
     # extract the ANL_FILTERED dataset for use in further validation
-    anl_filtered <- chunks_get_var("ANL_FILTERED", chunks = table_stack)
+    anl_filtered <- teal.devel::chunks_get_var("ANL_FILTERED", chunks = table_stack)
 
     validate(need(input$count_type, "Please select type of counts"))
     if (!is.null(input$group_by_var)) {
@@ -965,28 +964,28 @@ srv_missing_data <- function(input,
     table_stack_push(quote({
       summary_data
     }))
-    chunks_safe_eval(table_stack)
+    teal.devel::chunks_safe_eval(table_stack)
     table_stack
   })
 
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    teal.devel::validate_has_data(data(), 1)
+    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
     # Create a private stack for this function only.
-    by_subject_stack <- chunks$new()
+    by_subject_stack <- teal.devel::chunks$new()
     by_subject_stack_push <- function(...) {
-      chunks_push(..., chunks = by_subject_stack)
+      teal.devel::chunks_push(..., chunks = by_subject_stack)
     }
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
+    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
 
     keys <- data_keys()
     by_subject_stack_push(substitute(
       expr = parent_keys <- keys,
       env = list(keys = `if`(
-        is_empty(datasets$get_parentname(dataname)),
+        utils.nest::is_empty(datasets$get_parentname(dataname)),
         keys,
         datasets$get_keys(datasets$get_parentname(dataname))
       ))
@@ -1022,18 +1021,18 @@ srv_missing_data <- function(input,
       })
     )
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(x = "", y = ""),
       theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["By Subject"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = input$ggtheme
     )
@@ -1064,40 +1063,40 @@ srv_missing_data <- function(input,
       )
     )
 
-    chunks_safe_eval(by_subject_stack)
+    teal.devel::chunks_safe_eval(by_subject_stack)
     by_subject_stack
   })
 
   by_subject_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(by_subject_plot_chunks())
-    chunks_get_var(var = "g")
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(by_subject_plot_chunks())
+    teal.devel::chunks_get_var(var = "g")
   })
 
   output$levels_table <- DT::renderDataTable(
     expr = {
-      if (is_empty(input$variables_select)) {
+      if (utils.nest::is_empty(input$variables_select)) {
         # so that zeroRecords message gets printed
         # using tibble as it supports weird column names, such as " "
         tibble::tibble(` ` = logical(0))
       } else {
-        chunks_reset()
-        chunks_push_chunks(table_chunks())
-        chunks_get_var("summary_data")
+        teal.devel::chunks_reset()
+        teal.devel::chunks_push_chunks(table_chunks())
+        teal.devel::chunks_get_var("summary_data")
       }
     },
     options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "summary_plot",
     plot_r = summary_plot_r,
     height = plot_height,
     width = plot_width
   )
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "combination_plot",
     plot_r = combination_plot_r,
     height = plot_height,
@@ -1105,7 +1104,7 @@ srv_missing_data <- function(input,
   )
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "by_subject_plot",
     plot_r = by_subject_plot_r,
     height = plot_height,
@@ -1113,7 +1112,7 @@ srv_missing_data <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
     datanames = dataname,

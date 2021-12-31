@@ -69,20 +69,20 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
-  if (!is_class_list("data_extract_spec")(outlier_var)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(outlier_var)) {
     outlier_var <- list(outlier_var)
   }
-  if (!is.null(categorical_var) && !is_class_list("data_extract_spec")(categorical_var)) {
+  if (!is.null(categorical_var) && !utils.nest::is_class_list("data_extract_spec")(categorical_var)) {
     categorical_var <- list(categorical_var)
   }
 
   ggtheme <- match.arg(ggtheme)
 
-  stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(outlier_var),
-    is_character_single(ggtheme),
-    is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
+  utils.nest::stop_if_not(
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(outlier_var),
+    utils.nest::is_character_single(ggtheme),
+    is.null(categorical_var) || utils.nest::is_class_list("data_extract_spec")(categorical_var)
   )
 
   plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
@@ -113,26 +113,26 @@ tm_outliers <- function(label = "Outliers Module",
     ),
     ui = ui_outliers,
     ui_args = args,
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_outliers <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-  is_single_dataset_value <- is_single_dataset(args$outlier_var, args$categorical_var)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$outlier_var, args$categorical_var)
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
       uiOutput(ns("total_missing")),
       br(), hr(),
       tabsetPanel(
         id = ns("tabs"),
-        tabPanel("Boxplot", plot_with_settings_ui(id = ns("box_plot"))),
-        tabPanel("Density plot", plot_with_settings_ui(id = ns("density_plot"))),
-        tabPanel("Cumulative distribution plot", plot_with_settings_ui(id = ns("cum_density_plot")))
+        tabPanel("Boxplot", teal.devel::plot_with_settings_ui(id = ns("box_plot"))),
+        tabPanel("Density plot", teal.devel::plot_with_settings_ui(id = ns("density_plot"))),
+        tabPanel("Cumulative distribution plot", teal.devel::plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
       optionalSelectInput(
@@ -143,20 +143,20 @@ ui_outliers <- function(id, ...) {
         multiple = TRUE
       ),
       h4("Outlier Table"),
-      get_dt_rows(ns("table_ui"), ns("table_ui_rows")),
+      teal.devel::get_dt_rows(ns("table_ui"), ns("table_ui_rows")),
       DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("outlier_var", "categorical_var")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("outlier_var", "categorical_var")]),
+      teal.devel::data_extract_ui(
         id = ns("outlier_var"),
         label = "Variable",
         data_extract_spec = args$outlier_var,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$categorical_var)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("categorical_var"),
           label = "Categorical factor",
           data_extract_spec = args$categorical_var,
@@ -175,8 +175,8 @@ ui_outliers <- function(id, ...) {
       ),
       shinyjs::hidden(checkboxInput(ns("split_outliers"), "Define outliers based on group splitting", value = FALSE)),
       shinyjs::hidden(checkboxInput(ns("order_by_outlier"), "Re-order categories by outliers [by %]", value = FALSE)),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Method parameters",
           collapsed = FALSE,
           optionalSelectInput(
@@ -225,7 +225,7 @@ ui_outliers <- function(id, ...) {
           uiOutput(ns("ui_outlier_help"))
         )
       ),
-      panel_item(
+      teal.devel::panel_item(
         title = "Plot settings",
         optionalSelectInput(
           inputId = ns("ggtheme"),
@@ -236,7 +236,7 @@ ui_outliers <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -244,10 +244,10 @@ ui_outliers <- function(id, ...) {
 
 srv_outliers <- function(input, output, session, datasets, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
   vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-  selector_list <- data_extract_multiple_srv(vars, datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(vars, datasets)
 
   reactive_select_input <- reactive({
     if (length(selector_list()$categorical_var()$select) == 0) {
@@ -257,7 +257,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
   })
 
-  merged_data <- data_merge_srv(
+  merged_data <- teal.devel::data_merge_srv(
     selector_list = reactive_select_input,
     datasets = datasets,
     merge_function = "dplyr::inner_join"
@@ -268,10 +268,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
 
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
-    common_stack <- chunks$new()
+    common_stack <- teal.devel::chunks$new()
 
     common_stack_push <- function(...) {
-      chunks_push(..., chunks = common_stack)
+      teal.devel::chunks_push(..., chunks = common_stack)
     }
 
     input_catvar <- input[[extract_input(
@@ -280,7 +280,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       filter = is_cat_filter_spec
     )]]
 
-    chunks_push_data_merge(merged_data(), common_stack)
+    teal.devel::chunks_push_data_merge(merged_data(), common_stack)
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
     order_by_outlier <- input$order_by_outlier # nolint
@@ -288,17 +288,17 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     split_outliers <- input$split_outliers
 
     validate(need(outlier_var, "Please select a variable"))
-    chunks_validate_custom(
+    teal.devel::chunks_validate_custom(
       substitute(expr = length(unique(ANL[[outlier_var]])) > 1, env = list(outlier_var = outlier_var)),
       msg = "Variable has no variation, i.e. only one unique value",
       chunks = common_stack
     )
     validate(need(input$method, "Please select a method"))
     validate(need(is.numeric(merged_data()$data()[[outlier_var]]), "`Variable` is not numeric"))
-    validate_has_data(
+    teal.devel::validate_has_data(
       # missing values in the categorical variable may be used to form a category of its own
       `if`(
-        is_empty(categorical_var),
+        utils.nest::is_empty(categorical_var),
         merged_data()$data(),
         merged_data()$data()[, names(merged_data()$data()) != categorical_var]
       ),
@@ -308,7 +308,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     )
 
     # show/hide split_outliers
-    if (is_empty(categorical_var)) {
+    if (utils.nest::is_empty(categorical_var)) {
       shinyjs::hide("split_outliers")
       contains_na <- anyNA(merged_data()$data()[, outlier_var])
       if (contains_na) {
@@ -398,14 +398,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(substitute(
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
-          group_expr %>%
+          group_expr() %>%
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
-          calculate_outliers %>%
-          ungroup_expr %>%
+          calculate_outliers() %>%
+          ungroup_expr() %>%
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code
@@ -429,7 +429,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           substitute(
             expr = dplyr::mutate(
               is_outlier_selected = abs(outlier_var_name - mean(outlier_var_name)) /
-                sd(outlier_var_name) > outlier_definition_param
+                stats::sd(outlier_var_name) > outlier_definition_param
             ),
             env = list(
               outlier_var_name = as.name(outlier_var),
@@ -455,7 +455,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ) %>%
       remove_pipe_null())
 
-    if (!is_empty(categorical_var)) {
+    if (!utils.nest::is_empty(categorical_var)) {
       common_stack_push(substitute(
         expr = {
           summary_table_pre <- ANL_OUTLIER %>%
@@ -543,8 +543,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ))
     }
 
-    chunks_safe_eval(chunks = common_stack)
-    if (!is_empty(categorical_var) && nrow(chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
+    teal.devel::chunks_safe_eval(chunks = common_stack)
+    if (!utils.nest::is_empty(categorical_var) && nrow(teal.devel::chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
       shinyjs::show("order_by_outlier")
     } else {
       shinyjs::hide("order_by_outlier")
@@ -555,7 +555,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   output$summary_table <- DT::renderDataTable(
     expr = {
       suppressWarnings(
-        chunks_get_var("summary_table", common_code_chunks()$common_stack)
+        teal.devel::chunks_get_var("summary_table", common_code_chunks()$common_stack)
       )
     },
     options = list(
@@ -569,21 +569,21 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   box_plot_r_chunks <- reactive({
 
     # Create a private stack for this function only.
-    boxplot_r_stack <- chunks$new()
+    boxplot_r_stack <- teal.devel::chunks$new()
     boxplot_r_stack_push <- function(...) {
-      chunks_push(..., chunks = boxplot_r_stack)
+      teal.devel::chunks_push(..., chunks = boxplot_r_stack)
     }
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = boxplot_r_stack)
-    ANL <- chunks_get_var("ANL", boxplot_r_stack) # nolint
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", boxplot_r_stack) # nolint
+    teal.devel::chunks_push_chunks(common_code_chunks()$common_stack, chunks = boxplot_r_stack)
+    ANL <- teal.devel::chunks_get_var("ANL", boxplot_r_stack) # nolint
+    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", boxplot_r_stack) # nolint
 
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
     # validation
-    validate_has_data(ANL, 1)
+    teal.devel::validate_has_data(ANL, 1)
     validate(need(input$boxplot_alts, "Please select `Plot type`"))
 
     # boxplot
@@ -597,7 +597,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       NULL
     }
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
       inner_call <- substitute(
         expr = plot_call +
           aes(x = "Entire dataset", y = outlier_var_name) +
@@ -634,18 +634,18 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(color = "Is outlier?"),
       theme = list(legend.position = "top")
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Boxplot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = input$ggtheme
     )
@@ -663,34 +663,34 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ))
 
     boxplot_r_stack_push(quote(print(g)))
-    chunks_safe_eval(boxplot_r_stack)
+    teal.devel::chunks_safe_eval(boxplot_r_stack)
     boxplot_r_stack
   })
 
   box_plot_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(box_plot_r_chunks())
-    chunks_get_var(var = "g", chunks = box_plot_r_chunks())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(box_plot_r_chunks())
+    teal.devel::chunks_get_var(var = "g", chunks = box_plot_r_chunks())
   })
 
   # density plot
   density_plot_r_chunks <- reactive({
     # Create a private stack for this function only.
-    density_r_stack <- chunks$new()
+    density_r_stack <- teal.devel::chunks$new()
     density_r_stack_push <- function(...) {
-      chunks_push(..., chunks = density_r_stack)
+      teal.devel::chunks_push(..., chunks = density_r_stack)
     }
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = density_r_stack)
-    ANL <- chunks_get_var("ANL", density_r_stack) # nolint
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", density_r_stack) # nolint
+    teal.devel::chunks_push_chunks(common_code_chunks()$common_stack, chunks = density_r_stack)
+    ANL <- teal.devel::chunks_get_var("ANL", density_r_stack) # nolint
+    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", density_r_stack) # nolint
 
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
     # validation
-    validate_has_data(ANL, 1)
+    teal.devel::validate_has_data(ANL, 1)
     # plot
     plot_call <- substitute(
       expr = ANL %>%
@@ -701,7 +701,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
       substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
       substitute(
@@ -710,18 +710,18 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(color = "Is outlier?"),
       theme = list(legend.position = "top")
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Density plot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = input$ggtheme
     )
@@ -738,34 +738,34 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     )
     density_r_stack_push(quote(print(g)))
-    chunks_safe_eval(density_r_stack)
+    teal.devel::chunks_safe_eval(density_r_stack)
     density_r_stack
   })
 
   density_plot_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(density_plot_r_chunks())
-    chunks_get_var(var = "g", chunks = density_plot_r_chunks())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(density_plot_r_chunks())
+    teal.devel::chunks_get_var(var = "g", chunks = density_plot_r_chunks())
   })
 
   # Cumulative distribution plot
   cumulative_plot_r_chunks <- reactive({
     # Create a private stack for this function only.
-    cumulative_r_stack <- chunks$new()
+    cumulative_r_stack <- teal.devel::chunks$new()
     cumulative_r_stack_push <- function(...) {
-      chunks_push(..., chunks = cumulative_r_stack)
+      teal.devel::chunks_push(..., chunks = cumulative_r_stack)
     }
 
     # Add common code into this chunk
-    chunks_push_chunks(common_code_chunks()$common_stack, chunks = cumulative_r_stack)
-    ANL <- chunks_get_var("ANL", cumulative_r_stack) # nolint
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", cumulative_r_stack) # nolint
+    teal.devel::chunks_push_chunks(common_code_chunks()$common_stack, chunks = cumulative_r_stack)
+    ANL <- teal.devel::chunks_get_var("ANL", cumulative_r_stack) # nolint
+    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", cumulative_r_stack) # nolint
 
     outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
     categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
     # validation
-    validate_has_data(ANL, 1)
+    teal.devel::validate_has_data(ANL, 1)
 
     # plot
     plot_call <- substitute(
@@ -774,7 +774,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
       cumulative_r_stack_push(
         substitute(
           expr = {
@@ -795,7 +795,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
       plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
-      contains_na <- !is.null(suppressWarnings(chunks_get_var("ANL_NO_NA", cumulative_r_stack)))
+      contains_na <- !is.null(suppressWarnings(teal.devel::chunks_get_var("ANL_NO_NA", cumulative_r_stack)))
       ANL <- if (contains_na) { # nolint
         cumulative_r_stack_push(
           substitute(
@@ -839,18 +839,18 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       )
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(color = "Is outlier?"),
       theme = list(legend.position = "top")
     )
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Cumulative distribution plot"]],
       user_default = ggplot2_args$default,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = input$ggtheme
     )
@@ -870,26 +870,26 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ))
 
     cumulative_r_stack_push(quote(print(g)))
-    chunks_safe_eval(cumulative_r_stack)
+    teal.devel::chunks_safe_eval(cumulative_r_stack)
     cumulative_r_stack
   })
 
   cumulative_plot_plot_r <- reactive({
-    chunks_reset()
-    chunks_push_chunks(cumulative_plot_r_chunks())
-    chunks_get_var(var = "g", chunks = cumulative_plot_r_chunks())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_chunks(cumulative_plot_r_chunks())
+    teal.devel::chunks_get_var(var = "g", chunks = cumulative_plot_r_chunks())
   })
 
   observeEvent(input$tabs, {
     tab <- input$tabs
     req(tab) # tab is NULL upon app launch, hence will crash without this statement
-    chunks_reset()
+    teal.devel::chunks_reset()
     if (tab == "Boxplot") {
-      chunks_push_chunks(box_plot_r_chunks())
+      teal.devel::chunks_push_chunks(box_plot_r_chunks())
     } else if (tab == "Density plot") {
-      chunks_push_chunks(density_plot_r_chunks())
+      teal.devel::chunks_push_chunks(density_plot_r_chunks())
     } else if (tab == "Cumulative distribution plot") {
-      chunks_push_chunks(cumulative_plot_r_chunks())
+      teal.devel::chunks_push_chunks(cumulative_plot_r_chunks())
     }
   })
 
@@ -942,7 +942,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   })
 
   box_brush <- callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "box_plot",
     plot_r = box_plot_plot_r,
     height = plot_height,
@@ -951,7 +951,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
 
   density_brush <- callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "density_plot",
     plot_r = density_plot_plot_r,
     height = plot_height,
@@ -960,7 +960,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
 
   cum_density_brush <- callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "cum_density_plot",
     plot_r = cumulative_plot_plot_r,
     height = plot_height,
@@ -972,12 +972,12 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   dataname <- if (!is.function(datasets$get_parentname)) {
     dataname
   } else {
-    if_empty(datasets$get_parentname(dataname), dataname)
+    utils.nest::if_empty(datasets$get_parentname(dataname), dataname)
   }
   choices <- variable_choices(datasets$get_data(dataname))
 
   observeEvent(common_code_chunks(), {
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
     updateOptionalSelectInput(
       session,
       inputId = "table_ui_columns",
@@ -993,9 +993,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
       categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
-      ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
-      ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-      ANL_NO_NA <- suppressWarnings(chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
+      ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+      ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
+      ANL_NO_NA <- suppressWarnings(teal.devel::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
       if (!is.null(ANL_NO_NA)) {
         ANL <- ANL_NO_NA # nolint
       }
@@ -1014,7 +1014,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ANL_OUTLIER$order <- ANL$order <- NULL # nolint
 
       display_table <- if (!is.null(plot_brush)) {
-        if (!is_empty(categorical_var)) {
+        if (!utils.nest::is_empty(categorical_var)) {
           # due to reordering, the x-axis label may be changed to something like "reorder(categorical_var, order)"
           if (tab == "Boxplot") {
             plot_brush$mapping$x <- categorical_var
@@ -1030,6 +1030,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint
           }
         }
+
         # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
         # so they need to be computed and attached to ANL
         if (tab == "Density plot") {
@@ -1037,7 +1038,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
         } else if (tab == "Cumulative distribution plot") {
           plot_brush$mapping$y <- "cdf"
-          if (!is_empty(categorical_var)) {
+          if (!utils.nest::is_empty(categorical_var)) {
             ANL <- ANL %>% # nolint
               dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
               dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
@@ -1045,6 +1046,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
           }
         }
+
         brushed_rows <- brushedPoints(ANL, plot_brush)
         if (nrow(brushed_rows) > 0) {
           # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
@@ -1053,7 +1055,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             brushed_rows$density <- NULL
           } else if (tab == "Cumulative distribution plot") {
             brushed_rows$cdf <- NULL
-          } else if (tab == "Boxplot" && is_empty(categorical_var)) {
+          } else if (tab == "Boxplot" && utils.nest::is_empty(categorical_var)) {
             brushed_rows[[plot_brush$mapping$x]] <- NULL
           }
           # is_outlier_selected is part of ANL_OUTLIER so needed here
@@ -1065,6 +1067,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       } else {
         ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
       }
+
       display_table$is_outlier_selected <- NULL
       keys <- datasets$get_keys(dataname)
       data <- datasets$get_data(dataname)
@@ -1084,9 +1087,9 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   )
 
   output$total_outliers <- renderUI({
-    ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-    ANL_OUTLIER <- chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
-    validate_has_data(ANL, 1)
+    ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
+    ANL_OUTLIER <- teal.devel::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+    teal.devel::validate_has_data(ANL, 1)
     ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint
     h5(
       sprintf(
@@ -1100,8 +1103,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   })
 
   output$total_missing <- renderUI({
-    ANL <- chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-    ANL_NO_NA <- suppressWarnings(chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
+    ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
+    ANL_NO_NA <- suppressWarnings(teal.devel::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
     if (!is.null(ANL_NO_NA)) {
       helpText(
         sprintf(
@@ -1116,10 +1119,10 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   })
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(outlier_var, categorical_var)),
+    datanames = teal.devel::get_extract_datanames(list(outlier_var, categorical_var)),
     modal_title = "R Code for outlier",
     code_header = "Outlier"
   )

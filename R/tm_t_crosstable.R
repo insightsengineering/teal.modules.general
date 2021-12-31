@@ -17,8 +17,6 @@
 #' @note For more examples, please see the vignette "Using cross table" via
 #'   `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
-#' @importFrom tern summarize_vars
-#'
 #' @export
 #'
 #' @examples
@@ -77,15 +75,17 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
-  stop_if_not(
-    is_character_single(label),
-    is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
-    is_class_list("data_extract_spec")(y) || is(y, "data_extract_spec"),
-    is_logical_single(show_percentage),
-    is_logical_single(show_total),
+  utils.nest::stop_if_not(
+    utils.nest::is_character_single(label),
+    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
+    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
+    utils.nest::is_logical_single(show_percentage),
+    utils.nest::is_logical_single(show_total),
     list(
-      (is(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (is_class_list("data_extract_spec")(y) && all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
+      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
+        (utils.nest::is_class_list("data_extract_spec")(y) &&
+          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))
+        ),
       "y variable should not allow multiple selection"
     )
   )
@@ -107,13 +107,13 @@ tm_t_crosstable <- function(label = "Cross Table",
     ui = ui_t_crosstable,
     ui_args = ui_args,
     server_args = server_args,
-    filters = get_extract_datanames(list(x = x, y = y))
+    filters = teal.devel::get_extract_datanames(list(x = x, y = y))
   )
 }
 
 ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
-  is_single_dataset <- is_single_dataset(x, y)
+  is_single_dataset <- teal.devel::is_single_dataset(x, y)
 
   join_default_options <- c(
     "Full Join" = "dplyr::full_join",
@@ -122,16 +122,16 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     "Right Join" = "dplyr::right_join"
   )
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       textOutput(ns("title")),
-      table_with_settings_ui(ns("table"))
+      teal.devel::table_with_settings_ui(ns("table"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(list(x, y)),
-      data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
-      data_extract_ui(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
+      teal.devel::datanames_input(list(x, y)),
+      teal.devel::data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
+      teal.devel::data_extract_ui(ns("y"), label = "Column values", y, is_single_dataset = is_single_dataset),
       optionalSelectInput(
         ns("join_fun"),
         label = "Row to Column type of join",
@@ -140,24 +140,24 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
         multiple = FALSE
       ),
       tags$hr(),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = pre_output,
     post_output = post_output
   )
 }
 
 srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basic_table_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  selector_list <- data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
   observeEvent(list(selector_list()$x(), selector_list()$y()), {
     if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
@@ -175,7 +175,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     }
   })
 
-  merged_data_r <- data_merge_srv(
+  merged_data_r <- teal.devel::data_merge_srv(
     datasets = datasets,
     selector_list = selector_list,
     merge_function = merge_function
@@ -186,21 +186,26 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
   })
 
   create_table <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data_r())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data_r())
 
-    ANL <- chunks_get_var("ANL") # nolint
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
 
     # As this is a summary
-    validate_has_data(ANL, 3)
+    teal.devel::validate_has_data(ANL, 3)
 
     x_name <- x_ordered()
     y_name <- as.vector(merged_data_r()$columns_source$y)
 
-    validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
-    validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
+    validate(need(!utils.nest::is_character_empty(x_name), "Please define column for row variable that is not empty."))
+    validate(
+      need(
+        !utils.nest::is_character_empty(y_name),
+        "Please define column for column variable that is not empty."
+      )
+    )
 
-    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
     is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
     validate(need(
@@ -223,7 +228,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       "(columns)"
     )
 
-    chunks_push(substitute(
+    teal.devel::chunks_push(substitute(
       expr = {
         title <- plot_title
         print(title)
@@ -238,10 +243,10 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       ANL
     )
 
-    chunks_push(substitute(
+    teal.devel::chunks_push(substitute(
       expr = {
         lyt <- basic_tables %>%
-          split_call %>%
+          split_call() %>%
           rtables::add_colcounts() %>%
           tern::summarize_vars(
             vars = x_name,
@@ -252,8 +257,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
           )
       },
       env = list(
-        basic_tables = parse_basic_table_args(
-          basic_table_args = resolve_basic_table_args(basic_table_args)
+        basic_tables = teal.devel::parse_basic_table_args(
+          basic_table_args = teal.devel::resolve_basic_table_args(basic_table_args)
         ),
         split_call = if (show_total) {
           substitute(
@@ -272,7 +277,7 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       )
     ))
 
-    chunks_push(substitute(
+    teal.devel::chunks_push(substitute(
       expr = {
         ANL <- tern::df_explicit_na(ANL) # nolint
         tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
@@ -281,21 +286,21 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
       env = list(y_name = y_name)
     ))
 
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
   })
 
   output$title <- renderText({
     create_table()
-    chunks_get_var("title")
+    teal.devel::chunks_get_var("title")
   })
 
   table <- reactive({
     create_table()
-    chunks_get_var("tbl")
+    teal.devel::chunks_get_var("tbl")
   })
 
   callModule(
-    table_with_settings_srv,
+    teal.devel::table_with_settings_srv,
     id = "table",
     table_r = table
   )
@@ -310,10 +315,10 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(x, y)),
+    datanames = teal.devel::get_extract_datanames(list(x, y)),
     modal_title = show_r_code_title(),
     code_header = show_r_code_title()
   )

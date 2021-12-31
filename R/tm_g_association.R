@@ -81,21 +81,21 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
-  if (!is_class_list("data_extract_spec")(ref)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(ref)) {
     ref <- list(ref)
   }
-  if (!is_class_list("data_extract_spec")(vars)) {
+  if (!utils.nest::is_class_list("data_extract_spec")(vars)) {
     vars <- list(vars)
   }
 
-  stopifnot(is_character_single(label))
-  stopifnot(is_class_list("data_extract_spec")(ref))
-  stop_if_not(list(
+  stopifnot(utils.nest::is_character_single(label))
+  stopifnot(utils.nest::is_class_list("data_extract_spec")(ref))
+  utils.nest::stop_if_not(list(
     all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
     "'ref' should not allow multiple selection"
   ))
-  stopifnot(is_class_list("data_extract_spec")(vars))
-  stopifnot(is_logical_single(show_association))
+  stopifnot(utils.nest::is_class_list("data_extract_spec")(vars))
+  stopifnot(utils.nest::is_logical_single(show_association))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -106,9 +106,9 @@ tm_g_association <- function(label = "Association",
   )
 
   distribution_theme <- match.arg(distribution_theme)
-  stopifnot(is_character_single(distribution_theme))
+  stopifnot(utils.nest::is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)
-  stopifnot(is_character_single(association_theme))
+  stopifnot(utils.nest::is_character_single(association_theme))
 
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert(
@@ -138,31 +138,31 @@ tm_g_association <- function(label = "Association",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(args$ref, args$vars)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$ref, args$vars)
 
-  standard_layout(
-    output = white_small_well(
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
       textOutput(ns("title")),
       tags$br(),
-      plot_with_settings_ui(id = ns("myplot"))
+      teal.devel::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("ref", "vars")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("ref", "vars")]),
+      teal.devel::data_extract_ui(
         id = ns("ref"),
         label = "Reference variable",
         data_extract_spec = args$ref,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("vars"),
         label = "Associated variables",
         data_extract_spec = args$vars,
@@ -183,8 +183,8 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Scatterplot opacity:", c(0.5, 0, 1), ticks = FALSE),
           optionalSliderInputValMinMax(ns("size"), "Scatterplot points size:", c(2, 1, 8), ticks = FALSE),
@@ -207,15 +207,12 @@ ui_tm_g_association <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
-
-#' @importFrom grid grid.newpage grid.draw
-#' @importFrom shinyjs show hide
 srv_tm_g_association <- function(input,
                                  output,
                                  session,
@@ -225,21 +222,24 @@ srv_tm_g_association <- function(input,
                                  plot_height,
                                  plot_width,
                                  ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  selector_list <- data_extract_multiple_srv(data_extract = list(ref = ref, vars = vars), datasets = datasets)
+  selector_list <- teal.devel::data_extract_multiple_srv(
+    data_extract = list(ref = ref, vars = vars),
+    datasets = datasets
+  )
 
-  merged_data <- data_merge_srv(
+  merged_data <- teal.devel::data_merge_srv(
     datasets = datasets,
     selector_list = selector_list
   )
 
   chunks_reactive <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 3)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 3)
 
     vars_names <- selector_list()$vars()$select_ordered
 
@@ -270,7 +270,7 @@ srv_tm_g_association <- function(input,
     validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
     validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
-    validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
     # reference
     ref_class <- class(ANL[[ref_name]])
@@ -285,7 +285,7 @@ srv_tm_g_association <- function(input,
       ref_cl_lbl <- varname_w_label(ref_name, ANL)
     }
 
-    user_ggplot2_args <- resolve_ggplot2_args(
+    user_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args[["Bivariate1"]],
       user_default = ggplot2_args$default
     )
@@ -307,7 +307,7 @@ srv_tm_g_association <- function(input,
     # association
     ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-    chunks_push(substitute(
+    teal.devel::chunks_push(substitute(
       expr = title <- new_title,
       env = list(new_title = paste(
         "Association",
@@ -323,9 +323,9 @@ srv_tm_g_association <- function(input,
       ))
     ))
 
-    chunks_push(quote(print(title)))
+    teal.devel::chunks_push(quote(print(title)))
 
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
 
     var_calls <- lapply(vars_names, function(var_i) {
       var_class <- class(ANL[[var_i]])
@@ -340,7 +340,7 @@ srv_tm_g_association <- function(input,
         var_cl_lbl <- varname_w_label(var_i, ANL)
       }
 
-      user_ggplot2_args <- resolve_ggplot2_args(
+      user_ggplot2_args <- teal.devel::resolve_ggplot2_args(
         user_plot = ggplot2_args[["Bivariate2"]],
         user_default = ggplot2_args$default
       )
@@ -363,7 +363,7 @@ srv_tm_g_association <- function(input,
       )
     })
 
-    chunks_push(
+    teal.devel::chunks_push(
       expression = substitute(
         expr = {
           plots <- plot_calls
@@ -378,14 +378,14 @@ srv_tm_g_association <- function(input,
   })
 
   plot_r <- reactive({
-    chunks_uneval()
+    teal.devel::chunks_uneval()
     chunks_reactive()
-    chunks_safe_eval()
-    chunks_get_var(var = "p")
+    teal.devel::chunks_safe_eval()
+    teal.devel::chunks_get_var(var = "p")
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,
@@ -394,14 +394,14 @@ srv_tm_g_association <- function(input,
 
   output$title <- renderText({
     chunks_reactive()
-    chunks_get_var("title")
+    teal.devel::chunks_get_var("title")
   })
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(ref, vars)),
+    datanames = teal.devel::get_extract_datanames(list(ref, vars)),
     modal_title = "R Code for the Association Plot",
     code_header = "Association Plot"
   )
