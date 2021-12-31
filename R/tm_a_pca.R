@@ -67,6 +67,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
 
@@ -109,16 +111,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   }
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 

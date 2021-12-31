@@ -92,6 +92,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   if (!is_class_list("data_extract_spec")(response)) {
     response <- list(response)
   }
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
 
@@ -111,24 +112,11 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 
   plot_choices <- c(
-    "Response vs Regressor",
-    "Residuals vs Fitted",
-    "Normal Q-Q",
-    "Scale-Location",
-    "Cook's distance",
-    "Residuals vs Leverage",
-    "Cook's dist vs Leverage"
+    "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
+    "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
   )
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")

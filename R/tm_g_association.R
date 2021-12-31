@@ -87,6 +87,7 @@ tm_g_association <- function(label = "Association",
   if (!is_class_list("data_extract_spec")(vars)) {
     vars <- list(vars)
   }
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   stopifnot(is_character_single(label))
   stopifnot(is_class_list("data_extract_spec")(ref))
@@ -111,16 +112,8 @@ tm_g_association <- function(label = "Association",
   stopifnot(is_character_single(association_theme))
 
   plot_choices <- c("Bivariate1", "Bivariate2")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 

@@ -111,6 +111,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (!is_class_list("data_extract_spec")(group_var)) {
     group_var <- list_or_null(group_var)
   }
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
 
@@ -130,16 +131,8 @@ tm_g_distribution <- function(label = "Distribution Module",
   )
 
   plot_choices <- c("Histogram", "QQplot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 

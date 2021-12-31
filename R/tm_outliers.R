@@ -69,6 +69,7 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
   if (!is_class_list("data_extract_spec")(outlier_var)) {
     outlier_var <- list(outlier_var)
   }
@@ -86,16 +87,9 @@ tm_outliers <- function(label = "Outliers Module",
   )
 
   plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
 
   args <- as.list(environment())
 
