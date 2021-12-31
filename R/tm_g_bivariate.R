@@ -411,8 +411,8 @@ srv_g_bivariate <- function(input,
     ANL <- chunks_get_var("ANL") # nolint
     validate_has_data(ANL, 3)
 
-    x_name <- if_null(as.vector(merged_data()$columns_source$x), character(0))
-    y_name <- if_null(as.vector(merged_data()$columns_source$y), character(0))
+    x_name <- `if`(is.null(merged_data()$columns_source$x), character(0), as.vector(merged_data()$columns_source$x))
+    y_name <- `if`(is.null(merged_data()$columns_source$y), character(0), as.vector(merged_data()$columns_source$y))
 
     validate(
       need(
@@ -480,7 +480,7 @@ srv_g_bivariate <- function(input,
       ggplot2_args = ggplot2_args
     )
 
-    facetting <- (if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+    facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
 
     if (facetting) {
       facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)

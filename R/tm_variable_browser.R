@@ -231,7 +231,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("display_density"),
             label = "Show density",
-            value = if_null(isolate(input$display_density), TRUE),
+            value = `if`(is.null(isolate(input$display_density)), TRUE, isolate(input$display_density)),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -242,7 +242,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           shinyWidgets::switchInput(
             inputId = session$ns("remove_outliers"),
             label = "Remove outliers",
-            value = if_null(isolate(input$remove_outliers), FALSE),
+            value = `if`(is.null(isolate(input$remove_outliers)), FALSE, isolate(input$remove_outliers)),
             width = "50%",
             labelWidth = "100px",
             handleWidth = "50px"
@@ -266,9 +266,10 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         list(
           checkboxInput(session$ns("numeric_as_factor"),
             "Treat variable as factor",
-            value = if_null(
-              isolate(input$numeric_as_factor),
-              unique_entries < .unique_records_default_as_factor
+            value = `if`(
+              is.null(isolate(input$numeric_as_factor)),
+              unique_entries < .unique_records_default_as_factor,
+              isolate(input$numeric_as_factor)
             )
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
@@ -338,8 +339,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
 
 
   variable_plot_r <- reactive({
-    display_density <- if_null(input$display_density, FALSE)
-    remove_outliers <- if_null(input$remove_outliers, FALSE)
+    display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
+    remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)
 
     if (remove_outliers) {
       req(input$outlier_definition_slider)
@@ -1031,7 +1032,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
           ulapply(
             df,
             function(x) {
-              if_null(attr(x, "label"), "")
+              `if`(is.null(attr(x, "label")), "", attr(x, "label"))
             }
           ),
           names(df)

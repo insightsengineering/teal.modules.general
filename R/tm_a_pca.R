@@ -567,7 +567,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           y_axis = y_axis,
           variables = variables,
           ggthemes = parsed_ggplot2_args$ggtheme,
-          labs = utils.nest::if_null(parsed_ggplot2_args$labs, quote(labs())),
+          labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
           themes = parsed_ggplot2_args$theme
         )
       )
