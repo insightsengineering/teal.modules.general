@@ -73,7 +73,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   stopifnot(is_class_list("data_extract_spec")(dat) || is(dat, "data_extract_spec"))
 
   ggtheme <- match.arg(ggtheme)
-  stopifnot(is_character_single(ggtheme))
+  checkmate::assert_character(ggtheme, len = 1)
   stopifnot(is_logical_single(rotate_xaxis_labels))
 
   if (length(alpha) == 1) {

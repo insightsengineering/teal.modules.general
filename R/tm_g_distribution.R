@@ -114,6 +114,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
+  checkmate::assert_character(ggtheme, len = 1)
 
   if (length(bins) == 1) {
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
@@ -126,7 +127,6 @@ tm_g_distribution <- function(label = "Distribution Module",
     is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
     is.null(strata_var) || (is_class_list("data_extract_spec")(strata_var)),
     is.null(group_var) || (is_class_list("data_extract_spec")(group_var)),
-    is_character_single(ggtheme),
     is_logical_single(freq)
   )
 

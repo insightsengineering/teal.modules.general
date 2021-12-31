@@ -57,7 +57,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 
   ggtheme <- match.arg(ggtheme)
-  stop_if_not(is_character_single(ggtheme))
+  checkmate::assert_character(ggtheme, len = 1)
 
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")

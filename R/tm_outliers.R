@@ -78,11 +78,10 @@ tm_outliers <- function(label = "Outliers Module",
   }
 
   ggtheme <- match.arg(ggtheme)
-
+  checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
   stop_if_not(
     is_class_list("data_extract_spec")(outlier_var),
-    is_character_single(ggtheme),
     is.null(categorical_var) || is_class_list("data_extract_spec")(categorical_var)
   )
 

@@ -155,6 +155,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   }
 
   ggtheme <- match.arg(ggtheme)
+  checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
   stop_if_not(
     is_class_list("data_extract_spec")(x),
@@ -164,7 +165,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     is.null(color_by) || is_class_list("data_extract_spec")(color_by),
     is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
     is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
-    is_character_single(ggtheme),
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,

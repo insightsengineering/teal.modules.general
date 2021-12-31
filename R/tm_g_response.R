@@ -95,7 +95,7 @@ tm_g_response <- function(label = "Response Plot",
   }
   checkmate::assert_character(label, len = 1)
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_character(ggtheme, len = 1)
   stop_if_not(
     is.null(row_facet) || is_class_list("data_extract_spec")(row_facet),
     is.null(col_facet) || is_class_list("data_extract_spec")(col_facet),
@@ -105,7 +105,6 @@ tm_g_response <- function(label = "Response Plot",
     is_logical_single(count_labels),
     is_logical_single(rotate_xaxis_labels),
     is_logical_single(freq),
-    is_character_single(ggtheme),
     list(
       all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
       "'response' should not allow empty values"

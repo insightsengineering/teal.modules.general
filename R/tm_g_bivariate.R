@@ -105,6 +105,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
   ggtheme <- match.arg(ggtheme)
+  checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
   stop_if_not(
     is_class_list("data_extract_spec")(x) || is(x, "data_extract_spec"),
@@ -120,7 +121,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     is_logical_single(free_y_scales),
     is_logical_single(rotate_xaxis_labels),
     is_logical_single(swap_axes),
-    is_character_single(ggtheme),
     list(
       (is(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
         (is_class_list("data_extract_spec")(x) && all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),

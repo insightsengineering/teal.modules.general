@@ -107,9 +107,9 @@ tm_g_association <- function(label = "Association",
   )
 
   distribution_theme <- match.arg(distribution_theme)
-  stopifnot(is_character_single(distribution_theme))
+  checkmate::assert_character(distribution_theme, len = 1)
   association_theme <- match.arg(association_theme)
-  stopifnot(is_character_single(association_theme))
+  checkmate::assert_character(association_theme, len = 1)
 
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")

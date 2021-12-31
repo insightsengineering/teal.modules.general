@@ -96,7 +96,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert_character(label, len = 1)
   ggtheme <- match.arg(ggtheme)
-
+  checkmate::assert_character(ggtheme, len = 1)
   stop_if_not(
     is_class_list("data_extract_spec")(response),
     list(
@@ -107,7 +107,6 @@ tm_a_regression <- function(label = "Regression Analysis",
     ),
     is_class_list("data_extract_spec")(regressor),
     # No check necessary for regressor and response, as checked in data_extract_ui
-    is_character_single(ggtheme),
     is_character_single(default_outlier_label)
   )
 
