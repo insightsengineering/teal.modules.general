@@ -349,7 +349,11 @@ srv_a_regression <- function(input,
       selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
         isolate(input$label_var)
       } else {
-        if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
+        if (length(opts[as.character(opts) == default_outlier_label]) == 0) {
+          opts[[1]]
+        } else {
+          opts[as.character(opts) == default_outlier_label]
+        }
       }
       updateOptionalSelectInput(
         session = session,

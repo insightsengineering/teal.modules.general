@@ -407,7 +407,7 @@ srv_distribution <- function(input,
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
-    if (!is_empty(g_var)) {
+    if (length(g_var) > 0) {
       validate(
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
@@ -420,7 +420,7 @@ srv_distribution <- function(input,
       ))
     }
 
-    if (!is_empty(s_var)) {
+    if (length(s_var) > 0) {
       validate(
         need(
           inherits(ANL[[s_var]], c("integer", "factor", "character")),
@@ -900,7 +900,7 @@ srv_distribution <- function(input,
 
       validate(need(dist_tests, "Please select a test"))
 
-      if ((!is_empty(s_var) || !is_empty(g_var))) {
+      if ((length(s_var) > 0 || length(g_var) > 0)) {
         counts <- ANL %>%
           dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
           dplyr::summarise(n = dplyr::n())
@@ -923,13 +923,13 @@ srv_distribution <- function(input,
         "Kolmogorov-Smirnov (two-samples)"
       )) {
         validate(need(s_var, "Please select stratify variable."))
-        if (is_empty(g_var) && !is_empty(s_var)) {
+        if (length(g_var) == 0 && length(s_var) > 0) {
           validate(need(
             length(unique(ANL[[s_var]])) == 2,
             "Please select stratify variable with 2 levels."
           ))
         }
-        if (!is_empty(g_var) && !is_empty(s_var)) {
+        if (length(g_var) > 0 && length(s_var) > 0) {
           validate(need(
             all(stats::na.omit(as.vector(tapply(
               ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
@@ -1016,7 +1016,7 @@ srv_distribution <- function(input,
         s_var_name = s_var_name
       )
 
-      if ((is_empty(s_var) && is_empty(g_var))) {
+      if ((length(s_var) == 0 && length(g_var) == 0)) {
         test_stack_push(
           substitute(
             expr = {

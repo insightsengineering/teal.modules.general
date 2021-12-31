@@ -148,17 +148,17 @@ tm_data_table <- function(label = "Data Table",
     is_character_empty(datasets_selected) || is_character_vector(datasets_selected),
     utils.nest::is_fully_named_list(dt_args),
     utils.nest::is_fully_named_list(dt_options),
-    is_empty(variables_selected) ||
+    length(variables_selected) == 0 ||
       (!is.null(names(variables_selected)) &&
         all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
         all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
         all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
-    is_empty(datasets_selected) ||
+    length(datasets_selected) == 0 ||
       (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
         all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
     list(
-      is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
+      length(dt_args) == 0 || all(names(dt_args) %in% names(formals(DT::datatable))),
       "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))"
     )
   )

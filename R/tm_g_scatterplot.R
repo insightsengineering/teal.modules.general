@@ -365,18 +365,18 @@ srv_g_scatterplot <- function(input,
     ANL <- merged_data()$data() # nolint
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
-    !is_empty(x_var) && !is_empty(y_var) && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
+    length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
   })
 
   add_trend_line <- reactive({
     smoothing_degree <- as.integer(input$smoothing_degree)
-    trend_line_is_applicable() && !is_empty(smoothing_degree)
+    trend_line_is_applicable() && length(smoothing_degree) > 0
   })
 
   if (!is.null(color_by)) {
     observeEvent(merged_data()$columns_source$color_by, {
       color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      if (!is_empty(color_by_var)) {
+      if (length(color_by_var) > 0) {
         shinyjs::hide("color")
       } else {
         shinyjs::show("color")
@@ -406,8 +406,16 @@ srv_g_scatterplot <- function(input,
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
     size_by_var <- as.vector(merged_data()$columns_source$size_by)
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
+    row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$row_facet)
+    }
+    col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$col_facet)
+    }
     alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
@@ -415,7 +423,7 @@ srv_g_scatterplot <- function(input,
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
     color <- input$color # nolint
-    shape <- if_empty_string(if_null(input$shape, "circle"), "circle") # nolint
+    shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape) # nolint
     smoothing_degree <- as.integer(input$smoothing_degree)
     ci <- input$ci # nolint
 
@@ -427,14 +435,14 @@ srv_g_scatterplot <- function(input,
     validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
     validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
-      is_empty(row_facet_name) || any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
       "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
     validate(need(
-      is_empty(col_facet_name) || any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
       "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
-    if (add_density && !is_empty(color_by_var)) {
+    if (add_density && length(color_by_var) > 0) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
@@ -460,7 +468,7 @@ srv_g_scatterplot <- function(input,
       ))
     }
 
-    point_sizes <- if (!is_empty(size_by_var)) {
+    point_sizes <- if (length(size_by_var) > 0) {
       validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
       substitute(
         expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
@@ -475,7 +483,7 @@ srv_g_scatterplot <- function(input,
         "ANL %>% dplyr::group_by(",
         paste(
           c(
-            if (!is_empty(color_by_var) && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+            if (length(color_by_var) > 0 && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
             row_facet_name,
             col_facet_name
           ),
@@ -489,7 +497,7 @@ srv_g_scatterplot <- function(input,
 
     plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-    plot_call <- if (is_empty(color_by_var)) {
+    plot_call <- if (length(color_by_var) == 0) {
       substitute(
         expr = plot_call +
           aes(x = x_name, y = y_name) +
@@ -627,11 +635,14 @@ srv_g_scatterplot <- function(input,
           type = "density",
           groupColour = group_colour
         ),
-        env = list(plot_call = plot_call, group_colour = if (!is_empty(color_by_var)) TRUE else FALSE)
+        env = list(
+          plot_call = plot_call,
+          group_colour = if (length(color_by_var) > 0) TRUE else FALSE
+        )
       )
     }
 
-    y_label <- ifelse(is_empty(color_by_var), varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    y_label <- ifelse(length(color_by_var) == 0, varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
     x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- ggplot2_args(

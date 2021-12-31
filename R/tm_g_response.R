@@ -258,9 +258,16 @@ srv_g_response <- function(input,
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- as.vector(if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(if_empty(merged_data()$columns_source$col_facet, character(0)))
-
+    row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$row_facet)
+    }
+    col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$col_facet)
+    }
     validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
     validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
     validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
@@ -281,8 +288,8 @@ srv_g_response <- function(input,
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
-    colf <- if (is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
+    rowf <- if (length(row_facet_name) == 0) NULL else as.name(row_facet_name) # nolint
+    colf <- if (length(col_facet_name) == 0) NULL else as.name(col_facet_name) # nolint
     resp_cl <- as.name(resp_var) # nolint
     x_cl <- as.name(x) # nolint
 

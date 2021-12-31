@@ -455,9 +455,10 @@ srv_missing_data <- function(input,
       session$ns("group_by_var"),
       label = "Group by variable",
       choices = cat_choices,
-      selected = if_null(
-        isolate(input$group_by_var),
-        cat_choices[1]
+      selected = `if`(
+        is.null(isolate(input$group_by_var)),
+        cat_choices[1],
+        isolate(input$group_by_var)
       ),
       multiple = FALSE,
       label_help = paste0("Dataset: ", dataname)
@@ -502,7 +503,7 @@ srv_missing_data <- function(input,
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
 
     # Create a private stack for this function only.
     summary_stack <- chunks$new()
@@ -604,7 +605,11 @@ srv_missing_data <- function(input,
       keys <- data_keys()
       summary_stack_push(substitute(
         expr = parent_keys <- keys,
-        env = list(keys = datasets$get_keys(if_empty(datasets$get_parentname(dataname), dataname)))
+        env = list(
+          keys = datasets$get_keys(
+            `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
+          )
+        )
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
@@ -741,7 +746,7 @@ srv_missing_data <- function(input,
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
@@ -972,7 +977,7 @@ srv_missing_data <- function(input,
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
     validate_has_data(data(), 1)
-    validate(need(!is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
     # Create a private stack for this function only.
     by_subject_stack <- chunks$new()
     by_subject_stack_push <- function(...) {
@@ -986,7 +991,7 @@ srv_missing_data <- function(input,
     by_subject_stack_push(substitute(
       expr = parent_keys <- keys,
       env = list(keys = `if`(
-        is_empty(datasets$get_parentname(dataname)),
+        length(datasets$get_parentname(dataname)) == 0,
         keys,
         datasets$get_keys(datasets$get_parentname(dataname))
       ))
@@ -1076,7 +1081,7 @@ srv_missing_data <- function(input,
 
   output$levels_table <- DT::renderDataTable(
     expr = {
-      if (is_empty(input$variables_select)) {
+      if (length(input$variables_select) == 0) {
         # so that zeroRecords message gets printed
         # using tibble as it supports weird column names, such as " "
         tibble::tibble(` ` = logical(0))

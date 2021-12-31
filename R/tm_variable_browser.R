@@ -985,7 +985,7 @@ render_tab_header <- function(dataset_name, output, datasets) {
     key <- datasets$get_keys(dataset_name)
     sprintf(
       "Dataset with %s unique key rows and %s variables",
-      nrow(unique(`if`(!is_empty(key), df[, key, drop = FALSE], df))),
+      nrow(unique(`if`(length(key) > 0, df[, key, drop = FALSE], df))),
       ncol(df)
     )
   })

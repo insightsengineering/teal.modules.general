@@ -434,7 +434,7 @@ srv_g_bivariate <- function(input,
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
 
-    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && !is_empty(x_name)
+    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && length(x_name) > 0
 
     if (is_scatterplot) {
       shinyjs::show("alpha")
@@ -768,7 +768,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         substitute(
           geom_point(alpha = alphaval, pch = 21),
           env = list(alphaval = alpha)
-        ),
+        )
       )
     )
   } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric")) {
