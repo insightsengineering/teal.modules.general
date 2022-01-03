@@ -136,16 +136,16 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
   if (inherits(x, "data_extract_spec")) x <- list(x)
-  if (inherits(y)) y <- list(y)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
   if (inherits(size_by, "data_extract_spec")) size_by <- list(size_by)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
-
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
@@ -154,14 +154,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_character(shape)
 
-  stop_if_not(
-    list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
-    list(
-      max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
-      "`max_deg` must be a finite whole number greater than zero"
-    ),
-    is_numeric_single(table_dec)
-  )
+  checkmate::assert_integer(max_deg, len = 1, lower = 1L, upper = .Machine$integer.max)
+  checkmate::assert_numeric(table_dec, len = 1)
   checkmate::assert_logical(rotate_xaxis_labels, len = 1)
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
