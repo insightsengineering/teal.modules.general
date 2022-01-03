@@ -88,7 +88,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 
   checkmate::assert_logical(show_percentage, len = 1)
   checkmate::assert_logical(show_total, len = 1)
-  utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
+  checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
   ui_args <- as.list(environment())
 
