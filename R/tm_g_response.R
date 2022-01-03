@@ -133,36 +133,36 @@ tm_g_response <- function(label = "Response Plot",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_g_response <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
+  is_single_dataset_value <- teal.devel::is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
 
-  standard_layout(
-    output = white_small_well(
-      plot_with_settings_ui(id = ns("myplot"))
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      teal.devel::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
+      teal.devel::data_extract_ui(
         id = ns("response"),
         label = "Response variable",
         data_extract_spec = args$response,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$row_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -170,22 +170,22 @@ ui_g_response <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,
           is_single_dataset = is_single_dataset_value
         )
       },
-      radioGroupButtons(
+      shinyWidgets::radioGroupButtons(
         inputId = ns("freq"),
         label = NULL,
         choices = c("frequency", "density"),
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
@@ -200,7 +200,7 @@ ui_g_response <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -217,22 +217,22 @@ srv_g_response <- function(input,
                            plot_height,
                            plot_width,
                            ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
   data_extract <- list(response, x, row_facet, col_facet)
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = data_extract
   )
 
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 10)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 10)
 
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
@@ -255,7 +255,7 @@ srv_g_response <- function(input,
     validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
 
 
-    validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
     freq <- input$freq == "frequency"
     swap_axes <- input$coord_flip
@@ -273,19 +273,19 @@ srv_g_response <- function(input,
     x_cl <- as.name(x) # nolint
 
     if (swap_axes) {
-      chunks_push(expression = substitute(
+      teal.devel::chunks_push(expression = substitute(
         expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
         env = list(x = x, x_cl = x_cl)
       ))
     }
 
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
       env = list(resp_var = resp_var)
     ))
     # nolint start
     # rowf and colf will be a NULL if not set by a user
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL2 <- ANL %>%
         dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
         dplyr::summarise(ns = dplyr::n()) %>%
@@ -294,7 +294,7 @@ srv_g_response <- function(input,
       env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
     ))
 
-    chunks_push(expression = substitute(
+    teal.devel::chunks_push(expression = substitute(
       expr = ANL3 <- ANL %>%
         dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
         dplyr::summarise(ns = dplyr::n()),
@@ -355,7 +355,7 @@ srv_g_response <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(
         x = varname_w_label(x, ANL),
         y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
@@ -368,12 +368,12 @@ srv_g_response <- function(input,
       dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
     }
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
       all_ggplot2_args,
       ggtheme = ggtheme
     )
@@ -388,14 +388,14 @@ srv_g_response <- function(input,
       ggthemes = parsed_ggplot2_args$ggtheme
     ))
 
-    chunks_push(expression = plot_call, id = "plotCall")
+    teal.devel::chunks_push(expression = plot_call, id = "plotCall")
 
-    chunks_safe_eval()
+    teal.devel::chunks_safe_eval()
   })
 
   # Insert the plot into a plot_with_settings module from teal.devel
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,
@@ -403,10 +403,10 @@ srv_g_response <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(response, x, row_facet, col_facet)),
+    datanames = teal.devel::get_extract_datanames(list(response, x, row_facet, col_facet)),
     modal_title = "R Code for Response Plot"
   )
 }

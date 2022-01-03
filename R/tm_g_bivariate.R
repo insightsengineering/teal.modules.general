@@ -42,7 +42,6 @@
 #' For more examples, please see the vignette "Using bivariate plot" via
 #'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
-#' @importFrom methods is
 #' @export
 #'
 #' @examples
@@ -192,32 +191,31 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
-#' @importFrom shinyWidgets radioGroupButtons switchInput
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
-  is_single_dataset_value <- is_single_dataset(
+  is_single_dataset_value <- teal.devel::is_single_dataset(
     args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size
   )
 
   ns <- NS(id)
-  standard_layout(
-    output = white_small_well(
-      tags$div(plot_with_settings_ui(id = ns("myplot")))
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      tags$div(teal.devel::plot_with_settings_ui(id = ns("myplot")))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
@@ -227,7 +225,7 @@ ui_g_bivariate <- function(id, ...) {
         condition =
           "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
           $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        radioGroupButtons(
+        shinyWidgets::radioGroupButtons(
           inputId = ns("use_density"),
           label = NULL,
           choices = c("frequency", "density"),
@@ -239,12 +237,12 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Facetting"),
-          switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
             div(
               if (!is.null(args$row_facet)) {
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("row_facet"),
                   label = "Row facetting variable",
                   data_extract_spec = args$row_facet,
@@ -252,7 +250,7 @@ ui_g_bivariate <- function(id, ...) {
                 )
               },
               if (!is.null(args$col_facet)) {
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("col_facet"),
                   label = "Column facetting variable",
                   data_extract_spec = args$col_facet,
@@ -270,17 +268,17 @@ ui_g_bivariate <- function(id, ...) {
         div(
           class = "data-extract-box",
           tags$label("Color settings"),
-          switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
+          shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
             div(
-              data_extract_ui(
+              teal.devel::data_extract_ui(
                 id = ns("color"),
                 label = "Outline color by variable",
                 data_extract_spec = args$color,
                 is_single_dataset = is_single_dataset_value
               ),
-              data_extract_ui(
+              teal.devel::data_extract_ui(
                 id = ns("fill"),
                 label = "Fill color by variable",
                 data_extract_spec = args$fill,
@@ -288,7 +286,7 @@ ui_g_bivariate <- function(id, ...) {
               ),
               div(
                 id = ns("size_settings"),
-                data_extract_ui(
+                teal.devel::data_extract_ui(
                   id = ns("size"),
                   label = "Size of points by variable (only if x and y are numeric)",
                   data_extract_spec = args$size,
@@ -299,8 +297,8 @@ ui_g_bivariate <- function(id, ...) {
           )
         )
       },
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
@@ -325,7 +323,7 @@ ui_g_bivariate <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -347,7 +345,7 @@ srv_g_bivariate <- function(input,
                             plot_height,
                             plot_width,
                             ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
   data_extract <- stats::setNames(
     list(x, y),
     c("x", "y")
@@ -383,17 +381,17 @@ srv_g_bivariate <- function(input,
     )
   }
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = data_extract
   )
 
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- chunks_get_var("ANL") # nolint
-    validate_has_data(ANL, 3)
+    ANL <- teal.devel::chunks_get_var("ANL") # nolint
+    teal.devel::validate_has_data(ANL, 3)
 
     x_name <- `if`(is.null(merged_data()$columns_source$x), character(0), as.vector(merged_data()$columns_source$x))
     y_name <- `if`(is.null(merged_data()$columns_source$y), character(0), as.vector(merged_data()$columns_source$y))
@@ -444,7 +442,7 @@ srv_g_bivariate <- function(input,
     }
 
 
-    validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
     validate(need(!is.null(ggtheme), "Please select a theme."))
 
     cl <- bivariate_plot_call(
@@ -501,17 +499,17 @@ srv_g_bivariate <- function(input,
       }
     }
 
-    chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
+    teal.devel::chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
 
     # Add labels to facets
     nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
     nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
     if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-      chunks_push(quote(print(p)))
-      chunks_safe_eval()
+      teal.devel::chunks_push(quote(print(p)))
+      teal.devel::chunks_safe_eval()
     } else {
-      chunks_push(substitute(
+      teal.devel::chunks_push(substitute(
         expr = {
           # Add facetting labels
           # optional: grid.newpage() #nolintr
@@ -520,13 +518,13 @@ srv_g_bivariate <- function(input,
         },
         env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
       ))
-      chunks_safe_eval()
-      chunks_get_var("g")
+      teal.devel::chunks_safe_eval()
+      teal.devel::chunks_get_var("g")
     }
   })
 
   callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "myplot",
     plot_r = plot_r,
     height = plot_height,
@@ -534,10 +532,10 @@ srv_g_bivariate <- function(input,
   )
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
+    datanames = teal.devel::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
     modal_title = "R Code for a Bivariate plot"
   )
 }
@@ -785,18 +783,18 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     )
   }
 
-  dev_ggplot2_args <- ggplot2_args(labs = labs_base)
+  dev_ggplot2_args <- teal.devel::ggplot2_args(labs = labs_base)
 
   if (rotate_xaxis_labels) {
     dev_ggplot2_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
   }
 
-  all_ggplot2_args <- resolve_ggplot2_args(
+  all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
     user_plot = ggplot2_args,
     module_plot = dev_ggplot2_args
   )
 
-  parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
+  parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = theme)
 
   plot_call <- reduce_plot_call(
     plot_call,

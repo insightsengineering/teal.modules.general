@@ -202,41 +202,41 @@ tm_g_scatterplot <- function(label = "Scatterplot",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec, ggplot2_args = ggplot2_args)
     ),
-    filters = get_extract_datanames(data_extract_list)
+    filters = teal.devel::get_extract_datanames(data_extract_list)
   )
 }
 
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
-  is_single_dataset_value <- is_single_dataset(
+  is_single_dataset_value <- teal.devel::is_single_dataset(
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  standard_layout(
-    output = white_small_well(
-      plot_with_settings_ui(id = ns("scatter_plot")),
+  teal.devel::standard_layout(
+    output = teal.devel::white_small_well(
+      teal.devel::plot_with_settings_ui(id = ns("scatter_plot")),
       tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
-      get_dt_rows(ns("data_table"), ns("data_table_rows")),
+      teal.devel::get_dt_rows(ns("data_table"), ns("data_table_rows")),
       DT::dataTableOutput(ns("data_table"), width = "100%")
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      data_extract_ui(
+      teal.devel::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
+      teal.devel::data_extract_ui(
         id = ns("x"),
         label = "X variable",
         data_extract_spec = args$x,
         is_single_dataset = is_single_dataset_value
       ),
-      data_extract_ui(
+      teal.devel::data_extract_ui(
         id = ns("y"),
         label = "Y variable",
         data_extract_spec = args$y,
         is_single_dataset = is_single_dataset_value
       ),
       if (!is.null(args$color_by)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("color_by"),
           label = "Color by variable",
           data_extract_spec = args$color_by,
@@ -244,7 +244,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$size_by)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("size_by"),
           label = "Size by variable",
           data_extract_spec = args$size_by,
@@ -252,7 +252,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$row_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("row_facet"),
           label = "Row facetting",
           data_extract_spec = args$row_facet,
@@ -260,15 +260,15 @@ ui_g_scatterplot <- function(id, ...) {
         )
       },
       if (!is.null(args$col_facet)) {
-        data_extract_ui(
+        teal.devel::data_extract_ui(
           id = ns("col_facet"),
           label = "Column facetting",
           data_extract_spec = args$col_facet,
           is_single_dataset = is_single_dataset_value
         )
       },
-      panel_group(
-        panel_item(
+      teal.devel::panel_group(
+        teal.devel::panel_item(
           title = "Plot settings",
           optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           optionalSelectInput(
@@ -313,7 +313,7 @@ ui_g_scatterplot <- function(id, ...) {
         )
       )
     ),
-    forms = get_rcode_ui(ns("rcode")),
+    forms = teal.devel::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -333,9 +333,9 @@ srv_g_scatterplot <- function(input,
                               plot_width,
                               table_dec,
                               ggplot2_args) {
-  init_chunks()
+  teal.devel::init_chunks()
 
-  merged_data <- data_merge_module(
+  merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = list(
       x = x, y = y,
@@ -379,11 +379,11 @@ srv_g_scatterplot <- function(input,
   })
 
   plot_r <- reactive({
-    chunks_reset()
-    chunks_push_data_merge(merged_data())
+    teal.devel::chunks_reset()
+    teal.devel::chunks_push_data_merge(merged_data())
 
     ANL <- merged_data()$data() # nolint
-    validate_has_data(ANL, 10)
+    teal.devel::validate_has_data(ANL, 10)
 
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
@@ -440,7 +440,7 @@ srv_g_scatterplot <- function(input,
       ))
     }
 
-    validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+    teal.devel::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
     facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
     if (!is.null(facet_cl)) {
@@ -572,7 +572,7 @@ srv_g_scatterplot <- function(input,
         shinyjs::show("show_form")
         shinyjs::show("show_r2")
         if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
-          chunks_push(substitute(
+          teal.devel::chunks_push(substitute(
             expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
             env = list(x_var = as.name(x_var), y_var = as.name(y_var))
           ))
@@ -628,7 +628,7 @@ srv_g_scatterplot <- function(input,
     y_label <- ifelse(length(color_by_var) == 0, varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
     x_label <- varname_w_label(x_var, ANL)
 
-    dev_ggplot2_args <- ggplot2_args(
+    dev_ggplot2_args <- teal.devel::ggplot2_args(
       labs = list(y = y_label, x = x_label),
       theme = list(legend.position = "bottom")
     )
@@ -637,12 +637,12 @@ srv_g_scatterplot <- function(input,
       dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
     }
 
-    all_ggplot2_args <- resolve_ggplot2_args(
+    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
       user_plot = ggplot2_args,
       module_plot = dev_ggplot2_args
     )
 
-    parsed_ggplot2_args <- parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
+    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
 
     plot_call <- substitute(
       expr = plot_call +
@@ -658,19 +658,19 @@ srv_g_scatterplot <- function(input,
     )
 
     plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
-    chunks_push(plot_call)
+    teal.devel::chunks_push(plot_call)
 
     # explicitly calling print on the plot inside the chunk evaluates
     # the ggplot call and therefore catches errors
     plot_print_call <- quote(print(p))
-    chunks_push(plot_print_call)
-    chunks_safe_eval()
-    chunks_get_var(var = "p")
+    teal.devel::chunks_push(plot_print_call)
+    teal.devel::chunks_safe_eval()
+    teal.devel::chunks_get_var(var = "p")
   })
 
   # Insert the plot into a plot_with_settings module from teal.devel
   brush <- callModule(
-    plot_with_settings_srv,
+    teal.devel::plot_with_settings_srv,
     id = "scatter_plot",
     plot_r = plot_r,
     height = plot_height,
@@ -688,9 +688,9 @@ srv_g_scatterplot <- function(input,
       validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
     }
 
-    merged_data <- isolate(chunks_get_var("ANL"))
+    merged_data <- isolate(teal.devel::chunks_get_var("ANL"))
 
-    brushed_df <- clean_brushedPoints(merged_data, plot_brush)
+    brushed_df <- teal.devel::clean_brushedPoints(merged_data, plot_brush)
     numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
 
     DT::formatRound(
@@ -701,10 +701,10 @@ srv_g_scatterplot <- function(input,
   })
 
   callModule(
-    get_rcode_srv,
+    teal.devel::get_rcode_srv,
     id = "rcode",
     datasets = datasets,
-    datanames = get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
+    datanames = teal.devel::get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
     modal_title = "R Code for a scatterplot",
     code_header = "Scatterplot"
   )
