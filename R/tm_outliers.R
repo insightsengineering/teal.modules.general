@@ -530,8 +530,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ))
     }
 
-    chunks_safe_eval(chunks = common_stack)
-    if (length(categorical_var) > 0 && nrow(chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
+    teal.devel::chunks_safe_eval(chunks = common_stack)
+    if (length(categorical_var) > 0 && nrow(teal.devel::chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
       shinyjs::show("order_by_outlier")
     } else {
       shinyjs::hide("order_by_outlier")

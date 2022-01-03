@@ -423,12 +423,12 @@ srv_missing_data <- function(input,
   observeEvent(input$filter_na, {
     choices <- vars_summary() %>%
       dplyr::select(.data$key) %>%
-      extract2(1)
+      getElement(name = 1)
 
     selected <- vars_summary() %>%
       dplyr::filter(.data$value > 0) %>%
       dplyr::select(.data$key) %>%
-      extract2(1)
+      getElement(name = 1)
 
     updateOptionalSelectInput(
       session = session,
@@ -495,7 +495,7 @@ srv_missing_data <- function(input,
 
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
+    teal.devel::validate_has_data(data(), 1)
     validate(need(length(input$variables_select) > 0, "No variables selected"))
 
     # Create a private stack for this function only.
@@ -738,7 +738,7 @@ srv_missing_data <- function(input,
 
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
+    teal.devel::validate_has_data(data(), 1)
     validate(need(length(input$variables_select) > 0, "No variables selected"))
     req(input$combination_cutoff)
 
@@ -772,7 +772,7 @@ srv_missing_data <- function(input,
     combination_stack_push(quote(
       labels <- data_combination_plot_cutoff %>%
         dplyr::filter(key == key[[1]]) %>%
-        extract2(1)
+        getElement(name = 1)
     ))
 
     dev_ggplot2_args1 <- teal.devel::ggplot2_args(
@@ -969,7 +969,7 @@ srv_missing_data <- function(input,
 
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
-    validate_has_data(data(), 1)
+    teal.devel::validate_has_data(data(), 1)
     validate(need(length(input$variables_select) > 0, "No variables selected"))
     # Create a private stack for this function only.
     by_subject_stack <- teal.devel::chunks$new()
@@ -1013,7 +1013,7 @@ srv_missing_data <- function(input,
           dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-          extract2("id")
+          getElement(name = "id")
 
         summary_plot_patients <- summary_plot_patients %>%
           tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
