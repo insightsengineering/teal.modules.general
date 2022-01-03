@@ -621,7 +621,7 @@ srv_a_regression <- function(input,
         id = "plot_3",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+            smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
             print(g)
           },
@@ -743,7 +743,7 @@ srv_a_regression <- function(input,
         id = "plot_5",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.hat, data$.stdresid)
+            smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
             print(g)
           },
@@ -793,7 +793,7 @@ srv_a_regression <- function(input,
         id = "plot_6",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.hat, data$.cooksd)
+            smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
             print(g)
           },
