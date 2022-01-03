@@ -39,7 +39,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   if (length(label) == 0 || label == "") {
     label <- " "
   }
-  if (length(input_path) == 0 || input_path == "") {
+  if (length(input_path) == 0 || identical(input_path, "")) {
     input_path <- list()
   }
 
