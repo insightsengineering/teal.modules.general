@@ -42,7 +42,7 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   datasets_selected <- unique(datasets_selected)
@@ -737,7 +737,7 @@ plot_var_summary <- function(var,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  checkmate::assert_logical(display_density, len = 1)
+  checkmate::assert_flag(display_density)
 
   grid::grid.newpage()
 

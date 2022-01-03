@@ -130,23 +130,19 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     stop("'size' should not allow multiple selection")
 
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-  checkmate::assert_character(label, len = 1)
-  checkmate::assert_logical(use_density, len = 1)
-  checkmate::assert_logical(color_settings, len = 1)
-  checkmate::assert_logical(free_x_scales, len = 1)
-  checkmate::assert_logical(free_y_scales, len = 1)
-  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
-  checkmate::assert_logical(swap_axes, len = 1)
+  checkmate::assert_string(label)
+  checkmate::assert_flag(use_density)
+  checkmate::assert_flag(color_settings)
+  checkmate::assert_flag(free_x_scales)
+  checkmate::assert_flag(free_y_scales)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(swap_axes)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   if (color_settings) {

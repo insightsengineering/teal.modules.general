@@ -141,7 +141,7 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
   checkmate::assert_list(variables_selected, min.len = 0, types = "character", names = "named")
   if (length(variables_selected) > 0) {

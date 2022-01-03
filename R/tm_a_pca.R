@@ -70,12 +70,10 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::check_list(dat, types = "data_extract_spec")
-
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
+  checkmate::assert_flag(rotate_xaxis_labels)
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -102,9 +100,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")

@@ -144,8 +144,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
@@ -154,9 +153,9 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_character(shape)
 
-  checkmate::assert_integer(max_deg, len = 1, lower = 1L, upper = .Machine$integer.max)
-  checkmate::assert_numeric(table_dec, len = 1)
-  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
+  checkmate::assert_int(max_deg, lower = 1L, upper = .Machine$integer.max)
+  checkmate::assert_scalar(table_dec)
+  checkmate::assert_flag(rotate_xaxis_labels)
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
   } else {

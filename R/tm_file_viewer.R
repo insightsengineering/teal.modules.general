@@ -43,7 +43,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
     input_path <- list()
   }
 
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert(
     checkmate::check_list(input_path, types = "character", min.len = 0),
     checkmate::check_character(input_path, min.len = 1)

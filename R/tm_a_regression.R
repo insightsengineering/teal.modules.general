@@ -90,28 +90,24 @@ tm_a_regression <- function(label = "Regression Analysis",
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !(x$select$multiple), logical(1))))
     stop("'response' should not allow multiple selection")
   checkmate::assert_list(regressor, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-  checkmate::assert_character(default_outlier_label, len = 1)
+  checkmate::assert_string(default_outlier_label)
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
     "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
   )
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   # Send ui args

@@ -74,15 +74,12 @@ tm_outliers <- function(label = "Outliers Module",
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
-
   plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-
 
   args <- as.list(environment())
 

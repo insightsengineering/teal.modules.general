@@ -78,14 +78,14 @@ tm_t_crosstable <- function(label = "Cross Table",
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
 
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   if (!all(vapply(y, function(x) !("" %in% x$select$choices), logical(1))))
     stop("'y' should not allow empty values")
 
-  checkmate::assert_logical(show_percentage, len = 1)
-  checkmate::assert_logical(show_total, len = 1)
+  checkmate::assert_flag(show_percentage)
+  checkmate::assert_flag(show_total)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
   ui_args <- as.list(environment())

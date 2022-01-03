@@ -85,9 +85,8 @@ tm_g_response <- function(label = "Response Plot",
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list_or_null(row_facet)
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list_or_null(col_facet)
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))))
     stop("'response' should not allow empty values")
@@ -100,17 +99,15 @@ tm_g_response <- function(label = "Response Plot",
     stop("'x' should not allow multiple selection")
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_logical(coord_flip, len = 1)
-  checkmate::assert_logical(count_labels, len = 1)
-  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
-  checkmate::assert_logical(freq, len = 1)
+  checkmate::assert_flag(coord_flip)
+  checkmate::assert_flag(count_labels)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(freq)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")

@@ -106,20 +106,18 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_character(ggtheme, len = 1)
-
   if (length(bins) == 1) {
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
   } else {
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-  checkmate::assert_character(label, len = 1)
+  checkmate::assert_string(label)
   checkmate::check_list(dist_var, "data_extract_spec")
   checkmate::check_false(dist_var[[1]]$select$multiple)
   checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_logical(freq, len = 1)
+  checkmate::assert_flag(freq)
   plot_choices <- c("Histogram", "QQplot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
