@@ -401,7 +401,7 @@ srv_g_bivariate <- function(input,
 
     validate(
       need(
-        !is_character_empty(x_name) || !is_character_empty(y_name),
+        !identical(x_name, character(0)) || !identical(y_name, character(0)),
         "x-variable and y-variable aren't correctly specified. At least one should be valid."
       )
     )
@@ -452,8 +452,8 @@ srv_g_bivariate <- function(input,
       data_name = "ANL",
       x = x_name,
       y = y_name,
-      x_class = ifelse(!is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
-      y_class = ifelse(!is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
+      x_class = ifelse(!identical(x_name, character(0)), class(ANL[[x_name]]), "NULL"),
+      y_class = ifelse(!identical(y_name, character(0)), class(ANL[[y_name]]), "NULL"),
       x_label = varname_w_label(x_name, ANL),
       y_label = varname_w_label(y_name, ANL),
       freq = !use_density,
@@ -571,12 +571,12 @@ bivariate_plot_call <- function(data_name,
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
 
-  if (is_character_empty(x)) {
+  if (identical(x, character(0))) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (is_character_empty(y)) {
+  if (identical(y, character(0))) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)
@@ -837,18 +837,18 @@ facet_ggplot_call <- function(row_facet = character(0),
     "fixed"
   }
 
-  if (is_character_empty(row_facet) && is_character_empty(col_facet)) {
+  if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     NULL
-  } else if (!is_character_empty(row_facet) && !is_character_empty(col_facet)) {
+  } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
     call(
       "facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
-  } else if (is_character_empty(row_facet) && !is_character_empty(col_facet)) {
+  } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-  } else if (!is_character_empty(row_facet) && is_character_empty(col_facet)) {
+  } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
@@ -857,38 +857,38 @@ coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
                                  is_point = FALSE) {
-  if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && identical(size, character(0))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (!is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
-  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    (!is_point || is_character_empty(size))) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
-  } else if (!is_character_empty(colour) && is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
-  } else if (is_character_empty(colour) && !is_character_empty(fill) &&
-    is_point && !is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))

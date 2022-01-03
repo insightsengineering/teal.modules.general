@@ -195,8 +195,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     x_name <- x_ordered()
     y_name <- as.vector(merged_data_r()$columns_source$y)
 
-    validate(need(!is_character_empty(x_name), "Please define column for row variable that is not empty."))
-    validate(need(!is_character_empty(y_name), "Please define column for column variable that is not empty."))
+    validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
+    validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
 
     validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 

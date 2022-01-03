@@ -584,7 +584,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       NULL
     }
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
       inner_call <- substitute(
         expr = plot_call +
           aes(x = "Entire dataset", y = outlier_var_name) +
@@ -688,7 +688,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, , character(0)) || is.null(categorical_var)) {
       substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
       substitute(
@@ -761,7 +761,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
       cumulative_r_stack_push(
         substitute(
           expr = {

@@ -373,7 +373,7 @@ srv_data_table <- function(input,
 get_datanames_selected <- function(datasets, datasets_selected) {
   datanames <- datasets$datanames()
 
-  if (!is_character_empty(datasets_selected)) {
+  if (!identical(datasets_selected, character(0))) {
     stopifnot(all(datasets_selected %in% datanames))
     datanames <- datasets_selected
   }
