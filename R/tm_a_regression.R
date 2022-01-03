@@ -97,10 +97,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_list(regressor, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
-  stop_if_not(
-    is_character_single(default_outlier_label)
-  )
-
+  checkmate::assert_character(default_outlier_label, len = 1)
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
     "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
