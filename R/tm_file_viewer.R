@@ -36,16 +36,17 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (is.null(label) || length(label) == 0 || label == "") {
+  if (length(label) == 0 || label == "") {
     label <- " "
   }
-  if (is.null(input_path) || length(input_path) == 0 || input_path == "") {
+  if (length(input_path) == 0 || input_path == "") {
     input_path <- list()
   }
 
   checkmate::assert_character(label, len = 1)
-  stop_if_not(
-    is_character_list(input_path, 0) || is_character_vector(input_path)
+  checkmate::assert(
+    checkmate::check_list(input_path, types = "character", min.len = 0),
+    checkmate::check_character(input_path, min.len = 1)
   )
 
   if (length(input_path) > 0) {

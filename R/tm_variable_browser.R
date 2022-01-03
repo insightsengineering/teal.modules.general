@@ -44,12 +44,8 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
   checkmate::assert_character(label, len = 1)
-  stop_if_not(
-    is_character_empty(datasets_selected) || is_character_vector(datasets_selected)
-  )
-
+  checkmate::assert_character(datasets_selected)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
-
   datasets_selected <- unique(datasets_selected)
 
   module(

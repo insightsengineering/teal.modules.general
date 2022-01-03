@@ -69,10 +69,8 @@ NULL
 #' @importFrom grid grid.newpage grid.draw pushViewport upViewport plotViewport viewport grid.grabExpr
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   checkmate::assert_class(p, classes = "ggplot")
-  stopifnot(
-    is.null(xfacet_label) || is_character_vector(xfacet_label, min_length = 1),
-    is.null(yfacet_label) || is_character_vector(yfacet_label, min_length = 1)
-  )
+  checkmate::assert_character(xfacet_label, min.len = 1, null.ok = TRUE)
+  checkmate::assert_character(yfacet_label, min.len = 1, null.ok = TRUE)
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }

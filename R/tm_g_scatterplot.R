@@ -152,9 +152,9 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_character(shape)
 
   stop_if_not(
-    list(is_character_vector(shape) && length(shape) > 0, "`shape` must be a character vector of length 1 or more"),
     list(is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
     list(
       max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
