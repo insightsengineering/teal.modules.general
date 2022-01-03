@@ -137,15 +137,12 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
   checkmate::assert_character(label, len = 1)
-  stop_if_not(
-    is_logical_single(use_density),
-    is_logical_single(color_settings),
-    is_logical_single(free_x_scales),
-    is_logical_single(free_y_scales),
-    is_logical_single(rotate_xaxis_labels),
-    is_logical_single(swap_axes)
-  )
-
+  checkmate::assert_logical(use_density, len = 1)
+  checkmate::assert_logical(color_settings, len = 1)
+  checkmate::assert_logical(free_x_scales, len = 1)
+  checkmate::assert_logical(free_y_scales, len = 1)
+  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
+  checkmate::assert_logical(swap_axes, len = 1)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)

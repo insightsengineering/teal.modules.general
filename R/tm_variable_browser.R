@@ -752,7 +752,7 @@ plot_var_summary <- function(var,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  stopifnot(is_logical_single(display_density))
+  checkmate::assert_logical(display_density, len = 1)
 
   grid::grid.newpage()
 

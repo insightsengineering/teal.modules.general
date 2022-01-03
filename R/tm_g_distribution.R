@@ -119,10 +119,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::check_false(dist_var[[1]]$select$multiple)
   checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
-  stop_if_not(
-    is_logical_single(freq)
-  )
-
+  checkmate::assert_logical(freq, len = 1)
   plot_choices <- c("Histogram", "QQplot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))

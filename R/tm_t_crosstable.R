@@ -86,11 +86,8 @@ tm_t_crosstable <- function(label = "Cross Table",
   if (!all(vapply(y, function(x) !("" %in% x$select$choices), logical(1))))
     stop("'y' should not allow empty values")
 
-  stop_if_not(
-    is_logical_single(show_percentage),
-    is_logical_single(show_total)
-  )
-
+  checkmate::assert_logical(show_percentage, len = 1)
+  checkmate::assert_logical(show_total, len = 1)
   utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
 
   ui_args <- as.list(environment())

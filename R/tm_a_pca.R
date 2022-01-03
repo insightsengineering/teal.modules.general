@@ -75,7 +75,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_character(ggtheme, len = 1)
-  stopifnot(is_logical_single(rotate_xaxis_labels))
+  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)

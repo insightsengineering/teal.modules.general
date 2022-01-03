@@ -100,13 +100,10 @@ tm_g_response <- function(label = "Response Plot",
     stop("'x' should not allow multiple selection")
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  stop_if_not(
-    is_logical_single(coord_flip),
-    is_logical_single(count_labels),
-    is_logical_single(rotate_xaxis_labels),
-    is_logical_single(freq)
-  )
-
+  checkmate::assert_logical(coord_flip, len = 1)
+  checkmate::assert_logical(count_labels, len = 1)
+  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
+  checkmate::assert_logical(freq, len = 1)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)

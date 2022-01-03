@@ -162,7 +162,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ),
     is_numeric_single(table_dec)
   )
-
+  checkmate::assert_logical(rotate_xaxis_labels, len = 1)
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
   } else {

@@ -90,7 +90,7 @@ tm_g_association <- function(label = "Association",
   if (!all(vapply(ref, function(x) !(x$select$multiple), logical(1))))
     stop("'ref' should not allow multiple selection")
   checkmate::assert_list(vars, types = "data_extract_spec")
-  stopifnot(is_logical_single(show_association))
+  checkmate::assert_logical(show_association, len = 1)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
