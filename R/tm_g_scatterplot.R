@@ -153,7 +153,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_character(shape)
 
-  checkmate::assert_int(max_deg, lower = 1L, upper = .Machine$integer.max)
+  checkmate::assert_int(max_deg, lower = 1L)
   checkmate::assert_scalar(table_dec)
   checkmate::assert_flag(rotate_xaxis_labels)
   if (length(alpha) == 1) {
@@ -174,9 +174,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
