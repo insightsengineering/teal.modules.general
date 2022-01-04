@@ -68,8 +68,8 @@ NULL
 #'
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   checkmate::assert_class(p, classes = "ggplot")
-  checkmate::assert_string(xfacet_label, null.ok = TRUE)
-  checkmate::assert_string(yfacet_label, null.ok = TRUE)
+  checkmate::assert_character(xfacet_label, null.ok = TRUE, min.len = 1)
+  checkmate::assert_character(yfacet_label, null.ok = TRUE, min.len = 1)
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }

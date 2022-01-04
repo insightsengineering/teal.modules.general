@@ -113,8 +113,8 @@ tm_g_distribution <- function(label = "Distribution Module",
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
   checkmate::assert_string(label)
-  checkmate::check_list(dist_var, "data_extract_spec")
-  checkmate::check_false(dist_var[[1]]$select$multiple)
+  checkmate::assert_list(dist_var, "data_extract_spec")
+  checkmate::assert_false(dist_var[[1]]$select$multiple)
   checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_flag(freq)
@@ -882,7 +882,7 @@ srv_distribution <- function(input,
 
       validate(need(dist_tests, "Please select a test"))
 
-      if ((length(s_var) > 0 || length(g_var) > 0)) {
+      if (length(s_var) > 0 || length(g_var) > 0) {
         counts <- ANL %>%
           dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
           dplyr::summarise(n = dplyr::n())
@@ -998,7 +998,7 @@ srv_distribution <- function(input,
         s_var_name = s_var_name
       )
 
-      if ((length(s_var) == 0 && length(g_var) == 0)) {
+      if (length(s_var) == 0 && length(g_var) == 0) {
         test_stack_push(
           substitute(
             expr = {

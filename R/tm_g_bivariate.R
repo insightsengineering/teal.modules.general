@@ -112,21 +112,21 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (inherits(size, "data_extract_spec")) size <- list(size)
 
   checkmate::assert_list(x, types = "data_extract_spec")
-  if (!all(vapply(x, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(x, function(x) !x$select$multiple, logical(1))))
     stop("'x' should not allow multiple selection")
   checkmate::assert_list(y, types = "data_extract_spec")
-  if (!all(vapply(y, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(y, function(x) !x$select$multiple, logical(1))))
     stop("'y' should not allow multiple selection")
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(color, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(color, function(x) !x$select$multiple, logical(1))))
     stop("'color' should not allow multiple selection")
   checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(fill, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(fill, function(x) !x$select$multiple, logical(1))))
     stop("'fill' should not allow multiple selection")
   checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(size, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(size, function(x) !x$select$multiple, logical(1))))
     stop("'size' should not allow multiple selection")
 
   ggtheme <- match.arg(ggtheme)
@@ -147,12 +147,15 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   if (color_settings) {
     if (is.null(color)) {
+      color <- x
       color[[1]]$select <- select_spec(choices = color[[1]]$select$choices, selected = NULL)
     }
     if (is.null(fill)) {
+      fill <- x
       fill[[1]]$select <- select_spec(choices = fill[[1]]$select$choices, selected = NULL)
     }
     if (is.null(size)) {
+      size <- x
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
