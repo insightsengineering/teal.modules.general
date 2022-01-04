@@ -398,14 +398,14 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     common_stack_push(substitute(
       expr = {
         ANL_OUTLIER <- anl_call %>% # nolint
-          group_expr %>%
+          group_expr %>% # styler: off
           dplyr::mutate(is_outlier = {
             q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
             iqr <- q1_q3[2] - q1_q3[1]
             !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
           }) %>%
-          calculate_outliers %>%
-          ungroup_expr %>%
+          calculate_outliers %>% # styler: off
+          ungroup_expr %>% # styler: off
           dplyr::filter(is_outlier | is_outlier_selected) %>%
           dplyr::select(-is_outlier)
         ANL_OUTLIER # used to display table when running show-r-code code

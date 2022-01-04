@@ -429,12 +429,12 @@ srv_missing_data <- function(input,
   observeEvent(input$filter_na, {
     choices <- vars_summary() %>%
       dplyr::select(.data$key) %>%
-      extract2(1)
+      magrittr::extract2(1)
 
     selected <- vars_summary() %>%
       dplyr::filter(.data$value > 0) %>%
       dplyr::select(.data$key) %>%
-      extract2(1)
+      magrittr::extract2(1)
 
     updateOptionalSelectInput(
       session = session,
@@ -773,7 +773,7 @@ srv_missing_data <- function(input,
     combination_stack_push(quote(
       labels <- data_combination_plot_cutoff %>%
         dplyr::filter(key == key[[1]]) %>%
-        extract2(1)
+        magrittr::extract2(1)
     ))
 
     dev_ggplot2_args1 <- teal.devel::ggplot2_args(
@@ -1014,10 +1014,22 @@ srv_missing_data <- function(input,
           dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-          extract2("id")
+          magrittr::extract2("id")
+
+        # order columns by decreasing percent of missing values
+        ordered_columns <- summary_plot_patients %>%
+          dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+          dplyr::summarise(
+            column = colnames(.),
+            na_count = apply(., MARGIN = 2, FUN = sum),
+            na_percent = na_count / nrow(.) * 100
+          ) %>%
+          dplyr::arrange(na_percent, dplyr::desc(column)) %>%
+          dplyr::mutate(column = create_cols_labels(column))
 
         summary_plot_patients <- summary_plot_patients %>%
-          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
+          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+          dplyr::mutate(col = create_cols_labels(col))
       })
     )
 
@@ -1042,9 +1054,17 @@ srv_missing_data <- function(input,
         expr = {
           g <- ggplot(summary_plot_patients, aes(
             x = factor(id, levels = order_subjects),
-            y = create_cols_labels(col), fill = isna
+            y = factor(col, levels = ordered_columns[["column"]]),
+            fill = isna
           )) +
             geom_raster() +
+            annotate(
+              "text",
+              x = nrow(ANL_FILTERED),
+              y = 1:nrow(ordered_columns),
+              hjust = 1,
+              label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+            ) +
             scale_fill_manual(
               name = "",
               values = c("grey90", "#ff2951ff"),
@@ -1102,7 +1122,6 @@ srv_missing_data <- function(input,
     height = plot_height,
     width = plot_width
   )
-
   callModule(
     teal.devel::plot_with_settings_srv,
     id = "by_subject_plot",
@@ -1110,7 +1129,6 @@ srv_missing_data <- function(input,
     height = plot_height,
     width = plot_width
   )
-
   callModule(
     teal.devel::get_rcode_srv,
     id = "rcode",
