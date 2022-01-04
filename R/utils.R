@@ -137,29 +137,6 @@ call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
 
-#' Returns NULL or an argument coerced to a list
-#'
-#' @param obj object to be tested for NULL
-#'
-#' @return: NULL if obj is NULL, list(obj) otherwise
-#'
-#' @examples
-#' \dontrun{
-#' a <- NULL
-#' b <- c(1, 2)
-#' list_or_null(a) # returns NULL
-#' l <- list_or_null(b) # return list(b)
-#' print(l)
-#' }
-list_or_null <- function(obj) {
-  if (is.null(obj)) {
-    NULL
-  } else {
-    list(obj)
-  }
-}
-
-
 #' Get variable name with label
 #'
 #' @param var_names (\code{character}) Name of variable to extract labels from.
@@ -187,7 +164,8 @@ varname_w_label <- function(var_names,
                             suffix = NULL) {
   add_label <- function(var_names) {
     label <- vapply(dataset[var_names], function(x) {
-      `if`(is.null(attr(x, "label")), "", attr(x, "label"))
+      attr_label <- attr(x, "label")
+      `if`(is.null(attr_label), "", attr_label)
     },
     character(1)
     )

@@ -49,7 +49,6 @@ reference:
       - extract_input
       - get_datanames_selected
       - get_var_description
-      - list_or_null
       - plot_var_summary
       - render_single_tab
       - render_tab_header
