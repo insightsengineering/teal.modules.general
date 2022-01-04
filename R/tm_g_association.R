@@ -87,8 +87,9 @@ tm_g_association <- function(label = "Association",
 
   checkmate::assert_string(label)
   checkmate::assert_list(ref, types = "data_extract_spec")
-  if (!all(vapply(ref, function(x) !x$select$multiple, logical(1))))
+  if (!all(vapply(ref, function(x) !x$select$multiple, logical(1)))) {
     stop("'ref' should not allow multiple selection")
+  }
   checkmate::assert_list(vars, types = "data_extract_spec")
   checkmate::assert_flag(show_association)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)

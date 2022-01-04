@@ -92,8 +92,9 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert_string(label)
   checkmate::assert_list(response, types = "data_extract_spec")
-  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1))))
+  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
     stop("'response' should not allow multiple selection")
+  }
   checkmate::assert_list(regressor, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_string(default_outlier_label)

@@ -36,12 +36,8 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (length(label) == 0 || label == "") {
-    label <- " "
-  }
-  if (length(input_path) == 0 || identical(input_path, "")) {
-    input_path <- list()
-  }
+  if (length(label) == 0 || label == "") label <- " "
+  if (length(input_path) == 0 || identical(input_path, "")) input_path <- list()
 
   checkmate::assert_string(label)
   checkmate::assert(

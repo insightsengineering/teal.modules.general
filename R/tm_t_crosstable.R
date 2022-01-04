@@ -81,9 +81,9 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
-  if (!all(vapply(y, function(x) !x$select$multiple, logical(1))))
+  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
     stop("'y' should not allow multiple selection")
-
+  }
   checkmate::assert_flag(show_percentage)
   checkmate::assert_flag(show_total)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
