@@ -393,8 +393,10 @@ srv_g_bivariate <- function(input,
     ANL <- teal.devel::chunks_get_var("ANL") # nolint
     teal.devel::validate_has_data(ANL, 3)
 
-    x_name <- `if`(is.null(merged_data()$columns_source$x), character(0), as.vector(merged_data()$columns_source$x))
-    y_name <- `if`(is.null(merged_data()$columns_source$y), character(0), as.vector(merged_data()$columns_source$y))
+    x_col_vec <- as.vector(merged_data()$columns_source$x)
+    x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
+    y_col_vec <- as.vector(merged_data()$columns_source$y)
+    y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
 
     validate(
       need(
