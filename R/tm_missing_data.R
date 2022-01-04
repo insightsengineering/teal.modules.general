@@ -1061,7 +1061,7 @@ srv_missing_data <- function(input,
             annotate(
               "text",
               x = nrow(ANL_FILTERED),
-              y = 1:nrow(ordered_columns),
+              y = seq_len(ordered_columns),
               hjust = 1,
               label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
             ) +
