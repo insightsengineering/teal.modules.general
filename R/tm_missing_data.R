@@ -1015,12 +1015,11 @@ srv_missing_data <- function(input,
         ordered_columns <- summary_plot_patients %>%
           dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::summarise(
-            column = colnames(.),
+            column = create_cols_labels(colnames(.)),
             na_count = apply(., MARGIN = 2, FUN = sum),
             na_percent = na_count / nrow(.) * 100
           ) %>%
-          dplyr::arrange(na_percent, dplyr::desc(column)) %>%
-          dplyr::mutate(column = create_cols_labels(column))
+          dplyr::arrange(na_percent, dplyr::desc(column))
 
         summary_plot_patients <- summary_plot_patients %>%
           tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
