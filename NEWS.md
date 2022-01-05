@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9022
+# teal.modules.general 0.2.11.9023
 
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
