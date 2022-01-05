@@ -685,7 +685,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (identical(categorical_var, , character(0)) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
       substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
       substitute(
