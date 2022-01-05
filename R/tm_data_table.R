@@ -141,25 +141,21 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    is.list(variables_selected),
-    utils.nest::is_character_empty(datasets_selected) || utils.nest::is_character_vector(datasets_selected),
-    utils.nest::is_fully_named_list(dt_args),
-    utils.nest::is_fully_named_list(dt_options),
-    utils.nest::is_empty(variables_selected) ||
-      (!is.null(names(variables_selected)) &&
-        all(vapply(names(variables_selected), is.character, FUN.VALUE = logical(1))) &&
-        all(vapply(names(variables_selected), nchar, FUN.VALUE = integer(1)) > 0) &&
-        all(vapply(variables_selected, is.character, FUN.VALUE = logical(1))) &&
-        all(vapply(variables_selected, length, FUN.VALUE = integer(1)) > 0)),
-    utils.nest::is_empty(datasets_selected) ||
-      (all(vapply(datasets_selected, nchar, FUN.VALUE = integer(1)) > 0) &&
-        all(vapply(datasets_selected, is.character, FUN.VALUE = logical(1)))),
-    list(
-      utils.nest::is_empty(dt_args) || all(names(dt_args) %in% names(formals(DT::datatable))),
-      "Invalid dt_args: The names of entries in this list should be found in names(formals(DT::datatable))"
-    )
+  checkmate::assert_string(label)
+  checkmate::assert_list(variables_selected, min.len = 0, types = "character", names = "named")
+  if (length(variables_selected) > 0) {
+    lapply(seq_along(variables_selected), function(i) {
+      checkmate::assert_character(variables_selected[[i]], min.chars = 1, min.len = 1)
+      if (!is.null(names(variables_selected[[i]]))) {
+        checkmate::assert_names(names(variables_selected[[i]]))
+      }
+    })
+  }
+  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  checkmate::check_list(dt_options, names = "named")
+  checkmate::assert(
+    checkmate::check_list(dt_args, len = 0),
+    checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
   )
 
   module(
@@ -367,7 +363,7 @@ srv_data_table <- function(input,
 get_datanames_selected <- function(datasets, datasets_selected) {
   datanames <- datasets$datanames()
 
-  if (!utils.nest::is_character_empty(datasets_selected)) {
+  if (!identical(datasets_selected, character(0))) {
     stopifnot(all(datasets_selected %in% datanames))
     datanames <- datasets_selected
   }

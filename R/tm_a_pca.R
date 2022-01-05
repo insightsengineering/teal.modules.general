@@ -67,12 +67,13 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
-  stopifnot(utils.nest::is_character_single(label))
-  stopifnot(utils.nest::is_class_list("data_extract_spec")(dat) || inherits(dat, "data_extract_spec"))
+  if (inherits(dat, "data_extract_spec")) dat <- list(dat)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  checkmate::assert_string(label)
+  checkmate::check_list(dat, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
-  stopifnot(utils.nest::is_character_single(ggtheme))
-  stopifnot(utils.nest::is_logical_single(rotate_xaxis_labels))
+  checkmate::assert_flag(rotate_xaxis_labels)
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -99,26 +100,12 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-
-  if (!utils.nest::is_class_list("data_extract_spec")(dat)) {
-    dat <- list(dat)
-  }
 
   plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 
@@ -567,7 +554,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           y_axis = y_axis,
           variables = variables,
           ggthemes = parsed_ggplot2_args$ggtheme,
-          labs = utils.nest::if_null(parsed_ggplot2_args$labs, quote(labs())),
+          labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
           themes = parsed_ggplot2_args$theme
         )
       )

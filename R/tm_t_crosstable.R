@@ -75,22 +75,18 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.devel::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
-    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
-    utils.nest::is_logical_single(show_percentage),
-    utils.nest::is_logical_single(show_total),
-    list(
-      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(y) &&
-          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))
-        ),
-      "y variable should not allow multiple selection"
-    )
-  )
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
 
-  utils.nest::stop_if_not(inherits(basic_table_args, "basic_table_args"))
+  checkmate::assert_string(label)
+  checkmate::assert_list(x, types = "data_extract_spec")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
+    stop("'y' should not allow multiple selection")
+  }
+  checkmate::assert_flag(show_percentage)
+  checkmate::assert_flag(show_total)
+  checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
   ui_args <- as.list(environment())
 
@@ -197,13 +193,8 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
     x_name <- x_ordered()
     y_name <- as.vector(merged_data_r()$columns_source$y)
 
-    validate(need(!utils.nest::is_character_empty(x_name), "Please define column for row variable that is not empty."))
-    validate(
-      need(
-        !utils.nest::is_character_empty(y_name),
-        "Please define column for column variable that is not empty."
-      )
-    )
+    validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
+    validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
 
     teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 

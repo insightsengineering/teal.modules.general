@@ -103,92 +103,70 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  if (inherits(color, "data_extract_spec")) color <- list(color)
+  if (inherits(fill, "data_extract_spec")) fill <- list(fill)
+  if (inherits(size, "data_extract_spec")) size <- list(size)
+
+  checkmate::assert_list(x, types = "data_extract_spec")
+  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
+    stop("'x' should not allow multiple selection")
+  }
+  checkmate::assert_list(y, types = "data_extract_spec")
+  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
+    stop("'y' should not allow multiple selection")
+  }
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(color, function(x) !x$select$multiple, logical(1)))) {
+    stop("'color' should not allow multiple selection")
+  }
+  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(fill, function(x) !x$select$multiple, logical(1)))) {
+    stop("'fill' should not allow multiple selection")
+  }
+  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(size, function(x) !x$select$multiple, logical(1)))) {
+    stop("'size' should not allow multiple selection")
+  }
+
   ggtheme <- match.arg(ggtheme)
-
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(x) || inherits(x, "data_extract_spec"),
-    utils.nest::is_class_list("data_extract_spec")(y) || inherits(y, "data_extract_spec"),
-    is.null(row_facet) ||
-      utils.nest::is_class_list("data_extract_spec")(row_facet) ||
-      inherits(row_facet, "data_extract_spec"),
-    is.null(col_facet) ||
-      utils.nest::is_class_list("data_extract_spec")(col_facet) ||
-      inherits(col_facet, "data_extract_spec"),
-    is.null(color) || utils.nest::is_class_list("data_extract_spec")(color) || inherits(color, "data_extract_spec"),
-    is.null(fill) || utils.nest::is_class_list("data_extract_spec")(fill) || inherits(fill, "data_extract_spec"),
-    is.null(size) || utils.nest::is_class_list("data_extract_spec")(size) || inherits(size, "data_extract_spec"),
-    utils.nest::is_logical_single(use_density),
-    utils.nest::is_logical_single(color_settings),
-    utils.nest::is_logical_single(free_x_scales),
-    utils.nest::is_logical_single(free_y_scales),
-    utils.nest::is_logical_single(rotate_xaxis_labels),
-    utils.nest::is_logical_single(swap_axes),
-    utils.nest::is_character_single(ggtheme),
-    list(
-      (inherits(x, "data_extract_spec") && !isTRUE(x$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(x) &&
-          all(vapply(x, function(xx) !isTRUE(xx$select$multiple), logical(1)))),
-      "x variable should not allow multiple selection"
-    ),
-    list(
-      (inherits(y, "data_extract_spec") && !isTRUE(y$select$multiple)) ||
-        (utils.nest::is_class_list("data_extract_spec")(y) &&
-          all(vapply(y, function(yy) !isTRUE(yy$select$multiple), logical(1)))),
-      "y variable should not allow multiple selection"
-    ),
-    list(
-      is.null(color) ||
-        ((inherits(color, "data_extract_spec") && !isTRUE(color$select$multiple)) ||
-          (utils.nest::is_class_list("data_extract_spec")(color) &&
-            all(vapply(color, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "color variable should not allow multiple selection"
-    ),
-    list(
-      is.null(fill) ||
-        ((inherits(fill, "data_extract_spec") && !isTRUE(fill$select$multiple)) ||
-          (utils.nest::is_class_list("data_extract_spec")(fill) &&
-            all(vapply(fill, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "fill variable should not allow multiple selection"
-    ),
-    list(
-      is.null(size) ||
-        ((inherits(size, "data_extract_spec") && !isTRUE(size$select$multiple)) ||
-          (utils.nest::is_class_list("data_extract_spec")(size) &&
-            all(vapply(size, function(z) !isTRUE(z$select$multiple), logical(1))))),
-      "size variable should not allow multiple selection"
-    )
-  )
-
+  checkmate::assert_string(label)
+  checkmate::assert_flag(use_density)
+  checkmate::assert_flag(color_settings)
+  checkmate::assert_flag(free_x_scales)
+  checkmate::assert_flag(free_y_scales)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(swap_axes)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   if (color_settings) {
     if (is.null(color)) {
-      color <- `if`(inherits(x, "list"), x, list(x))
+      color <- x
       color[[1]]$select <- select_spec(choices = color[[1]]$select$choices, selected = NULL)
     }
     if (is.null(fill)) {
-      fill <- `if`(inherits(x, "list"), x, list(x))
+      fill <- x
       fill[[1]]$select <- select_spec(choices = fill[[1]]$select$choices, selected = NULL)
     }
     if (is.null(size)) {
-      size <- `if`(inherits(x, "list"), x, list(x))
+      size <- x
       size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
-    utils.nest::stop_if_not(list(
-      is.null(color) && is.null(fill) && is.null(size),
-      "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
-    ))
+    if (!is.null(c(color, fill, size))) {
+      stop("'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied.")
+    }
   }
 
   args <- as.list(environment())
@@ -415,12 +393,14 @@ srv_g_bivariate <- function(input,
     ANL <- teal.devel::chunks_get_var("ANL") # nolint
     teal.devel::validate_has_data(ANL, 3)
 
-    x_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$x), character(0))
-    y_name <- utils.nest::if_null(as.vector(merged_data()$columns_source$y), character(0))
+    x_col_vec <- as.vector(merged_data()$columns_source$x)
+    x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
+    y_col_vec <- as.vector(merged_data()$columns_source$y)
+    y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
 
     validate(
       need(
-        !utils.nest::is_character_empty(x_name) || !utils.nest::is_character_empty(y_name),
+        !identical(x_name, character(0)) || !identical(y_name, character(0)),
         "x-variable and y-variable aren't correctly specified. At least one should be valid."
       )
     )
@@ -438,7 +418,7 @@ srv_g_bivariate <- function(input,
     rotate_xaxis_labels <- input$rotate_xaxis_labels
     swap_axes <- input$swap_axes
 
-    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && !utils.nest::is_empty(x_name)
+    is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && length(x_name) > 0
 
     if (is_scatterplot) {
       shinyjs::show("alpha")
@@ -471,8 +451,8 @@ srv_g_bivariate <- function(input,
       data_name = "ANL",
       x = x_name,
       y = y_name,
-      x_class = ifelse(!utils.nest::is_character_empty(x_name), class(ANL[[x_name]]), "NULL"),
-      y_class = ifelse(!utils.nest::is_character_empty(y_name), class(ANL[[y_name]]), "NULL"),
+      x_class = ifelse(!identical(x_name, character(0)), class(ANL[[x_name]]), "NULL"),
+      y_class = ifelse(!identical(y_name, character(0)), class(ANL[[y_name]]), "NULL"),
       x_label = varname_w_label(x_name, ANL),
       y_label = varname_w_label(y_name, ANL),
       freq = !use_density,
@@ -484,7 +464,7 @@ srv_g_bivariate <- function(input,
       ggplot2_args = ggplot2_args
     )
 
-    facetting <- (utils.nest::if_null(input$facetting, FALSE) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+    facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
 
     if (facetting) {
       facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
@@ -590,12 +570,12 @@ bivariate_plot_call <- function(data_name,
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
 
-  if (utils.nest::is_character_empty(x)) {
+  if (identical(x, character(0))) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (utils.nest::is_character_empty(y)) {
+  if (identical(y, character(0))) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)
@@ -772,7 +752,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
         substitute(
           geom_point(alpha = alphaval, pch = 21),
           env = list(alphaval = alpha)
-        ),
+        )
       )
     )
   } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric")) {
@@ -856,17 +836,18 @@ facet_ggplot_call <- function(row_facet = character(0),
     "fixed"
   }
 
-  if (utils.nest::is_character_empty(row_facet) && utils.nest::is_character_empty(col_facet)) {
+  if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     NULL
-  } else if (!utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
-    call("facet_grid",
+  } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
+    call(
+      "facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
-  } else if (utils.nest::is_character_empty(row_facet) && !utils.nest::is_character_empty(col_facet)) {
+  } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
     call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-  } else if (!utils.nest::is_character_empty(row_facet) && utils.nest::is_character_empty(col_facet)) {
+  } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
@@ -875,38 +856,38 @@ coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
                                  is_point = FALSE) {
-  if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-    is_point && !utils.nest::is_character_empty(size)) {
+  if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
-  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-    is_point && utils.nest::is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && identical(size, character(0))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (!utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-    (!is_point || utils.nest::is_character_empty(size))) {
+  } else if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
-  } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-    (!is_point || utils.nest::is_character_empty(size))) {
+  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
-  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-    (!is_point || utils.nest::is_character_empty(size))) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-    is_point && !utils.nest::is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
-  } else if (!utils.nest::is_character_empty(colour) && utils.nest::is_character_empty(fill) &&
-    is_point && !utils.nest::is_character_empty(size)) {
+  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
-  } else if (utils.nest::is_character_empty(colour) && !utils.nest::is_character_empty(fill) &&
-    is_point && !utils.nest::is_character_empty(size)) {
+  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
