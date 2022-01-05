@@ -1,11 +1,11 @@
-# teal.modules.general 0.2.11.9023
+# teal.modules.general 0.2.11.9024
 
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
 * Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
 * Added support for `NA` level in grouping variable in "By variable levels" table inside `tm_missing_data`.
 * Added informative labels for each level of grouping variable in "By variable levels" table inside `tm_missing_data`.
-* Added ability to sort by `Variable` and `Type` in `tm_variable_browser` by separating the variable type icons into their own column. 
+* Added ability to sort by `Variable` and `Type` in `tm_variable_browser` by separating the variable type icons into their own column.
 * Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `data_merge_srv` and `data_extract_multiple_srv` modules.
 * Removed `input_id` argument from all `data_merge_module` calls in all modules.
 
@@ -14,6 +14,7 @@
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in plot based modules.
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
+* Changed the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab did.
 
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.

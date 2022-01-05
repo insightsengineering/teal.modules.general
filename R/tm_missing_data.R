@@ -51,7 +51,8 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
   ggtheme <- match.arg(ggtheme)
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
@@ -1010,8 +1011,19 @@ srv_missing_data <- function(input,
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
           getElement(name = "id")
 
+        # order columns by decreasing percent of missing values
+        ordered_columns <- summary_plot_patients %>%
+          dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+          dplyr::summarise(
+            column = create_cols_labels(colnames(.)),
+            na_count = apply(., MARGIN = 2, FUN = sum),
+            na_percent = na_count / nrow(.) * 100
+          ) %>%
+          dplyr::arrange(na_percent, dplyr::desc(column))
+
         summary_plot_patients <- summary_plot_patients %>%
-          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys))
+          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+          dplyr::mutate(col = create_cols_labels(col))
       })
     )
 
@@ -1036,9 +1048,17 @@ srv_missing_data <- function(input,
         expr = {
           g <- ggplot(summary_plot_patients, aes(
             x = factor(id, levels = order_subjects),
-            y = create_cols_labels(col), fill = isna
+            y = factor(col, levels = ordered_columns[["column"]]),
+            fill = isna
           )) +
             geom_raster() +
+            annotate(
+              "text",
+              x = nrow(ANL_FILTERED),
+              y = seq_len(nrow(ordered_columns)),
+              hjust = 1,
+              label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+            ) +
             scale_fill_manual(
               name = "",
               values = c("grey90", "#ff2951ff"),
@@ -1096,7 +1116,6 @@ srv_missing_data <- function(input,
     height = plot_height,
     width = plot_width
   )
-
   callModule(
     teal.devel::plot_with_settings_srv,
     id = "by_subject_plot",
@@ -1104,7 +1123,6 @@ srv_missing_data <- function(input,
     height = plot_height,
     width = plot_width
   )
-
   callModule(
     teal.devel::get_rcode_srv,
     id = "rcode",
