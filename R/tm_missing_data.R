@@ -51,7 +51,8 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
   ggtheme <- match.arg(ggtheme)
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
@@ -1055,7 +1056,7 @@ srv_missing_data <- function(input,
             annotate(
               "text",
               x = nrow(ANL_FILTERED),
-              y = seq_len(ordered_columns),
+              y = seq_len(nrow(ordered_columns)),
               hjust = 1,
               label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
             ) +
