@@ -36,16 +36,17 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (is.null(label) || length(label) == 0 || label == "") {
+  if (length(label) == 0 || identical(label, "")) {
     label <- " "
   }
-  if (is.null(input_path) || length(input_path) == 0 || input_path == "") {
+  if (length(input_path) == 0 || identical(input_path, "")) {
     input_path <- list()
   }
 
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_character_list(input_path, 0) || utils.nest::is_character_vector(input_path)
+  checkmate::assert_string(label)
+  checkmate::assert(
+    checkmate::check_list(input_path, types = "character", min.len = 0),
+    checkmate::check_character(input_path, min.len = 1)
   )
 
   if (length(input_path) > 0) {
@@ -175,7 +176,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
           files <- list.files(path, full.names = TRUE, include.dirs = TRUE)
           out <- lapply(files, function(x) tree_list(x))
           out <- unlist(out, recursive = FALSE)
-          if (!utils.nest::is_empty(files)) names(out) <- basename(files)
+          if (length(files) > 0) names(out) <- basename(files)
           out
         }
       } else {
@@ -189,7 +190,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
   }
 
   output$tree <- shinyTree::renderTree({
-    if (!utils.nest::is_empty(input_path)) {
+    if (length(input_path) > 0) {
       tree_list(input_path)
     } else {
       list("Empty Path" = NULL)
@@ -200,7 +201,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     eventExpr = input$tree,
     ignoreNULL = TRUE,
     handlerExpr = {
-      if (!utils.nest::is_empty(shinyTree::get_selected(input$tree))) {
+      if (length(shinyTree::get_selected(input$tree)) > 0) {
         obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
         repo <- attr(obj, "ancestry")
         repo_collapsed <- if (length(repo) > 1) paste0(repo, collapse = "/") else repo
@@ -209,7 +210,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         if (is_not_named) {
           selected_path <- do.call("file.path", as.list(c(repo, obj[1])))
         } else {
-          if (utils.nest::is_empty(repo)) {
+          if (length(repo) == 0) {
             selected_path <- do.call("file.path", as.list(attr(input$tree[[obj[1]]], "ancestry")))
           } else {
             selected_path <- do.call("file.path", as.list(attr(input$tree[[repo]][[obj[1]]], "ancestry")))
@@ -219,8 +220,7 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
         output$output <- renderUI({
           validate(
             need(
-              !isTRUE(file.info(selected_path)$isdir) &&
-                !utils.nest::is_empty(selected_path),
+              !isTRUE(file.info(selected_path)$isdir) && length(selected_path) > 0,
               "Please select a single file."
             )
           )

@@ -100,46 +100,27 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
-  if (!is.null(dist_var) && !utils.nest::is_class_list("data_extract_spec")(dist_var)) {
-    dist_var <- list(dist_var)
-  }
-
-  if (!utils.nest::is_class_list("data_extract_spec")(strata_var)) {
-    strata_var <- list_or_null(strata_var)
-  }
-
-  if (!utils.nest::is_class_list("data_extract_spec")(group_var)) {
-    group_var <- list_or_null(group_var)
-  }
+  if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
+  if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
+  if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
-
   if (length(bins) == 1) {
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
   } else {
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(dist_var) && isFALSE(dist_var[[1]]$select$multiple),
-    is.null(strata_var) || (utils.nest::is_class_list("data_extract_spec")(strata_var)),
-    is.null(group_var) || (utils.nest::is_class_list("data_extract_spec")(group_var)),
-    utils.nest::is_character_single(ggtheme),
-    utils.nest::is_logical_single(freq)
-  )
-
+  checkmate::assert_string(label)
+  checkmate::assert_list(dist_var, "data_extract_spec")
+  checkmate::assert_false(dist_var[[1]]$select$multiple)
+  checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_flag(freq)
   plot_choices <- c("Histogram", "QQplot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 
@@ -408,7 +389,7 @@ srv_distribution <- function(input,
     # isolated as dist_param1/dist_param2 already triggered the reactivity
     t_dist <- isolate(input$t_dist)
 
-    if (!utils.nest::is_empty(g_var)) {
+    if (length(g_var) > 0) {
       validate(
         need(
           inherits(ANL[[g_var]], c("integer", "factor", "character")),
@@ -421,7 +402,7 @@ srv_distribution <- function(input,
       ))
     }
 
-    if (!utils.nest::is_empty(s_var)) {
+    if (length(s_var) > 0) {
       validate(
         need(
           inherits(ANL[[s_var]], c("integer", "factor", "character")),
@@ -901,7 +882,7 @@ srv_distribution <- function(input,
 
       validate(need(dist_tests, "Please select a test"))
 
-      if ((!utils.nest::is_empty(s_var) || !utils.nest::is_empty(g_var))) {
+      if (length(s_var) > 0 || length(g_var) > 0) {
         counts <- ANL %>%
           dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
           dplyr::summarise(n = dplyr::n())
@@ -924,13 +905,13 @@ srv_distribution <- function(input,
         "Kolmogorov-Smirnov (two-samples)"
       )) {
         validate(need(s_var, "Please select stratify variable."))
-        if (utils.nest::is_empty(g_var) && !utils.nest::is_empty(s_var)) {
+        if (length(g_var) == 0 && length(s_var) > 0) {
           validate(need(
             length(unique(ANL[[s_var]])) == 2,
             "Please select stratify variable with 2 levels."
           ))
         }
-        if (!utils.nest::is_empty(g_var) && !utils.nest::is_empty(s_var)) {
+        if (length(g_var) > 0 && length(s_var) > 0) {
           validate(need(
             all(stats::na.omit(as.vector(tapply(
               ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
@@ -1017,7 +998,7 @@ srv_distribution <- function(input,
         s_var_name = s_var_name
       )
 
-      if ((utils.nest::is_empty(s_var) && utils.nest::is_empty(g_var))) {
+      if (length(s_var) == 0 && length(g_var) == 0) {
         test_stack_push(
           substitute(
             expr = {

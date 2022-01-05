@@ -44,30 +44,19 @@ tm_missing_data <- function(label = "Missing data",
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
-  stopifnot(utils.nest::is_character_single(label))
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+
+  checkmate::assert_string(label)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-
   ggtheme <- match.arg(ggtheme)
-  utils.nest::stop_if_not(utils.nest::is_character_single(ggtheme))
-
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   module(
     label,
@@ -429,12 +418,12 @@ srv_missing_data <- function(input,
   observeEvent(input$filter_na, {
     choices <- vars_summary() %>%
       dplyr::select(.data$key) %>%
-      magrittr::extract2(1)
+      getElement(name = 1)
 
     selected <- vars_summary() %>%
       dplyr::filter(.data$value > 0) %>%
       dplyr::select(.data$key) %>%
-      magrittr::extract2(1)
+      getElement(name = 1)
 
     updateOptionalSelectInput(
       session = session,
@@ -454,9 +443,10 @@ srv_missing_data <- function(input,
       session$ns("group_by_var"),
       label = "Group by variable",
       choices = cat_choices,
-      selected = utils.nest::if_null(
-        isolate(input$group_by_var),
-        cat_choices[1]
+      selected = `if`(
+        is.null(isolate(input$group_by_var)),
+        cat_choices[1],
+        isolate(input$group_by_var)
       ),
       multiple = FALSE,
       label_help = paste0("Dataset: ", dataname)
@@ -501,7 +491,7 @@ srv_missing_data <- function(input,
   summary_plot_chunks <- reactive({
     req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
     teal.devel::validate_has_data(data(), 1)
-    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
 
     # Create a private stack for this function only.
     summary_stack <- teal.devel::chunks$new()
@@ -603,7 +593,11 @@ srv_missing_data <- function(input,
       keys <- data_keys()
       summary_stack_push(substitute(
         expr = parent_keys <- keys,
-        env = list(keys = datasets$get_keys(utils.nest::if_empty(datasets$get_parentname(dataname), dataname)))
+        env = list(
+          keys = datasets$get_keys(
+            `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
+          )
+        )
       ))
       summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
       summary_stack_push(
@@ -740,7 +734,7 @@ srv_missing_data <- function(input,
   combination_plot_chunks <- reactive({
     req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
     teal.devel::validate_has_data(data(), 1)
-    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
     req(input$combination_cutoff)
 
     # Create a private stack for this function only.
@@ -773,7 +767,7 @@ srv_missing_data <- function(input,
     combination_stack_push(quote(
       labels <- data_combination_plot_cutoff %>%
         dplyr::filter(key == key[[1]]) %>%
-        magrittr::extract2(1)
+        getElement(name = 1)
     ))
 
     dev_ggplot2_args1 <- teal.devel::ggplot2_args(
@@ -971,7 +965,7 @@ srv_missing_data <- function(input,
   by_subject_plot_chunks <- reactive({
     req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
     teal.devel::validate_has_data(data(), 1)
-    validate(need(!utils.nest::is_empty(input$variables_select), "No variables selected"))
+    validate(need(length(input$variables_select) > 0, "No variables selected"))
     # Create a private stack for this function only.
     by_subject_stack <- teal.devel::chunks$new()
     by_subject_stack_push <- function(...) {
@@ -985,7 +979,7 @@ srv_missing_data <- function(input,
     by_subject_stack_push(substitute(
       expr = parent_keys <- keys,
       env = list(keys = `if`(
-        utils.nest::is_empty(datasets$get_parentname(dataname)),
+        length(datasets$get_parentname(dataname)) == 0,
         keys,
         datasets$get_keys(datasets$get_parentname(dataname))
       ))
@@ -1014,7 +1008,7 @@ srv_missing_data <- function(input,
           dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
           dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
           dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-          magrittr::extract2("id")
+          getElement(name = "id")
 
         # order columns by decreasing percent of missing values
         ordered_columns <- summary_plot_patients %>%
@@ -1095,7 +1089,7 @@ srv_missing_data <- function(input,
 
   output$levels_table <- DT::renderDataTable(
     expr = {
-      if (utils.nest::is_empty(input$variables_select)) {
+      if (length(input$variables_select) == 0) {
         # so that zeroRecords message gets printed
         # using tibble as it supports weird column names, such as " "
         tibble::tibble(` ` = logical(0))

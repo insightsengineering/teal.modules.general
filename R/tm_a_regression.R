@@ -86,57 +86,29 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
-  if (!utils.nest::is_class_list("data_extract_spec")(regressor)) {
-    regressor <- list(regressor)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(response)) {
-    response <- list(response)
-  }
-
-  ggtheme <- match.arg(ggtheme)
-
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(response),
-    list(
-      all(vapply(response, function(x) {
-        !isTRUE(x$select$multiple)
-      }, logical(1))),
-      "Response variable should not allow multiple selection"
-    ),
-    utils.nest::is_class_list("data_extract_spec")(regressor),
-    # No check necessary for regressor and response, as checked in data_extract_ui
-    utils.nest::is_character_single(ggtheme),
-    utils.nest::is_character_single(default_outlier_label)
-  )
-
-  plot_choices <- c(
-    "Response vs Regressor",
-    "Residuals vs Fitted",
-    "Normal Q-Q",
-    "Scale-Location",
-    "Cook's distance",
-    "Residuals vs Leverage",
-    "Cook's dist vs Leverage"
-  )
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
+  if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
+  if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  checkmate::assert_string(label)
+  checkmate::assert_list(response, types = "data_extract_spec")
+  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
+    stop("'response' should not allow multiple selection")
+  }
+  checkmate::assert_list(regressor, types = "data_extract_spec")
+  ggtheme <- match.arg(ggtheme)
+  checkmate::assert_string(default_outlier_label)
+  plot_choices <- c(
+    "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
+    "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
+  )
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   # Send ui args
@@ -349,7 +321,11 @@ srv_a_regression <- function(input,
       selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
         isolate(input$label_var)
       } else {
-        utils.nest::if_empty(opts[as.character(opts) == default_outlier_label], opts[[1]])
+        if (length(opts[as.character(opts) == default_outlier_label]) == 0) {
+          opts[[1]]
+        } else {
+          opts[as.character(opts) == default_outlier_label]
+        }
       }
       updateOptionalSelectInput(
         session = session,
@@ -544,7 +520,7 @@ srv_a_regression <- function(input,
         id = "plot_1a",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.fitted, data$.resid)
+            smoothy <- smooth(data$.fitted, data$.resid)
             g <- plot
             print(g)
           },
@@ -642,7 +618,7 @@ srv_a_regression <- function(input,
         id = "plot_3",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+            smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
             g <- plot
             print(g)
           },
@@ -764,7 +740,7 @@ srv_a_regression <- function(input,
         id = "plot_5",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.hat, data$.stdresid)
+            smoothy <- smooth(data$.hat, data$.stdresid)
             g <- plot
             print(g)
           },
@@ -814,7 +790,7 @@ srv_a_regression <- function(input,
         id = "plot_6",
         expression = substitute(
           expr = {
-            smoothy <- stats::smooth(data$.hat, data$.cooksd)
+            smoothy <- smooth(data$.hat, data$.cooksd)
             g <- plot
             print(g)
           },

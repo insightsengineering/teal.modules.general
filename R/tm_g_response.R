@@ -81,57 +81,37 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
-  if (!utils.nest::is_class_list("data_extract_spec")(response)) {
-    response <- list(response)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(x)) {
-    x <- list(x)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(row_facet)) {
-    row_facet <- list_or_null(row_facet)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(col_facet)) {
-    col_facet <- list_or_null(col_facet)
-  }
-
+  if (inherits(response, "data_extract_spec")) response <- list(response)
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  checkmate::assert_string(label)
   ggtheme <- match.arg(ggtheme)
-
-  utils.nest::stop_if_not(
-    is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(response),
-    utils.nest::is_class_list("data_extract_spec")(x),
-    utils.nest::is_logical_single(coord_flip),
-    utils.nest::is_logical_single(count_labels),
-    utils.nest::is_logical_single(rotate_xaxis_labels),
-    utils.nest::is_logical_single(freq),
-    utils.nest::is_character_single(ggtheme),
-    list(
-      all(vapply(response, function(x) !("" %in% x$select$choices), logical(1))),
-      "'response' should not allow empty values"
-    ),
-    list(
-      all(vapply(response, function(x) !(x$select$multiple), logical(1))),
-      "'response' should not allow multiple selection"
-    ),
-    list(
-      all(vapply(x, function(x) !("" %in% x$select$choices), logical(1))),
-      "'x' should not allow empty values"
-    ),
-    list(
-      all(vapply(x, function(x) !(x$select$multiple), logical(1))),
-      "'x' should not allow multiple selection"
-    )
-  )
-
+  checkmate::assert_list(response, types = "data_extract_spec")
+  if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1)))) {
+    stop("'response' should not allow empty values")
+  }
+  if (!all(vapply(response, function(x) !x$select$multiple, logical(1)))) {
+    stop("'response' should not allow multiple selection")
+  }
+  checkmate::assert_list(x, types = "data_extract_spec")
+  if (!all(vapply(x, function(x) !("" %in% x$select$choices), logical(1)))) {
+    stop("'x' should not allow empty values")
+  }
+  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
+    stop("'x' should not allow multiple selection")
+  }
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_flag(coord_flip)
+  checkmate::assert_flag(count_labels)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(freq)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -258,9 +238,16 @@ srv_g_response <- function(input,
     resp_var <- as.vector(merged_data()$columns_source$response)
     x <- as.vector(merged_data()$columns_source$x)
 
-    row_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$col_facet, character(0)))
-
+    row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$row_facet)
+    }
+    col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$col_facet)
+    }
     validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
     validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
     validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
@@ -281,8 +268,8 @@ srv_g_response <- function(input,
 
     arg_position <- if (freq) "stack" else "fill" # nolint
 
-    rowf <- if (utils.nest::is_empty(row_facet_name)) NULL else as.name(row_facet_name) # nolint
-    colf <- if (utils.nest::is_empty(col_facet_name)) NULL else as.name(col_facet_name) # nolint
+    rowf <- if (length(row_facet_name) == 0) NULL else as.name(row_facet_name) # nolint
+    colf <- if (length(col_facet_name) == 0) NULL else as.name(col_facet_name) # nolint
     resp_cl <- as.name(resp_var) # nolint
     x_cl <- as.name(x) # nolint
 

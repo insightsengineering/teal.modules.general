@@ -69,33 +69,17 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
-  if (!utils.nest::is_class_list("data_extract_spec")(outlier_var)) {
-    outlier_var <- list(outlier_var)
-  }
-  if (!is.null(categorical_var) && !utils.nest::is_class_list("data_extract_spec")(categorical_var)) {
-    categorical_var <- list(categorical_var)
-  }
+  if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
+  if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   ggtheme <- match.arg(ggtheme)
-
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(outlier_var),
-    utils.nest::is_character_single(ggtheme),
-    is.null(categorical_var) || utils.nest::is_class_list("data_extract_spec")(categorical_var)
-  )
-
+  checkmate::assert_string(label)
+  checkmate::assert_list(outlier_var, types = "data_extract_spec")
+  checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
   plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 
@@ -298,7 +282,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     teal.devel::validate_has_data(
       # missing values in the categorical variable may be used to form a category of its own
       `if`(
-        utils.nest::is_empty(categorical_var),
+        length(categorical_var) == 0,
         merged_data()$data(),
         merged_data()$data()[, names(merged_data()$data()) != categorical_var]
       ),
@@ -308,7 +292,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     )
 
     # show/hide split_outliers
-    if (utils.nest::is_empty(categorical_var)) {
+    if (length(categorical_var) == 0) {
       shinyjs::hide("split_outliers")
       contains_na <- anyNA(merged_data()$data()[, outlier_var])
       if (contains_na) {
@@ -455,7 +439,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     ) %>%
       remove_pipe_null())
 
-    if (!utils.nest::is_empty(categorical_var)) {
+    if (length(categorical_var) > 0) {
       common_stack_push(substitute(
         expr = {
           summary_table_pre <- ANL_OUTLIER %>%
@@ -544,7 +528,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     }
 
     teal.devel::chunks_safe_eval(chunks = common_stack)
-    if (!utils.nest::is_empty(categorical_var) && nrow(teal.devel::chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
+    if (length(categorical_var) > 0 && nrow(teal.devel::chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
       shinyjs::show("order_by_outlier")
     } else {
       shinyjs::hide("order_by_outlier")
@@ -597,7 +581,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       NULL
     }
 
-    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
       inner_call <- substitute(
         expr = plot_call +
           aes(x = "Entire dataset", y = outlier_var_name) +
@@ -701,7 +685,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, , character(0)) || is.null(categorical_var)) {
       substitute(expr = plot_call, env = list(plot_call = plot_call))
     } else {
       substitute(
@@ -774,7 +758,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       env = list(outlier_var_name = as.name(outlier_var))
     )
 
-    plot_call <- if (utils.nest::is_character_empty(categorical_var) || is.null(categorical_var)) {
+    plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
       cumulative_r_stack_push(
         substitute(
           expr = {
@@ -972,7 +956,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   dataname <- if (!is.function(datasets$get_parentname)) {
     dataname
   } else {
-    utils.nest::if_empty(datasets$get_parentname(dataname), dataname)
+    `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
   }
   choices <- variable_choices(datasets$get_data(dataname))
 
@@ -1014,7 +998,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
       ANL_OUTLIER$order <- ANL$order <- NULL # nolint
 
       display_table <- if (!is.null(plot_brush)) {
-        if (!utils.nest::is_empty(categorical_var)) {
+        if (length(categorical_var) > 0) {
           # due to reordering, the x-axis label may be changed to something like "reorder(categorical_var, order)"
           if (tab == "Boxplot") {
             plot_brush$mapping$x <- categorical_var
@@ -1038,7 +1022,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
           ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
         } else if (tab == "Cumulative distribution plot") {
           plot_brush$mapping$y <- "cdf"
-          if (!utils.nest::is_empty(categorical_var)) {
+          if (length(categorical_var) > 0) {
             ANL <- ANL %>% # nolint
               dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
               dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
@@ -1055,7 +1039,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
             brushed_rows$density <- NULL
           } else if (tab == "Cumulative distribution plot") {
             brushed_rows$cdf <- NULL
-          } else if (tab == "Boxplot" && utils.nest::is_empty(categorical_var)) {
+          } else if (tab == "Boxplot" && length(categorical_var) == 0) {
             brushed_rows[[plot_brush$mapping$x]] <- NULL
           }
           # is_outlier_selected is part of ANL_OUTLIER so needed here

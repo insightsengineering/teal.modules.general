@@ -135,48 +135,27 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
-  if (!utils.nest::is_class_list("data_extract_spec")(x)) {
-    x <- list(x)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(y)) {
-    y <- list(y)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(color_by)) {
-    color_by <- list_or_null(color_by)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(size_by)) {
-    size_by <- list_or_null(size_by)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(row_facet)) {
-    row_facet <- list_or_null(row_facet)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(col_facet)) {
-    col_facet <- list_or_null(col_facet)
-  }
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
+  if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
+  if (inherits(size_by, "data_extract_spec")) size_by <- list(size_by)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
   ggtheme <- match.arg(ggtheme)
+  checkmate::assert_string(label)
+  checkmate::assert_list(x, types = "data_extract_spec")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_character(shape)
 
-  utils.nest::stop_if_not(
-    utils.nest::is_character_single(label),
-    utils.nest::is_class_list("data_extract_spec")(x),
-    utils.nest::is_class_list("data_extract_spec")(y),
-    list(
-      utils.nest::is_character_vector(shape) && length(shape) > 0,
-      "`shape` must be a character vector of length 1 or more"
-    ),
-    is.null(size_by) || utils.nest::is_class_list("data_extract_spec")(size_by),
-    is.null(color_by) || utils.nest::is_class_list("data_extract_spec")(color_by),
-    is.null(row_facet) || utils.nest::is_class_list("data_extract_spec")(row_facet),
-    is.null(col_facet) || utils.nest::is_class_list("data_extract_spec")(col_facet),
-    utils.nest::is_character_single(ggtheme),
-    list(utils.nest::is_numeric_single(max_deg), "`max_deg` must be an integer vector of length of 1"),
-    list(
-      max_deg < Inf && max_deg == as.integer(max_deg) && max_deg >= 1,
-      "`max_deg` must be a finite whole number greater than zero"
-    ),
-    utils.nest::is_numeric_single(table_dec)
-  )
-
+  checkmate::assert_int(max_deg, lower = 1L)
+  checkmate::assert_scalar(table_dec)
+  checkmate::assert_flag(rotate_xaxis_labels)
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
   } else {
@@ -195,9 +174,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -368,18 +345,18 @@ srv_g_scatterplot <- function(input,
     ANL <- merged_data()$data() # nolint
     x_var <- as.vector(merged_data()$columns_source$x)
     y_var <- as.vector(merged_data()$columns_source$y)
-    !utils.nest::is_empty(x_var) && !utils.nest::is_empty(y_var) && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
+    length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
   })
 
   add_trend_line <- reactive({
     smoothing_degree <- as.integer(input$smoothing_degree)
-    trend_line_is_applicable() && !utils.nest::is_empty(smoothing_degree)
+    trend_line_is_applicable() && length(smoothing_degree) > 0
   })
 
   if (!is.null(color_by)) {
     observeEvent(merged_data()$columns_source$color_by, {
       color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      if (!utils.nest::is_empty(color_by_var)) {
+      if (length(color_by_var) > 0) {
         shinyjs::hide("color")
       } else {
         shinyjs::show("color")
@@ -409,8 +386,16 @@ srv_g_scatterplot <- function(input,
     y_var <- as.vector(merged_data()$columns_source$y)
     color_by_var <- as.vector(merged_data()$columns_source$color_by)
     size_by_var <- as.vector(merged_data()$columns_source$size_by)
-    row_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$row_facet, character(0)))
-    col_facet_name <- as.vector(utils.nest::if_empty(merged_data()$columns_source$col_facet, character(0)))
+    row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$row_facet)
+    }
+    col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      character(0)
+    } else {
+      as.vector(merged_data()$columns_source$col_facet)
+    }
     alpha <- input$alpha # nolint
     size <- input$size # nolint
     rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
@@ -418,7 +403,7 @@ srv_g_scatterplot <- function(input,
     ggtheme <- input$ggtheme
     rug_plot <- input$rug_plot
     color <- input$color # nolint
-    shape <- utils.nest::if_empty_string(utils.nest::if_null(input$shape, "circle"), "circle") # nolint
+    shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape) # nolint
     smoothing_degree <- as.integer(input$smoothing_degree)
     ci <- input$ci # nolint
 
@@ -430,16 +415,14 @@ srv_g_scatterplot <- function(input,
     validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
     validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
     validate(need(
-      utils.nest::is_empty(row_facet_name) ||
-        any(class(ANL[[row_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
       "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
     validate(need(
-      utils.nest::is_empty(col_facet_name) ||
-        any(class(ANL[[col_facet_name]]) %in% c("character", "factor", "Date", "integer")),
+      length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
       "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
     ))
-    if (add_density && !utils.nest::is_empty(color_by_var)) {
+    if (add_density && length(color_by_var) > 0) {
       validate(need(
         !is.numeric(ANL[[color_by_var]]),
         "Marginal plots cannot be produced when the points are colored by numeric variables.
@@ -465,7 +448,7 @@ srv_g_scatterplot <- function(input,
       ))
     }
 
-    point_sizes <- if (!utils.nest::is_empty(size_by_var)) {
+    point_sizes <- if (length(size_by_var) > 0) {
       validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
       substitute(
         expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
@@ -480,10 +463,7 @@ srv_g_scatterplot <- function(input,
         "ANL %>% dplyr::group_by(",
         paste(
           c(
-            if (!utils.nest::is_empty(color_by_var) &&
-              inherits(ANL[[color_by_var]], c("factor", "character"))) {
-              color_by_var
-            },
+            if (length(color_by_var) > 0 && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
             row_facet_name,
             col_facet_name
           ),
@@ -497,7 +477,7 @@ srv_g_scatterplot <- function(input,
 
     plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-    plot_call <- if (utils.nest::is_empty(color_by_var)) {
+    plot_call <- if (length(color_by_var) == 0) {
       substitute(
         expr = plot_call +
           aes(x = x_name, y = y_name) +
@@ -635,15 +615,14 @@ srv_g_scatterplot <- function(input,
           type = "density",
           groupColour = group_colour
         ),
-        env = list(plot_call = plot_call, group_colour = if (!utils.nest::is_empty(color_by_var)) TRUE else FALSE)
+        env = list(
+          plot_call = plot_call,
+          group_colour = if (length(color_by_var) > 0) TRUE else FALSE
+        )
       )
     }
 
-    y_label <- ifelse(
-      utils.nest::is_empty(color_by_var),
-      varname_w_label(y_var, ANL),
-      varname_w_label(color_by_var, ANL)
-    )
+    y_label <- ifelse(length(color_by_var) == 0, varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
     x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- teal.devel::ggplot2_args(

@@ -67,11 +67,9 @@ NULL
 #' }
 #'
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
-  stopifnot(
-    is.null(xfacet_label) || utils.nest::is_character_vector(xfacet_label, min_length = 1),
-    is.null(yfacet_label) || utils.nest::is_character_vector(yfacet_label, min_length = 1),
-    inherits(p, "ggplot")
-  )
+  checkmate::assert_class(p, classes = "ggplot")
+  checkmate::assert_character(xfacet_label, null.ok = TRUE, min.len = 1)
+  checkmate::assert_character(yfacet_label, null.ok = TRUE, min.len = 1)
   if (is.null(xfacet_label) && is.null(yfacet_label)) {
     return(ggplotGrob(p))
   }
@@ -79,8 +77,8 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
     g <- ggplotGrob(p)
 
     # we are going to replace these, so we make sure they have nothing in them
-    stopifnot(inherits(g$grobs[[grep("xlab-t", g$layout$name, fixed = TRUE)]], "zeroGrob"))
-    stopifnot(inherits(g$grobs[[grep("ylab-r", g$layout$name, fixed = TRUE)]], "zeroGrob"))
+    checkmate::assert_class(g$grobs[[grep("xlab-t", g$layout$name, fixed = TRUE)]], "zeroGrob")
+    checkmate::assert_class(g$grobs[[grep("ylab-r", g$layout$name, fixed = TRUE)]], "zeroGrob")
 
     xaxis_label_grob <- g$grobs[[grep("xlab-b", g$layout$name, fixed = TRUE)]]
     xaxis_label_grob$children[[1]]$label <- paste(xfacet_label, collapse = " & ")
@@ -139,29 +137,6 @@ call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
 
-#' Returns NULL or an argument coerced to a list
-#'
-#' @param obj object to be tested for NULL
-#'
-#' @return: NULL if obj is NULL, list(obj) otherwise
-#'
-#' @examples
-#' \dontrun{
-#' a <- NULL
-#' b <- c(1, 2)
-#' list_or_null(a) # returns NULL
-#' l <- list_or_null(b) # return list(b)
-#' print(l)
-#' }
-list_or_null <- function(obj) {
-  if (is.null(obj)) {
-    NULL
-  } else {
-    list(obj)
-  }
-}
-
-
 #' Get variable name with label
 #'
 #' @param var_names (\code{character}) Name of variable to extract labels from.
@@ -188,7 +163,12 @@ varname_w_label <- function(var_names,
                             prefix = NULL,
                             suffix = NULL) {
   add_label <- function(var_names) {
-    label <- vapply(dataset[var_names], function(x) utils.nest::if_null(attr(x, "label"), ""), character(1))
+    label <- vapply(dataset[var_names], function(x) {
+      attr_label <- attr(x, "label")
+      `if`(is.null(attr_label), "", attr_label)
+    },
+    character(1)
+    )
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
       paste0(prefix, label, " [", var_names, "]", suffix)

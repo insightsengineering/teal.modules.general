@@ -81,46 +81,28 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.devel::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
-  if (!utils.nest::is_class_list("data_extract_spec")(ref)) {
-    ref <- list(ref)
-  }
-  if (!utils.nest::is_class_list("data_extract_spec")(vars)) {
-    vars <- list(vars)
-  }
+  if (inherits(ref, "data_extract_spec")) ref <- list(ref)
+  if (inherits(vars, "data_extract_spec")) vars <- list(vars)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  stopifnot(utils.nest::is_character_single(label))
-  stopifnot(utils.nest::is_class_list("data_extract_spec")(ref))
-  utils.nest::stop_if_not(list(
-    all(vapply(ref, function(x) !(x$select$multiple), logical(1))),
-    "'ref' should not allow multiple selection"
-  ))
-  stopifnot(utils.nest::is_class_list("data_extract_spec")(vars))
-  stopifnot(utils.nest::is_logical_single(show_association))
+  checkmate::assert_string(label)
+  checkmate::assert_list(ref, types = "data_extract_spec")
+  if (!all(vapply(ref, function(x) !x$select$multiple, logical(1)))) {
+    stop("'ref' should not allow multiple selection")
+  }
+  checkmate::assert_list(vars, types = "data_extract_spec")
+  checkmate::assert_flag(show_association)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE,
-    .var.name = "plot_width"
+    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-
   distribution_theme <- match.arg(distribution_theme)
-  stopifnot(utils.nest::is_character_single(distribution_theme))
   association_theme <- match.arg(association_theme)
-  stopifnot(utils.nest::is_character_single(association_theme))
-
   plot_choices <- c("Bivariate1", "Bivariate2")
-  checkmate::assert(
-    checkmate::check_class(ggplot2_args, "ggplot2_args"),
-    checkmate::assert(
-      combine = "or",
-      checkmate::check_list(ggplot2_args, types = "ggplot2_args"),
-      checkmate::check_subset(names(ggplot2_args), c("default", plot_choices))
-    )
-  )
-  # Important step, so we could easily consume it later
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   args <- as.list(environment())
 
