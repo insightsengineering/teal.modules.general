@@ -234,7 +234,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   selector_list <- teal.devel::data_extract_multiple_srv(vars, datasets)
 
   reactive_select_input <- reactive({
-    if (length(selector_list()$categorical_var()$select) == 0) {
+    if (is.null(selector_list()$categorical_var) || length(selector_list()$categorical_var()$select) == 0) {
       selector_list()[names(selector_list()) != "categorical_var"]
     } else {
       selector_list()
