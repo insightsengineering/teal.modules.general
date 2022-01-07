@@ -292,7 +292,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
         class = "col-md-4",
         shinyWidgets::switchInput(
           inputId = session$ns("remove_NA_hist"),
-          label = "Remove NA",
+          label = "Remove NA values",
           value = FALSE,
           width = "50%",
           labelWidth = "100px",
