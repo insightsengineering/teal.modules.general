@@ -775,7 +775,7 @@ plot_var_summary <- function(var,
                              var_lab,
                              numeric_as_factor,
                              display_density = is.numeric(var),
-                             remove_NA_hist = FALSE,
+                             remove_NA_hist = FALSE, # nolint
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
