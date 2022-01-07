@@ -765,6 +765,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows) {
 #' @param var_lab text describing selected variable to be displayed on the plot
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @param display_density \code{logical} Should density estimation be displayed for numeric values?
+#' @param remove_NA_hist \code{logical} Should \code{NA} values be removed for histogram of factor like variables.
 #' @param outlier_definition If 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
