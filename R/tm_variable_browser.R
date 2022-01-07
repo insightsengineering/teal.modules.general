@@ -147,6 +147,11 @@ ui_variable_browser <- function(id,
           div(
             class = "clearfix;",
             style = "margin: 0px 15px 15px 15px;",
+            uiOutput(ns("ui_histogram_display"))
+          ),
+          div(
+            class = "clearfix;",
+            style = "margin: 0px 15px 15px 15px;",
             uiOutput(ns("ui_numeric_display"))
           ),
           teal.devel::plot_with_settings_ui(ns("variable_plot")),
@@ -257,16 +262,51 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
-            "Treat variable as factor",
-            value = `if`(
-              is.null(isolate(input$numeric_as_factor)),
-              unique_entries < .unique_records_default_as_factor,
-              isolate(input$numeric_as_factor)
-            )
+                        "Treat variable as factor",
+                        value = `if`(
+                          is.null(isolate(input$numeric_as_factor)),
+                          unique_entries < .unique_records_default_as_factor,
+                          isolate(input$numeric_as_factor)
+                        )
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
       } else if (unique_entries > 0) {
+        numeric_ui
+      }
+    } else {
+      NULL
+    }
+  })
+
+  output$ui_histogram_display <- renderUI({
+    data <- input$tabset_panel
+    varname <- plot_var$variable[[input$tabset_panel]]
+    type <- input$raw_or_filtered
+    req(data, varname, is.logical(type))
+
+    df <- datasets$get_data(data, filtered = type)
+
+    numeric_ui <- tagList(fluidRow(
+      div(
+        class = "col-md-4",
+        shinyWidgets::switchInput(
+          inputId = session$ns("remove_NA_hist"),
+          label = "Remove NA",
+          value = FALSE,
+          width = "50%",
+          labelWidth = "100px",
+          handleWidth = "50px"
+        )
+      )))
+
+    var <- df[[varname]]
+    if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
+      groups <- unique(as.character(var))
+      len_groups <- length(groups)
+      if (len_groups >= .unique_records_for_factor) {
+        NULL
+      } else {
         numeric_ui
       }
     } else {
@@ -345,6 +385,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       var = plotted_data()$data,
       var_lab = plotted_data()$var_description,
       numeric_as_factor = treat_numeric_as_factor(),
+      remove_NA_hist = input$remove_NA_hist,
       display_density = display_density,
       outlier_definition = outlier_definition,
       records_for_factor = .unique_records_for_factor,
@@ -734,6 +775,7 @@ plot_var_summary <- function(var,
                              var_lab,
                              numeric_as_factor,
                              display_density = is.numeric(var),
+                             remove_NA_hist = FALSE,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
@@ -758,6 +800,7 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
+      var <- if (isTRUE(remove_NA_hist)) as.vector(na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
         scale_fill_manual(values = c("gray50", "tan"))
