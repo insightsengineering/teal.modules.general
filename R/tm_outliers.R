@@ -251,6 +251,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   cat_dataname <- categorical_var[[1]]$dataname
 
   common_code_chunks <- reactive({
+    validate(need(!is.null(selector_list()$outlier()), "Please select an outlier variable dataset"))
+
     # Create a private stack for this function only.
     common_stack <- teal.devel::chunks$new()
 
