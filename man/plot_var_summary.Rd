@@ -9,6 +9,7 @@ plot_var_summary(
   var_lab,
   numeric_as_factor,
   display_density = is.numeric(var),
+  remove_NA_hist = FALSE,
   outlier_definition,
   records_for_factor,
   ggplot2_args
