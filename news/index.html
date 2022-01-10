@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9023</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9025</span>
       </span>
     </div>
 
@@ -65,15 +65,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -94,7 +85,7 @@ Other releases
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.2.11.9023" id="tealmodulesgeneral-02119023">teal.modules.general 0.2.11.9023<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02119023"></a></h2>
+<h2 class="page-header" data-toc-text="0.2.11.9025" id="tealmodulesgeneral-02119025">teal.modules.general 0.2.11.9025<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02119025"></a></h2>
 <ul><li>Added R version requirement, R &gt;= 3.6.</li>
 <li>Used browser-side processing in <code>tm_data_table</code> so that <code>Buttons</code> extension could download full table. Added example for advanced usage of <code>DT</code> in the module.</li>
 <li>Fixed an error in <code>tm_variable_browser</code> when the selected column is <code>logical(1)</code>.</li>
@@ -103,8 +94,9 @@ Other releases
 <li>Added ability to sort by <code>Variable</code> and <code>Type</code> in <code>tm_variable_browser</code> by separating the variable type icons into their own column.</li>
 <li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code>data_merge_srv</code> and <code>data_extract_multiple_srv</code> modules.</li>
 <li>Removed <code>input_id</code> argument from all <code>data_merge_module</code> calls in all modules.</li>
+<li>Added an option to remove missing values in a <code>tm_variable_browser</code> histogram for factor like variables.</li>
 </ul><div class="section level3">
-<h3 id="enhancements-0-2-11-9023">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-11-9023"></a></h3>
+<h3 id="enhancements-0-2-11-9025">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-11-9025"></a></h3>
 <ul><li>Added support for logging with the <code>logger</code> package and added info level logs upon initialization of a module.</li>
 <li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
 <li>Added support for custom arguments for <code><a href="https://roche.github.io/rtables/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
@@ -112,7 +104,7 @@ Other releases
 <li>Changed the <code>Grouped by Subject</code> tab of the <code>tm_missing_data</code> module to present data the same way the <code>Summary</code> tab did.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="miscellaneous-0-2-11-9023">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-11-9023"></a></h3>
+<h3 id="miscellaneous-0-2-11-9025">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-11-9025"></a></h3>
 <ul><li>Refactored the defunct <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_input.html" class="external-link">teal.devel::data_extract_input</a></code> into its replacement <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_ui.html" class="external-link">teal.devel::data_extract_ui</a></code>.</li>
 <li>Removed the overlay statistics table in <code>tm_g_distribution</code>.</li>
 <li>Replaced calls to <code>utils.nest::check_slider_input</code> with <code><a href="https://rdrr.io/pkg/checkmate/man/checkNumeric.html" class="external-link">checkmate::assert_numeric</a></code>.</li>
