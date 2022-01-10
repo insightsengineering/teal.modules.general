@@ -488,7 +488,7 @@ app <- init(
             filter_spec(
               vars = "AVISIT",
               choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[2],
+              selected = levels(ADLB$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
@@ -565,7 +565,7 @@ app <- init(
             filter_spec(
               vars = "AVISIT",
               choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[3],
+              selected = levels(ADLB$AVISIT)[1],
               multiple = FALSE,
               label = "Select category:"
             )
