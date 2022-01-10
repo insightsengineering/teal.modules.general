@@ -315,7 +315,7 @@ app <- init(
             filter_spec(
               vars = "PARAMCD",
               choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-              selected = levels(ADLB$PARAMCD)[2],
+              selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
             ),
