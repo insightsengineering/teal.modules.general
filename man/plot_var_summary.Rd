@@ -9,6 +9,7 @@ plot_var_summary(
   var_lab,
   numeric_as_factor,
   display_density = is.numeric(var),
+  remove_NA_hist = FALSE,
   outlier_definition,
   records_for_factor,
   ggplot2_args
@@ -23,6 +24,8 @@ density line, for factors it creates frequency plot}
 \item{numeric_as_factor}{\code{logical} should the numeric variable be treated as a factor}
 
 \item{display_density}{\code{logical} Should density estimation be displayed for numeric values?}
+
+\item{remove_NA_hist}{\code{logical} Should \code{NA} values be removed for histogram of factor like variables.}
 
 \item{outlier_definition}{If 0 no outliers are removed, otherwise
 outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}
