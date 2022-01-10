@@ -223,7 +223,7 @@ srv_tm_g_association <- function(input,
     ANL <- teal.devel::chunks_get_var("ANL") # nolint
     teal.devel::validate_has_data(ANL, 3)
 
-    vars_names <- selector_list()$vars()$select_ordered
+    vars_names <- merged_data()$columns_source$vars
 
     ref_name <- as.vector(merged_data()$columns_source$ref)
     association <- input$association
