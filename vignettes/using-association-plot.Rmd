@@ -63,7 +63,7 @@ combinations of data sets.
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    dataset(
+    cdisc_dataset(
       "ADSL2",
       ADSL2,
       keys = get_cdisc_keys("ADSL"),
@@ -274,14 +274,14 @@ app <- init(
             filter_spec(
               vars = "PARAMCD",
               choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-              selected = levels(ADLB$PARAMCD)[2],
+              selected = levels(ADLB$PARAMCD)[1],
               multiple = FALSE,
               label = "Select labs:"
             ),
             filter_spec(
               vars = "AVISIT",
               choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[2],
+              selected = levels(ADLB$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
