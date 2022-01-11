@@ -9,6 +9,7 @@
 #' @import shinyTree
 #' @import teal
 #' @importFrom magrittr %>%
+#' @importFrom stats na.omit
 #'
 #'
 #' @docType package
