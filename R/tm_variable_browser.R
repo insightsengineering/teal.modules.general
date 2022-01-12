@@ -443,7 +443,7 @@ create_sparklines <- function(arr, width = 150, ...) {
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.default <- function(arr, width = 150, ...) { # nousage # nolint
+create_sparklines.default <- function(arr, width = 150, ...) { # nolint
   return(as.character(tags$code("unsupported variable type", style = "color:blue")))
 }
 
@@ -458,7 +458,7 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nousage # nolin
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -499,7 +499,7 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -540,7 +540,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -581,7 +581,7 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.character <- function(arr, ...) { # nousage # nolint
+create_sparklines.character <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
 
@@ -597,7 +597,7 @@ create_sparklines.character <- function(arr, ...) { # nousage # nolint
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.logical <- function(arr, ...) { # nousage # nolint
+create_sparklines.logical <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
 
@@ -613,7 +613,7 @@ create_sparklines.logical <- function(arr, ...) { # nousage # nolint
 #' @export
 #'
 #' @seealso \code{\link{create_sparklines}}
-create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nousage # nolint
+create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   decreasing_order <- TRUE
 
   counts <- table(arr)
@@ -655,7 +655,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #'
 #' @seealso \code{\link{create_sparklines}}
 
-create_sparklines.numeric <- function(arr, width = 150, ...) { # nousage # nolint
+create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
   }
@@ -801,7 +801,7 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      var <- if (isTRUE(remove_NA_hist)) as.vector(na.omit(var)) else var
+      var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
         scale_fill_manual(values = c("gray50", "tan"))
