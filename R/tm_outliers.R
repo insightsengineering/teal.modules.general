@@ -234,7 +234,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   selector_list <- teal.devel::data_extract_multiple_srv(vars, datasets)
 
   reactive_select_input <- reactive({
-    if (length(selector_list()$categorical_var()$select) == 0) {
+    if (is.null(selector_list()$categorical_var) || length(selector_list()$categorical_var()$select) == 0) {
       selector_list()[names(selector_list()) != "categorical_var"]
     } else {
       selector_list()
@@ -251,6 +251,8 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
   cat_dataname <- categorical_var[[1]]$dataname
 
   common_code_chunks <- reactive({
+    validate(need(!is.null(reactive_select_input()$outlier()), "Please select an outlier variable dataset"))
+
     # Create a private stack for this function only.
     common_stack <- teal.devel::chunks$new()
 
@@ -974,6 +976,7 @@ srv_outliers <- function(input, output, session, datasets, outlier_var,
     expr = {
       tab <- input$tabs
       req(tab) # tab is NULL upon app launch, hence will crash without this statement
+      validate(need(!is.null(reactive_select_input()$outlier()), ""))
       outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
       categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
 
