@@ -16,6 +16,7 @@
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
 * Changed the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab did.
+* Modified the summary statistics table for numeric columns in `tm_variable_browser` to reflect the plot after `outliers` are removed.
 
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
