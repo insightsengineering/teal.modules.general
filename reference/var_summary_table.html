@@ -25,7 +25,7 @@ number of levels."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aja
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9029</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9031</span>
       </span>
     </div>
 
@@ -67,15 +67,6 @@ number of levels."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aja
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -103,7 +94,7 @@ number of levels.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">var_summary_table</span><span class="op">(</span><span class="va">x</span>, <span class="va">numeric_as_factor</span>, <span class="va">dt_rows</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">var_summary_table</span><span class="op">(</span><span class="va">x</span>, <span class="va">numeric_as_factor</span>, <span class="va">dt_rows</span>, <span class="va">outlier_definition</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -114,6 +105,9 @@ number of levels.</p>
 <dd><p><code>logical</code> should the numeric variable be treated as a factor</p></dd>
 <dt>dt_rows</dt>
 <dd><p><code>numeric</code> current/latest DT page length</p></dd>
+<dt>outlier_definition</dt>
+<dd><p>If 0 no outliers are removed, otherwise
+outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
