@@ -459,7 +459,7 @@ srv_g_scatterplot <- function(input,
       col_facet_name,
       free_x_scales = isTRUE(input$free_scales),
       free_y_scales = isTRUE(input$free_scales)
-      )
+    )
     if (!is.null(facet_cl)) {
       validate(need(
         !add_density,
