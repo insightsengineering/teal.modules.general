@@ -1166,10 +1166,12 @@ custom_sparkline_formatter <- function(labels, counts) {
   )
 }
 
-#' @param var a numeric vector
-#' @param outlier_definition If 0 no outliers are removed, otherwise
-#'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
-#' @returns numeric vector
+#' Removes the outlier observation from an array
+#'
+#' @param var (`numeric`) a numeric vector
+#' @param outlier_definition (`numeric`) if `0` then no outliers are removed, otherwise
+#'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3`) are removed
+#' @returns (`numeric`) vector without the outlier values
 remove_outliers_from <- function(var, outlier_definition) {
   q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2)
   iqr <- q1_q3[2] - q1_q3[1]
