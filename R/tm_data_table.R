@@ -188,7 +188,7 @@ ui_page_data_table <- function(id,
     output = tagList(
       fluidRow(
         column(
-          width = 6,
+          width = 4,
           radioButtons(
             ns("if_filtered"),
             NULL,
@@ -198,13 +198,21 @@ ui_page_data_table <- function(id,
           )
         ),
         column(
-          width = 6,
+          width = 4,
           checkboxInput(
             ns("if_distinct"),
             "Show only distinct rows:",
             value = FALSE
           )
-        )
+        ),
+        column(
+          width = 4,
+          checkboxInput(
+            ns("dt_json_args"),
+            "Show Inf/NA in table:",
+            value = FALSE
+          )
+        ),
       ),
       fluidRow(
         column(
@@ -267,6 +275,14 @@ srv_page_data_table <- function(input,
   if_filtered <- reactive(as.logical(input$if_filtered))
   if_distinct <- reactive(as.logical(input$if_distinct))
 
+  dt_json_args <- reactive(
+    if (!is.null(input$dt_json_args) && input$dt_json_args) {
+      list(na = "string")
+    } else {
+      NULL
+    }
+  )
+
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
   lapply(
@@ -279,6 +295,7 @@ srv_page_data_table <- function(input,
         dataname = x,
         if_filtered = if_filtered,
         if_distinct = if_distinct,
+        dt_json_args = dt_json_args,
         dt_args = dt_args,
         dt_options = dt_options
       )
@@ -322,6 +339,7 @@ srv_data_table <- function(input,
                            dataname,
                            if_filtered,
                            if_distinct,
+                           dt_json_args,
                            dt_args,
                            dt_options) {
   output$data_table <- DT::renderDataTable(server = FALSE, {
@@ -350,7 +368,11 @@ srv_data_table <- function(input,
     }
     dt_args$data <- dataframe_selected
 
-    do.call(DT::datatable, dt_args)
+    withr::with_options(
+      list(DT.TOJSON_ARGS = dt_json_args()),
+      do.call(DT::datatable, dt_args)
+    )
+
   })
 }
 

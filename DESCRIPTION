@@ -60,7 +60,8 @@ Imports:
     tidyr,
     tidyselect,
     utils,
-    utils.nest (>= 0.2.11)
+    utils.nest (>= 0.2.11),
+    withr
 Suggests:
     knitr,
     rmarkdown,
