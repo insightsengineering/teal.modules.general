@@ -372,7 +372,6 @@ srv_data_table <- function(input,
       list(DT.TOJSON_ARGS = dt_json_args()),
       do.call(DT::datatable, dt_args)
     )
-
   })
 }
 

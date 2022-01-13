@@ -262,12 +262,12 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
         list(
           checkboxInput(session$ns("numeric_as_factor"),
-                        "Treat variable as factor",
-                        value = `if`(
-                          is.null(isolate(input$numeric_as_factor)),
-                          unique_entries < .unique_records_default_as_factor,
-                          isolate(input$numeric_as_factor)
-                        )
+            "Treat variable as factor",
+            value = `if`(
+              is.null(isolate(input$numeric_as_factor)),
+              unique_entries < .unique_records_default_as_factor,
+              isolate(input$numeric_as_factor)
+            )
           ),
           conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
         )
@@ -298,7 +298,8 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
           labelWidth = "100px",
           handleWidth = "50px"
         )
-      )))
+      )
+    ))
 
     var <- df[[varname]]
     if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
