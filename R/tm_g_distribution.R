@@ -1041,8 +1041,9 @@ srv_distribution <- function(input,
     teal.devel::chunks_reset()
     teal.devel::chunks_push_chunks(common_code_chunks())
     # wrapped in if since test chunk could lead into validate error - we do want to continue
-    if (inherits(try(test_r_chunks(), silent = TRUE), c("try-error", "error"))) {
-      teal.devel::chunks_push_chunks(test_r_chunks())
+    test_r_chunks_out <- try(test_r_chunks(), silent = TRUE)
+    if (!inherits(test_r_chunks_out, c("try-error", "error"))) {
+      teal.devel::chunks_push_chunks(test_r_chunks_out)
     }
 
     if (tab == "Histogram") {
