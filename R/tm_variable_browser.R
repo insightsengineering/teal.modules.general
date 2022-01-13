@@ -405,7 +405,7 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
       plotted_data()$data,
       treat_numeric_as_factor(),
       input$variable_summary_table_rows,
-      if (`if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)) {
+      if (!is.null(input$remove_outliers) && input$remove_outliers) {
         req(input$outlier_definition_slider)
         as.numeric(input$outlier_definition_slider)
       } else {
