@@ -4,7 +4,7 @@
 \alias{var_summary_table}
 \title{Summarizes variable}
 \usage{
-var_summary_table(x, numeric_as_factor, dt_rows)
+var_summary_table(x, numeric_as_factor, dt_rows, outlier_definition)
 }
 \arguments{
 \item{x}{vector of any type}
@@ -12,6 +12,9 @@ var_summary_table(x, numeric_as_factor, dt_rows)
 \item{numeric_as_factor}{\code{logical} should the numeric variable be treated as a factor}
 
 \item{dt_rows}{\code{numeric} current/latest DT page length}
+
+\item{outlier_definition}{If 0 no outliers are removed, otherwise
+outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}
 }
 \value{
 text with simple statistics.
