@@ -466,7 +466,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -526,7 +526,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -581,7 +581,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -624,7 +624,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -690,7 +690,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -746,7 +746,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
@@ -796,7 +796,7 @@ srv_a_regression <- function(input,
             print(g)
           },
           env = list(
-            plot = utils.nest::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+            plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
           )
         )
       )
