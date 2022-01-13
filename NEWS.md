@@ -16,7 +16,7 @@
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
 * Changed the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab did.
-* Added a checkbook to `tm_g_scatterplot` to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.
+* Added a checkbox to `tm_g_scatterplot` to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.
 * Modified the summary statistics table for numeric columns in `tm_variable_browser` to reflect the plot after `outliers` are removed.
 
 ## Miscellaneous
