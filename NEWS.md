@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9031
+# teal.modules.general 0.2.11.9033
 
 * Added R version requirement, R >= 3.6.
 * Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
@@ -17,6 +17,8 @@
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
 * Changed the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab did.
 * Added option to show `NA/Inf` values in the `tm_data_table`.
+* Added a checkbox to `tm_g_scatterplot` to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.
+* Modified the summary statistics table for numeric columns in `tm_variable_browser` to reflect the plot after `outliers` are removed.
 
 ## Miscellaneous
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.

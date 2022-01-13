@@ -402,7 +402,17 @@ srv_variable_browser <- function(input, output, session, datasets, datasets_sele
   )
 
   output$variable_summary_table <- DT::renderDataTable({
-    var_summary_table(plotted_data()$data, treat_numeric_as_factor(), input$variable_summary_table_rows)
+    var_summary_table(
+      plotted_data()$data,
+      treat_numeric_as_factor(),
+      input$variable_summary_table_rows,
+      if (!is.null(input$remove_outliers) && input$remove_outliers) {
+        req(input$outlier_definition_slider)
+        as.numeric(input$outlier_definition_slider)
+      } else {
+        0
+      }
+    )
   })
 }
 
@@ -677,13 +687,17 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
 #' @param x vector of any type
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @param dt_rows \code{numeric} current/latest DT page length
+#' @param outlier_definition If 0 no outliers are removed, otherwise
+#'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @return text with simple statistics.
-var_summary_table <- function(x, numeric_as_factor, dt_rows) {
+var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition) {
   if (is.null(dt_rows)) {
     dt_rows <- 10
   }
   if (is.numeric(x) && !numeric_as_factor) {
     req(!any(is.infinite(x)))
+
+    x <- remove_outliers_from(x, outlier_definition)
 
     qvals <- round(stats::quantile(x, na.rm = TRUE, probs = c(0.25, 0.5, 0.75), type = 2), 2)
     # classical central tendency measures
@@ -821,10 +835,8 @@ plot_var_summary <- function(var,
     } else {
       # remove outliers
       if (outlier_definition != 0) {
-        q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2)
-        iqr <- q1_q3[2] - q1_q3[1]
         number_records <- length(var)
-        var <- var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+        var <- remove_outliers_from(var, outlier_definition)
         number_outliers <- number_records - length(var)
         outlier_text <- paste0(
           number_outliers, " outliers (",
@@ -1153,4 +1165,16 @@ custom_sparkline_formatter <- function(labels, counts) {
       jsonlite::toJSON(counts)
     )
   )
+}
+
+#' Removes the outlier observation from an array
+#'
+#' @param var (`numeric`) a numeric vector
+#' @param outlier_definition (`numeric`) if `0` then no outliers are removed, otherwise
+#'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3`) are removed
+#' @returns (`numeric`) vector without the outlier values
+remove_outliers_from <- function(var, outlier_definition) {
+  q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2)
+  iqr <- q1_q3[2] - q1_q3[1]
+  var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
 }

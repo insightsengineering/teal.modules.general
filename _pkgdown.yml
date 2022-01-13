@@ -50,6 +50,7 @@ reference:
       - get_datanames_selected
       - get_var_description
       - plot_var_summary
+      - remove_outliers_from
       - render_single_tab
       - render_tab_header
       - render_tab_table
