@@ -922,7 +922,7 @@ plot_var_summary <- function(var,
 #' @param var_name (`character`) the name of the variable
 get_var_description <- function(datasets, dataset_name, var_name) {
   varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
-  d_var_name <- paste0( if (is.na(varlabel)) var_name else varlabel, " [", dataset_name, ".", var_name, "]")
+  d_var_name <- paste0(if (is.na(varlabel)) var_name else varlabel, " [", dataset_name, ".", var_name, "]")
   d_var_name
 }
 
