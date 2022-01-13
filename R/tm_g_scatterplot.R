@@ -300,6 +300,9 @@ ui_g_scatterplot <- function(id, ...) {
             ),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
           ),
+          if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
+            checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
+          },
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -375,6 +378,18 @@ srv_g_scatterplot <- function(input,
     }
   })
 
+  observeEvent({
+    merged_data()$columns_source$col_facet
+    merged_data()$columns_source$row_facet
+  }, {
+    if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
+      shinyjs::hide("free_scales")
+    } else {
+      shinyjs::show("free_scales")
+    }
+  }
+  )
+
   plot_r <- reactive({
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
@@ -439,7 +454,12 @@ srv_g_scatterplot <- function(input,
 
     teal.devel::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
-    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
+    facet_cl <- facet_ggplot_call(
+      row_facet_name,
+      col_facet_name,
+      free_x_scales = isTRUE(input$free_scales),
+      free_y_scales = isTRUE(input$free_scales)
+    )
     if (!is.null(facet_cl)) {
       validate(need(
         !add_density,
