@@ -665,7 +665,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
 
   reduce_plot_call <- function(...) {
     args <- Filter(Negate(is.null), list(...))
-    teal::teal_combine_by("+", args)
+    teal::calls_combine_by("+", args)
   }
 
   plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
