@@ -59,8 +59,7 @@ Imports:
     tibble,
     tidyr,
     tidyselect,
-    utils,
-    utils.nest (>= 0.2.11)
+    utils
 Suggests:
     knitr,
     rmarkdown,

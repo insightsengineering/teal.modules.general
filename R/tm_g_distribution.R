@@ -680,7 +680,7 @@ srv_distribution <- function(input,
           g <- plot_call
           print(g)
         },
-        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+        env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
       teal.devel::chunks_safe_eval(distplot_stack)
@@ -834,7 +834,7 @@ srv_distribution <- function(input,
           g <- plot_call
           print(g)
         },
-        env = list(plot_call = utils.nest::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+        env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
       ))
 
       teal.devel::chunks_safe_eval(qqplot_stack)
@@ -1041,7 +1041,10 @@ srv_distribution <- function(input,
     teal.devel::chunks_reset()
     teal.devel::chunks_push_chunks(common_code_chunks())
     # wrapped in if since test chunk could lead into validate error - we do want to continue
-    `if`(!utils.nest::is_error(test_r_chunks()), teal.devel::chunks_push_chunks(test_r_chunks()))
+    if (inherits(try(test_r_chunks(), silent = TRUE), c("try-error", "error"))) {
+      teal.devel::chunks_push_chunks(test_r_chunks())
+    }
+
     if (tab == "Histogram") {
       teal.devel::chunks_push_chunks(dist_plot_r_chunks())
     } else if (tab == "QQplot") {

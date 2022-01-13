@@ -784,7 +784,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
           print(g)
         },
         env = list(
-          plot_call = utils.nest::calls_combine_by("+", pca_plot_biplot_expr)
+          plot_call = teal::calls_combine_by("+", pca_plot_biplot_expr)
         )
       )
     )
@@ -865,7 +865,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         },
         env = list(
           pc = pc,
-          plot_call = utils.nest::calls_combine_by("+", ggplot_exprs)
+          plot_call = tealt::calls_combine_by("+", ggplot_exprs)
         )
       )
     )

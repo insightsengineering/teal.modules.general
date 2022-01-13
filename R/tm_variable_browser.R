@@ -922,7 +922,7 @@ plot_var_summary <- function(var,
 #' @param var_name (`character`) the name of the variable
 get_var_description <- function(datasets, dataset_name, var_name) {
   varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
-  d_var_name <- paste0(utils.nest::if_na(varlabel, var_name), " [", dataset_name, ".", var_name, "]")
+  d_var_name <- paste0( if (is.na(varlabel)) var_name else varlabel, " [", dataset_name, ".", var_name, "]")
   d_var_name
 }
 
@@ -1058,11 +1058,13 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
       } else {
         # extract data variable labels
         labels <- stats::setNames(
-          utils.nest::ulapply(
-            df,
-            function(x) {
-              `if`(is.null(attr(x, "label")), "", attr(x, "label"))
-            }
+          unlist(
+            lapply(
+              df,
+              function(x) {
+                `if`(is.null(attr(x, "label")), "", attr(x, "label"))
+              }
+            )
           ),
           names(df)
         )
