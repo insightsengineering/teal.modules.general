@@ -174,7 +174,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
   checkmate::assert_numeric(
-    plot_width[1], lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
@@ -378,16 +379,18 @@ srv_g_scatterplot <- function(input,
     }
   })
 
-  observeEvent({
-    merged_data()$columns_source$col_facet
-    merged_data()$columns_source$row_facet
-  }, {
-    if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
-      shinyjs::hide("free_scales")
-    } else {
-      shinyjs::show("free_scales")
+  observeEvent(
+    {
+      merged_data()$columns_source$col_facet
+      merged_data()$columns_source$row_facet
+    },
+    {
+      if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
+        shinyjs::hide("free_scales")
+      } else {
+        shinyjs::show("free_scales")
+      }
     }
-  }
   )
 
   plot_r <- reactive({
