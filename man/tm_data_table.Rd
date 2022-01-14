@@ -43,6 +43,11 @@ output to put the output into context. For example the
 \description{
 A data table viewer shows the data using a paginated table.
 }
+\details{
+The \code{DT} package has an option \code{DT.TOJSON_ARGS} to show \code{Inf} and \code{NA} in data tables. If this is something
+you require then set \code{options(DT.TOJSON_ARGS =  list(na = "string"))} before running the module.
+Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
+}
 \examples{
 library(scda)
 

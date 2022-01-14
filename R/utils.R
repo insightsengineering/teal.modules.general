@@ -163,11 +163,12 @@ varname_w_label <- function(var_names,
                             prefix = NULL,
                             suffix = NULL) {
   add_label <- function(var_names) {
-    label <- vapply(dataset[var_names], function(x) {
-      attr_label <- attr(x, "label")
-      `if`(is.null(attr_label), "", attr_label)
-    },
-    character(1)
+    label <- vapply(
+      dataset[var_names], function(x) {
+        attr_label <- attr(x, "label")
+        `if`(is.null(attr_label), "", attr_label)
+      },
+      character(1)
     )
 
     if (length(label) == 1 && !is.na(label) && !identical(label, "")) {
