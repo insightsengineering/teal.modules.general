@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9033</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9034</span>
       </span>
     </div>
 
@@ -65,15 +65,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -138,6 +129,12 @@ output to put the output into context. For example a title.</p></dd>
 output to put the output into context. For example the
 <code><a href="https://rdrr.io/pkg/shiny/man/helpText.html" class="external-link">helpText</a></code> elements are useful.</p></dd>
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>The <code>DT</code> package has an option <code>DT.TOJSON_ARGS</code> to show <code>Inf</code> and <code>NA</code> in data tables. If this is something
+you require then set <code>options(DT.TOJSON_ARGS =  list(na = "string"))</code> before running the module.
+Note though that sorting of numeric columns with <code>NA</code>/<code>Inf</code> will be lexicographic not numerical.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -157,7 +154,7 @@ output to put the output into context. For example the
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-13 20:25:25.5756 pid:1794 token: teal.modules.general Initializing tm_data_table</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-14 14:08:16.1943 pid:1797 token:[] teal.modules.general Initializing tm_data_table</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
@@ -186,7 +183,7 @@ output to put the output into context. For example the
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-13 20:25:29.5286 pid:1794 token: teal.modules.general Initializing tm_data_table</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-14 14:08:19.5165 pid:1797 token:[] teal.modules.general Initializing tm_data_table</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
@@ -218,7 +215,7 @@ output to put the output into context. For example the
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-13 20:25:35.9670 pid:1794 token: teal.modules.general Initializing tm_data_table</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-14 14:08:24.9797 pid:1797 token:[] teal.modules.general Initializing tm_data_table</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
@@ -251,7 +248,7 @@ output to put the output into context. For example the
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-13 20:25:39.8675 pid:1794 token: teal.modules.general Initializing tm_data_table</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-14 14:08:28.2743 pid:1797 token:[] teal.modules.general Initializing tm_data_table</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
