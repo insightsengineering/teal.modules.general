@@ -379,19 +379,16 @@ srv_g_scatterplot <- function(input,
     }
   })
 
-  observeEvent(
-    {
-      merged_data()$columns_source$col_facet
-      merged_data()$columns_source$row_facet
-    },
-    {
-      if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
-        shinyjs::hide("free_scales")
-      } else {
-        shinyjs::show("free_scales")
-      }
+  observeEvent({
+    merged_data()$columns_source$col_facet
+    merged_data()$columns_source$row_facet
+  }, {
+    if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
+      shinyjs::hide("free_scales")
+    } else {
+      shinyjs::show("free_scales")
     }
-  )
+  })
 
   plot_r <- reactive({
     teal.devel::chunks_reset()
