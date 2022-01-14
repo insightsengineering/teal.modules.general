@@ -16,6 +16,10 @@
 #'   (must not include `data` or `options`).
 #' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
 #'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
+#' @details
+#'   The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables. If this is something
+#'   you require then set `options(DT.TOJSON_ARGS =  list(na = "string"))` before running the module.
+#'   Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
 #' @export
 #' @examples
 #' library(scda)
