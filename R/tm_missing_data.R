@@ -40,7 +40,10 @@ tm_missing_data <- function(label = "Missing data",
                               "classic", "gray", "bw", "linedraw",
                               "light", "dark", "minimal", "void", "test"
                             ),
-                            ggplot2_args = teal.devel::ggplot2_args(),
+                            ggplot2_args = list(
+                              "Combinations Hist" = teal.devel::ggplot2_args(labs = list(caption = NULL)),
+                              "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = NULL))
+                            ),
                             pre_output = NULL,
                             post_output = NULL) {
   logger::log_info("Initializing tm_missing_data")
