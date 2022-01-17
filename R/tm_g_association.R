@@ -178,14 +178,14 @@ ui_tm_g_association <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("distribution_theme"),
             label = "Distribution theme (by ggplot):",
-            choices = gg_themes,
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$distribution_theme,
             multiple = FALSE
           ),
           optionalSelectInput(
             inputId = ns("association_theme"),
             label = "Association theme (by ggplot):",
-            choices = gg_themes,
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$association_theme,
             multiple = FALSE
           )

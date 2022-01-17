@@ -203,8 +203,6 @@ extract_input <- function(varname, dataname, filter = FALSE) {
   }
 }
 
-gg_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")
-
 # see vignette("ggplot2-specs", package="ggplot2")
 shape_names <- c(
   "circle", paste("circle", c("open", "filled", "cross", "plus", "small")), "bullet",
