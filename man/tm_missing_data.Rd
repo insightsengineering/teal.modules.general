@@ -27,6 +27,7 @@ for a slider encoding the plot height.}
 for a slider encoding the plot width.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 All themes can be chosen by the user. Defaults to \code{classic}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]

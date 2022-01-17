@@ -8,7 +8,8 @@ tm_outliers(
   label = "Outliers Module",
   outlier_var,
   categorical_var = NULL,
-  ggtheme = gg_themes,
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   ggplot2_args = teal.devel::ggplot2_args(),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -26,8 +27,7 @@ variable to consider for the outliers analysis.}
 categorical factor to split the selected outlier variables on.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]

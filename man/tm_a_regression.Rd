@@ -12,7 +12,8 @@ tm_a_regression(
   plot_width = NULL,
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
-  ggtheme = gg_themes,
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   ggplot2_args = teal.devel::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL,
@@ -44,8 +45,7 @@ If a slider should be presented to adjust the plot point sizes dynamically then 
 vector of length three with \code{c(value, min, max)}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
 All themes can be chosen by the user. Defaults to \code{gray}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
