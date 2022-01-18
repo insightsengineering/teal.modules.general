@@ -62,7 +62,7 @@
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
-                        ggtheme = gg_themes,
+                        ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
                         ggplot2_args = teal.devel::ggplot2_args(),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
@@ -214,7 +214,7 @@ ui_outliers <- function(id, ...) {
         optionalSelectInput(
           inputId = ns("ggtheme"),
           label = "Theme (by ggplot):",
-          choices = gg_themes,
+          choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
           selected = args$ggtheme,
           multiple = FALSE
         )

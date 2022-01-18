@@ -79,7 +79,8 @@ tm_a_regression <- function(label = "Regression Analysis",
                             plot_width = NULL,
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
-                            ggtheme = gg_themes,
+                            ggtheme = c("gray", "bw", "linedraw", "light", "dark",
+                                        "minimal", "classic", "void", "test"),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL,
@@ -202,7 +203,7 @@ ui_a_regression <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = gg_themes,
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
           )
