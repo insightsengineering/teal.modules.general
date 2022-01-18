@@ -11,8 +11,10 @@ tm_g_association(
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  distribution_theme = gg_themes,
-  association_theme = gg_themes,
+  distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal",
+    "classic", "void", "test"),
+  association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal",
+    "classic", "void", "test"),
   pre_output = NULL,
   post_output = NULL,
   ggplot2_args = teal.devel::ggplot2_args()
@@ -36,15 +38,13 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the distribution plot. All themes can be chosen by the user. Defaults to \code{gray}.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
+\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
-\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the association plots. All themes can be chosen by the user. Defaults to \code{gray}.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
+\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
