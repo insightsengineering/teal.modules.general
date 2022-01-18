@@ -7,7 +7,8 @@
 #' @inheritParams teal.devel::standard_layout
 #'
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{classic}.
+#'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+#'   Each theme can be chosen by the user during the session. Defaults to \code{classic}.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -296,7 +297,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       optionalSelectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = gg_themes,
+        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
         selected = ggtheme,
         multiple = FALSE
       )

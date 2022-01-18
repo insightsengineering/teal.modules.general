@@ -19,7 +19,8 @@ tm_g_scatterplot(
   size = c(5, 1, 15),
   max_deg = 5L,
   rotate_xaxis_labels = FALSE,
-  ggtheme = gg_themes,
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   pre_output = NULL,
   post_output = NULL,
   table_dec = 4,
@@ -71,9 +72,8 @@ vector of length three with \code{c(value, min, max)}.}
 rotate by default (\code{FALSE}).}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
-All themes can be chosen by the user. Defaults to \code{gray}.}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}

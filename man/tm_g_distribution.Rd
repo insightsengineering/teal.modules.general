@@ -10,7 +10,8 @@ tm_g_distribution(
   strata_var = NULL,
   group_var = NULL,
   freq = FALSE,
-  ggtheme = gg_themes,
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
+    "test"),
   ggplot2_args = teal.devel::ggplot2_args(),
   bins = c(30L, 1L, 100L),
   plot_height = c(600, 200, 2000),
@@ -35,9 +36,8 @@ Which data columns to use for faceting rows.}
 Defaults to density (\code{FALSE}).}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
-All themes can be chosen by the user. Defaults to \code{gray}.}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
