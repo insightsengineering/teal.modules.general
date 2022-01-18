@@ -38,15 +38,13 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the distribution plot. All themes can be chosen by the user. Defaults to \code{gray}.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
+\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each of the theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
-\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default
-for the association plots. All themes can be chosen by the user. Defaults to \code{gray}.
-\code{gg_themes} is defined internally as
-\code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}}
+\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
+Each of the theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
