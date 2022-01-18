@@ -36,7 +36,7 @@ Which data columns to use for faceting rows.}
 Defaults to density (\code{FALSE}).}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each of the theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]

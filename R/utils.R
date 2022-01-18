@@ -10,7 +10,7 @@
 #' @param rotate_xaxis_labels optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 #'   rotate by default (\code{FALSE}).
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+#'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 #'   Each of the theme can be chosen by the user during the session. Defaults to \code{gray}.
 #' @param ggplot2_args (`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
 #'  with settings for the module plot.

@@ -72,7 +72,7 @@ vector of length three with \code{c(value, min, max)}.}
 rotate by default (\code{FALSE}).}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}
+One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each of the theme can be chosen by the user during the session. Defaults to \code{gray}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
