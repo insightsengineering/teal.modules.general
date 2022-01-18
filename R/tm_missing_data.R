@@ -8,7 +8,7 @@
 #'
 #' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
 #'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-#'   Each of the theme can be chosen by the user during the session. Defaults to \code{classic}.
+#'   Each theme can be chosen by the user during the session. Defaults to \code{classic}.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
