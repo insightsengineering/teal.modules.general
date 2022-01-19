@@ -645,7 +645,7 @@ srv_g_scatterplot <- function(input,
       )
     }
 
-    y_label <- ifelse(length(color_by_var) == 0, varname_w_label(y_var, ANL), varname_w_label(color_by_var, ANL))
+    y_label <- varname_w_label(y_var, ANL)
     x_label <- varname_w_label(x_var, ANL)
 
     dev_ggplot2_args <- teal.devel::ggplot2_args(
