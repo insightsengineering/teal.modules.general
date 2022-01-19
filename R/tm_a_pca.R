@@ -58,7 +58,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
-                     ggtheme = gg_themes,
+                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
                      ggplot2_args = teal.devel::ggplot2_args(),
                      rotate_xaxis_labels = FALSE,
                      font_size = c(12, 8, 20),
@@ -223,8 +223,8 @@ ui_a_pca <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = gg_themes,
-            selected = gg_themes[1],
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            selected = args$ggtheme,
             multiple = FALSE
           ),
           optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)

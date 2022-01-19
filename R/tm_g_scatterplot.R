@@ -129,7 +129,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              size = c(5, 1, 15),
                              max_deg = 5L,
                              rotate_xaxis_labels = FALSE,
-                             ggtheme = gg_themes,
+                             ggtheme = c("gray", "bw", "linedraw", "light", "dark",
+                                         "minimal", "classic", "void", "test"),
                              pre_output = NULL,
                              post_output = NULL,
                              table_dec = 4,
@@ -307,7 +308,7 @@ ui_g_scatterplot <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = gg_themes,
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
           )

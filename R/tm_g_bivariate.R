@@ -98,7 +98,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            plot_width = NULL,
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
-                           ggtheme = gg_themes,
+                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
                            ggplot2_args = teal.devel::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL) {
@@ -306,7 +306,7 @@ ui_g_bivariate <- function(id, ...) {
           optionalSelectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = gg_themes,
+            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$ggtheme,
             multiple = FALSE
           ),
