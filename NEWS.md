@@ -21,7 +21,7 @@
 
 ### Miscellaneous
 * Added R version requirement `R >= 3.6`.
-* Removed `input_id` argument from `data_merge_module` calls in all modules.
+* Removed `input_id` argument from `teal.devel::data_merge_module` calls in all modules.
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
 * Updated `teal.devel::data_merge_srv` to use `dplyr::inner_join` instead of `dplyr::left_join` in `tm_outliers` module.
 * Removed the overlay statistics table in `tm_g_distribution` module.
