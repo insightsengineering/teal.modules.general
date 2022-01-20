@@ -337,12 +337,26 @@ srv_g_scatterplot <- function(input,
                               ggplot2_args) {
   teal.devel::init_chunks()
 
-  merged_data <- teal.devel::data_merge_module(
+  data_extract <- list(
+    x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
+  )
+  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+
+  reactive_select_input <- reactive({
+    selectors <- selector_list()
+    extract_names <- names(selectors)
+    for (extract in extract_names) {
+      if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+        selectors <- selectors[-which(names(selectors) == extract)]
+      }
+    }
+    selectors
+  })
+
+  merged_data <- teal.devel::data_merge_srv(
+    selector_list = reactive_select_input,
     datasets = datasets,
-    data_extract = list(
-      x = x, y = y,
-      color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
-    ),
     merge_function = "dplyr::inner_join"
   )
 
@@ -359,14 +373,25 @@ srv_g_scatterplot <- function(input,
   })
 
   if (!is.null(color_by)) {
-    observeEvent(merged_data()$columns_source$color_by, {
-      color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      if (length(color_by_var) > 0) {
-        shinyjs::hide("color")
-      } else {
-        shinyjs::show("color")
-      }
+    color_reactive <- reactive({
+      req(length(reactive_select_input()) > 0)
+      merged_data()$columns_source$color_by
     })
+
+    observeEvent(
+      eventExpr = {
+        req(length(reactive_select_input()) > 0)
+        merged_data()$columns_source$color_by
+      },
+      handlerExpr = {
+        color_by_var <- as.vector(merged_data()$columns_source$color_by)
+        if (length(color_by_var) > 0) {
+          shinyjs::hide("color")
+        } else {
+          shinyjs::show("color")
+        }
+      }
+    )
   }
 
   output$num_na_removed <- renderUI({
@@ -380,8 +405,10 @@ srv_g_scatterplot <- function(input,
     }
   })
 
+
   observeEvent(
     eventExpr = {
+      req(length(reactive_select_input()) > 0)
       merged_data()$columns_source$col_facet
       merged_data()$columns_source$row_facet
     }, handlerExpr = {
@@ -394,6 +421,10 @@ srv_g_scatterplot <- function(input,
   )
 
   plot_r <- reactive({
+    validate({
+      need(all(c("x", "y") %in% names(reactive_select_input())), "Please select X and Y variables")
+    })
+
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
