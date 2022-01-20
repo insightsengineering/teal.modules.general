@@ -297,7 +297,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       optionalSelectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+        choices = c("void", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "test"),
         selected = ggtheme,
         multiple = FALSE
       )
