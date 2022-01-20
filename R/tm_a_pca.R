@@ -260,8 +260,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   response_data <- teal.devel::data_merge_module(
     datasets = datasets,
-    data_extract = list(response),
-    input_id = c("response"),
+    data_extract = list(response = response),
     anl_name = "RP"
   )
 
