@@ -373,11 +373,6 @@ srv_g_scatterplot <- function(input,
   })
 
   if (!is.null(color_by)) {
-    color_reactive <- reactive({
-      req(length(reactive_select_input()) > 0)
-      merged_data()$columns_source$color_by
-    })
-
     observeEvent(
       eventExpr = {
         req(length(reactive_select_input()) > 0)
