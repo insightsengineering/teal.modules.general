@@ -244,7 +244,7 @@ srv_g_response <- function(input,
 
   plot_r <- reactive({
     validate({
-      need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a respone and x variable")
+      need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
     })
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
