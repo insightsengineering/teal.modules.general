@@ -40,7 +40,7 @@ output to put the output into context. For example the
 \item{basic_table_args}{(`basic_table_args`) object created by [teal.devel::basic_table_args()]
 with settings for the module table.
 For more details see the help vignette:
-`vignette("Custom basic_table arguments module", package = "teal.devel")`
+`vignette("custom-basic-table-arguments", package = "teal.devel")`
 The argument is merged with options variable `teal.basic_table_args` and default module setup.}
 }
 \description{

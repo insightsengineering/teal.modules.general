@@ -66,7 +66,7 @@ Each theme can be chosen by the user during the session. Defaults to \code{gray}
 \item{ggplot2_args}{(`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
 with settings for the module plot.
 For more details see the help vignette:
-`vignette("Custom ggplot2_args arguments module", package = "teal.devel")`
+`vignette("custom-ggplot2-arguments", package = "teal.devel")`
 The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
