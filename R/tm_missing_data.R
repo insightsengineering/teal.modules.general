@@ -6,9 +6,6 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-#'   Each theme can be chosen by the user during the session. Defaults to \code{classic}.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -37,10 +34,6 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            ggtheme = c(
-                              "classic", "gray", "bw", "linedraw",
-                              "light", "dark", "minimal", "void", "test"
-                            ),
                             ggplot2_args = list(
                               "Combinations Hist" = teal.devel::ggplot2_args(labs = list(caption = NULL)),
                               "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = NULL))
@@ -58,7 +51,7 @@ tm_missing_data <- function(label = "Missing data",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-  ggtheme <- match.arg(ggtheme)
+
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
@@ -69,11 +62,11 @@ tm_missing_data <- function(label = "Missing data",
     server_args = list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
     ui = ui_page_missing_data,
     filters = "all",
-    ui_args = list(pre_output = pre_output, post_output = post_output, ggtheme = ggtheme)
+    ui_args = list(pre_output = pre_output, post_output = post_output)
   )
 }
 
-ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL, ggtheme) {
+ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   datanames <- datasets$datanames()
 
@@ -121,8 +114,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
               sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
               encoding_missing_data(
                 id = ns(x),
-                summary_per_patient = if_subject_plot,
-                ggtheme = ggtheme
+                summary_per_patient = if_subject_plot
               )
             )
           }
@@ -226,7 +218,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
-encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE) {
   ns <- NS(id)
 
   tagList(
@@ -292,17 +284,6 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
         )
       )
     ),
-    teal.devel::panel_item(
-      title = "Plot settings",
-      optionalSelectInput(
-        inputId = ns("ggtheme"),
-        label = "Theme (by ggplot):",
-        choices = c("void", "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "test"),
-        selected = ggtheme,
-        multiple = FALSE
-      )
-    ),
-    hr(),
     teal.devel::get_rcode_ui(ns("rcode"))
   )
 }
@@ -559,8 +540,7 @@ srv_missing_data <- function(input,
     )
 
     parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = input$ggtheme
+      all_ggplot2_args
     )
 
     summary_stack_push(substitute(
@@ -584,13 +564,11 @@ srv_missing_data <- function(input,
           color = "black"
         ) +
         labs +
-        ggthemes +
         themes +
         coord_flip(),
       env = list(
         labs = parsed_ggplot2_args$labs,
-        themes = parsed_ggplot2_args$theme,
-        ggthemes = parsed_ggplot2_args$ggtheme
+        themes = parsed_ggplot2_args$theme
       )
     ))
 
@@ -636,8 +614,7 @@ srv_missing_data <- function(input,
       )
 
       parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-        all_ggplot2_args,
-        ggtheme = input$ggtheme
+        all_ggplot2_args
       )
 
       summary_stack_push(substitute(
@@ -661,13 +638,11 @@ srv_missing_data <- function(input,
             color = "black"
           ) +
           labs +
-          ggthemes +
           themes +
           coord_flip(),
         env = list(
           labs = parsed_ggplot2_args$labs,
-          themes = parsed_ggplot2_args$theme,
-          ggthemes = parsed_ggplot2_args$ggtheme
+          themes = parsed_ggplot2_args$theme
         )
       ))
 
@@ -790,8 +765,7 @@ srv_missing_data <- function(input,
     )
 
     parsed_ggplot2_args1 <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args1,
-      ggtheme = "void"
+      all_ggplot2_args1
     )
 
     dev_ggplot2_args2 <- teal.devel::ggplot2_args(
@@ -811,8 +785,7 @@ srv_missing_data <- function(input,
     )
 
     parsed_ggplot2_args2 <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args2,
-      ggtheme = input$ggtheme
+      all_ggplot2_args2
     )
 
     combination_stack_push(substitute(
@@ -825,7 +798,6 @@ srv_missing_data <- function(input,
           geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
           ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
           labs1 +
-          ggthemes1 +
           themes1
 
         graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
@@ -843,7 +815,6 @@ srv_missing_data <- function(input,
           geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
           coord_flip() +
           labs2 +
-          ggthemes2 +
           themes2
 
         g1 <- ggplotGrob(p1)
@@ -857,10 +828,8 @@ srv_missing_data <- function(input,
       env = list(
         labs1 = parsed_ggplot2_args1$labs,
         themes1 = parsed_ggplot2_args1$theme,
-        ggthemes1 = parsed_ggplot2_args1$ggtheme,
         labs2 = parsed_ggplot2_args2$labs,
-        themes2 = parsed_ggplot2_args2$theme,
-        ggthemes2 = parsed_ggplot2_args2$ggtheme
+        themes2 = parsed_ggplot2_args2$theme
       )
     ))
 
@@ -1043,8 +1012,7 @@ srv_missing_data <- function(input,
     )
 
     parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = input$ggtheme
+      all_ggplot2_args
     )
 
     by_subject_stack_push(
@@ -1069,14 +1037,12 @@ srv_missing_data <- function(input,
               labels = c("Present", "Missing (at least one)")
             ) +
             labs +
-            ggthemes +
             themes
           print(g)
         },
         env = list(
           labs = parsed_ggplot2_args$labs,
-          themes = parsed_ggplot2_args$theme,
-          ggthemes = parsed_ggplot2_args$ggtheme
+          themes = parsed_ggplot2_args$theme
         )
       )
     )

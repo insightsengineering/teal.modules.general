@@ -8,8 +8,6 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void",
-    "test"),
   ggplot2_args = list(`Combinations Hist` = teal.devel::ggplot2_args(labs =
     list(caption = NULL)), `Combinations Main` = teal.devel::ggplot2_args(labs =
     list(title = NULL))),
@@ -25,10 +23,6 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
 for a slider encoding the plot width.}
-
-\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{classic}.}
 
 \item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
 with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
