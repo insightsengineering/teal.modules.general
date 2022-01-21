@@ -376,6 +376,15 @@ srv_g_bivariate <- function(input,
     validate({
       need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
     })
+    if (color_settings && input$coloring) {
+      validate({
+        need(
+          all(c("color", "fill", "size") %in% names(reactive_select_input())),
+          "Please select color, fill and size valeus"
+        )
+      })
+    }
+
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
