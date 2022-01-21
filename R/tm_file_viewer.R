@@ -197,38 +197,37 @@ srv_viewer <- function(input, output, session, datasets, input_path) {
     }
   })
 
-  observeEvent(
-    eventExpr = input$tree,
-    ignoreNULL = TRUE,
-    handlerExpr = {
-      if (length(shinyTree::get_selected(input$tree)) > 0) {
-        obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
-        repo <- attr(obj, "ancestry")
-        repo_collapsed <- if (length(repo) > 1) paste0(repo, collapse = "/") else repo
-        is_not_named <- file.exists(file.path(c(repo_collapsed, obj[1])))[1]
+  output$output <- renderUI({
+    validate(
+      need(
+        length(shinyTree::get_selected(input$tree)) > 0,
+        "Please select a file."
+      )
+    )
 
-        if (is_not_named) {
-          selected_path <- do.call("file.path", as.list(c(repo, obj[1])))
-        } else {
-          if (length(repo) == 0) {
-            selected_path <- do.call("file.path", as.list(attr(input$tree[[obj[1]]], "ancestry")))
-          } else {
-            selected_path <- do.call("file.path", as.list(attr(input$tree[[repo]][[obj[1]]], "ancestry")))
-          }
-        }
+    obj <- shinyTree::get_selected(input$tree, format = "names")[[1]]
+    repo <- attr(obj, "ancestry")
+    repo_collapsed <- if (length(repo) > 1) paste0(repo, collapse = "/") else repo
+    is_not_named <- file.exists(file.path(c(repo_collapsed, obj[1])))[1]
 
-        output$output <- renderUI({
-          validate(
-            need(
-              !isTRUE(file.info(selected_path)$isdir) && length(selected_path) > 0,
-              "Please select a single file."
-            )
-          )
-          display_file(selected_path)
-        })
+    if (is_not_named) {
+      selected_path <- do.call("file.path", as.list(c(repo, obj[1])))
+    } else {
+      if (length(repo) == 0) {
+        selected_path <- do.call("file.path", as.list(attr(input$tree[[obj[1]]], "ancestry")))
+      } else {
+        selected_path <- do.call("file.path", as.list(attr(input$tree[[repo]][[obj[1]]], "ancestry")))
       }
     }
-  )
+
+    validate(
+      need(
+        !isTRUE(file.info(selected_path)$isdir) && length(selected_path) > 0,
+        "Please select a single file."
+      )
+    )
+    display_file(selected_path)
+  })
 
   onStop(function() {
     removeResourcePath(basename(temp_dir))
