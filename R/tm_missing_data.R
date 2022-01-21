@@ -284,6 +284,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE) {
         )
       )
     ),
+    hr(),
     teal.devel::get_rcode_ui(ns("rcode"))
   )
 }
