@@ -303,9 +303,25 @@ srv_distribution <- function(input,
                              ggplot2_args) {
   teal.devel::init_chunks()
 
-  merged_data <- teal.devel::data_merge_module(
-    datasets = datasets,
-    data_extract = list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
+  data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
+  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+
+  reactive_select_input <- reactive({
+    selectors <- selector_list()
+    extract_names <- names(selectors)
+    for (extract in extract_names) {
+      if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+        selectors <- selectors[-which(names(selectors) == extract)]
+      }
+    }
+    selectors
+  })
+
+  merged_data <- teal.devel::data_merge_srv(
+    selector_list = reactive_select_input,
+    datasets = datasets
   )
 
   observeEvent(
@@ -367,6 +383,10 @@ srv_distribution <- function(input,
   # common chunks ----
   common_code_chunks <- reactive({
     # Create a private stack for this function only.
+    validate({
+      need("dist_i" %in% names(reactive_select_input()), "Please select a variable")
+    })
+
     common_stack <- teal.devel::chunks$new()
 
     common_stack_push <- function(...) {
@@ -416,7 +436,6 @@ srv_distribution <- function(input,
       ))
     }
 
-    validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
     teal.devel::validate_has_data(ANL, 1, complete = TRUE)
 
