@@ -347,47 +347,37 @@ srv_g_bivariate <- function(input,
                             plot_width,
                             ggplot2_args) {
   teal.devel::init_chunks()
-  data_extract <- stats::setNames(
-    list(x, y),
-    c("x", "y")
+
+  data_extract <- list(
+    x = x, y = y, row_facet = row_facet, col_facet = col_facet,
+    color = color, fill = fill, size = size
   )
 
-  if (!is.null(row_facet)) {
-    data_extract <- append(
-      data_extract,
-      stats::setNames(
-        list(row_facet),
-        c("row_facet")
-      )
-    )
-  }
+  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
 
-  if (!is.null(col_facet)) {
-    data_extract <- append(
-      data_extract,
-      stats::setNames(
-        list(col_facet),
-        c("col_facet")
-      )
-    )
-  }
+  reactive_select_input <- reactive({
+    selectors <- selector_list()
+    extract_names <- names(selectors)
+    for (extract in extract_names) {
+      if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+        selectors <- selectors[-which(names(selectors) == extract)]
+      }
+    }
+    selectors
+  })
 
-  if (color_settings) {
-    data_extract <- append(
-      data_extract,
-      stats::setNames(
-        list(color, fill, size),
-        c("color", "fill", "size")
-      )
-    )
-  }
-
-  merged_data <- teal.devel::data_merge_module(
-    datasets = datasets,
-    data_extract = data_extract
+  merged_data <- teal.devel::data_merge_srv(
+    selector_list = reactive_select_input,
+    datasets = datasets
   )
 
   plot_r <- reactive({
+    validate({
+      need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
+    })
+
+
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
@@ -408,9 +398,21 @@ srv_g_bivariate <- function(input,
 
     row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
     col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
-    color_name <- as.vector(merged_data()$columns_source$color)
-    fill_name <- as.vector(merged_data()$columns_source$fill)
-    size_name <- as.vector(merged_data()$columns_source$size)
+    color_name <- if ("color" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$color)
+    } else {
+      character(0)
+    }
+    fill_name <- if ("fill" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$fill)
+    } else {
+      character(0)
+    }
+    size_name <- if ("size" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$size)
+    } else {
+      character(0)
+    }
 
     use_density <- input$use_density == "density"
     free_x_scales <- input$free_x_scales
