@@ -1058,7 +1058,7 @@ srv_missing_data <- function(input,
             geom_raster() +
             annotate(
               "text",
-              x = nrow(ANL_FILTERED),
+              x = length(order_subjects),
               y = seq_len(nrow(ordered_columns)),
               hjust = 1,
               label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
