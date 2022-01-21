@@ -168,6 +168,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   # plot
   plot_r <- reactive({
+    validate({need(!is.null(selector_list()$variables()), "Please select variables")})
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
@@ -277,6 +278,7 @@ srv_g_scatterplotmatrix <- function(input,
 
   # show a message if conversion to factors took place
   output$message <- renderText({
+    req(selector_list()$variables())
     ANL <- merged_data()$data() # nolint
     cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
     check_char <- vapply(ANL[, cols_names], is.character, logical(1))
