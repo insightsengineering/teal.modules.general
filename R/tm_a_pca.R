@@ -253,6 +253,8 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   teal.devel::init_chunks()
 
+  dat_selector <- teal.devel::data_extract_srv(id = "dat", datasets, dat)
+
   anl_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = list(dat = dat)
@@ -266,6 +268,11 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
 
   # computation ----
   computation <- reactive({
+    validate({
+      need(
+        !is.null(dat_selector()), "Please select data"
+      )
+    })
     chunks_stack <- teal.devel::chunks$new()
 
     keep_cols <- as.character(anl_data()$columns_source$dat)
