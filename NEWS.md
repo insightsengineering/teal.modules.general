@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.11.9036.6
+# teal.modules.general 0.2.11.9036.7
 
 ### Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
