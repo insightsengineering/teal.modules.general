@@ -224,12 +224,28 @@ srv_g_response <- function(input,
   names(data_extract) <- c("response", "x", "row_facet", "col_facet")
   data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  merged_data <- teal.devel::data_merge_module(
-    datasets = datasets,
-    data_extract = data_extract
+  selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+
+  reactive_select_input <- reactive({
+    selectors <- selector_list()
+    extract_names <- names(selectors)
+    for (extract in extract_names) {
+      if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+        selectors <- selectors[-which(names(selectors) == extract)]
+      }
+    }
+    selectors
+  })
+
+  merged_data <- teal.devel::data_merge_srv(
+    selector_list = reactive_select_input,
+    datasets = datasets
   )
 
   plot_r <- reactive({
+    validate({
+      need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
+    })
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
