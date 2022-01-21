@@ -436,7 +436,6 @@ srv_distribution <- function(input,
       ))
     }
 
-    validate(need(dist_var, "Please select a variable."))
     validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
     teal.devel::validate_has_data(ANL, 1, complete = TRUE)
 
