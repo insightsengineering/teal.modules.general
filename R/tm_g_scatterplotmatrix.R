@@ -168,7 +168,9 @@ srv_g_scatterplotmatrix <- function(input,
 
   # plot
   plot_r <- reactive({
-    validate({need(!is.null(selector_list()$variables()), "Please select variables")})
+    validate({
+      need(!is.null(selector_list()$variables()), "Please select variables")
+    })
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 
