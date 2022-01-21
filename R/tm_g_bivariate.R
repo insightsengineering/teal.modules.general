@@ -376,14 +376,7 @@ srv_g_bivariate <- function(input,
     validate({
       need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
     })
-    if (color_settings && input$coloring) {
-      validate({
-        need(
-          all(c("color", "fill", "size") %in% names(reactive_select_input())),
-          "Please select color, fill and size valeus"
-        )
-      })
-    }
+
 
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
@@ -405,9 +398,21 @@ srv_g_bivariate <- function(input,
 
     row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
     col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
-    color_name <- as.vector(merged_data()$columns_source$color)
-    fill_name <- as.vector(merged_data()$columns_source$fill)
-    size_name <- as.vector(merged_data()$columns_source$size)
+    color_name <- if ("color" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$color)
+    } else {
+      character(0)
+    }
+    fill_name <- if ("fill" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$fill)
+    } else {
+      character(0)
+    }
+    size_name <- if ("size" %in% names(merged_data()$columns_source)) {
+      as.vector(merged_data()$columns_source$size)
+    } else {
+      character(0)
+    }
 
     use_density <- input$use_density == "density"
     free_x_scales <- input$free_x_scales
