@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{render_tabset_panel_content}
 \alias{render_tabset_panel_content}
-\title{Renders the left-hand side `tabset` panel of the module}
+\title{Renders the left-hand side \code{tabset} panel of the module}
 \usage{
 render_tabset_panel_content(
   datanames,
@@ -14,18 +14,18 @@ render_tabset_panel_content(
 )
 }
 \arguments{
-\item{datanames}{(`character`) the name of the dataset}
+\item{datanames}{(\code{character}) the name of the dataset}
 
-\item{output}{(`session$output`) the shiny session output}
+\item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(`FilteredData`) the object containing all datasets}
+\item{datasets}{(\code{FilteredData}) the object containing all datasets}
 
-\item{input}{(`session$input`) the shiny session input}
+\item{input}{(\code{session$input}) the shiny session input}
 
-\item{columns_names}{(`environment`) the environment containing bindings for each dataset}
+\item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
 
-\item{plot_var}{(`list`) the list containing the currently selected dataset (tab) and its column names}
+\item{plot_var}{(\code{list}) the list containing the currently selected dataset (tab) and its column names}
 }
 \description{
-Renders the left-hand side `tabset` panel of the module
+Renders the left-hand side \code{tabset} panel of the module
 }

@@ -15,7 +15,7 @@ be executed with}
 }
 \value{
 : call (i.e. expression) of the function provided by \code{fun}
- with arguments provided by \code{str_args}.
+with arguments provided by \code{str_args}.
 }
 \description{
 Call a function with a character vector for the \code{...} argument

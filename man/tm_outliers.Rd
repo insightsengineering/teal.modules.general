@@ -20,28 +20,28 @@ tm_outliers(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{outlier_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
+\item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 variable to consider for the outliers analysis.}
 
-\item{categorical_var}{(`data_extract_spec` or `list` of multiple `data_extract_spec`)
+\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 categorical factor to split the selected outlier variables on.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) Theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
+Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-For more details see the help vignette:
-`vignette("custom-ggplot2-arguments", package = "teal.devel")`.
-List names should match the following:\cr
-`c("default", "Boxplot","Density plot","Cumulative distribution plot")`.
-The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+List names should match the following: \code{c("default", "Boxplot","Density plot","Cumulative distribution plot")}.
+
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}.}
+
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the

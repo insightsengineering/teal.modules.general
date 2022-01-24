@@ -20,23 +20,23 @@ tm_missing_data(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) Theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{classic}.}
+Each theme can be chosen by the user during the session. Defaults to \code{"classic"}.}
 
-\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-For more details see the help vignette:
-`vignette("custom-ggplot2-arguments", package = "teal.devel")`.
-List names should match the following:\cr
-`c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`.
-The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+
+List names should match the following: \code{c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")}.
+
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
