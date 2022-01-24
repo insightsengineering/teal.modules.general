@@ -38,11 +38,11 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{distribution_theme}{optional, (\code{character}) Theme to be used by default.
+\item{distribution_theme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{association_theme}{optional, (\code{character}) Theme to be used by default.
+\item{association_theme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 

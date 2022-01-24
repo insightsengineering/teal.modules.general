@@ -35,7 +35,7 @@ Which data columns to use for faceting rows.}
 \item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 

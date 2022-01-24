@@ -71,7 +71,7 @@ vector of length three with \code{c(value, min, max)}.}
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 

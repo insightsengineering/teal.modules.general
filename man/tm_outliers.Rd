@@ -26,7 +26,7 @@ variable to consider for the outliers analysis.}
 \item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 categorical factor to split the selected outlier variables on.}
 
-\item{ggtheme}{optional, (\code{character}) Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 

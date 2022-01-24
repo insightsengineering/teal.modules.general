@@ -9,7 +9,7 @@
 #'   for a slider encoding the plot width.
 #' @param rotate_xaxis_labels optional, (`logical`) Whether to rotate plot X axis labels. Does not
 #'   rotate by default (`FALSE`).
-#' @param ggtheme optional, (`character`) Theme to be used by default.
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
 #' @param ggplot2_args (`ggplot2_args`) object created by [teal.devel::ggplot2_args()]

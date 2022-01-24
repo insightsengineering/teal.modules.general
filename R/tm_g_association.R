@@ -10,10 +10,10 @@
 #'   associated variables.
 #' @param show_association optional, (`logical`) Whether show association of `vars`
 #'   with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme optional, (`character`) Theme to be used by default.
+#' @param distribution_theme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
-#' @param association_theme optional, (`character`) Theme to be used by default.
+#' @param association_theme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
 #'

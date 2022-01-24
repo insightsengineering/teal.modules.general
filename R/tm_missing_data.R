@@ -6,7 +6,7 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @param ggtheme optional, (`character`) Theme to be used by default.
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
 #'
