@@ -79,8 +79,10 @@ tm_a_regression <- function(label = "Regression Analysis",
                             plot_width = NULL,
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
-                            ggtheme = c("gray", "bw", "linedraw", "light", "dark",
-                                        "minimal", "classic", "void", "test"),
+                            ggtheme = c(
+                              "gray", "bw", "linedraw", "light", "dark",
+                              "minimal", "classic", "void", "test"
+                            ),
                             ggplot2_args = teal.devel::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL,

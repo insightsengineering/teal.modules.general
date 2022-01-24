@@ -777,9 +777,9 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     stop("x y type combination not allowed")
   }
 
-  labs_base <- if (is.null(x_class)) {
+  labs_base <- if (x_class == "NULL") {
     list(x = substitute(ylab, list(ylab = ylab)))
-  } else if (is.null(y_class)) {
+  } else if (y_class == "NULL") {
     list(x = substitute(xlab, list(xlab = xlab)))
   } else {
     list(
