@@ -657,20 +657,6 @@ srv_g_scatterplot <- function(input,
       plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
     }
 
-    if (add_density) {
-      plot_call <- substitute(
-        expr = ggExtra::ggMarginal(
-          plot_call,
-          type = "density",
-          groupColour = group_colour
-        ),
-        env = list(
-          plot_call = plot_call,
-          group_colour = if (length(color_by_var) > 0) TRUE else FALSE
-        )
-      )
-    }
-
     y_label <- varname_w_label(y_var, ANL)
     x_label <- varname_w_label(x_var, ANL)
 
@@ -690,18 +676,36 @@ srv_g_scatterplot <- function(input,
 
     parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
 
-    plot_call <- substitute(
-      expr = plot_call +
-        labs +
-        ggthemes +
-        themes,
-      env = list(
-        plot_call = plot_call,
-        labs = parsed_ggplot2_args$labs,
-        ggthemes = parsed_ggplot2_args$ggtheme,
-        themes = parsed_ggplot2_args$theme
+
+    if (add_density) {
+      plot_call <- substitute(
+        expr = ggExtra::ggMarginal(
+          plot_call + labs + ggthemes + themes,
+          type = "density",
+          groupColour = group_colour
+        ),
+        env = list(
+          plot_call = plot_call,
+          group_colour = if (length(color_by_var) > 0) TRUE else FALSE,
+          labs = parsed_ggplot2_args$labs,
+          ggthemes = parsed_ggplot2_args$ggtheme,
+          themes = parsed_ggplot2_args$theme
+        )
       )
-    )
+    } else {
+      plot_call <- substitute(
+        expr = plot_call +
+          labs +
+          ggthemes +
+          themes,
+        env = list(
+          plot_call = plot_call,
+          labs = parsed_ggplot2_args$labs,
+          ggthemes = parsed_ggplot2_args$ggtheme,
+          themes = parsed_ggplot2_args$theme
+        )
+      )
+    }
 
     plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
     teal.devel::chunks_push(plot_call)
