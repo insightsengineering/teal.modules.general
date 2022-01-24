@@ -236,6 +236,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       span(style = "white-space: normal;", "Select only vars with missings"),
       width = "100%"
     ),
+    hr(),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
       checkboxInput(
