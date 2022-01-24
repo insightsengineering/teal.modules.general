@@ -404,7 +404,7 @@ srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_w
         helpText("No plot specific settings available.")
       ),
       conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'pc_var'"),
+        condition = paste0("input['", ns("plot_type"), "'] == 'Eigenvector plot'"),
         optionalSelectInput(ns("pc"), "PC", choices = chcs_pcs, selected = chcs_pcs[1])
       )
     )
