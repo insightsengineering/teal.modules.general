@@ -680,7 +680,7 @@ srv_g_scatterplot <- function(input,
     if (add_density) {
       plot_call <- substitute(
         expr = ggExtra::ggMarginal(
-          plot_call  + labs + ggthemes + themes,
+          plot_call + labs + ggthemes + themes,
           type = "density",
           groupColour = group_colour
         ),
