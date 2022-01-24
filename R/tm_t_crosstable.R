@@ -155,13 +155,19 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
 
   selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
-  observeEvent(list(selector_list()$x(), selector_list()$y()), {
-    if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
-      shinyjs::hide("join_fun")
-    } else {
-      shinyjs::show("join_fun")
+  observeEvent(
+    eventExpr = {
+      req(!is.null(selector_list()$x()) && !is.null(selector_list()$y()))
+      list(selector_list()$x(), selector_list()$y())
+    },
+    handlerExpr = {
+      if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
+        shinyjs::hide("join_fun")
+      } else {
+        shinyjs::show("join_fun")
+      }
     }
-  })
+  )
 
   merge_function <- reactive({
     if (is.null(input$merge_fun)) {
@@ -182,6 +188,9 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
   })
 
   create_table <- reactive({
+    validate({
+      need(!is.null(selector_list()$x()) && !is.null(selector_list()$y()), "Please select row and column values")
+    })
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data_r())
 
@@ -297,12 +306,17 @@ srv_t_crosstable <- function(input, output, session, datasets, label, x, y, basi
   )
 
   show_r_code_title <- reactive(
-    paste(
-      "Cross-Table of",
-      paste0(merged_data_r()$columns_source$x, collapse = ", "),
-      "vs.",
-      merged_data_r()$columns_source$y
-    )
+    if (is.null(selector_list()$x()) || is.null(selector_list()$y())) {
+      paste("Cross-Table")
+    }
+    else {
+      paste(
+        "Cross-Table of",
+        paste0(merged_data_r()$columns_source$x, collapse = ", "),
+        "vs.",
+        merged_data_r()$columns_source$y
+      )
+    }
   )
 
   callModule(
