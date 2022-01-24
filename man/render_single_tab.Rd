@@ -14,17 +14,17 @@ render_single_tab(
 )
 }
 \arguments{
-\item{dataset_name}{(`character`) the name of the dataset contained in the rendered tab}
+\item{dataset_name}{(\code{character}) the name of the dataset contained in the rendered tab}
 
-\item{output}{(`session$output`) the shiny session output}
+\item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(`FilteredData`) the object containing all datasets}
+\item{datasets}{(\code{FilteredData}) the object containing all datasets}
 
-\item{input}{(`session$input`) the shiny session input}
+\item{input}{(\code{session$input}) the shiny session input}
 
-\item{columns_names}{(`environment`) the environment containing bindings for each dataset}
+\item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
 
-\item{plot_var}{(`list`) the list containing the currently selected dataset (tab) and its column names}
+\item{plot_var}{(\code{list}) the list containing the currently selected dataset (tab) and its column names}
 }
 \description{
 Renders a single tab in the left-hand side tabset panel. The rendered tab contains

@@ -32,8 +32,8 @@ Default \code{stats::cor.test}}
 }
 \description{
 uses stats::cor.test per default for all numerical input variables and converts results
- to character vector. Could be extended if different stats for different variable
- types are needed. Meant to be called from \code{lattice::panel.text}.
+to character vector. Could be extended if different stats for different variable
+types are needed. Meant to be called from \code{lattice::panel.text}.
 }
 \details{
 presently we need to use a formula input for \code{stats::cor.test} because

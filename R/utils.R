@@ -1,27 +1,27 @@
 #' Shared Parameters
 #'
 #' @description Contains arguments that are shared between multiple functions
-#'   in the package to avoid repetition using \code{inheritParams}.
+#'   in the package to avoid repetition using `inheritParams`.
 #'
-#' @param plot_height optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+#' @param plot_height optional, (`numeric`) A vector of length three with `c(value, min and max)`
 #'   for a slider encoding the plot height.
-#' @param plot_width optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+#' @param plot_width optional, (`numeric`) A vector of length three with `c(value, min and max)`
 #'   for a slider encoding the plot width.
-#' @param rotate_xaxis_labels optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
-#'   rotate by default (\code{FALSE}).
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-#'   Each theme can be chosen by the user during the session. Defaults to \code{gray}.
+#' @param rotate_xaxis_labels optional, (`logical`) Whether to rotate plot X axis labels. Does not
+#'   rotate by default (`FALSE`).
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
+#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
+#'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
 #' @param ggplot2_args (`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
 #'  with settings for the module plot.
-#'  For more details see the help vignette:
-#'  `vignette("custom-ggplot2-arguments", package = "teal.devel")`
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#'
+#'  For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.devel")`
 #' @param basic_table_args (`basic_table_args`) object created by [teal.devel::basic_table_args()]
 #'  with settings for the module table.
-#'  For more details see the help vignette:
-#'  `vignette("custom-basic-table-arguments", package = "teal.devel")`
 #'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
+#'
+#'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.devel")`
 #'
 #' @name shared_params
 NULL

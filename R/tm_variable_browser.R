@@ -926,9 +926,9 @@ plot_var_summary <- function(var,
 #'
 #' @description
 #' The format of the variable description is:
-#' <Long variable label> [<dataset name>.<variable name>]
+#' `"<Long variable label> [<dataset name>.<variable name>]"`
 #'
-#' Example: Study Identifier [ADSL.STUDYID]
+#' Example: `"Study Identifier [ADSL.STUDYID]"`
 #'
 #' @param datasets (`FilteredData`) the object containing the dataset
 #' @param dataset_name (`character`) the name of the dataset containing the variable

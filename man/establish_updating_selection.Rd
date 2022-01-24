@@ -7,13 +7,13 @@
 establish_updating_selection(datanames, input, plot_var, columns_names)
 }
 \arguments{
-\item{datanames}{(`character`) the name of the dataset}
+\item{datanames}{(\code{character}) the name of the dataset}
 
-\item{input}{(`session$input`) the shiny session input}
+\item{input}{(\code{session$input}) the shiny session input}
 
-\item{plot_var}{(`list`) the list containing the currently selected dataset (tab) and its column names}
+\item{plot_var}{(\code{list}) the list containing the currently selected dataset (tab) and its column names}
 
-\item{columns_names}{(`environment`) the environment containing bindings for each dataset}
+\item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
 }
 \description{
 The created observers update the column currently selected in the left-hand side
