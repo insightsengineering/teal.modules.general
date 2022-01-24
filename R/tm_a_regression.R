@@ -282,6 +282,12 @@ srv_a_regression <- function(input,
         "Response vs Regressor is only provided for exactly one regressor"
       )
     )
+    validate(
+      need(
+        input$plot_type != "Response vs Regressor" || regression_var()$regressor != regression_var()$response,
+        "Response vs Regressor is only provided if regression and response variables are different"
+      )
+    )
 
     teal.devel::validate_has_data(
       ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
