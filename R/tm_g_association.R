@@ -222,6 +222,12 @@ srv_tm_g_association <- function(input,
   )
 
   chunks_reactive <- reactive({
+    validate({
+      need(
+        !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
+        "Please select reference and associated variables"
+      )
+    })
     teal.devel::chunks_reset()
     teal.devel::chunks_push_data_merge(merged_data())
 

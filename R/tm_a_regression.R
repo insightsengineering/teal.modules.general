@@ -231,20 +231,30 @@ srv_a_regression <- function(input,
                              default_outlier_label) {
   teal.devel::init_chunks()
 
+  selector_list <- teal.devel::data_extract_multiple_srv(list(response = response, regressor = regressor), datasets)
+
   merged_data <- teal.devel::data_merge_module(
     datasets = datasets,
     data_extract = list(response = response, regressor = regressor)
   )
 
-  regression_var <- reactive(
+  regression_var <- reactive({
+    req(!is.null(selector_list()$response()) && !is.null(selector_list()$regressor()))
     list(
       response = as.vector(merged_data()$columns_source$response),
       regressor = as.vector(merged_data()$columns_source$regressor)
     )
-  )
+  })
 
   # sets chunk object and populates it with data merge call and fit expression
   fit <- reactive({
+    validate({
+      need(
+        !is.null(selector_list()$response()) && !is.null(selector_list()$regressor()),
+        "Please select regressor and response variables"
+      )
+    })
+
     chunks_stack <- teal.devel::chunks$new()
 
     teal.devel::chunks_reset(chunks = chunks_stack)
