@@ -32,7 +32,7 @@
 #'       ggplot2_args = list(
 #'         "Combinations Hist" = teal.devel::ggplot2_args(labs = list(caption = NULL)),
 #'         "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = "Plot produced by Missing Data Module"))
-#'        )
+#'       )
 #'     )
 #'   )
 #' )
