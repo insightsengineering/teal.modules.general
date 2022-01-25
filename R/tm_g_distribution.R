@@ -94,8 +94,10 @@ tm_g_distribution <- function(label = "Distribution Module",
                               strata_var = NULL,
                               group_var = NULL,
                               freq = FALSE,
-                              ggtheme = c("gray", "bw", "linedraw", "light", "dark",
-                                          "minimal", "classic", "void", "test"),
+                              ggtheme = c(
+                                "gray", "bw", "linedraw", "light", "dark",
+                                "minimal", "classic", "void", "test"
+                              ),
                               ggplot2_args = teal.devel::ggplot2_args(),
                               bins = c(30L, 1L, 100L),
                               plot_height = c(600, 200, 2000),

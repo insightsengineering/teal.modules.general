@@ -74,10 +74,14 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark",
-                                                    "minimal", "classic", "void", "test"),
-                             association_theme = c("gray", "bw", "linedraw", "light", "dark",
-                                                   "minimal", "classic", "void", "test"),
+                             distribution_theme = c(
+                               "gray", "bw", "linedraw", "light", "dark",
+                               "minimal", "classic", "void", "test"
+                             ),
+                             association_theme = c(
+                               "gray", "bw", "linedraw", "light", "dark",
+                               "minimal", "classic", "void", "test"
+                             ),
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.devel::ggplot2_args()) {
