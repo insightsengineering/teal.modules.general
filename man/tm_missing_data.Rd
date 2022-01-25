@@ -63,9 +63,10 @@ app <- init(
   modules = root_modules(
     tm_missing_data(
       ggplot2_args = list(
-        "Combinations Hist" = teal.devel::ggplot2_args(labs = list(caption = NULL)),
-        "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = "Plot produced by Missing Data Module"))
-       )
+        "Combinations Hist" =
+          teal.devel::ggplot2_args(labs = list(title = "Plot produced by Missing Data Module", caption = NULL)),
+        "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = NULL))
+      )
     )
   )
 )
