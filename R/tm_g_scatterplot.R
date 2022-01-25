@@ -129,8 +129,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              size = c(5, 1, 15),
                              max_deg = 5L,
                              rotate_xaxis_labels = FALSE,
-                             ggtheme = c("gray", "bw", "linedraw", "light", "dark",
-                                         "minimal", "classic", "void", "test"),
+                             ggtheme = c(
+                               "gray", "bw", "linedraw", "light", "dark",
+                               "minimal", "classic", "void", "test"
+                             ),
                              pre_output = NULL,
                              post_output = NULL,
                              table_dec = 4,
