@@ -7,13 +7,13 @@
 remove_outliers_from(var, outlier_definition)
 }
 \arguments{
-\item{var}{(`numeric`) a numeric vector}
+\item{var}{(\code{numeric}) a numeric vector}
 
-\item{outlier_definition}{(`numeric`) if `0` then no outliers are removed, otherwise
-outliers (those more than `outlier_definition*IQR below/above Q1/Q3`) are removed}
+\item{outlier_definition}{(\code{numeric}) if \code{0} then no outliers are removed, otherwise
+outliers (those more than \verb{outlier_definition*IQR below/above Q1/Q3}) are removed}
 }
 \value{
-(`numeric`) vector without the outlier values
+(\code{numeric}) vector without the outlier values
 }
 \description{
 Removes the outlier observation from an array

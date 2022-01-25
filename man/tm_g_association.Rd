@@ -32,19 +32,19 @@ associated variables.}
 \item{show_association}{optional, (\code{logical}) Whether show association of \code{vars}
 with reference variable. Defaults to \code{TRUE}.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{distribution_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\item{distribution_theme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
+Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{association_theme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\item{association_theme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
+Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
@@ -53,13 +53,13 @@ output to put the output into context. For example a title.}
 output to put the output into context. For example the
 \code{\link[shiny]{helpText}} elements are useful.}
 
-\item{ggplot2_args}{optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-For more details see the help vignette:
-`vignette("custom-ggplot2-arguments", package = "teal.devel")`.
-List names should match the following:\cr
-`c("default", "Bivariate1", "Bivariate2")`.
-The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+
+List names should match the following: \code{c("default", "Bivariate1", "Bivariate2")}.
+
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}.}
 }
 \description{
 Stack Plots of variables and show association with reference variable

@@ -73,10 +73,10 @@ Does not allow scaling to be changed by default (\code{FALSE}).}
 \item{free_y_scales}{optional, (\code{logical}) Whether Y scaling shall be changeable.
 Does not allow scaling to be changed by default (\code{FALSE}).}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
@@ -84,15 +84,15 @@ rotate by default (\code{FALSE}).}
 
 \item{swap_axes}{optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot} Theme to be used by default.
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{gray}.}
+Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
+\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
 with settings for the module plot.
-For more details see the help vignette:
-`vignette("custom-ggplot2-arguments", package = "teal.devel")`
-The argument is merged with options variable `teal.ggplot2_args` and default module setup.}
+The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the
 output to put the output into context. For example a title.}
