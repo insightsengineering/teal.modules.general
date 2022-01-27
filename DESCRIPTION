@@ -47,7 +47,7 @@ Imports:
     MASS,
     methods,
     rlang,
-    rtables (>= 0.4.0.2.1),
+    rtables (>= 0.4.1),
     scales,
     shinyjs,
     shinyWidgets,
