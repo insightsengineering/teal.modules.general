@@ -303,103 +303,592 @@ srv_distribution <- function(id,
                              plot_height,
                              plot_width,
                              ggplot2_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      teal.devel::init_chunks()
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-      data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
-      data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+    data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
+    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-      selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
 
-      reactive_select_input <- reactive({
-        selectors <- selector_list()
-        extract_names <- names(selectors)
-        for (extract in extract_names) {
-          if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-            selectors <- selectors[-which(names(selectors) == extract)]
-          }
+    reactive_select_input <- reactive({
+      selectors <- selector_list()
+      extract_names <- names(selectors)
+      for (extract in extract_names) {
+        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+          selectors <- selectors[-which(names(selectors) == extract)]
         }
-        selectors
-      })
+      }
+      selectors
+    })
 
-      merged_data <- teal.devel::data_merge_srv(
-        selector_list = reactive_select_input,
-        datasets = datasets
-      )
+    merged_data <- teal.devel::data_merge_srv(
+      selector_list = reactive_select_input,
+      datasets = datasets
+    )
 
-      observeEvent(
-        eventExpr = list(
-          input$t_dist,
-          input$params_reset,
-          input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
-        ),
-        handlerExpr = {
-          if (length(input$t_dist) != 0) {
-            dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+    observeEvent(
+      eventExpr = list(
+        input$t_dist,
+        input$params_reset,
+        input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
+      ),
+      handlerExpr = {
+        if (length(input$t_dist) != 0) {
+          dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
 
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                res <- as.list(range(x))
-                names(res) <- c("min", "max")
-                return(res)
-              }
-              tryCatch(
-                as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-                error = function(e) list(param1 = NA, param2 = NA)
-              )
+          get_dist_params <- function(x, dist) {
+            if (dist == "unif") {
+              res <- as.list(range(x))
+              names(res) <- c("min", "max")
+              return(res)
             }
-
-            ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
-            params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
-            params_vec <- round(unname(unlist(params)), 2)
-            params_names <- names(params)
-
-            updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-            updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-          } else {
-            updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-            updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+            tryCatch(
+              as.list(MASS::fitdistr(x, densfun = dist)$estimate),
+              error = function(e) list(param1 = NA, param2 = NA)
+            )
           }
-        },
-        ignoreInit = TRUE
+
+          ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+          params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
+          params_vec <- round(unname(unlist(params)), 2)
+          params_names <- names(params)
+
+          updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
+          updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+        } else {
+          updateNumericInput(session, "dist_param1", label = "param1", value = NA)
+          updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+        }
+      },
+      ignoreInit = TRUE
+    )
+
+    merge_vars <- reactive({
+      dist_var <- as.vector(merged_data()$columns_source$dist_i)
+      s_var <- as.vector(merged_data()$columns_source$strata_i)
+      g_var <- as.vector(merged_data()$columns_source$group_i)
+
+      dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
+      s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+      g_var_name <- if (length(g_var)) as.name(g_var) else NULL
+
+      list(
+        dist_var = dist_var,
+        s_var = s_var,
+        g_var = g_var,
+        dist_var_name = dist_var_name,
+        s_var_name = s_var_name,
+        g_var_name = g_var_name
       )
+    })
 
-      merge_vars <- reactive({
-        dist_var <- as.vector(merged_data()$columns_source$dist_i)
-        s_var <- as.vector(merged_data()$columns_source$strata_i)
-        g_var <- as.vector(merged_data()$columns_source$group_i)
-
-        dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
-        s_var_name <- if (length(s_var)) as.name(s_var) else NULL
-        g_var_name <- if (length(g_var)) as.name(g_var) else NULL
-
-        list(
-          dist_var = dist_var,
-          s_var = s_var,
-          g_var = g_var,
-          dist_var_name = dist_var_name,
-          s_var_name = s_var_name,
-          g_var_name = g_var_name
-        )
+    # common chunks ----
+    common_code_chunks <- reactive({
+      # Create a private stack for this function only.
+      validate({
+        need("dist_i" %in% names(reactive_select_input()), "Please select a variable")
       })
 
-      # common chunks ----
-      common_code_chunks <- reactive({
+      common_stack <- teal.devel::chunks$new()
+
+      common_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = common_stack)
+      }
+
+      teal.devel::chunks_push_data_merge(isolate(merged_data()), common_stack)
+      ANL <- teal.devel::chunks_get_var("ANL", common_stack) # nolint
+
+      dist_var <- merge_vars()$dist_var
+      s_var <- merge_vars()$s_var
+      g_var <- merge_vars()$g_var
+
+      dist_var_name <- merge_vars()$dist_var_name
+      s_var_name <- merge_vars()$s_var_name
+      g_var_name <- merge_vars()$g_var_name
+
+      roundn <- input$roundn
+      dist_param1 <- input$dist_param1
+      dist_param2 <- input$dist_param2
+      # isolated as dist_param1/dist_param2 already triggered the reactivity
+      t_dist <- isolate(input$t_dist)
+
+      if (length(g_var) > 0) {
+        validate(
+          need(
+            inherits(ANL[[g_var]], c("integer", "factor", "character")),
+            "Group by variable must be `factor`, `character`, or `integer`"
+          )
+        )
+        common_stack_push(substitute(
+          expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
+          env = list(g_var = g_var)
+        ))
+      }
+
+      if (length(s_var) > 0) {
+        validate(
+          need(
+            inherits(ANL[[s_var]], c("integer", "factor", "character")),
+            "Stratify by variable must be `factor`, `character`, or `integer`"
+          )
+        )
+        common_stack_push(substitute(
+          expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
+          env = list(s_var = s_var)
+        ))
+      }
+
+      validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
+      teal.devel::validate_has_data(ANL, 1, complete = TRUE)
+
+      if (length(t_dist) != 0) {
+        map_distr_nams <- data.frame(
+          distr = c("normal", "lognormal", "gamma", "unif"),
+          namparam = I(list(
+            c("mean", "sd"),
+            c("meanlog", "sdlog"),
+            c("shape", "rate"),
+            c("min", "max")
+          )),
+          stringsAsFactors = FALSE
+        )
+        params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
+
+        common_stack_push(substitute(
+          expr = {
+            params <- as.list(c(dist_param1, dist_param2))
+            names(params) <- params_names_raw
+          },
+          env = list(
+            dist_param1 = dist_param1,
+            dist_param2 = dist_param2,
+            t_dist = t_dist,
+            params_names_raw = params_names_raw
+          )
+        ))
+      }
+
+      if (length(s_var) == 0 && length(g_var) == 0) {
+        common_stack_push(
+          substitute(
+            expr = {
+              summary_table <- ANL %>%
+                dplyr::summarise(
+                  min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                  median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
+                  mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
+                  max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                  sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
+                  count = dplyr::n()
+                )
+            },
+            env = list(
+              dist_var_name = as.name(dist_var),
+              roundn = roundn
+            )
+          )
+        )
+      } else {
+        common_stack_push(
+          substitute(
+            expr = {
+              strata_vars <- strata_vars_raw
+              summary_table <- ANL %>%
+                dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
+                dplyr::summarise(
+                  min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                  median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
+                  mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
+                  max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                  sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
+                  count = dplyr::n()
+                )
+            },
+            env = list(
+              dist_var_name = dist_var_name,
+              strata_vars_raw = c(g_var, s_var),
+              roundn = roundn
+            )
+          )
+        )
+      }
+
+      teal.devel::chunks_safe_eval(chunks = common_stack)
+
+      common_stack
+    })
+
+    # distplot chunks ----
+    dist_plot_r_chunks <- eventReactive(
+      eventExpr = {
+        common_code_chunks()
+        input$scales_type
+        input$main_type
+        input$bins
+        input$add_dens
+        is.null(input$ggtheme)
+      },
+      valueExpr = {
         # Create a private stack for this function only.
-        validate({
-          need("dist_i" %in% names(reactive_select_input()), "Please select a variable")
-        })
+        distplot_stack <- teal.devel::chunks$new()
 
-        common_stack <- teal.devel::chunks$new()
+        ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
+        if ("params" %in% common_code_chunks()$ls()) {
+          params <- teal.devel::chunks_get_var("params", common_code_chunks())
+        }
+        summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks()) # nolint
 
-        common_stack_push <- function(...) {
-          teal.devel::chunks_push(..., chunks = common_stack)
+        teal.devel::chunks_reset(chunks = distplot_stack)
+
+        distplot_stack_push <- function(...) {
+          teal.devel::chunks_push(..., chunks = distplot_stack)
         }
 
-        teal.devel::chunks_push_data_merge(isolate(merged_data()), common_stack)
-        ANL <- teal.devel::chunks_get_var("ANL", common_stack) # nolint
+        # isolated as common chunks already triggered the reactivity
+        dist_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$s_var
+        g_var <- merge_vars()$g_var
+        dist_var_name <- merge_vars()$dist_var_name
+        s_var_name <- merge_vars()$s_var_name
+        g_var_name <- merge_vars()$g_var_name
+        t_dist <- input$t_dist
+        dist_param1 <- input$dist_param1
+        dist_param2 <- input$dist_param2
+
+        scales_type <- input$scales_type
+        ndensity <- 512
+        main_type_var <- input$main_type
+        bins_var <- input$bins
+        add_dens_var <- input$add_dens
+        ggtheme <- input$ggtheme
+
+        validate(need(ggtheme, "Please select a theme."))
+
+        m_type <- if (main_type_var == "Density") "..density.." else "..count.."
+        m_type2 <- if (main_type_var == "Density") {
+          "..density.."
+        } else {
+          paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
+        }
+
+        plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
+          substitute(
+            expr = ggplot(ANL, aes(dist_var_name)) +
+              geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
+            env = list(
+              m_type = m_type,
+              bins_var = bins_var,
+              dist_var_name = as.name(dist_var)
+            )
+          )
+        } else if (length(s_var) != 0 && length(g_var) == 0) {
+          substitute(
+            expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+              geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
+            env = list(
+              m_type = m_type,
+              bins_var = bins_var,
+              dist_var_name = dist_var_name,
+              s_var = s_var,
+              s_var_name = s_var_name
+            )
+          )
+        } else if (length(s_var) == 0 && length(g_var) != 0) {
+          substitute(
+            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
+              geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
+              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            env = list(
+              m_type = m_type,
+              bins_var = bins_var,
+              dist_var_name = dist_var_name,
+              g_var = g_var,
+              g_var_name = g_var_name,
+              scales_raw = tolower(scales_type)
+            )
+          )
+        } else {
+          substitute(
+            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
+              geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
+              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            env = list(
+              m_type = m_type,
+              bins_var = bins_var,
+              dist_var_name = dist_var_name,
+              g_var = g_var,
+              s_var = s_var,
+              g_var_name = g_var_name,
+              s_var_name = s_var_name,
+              scales_raw = tolower(scales_type)
+            )
+          )
+        }
+
+        if (add_dens_var) {
+          plot_call <- substitute(
+            expr = plot_call +
+              stat_density(
+                aes_string(y = m_type2),
+                geom = "line",
+                position = "identity",
+                alpha = 0.5,
+                size = 2,
+                n = ndensity
+              ),
+            env = list(
+              plot_call = plot_call,
+              m_type2 = m_type2,
+              ndensity = ndensity
+            )
+          )
+        }
+
+        if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
+          distplot_stack_push(substitute(
+            df_params <- as.data.frame(append(params, list(name = t_dist))),
+            env = list(t_dist = t_dist)
+          ))
+          datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
+          label <- quote(tb)
+
+          plot_call <- substitute(
+            expr = plot_call + ggpp::geom_table_npc(
+              data = data,
+              aes(npcx = x, npcy = y, label = label),
+              hjust = 0, vjust = 1, size = 4
+            ),
+            env = list(plot_call = plot_call, data = datas, label = label)
+          )
+        }
+
+        if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
+          length(t_dist) != 0 && m_type == "..density..") {
+          map_dist <- stats::setNames(
+            c("dnorm", "dlnorm", "dgamma", "dunif"),
+            c("normal", "lognormal", "gamma", "unif")
+          )
+          plot_call <- substitute(
+            expr = plot_call + stat_function(
+              data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
+              aes(x, color = color),
+              fun = mapped_dist,
+              n = ndensity,
+              size = 2,
+              args = params
+            ) +
+              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
+            env = list(
+              plot_call = plot_call,
+              dist_var = dist_var,
+              ndensity = ndensity,
+              mapped_dist = unname(map_dist[t_dist])
+            )
+          )
+        }
+
+        all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Histogram"]],
+          user_default = ggplot2_args$default
+        )
+
+        parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+          all_ggplot2_args,
+          ggtheme = ggtheme
+        )
+
+        distplot_stack_push(substitute(
+          expr = {
+            g <- plot_call
+            print(g)
+          },
+          env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+        ))
+
+        teal.devel::chunks_safe_eval(distplot_stack)
+
+        distplot_stack
+      }
+    )
+
+    # qqplot chunks ----
+    qq_plot_r_chunks <- eventReactive(
+      eventExpr = {
+        common_code_chunks()
+        input$scales_type
+        input$qq_line
+        is.null(input$ggtheme)
+      },
+      valueExpr = {
+        # Create a private stack for this function only.
+        qqplot_stack <- teal.devel::chunks$new()
+
+        ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
+        if ("params" %in% common_code_chunks()$ls()) {
+          params <- teal.devel::chunks_get_var("params", common_code_chunks())
+        }
+        summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks())
+
+        teal.devel::chunks_reset(chunks = qqplot_stack)
+
+        qqplot_stack_push <- function(...) {
+          teal.devel::chunks_push(..., chunks = qqplot_stack)
+        }
+
+        # isolated as common chunks already triggered the reactivity
+        dist_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$s_var
+        g_var <- merge_vars()$g_var
+        dist_var_name <- merge_vars()$dist_var_name
+        s_var_name <- merge_vars()$s_var_name
+        g_var_name <- merge_vars()$g_var_name
+        t_dist <- input$t_dist
+        dist_param1 <- input$dist_param1
+        dist_param2 <- input$dist_param2
+
+        scales_type <- input$scales_type
+        ggtheme <- input$ggtheme
+
+        validate(need(ggtheme, "Please select a theme."))
+        validate(need(t_dist, "Please select the theoretical distribution."))
+        validate_dist_parameters(t_dist, dist_param1, dist_param2)
+
+        plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
+          substitute(
+            expr = ggplot(ANL, aes_string(sample = dist_var)),
+            env = list(
+              dist_var = dist_var
+            )
+          )
+        } else if (length(s_var) != 0 && length(g_var) == 0) {
+          substitute(
+            expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
+            env = list(
+              dist_var = dist_var,
+              s_var = s_var
+            )
+          )
+        } else if (length(s_var) == 0 && length(g_var) != 0) {
+          substitute(
+            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var)) +
+              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            env = list(
+              dist_var = dist_var,
+              g_var = g_var,
+              g_var_name = g_var_name,
+              scales_raw = tolower(scales_type)
+            )
+          )
+        } else {
+          substitute(
+            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var, color = s_var)) +
+              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            env = list(
+              dist_var = dist_var,
+              g_var = g_var,
+              s_var = s_var,
+              g_var_name = g_var_name,
+              scales_raw = tolower(scales_type)
+            )
+          )
+        }
+
+        map_dist <- stats::setNames(
+          c("qnorm", "qlnorm", "qgamma", "qunif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+
+        plot_call <- substitute(
+          expr = plot_call +
+            stat_qq(distribution = mapped_dist, dparams = params),
+          env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
+        )
+
+        if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
+          qqplot_stack_push(substitute(
+            df_params <- as.data.frame(append(params, list(name = t_dist))),
+            env = list(t_dist = t_dist)
+          ))
+          datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
+          label <- quote(tb)
+
+          plot_call <- substitute(
+            expr = plot_call +
+              ggpp::geom_table_npc(
+                data = data,
+                aes(npcx = x, npcy = y, label = label),
+                hjust = 0,
+                vjust = 1,
+                size = 4
+              ),
+            env = list(
+              plot_call = plot_call,
+              data = datas,
+              label = label
+            )
+          )
+        }
+
+        if (isTRUE(input$qq_line)) {
+          plot_call <- substitute(
+            expr = plot_call +
+              stat_qq_line(distribution = mapped_dist, dparams = params),
+            env = list(
+              plot_call = plot_call,
+              mapped_dist = unname(map_dist[t_dist])
+            )
+          )
+        }
+
+        all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["QQplot"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.devel::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
+        )
+
+        parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+          all_ggplot2_args,
+          ggtheme = ggtheme
+        )
+
+        qqplot_stack_push(substitute(
+          expr = {
+            g <- plot_call
+            print(g)
+          },
+          env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+        ))
+
+        teal.devel::chunks_safe_eval(qqplot_stack)
+
+        qqplot_stack
+      }
+    )
+
+    # test chunks ----
+    test_r_chunks <- eventReactive(
+      ignoreNULL = FALSE,
+      eventExpr = {
+        common_code_chunks()
+        input$dist_param1
+        input$dist_param2
+        input$dist_tests
+      },
+      valueExpr = {
+        # Create a private stack for this function only.
+        test_stack <- teal.devel::chunks$new()
+
+        ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
+        if ("params" %in% common_code_chunks()$ls()) {
+          params <- teal.devel::chunks_get_var("params", common_code_chunks())
+        }
+
+        teal.devel::chunks_reset(chunks = test_stack)
+
+        test_stack_push <- function(...) {
+          teal.devel::chunks_push(..., chunks = test_stack)
+        }
 
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
@@ -409,729 +898,237 @@ srv_distribution <- function(id,
         s_var_name <- merge_vars()$s_var_name
         g_var_name <- merge_vars()$g_var_name
 
-        roundn <- input$roundn
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
-        # isolated as dist_param1/dist_param2 already triggered the reactivity
-        t_dist <- isolate(input$t_dist)
+        dist_tests <- input$dist_tests
+        t_dist <- input$t_dist
 
-        if (length(g_var) > 0) {
-          validate(
-            need(
-              inherits(ANL[[g_var]], c("integer", "factor", "character")),
-              "Group by variable must be `factor`, `character`, or `integer`"
-            )
-          )
-          common_stack_push(substitute(
-            expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
-            env = list(g_var = g_var)
-          ))
+        validate(need(dist_tests, "Please select a test"))
+
+        if (length(s_var) > 0 || length(g_var) > 0) {
+          counts <- ANL %>%
+            dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
+            dplyr::summarise(n = dplyr::n())
+
+          validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
         }
 
-        if (length(s_var) > 0) {
-          validate(
-            need(
-              inherits(ANL[[s_var]], c("integer", "factor", "character")),
-              "Stratify by variable must be `factor`, `character`, or `integer`"
-            )
-          )
-          common_stack_push(substitute(
-            expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
-            env = list(s_var = s_var)
-          ))
+        if (dist_tests %in% c(
+          "Kolmogorov-Smirnov (one-sample)",
+          "Anderson-Darling (one-sample)",
+          "Cramer-von Mises (one-sample)"
+        )) {
+          validate(need(t_dist, "Please select the theoretical distribution."))
+        } else if (dist_tests == "Fligner-Killeen") {
+          validate(need(s_var, "Please select stratify variable."))
+          validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
+        } else if (dist_tests %in% c(
+          "t-test (two-samples, not paired)",
+          "F-test",
+          "Kolmogorov-Smirnov (two-samples)"
+        )) {
+          validate(need(s_var, "Please select stratify variable."))
+          if (length(g_var) == 0 && length(s_var) > 0) {
+            validate(need(
+              length(unique(ANL[[s_var]])) == 2,
+              "Please select stratify variable with 2 levels."
+            ))
+          }
+          if (length(g_var) > 0 && length(s_var) > 0) {
+            validate(need(
+              all(stats::na.omit(as.vector(tapply(
+                ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
+              ) == 2))),
+              "Please select stratify variable with 2 levels, per each group."
+            ))
+          }
+        } else if (dist_tests == "one-way ANOVA") {
+          validate(need(s_var, "Please select stratify variable."))
         }
 
-        validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
-        teal.devel::validate_has_data(ANL, 1, complete = TRUE)
+        map_dist <- stats::setNames(
+          c("pnorm", "plnorm", "pgamma", "punif"),
+          c("normal", "lognormal", "gamma", "unif")
+        )
+        sks_args <- list(
+          test = quote(stats::ks.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        ssw_args <- list(
+          test = quote(stats::shapiro.test),
+          args = bquote(list(.[[.(dist_var)]])),
+          groups = c(g_var, s_var)
+        )
+        mfil_args <- list(
+          test = quote(stats::fligner.test),
+          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
+          groups = c(g_var)
+        )
+        sad_args <- list(
+          test = quote(goftest::ad.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        scvm_args <- list(
+          test = quote(goftest::cvm.test),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
+          groups = c(g_var, s_var)
+        )
+        manov_args <- list(
+          test = quote(stats::aov),
+          args = bquote(list(stats::formula(.(dist_var_name) ~ .(s_var_name)), .)),
+          groups = c(g_var)
+        )
+        mt_args <- list(
+          test = quote(stats::t.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
+        mv_args <- list(
+          test = quote(stats::var.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
+        mks_args <- list(
+          test = quote(stats::ks.test),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
+          groups = c(g_var)
+        )
 
-        if (length(t_dist) != 0) {
-          map_distr_nams <- data.frame(
-            distr = c("normal", "lognormal", "gamma", "unif"),
-            namparam = I(list(
-              c("mean", "sd"),
-              c("meanlog", "sdlog"),
-              c("shape", "rate"),
-              c("min", "max")
-            )),
-            stringsAsFactors = FALSE
-          )
-          params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
+        tests_base <- switch(dist_tests,
+          "Kolmogorov-Smirnov (one-sample)" = sks_args,
+          "Shapiro-Wilk" = ssw_args,
+          "Fligner-Killeen" = mfil_args,
+          "one-way ANOVA" = manov_args,
+          "t-test (two-samples, not paired)" = mt_args,
+          "F-test" = mv_args,
+          "Kolmogorov-Smirnov (two-samples)" = mks_args,
+          "Anderson-Darling (one-sample)" = sad_args,
+          "Cramer-von Mises (one-sample)" = scvm_args
+        )
 
-          common_stack_push(substitute(
-            expr = {
-              params <- as.list(c(dist_param1, dist_param2))
-              names(params) <- params_names_raw
-            },
-            env = list(
-              dist_param1 = dist_param1,
-              dist_param2 = dist_param2,
-              t_dist = t_dist,
-              params_names_raw = params_names_raw
-            )
-          ))
-        }
+        env <- list(
+          t_test = t_dist,
+          dist_var = dist_var,
+          g_var = g_var,
+          s_var = s_var,
+          args = tests_base$args,
+          groups = tests_base$groups,
+          test = tests_base$test,
+          dist_var_name = dist_var_name,
+          g_var_name = g_var_name,
+          s_var_name = s_var_name
+        )
 
         if (length(s_var) == 0 && length(g_var) == 0) {
-          common_stack_push(
+          test_stack_push(
             substitute(
               expr = {
-                summary_table <- ANL %>%
-                  dplyr::summarise(
-                    min = round(min(dist_var_name, na.rm = TRUE), roundn),
-                    median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
-                    mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
-                    max = round(max(dist_var_name, na.rm = TRUE), roundn),
-                    sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
-                    count = dplyr::n()
-                  )
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var) %>%
+                  with(., broom::glance(do.call(test, args))) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
               },
-              env = list(
-                dist_var_name = as.name(dist_var),
-                roundn = roundn
-              )
+              env = env
             )
           )
         } else {
-          common_stack_push(
+          test_stack_push(
             substitute(
               expr = {
-                strata_vars <- strata_vars_raw
-                summary_table <- ANL %>%
-                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
-                  dplyr::summarise(
-                    min = round(min(dist_var_name, na.rm = TRUE), roundn),
-                    median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
-                    mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
-                    max = round(max(dist_var_name, na.rm = TRUE), roundn),
-                    sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
-                    count = dplyr::n()
-                  )
+                test_stats <- ANL %>%
+                  dplyr::select(dist_var, s_var, g_var) %>%
+                  dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
+                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                  tidyr::unnest(tests) %>%
+                  dplyr::mutate_if(is.numeric, round, 3)
               },
-              env = list(
-                dist_var_name = dist_var_name,
-                strata_vars_raw = c(g_var, s_var),
-                roundn = roundn
-              )
+              env = env
             )
           )
         }
 
-        teal.devel::chunks_safe_eval(chunks = common_stack)
-
-        common_stack
-      })
-
-      # distplot chunks ----
-      dist_plot_r_chunks <- eventReactive(
-        eventExpr = {
-          common_code_chunks()
-          input$scales_type
-          input$main_type
-          input$bins
-          input$add_dens
-          is.null(input$ggtheme)
-        },
-        valueExpr = {
-          # Create a private stack for this function only.
-          distplot_stack <- teal.devel::chunks$new()
-
-          ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
-          if ("params" %in% common_code_chunks()$ls()) {
-            params <- teal.devel::chunks_get_var("params", common_code_chunks())
-          }
-          summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks()) # nolint
-
-          teal.devel::chunks_reset(chunks = distplot_stack)
-
-          distplot_stack_push <- function(...) {
-            teal.devel::chunks_push(..., chunks = distplot_stack)
-          }
-
-          # isolated as common chunks already triggered the reactivity
-          dist_var <- merge_vars()$dist_var
-          s_var <- merge_vars()$s_var
-          g_var <- merge_vars()$g_var
-          dist_var_name <- merge_vars()$dist_var_name
-          s_var_name <- merge_vars()$s_var_name
-          g_var_name <- merge_vars()$g_var_name
-          t_dist <- input$t_dist
-          dist_param1 <- input$dist_param1
-          dist_param2 <- input$dist_param2
-
-          scales_type <- input$scales_type
-          ndensity <- 512
-          main_type_var <- input$main_type
-          bins_var <- input$bins
-          add_dens_var <- input$add_dens
-          ggtheme <- input$ggtheme
-
-          validate(need(ggtheme, "Please select a theme."))
-
-          m_type <- if (main_type_var == "Density") "..density.." else "..count.."
-          m_type2 <- if (main_type_var == "Density") {
-            "..density.."
-          } else {
-            paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
-          }
-
-          plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-            substitute(
-              expr = ggplot(ANL, aes(dist_var_name)) +
-                geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
-              env = list(
-                m_type = m_type,
-                bins_var = bins_var,
-                dist_var_name = as.name(dist_var)
-              )
-            )
-          } else if (length(s_var) != 0 && length(g_var) == 0) {
-            substitute(
-              expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-                geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
-              env = list(
-                m_type = m_type,
-                bins_var = bins_var,
-                dist_var_name = dist_var_name,
-                s_var = s_var,
-                s_var_name = s_var_name
-              )
-            )
-          } else if (length(s_var) == 0 && length(g_var) != 0) {
-            substitute(
-              expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
-                geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
-                facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-              env = list(
-                m_type = m_type,
-                bins_var = bins_var,
-                dist_var_name = dist_var_name,
-                g_var = g_var,
-                g_var_name = g_var_name,
-                scales_raw = tolower(scales_type)
-              )
-            )
-          } else {
-            substitute(
-              expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
-                geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
-                facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-              env = list(
-                m_type = m_type,
-                bins_var = bins_var,
-                dist_var_name = dist_var_name,
-                g_var = g_var,
-                s_var = s_var,
-                g_var_name = g_var_name,
-                s_var_name = s_var_name,
-                scales_raw = tolower(scales_type)
-              )
-            )
-          }
-
-          if (add_dens_var) {
-            plot_call <- substitute(
-              expr = plot_call +
-                stat_density(
-                  aes_string(y = m_type2),
-                  geom = "line",
-                  position = "identity",
-                  alpha = 0.5,
-                  size = 2,
-                  n = ndensity
-                ),
-              env = list(
-                plot_call = plot_call,
-                m_type2 = m_type2,
-                ndensity = ndensity
-              )
-            )
-          }
-
-          if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-            distplot_stack_push(substitute(
-              df_params <- as.data.frame(append(params, list(name = t_dist))),
-              env = list(t_dist = t_dist)
-            ))
-            datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
-            label <- quote(tb)
-
-            plot_call <- substitute(
-              expr = plot_call + ggpp::geom_table_npc(
-                data = data,
-                aes(npcx = x, npcy = y, label = label),
-                hjust = 0, vjust = 1, size = 4
-              ),
-              env = list(plot_call = plot_call, data = datas, label = label)
-            )
-          }
-
-          if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-            length(t_dist) != 0 && m_type == "..density..") {
-            map_dist <- stats::setNames(
-              c("dnorm", "dlnorm", "dgamma", "dunif"),
-              c("normal", "lognormal", "gamma", "unif")
-            )
-            plot_call <- substitute(
-              expr = plot_call + stat_function(
-                data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-                aes(x, color = color),
-                fun = mapped_dist,
-                n = ndensity,
-                size = 2,
-                args = params
-              ) +
-                scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
-              env = list(
-                plot_call = plot_call,
-                dist_var = dist_var,
-                ndensity = ndensity,
-                mapped_dist = unname(map_dist[t_dist])
-              )
-            )
-          }
-
-          all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Histogram"]],
-            user_default = ggplot2_args$default
-          )
-
-          parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-            all_ggplot2_args,
-            ggtheme = ggtheme
-          )
-
-          distplot_stack_push(substitute(
-            expr = {
-              g <- plot_call
-              print(g)
-            },
-            env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
-          ))
-
-          teal.devel::chunks_safe_eval(distplot_stack)
-
-          distplot_stack
-        }
-      )
-
-      # qqplot chunks ----
-      qq_plot_r_chunks <- eventReactive(
-        eventExpr = {
-          common_code_chunks()
-          input$scales_type
-          input$qq_line
-          is.null(input$ggtheme)
-        },
-        valueExpr = {
-          # Create a private stack for this function only.
-          qqplot_stack <- teal.devel::chunks$new()
-
-          ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
-          if ("params" %in% common_code_chunks()$ls()) {
-            params <- teal.devel::chunks_get_var("params", common_code_chunks())
-          }
-          summary_table <- teal.devel::chunks_get_var("summary_table", common_code_chunks())
-
-          teal.devel::chunks_reset(chunks = qqplot_stack)
-
-          qqplot_stack_push <- function(...) {
-            teal.devel::chunks_push(..., chunks = qqplot_stack)
-          }
-
-          # isolated as common chunks already triggered the reactivity
-          dist_var <- merge_vars()$dist_var
-          s_var <- merge_vars()$s_var
-          g_var <- merge_vars()$g_var
-          dist_var_name <- merge_vars()$dist_var_name
-          s_var_name <- merge_vars()$s_var_name
-          g_var_name <- merge_vars()$g_var_name
-          t_dist <- input$t_dist
-          dist_param1 <- input$dist_param1
-          dist_param2 <- input$dist_param2
-
-          scales_type <- input$scales_type
-          ggtheme <- input$ggtheme
-
-          validate(need(ggtheme, "Please select a theme."))
-          validate(need(t_dist, "Please select the theoretical distribution."))
-          validate_dist_parameters(t_dist, dist_param1, dist_param2)
-
-          plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-            substitute(
-              expr = ggplot(ANL, aes_string(sample = dist_var)),
-              env = list(
-                dist_var = dist_var
-              )
-            )
-          } else if (length(s_var) != 0 && length(g_var) == 0) {
-            substitute(
-              expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
-              env = list(
-                dist_var = dist_var,
-                s_var = s_var
-              )
-            )
-          } else if (length(s_var) == 0 && length(g_var) != 0) {
-            substitute(
-              expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var)) +
-                facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-              env = list(
-                dist_var = dist_var,
-                g_var = g_var,
-                g_var_name = g_var_name,
-                scales_raw = tolower(scales_type)
-              )
-            )
-          } else {
-            substitute(
-              expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var, color = s_var)) +
-                facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-              env = list(
-                dist_var = dist_var,
-                g_var = g_var,
-                s_var = s_var,
-                g_var_name = g_var_name,
-                scales_raw = tolower(scales_type)
-              )
-            )
-          }
-
-          map_dist <- stats::setNames(
-            c("qnorm", "qlnorm", "qgamma", "qunif"),
-            c("normal", "lognormal", "gamma", "unif")
-          )
-
-          plot_call <- substitute(
-            expr = plot_call +
-              stat_qq(distribution = mapped_dist, dparams = params),
-            env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
-          )
-
-          if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-            qqplot_stack_push(substitute(
-              df_params <- as.data.frame(append(params, list(name = t_dist))),
-              env = list(t_dist = t_dist)
-            ))
-            datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
-            label <- quote(tb)
-
-            plot_call <- substitute(
-              expr = plot_call +
-                ggpp::geom_table_npc(
-                  data = data,
-                  aes(npcx = x, npcy = y, label = label),
-                  hjust = 0,
-                  vjust = 1,
-                  size = 4
-                ),
-              env = list(
-                plot_call = plot_call,
-                data = datas,
-                label = label
-              )
-            )
-          }
-
-          if (isTRUE(input$qq_line)) {
-            plot_call <- substitute(
-              expr = plot_call +
-                stat_qq_line(distribution = mapped_dist, dparams = params),
-              env = list(
-                plot_call = plot_call,
-                mapped_dist = unname(map_dist[t_dist])
-              )
-            )
-          }
-
-          all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["QQplot"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.devel::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
-          )
-
-          parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-            all_ggplot2_args,
-            ggtheme = ggtheme
-          )
-
-          qqplot_stack_push(substitute(
-            expr = {
-              g <- plot_call
-              print(g)
-            },
-            env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
-          ))
-
-          teal.devel::chunks_safe_eval(qqplot_stack)
-
-          qqplot_stack
-        }
-      )
-
-      # test chunks ----
-      test_r_chunks <- eventReactive(
-        ignoreNULL = FALSE,
-        eventExpr = {
-          common_code_chunks()
-          input$dist_param1
-          input$dist_param2
-          input$dist_tests
-        },
-        valueExpr = {
-          # Create a private stack for this function only.
-          test_stack <- teal.devel::chunks$new()
-
-          ANL <- teal.devel::chunks_get_var("ANL", common_code_chunks()) # nolint
-          if ("params" %in% common_code_chunks()$ls()) {
-            params <- teal.devel::chunks_get_var("params", common_code_chunks())
-          }
-
-          teal.devel::chunks_reset(chunks = test_stack)
-
-          test_stack_push <- function(...) {
-            teal.devel::chunks_push(..., chunks = test_stack)
-          }
-
-          dist_var <- merge_vars()$dist_var
-          s_var <- merge_vars()$s_var
-          g_var <- merge_vars()$g_var
-
-          dist_var_name <- merge_vars()$dist_var_name
-          s_var_name <- merge_vars()$s_var_name
-          g_var_name <- merge_vars()$g_var_name
-
-          dist_param1 <- input$dist_param1
-          dist_param2 <- input$dist_param2
-          dist_tests <- input$dist_tests
-          t_dist <- input$t_dist
-
-          validate(need(dist_tests, "Please select a test"))
-
-          if (length(s_var) > 0 || length(g_var) > 0) {
-            counts <- ANL %>%
-              dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
-              dplyr::summarise(n = dplyr::n())
-
-            validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
-          }
-
-          if (dist_tests %in% c(
-            "Kolmogorov-Smirnov (one-sample)",
-            "Anderson-Darling (one-sample)",
-            "Cramer-von Mises (one-sample)"
-          )) {
-            validate(need(t_dist, "Please select the theoretical distribution."))
-          } else if (dist_tests == "Fligner-Killeen") {
-            validate(need(s_var, "Please select stratify variable."))
-            validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
-          } else if (dist_tests %in% c(
-            "t-test (two-samples, not paired)",
-            "F-test",
-            "Kolmogorov-Smirnov (two-samples)"
-          )) {
-            validate(need(s_var, "Please select stratify variable."))
-            if (length(g_var) == 0 && length(s_var) > 0) {
-              validate(need(
-                length(unique(ANL[[s_var]])) == 2,
-                "Please select stratify variable with 2 levels."
-              ))
-            }
-            if (length(g_var) > 0 && length(s_var) > 0) {
-              validate(need(
-                all(stats::na.omit(as.vector(tapply(
-                  ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
-                ) == 2))),
-                "Please select stratify variable with 2 levels, per each group."
-              ))
-            }
-          } else if (dist_tests == "one-way ANOVA") {
-            validate(need(s_var, "Please select stratify variable."))
-          }
-
-          map_dist <- stats::setNames(
-            c("pnorm", "plnorm", "pgamma", "punif"),
-            c("normal", "lognormal", "gamma", "unif")
-          )
-          sks_args <- list(
-            test = quote(stats::ks.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          ssw_args <- list(
-            test = quote(stats::shapiro.test),
-            args = bquote(list(.[[.(dist_var)]])),
-            groups = c(g_var, s_var)
-          )
-          mfil_args <- list(
-            test = quote(stats::fligner.test),
-            args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
-            groups = c(g_var)
-          )
-          sad_args <- list(
-            test = quote(goftest::ad.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          scvm_args <- list(
-            test = quote(goftest::cvm.test),
-            args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
-            groups = c(g_var, s_var)
-          )
-          manov_args <- list(
-            test = quote(stats::aov),
-            args = bquote(list(stats::formula(.(dist_var_name) ~ .(s_var_name)), .)),
-            groups = c(g_var)
-          )
-          mt_args <- list(
-            test = quote(stats::t.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
-          mv_args <- list(
-            test = quote(stats::var.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
-          mks_args <- list(
-            test = quote(stats::ks.test),
-            args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
-            groups = c(g_var)
-          )
-
-          tests_base <- switch(dist_tests,
-            "Kolmogorov-Smirnov (one-sample)" = sks_args,
-            "Shapiro-Wilk" = ssw_args,
-            "Fligner-Killeen" = mfil_args,
-            "one-way ANOVA" = manov_args,
-            "t-test (two-samples, not paired)" = mt_args,
-            "F-test" = mv_args,
-            "Kolmogorov-Smirnov (two-samples)" = mks_args,
-            "Anderson-Darling (one-sample)" = sad_args,
-            "Cramer-von Mises (one-sample)" = scvm_args
-          )
-
-          env <- list(
-            t_test = t_dist,
-            dist_var = dist_var,
-            g_var = g_var,
-            s_var = s_var,
-            args = tests_base$args,
-            groups = tests_base$groups,
-            test = tests_base$test,
-            dist_var_name = dist_var_name,
-            g_var_name = g_var_name,
-            s_var_name = s_var_name
-          )
-
-          if (length(s_var) == 0 && length(g_var) == 0) {
-            test_stack_push(
-              substitute(
-                expr = {
-                  test_stats <- ANL %>%
-                    dplyr::select(dist_var) %>%
-                    with(., broom::glance(do.call(test, args))) %>%
-                    dplyr::mutate_if(is.numeric, round, 3)
-                },
-                env = env
-              )
-            )
-          } else {
-            test_stack_push(
-              substitute(
-                expr = {
-                  test_stats <- ANL %>%
-                    dplyr::select(dist_var, s_var, g_var) %>%
-                    dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                    dplyr::do(tests = broom::glance(do.call(test, args))) %>%
-                    tidyr::unnest(tests) %>%
-                    dplyr::mutate_if(is.numeric, round, 3)
-                },
-                env = env
-              )
-            )
-          }
-
-          teal.devel::chunks_safe_eval(test_stack)
-
-          test_stack
-        }
-      )
-
-      # outputs ----
-      ## building main chunk
-      observe({
-        tab <- input$tabs
-        req(tab) # tab is NULL upon app launch, hence will crash without this statement
-
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_chunks(common_code_chunks())
-        # wrapped in if since test chunk could lead into validate error - we do want to continue
-        test_r_chunks_out <- try(test_r_chunks(), silent = TRUE)
-        if (!inherits(test_r_chunks_out, c("try-error", "error"))) {
-          teal.devel::chunks_push_chunks(test_r_chunks_out)
-        }
-
-        if (tab == "Histogram") {
-          teal.devel::chunks_push_chunks(dist_plot_r_chunks())
-        } else if (tab == "QQplot") {
-          teal.devel::chunks_push_chunks(qq_plot_r_chunks())
-        }
-      })
-
-
-      dist_r <- reactive({
-        teal.devel::chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
-      })
-
-      qq_r <- reactive({
-        teal.devel::chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
-      })
-
-      tests_r <- reactive({
-        teal.devel::chunks_get_var(var = "test_stats", chunks = test_r_chunks())
-      })
-
-
-      output$summary_table <- DT::renderDataTable(
-        expr = teal.devel::chunks_get_var("summary_table", chunks = common_code_chunks()),
-        options = list(
-          autoWidth = TRUE,
-          columnDefs = list(list(width = "200px", targets = "_all"))
-        ),
-        rownames = FALSE
-      )
-
-      teal.devel::plot_with_settings_srv(
-        id = "hist_plot",
-        plot_r = dist_r,
-        height = plot_height,
-        width = plot_width,
-        brushing = FALSE
-      )
-
-      teal.devel::plot_with_settings_srv(
-        id = "qq_plot",
-        plot_r = qq_r,
-        height = plot_height,
-        width = plot_width,
-        brushing = FALSE
-      )
-
-      output$t_stats <- DT::renderDataTable(
-        expr = tests_r(),
-        options = list(scrollX = TRUE),
-        rownames = FALSE
-      )
-
-      teal.devel::get_rcode_srv(
-        id = "rcode",
-        datasets = datasets,
-        datanames = teal.devel::get_extract_datanames(list(dist_var, strata_var, group_var)),
-        modal_title = "R Code for distribution",
-        code_header = "Distribution"
-      )
-    }
-  )
+        teal.devel::chunks_safe_eval(test_stack)
+
+        test_stack
+      }
+    )
+
+    # outputs ----
+    ## building main chunk
+    observe({
+      tab <- input$tabs
+      req(tab) # tab is NULL upon app launch, hence will crash without this statement
+
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_chunks(common_code_chunks())
+      # wrapped in if since test chunk could lead into validate error - we do want to continue
+      test_r_chunks_out <- try(test_r_chunks(), silent = TRUE)
+      if (!inherits(test_r_chunks_out, c("try-error", "error"))) {
+        teal.devel::chunks_push_chunks(test_r_chunks_out)
+      }
+
+      if (tab == "Histogram") {
+        teal.devel::chunks_push_chunks(dist_plot_r_chunks())
+      } else if (tab == "QQplot") {
+        teal.devel::chunks_push_chunks(qq_plot_r_chunks())
+      }
+    })
+
+
+    dist_r <- reactive({
+      teal.devel::chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
+    })
+
+    qq_r <- reactive({
+      teal.devel::chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
+    })
+
+    tests_r <- reactive({
+      teal.devel::chunks_get_var(var = "test_stats", chunks = test_r_chunks())
+    })
+
+
+    output$summary_table <- DT::renderDataTable(
+      expr = teal.devel::chunks_get_var("summary_table", chunks = common_code_chunks()),
+      options = list(
+        autoWidth = TRUE,
+        columnDefs = list(list(width = "200px", targets = "_all"))
+      ),
+      rownames = FALSE
+    )
+
+    teal.devel::plot_with_settings_srv(
+      id = "hist_plot",
+      plot_r = dist_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = FALSE
+    )
+
+    teal.devel::plot_with_settings_srv(
+      id = "qq_plot",
+      plot_r = qq_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = FALSE
+    )
+
+    output$t_stats <- DT::renderDataTable(
+      expr = tests_r(),
+      options = list(scrollX = TRUE),
+      rownames = FALSE
+    )
+
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(dist_var, strata_var, group_var)),
+      modal_title = "R Code for distribution",
+      code_header = "Distribution"
+    )
+  })
 }
 
 #' @description

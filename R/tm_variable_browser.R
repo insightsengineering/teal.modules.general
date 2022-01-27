@@ -170,257 +170,254 @@ ui_variable_browser <- function(id,
 }
 
 srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
+  moduleServer(id, function(input, output, session) {
 
-      # if there are < this number of unique records then a numeric
-      # variable can be treated as a factor and all factors with < this groups
-      # have their values plotted
-      .unique_records_for_factor <- 30
-      # if there are < this number of unique records then a numeric
-      # variable is by default treated as a factor
-      .unique_records_default_as_factor <- 6 # nolint
+    # if there are < this number of unique records then a numeric
+    # variable can be treated as a factor and all factors with < this groups
+    # have their values plotted
+    .unique_records_for_factor <- 30
+    # if there are < this number of unique records then a numeric
+    # variable is by default treated as a factor
+    .unique_records_default_as_factor <- 6 # nolint
 
-      datanames <- get_datanames_selected(datasets, datasets_selected)
-      columns_names <- new.env() # nolint
+    datanames <- get_datanames_selected(datasets, datasets_selected)
+    columns_names <- new.env() # nolint
 
-      # plot_var$data holds the name of the currently selected dataset
-      # plot_var$variable[[<dataset_name>]] holds the name of the currently selected
-      # variable for dataset <dataset_name>
-      plot_var <- reactiveValues(data = NULL, variable = list())
+    # plot_var$data holds the name of the currently selected dataset
+    # plot_var$variable[[<dataset_name>]] holds the name of the currently selected
+    # variable for dataset <dataset_name>
+    plot_var <- reactiveValues(data = NULL, variable = list())
 
-      establish_updating_selection(datanames, input, plot_var, columns_names)
+    establish_updating_selection(datanames, input, plot_var, columns_names)
 
-      # validations
-      validation_checks <- validate_input(input, plot_var, datasets)
+    # validations
+    validation_checks <- validate_input(input, plot_var, datasets)
 
-      # data_for_analysis is a list with two elements: a column from a dataset and the column label
-      plotted_data <- reactive({
-        validation_checks()
+    # data_for_analysis is a list with two elements: a column from a dataset and the column label
+    plotted_data <- reactive({
+      validation_checks()
 
-        get_plotted_data(input, plot_var, datasets)
-      })
+      get_plotted_data(input, plot_var, datasets)
+    })
 
-      treat_numeric_as_factor <- reactive({
-        if (is_num_var_short(.unique_records_for_factor, input, plotted_data)) {
-          input$numeric_as_factor
-        } else {
-          FALSE
-        }
-      })
+    treat_numeric_as_factor <- reactive({
+      if (is_num_var_short(.unique_records_for_factor, input, plotted_data)) {
+        input$numeric_as_factor
+      } else {
+        FALSE
+      }
+    })
 
-      render_tabset_panel_content(
-        input = input,
-        output = output,
-        datasets = datasets,
-        datanames = datanames,
-        columns_names = columns_names,
-        plot_var = plot_var
-      )
+    render_tabset_panel_content(
+      input = input,
+      output = output,
+      datasets = datasets,
+      datanames = datanames,
+      columns_names = columns_names,
+      plot_var = plot_var
+    )
 
-      output$ui_numeric_display <- renderUI({
-        data <- input$tabset_panel
-        varname <- plot_var$variable[[input$tabset_panel]]
-        type <- input$raw_or_filtered
-        req(data, varname, is.logical(type))
+    output$ui_numeric_display <- renderUI({
+      data <- input$tabset_panel
+      varname <- plot_var$variable[[input$tabset_panel]]
+      type <- input$raw_or_filtered
+      req(data, varname, is.logical(type))
 
-        df <- datasets$get_data(data, filtered = type)
+      df <- datasets$get_data(data, filtered = type)
 
-        numeric_ui <- tagList(
-          fluidRow(
-            div(
-              class = "col-md-4",
-              shinyWidgets::switchInput(
-                inputId = session$ns("display_density"),
-                label = "Show density",
-                value = `if`(is.null(isolate(input$display_density)), TRUE, isolate(input$display_density)),
-                width = "50%",
-                labelWidth = "100px",
-                handleWidth = "50px"
-              )
-            ),
-            div(
-              class = "col-md-4",
-              shinyWidgets::switchInput(
-                inputId = session$ns("remove_outliers"),
-                label = "Remove outliers",
-                value = `if`(is.null(isolate(input$remove_outliers)), FALSE, isolate(input$remove_outliers)),
-                width = "50%",
-                labelWidth = "100px",
-                handleWidth = "50px"
-              )
-            ),
-            div(
-              class = "col-md-4",
-              uiOutput(session$ns("outlier_definition_slider_ui"))
-            )
-          ),
-          div(
-            style = "margin-left: 15px;",
-            uiOutput(session$ns("ui_density_help")),
-            uiOutput(session$ns("ui_outlier_help"))
-          )
-        )
-
-        if (is.numeric(df[[varname]])) {
-          unique_entries <- length(unique(df[[varname]]))
-          if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
-            list(
-              checkboxInput(session$ns("numeric_as_factor"),
-                "Treat variable as factor",
-                value = `if`(
-                  is.null(isolate(input$numeric_as_factor)),
-                  unique_entries < .unique_records_default_as_factor,
-                  isolate(input$numeric_as_factor)
-                )
-              ),
-              conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
-            )
-          } else if (unique_entries > 0) {
-            numeric_ui
-          }
-        } else {
-          NULL
-        }
-      })
-
-      output$ui_histogram_display <- renderUI({
-        data <- input$tabset_panel
-        varname <- plot_var$variable[[input$tabset_panel]]
-        type <- input$raw_or_filtered
-        req(data, varname, is.logical(type))
-
-        df <- datasets$get_data(data, filtered = type)
-
-        numeric_ui <- tagList(fluidRow(
+      numeric_ui <- tagList(
+        fluidRow(
           div(
             class = "col-md-4",
             shinyWidgets::switchInput(
-              inputId = session$ns("remove_NA_hist"),
-              label = "Remove NA values",
-              value = FALSE,
+              inputId = session$ns("display_density"),
+              label = "Show density",
+              value = `if`(is.null(isolate(input$display_density)), TRUE, isolate(input$display_density)),
               width = "50%",
               labelWidth = "100px",
               handleWidth = "50px"
             )
-          )
-        ))
-
-        var <- df[[varname]]
-        if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
-          groups <- unique(as.character(var))
-          len_groups <- length(groups)
-          if (len_groups >= .unique_records_for_factor) {
-            NULL
-          } else {
-            numeric_ui
-          }
-        } else {
-          NULL
-        }
-      })
-
-      output$outlier_definition_slider_ui <- renderUI({
-        req(input$remove_outliers)
-        sliderInput(
-          inputId = session$ns("outlier_definition_slider"),
+          ),
           div(
-            class = "teal-tooltip",
-            tagList(
-              "Outlier definition:",
-              icon("info-circle"),
-              span(
-                class = "tooltiptext",
-                paste(
-                  "Use the slider to choose the cut-off value to define outliers; the larger the value the",
-                  "further below Q1/above Q3 points have to be in order to be classed as outliers"
-                )
-              )
+            class = "col-md-4",
+            shinyWidgets::switchInput(
+              inputId = session$ns("remove_outliers"),
+              label = "Remove outliers",
+              value = `if`(is.null(isolate(input$remove_outliers)), FALSE, isolate(input$remove_outliers)),
+              width = "50%",
+              labelWidth = "100px",
+              handleWidth = "50px"
             )
           ),
-          min = 1,
-          max = 5,
-          value = 3,
-          step = 0.5
-        )
-      })
-
-      output$ui_density_help <- renderUI({
-        req(is.logical(input$display_density))
-        if (input$display_density) {
-          tags$small(helpText(paste(
-            "Kernel density estimation with gaussian kernel",
-            "and bandwidth function bw.nrd0 (R default)"
-          )))
-        } else {
-          NULL
-        }
-      })
-
-      output$ui_outlier_help <- renderUI({
-        req(is.logical(input$remove_outliers), input$outlier_definition_slider)
-        if (input$remove_outliers) {
-          tags$small(
-            helpText(
-              withMathJax(paste0(
-                "Outlier data points (\\( X \\lt Q1 - ", input$outlier_definition_slider, "\\times IQR \\) or
-            \\(Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
-            have not been displayed on the graph and will not be used for any kernel density estimations, ",
-                "although their values remain in the statisics table below."
-              ))
-            )
+          div(
+            class = "col-md-4",
+            uiOutput(session$ns("outlier_definition_slider_ui"))
           )
-        } else {
-          NULL
-        }
-      })
-
-
-      variable_plot_r <- reactive({
-        display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
-        remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)
-
-        if (remove_outliers) {
-          req(input$outlier_definition_slider)
-          outlier_definition <- as.numeric(input$outlier_definition_slider)
-        } else {
-          outlier_definition <- 0
-        }
-
-        plot_var_summary(
-          var = plotted_data()$data,
-          var_lab = plotted_data()$var_description,
-          numeric_as_factor = treat_numeric_as_factor(),
-          remove_NA_hist = input$remove_NA_hist,
-          display_density = display_density,
-          outlier_definition = outlier_definition,
-          records_for_factor = .unique_records_for_factor,
-          ggplot2_args = ggplot2_args
+        ),
+        div(
+          style = "margin-left: 15px;",
+          uiOutput(session$ns("ui_density_help")),
+          uiOutput(session$ns("ui_outlier_help"))
         )
-      })
-
-      teal.devel::plot_with_settings_srv(
-        id = "variable_plot",
-        plot_r = variable_plot_r,
-        height =  c(500, 200, 2000)
       )
 
-      output$variable_summary_table <- DT::renderDataTable({
-        var_summary_table(
-          plotted_data()$data,
-          treat_numeric_as_factor(),
-          input$variable_summary_table_rows,
-          if (!is.null(input$remove_outliers) && input$remove_outliers) {
-            req(input$outlier_definition_slider)
-            as.numeric(input$outlier_definition_slider)
-          } else {
-            0
-          }
+      if (is.numeric(df[[varname]])) {
+        unique_entries <- length(unique(df[[varname]]))
+        if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
+          list(
+            checkboxInput(session$ns("numeric_as_factor"),
+              "Treat variable as factor",
+              value = `if`(
+                is.null(isolate(input$numeric_as_factor)),
+                unique_entries < .unique_records_default_as_factor,
+                isolate(input$numeric_as_factor)
+              )
+            ),
+            conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
+          )
+        } else if (unique_entries > 0) {
+          numeric_ui
+        }
+      } else {
+        NULL
+      }
+    })
+
+    output$ui_histogram_display <- renderUI({
+      data <- input$tabset_panel
+      varname <- plot_var$variable[[input$tabset_panel]]
+      type <- input$raw_or_filtered
+      req(data, varname, is.logical(type))
+
+      df <- datasets$get_data(data, filtered = type)
+
+      numeric_ui <- tagList(fluidRow(
+        div(
+          class = "col-md-4",
+          shinyWidgets::switchInput(
+            inputId = session$ns("remove_NA_hist"),
+            label = "Remove NA values",
+            value = FALSE,
+            width = "50%",
+            labelWidth = "100px",
+            handleWidth = "50px"
+          )
         )
-      })
-    }
-  )
+      ))
+
+      var <- df[[varname]]
+      if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
+        groups <- unique(as.character(var))
+        len_groups <- length(groups)
+        if (len_groups >= .unique_records_for_factor) {
+          NULL
+        } else {
+          numeric_ui
+        }
+      } else {
+        NULL
+      }
+    })
+
+    output$outlier_definition_slider_ui <- renderUI({
+      req(input$remove_outliers)
+      sliderInput(
+        inputId = session$ns("outlier_definition_slider"),
+        div(
+          class = "teal-tooltip",
+          tagList(
+            "Outlier definition:",
+            icon("info-circle"),
+            span(
+              class = "tooltiptext",
+              paste(
+                "Use the slider to choose the cut-off value to define outliers; the larger the value the",
+                "further below Q1/above Q3 points have to be in order to be classed as outliers"
+              )
+            )
+          )
+        ),
+        min = 1,
+        max = 5,
+        value = 3,
+        step = 0.5
+      )
+    })
+
+    output$ui_density_help <- renderUI({
+      req(is.logical(input$display_density))
+      if (input$display_density) {
+        tags$small(helpText(paste(
+          "Kernel density estimation with gaussian kernel",
+          "and bandwidth function bw.nrd0 (R default)"
+        )))
+      } else {
+        NULL
+      }
+    })
+
+    output$ui_outlier_help <- renderUI({
+      req(is.logical(input$remove_outliers), input$outlier_definition_slider)
+      if (input$remove_outliers) {
+        tags$small(
+          helpText(
+            withMathJax(paste0(
+              "Outlier data points (\\( X \\lt Q1 - ", input$outlier_definition_slider, "\\times IQR \\) or
+            \\(Q3 + ", input$outlier_definition_slider, "\\times IQR \\lt X\\))
+            have not been displayed on the graph and will not be used for any kernel density estimations, ",
+              "although their values remain in the statisics table below."
+            ))
+          )
+        )
+      } else {
+        NULL
+      }
+    })
+
+
+    variable_plot_r <- reactive({
+      display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
+      remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)
+
+      if (remove_outliers) {
+        req(input$outlier_definition_slider)
+        outlier_definition <- as.numeric(input$outlier_definition_slider)
+      } else {
+        outlier_definition <- 0
+      }
+
+      plot_var_summary(
+        var = plotted_data()$data,
+        var_lab = plotted_data()$var_description,
+        numeric_as_factor = treat_numeric_as_factor(),
+        remove_NA_hist = input$remove_NA_hist,
+        display_density = display_density,
+        outlier_definition = outlier_definition,
+        records_for_factor = .unique_records_for_factor,
+        ggplot2_args = ggplot2_args
+      )
+    })
+
+    teal.devel::plot_with_settings_srv(
+      id = "variable_plot",
+      plot_r = variable_plot_r,
+      height = c(500, 200, 2000)
+    )
+
+    output$variable_summary_table <- DT::renderDataTable({
+      var_summary_table(
+        plotted_data()$data,
+        treat_numeric_as_factor(),
+        input$variable_summary_table_rows,
+        if (!is.null(input$remove_outliers) && input$remove_outliers) {
+          req(input$outlier_definition_slider)
+          as.numeric(input$outlier_definition_slider)
+        } else {
+          0
+        }
+      )
+    })
+  })
 }
 
 #' Summarizes missings occurrence

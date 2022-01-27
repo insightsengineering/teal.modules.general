@@ -208,196 +208,193 @@ srv_tm_g_association <- function(id,
                                  plot_height,
                                  plot_width,
                                  ggplot2_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      teal.devel::init_chunks()
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-      selector_list <- teal.devel::data_extract_multiple_srv(
-        data_extract = list(ref = ref, vars = vars),
-        datasets = datasets
+    selector_list <- teal.devel::data_extract_multiple_srv(
+      data_extract = list(ref = ref, vars = vars),
+      datasets = datasets
+    )
+
+    merged_data <- teal.devel::data_merge_srv(
+      datasets = datasets,
+      selector_list = selector_list
+    )
+
+    chunks_reactive <- reactive({
+      validate({
+        need(
+          !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
+          "Please select reference and associated variables"
+        )
+      })
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_data_merge(merged_data())
+
+      ANL <- teal.devel::chunks_get_var("ANL") # nolint
+      teal.devel::validate_has_data(ANL, 3)
+
+      vars_names <- merged_data()$columns_source$vars
+
+      ref_name <- as.vector(merged_data()$columns_source$ref)
+      association <- input$association
+      show_dist <- input$show_dist
+      log_transformation <- input$log_transformation
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      swap_axes <- input$swap_axes
+      distribution_theme <- input$distribution_theme
+      association_theme <- input$association_theme
+
+      validate(need(ref_name, "need at least one variable selected"))
+
+      is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
+      if (is_scatterplot) {
+        shinyjs::show("alpha")
+        shinyjs::show("size")
+        alpha <- input$alpha # nolint
+        size <- input$size
+      } else {
+        shinyjs::hide("alpha")
+        shinyjs::hide("size")
+        alpha <- 0.5
+        size <- 2
+      }
+
+      validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
+      validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
+
+      teal.devel::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
+
+      # reference
+      ref_class <- class(ANL[[ref_name]])
+      if (is.numeric(ANL[[ref_name]]) && log_transformation) {
+        # works for both integers and doubles
+        ref_cl_name <- call("log", as.name(ref_name))
+        ref_cl_lbl <- varname_w_label(ref_name, ANL, prefix = "Log of ")
+      } else {
+        # silently ignore when non-numeric even if `log` is selected because some
+        # variables may be numeric and others not
+        ref_cl_name <- as.name(ref_name)
+        ref_cl_lbl <- varname_w_label(ref_name, ANL)
+      }
+
+      user_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Bivariate1"]],
+        user_default = ggplot2_args$default
       )
 
-      merged_data <- teal.devel::data_merge_srv(
-        datasets = datasets,
-        selector_list = selector_list
+      ref_call <- bivariate_plot_call(
+        data_name = "ANL",
+        x = ref_cl_name,
+        x_class = ref_class,
+        x_label = ref_cl_lbl,
+        freq = !show_dist,
+        theme = distribution_theme,
+        rotate_xaxis_labels = rotate_xaxis_labels,
+        swap_axes = FALSE,
+        size = size,
+        alpha = alpha,
+        ggplot2_args = user_ggplot2_args
       )
 
-      chunks_reactive <- reactive({
-        validate({
-          need(
-            !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
-            "Please select reference and associated variables"
-          )
-        })
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_data_merge(merged_data())
+      # association
+      ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-        ANL <- teal.devel::chunks_get_var("ANL") # nolint
-        teal.devel::validate_has_data(ANL, 3)
+      teal.devel::chunks_push(substitute(
+        expr = title <- new_title,
+        env = list(new_title = paste(
+          "Association",
+          ifelse(ref_class_cov == "NULL", "for", "between"),
+          paste(lapply(vars_names, function(x) {
+            if (is.numeric(ANL[[x]]) && log_transformation) {
+              varname_w_label(x, ANL, prefix = "Log of ")
+            } else {
+              varname_w_label(x, ANL)
+            }
+          }), collapse = " / "),
+          ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
+        ))
+      ))
 
-        vars_names <- merged_data()$columns_source$vars
+      teal.devel::chunks_push(quote(print(title)))
 
-        ref_name <- as.vector(merged_data()$columns_source$ref)
-        association <- input$association
-        show_dist <- input$show_dist
-        log_transformation <- input$log_transformation
-        rotate_xaxis_labels <- input$rotate_xaxis_labels
-        swap_axes <- input$swap_axes
-        distribution_theme <- input$distribution_theme
-        association_theme <- input$association_theme
+      teal.devel::chunks_safe_eval()
 
-        validate(need(ref_name, "need at least one variable selected"))
-
-        is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
-        if (is_scatterplot) {
-          shinyjs::show("alpha")
-          shinyjs::show("size")
-          alpha <- input$alpha # nolint
-          size <- input$size
-        } else {
-          shinyjs::hide("alpha")
-          shinyjs::hide("size")
-          alpha <- 0.5
-          size <- 2
-        }
-
-        validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
-        validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
-
-        teal.devel::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
-
-        # reference
-        ref_class <- class(ANL[[ref_name]])
-        if (is.numeric(ANL[[ref_name]]) && log_transformation) {
+      var_calls <- lapply(vars_names, function(var_i) {
+        var_class <- class(ANL[[var_i]])
+        if (is.numeric(ANL[[var_i]]) && log_transformation) {
           # works for both integers and doubles
-          ref_cl_name <- call("log", as.name(ref_name))
-          ref_cl_lbl <- varname_w_label(ref_name, ANL, prefix = "Log of ")
+          var_cl_name <- call("log", as.name(var_i))
+          var_cl_lbl <- varname_w_label(var_i, ANL, prefix = "Log of ")
         } else {
           # silently ignore when non-numeric even if `log` is selected because some
           # variables may be numeric and others not
-          ref_cl_name <- as.name(ref_name)
-          ref_cl_lbl <- varname_w_label(ref_name, ANL)
+          var_cl_name <- as.name(var_i)
+          var_cl_lbl <- varname_w_label(var_i, ANL)
         }
 
         user_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-          user_plot = ggplot2_args[["Bivariate1"]],
+          user_plot = ggplot2_args[["Bivariate2"]],
           user_default = ggplot2_args$default
         )
 
-        ref_call <- bivariate_plot_call(
+        bivariate_plot_call(
           data_name = "ANL",
           x = ref_cl_name,
-          x_class = ref_class,
+          y = var_cl_name,
+          x_class = ref_class_cov,
+          y_class = var_class,
           x_label = ref_cl_lbl,
+          y_label = var_cl_lbl,
+          theme = association_theme,
           freq = !show_dist,
-          theme = distribution_theme,
           rotate_xaxis_labels = rotate_xaxis_labels,
-          swap_axes = FALSE,
-          size = size,
+          swap_axes = swap_axes,
           alpha = alpha,
+          size = size,
           ggplot2_args = user_ggplot2_args
         )
-
-        # association
-        ref_class_cov <- ifelse(association, ref_class, "NULL")
-
-        teal.devel::chunks_push(substitute(
-          expr = title <- new_title,
-          env = list(new_title = paste(
-            "Association",
-            ifelse(ref_class_cov == "NULL", "for", "between"),
-            paste(lapply(vars_names, function(x) {
-              if (is.numeric(ANL[[x]]) && log_transformation) {
-                varname_w_label(x, ANL, prefix = "Log of ")
-              } else {
-                varname_w_label(x, ANL)
-              }
-            }), collapse = " / "),
-            ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
-          ))
-        ))
-
-        teal.devel::chunks_push(quote(print(title)))
-
-        teal.devel::chunks_safe_eval()
-
-        var_calls <- lapply(vars_names, function(var_i) {
-          var_class <- class(ANL[[var_i]])
-          if (is.numeric(ANL[[var_i]]) && log_transformation) {
-            # works for both integers and doubles
-            var_cl_name <- call("log", as.name(var_i))
-            var_cl_lbl <- varname_w_label(var_i, ANL, prefix = "Log of ")
-          } else {
-            # silently ignore when non-numeric even if `log` is selected because some
-            # variables may be numeric and others not
-            var_cl_name <- as.name(var_i)
-            var_cl_lbl <- varname_w_label(var_i, ANL)
-          }
-
-          user_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Bivariate2"]],
-            user_default = ggplot2_args$default
-          )
-
-          bivariate_plot_call(
-            data_name = "ANL",
-            x = ref_cl_name,
-            y = var_cl_name,
-            x_class = ref_class_cov,
-            y_class = var_class,
-            x_label = ref_cl_lbl,
-            y_label = var_cl_lbl,
-            theme = association_theme,
-            freq = !show_dist,
-            rotate_xaxis_labels = rotate_xaxis_labels,
-            swap_axes = swap_axes,
-            alpha = alpha,
-            size = size,
-            ggplot2_args = user_ggplot2_args
-          )
-        })
-
-        teal.devel::chunks_push(
-          expression = substitute(
-            expr = {
-              plots <- plot_calls
-              p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
-              grid::grid.newpage()
-              grid::grid.draw(p)
-            },
-            env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-          ),
-          id = "plotCall"
-        )
       })
 
-      plot_r <- reactive({
-        teal.devel::chunks_uneval()
-        chunks_reactive()
-        teal.devel::chunks_safe_eval()
-        teal.devel::chunks_get_var(var = "p")
-      })
-
-      teal.devel::plot_with_settings_srv(
-        id = "myplot",
-        plot_r = plot_r,
-        height = plot_height,
-        width = plot_width
+      teal.devel::chunks_push(
+        expression = substitute(
+          expr = {
+            plots <- plot_calls
+            p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+            grid::grid.newpage()
+            grid::grid.draw(p)
+          },
+          env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
+        ),
+        id = "plotCall"
       )
+    })
 
-      output$title <- renderText({
-        chunks_reactive()
-        teal.devel::chunks_get_var("title")
-      })
+    plot_r <- reactive({
+      teal.devel::chunks_uneval()
+      chunks_reactive()
+      teal.devel::chunks_safe_eval()
+      teal.devel::chunks_get_var(var = "p")
+    })
 
-      teal.devel::get_rcode_srv(
-        id = "rcode",
-        datasets = datasets,
-        datanames = teal.devel::get_extract_datanames(list(ref, vars)),
-        modal_title = "R Code for the Association Plot",
-        code_header = "Association Plot"
-      )
-    }
-  )
+    teal.devel::plot_with_settings_srv(
+      id = "myplot",
+      plot_r = plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+
+    output$title <- renderText({
+      chunks_reactive()
+      teal.devel::chunks_get_var("title")
+    })
+
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(ref, vars)),
+      modal_title = "R Code for the Association Plot",
+      code_header = "Association Plot"
+    )
+  })
 }

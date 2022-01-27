@@ -266,30 +266,27 @@ srv_page_data_table <- function(id,
                                 datasets_selected,
                                 dt_args,
                                 dt_options) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      if_filtered <- reactive(as.logical(input$if_filtered))
-      if_distinct <- reactive(as.logical(input$if_distinct))
+  moduleServer(id, function(input, output, session) {
+    if_filtered <- reactive(as.logical(input$if_filtered))
+    if_distinct <- reactive(as.logical(input$if_distinct))
 
-      datanames <- get_datanames_selected(datasets, datasets_selected)
+    datanames <- get_datanames_selected(datasets, datasets_selected)
 
-      lapply(
-        datanames,
-        function(x) {
-          srv_data_table(
-            id = x,
-            datasets = datasets,
-            dataname = x,
-            if_filtered = if_filtered,
-            if_distinct = if_distinct,
-            dt_args = dt_args,
-            dt_options = dt_options
-          )
-        }
-      )
-    }
-  )
+    lapply(
+      datanames,
+      function(x) {
+        srv_data_table(
+          id = x,
+          datasets = datasets,
+          dataname = x,
+          if_filtered = if_filtered,
+          if_distinct = if_distinct,
+          dt_args = dt_args,
+          dt_options = dt_options
+        )
+      }
+    )
+  })
 }
 
 ui_data_table <- function(id,
@@ -328,39 +325,36 @@ srv_data_table <- function(id,
                            if_distinct,
                            dt_args,
                            dt_options) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      output$data_table <- DT::renderDataTable(server = FALSE, {
-        variables <- input$variables
+  moduleServer(id, function(input, output, session) {
+    output$data_table <- DT::renderDataTable(server = FALSE, {
+      variables <- input$variables
 
-        validate(need(variables, "need valid variable names"))
+      validate(need(variables, "need valid variable names"))
 
-        df <- datasets$get_data(
-          dataname,
-          filtered = if_filtered()
-        )
+      df <- datasets$get_data(
+        dataname,
+        filtered = if_filtered()
+      )
 
-        validate(need(df, paste("data", dataname, "is empty")))
+      validate(need(df, paste("data", dataname, "is empty")))
 
-        validate(need(all(variables %in% names(df)), "not all selected variables exist"))
+      validate(need(all(variables %in% names(df)), "not all selected variables exist"))
 
-        dataframe_selected <- if (if_distinct()) {
-          dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
-        } else {
-          df[variables]
-        }
+      dataframe_selected <- if (if_distinct()) {
+        dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
+      } else {
+        df[variables]
+      }
 
-        dt_args$options <- dt_options
-        if (!is.null(input$dt_rows)) {
-          dt_args$options$pageLength <- input$dt_rows # nolint
-        }
-        dt_args$data <- dataframe_selected
+      dt_args$options <- dt_options
+      if (!is.null(input$dt_rows)) {
+        dt_args$options$pageLength <- input$dt_rows # nolint
+      }
+      dt_args$data <- dataframe_selected
 
-        do.call(DT::datatable, dt_args)
-      })
-    }
-  )
+      do.call(DT::datatable, dt_args)
+    })
+  })
 }
 
 #' a tool for ui and server for getting datanames taking into account the datasets_selected vector

@@ -345,206 +345,203 @@ srv_g_bivariate <- function(id,
                             plot_height,
                             plot_width,
                             ggplot2_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      teal.devel::init_chunks()
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-      data_extract <- list(
-        x = x, y = y, row_facet = row_facet, col_facet = col_facet,
-        color = color, fill = fill, size = size
-      )
+    data_extract <- list(
+      x = x, y = y, row_facet = row_facet, col_facet = col_facet,
+      color = color, fill = fill, size = size
+    )
 
-      data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
-      selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+    selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
 
-      reactive_select_input <- reactive({
-        selectors <- selector_list()
-        extract_names <- names(selectors)
-        for (extract in extract_names) {
-          if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-            selectors <- selectors[-which(names(selectors) == extract)]
-          }
+    reactive_select_input <- reactive({
+      selectors <- selector_list()
+      extract_names <- names(selectors)
+      for (extract in extract_names) {
+        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+          selectors <- selectors[-which(names(selectors) == extract)]
         }
-        selectors
+      }
+      selectors
+    })
+
+    merged_data <- teal.devel::data_merge_srv(
+      selector_list = reactive_select_input,
+      datasets = datasets
+    )
+
+    plot_r <- reactive({
+      validate({
+        need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
       })
 
-      merged_data <- teal.devel::data_merge_srv(
-        selector_list = reactive_select_input,
-        datasets = datasets
+
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_data_merge(merged_data())
+
+      ANL <- teal.devel::chunks_get_var("ANL") # nolint
+      teal.devel::validate_has_data(ANL, 3)
+
+      x_col_vec <- as.vector(merged_data()$columns_source$x)
+      x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
+      y_col_vec <- as.vector(merged_data()$columns_source$y)
+      y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
+
+      validate(
+        need(
+          !identical(x_name, character(0)) || !identical(y_name, character(0)),
+          "x-variable and y-variable aren't correctly specified. At least one should be valid."
+        )
       )
 
-      plot_r <- reactive({
-        validate({
-          need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
-        })
+      row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
+      col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
+      color_name <- if ("color" %in% names(merged_data()$columns_source)) {
+        as.vector(merged_data()$columns_source$color)
+      } else {
+        character(0)
+      }
+      fill_name <- if ("fill" %in% names(merged_data()$columns_source)) {
+        as.vector(merged_data()$columns_source$fill)
+      } else {
+        character(0)
+      }
+      size_name <- if ("size" %in% names(merged_data()$columns_source)) {
+        as.vector(merged_data()$columns_source$size)
+      } else {
+        character(0)
+      }
 
+      use_density <- input$use_density == "density"
+      free_x_scales <- input$free_x_scales
+      free_y_scales <- input$free_y_scales
+      ggtheme <- input$ggtheme
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      swap_axes <- input$swap_axes
 
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_data_merge(merged_data())
+      is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && length(x_name) > 0
 
-        ANL <- teal.devel::chunks_get_var("ANL") # nolint
-        teal.devel::validate_has_data(ANL, 3)
+      if (is_scatterplot) {
+        shinyjs::show("alpha")
+        alpha <- input$alpha # nolint
+        shinyjs::show("add_lines")
 
-        x_col_vec <- as.vector(merged_data()$columns_source$x)
-        x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
-        y_col_vec <- as.vector(merged_data()$columns_source$y)
-        y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
-
-        validate(
-          need(
-            !identical(x_name, character(0)) || !identical(y_name, character(0)),
-            "x-variable and y-variable aren't correctly specified. At least one should be valid."
-          )
-        )
-
-        row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
-        col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
-        color_name <- if ("color" %in% names(merged_data()$columns_source)) {
-          as.vector(merged_data()$columns_source$color)
-        } else {
-          character(0)
-        }
-        fill_name <- if ("fill" %in% names(merged_data()$columns_source)) {
-          as.vector(merged_data()$columns_source$fill)
-        } else {
-          character(0)
-        }
-        size_name <- if ("size" %in% names(merged_data()$columns_source)) {
-          as.vector(merged_data()$columns_source$size)
-        } else {
-          character(0)
-        }
-
-        use_density <- input$use_density == "density"
-        free_x_scales <- input$free_x_scales
-        free_y_scales <- input$free_y_scales
-        ggtheme <- input$ggtheme
-        rotate_xaxis_labels <- input$rotate_xaxis_labels
-        swap_axes <- input$swap_axes
-
-        is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) && length(x_name) > 0
-
-        if (is_scatterplot) {
-          shinyjs::show("alpha")
-          alpha <- input$alpha # nolint
-          shinyjs::show("add_lines")
-
-          if (color_settings && input$coloring) {
-            shinyjs::hide("fixed_size")
-            shinyjs::show("size_settings")
-            size <- NULL
-          } else {
-            shinyjs::show("fixed_size")
-            size <- input$fixed_size
-          }
-        } else {
-          shinyjs::hide("add_lines")
-          updateCheckboxInput(session, "add_lines", value = FALSE)
-          shinyjs::hide("alpha")
+        if (color_settings && input$coloring) {
           shinyjs::hide("fixed_size")
-          shinyjs::hide("size_settings")
-          alpha <- 1
+          shinyjs::show("size_settings")
           size <- NULL
-        }
-
-
-        teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
-        validate(need(!is.null(ggtheme), "Please select a theme."))
-
-        cl <- bivariate_plot_call(
-          data_name = "ANL",
-          x = x_name,
-          y = y_name,
-          x_class = ifelse(!identical(x_name, character(0)), class(ANL[[x_name]]), "NULL"),
-          y_class = ifelse(!identical(y_name, character(0)), class(ANL[[y_name]]), "NULL"),
-          x_label = varname_w_label(x_name, ANL),
-          y_label = varname_w_label(y_name, ANL),
-          freq = !use_density,
-          theme = ggtheme,
-          rotate_xaxis_labels = rotate_xaxis_labels,
-          swap_axes = swap_axes,
-          alpha = alpha,
-          size = size,
-          ggplot2_args = ggplot2_args
-        )
-
-        facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
-
-        if (facetting) {
-          facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
-
-          if (!is.null(facet_cl)) {
-            cl <- call("+", cl, facet_cl)
-          }
-        }
-
-        if (input$add_lines) {
-          cl <- call("+", cl, quote(geom_line(size = 1)))
-        }
-
-        coloring_cl <- NULL
-        if (color_settings) {
-          if (input$coloring) {
-            coloring_cl <- coloring_ggplot_call(
-              colour = color_name,
-              fill = fill_name,
-              size = size_name,
-              is_point = any(grepl("geom_point", cl %>% deparse()))
-            )
-            legend_lbls <- substitute(
-              expr = labs(color = color_name, fill = fill_name, size = size_name),
-              env = list(
-                color_name = varname_w_label(color_name, ANL),
-                fill_name = varname_w_label(fill_name, ANL),
-                size_name = varname_w_label(size_name, ANL)
-              )
-            )
-          }
-          if (!is.null(coloring_cl)) {
-            cl <- call("+", call("+", cl, coloring_cl), legend_lbls)
-          }
-        }
-
-        teal.devel::chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
-
-        # Add labels to facets
-        nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
-        nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
-
-        if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-          teal.devel::chunks_push(quote(print(p)))
-          teal.devel::chunks_safe_eval()
         } else {
-          teal.devel::chunks_push(substitute(
-            expr = {
-              # Add facetting labels
-              # optional: grid.newpage() #nolintr
-              g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
-              grid::grid.draw(g)
-            },
-            env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
-          ))
-          teal.devel::chunks_safe_eval()
-          teal.devel::chunks_get_var("g")
+          shinyjs::show("fixed_size")
+          size <- input$fixed_size
         }
-      })
+      } else {
+        shinyjs::hide("add_lines")
+        updateCheckboxInput(session, "add_lines", value = FALSE)
+        shinyjs::hide("alpha")
+        shinyjs::hide("fixed_size")
+        shinyjs::hide("size_settings")
+        alpha <- 1
+        size <- NULL
+      }
 
-      teal.devel::plot_with_settings_srv(
-        id = "myplot",
-        plot_r = plot_r,
-        height = plot_height,
-        width = plot_width
+
+      teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+      validate(need(!is.null(ggtheme), "Please select a theme."))
+
+      cl <- bivariate_plot_call(
+        data_name = "ANL",
+        x = x_name,
+        y = y_name,
+        x_class = ifelse(!identical(x_name, character(0)), class(ANL[[x_name]]), "NULL"),
+        y_class = ifelse(!identical(y_name, character(0)), class(ANL[[y_name]]), "NULL"),
+        x_label = varname_w_label(x_name, ANL),
+        y_label = varname_w_label(y_name, ANL),
+        freq = !use_density,
+        theme = ggtheme,
+        rotate_xaxis_labels = rotate_xaxis_labels,
+        swap_axes = swap_axes,
+        alpha = alpha,
+        size = size,
+        ggplot2_args = ggplot2_args
       )
 
-      teal.devel::get_rcode_srv(
-        id = "rcode",
-        datasets = datasets,
-        datanames = teal.devel::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
-        modal_title = "R Code for a Bivariate plot"
-      )
-    }
-  )
+      facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+
+      if (facetting) {
+        facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
+
+        if (!is.null(facet_cl)) {
+          cl <- call("+", cl, facet_cl)
+        }
+      }
+
+      if (input$add_lines) {
+        cl <- call("+", cl, quote(geom_line(size = 1)))
+      }
+
+      coloring_cl <- NULL
+      if (color_settings) {
+        if (input$coloring) {
+          coloring_cl <- coloring_ggplot_call(
+            colour = color_name,
+            fill = fill_name,
+            size = size_name,
+            is_point = any(grepl("geom_point", cl %>% deparse()))
+          )
+          legend_lbls <- substitute(
+            expr = labs(color = color_name, fill = fill_name, size = size_name),
+            env = list(
+              color_name = varname_w_label(color_name, ANL),
+              fill_name = varname_w_label(fill_name, ANL),
+              size_name = varname_w_label(size_name, ANL)
+            )
+          )
+        }
+        if (!is.null(coloring_cl)) {
+          cl <- call("+", call("+", cl, coloring_cl), legend_lbls)
+        }
+      }
+
+      teal.devel::chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
+
+      # Add labels to facets
+      nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
+      nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
+
+      if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
+        teal.devel::chunks_push(quote(print(p)))
+        teal.devel::chunks_safe_eval()
+      } else {
+        teal.devel::chunks_push(substitute(
+          expr = {
+            # Add facetting labels
+            # optional: grid.newpage() #nolintr
+            g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+            grid::grid.draw(g)
+          },
+          env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
+        ))
+        teal.devel::chunks_safe_eval()
+        teal.devel::chunks_get_var("g")
+      }
+    })
+
+    teal.devel::plot_with_settings_srv(
+      id = "myplot",
+      plot_r = plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
+      modal_title = "R Code for a Bivariate plot"
+    )
+  })
 }
 
 

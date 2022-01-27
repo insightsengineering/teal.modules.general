@@ -152,182 +152,179 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
 }
 
 srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      teal.devel::init_chunks()
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-      selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
+    selector_list <- teal.devel::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
 
-      observeEvent(
-        eventExpr = {
-          req(!is.null(selector_list()$x()) && !is.null(selector_list()$y()))
-          list(selector_list()$x(), selector_list()$y())
+    observeEvent(
+      eventExpr = {
+        req(!is.null(selector_list()$x()) && !is.null(selector_list()$y()))
+        list(selector_list()$x(), selector_list()$y())
+      },
+      handlerExpr = {
+        if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
+          shinyjs::hide("join_fun")
+        } else {
+          shinyjs::show("join_fun")
+        }
+      }
+    )
+
+    merge_function <- reactive({
+      if (is.null(input$merge_fun)) {
+        "dplyr::full_join"
+      } else {
+        input$merge_fun
+      }
+    })
+
+    merged_data_r <- teal.devel::data_merge_srv(
+      datasets = datasets,
+      selector_list = selector_list,
+      merge_function = merge_function
+    )
+
+    x_ordered <- reactive({
+      selector_list()$x()$select_ordered
+    })
+
+    create_table <- reactive({
+      validate({
+        need(!is.null(selector_list()$x()) && !is.null(selector_list()$y()), "Please select row and column values")
+      })
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_data_merge(merged_data_r())
+
+      ANL <- teal.devel::chunks_get_var("ANL") # nolint
+
+      # As this is a summary
+      teal.devel::validate_has_data(ANL, 3)
+
+      x_name <- x_ordered()
+      y_name <- as.vector(merged_data_r()$columns_source$y)
+
+      validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
+      validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
+
+      teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+
+      is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
+      validate(need(
+        all(vapply(ANL[x_name], is_allowed_class, logical(1))),
+        "Selected row variable has an unsupported data type."
+      ))
+      validate(need(
+        is_allowed_class(ANL[[y_name]]),
+        "Selected column variable has an unsupported data type."
+      ))
+
+      show_percentage <- input$show_percentage # nolint
+      show_total <- input$show_total # nolint
+
+      plot_title <- paste(
+        "Cross-Table of",
+        paste0(varname_w_label(x_name, ANL), collapse = ", "),
+        "(rows)", "vs.",
+        varname_w_label(y_name, ANL),
+        "(columns)"
+      )
+
+      teal.devel::chunks_push(substitute(
+        expr = {
+          title <- plot_title
+          print(title)
         },
-        handlerExpr = {
-          if (identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
-            shinyjs::hide("join_fun")
-          } else {
-            shinyjs::show("join_fun")
-          }
-        }
+        env = list(plot_title = plot_title)
+      ))
+
+      labels_vec <- vapply( # nolint
+        x_ordered(),
+        varname_w_label,
+        character(1),
+        ANL
       )
 
-      merge_function <- reactive({
-        if (is.null(input$merge_fun)) {
-          "dplyr::full_join"
-        } else {
-          input$merge_fun
-        }
-      })
-
-      merged_data_r <- teal.devel::data_merge_srv(
-        datasets = datasets,
-        selector_list = selector_list,
-        merge_function = merge_function
-      )
-
-      x_ordered <- reactive({
-        selector_list()$x()$select_ordered
-      })
-
-      create_table <- reactive({
-        validate({
-          need(!is.null(selector_list()$x()) && !is.null(selector_list()$y()), "Please select row and column values")
-        })
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_data_merge(merged_data_r())
-
-        ANL <- teal.devel::chunks_get_var("ANL") # nolint
-
-        # As this is a summary
-        teal.devel::validate_has_data(ANL, 3)
-
-        x_name <- x_ordered()
-        y_name <- as.vector(merged_data_r()$columns_source$y)
-
-        validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
-        validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
-
-        teal.devel::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
-
-        is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
-        validate(need(
-          all(vapply(ANL[x_name], is_allowed_class, logical(1))),
-          "Selected row variable has an unsupported data type."
-        ))
-        validate(need(
-          is_allowed_class(ANL[[y_name]]),
-          "Selected column variable has an unsupported data type."
-        ))
-
-        show_percentage <- input$show_percentage # nolint
-        show_total <- input$show_total # nolint
-
-        plot_title <- paste(
-          "Cross-Table of",
-          paste0(varname_w_label(x_name, ANL), collapse = ", "),
-          "(rows)", "vs.",
-          varname_w_label(y_name, ANL),
-          "(columns)"
-        )
-
-        teal.devel::chunks_push(substitute(
-          expr = {
-            title <- plot_title
-            print(title)
-          },
-          env = list(plot_title = plot_title)
-        ))
-
-        labels_vec <- vapply( # nolint
-          x_ordered(),
-          varname_w_label,
-          character(1),
-          ANL
-        )
-
-        teal.devel::chunks_push(substitute(
-          expr = {
-            lyt <- basic_tables %>%
+      teal.devel::chunks_push(substitute(
+        expr = {
+          lyt <- basic_tables %>%
           split_call %>% # styler: off
-              rtables::add_colcounts() %>%
-              tern::summarize_vars(
-                vars = x_name,
-                var_labels = labels_vec,
-                na.rm = FALSE,
-                denom = "N_col",
-                .stats = c("n", "mean_sd", "median", "range", count_value)
-              )
+            rtables::add_colcounts() %>%
+            tern::summarize_vars(
+              vars = x_name,
+              var_labels = labels_vec,
+              na.rm = FALSE,
+              denom = "N_col",
+              .stats = c("n", "mean_sd", "median", "range", count_value)
+            )
+        },
+        env = list(
+          basic_tables = teal.devel::parse_basic_table_args(
+            basic_table_args = teal.devel::resolve_basic_table_args(basic_table_args)
+          ),
+          split_call = if (show_total) {
+            substitute(
+              expr = rtables::split_cols_by(
+                y_name,
+                split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+              ),
+              env = list(y_name = y_name)
+            )
+          } else {
+            substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
           },
-          env = list(
-            basic_tables = teal.devel::parse_basic_table_args(
-              basic_table_args = teal.devel::resolve_basic_table_args(basic_table_args)
-            ),
-            split_call = if (show_total) {
-              substitute(
-                expr = rtables::split_cols_by(
-                  y_name,
-                  split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
-                ),
-                env = list(y_name = y_name)
-              )
-            } else {
-              substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
-            },
-            x_name = x_name,
-            labels_vec = labels_vec,
-            count_value = ifelse(show_percentage, "count_fraction", "count")
-          )
-        ))
+          x_name = x_name,
+          labels_vec = labels_vec,
+          count_value = ifelse(show_percentage, "count_fraction", "count")
+        )
+      ))
 
-        teal.devel::chunks_push(substitute(
-          expr = {
-            ANL <- tern::df_explicit_na(ANL) # nolint
-            tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
-            tbl
-          },
-          env = list(y_name = y_name)
-        ))
+      teal.devel::chunks_push(substitute(
+        expr = {
+          ANL <- tern::df_explicit_na(ANL) # nolint
+          tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
+          tbl
+        },
+        env = list(y_name = y_name)
+      ))
 
-        teal.devel::chunks_safe_eval()
-      })
+      teal.devel::chunks_safe_eval()
+    })
 
-      output$title <- renderText({
-        create_table()
-        teal.devel::chunks_get_var("title")
-      })
+    output$title <- renderText({
+      create_table()
+      teal.devel::chunks_get_var("title")
+    })
 
-      table <- reactive({
-        create_table()
-        teal.devel::chunks_get_var("tbl")
-      })
+    table <- reactive({
+      create_table()
+      teal.devel::chunks_get_var("tbl")
+    })
 
-      teal.devel::table_with_settings_srv(
-        id = "table",
-        table_r = table
-      )
+    teal.devel::table_with_settings_srv(
+      id = "table",
+      table_r = table
+    )
 
-      show_r_code_title <- reactive(
-        if (is.null(selector_list()$x()) || is.null(selector_list()$y())) {
-          paste("Cross-Table")
-        } else {
-          paste(
-            "Cross-Table of",
-            paste0(merged_data_r()$columns_source$x, collapse = ", "),
-            "vs.",
-            merged_data_r()$columns_source$y
-          )
-        }
-      )
+    show_r_code_title <- reactive(
+      if (is.null(selector_list()$x()) || is.null(selector_list()$y())) {
+        paste("Cross-Table")
+      } else {
+        paste(
+          "Cross-Table of",
+          paste0(merged_data_r()$columns_source$x, collapse = ", "),
+          "vs.",
+          merged_data_r()$columns_source$y
+        )
+      }
+    )
 
-      teal.devel::get_rcode_srv(
-        id = "rcode",
-        datasets = datasets,
-        datanames = teal.devel::get_extract_datanames(list(x, y)),
-        modal_title = show_r_code_title(),
-        code_header = show_r_code_title()
-      )
-    }
-  )
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(x, y)),
+      modal_title = show_r_code_title(),
+      code_header = show_r_code_title()
+    )
+  })
 }

@@ -336,314 +336,275 @@ srv_g_scatterplot <- function(id,
                               plot_width,
                               table_dec,
                               ggplot2_args) {
-  moduleServer(
-    id,
-    module = function(input, output, session) {
-      teal.devel::init_chunks()
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-      data_extract <- list(
-        x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
-      )
-      data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
-      selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+    data_extract <- list(
+      x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
+    )
+    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+    selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
 
-      reactive_select_input <- reactive({
-        selectors <- selector_list()
-        extract_names <- names(selectors)
-        for (extract in extract_names) {
-          if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-            selectors <- selectors[-which(names(selectors) == extract)]
-          }
+    reactive_select_input <- reactive({
+      selectors <- selector_list()
+      extract_names <- names(selectors)
+      for (extract in extract_names) {
+        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+          selectors <- selectors[-which(names(selectors) == extract)]
         }
-        selectors
-      })
-
-      merged_data <- teal.devel::data_merge_srv(
-        selector_list = reactive_select_input,
-        datasets = datasets,
-        merge_function = "dplyr::inner_join"
-      )
-
-      trend_line_is_applicable <- reactive({
-        ANL <- merged_data()$data() # nolint
-        x_var <- as.vector(merged_data()$columns_source$x)
-        y_var <- as.vector(merged_data()$columns_source$y)
-        length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
-      })
-
-      add_trend_line <- reactive({
-        smoothing_degree <- as.integer(input$smoothing_degree)
-        trend_line_is_applicable() && length(smoothing_degree) > 0
-      })
-
-      if (!is.null(color_by)) {
-        observeEvent(
-          eventExpr = {
-            req(length(reactive_select_input()) > 0)
-            merged_data()$columns_source$color_by
-          },
-          handlerExpr = {
-            color_by_var <- as.vector(merged_data()$columns_source$color_by)
-            if (length(color_by_var) > 0) {
-              shinyjs::hide("color")
-            } else {
-              shinyjs::show("color")
-            }
-          }
-        )
       }
+      selectors
+    })
 
-      output$num_na_removed <- renderUI({
-        if (add_trend_line()) {
-          ANL <- merged_data()$data() # nolint
-          x_var <- as.vector(merged_data()$columns_source$x)
-          y_var <- as.vector(merged_data()$columns_source$y)
-          if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
-            shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
-          }
-        }
-      })
+    merged_data <- teal.devel::data_merge_srv(
+      selector_list = reactive_select_input,
+      datasets = datasets,
+      merge_function = "dplyr::inner_join"
+    )
 
+    trend_line_is_applicable <- reactive({
+      ANL <- merged_data()$data() # nolint
+      x_var <- as.vector(merged_data()$columns_source$x)
+      y_var <- as.vector(merged_data()$columns_source$y)
+      length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
+    })
 
+    add_trend_line <- reactive({
+      smoothing_degree <- as.integer(input$smoothing_degree)
+      trend_line_is_applicable() && length(smoothing_degree) > 0
+    })
+
+    if (!is.null(color_by)) {
       observeEvent(
         eventExpr = {
           req(length(reactive_select_input()) > 0)
-          merged_data()$columns_source$col_facet
-          merged_data()$columns_source$row_facet
-        }, handlerExpr = {
-          if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
-            shinyjs::hide("free_scales")
+          merged_data()$columns_source$color_by
+        },
+        handlerExpr = {
+          color_by_var <- as.vector(merged_data()$columns_source$color_by)
+          if (length(color_by_var) > 0) {
+            shinyjs::hide("color")
           } else {
-            shinyjs::show("free_scales")
+            shinyjs::show("color")
           }
         }
       )
+    }
 
-      plot_r <- reactive({
-        validate({
-          need(all(c("x", "y") %in% names(reactive_select_input())), "Please select X and Y variables")
-        })
-
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_data_merge(merged_data())
-
+    output$num_na_removed <- renderUI({
+      if (add_trend_line()) {
         ANL <- merged_data()$data() # nolint
-        teal.devel::validate_has_data(ANL, 10)
-
         x_var <- as.vector(merged_data()$columns_source$x)
         y_var <- as.vector(merged_data()$columns_source$y)
-        color_by_var <- as.vector(merged_data()$columns_source$color_by)
-        size_by_var <- as.vector(merged_data()$columns_source$size_by)
-        row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
-          character(0)
-        } else {
-          as.vector(merged_data()$columns_source$row_facet)
+        if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
+          shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
         }
-        col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
-          character(0)
-        } else {
-          as.vector(merged_data()$columns_source$col_facet)
-        }
-        alpha <- input$alpha # nolint
-        size <- input$size # nolint
-        rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-        add_density <- input$add_density
-        ggtheme <- input$ggtheme
-        rug_plot <- input$rug_plot
-        color <- input$color # nolint
-        shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape) # nolint
-        smoothing_degree <- as.integer(input$smoothing_degree)
-        ci <- input$ci # nolint
+      }
+    })
 
-        validate(need(!is.null(ggtheme), "Please select a theme."))
-        validate(need(length(x_var) == 1, "There must be exactly one x var."))
-        validate(need(length(y_var) == 1, "There must be exactly one y var."))
-        validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
-        validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
-        validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
-        validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
+
+    observeEvent(
+      eventExpr = {
+        req(length(reactive_select_input()) > 0)
+        merged_data()$columns_source$col_facet
+        merged_data()$columns_source$row_facet
+      }, handlerExpr = {
+        if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
+          shinyjs::hide("free_scales")
+        } else {
+          shinyjs::show("free_scales")
+        }
+      }
+    )
+
+    plot_r <- reactive({
+      validate({
+        need(all(c("x", "y") %in% names(reactive_select_input())), "Please select X and Y variables")
+      })
+
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_data_merge(merged_data())
+
+      ANL <- merged_data()$data() # nolint
+      teal.devel::validate_has_data(ANL, 10)
+
+      x_var <- as.vector(merged_data()$columns_source$x)
+      y_var <- as.vector(merged_data()$columns_source$y)
+      color_by_var <- as.vector(merged_data()$columns_source$color_by)
+      size_by_var <- as.vector(merged_data()$columns_source$size_by)
+      row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged_data()$columns_source$row_facet)
+      }
+      col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged_data()$columns_source$col_facet)
+      }
+      alpha <- input$alpha # nolint
+      size <- input$size # nolint
+      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      add_density <- input$add_density
+      ggtheme <- input$ggtheme
+      rug_plot <- input$rug_plot
+      color <- input$color # nolint
+      shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape) # nolint
+      smoothing_degree <- as.integer(input$smoothing_degree)
+      ci <- input$ci # nolint
+
+      validate(need(!is.null(ggtheme), "Please select a theme."))
+      validate(need(length(x_var) == 1, "There must be exactly one x var."))
+      validate(need(length(y_var) == 1, "There must be exactly one y var."))
+      validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
+      validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
+      validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
+      validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
+      validate(need(
+        length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
+        "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+      ))
+      validate(need(
+        length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
+        "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+      ))
+      if (add_density && length(color_by_var) > 0) {
         validate(need(
-          length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
-          "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+          !is.numeric(ANL[[color_by_var]]),
+          "Marginal plots cannot be produced when the points are colored by numeric variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
         validate(need(
-          length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
-          "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+          !(inherits(ANL[[color_by_var]], "Date") ||
+            inherits(ANL[[color_by_var]], "POSIXct") ||
+            inherits(ANL[[color_by_var]], "POSIXlt")),
+          "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
-        if (add_density && length(color_by_var) > 0) {
-          validate(need(
-            !is.numeric(ANL[[color_by_var]]),
-            "Marginal plots cannot be produced when the points are colored by numeric variables.
-        \n Uncheck the 'Add marginal density' checkbox to display the plot."
-          ))
-          validate(need(
-            !(inherits(ANL[[color_by_var]], "Date") ||
-              inherits(ANL[[color_by_var]], "POSIXct") ||
-              inherits(ANL[[color_by_var]], "POSIXlt")),
-            "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
-        \n Uncheck the 'Add marginal density' checkbox to display the plot."
-          ))
-        }
+      }
 
-        teal.devel::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+      teal.devel::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
-        facet_cl <- facet_ggplot_call(
-          row_facet_name,
-          col_facet_name,
-          free_x_scales = isTRUE(input$free_scales),
-          free_y_scales = isTRUE(input$free_scales)
-        )
-        if (!is.null(facet_cl)) {
-          validate(need(
-            !add_density,
-            "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
+      facet_cl <- facet_ggplot_call(
+        row_facet_name,
+        col_facet_name,
+        free_x_scales = isTRUE(input$free_scales),
+        free_y_scales = isTRUE(input$free_scales)
+      )
+      if (!is.null(facet_cl)) {
+        validate(need(
+          !add_density,
+          "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
         or remove facetting."
-          ))
-        }
+        ))
+      }
 
-        point_sizes <- if (length(size_by_var) > 0) {
-          validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
-          substitute(
-            expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
-            env = list(size = size, size_by_var = size_by_var)
-          )
-        } else {
-          size
-        }
+      point_sizes <- if (length(size_by_var) > 0) {
+        validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
+        substitute(
+          expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
+          env = list(size = size, size_by_var = size_by_var)
+        )
+      } else {
+        size
+      }
 
-        pre_pro_anl <- if (input$show_count) {
-          paste0(
-            "ANL %>% dplyr::group_by(",
-            paste(
-              c(
-                if (length(color_by_var) > 0 && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
-                row_facet_name,
-                col_facet_name
-              ),
-              collapse = ", "
+      pre_pro_anl <- if (input$show_count) {
+        paste0(
+          "ANL %>% dplyr::group_by(",
+          paste(
+            c(
+              if (length(color_by_var) > 0 && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+              row_facet_name,
+              col_facet_name
             ),
-            ") %>% dplyr::mutate(n = dplyr::n()) %>% dplyr::ungroup()"
-          )
-        } else {
-          "ANL"
-        }
+            collapse = ", "
+          ),
+          ") %>% dplyr::mutate(n = dplyr::n()) %>% dplyr::ungroup()"
+        )
+      } else {
+        "ANL"
+      }
 
-        plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
+      plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-        plot_call <- if (length(color_by_var) == 0) {
-          substitute(
-            expr = plot_call +
-              aes(x = x_name, y = y_name) +
-              geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
-            env = list(
-              plot_call = plot_call,
-              x_name = as.name(x_var),
-              y_name = as.name(y_var),
-              alpha_value = alpha,
-              point_sizes = point_sizes,
-              shape_value = shape,
-              color_value = color
-            )
+      plot_call <- if (length(color_by_var) == 0) {
+        substitute(
+          expr = plot_call +
+            aes(x = x_name, y = y_name) +
+            geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
+          env = list(
+            plot_call = plot_call,
+            x_name = as.name(x_var),
+            y_name = as.name(y_var),
+            alpha_value = alpha,
+            point_sizes = point_sizes,
+            shape_value = shape,
+            color_value = color
           )
-        } else {
-          substitute(
-            expr = plot_call +
-              aes(x = x_name, y = y_name, color = color_by_var_name) +
-              geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
-            env = list(
-              plot_call = plot_call,
-              x_name = as.name(x_var),
-              y_name = as.name(y_var),
-              color_by_var_name = as.name(color_by_var),
-              alpha_value = alpha,
-              point_sizes = point_sizes,
-              shape_value = shape
-            )
+        )
+      } else {
+        substitute(
+          expr = plot_call +
+            aes(x = x_name, y = y_name, color = color_by_var_name) +
+            geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
+          env = list(
+            plot_call = plot_call,
+            x_name = as.name(x_var),
+            y_name = as.name(y_var),
+            color_by_var_name = as.name(color_by_var),
+            alpha_value = alpha,
+            point_sizes = point_sizes,
+            shape_value = shape
           )
-        }
+        )
+      }
 
-        if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
+      if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
 
-        plot_label_generator <- function(rhs_formula = quote(y ~ 1),
-                                         show_form = input$show_form,
-                                         show_r2 = input$show_r2,
-                                         show_count = input$show_count,
-                                         pos = input$pos) {
-          stopifnot(sum(show_form, show_r2, show_count) >= 1)
-          aes_label <- paste0(
-            "aes(",
-            if (show_count) "n = n, ",
-            "label = ",
-            if (sum(show_form, show_r2, show_count) > 1) "paste(",
-            paste(
-              c(if (show_form) "stat(eq.label)", if (show_r2) "stat(adj.rr.label)", if (show_count) "paste('N ~`=`~', n)"),
-              collapse = ", "
-            ),
-            if (sum(show_form, show_r2, show_count) > 1) ", sep = '*\", \"*'))" else ")"
+      plot_label_generator <- function(rhs_formula = quote(y ~ 1),
+                                       show_form = input$show_form,
+                                       show_r2 = input$show_r2,
+                                       show_count = input$show_count,
+                                       pos = input$pos) {
+        stopifnot(sum(show_form, show_r2, show_count) >= 1)
+        aes_label <- paste0(
+          "aes(",
+          if (show_count) "n = n, ",
+          "label = ",
+          if (sum(show_form, show_r2, show_count) > 1) "paste(",
+          paste(
+            c(if (show_form) "stat(eq.label)", if (show_r2) "stat(adj.rr.label)", if (show_count) "paste('N ~`=`~', n)"),
+            collapse = ", "
+          ),
+          if (sum(show_form, show_r2, show_count) > 1) ", sep = '*\", \"*'))" else ")"
+        )
+        label_geom <- substitute(
+          expr = ggpmisc::stat_poly_eq(
+            mapping = aes_label,
+            formula = rhs_formula,
+            parse = TRUE,
+            label.x = pos
+          ),
+          env = list(
+            rhs_formula = rhs_formula,
+            pos = pos,
+            aes_label = str2lang(aes_label)
           )
-          label_geom <- substitute(
-            expr = ggpmisc::stat_poly_eq(
-              mapping = aes_label,
-              formula = rhs_formula,
-              parse = TRUE,
-              label.x = pos
-            ),
-            env = list(
-              rhs_formula = rhs_formula,
-              pos = pos,
-              aes_label = str2lang(aes_label)
-            )
+        )
+        substitute(
+          expr = plot_call + label_geom,
+          env = list(
+            plot_call = plot_call,
+            label_geom = label_geom
           )
-          substitute(
-            expr = plot_call + label_geom,
-            env = list(
-              plot_call = plot_call,
-              label_geom = label_geom
-            )
-          )
-        }
+        )
+      }
 
-        if (trend_line_is_applicable()) {
-          shinyjs::hide("line_msg")
-          shinyjs::show("smoothing_degree")
-          if (!add_trend_line()) {
-            shinyjs::hide("ci")
-            shinyjs::hide("color_sub")
-            shinyjs::hide("show_form")
-            shinyjs::hide("show_r2")
-            if (input$show_count) {
-              plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
-              shinyjs::show("label_pos")
-            } else {
-              shinyjs::hide("label_pos")
-            }
-          } else {
-            shinyjs::show("ci")
-            shinyjs::show("show_form")
-            shinyjs::show("show_r2")
-            if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
-              teal.devel::chunks_push(substitute(
-                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
-                env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-              ))
-            }
-            rhs_formula <- substitute(
-              expr = y ~ poly(x, smoothing_degree, raw = TRUE),
-              env = list(smoothing_degree = smoothing_degree)
-            )
-            if (input$show_form || input$show_r2 || input$show_count) {
-              plot_call <- plot_label_generator(rhs_formula = rhs_formula)
-              shinyjs::show("label_pos")
-            } else {
-              shinyjs::hide("label_pos")
-            }
-            plot_call <- substitute(
-              expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
-              env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
-            )
-          }
-        } else {
-          shinyjs::hide("smoothing_degree")
+      if (trend_line_is_applicable()) {
+        shinyjs::hide("line_msg")
+        shinyjs::show("smoothing_degree")
+        if (!add_trend_line()) {
           shinyjs::hide("ci")
           shinyjs::hide("color_sub")
           shinyjs::hide("show_form")
@@ -654,112 +615,148 @@ srv_g_scatterplot <- function(id,
           } else {
             shinyjs::hide("label_pos")
           }
-          shinyjs::show("line_msg")
-        }
-
-        if (!is.null(facet_cl)) {
-          plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
-        }
-
-        y_label <- varname_w_label(y_var, ANL)
-        x_label <- varname_w_label(x_var, ANL)
-
-        dev_ggplot2_args <- teal.devel::ggplot2_args(
-          labs = list(y = y_label, x = x_label),
-          theme = list(legend.position = "bottom")
-        )
-
-        if (rotate_xaxis_labels) {
-          dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
-        }
-
-        all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-          user_plot = ggplot2_args,
-          module_plot = dev_ggplot2_args
-        )
-
-        parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
-
-
-        if (add_density) {
-          plot_call <- substitute(
-            expr = ggExtra::ggMarginal(
-              plot_call + labs + ggthemes + themes,
-              type = "density",
-              groupColour = group_colour
-            ),
-            env = list(
-              plot_call = plot_call,
-              group_colour = if (length(color_by_var) > 0) TRUE else FALSE,
-              labs = parsed_ggplot2_args$labs,
-              ggthemes = parsed_ggplot2_args$ggtheme,
-              themes = parsed_ggplot2_args$theme
-            )
-          )
         } else {
+          shinyjs::show("ci")
+          shinyjs::show("show_form")
+          shinyjs::show("show_r2")
+          if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
+            teal.devel::chunks_push(substitute(
+              expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
+              env = list(x_var = as.name(x_var), y_var = as.name(y_var))
+            ))
+          }
+          rhs_formula <- substitute(
+            expr = y ~ poly(x, smoothing_degree, raw = TRUE),
+            env = list(smoothing_degree = smoothing_degree)
+          )
+          if (input$show_form || input$show_r2 || input$show_count) {
+            plot_call <- plot_label_generator(rhs_formula = rhs_formula)
+            shinyjs::show("label_pos")
+          } else {
+            shinyjs::hide("label_pos")
+          }
           plot_call <- substitute(
-            expr = plot_call +
-              labs +
-              ggthemes +
-              themes,
-            env = list(
-              plot_call = plot_call,
-              labs = parsed_ggplot2_args$labs,
-              ggthemes = parsed_ggplot2_args$ggtheme,
-              themes = parsed_ggplot2_args$theme
-            )
+            expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
+            env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
           )
         }
-
-        plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
-        teal.devel::chunks_push(plot_call)
-
-        # explicitly calling print on the plot inside the chunk evaluates
-        # the ggplot call and therefore catches errors
-        plot_print_call <- quote(print(p))
-        teal.devel::chunks_push(plot_print_call)
-        teal.devel::chunks_safe_eval()
-        teal.devel::chunks_get_var(var = "p")
-      })
-
-      # Insert the plot into a plot_with_settings module from teal.devel
-      teal.devel::plot_with_settings_srv(
-        id = "scatter_plot",
-        plot_r = plot_r,
-        height = plot_height,
-        width = plot_width,
-        brushing = TRUE
-      )
-
-      output$data_table <- DT::renderDataTable({
-        # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL in plot_r
-        # which ends up in a bunch of warnings that ANL is not in chunks
-        plot_r()
-        plot_brush <- brush$brush()
-
-        if (!is.null(plot_brush)) {
-          validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
+      } else {
+        shinyjs::hide("smoothing_degree")
+        shinyjs::hide("ci")
+        shinyjs::hide("color_sub")
+        shinyjs::hide("show_form")
+        shinyjs::hide("show_r2")
+        if (input$show_count) {
+          plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
+          shinyjs::show("label_pos")
+        } else {
+          shinyjs::hide("label_pos")
         }
+        shinyjs::show("line_msg")
+      }
 
-        merged_data <- isolate(teal.devel::chunks_get_var("ANL"))
+      if (!is.null(facet_cl)) {
+        plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
+      }
 
-        brushed_df <- teal.devel::clean_brushedPoints(merged_data, plot_brush)
-        numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
+      y_label <- varname_w_label(y_var, ANL)
+      x_label <- varname_w_label(x_var, ANL)
 
-        DT::formatRound(
-          DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
-          numeric_cols,
-          table_dec
-        )
-      })
-
-      teal.devel::get_rcode_srv(
-        id = "rcode",
-        datasets = datasets,
-        datanames = teal.devel::get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
-        modal_title = "R Code for a scatterplot",
-        code_header = "Scatterplot"
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        labs = list(y = y_label, x = x_label),
+        theme = list(legend.position = "bottom")
       )
-    }
-  )
+
+      if (rotate_xaxis_labels) {
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
+      }
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(all_ggplot2_args, ggtheme = ggtheme)
+
+
+      if (add_density) {
+        plot_call <- substitute(
+          expr = ggExtra::ggMarginal(
+            plot_call + labs + ggthemes + themes,
+            type = "density",
+            groupColour = group_colour
+          ),
+          env = list(
+            plot_call = plot_call,
+            group_colour = if (length(color_by_var) > 0) TRUE else FALSE,
+            labs = parsed_ggplot2_args$labs,
+            ggthemes = parsed_ggplot2_args$ggtheme,
+            themes = parsed_ggplot2_args$theme
+          )
+        )
+      } else {
+        plot_call <- substitute(
+          expr = plot_call +
+            labs +
+            ggthemes +
+            themes,
+          env = list(
+            plot_call = plot_call,
+            labs = parsed_ggplot2_args$labs,
+            ggthemes = parsed_ggplot2_args$ggtheme,
+            themes = parsed_ggplot2_args$theme
+          )
+        )
+      }
+
+      plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
+      teal.devel::chunks_push(plot_call)
+
+      # explicitly calling print on the plot inside the chunk evaluates
+      # the ggplot call and therefore catches errors
+      plot_print_call <- quote(print(p))
+      teal.devel::chunks_push(plot_print_call)
+      teal.devel::chunks_safe_eval()
+      teal.devel::chunks_get_var(var = "p")
+    })
+
+    # Insert the plot into a plot_with_settings module from teal.devel
+    teal.devel::plot_with_settings_srv(
+      id = "scatter_plot",
+      plot_r = plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    output$data_table <- DT::renderDataTable({
+      # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL in plot_r
+      # which ends up in a bunch of warnings that ANL is not in chunks
+      plot_r()
+      plot_brush <- brush$brush()
+
+      if (!is.null(plot_brush)) {
+        validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
+      }
+
+      merged_data <- isolate(teal.devel::chunks_get_var("ANL"))
+
+      brushed_df <- teal.devel::clean_brushedPoints(merged_data, plot_brush)
+      numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
+
+      DT::formatRound(
+        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
+        numeric_cols,
+        table_dec
+      )
+    })
+
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
+      modal_title = "R Code for a scatterplot",
+      code_header = "Scatterplot"
+    )
+  })
 }
