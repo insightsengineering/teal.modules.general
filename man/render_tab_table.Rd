@@ -7,15 +7,15 @@
 render_tab_table(dataset_name, output, datasets, input, columns_names)
 }
 \arguments{
-\item{dataset_name}{(`character`) the name of the dataset}
+\item{dataset_name}{(\code{character}) the name of the dataset}
 
-\item{output}{(`session$output`) the shiny session output}
+\item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(`FilteredData`) the object containing all datasets}
+\item{datasets}{(\code{FilteredData}) the object containing all datasets}
 
-\item{input}{(`session$input`) the shiny session input}
+\item{input}{(\code{session$input}) the shiny session input}
 
-\item{columns_names}{(`environment`) the environment containing bindings for each dataset}
+\item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
 }
 \description{
 The table contains column names, column labels,

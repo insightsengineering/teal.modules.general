@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.11.9036
-Date: 2021-10-13
+Version: 0.2.12
+Date: 2022-01-27
 Authors@R: c(
     person("NEST", , , "basel.nestcicd@roche.com", role = c("aut", "cre")),
     person("Adrian", "Waddell", , "adrian.waddell@roche.com", role = "aut"),
@@ -25,7 +25,7 @@ Depends:
     R (>= 3.6),
     shiny,
     shinyTree,
-    teal (>= 0.10.0)
+    teal (>= 0.10.1)
 Imports:
     broom,
     checkmate,
@@ -43,19 +43,19 @@ Imports:
     htmlwidgets,
     jsonlite,
     lattice,
-    logger,
+    logger (>= 0.2.0),
     MASS,
     methods,
     rlang,
-    rtables (>= 0.3.8),
+    rtables (>= 0.4.1),
     scales,
     shinyjs,
     shinyWidgets,
     sparkline,
     stats,
     stringr,
-    teal.devel (>= 0.2.12),
-    tern (>= 0.7.5),
+    teal.devel (>= 0.2.13),
+    tern (>= 0.7.6),
     tibble,
     tidyr,
     tidyselect,
@@ -63,11 +63,12 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    scda.2021(>= 0.1.1),
-    scda(>= 0.1.1),
+    scda.2021(>= 0.1.2),
+    scda(>= 0.1.2),
     testthat (>= 2.0)
 VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

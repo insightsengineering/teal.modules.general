@@ -1,31 +1,33 @@
-# teal.modules.general 0.2.11.9036
+# teal.modules.general 0.2.12
 
-* Added R version requirement, R >= 3.6.
-* Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
-* Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
-* Added support for `NA` level in grouping variable in "By variable levels" table inside `tm_missing_data`.
-* Added informative labels for each level of grouping variable in "By variable levels" table inside `tm_missing_data`.
-* Added ability to sort by `Variable` and `Type` in `tm_variable_browser` by separating the variable type icons into their own column.
-* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `data_merge_srv` and `data_extract_multiple_srv` modules.
-* Removed `input_id` argument from all `data_merge_module` calls in all modules.
-* Added an option to remove missing values in a `tm_variable_browser` histogram for factor like variables.
-
-## Enhancements
+### Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in plot based modules.
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
+* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `teal.devel::data_merge_srv` and `teal.devel::data_extract_multiple_srv` modules.
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
-* Changed the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab did.
-* Added a checkbox to `tm_g_scatterplot` to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.
 * Modified the summary statistics table for numeric columns in `tm_variable_browser` to reflect the plot after `outliers` are removed.
+* Added an option to remove missing values in a `tm_variable_browser` histogram for factor like variables.
+* Added ability to sort by `Variable` and `Type` in `tm_variable_browser` by separating the variable type icons into their own column.
+* Updated the `Grouped by Subject` tab of the `tm_missing_data` module to present data the same way the `Summary` tab does.
+* Added support for `NA` level in grouping variable in `By variable levels` table in `tm_missing_data` module.
+* Added informative labels for each level of grouping variable in `By variable levels` table in `tm_missing_data` module.
+* Added a checkbox to `tm_g_scatterplot` to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.
+* Used browser-side processing in `tm_data_table` so that `Buttons` extension could download full table. Added example for advanced usage of `DT` in the module.
 
-## Miscellaneous
+### Bug fixes
+* Fixed an error in `tm_variable_browser` when the selected column is `logical(1)`.
+* Fixed bugs in the modules' vignette examples.
+
+### Miscellaneous
+* Added R version requirement `R >= 3.6`.
+* Removed `input_id` argument from `teal.devel::data_merge_module` calls in all modules.
 * Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
-* Removed the overlay statistics table in `tm_g_distribution`.
-* Replaced calls to `utils.nest::check_slider_input` with `checkmate::assert_numeric`.
-* Replaced calls to `utils.nest::is_<class>` and `utils.nest::is_<class>_list` with `checkmate` equivalent.
-* Removed dependency on `utils.nest`.
- 
+* Updated `teal.devel::data_merge_srv` to use `dplyr::inner_join` instead of `dplyr::left_join` in `tm_outliers` module.
+* Removed the overlay statistics table in `tm_g_distribution` module.
+* Removed dependency on `test.nest` package.
+* Removed dependency on `utils.nest` package and replaced its functions with equivalents from the `checkmate` package.
+
 # teal.modules.general 0.2.11
 
 ### New features

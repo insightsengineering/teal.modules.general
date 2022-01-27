@@ -12,7 +12,7 @@ tm_file_viewer(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{input_path}{(`list`) `optional` A list of the input paths to either: specific files of accepted formats,
+\item{input_path}{optional, (\code{list}) of the input paths to either: specific files of accepted formats,
 a directory or a URL. The paths can be specified as absolute paths or relative to the running
 directory of the application. Will default to current working directory if not supplied.}
 }

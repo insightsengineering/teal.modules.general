@@ -7,15 +7,15 @@
 get_var_description(datasets, dataset_name, var_name)
 }
 \arguments{
-\item{datasets}{(`FilteredData`) the object containing the dataset}
+\item{datasets}{(\code{FilteredData}) the object containing the dataset}
 
-\item{dataset_name}{(`character`) the name of the dataset containing the variable}
+\item{dataset_name}{(\code{character}) the name of the dataset containing the variable}
 
-\item{var_name}{(`character`) the name of the variable}
+\item{var_name}{(\code{character}) the name of the variable}
 }
 \description{
 The format of the variable description is:
-<Long variable label> [<dataset name>.<variable name>]
+\code{"<Long variable label> [<dataset name>.<variable name>]"}
 
-Example: Study Identifier [ADSL.STUDYID]
+Example: \code{"Study Identifier [ADSL.STUDYID]"}
 }

@@ -7,11 +7,11 @@
 render_tab_header(dataset_name, output, datasets)
 }
 \arguments{
-\item{dataset_name}{(`character`) the name of the dataset of the tab}
+\item{dataset_name}{(\code{character}) the name of the dataset of the tab}
 
-\item{output}{(`session$output`) the shiny session output}
+\item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(`FilteredData`) the object containing all datasets}
+\item{datasets}{(\code{FilteredData}) the object containing all datasets}
 }
 \description{
 Renders the text headlining a single tab in the left-hand side tabset panel

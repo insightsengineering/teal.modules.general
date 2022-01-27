@@ -7,14 +7,14 @@
 validate_input(input, plot_var, datasets)
 }
 \arguments{
-\item{input}{(`session$input`) the shiny session input}
+\item{input}{(\code{session$input}) the shiny session input}
 
-\item{plot_var}{(`list`) list of a data frame and an array of variable names}
+\item{plot_var}{(\code{list}) list of a data frame and an array of variable names}
 
-\item{datasets}{(`FilteredData`) the datasets passed to the module}
+\item{datasets}{(\code{FilteredData}) the datasets passed to the module}
 }
 \value{
-`logical` TRUE if validations pass; a Shiny validation error otherwise
+\code{logical} TRUE if validations pass; a Shiny validation error otherwise
 }
 \description{
 Validates the variable browser inputs

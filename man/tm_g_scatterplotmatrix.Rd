@@ -19,10 +19,10 @@ tm_g_scatterplotmatrix(
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \code{c(value, min and max)}
+\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
 \item{pre_output}{optional, \code{shiny.tag} with text placed before the

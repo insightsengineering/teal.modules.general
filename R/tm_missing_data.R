@@ -6,8 +6,9 @@
 #' @inheritParams shared_params
 #' @inheritParams teal.devel::standard_layout
 #'
-#' @param ggtheme optional, (\code{character}) \code{ggplot} Theme to be used by default.
-#'   All themes can be chosen by the user. Defaults to \code{classic}.
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
+#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
+#'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -27,7 +28,13 @@
 #'     check = TRUE
 #'   ),
 #'   modules = root_modules(
-#'     tm_missing_data()
+#'     tm_missing_data(
+#'       ggplot2_args = list(
+#'         "Combinations Hist" =
+#'           teal.devel::ggplot2_args(labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)),
+#'         "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = NULL))
+#'       )
+#'     )
 #'   )
 #' )
 #' \dontrun{
@@ -233,7 +240,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
     actionButton(
       ns("filter_na"),
       span(style = "white-space: normal;", "Select only vars with missings"),
-      width = "100%"
+      width = "100%",
+      style = "margin-bottom: 1rem;"
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
@@ -296,7 +304,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       optionalSelectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = gg_themes,
+        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
         selected = ggtheme,
         multiple = FALSE
       )
@@ -1057,7 +1065,7 @@ srv_missing_data <- function(input,
             geom_raster() +
             annotate(
               "text",
-              x = nrow(ANL_FILTERED),
+              x = length(order_subjects),
               y = seq_len(nrow(ordered_columns)),
               hjust = 1,
               label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
