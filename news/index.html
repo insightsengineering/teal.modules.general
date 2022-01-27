@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9035</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12</span>
       </span>
     </div>
 
@@ -65,15 +65,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -94,33 +85,37 @@ Other releases
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.2.11.9035" id="tealmodulesgeneral-02119035">teal.modules.general 0.2.11.9035<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02119035"></a></h2>
-<ul><li>Added R version requirement, R &gt;= 3.6.</li>
-<li>Used browser-side processing in <code>tm_data_table</code> so that <code>Buttons</code> extension could download full table. Added example for advanced usage of <code>DT</code> in the module.</li>
-<li>Fixed an error in <code>tm_variable_browser</code> when the selected column is <code>logical(1)</code>.</li>
-<li>Added support for <code>NA</code> level in grouping variable in “By variable levels” table inside <code>tm_missing_data</code>.</li>
-<li>Added informative labels for each level of grouping variable in “By variable levels” table inside <code>tm_missing_data</code>.</li>
-<li>Added ability to sort by <code>Variable</code> and <code>Type</code> in <code>tm_variable_browser</code> by separating the variable type icons into their own column.</li>
-<li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code>data_merge_srv</code> and <code>data_extract_multiple_srv</code> modules.</li>
-<li>Removed <code>input_id</code> argument from all <code>data_merge_module</code> calls in all modules.</li>
-<li>Added an option to remove missing values in a <code>tm_variable_browser</code> histogram for factor like variables.</li>
-</ul><div class="section level3">
-<h3 id="enhancements-0-2-11-9035">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-11-9035"></a></h3>
+<h2 class="page-header" data-toc-text="0.2.12" id="tealmodulesgeneral-0212">teal.modules.general 0.2.12<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-0212"></a></h2>
+<div class="section level4">
+<h4 id="enhancements-0-2-12">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-12"></a></h4>
 <ul><li>Added support for logging with the <code>logger</code> package and added info level logs upon initialization of a module.</li>
 <li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
 <li>Added support for custom arguments for <code><a href="https://roche.github.io/rtables/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
+<li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code><a href="https://rdrr.io/pkg/teal.devel/man/data_merge_srv.html" class="external-link">teal.devel::data_merge_srv</a></code> and <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_multiple_srv.html" class="external-link">teal.devel::data_extract_multiple_srv</a></code> modules.</li>
 <li>Distinguished bars representing <code>NA</code> in plot depicting counts of <code>tm_variable_browser</code> with a different color fill.</li>
-<li>Changed the <code>Grouped by Subject</code> tab of the <code>tm_missing_data</code> module to present data the same way the <code>Summary</code> tab did.</li>
-<li>Added a checkbox to <code>tm_g_scatterplot</code> to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.</li>
 <li>Modified the summary statistics table for numeric columns in <code>tm_variable_browser</code> to reflect the plot after <code>outliers</code> are removed.</li>
+<li>Added an option to remove missing values in a <code>tm_variable_browser</code> histogram for factor like variables.</li>
+<li>Added ability to sort by <code>Variable</code> and <code>Type</code> in <code>tm_variable_browser</code> by separating the variable type icons into their own column.</li>
+<li>Updated the <code>Grouped by Subject</code> tab of the <code>tm_missing_data</code> module to present data the same way the <code>Summary</code> tab does.</li>
+<li>Added support for <code>NA</code> level in grouping variable in <code>By variable levels</code> table in <code>tm_missing_data</code> module.</li>
+<li>Added informative labels for each level of grouping variable in <code>By variable levels</code> table in <code>tm_missing_data</code> module.</li>
+<li>Added a checkbox to <code>tm_g_scatterplot</code> to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.</li>
+<li>Used browser-side processing in <code>tm_data_table</code> so that <code>Buttons</code> extension could download full table. Added example for advanced usage of <code>DT</code> in the module.</li>
 </ul></div>
-<div class="section level3">
-<h3 id="miscellaneous-0-2-11-9035">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-11-9035"></a></h3>
-<ul><li>Refactored the defunct <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_input.html" class="external-link">teal.devel::data_extract_input</a></code> into its replacement <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_ui.html" class="external-link">teal.devel::data_extract_ui</a></code>.</li>
-<li>Removed the overlay statistics table in <code>tm_g_distribution</code>.</li>
-<li>Replaced calls to <code>utils.nest::check_slider_input</code> with <code><a href="https://rdrr.io/pkg/checkmate/man/checkNumeric.html" class="external-link">checkmate::assert_numeric</a></code>.</li>
-<li>Replaced calls to <code>utils.nest::is_&lt;class&gt;</code> and <code>utils.nest::is_&lt;class&gt;_list</code> with <code>checkmate</code> equivalent.</li>
-<li>Removed dependency on <code>utils.nest</code>.</li>
+<div class="section level4">
+<h4 id="bug-fixes-0-2-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-12"></a></h4>
+<ul><li>Fixed an error in <code>tm_variable_browser</code> when the selected column is <code>logical(1)</code>.</li>
+<li>Fixed bugs in the modules’ vignette examples.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="miscellaneous-0-2-12">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-12"></a></h4>
+<ul><li>Added R version requirement <code>R &gt;= 3.6</code>.</li>
+<li>Removed <code>input_id</code> argument from <code><a href="https://rdrr.io/pkg/teal.devel/man/data_merge_module.html" class="external-link">teal.devel::data_merge_module</a></code> calls in all modules.</li>
+<li>Refactored the defunct <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_input.html" class="external-link">teal.devel::data_extract_input</a></code> into its replacement <code><a href="https://rdrr.io/pkg/teal.devel/man/data_extract_ui.html" class="external-link">teal.devel::data_extract_ui</a></code>.</li>
+<li>Updated <code><a href="https://rdrr.io/pkg/teal.devel/man/data_merge_srv.html" class="external-link">teal.devel::data_merge_srv</a></code> to use <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> instead of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join</a></code> in <code>tm_outliers</code> module.</li>
+<li>Removed the overlay statistics table in <code>tm_g_distribution</code> module.</li>
+<li>Removed dependency on <code>test.nest</code> package.</li>
+<li>Removed dependency on <code>utils.nest</code> package and replaced its functions with equivalents from the <code>checkmate</code> package.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -375,7 +370,7 @@ Other releases
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

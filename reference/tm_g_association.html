@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.11.9035</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12</span>
       </span>
     </div>
 
@@ -65,15 +65,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -106,8 +97,10 @@ Other releases
   show_association <span class="op">=</span> <span class="cn">TRUE</span>,
   plot_height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">400</span>, <span class="fl">5000</span><span class="op">)</span>,
   plot_width <span class="op">=</span> <span class="cn">NULL</span>,
-  distribution_theme <span class="op">=</span> <span class="va">gg_themes</span>,
-  association_theme <span class="op">=</span> <span class="va">gg_themes</span>,
+  distribution_theme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"bw"</span>, <span class="st">"linedraw"</span>, <span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"minimal"</span>,
+    <span class="st">"classic"</span>, <span class="st">"void"</span>, <span class="st">"test"</span><span class="op">)</span>,
+  association_theme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"bw"</span>, <span class="st">"linedraw"</span>, <span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"minimal"</span>,
+    <span class="st">"classic"</span>, <span class="st">"void"</span>, <span class="st">"test"</span><span class="op">)</span>,
   pre_output <span class="op">=</span> <span class="cn">NULL</span>,
   post_output <span class="op">=</span> <span class="cn">NULL</span>,
   ggplot2_args <span class="op">=</span> <span class="fu">teal.devel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span><span class="op">)</span>
@@ -134,15 +127,13 @@ for a slider encoding the plot height.</p></dd>
 <dd><p>optional, (<code>numeric</code>) A vector of length three with <code>c(value, min and max)</code>
 for a slider encoding the plot width.</p></dd>
 <dt>distribution_theme</dt>
-<dd><p>optional, (<code>character</code>) <code>ggplot</code> Theme to be used by default
-for the distribution plot. All themes can be chosen by the user. Defaults to <code>gray</code>.
-<code>gg_themes</code> is defined internally as
-<code>c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")</code></p></dd>
+<dd><p>optional, (<code>character</code>) <code>ggplot2</code> theme to be used by default.
+One of <code>c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")</code>.
+Each theme can be chosen by the user during the session. Defaults to <code>"gray"</code>.</p></dd>
 <dt>association_theme</dt>
-<dd><p>optional, (<code>character</code>) <code>ggplot</code> Theme to be used by default
-for the association plots. All themes can be chosen by the user. Defaults to <code>gray</code>.
-<code>gg_themes</code> is defined internally as
-<code>c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")</code></p></dd>
+<dd><p>optional, (<code>character</code>) <code>ggplot2</code> theme to be used by default.
+One of <code>c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")</code>.
+Each theme can be chosen by the user during the session. Defaults to <code>"gray"</code>.</p></dd>
 <dt>pre_output</dt>
 <dd><p>optional, <code>shiny.tag</code> with text placed before the
 output to put the output into context. For example a title.</p></dd>
@@ -151,13 +142,11 @@ output to put the output into context. For example a title.</p></dd>
 output to put the output into context. For example the
 <code><a href="https://rdrr.io/pkg/shiny/man/helpText.html" class="external-link">helpText</a></code> elements are useful.</p></dd>
 <dt>ggplot2_args</dt>
-<dd><p>optional, (`ggplot2_args`) object created by [`teal.devel::ggplot2_args()`]
-with settings for all the plots or named list of `ggplot2_args` objects for plot-specific settings.
-For more details see the help vignette:
-`vignette("Custom ggplot2 arguments module", package = "teal.devel")`.
-List names should match the following:<br>
-`c("default", "Bivariate1", "Bivariate2")`.
-The argument is merged with options variable `teal.ggplot2_args` and default module setup.</p></dd>
+<dd><p>optional, (<code>ggplot2_args</code>) object created by <code><a href="https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html" class="external-link">teal.devel::ggplot2_args()</a></code>
+with settings for all the plots or named list of <code>ggplot2_args</code> objects for plot-specific settings.
+The argument is merged with options variable <code>teal.ggplot2_args</code> and default module setup.</p>
+<p>List names should match the following: <code>c("default", "Bivariate1", "Bivariate2")</code>.</p>
+<p>For more details see the vignette: <code>vignette("custom-ggplot2-arguments", package = "teal.devel")</code>.</p></dd>
 </dl></div>
     <div id="note">
     <h2>Note</h2>
@@ -203,11 +192,12 @@ The argument is merged with options variable `teal.ggplot2_args` and default mod
 <span class="r-in">          multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span class="r-in">          fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span class="r-in">        <span class="op">)</span></span>
-<span class="r-in">      <span class="op">)</span></span>
+<span class="r-in">      <span class="op">)</span>,</span>
+<span class="r-in">      ggplot2_args <span class="op">=</span> <span class="fu">teal.devel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.devel/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span>labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Plot generated by Association Module"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-14 14:37:49.9805 pid:1795 token:[] teal.modules.general Initializing tm_g_association</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-01-27 14:42:09.2577 pid:1794 token:[] teal.modules.general Initializing tm_g_association</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
@@ -225,7 +215,7 @@ The argument is merged with options variable `teal.ggplot2_args` and default mod
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>
