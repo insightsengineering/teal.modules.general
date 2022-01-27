@@ -379,8 +379,7 @@ srv_tm_g_association <- function(id,
         teal.devel::chunks_get_var(var = "p")
       })
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "myplot",
         plot_r = plot_r,
         height = plot_height,
@@ -392,8 +391,7 @@ srv_tm_g_association <- function(id,
         teal.devel::chunks_get_var("title")
       })
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(ref, vars)),

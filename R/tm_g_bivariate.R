@@ -530,16 +530,14 @@ srv_g_bivariate <- function(id,
         }
       })
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "myplot",
         plot_r = plot_r,
         height = plot_height,
         width = plot_width
       )
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),

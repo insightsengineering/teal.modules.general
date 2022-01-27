@@ -267,8 +267,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       })
 
       # Insert the plot into a plot_with_settings module
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "myplot",
         plot_r = plot_r,
         height = plot_height,
@@ -303,8 +302,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
         )
       )
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(variables)),

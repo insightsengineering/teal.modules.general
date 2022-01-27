@@ -400,8 +400,7 @@ srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) 
         )
       })
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "variable_plot",
         plot_r = variable_plot_r,
         height =  c(500, 200, 2000)

@@ -1101,8 +1101,7 @@ srv_distribution <- function(id,
         rownames = FALSE
       )
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "hist_plot",
         plot_r = dist_r,
         height = plot_height,
@@ -1110,8 +1109,7 @@ srv_distribution <- function(id,
         brushing = FALSE
       )
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "qq_plot",
         plot_r = qq_r,
         height = plot_height,
@@ -1125,8 +1123,7 @@ srv_distribution <- function(id,
         rownames = FALSE
       )
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(dist_var, strata_var, group_var)),

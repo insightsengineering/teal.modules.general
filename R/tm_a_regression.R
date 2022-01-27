@@ -844,8 +844,7 @@ srv_a_regression <- function(id,
       code_header <- reactive(teal.devel::chunks_get_var("form", chunks = fit()))
 
       # Insert the plot into a plot_with_settings module from teal.devel
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "myplot",
         plot_r = plot_r,
         height = plot_height,
@@ -858,8 +857,7 @@ srv_a_regression <- function(id,
         paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
       })
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(response, regressor)),

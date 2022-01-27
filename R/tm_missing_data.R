@@ -1107,29 +1107,25 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
       )
 
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "summary_plot",
         plot_r = summary_plot_r,
         height = plot_height,
         width = plot_width
       )
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "combination_plot",
         plot_r = combination_plot_r,
         height = plot_height,
         width = plot_width
       )
-      callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "by_subject_plot",
         plot_r = by_subject_plot_r,
         height = plot_height,
         width = plot_width
       )
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = dataname,

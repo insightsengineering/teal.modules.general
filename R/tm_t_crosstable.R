@@ -303,8 +303,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
         teal.devel::chunks_get_var("tbl")
       })
 
-      callModule(
-        teal.devel::table_with_settings_srv,
+      teal.devel::table_with_settings_srv(
         id = "table",
         table_r = table
       )
@@ -322,8 +321,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
         }
       )
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(x, y)),

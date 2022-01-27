@@ -931,8 +931,7 @@ srv_outliers <- function(id, datasets, outlier_var,
         }
       })
 
-      box_brush <- callModule(
-        teal.devel::plot_with_settings_srv,
+      box_brush <- teal.devel::plot_with_settings_srv(
         id = "box_plot",
         plot_r = box_plot_plot_r,
         height = plot_height,
@@ -940,8 +939,7 @@ srv_outliers <- function(id, datasets, outlier_var,
         brushing = TRUE
       )
 
-      density_brush <- callModule(
-        teal.devel::plot_with_settings_srv,
+      density_brush <- teal.devel::plot_with_settings_srv(
         id = "density_plot",
         plot_r = density_plot_plot_r,
         height = plot_height,
@@ -949,8 +947,7 @@ srv_outliers <- function(id, datasets, outlier_var,
         brushing = TRUE
       )
 
-      cum_density_brush <- callModule(
-        teal.devel::plot_with_settings_srv,
+      cum_density_brush <- teal.devel::plot_with_settings_srv(
         id = "cum_density_plot",
         plot_r = cumulative_plot_plot_r,
         height = plot_height,
@@ -1109,8 +1106,7 @@ srv_outliers <- function(id, datasets, outlier_var,
         }
       })
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(outlier_var, categorical_var)),

@@ -723,8 +723,7 @@ srv_g_scatterplot <- function(id,
       })
 
       # Insert the plot into a plot_with_settings module from teal.devel
-      brush <- callModule(
-        teal.devel::plot_with_settings_srv,
+      teal.devel::plot_with_settings_srv(
         id = "scatter_plot",
         plot_r = plot_r,
         height = plot_height,
@@ -754,8 +753,7 @@ srv_g_scatterplot <- function(id,
         )
       })
 
-      callModule(
-        teal.devel::get_rcode_srv,
+      teal.devel::get_rcode_srv(
         id = "rcode",
         datasets = datasets,
         datanames = teal.devel::get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
