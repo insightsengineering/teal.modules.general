@@ -452,7 +452,9 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
             elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
               dplyr::as_tibble(rownames = "metric") %>%
               tidyr::gather("component", "value", -metric) %>%
-              dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE))))
+              dplyr::mutate(
+                component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE)))
+              )
 
             g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
               geom_bar(

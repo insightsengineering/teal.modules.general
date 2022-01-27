@@ -409,7 +409,8 @@ srv_g_scatterplot <- function(id,
         merged_data()$columns_source$col_facet
         merged_data()$columns_source$row_facet
       }, handlerExpr = {
-        if (length(merged_data()$columns_source$col_facet) == 0 && length(merged_data()$columns_source$row_facet) == 0) {
+        if (length(merged_data()$columns_source$col_facet) == 0 &&
+            length(merged_data()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -574,7 +575,11 @@ srv_g_scatterplot <- function(id,
           "label = ",
           if (sum(show_form, show_r2, show_count) > 1) "paste(",
           paste(
-            c(if (show_form) "stat(eq.label)", if (show_r2) "stat(adj.rr.label)", if (show_count) "paste('N ~`=`~', n)"),
+            c(
+              if (show_form) "stat(eq.label)",
+              if (show_r2) "stat(adj.rr.label)",
+              if (show_count) "paste('N ~`=`~', n)"
+            ),
             collapse = ", "
           ),
           if (sum(show_form, show_r2, show_count) > 1) ", sep = '*\", \"*'))" else ")"
@@ -730,8 +735,8 @@ srv_g_scatterplot <- function(id,
     )
 
     output$data_table <- DT::renderDataTable({
-      # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL in plot_r
-      # which ends up in a bunch of warnings that ANL is not in chunks
+      # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL
+      # in plot_r which ends up in a bunch of warnings that ANL is not in chunks
       plot_r()
       plot_brush <- brush$brush()
 

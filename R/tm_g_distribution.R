@@ -611,7 +611,10 @@ srv_distribution <- function(id,
         } else {
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3) +
+              geom_histogram(
+                position = "identity",
+                aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3
+              ) +
               facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = m_type,

@@ -1007,7 +1007,11 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
           # missingness pattern (defined using sha1)
           order_subjects <- summary_plot_patients %>%
             dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
-            dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
+            dplyr::transmute(
+              id = dplyr::row_number(),
+              number_NA = apply(., 1, sum),
+              sha = apply(., 1, digest::sha1)
+            ) %>%
             dplyr::arrange(dplyr::desc(number_NA), sha) %>%
             getElement(name = "id")
 
