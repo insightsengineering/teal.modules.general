@@ -1,5 +1,7 @@
 # teal.modules.general 0.2.12.9000
 
+* Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
+
 ### Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in plot based modules.
