@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.12.9000
-
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
+
+# teal.modules.general 0.2.12
 
 ### Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
