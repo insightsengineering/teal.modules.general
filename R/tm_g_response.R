@@ -209,9 +209,7 @@ ui_g_response <- function(id, ...) {
   )
 }
 
-srv_g_response <- function(input,
-                           output,
-                           session,
+srv_g_response <- function(id,
                            datasets,
                            response,
                            x,
@@ -220,212 +218,212 @@ srv_g_response <- function(input,
                            plot_height,
                            plot_width,
                            ggplot2_args) {
-  teal.devel::init_chunks()
-  data_extract <- list(response, x, row_facet, col_facet)
-  names(data_extract) <- c("response", "x", "row_facet", "col_facet")
-  data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
+    data_extract <- list(response, x, row_facet, col_facet)
+    names(data_extract) <- c("response", "x", "row_facet", "col_facet")
+    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-  selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.devel::data_extract_multiple_srv(data_extract, datasets)
 
-  reactive_select_input <- reactive({
-    selectors <- selector_list()
-    extract_names <- names(selectors)
-    for (extract in extract_names) {
-      if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-        selectors <- selectors[-which(names(selectors) == extract)]
+    reactive_select_input <- reactive({
+      selectors <- selector_list()
+      extract_names <- names(selectors)
+      for (extract in extract_names) {
+        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
+          selectors <- selectors[-which(names(selectors) == extract)]
+        }
       }
-    }
-    selectors
-  })
-
-  merged_data <- teal.devel::data_merge_srv(
-    selector_list = reactive_select_input,
-    datasets = datasets
-  )
-
-  plot_r <- reactive({
-    validate({
-      need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
+      selectors
     })
-    teal.devel::chunks_reset()
-    teal.devel::chunks_push_data_merge(merged_data())
 
-    ANL <- teal.devel::chunks_get_var("ANL") # nolint
-    teal.devel::validate_has_data(ANL, 10)
-
-    resp_var <- as.vector(merged_data()$columns_source$response)
-    x <- as.vector(merged_data()$columns_source$x)
-
-    row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
-      character(0)
-    } else {
-      as.vector(merged_data()$columns_source$row_facet)
-    }
-    col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
-      character(0)
-    } else {
-      as.vector(merged_data()$columns_source$col_facet)
-    }
-    validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
-    validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
-    validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
-    validate(need(length(x) == 1, "Please define a column for X variable"))
-    validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
-    validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
-
-
-    teal.devel::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
-
-    freq <- input$freq == "frequency"
-    swap_axes <- input$coord_flip
-    counts <- input$count_labels
-    rotate_xaxis_labels <- input$rotate_xaxis_labels
-    ggtheme <- input$ggtheme
-
-    validate(need(!is.null(ggtheme), "Please select a theme."))
-
-    arg_position <- if (freq) "stack" else "fill" # nolint
-
-    rowf <- if (length(row_facet_name) == 0) NULL else as.name(row_facet_name) # nolint
-    colf <- if (length(col_facet_name) == 0) NULL else as.name(col_facet_name) # nolint
-    resp_cl <- as.name(resp_var) # nolint
-    x_cl <- as.name(x) # nolint
-
-    if (swap_axes) {
-      teal.devel::chunks_push(expression = substitute(
-        expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
-        env = list(x = x, x_cl = x_cl)
-      ))
-    }
-
-    teal.devel::chunks_push(expression = substitute(
-      expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
-      env = list(resp_var = resp_var)
-    ))
-    # nolint start
-    # rowf and colf will be a NULL if not set by a user
-    teal.devel::chunks_push(expression = substitute(
-      expr = ANL2 <- ANL %>%
-        dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
-        dplyr::summarise(ns = dplyr::n()) %>%
-        dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-        dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
-      env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
-    ))
-
-    teal.devel::chunks_push(expression = substitute(
-      expr = ANL3 <- ANL %>%
-        dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-        dplyr::summarise(ns = dplyr::n()),
-      env = list(x_cl = x_cl, rowf = rowf, colf = colf)
-    ))
-    # nolint end
-
-    plot_call <- substitute(
-      expr =
-        ggplot(ANL2, aes(x = x_cl, y = ns)) +
-          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
-      env = list(
-        x_cl = x_cl,
-        resp_cl = resp_cl,
-        arg_position = arg_position
-      )
+    merged_data <- teal.devel::data_merge_srv(
+      selector_list = reactive_select_input,
+      datasets = datasets
     )
 
-    if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
+    plot_r <- reactive({
+      validate({
+        need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
+      })
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_data_merge(merged_data())
 
-    if (counts) {
+      ANL <- teal.devel::chunks_get_var("ANL") # nolint
+      teal.devel::validate_has_data(ANL, 10)
+
+      resp_var <- as.vector(merged_data()$columns_source$response)
+      x <- as.vector(merged_data()$columns_source$x)
+
+      row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged_data()$columns_source$row_facet)
+      }
+      col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged_data()$columns_source$col_facet)
+      }
+      validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
+      validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
+      validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
+      validate(need(length(x) == 1, "Please define a column for X variable"))
+      validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
+      validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
+
+
+      teal.devel::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
+
+      freq <- input$freq == "frequency"
+      swap_axes <- input$coord_flip
+      counts <- input$count_labels
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      ggtheme <- input$ggtheme
+
+      validate(need(!is.null(ggtheme), "Please select a theme."))
+
+      arg_position <- if (freq) "stack" else "fill" # nolint
+
+      rowf <- if (length(row_facet_name) == 0) NULL else as.name(row_facet_name) # nolint
+      colf <- if (length(col_facet_name) == 0) NULL else as.name(col_facet_name) # nolint
+      resp_cl <- as.name(resp_var) # nolint
+      x_cl <- as.name(x) # nolint
+
+      if (swap_axes) {
+        teal.devel::chunks_push(expression = substitute(
+          expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
+          env = list(x = x, x_cl = x_cl)
+        ))
+      }
+
+      teal.devel::chunks_push(expression = substitute(
+        expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
+        env = list(resp_var = resp_var)
+      ))
+      # nolint start
+      # rowf and colf will be a NULL if not set by a user
+      teal.devel::chunks_push(expression = substitute(
+        expr = ANL2 <- ANL %>%
+          dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
+          dplyr::summarise(ns = dplyr::n()) %>%
+          dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+          dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
+        env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
+      ))
+
+      teal.devel::chunks_push(expression = substitute(
+        expr = ANL3 <- ANL %>%
+          dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+          dplyr::summarise(ns = dplyr::n()),
+        env = list(x_cl = x_cl, rowf = rowf, colf = colf)
+      ))
+      # nolint end
+
       plot_call <- substitute(
-        expr = plot_call +
-          geom_text(
-            data = ANL2,
-            aes(label = ns, x = x_cl, y = ns, group = resp_cl),
-            col = "white",
-            vjust = "middle",
-            hjust = "middle",
-            position = position_anl2_value
-          ) +
-          geom_text(
-            data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
-            hjust = hjust_value,
-            vjust = vjust_value,
-            position = position_anl3_value
-          ),
+        expr =
+          ggplot(ANL2, aes(x = x_cl, y = ns)) +
+            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
-          plot_call = plot_call,
           x_cl = x_cl,
           resp_cl = resp_cl,
-          hjust_value = if (swap_axes) "left" else "middle",
-          vjust_value = if (swap_axes) "middle" else -1,
-          position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)),
-          anl3_y = if (!freq) 1.1 else as.name("ns"),
-          position_anl3_value = if (!freq) "fill" else "stack"
+          arg_position = arg_position
         )
       )
-    }
 
-    if (swap_axes) {
-      plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
-    }
+      if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
 
-    facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
+      if (counts) {
+        plot_call <- substitute(
+          expr = plot_call +
+            geom_text(
+              data = ANL2,
+              aes(label = ns, x = x_cl, y = ns, group = resp_cl),
+              col = "white",
+              vjust = "middle",
+              hjust = "middle",
+              position = position_anl2_value
+            ) +
+            geom_text(
+              data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
+              hjust = hjust_value,
+              vjust = vjust_value,
+              position = position_anl3_value
+            ),
+          env = list(
+            plot_call = plot_call,
+            x_cl = x_cl,
+            resp_cl = resp_cl,
+            hjust_value = if (swap_axes) "left" else "middle",
+            vjust_value = if (swap_axes) "middle" else -1,
+            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)),
+            anl3_y = if (!freq) 1.1 else as.name("ns"),
+            position_anl3_value = if (!freq) "fill" else "stack"
+          )
+        )
+      }
 
-    if (!is.null(facet_cl)) {
-      plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
-    }
+      if (swap_axes) {
+        plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
+      }
 
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      labs = list(
-        x = varname_w_label(x, ANL),
-        y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
-        fill = varname_w_label(resp_var, ANL)
-      ),
-      theme = list(legend.position = "bottom")
+      facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
+
+      if (!is.null(facet_cl)) {
+        plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
+      }
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        labs = list(
+          x = varname_w_label(x, ANL),
+          y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
+          fill = varname_w_label(resp_var, ANL)
+        ),
+        theme = list(legend.position = "bottom")
+      )
+
+      if (rotate_xaxis_labels) {
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
+      }
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      plot_call <- substitute(expr = {
+        p <- plot_call + labs + ggthemes + themes
+        print(p)
+      }, env = list(
+        plot_call = plot_call,
+        labs = parsed_ggplot2_args$labs,
+        themes = parsed_ggplot2_args$theme,
+        ggthemes = parsed_ggplot2_args$ggtheme
+      ))
+
+      teal.devel::chunks_push(expression = plot_call, id = "plotCall")
+
+      teal.devel::chunks_safe_eval()
+    })
+
+    # Insert the plot into a plot_with_settings module from teal.devel
+    teal.devel::plot_with_settings_srv(
+      id = "myplot",
+      plot_r = plot_r,
+      height = plot_height,
+      width = plot_width
     )
 
-    if (rotate_xaxis_labels) {
-      dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
-    }
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args,
-      module_plot = dev_ggplot2_args
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(response, x, row_facet, col_facet)),
+      modal_title = "R Code for Response Plot"
     )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = ggtheme
-    )
-
-    plot_call <- substitute(expr = {
-      p <- plot_call + labs + ggthemes + themes
-      print(p)
-    }, env = list(
-      plot_call = plot_call,
-      labs = parsed_ggplot2_args$labs,
-      themes = parsed_ggplot2_args$theme,
-      ggthemes = parsed_ggplot2_args$ggtheme
-    ))
-
-    teal.devel::chunks_push(expression = plot_call, id = "plotCall")
-
-    teal.devel::chunks_safe_eval()
   })
-
-  # Insert the plot into a plot_with_settings module from teal.devel
-  callModule(
-    teal.devel::plot_with_settings_srv,
-    id = "myplot",
-    plot_r = plot_r,
-    height = plot_height,
-    width = plot_width
-  )
-
-  callModule(
-    teal.devel::get_rcode_srv,
-    id = "rcode",
-    datasets = datasets,
-    datanames = teal.devel::get_extract_datanames(list(response, x, row_facet, col_facet)),
-    modal_title = "R Code for Response Plot"
-  )
 }
