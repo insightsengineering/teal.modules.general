@@ -255,7 +255,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
               var_labels = labels_vec,
               na.rm = FALSE,
               denom = "N_col",
-              .stats = c("n", "mean_sd", "median", "range", count_value)
+              .stats = c("mean_sd", "median", "range", count_value)
             )
         },
         env = list(

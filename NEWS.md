@@ -1,4 +1,5 @@
 # teal.modules.general 0.2.12.9001
+* Removed unneeded `n` row in `tm_t_crosstable`.
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
 
 # teal.modules.general 0.2.12
