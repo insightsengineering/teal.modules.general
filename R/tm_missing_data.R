@@ -760,7 +760,7 @@ srv_missing_data <- function(input,
     combination_stack_push(substitute(
       expr = data_combination_plot_cutoff <- combination_cutoff %>%
         dplyr::filter(n >= combination_cutoff_value) %>%
-        dplyr::mutate(id = rank(n, ties.method = "first")) %>%
+        dplyr::mutate(id = rank(-n, ties.method = "first")) %>%
         tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
         dplyr::arrange(n),
       env = list(combination_cutoff_value = input$combination_cutoff)
