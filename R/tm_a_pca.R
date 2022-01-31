@@ -238,728 +238,730 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-srv_a_pca <- function(input, output, session, datasets, dat, plot_height, plot_width, ggplot2_args) {
-  response <- dat
+srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) {
+  moduleServer(id, function(input, output, session) {
+    response <- dat
 
-  for (i in seq_along(response)) {
-    response[[i]]$select$multiple <- FALSE
-    response[[i]]$select$always_selected <- NULL
-    response[[i]]$select$selected <- NULL
-    response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
-    response[[1]]$select$choices <- setdiff(
-      response[[1]]$select$choices,
-      datasets$get_keys(response[[i]]$dataname)
-    )
-  }
-
-  teal.devel::init_chunks()
-
-  dat_selector <- teal.devel::data_extract_srv(id = "dat", datasets, dat)
-
-  anl_data <- teal.devel::data_merge_module(
-    datasets = datasets,
-    data_extract = list(dat = dat)
-  )
-
-  response_data <- teal.devel::data_merge_module(
-    datasets = datasets,
-    data_extract = list(response = response),
-    anl_name = "RP"
-  )
-
-  # computation ----
-  computation <- reactive({
-    validate({
-      need(
-        !is.null(dat_selector()), "Please select data"
-      )
-    })
-    chunks_stack <- teal.devel::chunks$new()
-
-    keep_cols <- as.character(anl_data()$columns_source$dat)
-    na_action <- input$na_action
-    standardization <- input$standardization
-    center <- standardization %in% c("center", "center_scale") # nolint
-    scale <- standardization == "center_scale"
-
-    validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
-
-    teal.devel::chunks_reset(chunks = chunks_stack)
-    teal.devel::chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
-
-    ANL <- anl_data()$data() # nolint
-
-    teal.devel::validate_has_data(ANL, 10)
-    teal.devel::validate_has_elements(keep_cols, "Please select columns")
-    validate(need(
-      all(vapply(ANL[keep_cols], function(x) is.numeric(x) && !is.infinite(x), logical(1))),
-      "PCA is only defined for (finite) numeric columns."
-    ))
-    validate(need(
-      na_action != "none" | !anyNA(ANL[keep_cols]),
-      paste(
-        "There are NAs in the dataset. Please deal with them in preprocessing",
-        'or select "Drop" in the NA actions inside the encodings panel (left).'
-      )
-    ))
-
-    teal.devel::chunks_push(
-      id = "pca_1",
-      expression = substitute(
-        expr = {
-          keep_columns <- keep_cols
-        },
-        env = list(
-          keep_cols = keep_cols
-        )
-      ),
-      chunks = chunks_stack
-    )
-
-    if (na_action == "drop") {
-      teal.devel::chunks_push(
-        id = "pca_2",
-        expression = substitute(
-          expr = ANL <- tidyr::drop_na(ANL, keep_columns), # nolint
-          env = list()
-        ),
-        chunks = chunks_stack
+    for (i in seq_along(response)) {
+      response[[i]]$select$multiple <- FALSE
+      response[[i]]$select$always_selected <- NULL
+      response[[i]]$select$selected <- NULL
+      response[[i]]$select$choices <- names(datasets$get_data_attr(response[[i]]$dataname, "column_labels"))
+      response[[1]]$select$choices <- setdiff(
+        response[[1]]$select$choices,
+        datasets$get_keys(response[[i]]$dataname)
       )
     }
 
-    if (scale) {
-      teal.devel::chunks_validate_custom(
-        substitute(
-          expr = vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
-          env = list(keep_cols = keep_cols)
-        ),
-        msg = paste0(
-          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
-          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
-        ),
-        chunks = chunks_stack
-      )
-    }
+    teal.devel::init_chunks()
 
-    teal.devel::chunks_push(
-      id = "pca_3",
-      expression = substitute(
-        expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
-        env = list(center = center, scale = scale)
-      ),
-      chunks = chunks_stack
+    dat_selector <- teal.devel::data_extract_srv(id = "dat", datasets, dat)
+
+    anl_data <- teal.devel::data_merge_module(
+      datasets = datasets,
+      data_extract = list(dat = dat)
     )
 
-    teal.devel::chunks_push(
-      id = "pca_tbl_importance",
-      expression = quote({
-        tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-        tbl_importance
-      }),
-      chunks = chunks_stack
+    response_data <- teal.devel::data_merge_module(
+      datasets = datasets,
+      data_extract = list(response = response),
+      anl_name = "RP"
     )
 
-    teal.devel::chunks_push(
-      id = "pca_tbl_eigenvector",
-      expression = quote({
-        tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
-        tbl_eigenvector
-      }),
-      chunks = chunks_stack
-    )
-
-    teal.devel::chunks_safe_eval(chunks = chunks_stack)
-
-    chunks_stack
-  })
-
-  # plot args ----
-  output$plot_settings <- renderUI({
-    # reactivity triggers
-    chunks_stack <- computation()
-
-    ns <- session$ns
-
-    pca <- teal.devel::chunks_get_var("pca", chunks = chunks_stack)
-    chcs_pcs <- colnames(pca$rotation)
-    chcs_vars <- teal.devel::chunks_get_var("keep_cols", chunks = chunks_stack)
-
-    tagList(
-      conditionalPanel(
-        condition = sprintf(
-          "input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
-          ns("plot_type"), ns("plot_type")
-        ),
-        list(
-          optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
-          optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
-          optionalSelectInput(
-            ns("variables"), "Original coordinates",
-            choices = chcs_vars, selected = chcs_vars,
-            multiple = TRUE
-          )
+    # computation ----
+    computation <- reactive({
+      validate({
+        need(
+          !is.null(dat_selector()), "Please select data"
         )
-      ),
-      conditionalPanel(
-        condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
-        helpText("No plot specific settings available.")
-      ),
-      conditionalPanel(
-        condition = paste0("input['", ns("plot_type"), "'] == 'Eigenvector plot'"),
-        optionalSelectInput(ns("pc"), "PC", choices = chcs_pcs, selected = chcs_pcs[1])
-      )
-    )
-  })
+      })
+      chunks_stack <- teal.devel::chunks$new()
 
-  # plot elbow ----
-  plot_elbow <- function() {
-    ggtheme <- input$ggtheme
-    validate(need(ggtheme, "Please select a theme."))
-    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-    font_size <- input$font_size # nolint
+      keep_cols <- as.character(anl_data()$columns_source$dat)
+      na_action <- input$na_action
+      standardization <- input$standardization
+      center <- standardization %in% c("center", "center_scale") # nolint
+      scale <- standardization == "center_scale"
 
-    angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
-    hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+      validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
 
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
-      theme = list(
-        legend.position = "right",
-        legend.spacing.y = quote(grid::unit(-5, "pt")),
-        legend.title = quote(element_text(vjust = 8)),
-        axis.text.x = substitute(
-          element_text(angle = angle_value, hjust = hjust_value),
-          list(angle_value = angle_value, hjust_value = hjust_value)
-        ),
-        text = substitute(element_text(size = font_size), list(font_size = font_size))
-      )
-    )
+      teal.devel::chunks_reset(chunks = chunks_stack)
+      teal.devel::chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
 
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      teal.devel::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Elbow plot"]],
-        user_default = ggplot2_args$default,
-        module_plot = dev_ggplot2_args
-      ),
-      ggtheme = ggtheme
-    )
+      ANL <- anl_data()$data() # nolint
 
-    teal.devel::chunks_push(
-      id = "pca_plot",
-      expression = substitute(
-        expr = {
-          elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
-            dplyr::as_tibble(rownames = "metric") %>%
-            tidyr::gather("component", "value", -metric) %>%
-            dplyr::mutate(component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE))))
-
-          g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
-            geom_bar(
-              aes(fill = "Single variance"),
-              data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
-              color = "black",
-              stat = "identity"
-            ) +
-            geom_point(
-              aes(color = "Cumulative variance"),
-              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
-            ) +
-            geom_line(
-              aes(group = 1, color = "Cumulative variance"),
-              data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
-            ) +
-            labs +
-            scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
-            scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
-            ggthemes +
-            themes
-
-          print(g)
-        },
-        env = list(
-          ggthemes = parsed_ggplot2_args$ggtheme,
-          labs = parsed_ggplot2_args$labs,
-          themes = parsed_ggplot2_args$theme
+      teal.devel::validate_has_data(ANL, 10)
+      teal.devel::validate_has_elements(keep_cols, "Please select columns")
+      validate(need(
+        all(vapply(ANL[keep_cols], function(x) is.numeric(x) && !is.infinite(x), logical(1))),
+        "PCA is only defined for (finite) numeric columns."
+      ))
+      validate(need(
+        na_action != "none" | !anyNA(ANL[keep_cols]),
+        paste(
+          "There are NAs in the dataset. Please deal with them in preprocessing",
+          'or select "Drop" in the NA actions inside the encodings panel (left).'
         )
-      )
-    )
+      ))
 
-    invisible(NULL)
-  }
-
-  # plot circle ----
-  plot_circle <- function() {
-    validate(
-      need(input$x_axis, "Need additional plot settings - x axis"),
-      need(input$y_axis, "Need additional plot settings - y axis"),
-      need(input$variables, "Need additional plot settings - variables")
-    )
-    validate(need(input$x_axis != input$y_axis, "Please choose different X and Y axes."))
-
-    x_axis <- input$x_axis # nolint
-    y_axis <- input$y_axis # nolint
-    variables <- input$variables # nolint
-
-    ggtheme <- input$ggtheme
-    validate(need(ggtheme, "Please select a theme."))
-
-    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-    font_size <- input$font_size # nolint
-
-    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
-    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
-
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      theme = list(
-        text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(
-          element_text(angle = angle_val, hjust = hjust_val),
-          list(angle_val = angle, hjust_val = hjust)
-        )
-      )
-    )
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Circle plot"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = ggtheme
-    )
-
-    teal.devel::chunks_push(
-      id = "pca_plot",
-      expression = substitute(
-        expr = {
-          pca_rot <- pca$rotation[, c(x_axis, y_axis)] %>%
-            dplyr::as_tibble(rownames = "label") %>%
-            dplyr::filter(label %in% variables)
-
-          circle_data <- data.frame(
-            x = cos(seq(0, 2 * pi, length.out = 100)),
-            y = sin(seq(0, 2 * pi, length.out = 100))
-          )
-
-          g <- ggplot(pca_rot) +
-            geom_point(aes_string(x = x_axis, y = y_axis)) +
-            geom_label(
-              aes_string(x = x_axis, y = y_axis, label = "label"),
-              nudge_x = 0.1, nudge_y = 0.05,
-              fontface = "bold"
-            ) +
-            geom_path(aes(x, y, group = 1), data = circle_data) +
-            geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
-            labs +
-            ggthemes +
-            themes
-          print(g)
-        },
-        env = list(
-          x_axis = x_axis,
-          y_axis = y_axis,
-          variables = variables,
-          ggthemes = parsed_ggplot2_args$ggtheme,
-          labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
-          themes = parsed_ggplot2_args$theme
-        )
-      )
-    )
-
-    invisible(NULL)
-  }
-
-  # plot biplot ----
-  plot_biplot <- function() {
-    validate(
-      need(input$x_axis, "Need additional plot settings - x axis"),
-      need(input$y_axis, "Need additional plot settings - y axis")
-    )
-    validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
-
-    rd <- response_data()
-
-    resp_col <- as.character(rd$columns_source$response)
-    x_axis <- input$x_axis # nolint
-    y_axis <- input$y_axis # nolint
-    variables <- input$variables # nolint
-    pca <- teal.devel::chunks_get_var("pca")
-
-    ggtheme <- input$ggtheme
-    validate(need(ggtheme, "Please select a theme."))
-
-    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-    alpha <- input$alpha # nolint
-    size <- input$size # nolint
-    font_size <- input$font_size # nolint
-
-    teal.devel::chunks_push(
-      id = "pca_plot_data_rot",
-      expression = substitute(
-        expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
-        env = list(x_axis = x_axis, y_axis = y_axis)
-      )
-    )
-
-    # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
-    if (!is.null(input$variables)) {
       teal.devel::chunks_push(
-        id = "pca_plot_vars_rot_1",
+        id = "pca_1",
         expression = substitute(
           expr = {
+            keep_columns <- keep_cols
+          },
+          env = list(
+            keep_cols = keep_cols
+          )
+        ),
+        chunks = chunks_stack
+      )
+
+      if (na_action == "drop") {
+        teal.devel::chunks_push(
+          id = "pca_2",
+          expression = substitute(
+            expr = ANL <- tidyr::drop_na(ANL, keep_columns), # nolint
+            env = list()
+          ),
+          chunks = chunks_stack
+        )
+      }
+
+      if (scale) {
+        teal.devel::chunks_validate_custom(
+          substitute(
+            expr = vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
+            env = list(keep_cols = keep_cols)
+          ),
+          msg = paste0(
+            "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
+            "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
+          ),
+          chunks = chunks_stack
+        )
+      }
+
+      teal.devel::chunks_push(
+        id = "pca_3",
+        expression = substitute(
+          expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
+          env = list(center = center, scale = scale)
+        ),
+        chunks = chunks_stack
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_tbl_importance",
+        expression = quote({
+          tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+          tbl_importance
+        }),
+        chunks = chunks_stack
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_tbl_eigenvector",
+        expression = quote({
+          tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
+          tbl_eigenvector
+        }),
+        chunks = chunks_stack
+      )
+
+      teal.devel::chunks_safe_eval(chunks = chunks_stack)
+
+      chunks_stack
+    })
+
+    # plot args ----
+    output$plot_settings <- renderUI({
+      # reactivity triggers
+      chunks_stack <- computation()
+
+      ns <- session$ns
+
+      pca <- teal.devel::chunks_get_var("pca", chunks = chunks_stack)
+      chcs_pcs <- colnames(pca$rotation)
+      chcs_vars <- teal.devel::chunks_get_var("keep_cols", chunks = chunks_stack)
+
+      tagList(
+        conditionalPanel(
+          condition = sprintf(
+            "input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
+            ns("plot_type"), ns("plot_type")
+          ),
+          list(
+            optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
+            optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
+            optionalSelectInput(
+              ns("variables"), "Original coordinates",
+              choices = chcs_vars, selected = chcs_vars,
+              multiple = TRUE
+            )
+          )
+        ),
+        conditionalPanel(
+          condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
+          helpText("No plot specific settings available.")
+        ),
+        conditionalPanel(
+          condition = paste0("input['", ns("plot_type"), "'] == 'Eigenvector plot'"),
+          optionalSelectInput(ns("pc"), "PC", choices = chcs_pcs, selected = chcs_pcs[1])
+        )
+      )
+    })
+
+    # plot elbow ----
+    plot_elbow <- function() {
+      ggtheme <- input$ggtheme
+      validate(need(ggtheme, "Please select a theme."))
+      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      font_size <- input$font_size # nolint
+
+      angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+      hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        labs = list(x = "Principal component", y = "Proportion of variance explained", color = "", fill = "Legend"),
+        theme = list(
+          legend.position = "right",
+          legend.spacing.y = quote(grid::unit(-5, "pt")),
+          legend.title = quote(element_text(vjust = 8)),
+          axis.text.x = substitute(
+            element_text(angle = angle_value, hjust = hjust_value),
+            list(angle_value = angle_value, hjust_value = hjust_value)
+          ),
+          text = substitute(element_text(size = font_size), list(font_size = font_size))
+        )
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        teal.devel::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Elbow plot"]],
+          user_default = ggplot2_args$default,
+          module_plot = dev_ggplot2_args
+        ),
+        ggtheme = ggtheme
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_plot",
+        expression = substitute(
+          expr = {
+            elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
+              dplyr::as_tibble(rownames = "metric") %>%
+              tidyr::gather("component", "value", -metric) %>%
+              dplyr::mutate(
+                component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE)))
+              )
+
+            g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
+              geom_bar(
+                aes(fill = "Single variance"),
+                data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
+                color = "black",
+                stat = "identity"
+              ) +
+              geom_point(
+                aes(color = "Cumulative variance"),
+                data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
+              ) +
+              geom_line(
+                aes(group = 1, color = "Cumulative variance"),
+                data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
+              ) +
+              labs +
+              scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
+              scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
+              ggthemes +
+              themes
+
+            print(g)
+          },
+          env = list(
+            ggthemes = parsed_ggplot2_args$ggtheme,
+            labs = parsed_ggplot2_args$labs,
+            themes = parsed_ggplot2_args$theme
+          )
+        )
+      )
+
+      invisible(NULL)
+    }
+
+    # plot circle ----
+    plot_circle <- function() {
+      validate(
+        need(input$x_axis, "Need additional plot settings - x axis"),
+        need(input$y_axis, "Need additional plot settings - y axis"),
+        need(input$variables, "Need additional plot settings - variables")
+      )
+      validate(need(input$x_axis != input$y_axis, "Please choose different X and Y axes."))
+
+      x_axis <- input$x_axis # nolint
+      y_axis <- input$y_axis # nolint
+      variables <- input$variables # nolint
+
+      ggtheme <- input$ggtheme
+      validate(need(ggtheme, "Please select a theme."))
+
+      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      font_size <- input$font_size # nolint
+
+      angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+      hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        theme = list(
+          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          axis.text.x = substitute(
+            element_text(angle = angle_val, hjust = hjust_val),
+            list(angle_val = angle, hjust_val = hjust)
+          )
+        )
+      )
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Circle plot"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_plot",
+        expression = substitute(
+          expr = {
+            pca_rot <- pca$rotation[, c(x_axis, y_axis)] %>%
+              dplyr::as_tibble(rownames = "label") %>%
+              dplyr::filter(label %in% variables)
+
+            circle_data <- data.frame(
+              x = cos(seq(0, 2 * pi, length.out = 100)),
+              y = sin(seq(0, 2 * pi, length.out = 100))
+            )
+
+            g <- ggplot(pca_rot) +
+              geom_point(aes_string(x = x_axis, y = y_axis)) +
+              geom_label(
+                aes_string(x = x_axis, y = y_axis, label = "label"),
+                nudge_x = 0.1, nudge_y = 0.05,
+                fontface = "bold"
+              ) +
+              geom_path(aes(x, y, group = 1), data = circle_data) +
+              geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
+              labs +
+              ggthemes +
+              themes
+            print(g)
+          },
+          env = list(
+            x_axis = x_axis,
+            y_axis = y_axis,
+            variables = variables,
+            ggthemes = parsed_ggplot2_args$ggtheme,
+            labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
+            themes = parsed_ggplot2_args$theme
+          )
+        )
+      )
+
+      invisible(NULL)
+    }
+
+    # plot biplot ----
+    plot_biplot <- function() {
+      validate(
+        need(input$x_axis, "Need additional plot settings - x axis"),
+        need(input$y_axis, "Need additional plot settings - y axis")
+      )
+      validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
+
+      rd <- response_data()
+
+      resp_col <- as.character(rd$columns_source$response)
+      x_axis <- input$x_axis # nolint
+      y_axis <- input$y_axis # nolint
+      variables <- input$variables # nolint
+      pca <- teal.devel::chunks_get_var("pca")
+
+      ggtheme <- input$ggtheme
+      validate(need(ggtheme, "Please select a theme."))
+
+      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      alpha <- input$alpha # nolint
+      size <- input$size # nolint
+      font_size <- input$font_size # nolint
+
+      teal.devel::chunks_push(
+        id = "pca_plot_data_rot",
+        expression = substitute(
+          expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
+          env = list(x_axis = x_axis, y_axis = y_axis)
+        )
+      )
+
+      # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
+      if (!is.null(input$variables)) {
+        teal.devel::chunks_push(
+          id = "pca_plot_vars_rot_1",
+          expression = substitute(
+            expr = {
             r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
             v_scale <- rowSums(pca$rotation ^ 2) # styler: off
 
-            rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
-              dplyr::as_tibble(rownames = "label") %>%
-              dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
-          },
-          env = list(x_axis = x_axis, y_axis = y_axis)
-        )
-      )
-
-      # determine start of arrows
-      teal.devel::chunks_push(
-        id = "pca_plot_vars_rot_2",
-        expression = if (is.logical(pca$center) && !pca$center) {
-          substitute(
-            expr = {
-              rot_vars <- rot_vars %>%
-                tibble::column_to_rownames("label") %>%
-                sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
-                tibble::rownames_to_column("label") %>%
-                dplyr::mutate(
-                  xstart = mean(pca$x[, x_axis], na.rm = TRUE),
-                  ystart = mean(pca$x[, y_axis], na.rm = TRUE)
-                )
+              rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
+                dplyr::as_tibble(rownames = "label") %>%
+                dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
           )
-        } else {
-          quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
-        }
-      )
-
-      teal.devel::chunks_push(
-        id = "pca_plot_vars_rot_3",
-        expression = substitute(
-          expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
-          env = list(variables = variables)
         )
-      )
-    }
 
-    pca_plot_biplot_expr <- list(quote(ggplot()))
-
-    if (length(resp_col) == 0) {
-      pca_plot_biplot_expr <- c(
-        pca_plot_biplot_expr,
-        substitute(
-          geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
-          list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
-        )
-      )
-      dev_labs <- list()
-    } else {
-      ANL <- teal.devel::chunks_get_var("ANL") # nolint
-      validate(need(
-        !resp_col %in% colnames(ANL),
-        "Response column must be different from the original variables (that were used for PCA)."
-      ))
-      rp <- teal.devel::chunks_get_var("RP")
-
-      rp_keys <- setdiff(colnames(rp), as.character(unlist(rd$columns_source))) # nolint
-
-      response <- rp[[resp_col]]
-
-      aes_biplot <- substitute(
-        aes_string(x = x_axis, y = y_axis, color = "response"),
-        env = list(x_axis = x_axis, y_axis = y_axis)
-      )
-
-      teal.devel::chunks_push(
-        id = "pca_plot_response_base",
-        substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col))
-      )
-
-      dev_labs <- list(color = varname_w_label(resp_col, rp))
-
-      scales_biplot <- if (is.character(response) ||
-        is.factor(response) ||
-        (is.numeric(response) && length(unique(response)) <= 6)) {
+        # determine start of arrows
         teal.devel::chunks_push(
-          id = "pca_plot_response",
-          quote(pca_rot$response <- as.factor(response))
-        )
-        quote(scale_color_brewer(palette = "Dark2"))
-      } else if (class(response) == "Date") {
-        teal.devel::chunks_push(
-          id = "pca_plot_response",
-          quote(pca_rot$response <- numeric(response))
+          id = "pca_plot_vars_rot_2",
+          expression = if (is.logical(pca$center) && !pca$center) {
+            substitute(
+              expr = {
+                rot_vars <- rot_vars %>%
+                  tibble::column_to_rownames("label") %>%
+                  sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
+                  tibble::rownames_to_column("label") %>%
+                  dplyr::mutate(
+                    xstart = mean(pca$x[, x_axis], na.rm = TRUE),
+                    ystart = mean(pca$x[, y_axis], na.rm = TRUE)
+                  )
+              },
+              env = list(x_axis = x_axis, y_axis = y_axis)
+            )
+          } else {
+            quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
+          }
         )
 
-        quote(
-          scale_color_gradient(
-            low = "darkred",
-            high = "lightblue",
-            labels = function(x) as.Date(x, origin = "1970-01-01")
+        teal.devel::chunks_push(
+          id = "pca_plot_vars_rot_3",
+          expression = substitute(
+            expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
+            env = list(variables = variables)
           )
         )
+      }
+
+      pca_plot_biplot_expr <- list(quote(ggplot()))
+
+      if (length(resp_col) == 0) {
+        pca_plot_biplot_expr <- c(
+          pca_plot_biplot_expr,
+          substitute(
+            geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
+            list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
+          )
+        )
+        dev_labs <- list()
       } else {
+        ANL <- teal.devel::chunks_get_var("ANL") # nolint
+        validate(need(
+          !resp_col %in% colnames(ANL),
+          "Response column must be different from the original variables (that were used for PCA)."
+        ))
+        rp <- teal.devel::chunks_get_var("RP")
+
+        rp_keys <- setdiff(colnames(rp), as.character(unlist(rd$columns_source))) # nolint
+
+        response <- rp[[resp_col]]
+
+        aes_biplot <- substitute(
+          aes_string(x = x_axis, y = y_axis, color = "response"),
+          env = list(x_axis = x_axis, y_axis = y_axis)
+        )
+
         teal.devel::chunks_push(
-          id = "pca_plot_response",
-          quote(pca_rot$response <- response)
+          id = "pca_plot_response_base",
+          substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col))
         )
-        quote(scale_color_gradient(low = "darkred", high = "lightblue"))
-      }
 
-      pca_plot_biplot_expr <- c(
-        pca_plot_biplot_expr,
-        substitute(
-          geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
-          env = list(aes_biplot = aes_biplot, alpha = alpha, size = size)
-        ),
-        scales_biplot
-      )
-    }
+        dev_labs <- list(color = varname_w_label(resp_col, rp))
 
-    if (!is.null(input$variables)) {
-      pca_plot_biplot_expr <- c(
-        pca_plot_biplot_expr,
-        substitute(
-          geom_segment(
-            aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
-            data = rot_vars,
-            lineend = "round", linejoin = "round",
-            arrow = grid::arrow(length = grid::unit(0.5, "cm"))
-          ),
-          env = list(x_axis = x_axis, y_axis = y_axis)
-        ),
-        substitute(
-          geom_label(
-            aes_string(
-              x = x_axis,
-              y = y_axis,
-              label = "label"
-            ),
-            data = rot_vars,
-            nudge_y = 0.1,
-            fontface = "bold"
-          ),
-          env = list(x_axis = x_axis, y_axis = y_axis)
-        ),
-        quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
-      )
-    }
+        scales_biplot <- if (is.character(response) ||
+          is.factor(response) ||
+          (is.numeric(response) && length(unique(response)) <= 6)) {
+          teal.devel::chunks_push(
+            id = "pca_plot_response",
+            quote(pca_rot$response <- as.factor(response))
+          )
+          quote(scale_color_brewer(palette = "Dark2"))
+        } else if (class(response) == "Date") {
+          teal.devel::chunks_push(
+            id = "pca_plot_response",
+            quote(pca_rot$response <- numeric(response))
+          )
 
-    angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
-    hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
-
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      labs = dev_labs,
-      theme = list(
-        text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(
-          element_text(angle = angle_val, hjust = hjust_val),
-          list(angle_val = angle, hjust_val = hjust)
-        )
-      )
-    )
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Biplot"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = ggtheme
-    )
-
-    pca_plot_biplot_expr <- c(
-      pca_plot_biplot_expr,
-      parsed_ggplot2_args
-    )
-
-    teal.devel::chunks_push(
-      id = "pca_plot_final",
-      expression = substitute(
-        expr = {
-          g <- plot_call
-          print(g)
-        },
-        env = list(
-          plot_call = teal::calls_combine_by("+", pca_plot_biplot_expr)
-        )
-      )
-    )
-
-    invisible(NULL)
-  }
-
-  # plot pc_var ----
-  plot_pc_var <- function() {
-    validate(need(input$pc, "Need additional plot settings - PC"))
-
-    pc <- input$pc # nolint
-
-    ggtheme <- input$ggtheme
-    validate(need(ggtheme, "Please select a theme."))
-
-    rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-    font_size <- input$font_size # nolint
-
-    angle <- ifelse(rotate_xaxis_labels, 45, 0)
-    hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)
-
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      theme = list(
-        text = substitute(element_text(size = font_size), list(font_size = font_size)),
-        axis.text.x = substitute(
-          element_text(angle = angle_val, hjust = hjust_val),
-          list(angle_val = angle, hjust_val = hjust)
-        )
-      )
-    )
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Eigenvector plot"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = ggtheme
-    )
-
-    ggplot_exprs <- c(
-      list(
-        quote(ggplot(pca_rot)),
-        substitute(
-          geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue"),
-          env = list(pc = pc)
-        ),
-        substitute(
-          geom_text(
-            aes(
-              x = Variable,
-              y = pc_name,
-              label = round(pc_name, 3),
-              vjust = ifelse(pc_name > 0, -0.5, 1.3)
+          quote(
+            scale_color_gradient(
+              low = "darkred",
+              high = "lightblue",
+              labels = function(x) as.Date(x, origin = "1970-01-01")
             )
+          )
+        } else {
+          teal.devel::chunks_push(
+            id = "pca_plot_response",
+            quote(pca_rot$response <- response)
+          )
+          quote(scale_color_gradient(low = "darkred", high = "lightblue"))
+        }
+
+        pca_plot_biplot_expr <- c(
+          pca_plot_biplot_expr,
+          substitute(
+            geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
+            env = list(aes_biplot = aes_biplot, alpha = alpha, size = size)
           ),
-          env = list(pc_name = as.name(pc))
+          scales_biplot
         )
-      ),
-      parsed_ggplot2_args$labs,
-      parsed_ggplot2_args$ggtheme,
-      parsed_ggplot2_args$theme
-    )
-
-    teal.devel::chunks_push(
-      id = "pca_plot",
-      expression = substitute(
-        expr = {
-          pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
-            dplyr::as_tibble(rownames = "Variable")
-
-          g <- plot_call
-
-          print(g)
-        },
-        env = list(
-          pc = pc,
-          plot_call = teal::calls_combine_by("+", ggplot_exprs)
-        )
-      )
-    )
-
-    invisible(NULL)
-  }
-
-  # plot final ----
-  plot_r <- reactive({
-    teal.devel::chunks_reset()
-    teal.devel::chunks_push_chunks(computation())
-
-    if (input$plot_type == "Elbow plot") {
-      plot_elbow()
-    } else if (input$plot_type == "Circle plot") {
-      plot_circle()
-    } else if (input$plot_type == "Biplot") {
-      if (length(response_data()$columns_source$response) > 0) {
-        teal.devel::chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
       }
 
-      plot_biplot()
-    } else if (input$plot_type == "Eigenvector plot") {
-      plot_pc_var()
-    } else {
-      stop("Unknown plot")
+      if (!is.null(input$variables)) {
+        pca_plot_biplot_expr <- c(
+          pca_plot_biplot_expr,
+          substitute(
+            geom_segment(
+              aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
+              data = rot_vars,
+              lineend = "round", linejoin = "round",
+              arrow = grid::arrow(length = grid::unit(0.5, "cm"))
+            ),
+            env = list(x_axis = x_axis, y_axis = y_axis)
+          ),
+          substitute(
+            geom_label(
+              aes_string(
+                x = x_axis,
+                y = y_axis,
+                label = "label"
+              ),
+              data = rot_vars,
+              nudge_y = 0.1,
+              fontface = "bold"
+            ),
+            env = list(x_axis = x_axis, y_axis = y_axis)
+          ),
+          quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
+        )
+      }
+
+      angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
+      hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        labs = dev_labs,
+        theme = list(
+          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          axis.text.x = substitute(
+            element_text(angle = angle_val, hjust = hjust_val),
+            list(angle_val = angle, hjust_val = hjust)
+          )
+        )
+      )
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Biplot"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      pca_plot_biplot_expr <- c(
+        pca_plot_biplot_expr,
+        parsed_ggplot2_args
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_plot_final",
+        expression = substitute(
+          expr = {
+            g <- plot_call
+            print(g)
+          },
+          env = list(
+            plot_call = teal::calls_combine_by("+", pca_plot_biplot_expr)
+          )
+        )
+      )
+
+      invisible(NULL)
     }
 
-    teal.devel::chunks_safe_eval()
-  })
+    # plot pc_var ----
+    plot_pc_var <- function() {
+      validate(need(input$pc, "Need additional plot settings - PC"))
 
-  callModule(
-    teal.devel::plot_with_settings_srv,
-    id = "pca_plot",
-    plot_r = plot_r,
-    height = plot_height,
-    width = plot_width,
-    graph_align = "center"
-  )
+      pc <- input$pc # nolint
 
-  # tables ----
-  output$tbl_importance <- renderTable(
-    expr = {
+      ggtheme <- input$ggtheme
+      validate(need(ggtheme, "Please select a theme."))
+
+      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      font_size <- input$font_size # nolint
+
+      angle <- ifelse(rotate_xaxis_labels, 45, 0)
+      hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        theme = list(
+          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          axis.text.x = substitute(
+            element_text(angle = angle_val, hjust = hjust_val),
+            list(angle_val = angle, hjust_val = hjust)
+          )
+        )
+      )
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Eigenvector plot"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme
+      )
+
+      ggplot_exprs <- c(
+        list(
+          quote(ggplot(pca_rot)),
+          substitute(
+            geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue"),
+            env = list(pc = pc)
+          ),
+          substitute(
+            geom_text(
+              aes(
+                x = Variable,
+                y = pc_name,
+                label = round(pc_name, 3),
+                vjust = ifelse(pc_name > 0, -0.5, 1.3)
+              )
+            ),
+            env = list(pc_name = as.name(pc))
+          )
+        ),
+        parsed_ggplot2_args$labs,
+        parsed_ggplot2_args$ggtheme,
+        parsed_ggplot2_args$theme
+      )
+
+      teal.devel::chunks_push(
+        id = "pca_plot",
+        expression = substitute(
+          expr = {
+            pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
+              dplyr::as_tibble(rownames = "Variable")
+
+            g <- plot_call
+
+            print(g)
+          },
+          env = list(
+            pc = pc,
+            plot_call = teal::calls_combine_by("+", ggplot_exprs)
+          )
+        )
+      )
+
+      invisible(NULL)
+    }
+
+    # plot final ----
+    plot_r <- reactive({
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_chunks(computation())
+
+      if (input$plot_type == "Elbow plot") {
+        plot_elbow()
+      } else if (input$plot_type == "Circle plot") {
+        plot_circle()
+      } else if (input$plot_type == "Biplot") {
+        if (length(response_data()$columns_source$response) > 0) {
+          teal.devel::chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
+        }
+
+        plot_biplot()
+      } else if (input$plot_type == "Eigenvector plot") {
+        plot_pc_var()
+      } else {
+        stop("Unknown plot")
+      }
+
+      teal.devel::chunks_safe_eval()
+    })
+
+    teal.devel::plot_with_settings_srv(
+      id = "pca_plot",
+      plot_r = plot_r,
+      height = plot_height,
+      width = plot_width,
+      graph_align = "center"
+    )
+
+    # tables ----
+    output$tbl_importance <- renderTable(
+      expr = {
+        req("importance" %in% input$tables_display)
+        chunks_stack <- computation()
+        teal.devel::chunks_get_var("tbl_importance", chunks = chunks_stack)
+      },
+      bordered = TRUE,
+      align = "c",
+      digits = 3
+    )
+
+    output$tbl_importance_ui <- renderUI({
       req("importance" %in% input$tables_display)
-      chunks_stack <- computation()
-      teal.devel::chunks_get_var("tbl_importance", chunks = chunks_stack)
-    },
-    bordered = TRUE,
-    align = "c",
-    digits = 3
-  )
+      div(
+        tags$h4("Principal components importance"),
+        tableOutput(session$ns("tbl_importance")),
+        align = "center"
+      )
+    })
 
-  output$tbl_importance_ui <- renderUI({
-    req("importance" %in% input$tables_display)
-    div(
-      tags$h4("Principal components importance"),
-      tableOutput(session$ns("tbl_importance")),
-      align = "center"
+    output$tbl_eigenvector <- renderTable(
+      expr = {
+        req("eigenvector" %in% input$tables_display)
+        chunks_stack <- computation()
+        teal.devel::chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
+      },
+      bordered = TRUE,
+      align = "c",
+      digits = 3
     )
-  })
 
-  output$tbl_eigenvector <- renderTable(
-    expr = {
+    output$tbl_eigenvector_ui <- renderUI({
       req("eigenvector" %in% input$tables_display)
-      chunks_stack <- computation()
-      teal.devel::chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
-    },
-    bordered = TRUE,
-    align = "c",
-    digits = 3
-  )
+      div(
+        tags$h4("Eigenvectors"),
+        tableOutput(session$ns("tbl_eigenvector")),
+        align = "center"
+      )
+    })
 
-  output$tbl_eigenvector_ui <- renderUI({
-    req("eigenvector" %in% input$tables_display)
-    div(
-      tags$h4("Eigenvectors"),
-      tableOutput(session$ns("tbl_eigenvector")),
-      align = "center"
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = teal.devel::get_extract_datanames(list(dat)),
+      modal_title = "R code for PCA"
     )
   })
-
-  callModule(
-    teal.devel::get_rcode_srv,
-    id = "rcode",
-    datasets = datasets,
-    datanames = teal.devel::get_extract_datanames(list(dat)),
-    modal_title = "R code for PCA"
-  )
 }

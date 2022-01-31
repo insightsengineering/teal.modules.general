@@ -1,5 +1,8 @@
 # teal.modules.general 0.2.12.9000
 * Switched order of `tm_missing_data` combination plot to show data in descending order.
+* Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
+
+# teal.modules.general 0.2.12
 
 # teal.modules.general 0.2.12
 ### Enhancements

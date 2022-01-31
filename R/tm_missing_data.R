@@ -140,27 +140,22 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   )
 }
 
-srv_page_missing_data <- function(input,
-                                  output,
-                                  session,
-                                  datasets,
-                                  plot_height,
-                                  plot_width,
-                                  ggplot2_args) {
-  lapply(
-    datasets$datanames(),
-    function(x) {
-      callModule(
-        module = srv_missing_data,
-        id = x,
-        datasets = datasets,
-        dataname = x,
-        plot_height = plot_height,
-        plot_width = plot_width,
-        ggplot2_args = ggplot2_args
-      )
-    }
-  )
+srv_page_missing_data <- function(id, datasets, plot_height, plot_width, ggplot2_args) {
+  moduleServer(id, function(input, output, session) {
+    lapply(
+      datasets$datanames(),
+      function(x) {
+        srv_missing_data(
+          id = x,
+          datasets = datasets,
+          dataname = x,
+          plot_height = plot_height,
+          plot_width = plot_width,
+          ggplot2_args = ggplot2_args
+        )
+      }
+    )
+  })
 }
 
 ui_missing_data <- function(id, by_subject_plot = FALSE) {
@@ -315,329 +310,246 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
 }
 
 #' @importFrom rlang .data
-srv_missing_data <- function(input,
-                             output,
-                             session,
-                             datasets,
-                             dataname,
-                             plot_height,
-                             plot_width,
-                             ggplot2_args) {
-  teal.devel::init_chunks()
+srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, ggplot2_args) {
+  moduleServer(id, function(input, output, session) {
+    teal.devel::init_chunks()
 
-  prev_group_by_var <- reactiveVal("")
+    prev_group_by_var <- reactiveVal("")
 
-  raw_data <- reactive({
-    # unfiltered data maintains all attributes such as labels
-    datasets$get_data(dataname, filtered = FALSE)
-  })
+    raw_data <- reactive({
+      # unfiltered data maintains all attributes such as labels
+      datasets$get_data(dataname, filtered = FALSE)
+    })
 
-  data <- reactive({
-    datasets$get_data(dataname, filtered = TRUE)
-  })
+    data <- reactive({
+      datasets$get_data(dataname, filtered = TRUE)
+    })
 
-  data_keys <- reactive({
-    datasets$get_keys(dataname)
-  })
+    data_keys <- reactive({
+      datasets$get_keys(dataname)
+    })
 
-  # chunks needed by all three outputs stored here
-  common_code_chunks <- reactive({
-    # Create a private stack for this function only.
-    common_stack <- teal.devel::chunks$new()
-    common_stack_push <- function(...) {
-      teal.devel::chunks_push(..., chunks = common_stack)
-    }
+    # chunks needed by all three outputs stored here
+    common_code_chunks <- reactive({
+      # Create a private stack for this function only.
+      common_stack <- teal.devel::chunks$new()
+      common_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = common_stack)
+      }
 
-    anl_name <- paste0(dataname, "_FILTERED")
-    anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
-    assign(anl_name, anl_filtered)
-    teal.devel::chunks_reset(chunks = common_stack)
-    group_var <- input$group_by_var
+      anl_name <- paste0(dataname, "_FILTERED")
+      anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
+      assign(anl_name, anl_filtered)
+      teal.devel::chunks_reset(chunks = common_stack)
+      group_var <- input$group_by_var
 
-    if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
-      common_stack_push(substitute(
-        expr = ANL_FILTERED <- anl_name[, selected_vars], # nolint
-        env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
-      ))
-    } else {
-      common_stack_push(substitute(expr = ANL_FILTERED <- anl_name, env = list(anl_name = as.name(anl_name)))) # nolint
-    }
-
-    if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
-      common_stack_push(substitute(
-        expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]], # nolint
-        env = list(group_var = group_var, anl_name = as.name(anl_name))
-      ))
-    }
-
-    new_col_name <- "**anyna**" # nolint variable assigned and used
-
-    common_stack_push(substitute(
-      expr =
-        create_cols_labels <- function(cols, just_label = FALSE) {
-          column_labels <- column_labels_value
-          column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
-          if (just_label) {
-            labels <- column_labels[cols]
-          } else {
-            labels <- ifelse(cols == new_col_name | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
-          }
-          return(labels)
-        },
-      env = list(
-        new_col_name = new_col_name,
-        column_labels_value = c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name)
-      )
-    ))
-    teal.devel::chunks_safe_eval(chunks = common_stack)
-    common_stack
-  })
-
-  selected_vars <- reactive({
-    req(input$variables_select)
-    keys <- data_keys()
-    vars <- unique(c(keys, input$variables_select))
-    validate(need(length(setdiff(vars, keys)) >= 1, "Please also select non-key columns."))
-    vars
-  })
-
-  vars_summary <- reactive({
-    na_count <- data() %>%
-      sapply(function(x) mean(is.na(x)), USE.NAMES = TRUE) %>%
-      sort(decreasing = TRUE)
-
-    tibble::tibble(
-      key = names(na_count),
-      value = unname(na_count),
-      label = cut(na_count, breaks = seq(from = 0, to = 1, by = 0.1), include.lowest = TRUE)
-    )
-  })
-
-  output$variables <- renderUI({
-    choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
-    selected <- choices <- unname(unlist(choices))
-
-    optionalSelectInput(
-      session$ns("variables_select"),
-      label = "Select variables",
-      label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
-      choices = variable_choices(raw_data(), choices),
-      selected = selected,
-      multiple = TRUE
-    )
-  })
-
-  observeEvent(input$filter_na, {
-    choices <- vars_summary() %>%
-      dplyr::select(.data$key) %>%
-      getElement(name = 1)
-
-    selected <- vars_summary() %>%
-      dplyr::filter(.data$value > 0) %>%
-      dplyr::select(.data$key) %>%
-      getElement(name = 1)
-
-    updateOptionalSelectInput(
-      session = session,
-      inputId = "variables_select",
-      choices = variable_choices(raw_data()),
-      selected = selected
-    )
-  })
-
-  output$group_by_var_ui <- renderUI({
-    all_choices <- variable_choices(raw_data())
-    cat_choices <- all_choices[!sapply(raw_data(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
-    validate(
-      need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
-    )
-    optionalSelectInput(
-      session$ns("group_by_var"),
-      label = "Group by variable",
-      choices = cat_choices,
-      selected = `if`(
-        is.null(isolate(input$group_by_var)),
-        cat_choices[1],
-        isolate(input$group_by_var)
-      ),
-      multiple = FALSE,
-      label_help = paste0("Dataset: ", dataname)
-    )
-  })
-
-  output$group_by_vals_ui <- renderUI({
-    req(input$group_by_var)
-
-    choices <- value_choices(raw_data(), input$group_by_var, input$group_by_var)
-    prev_choices <- isolate(input$group_by_vals)
-
-    # determine selected value based on filtered data
-    # display those previously selected values that are still available
-    selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
-      prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-    } else if (!is.null(prev_choices) &&
-      !any(prev_choices %in% choices) &&
-      isolate(prev_group_by_var()) == input$group_by_var) {
-      # if not any previously selected value is available and the grouping variable is the same,
-      # then display NULL
-      NULL
-    } else {
-      # if new grouping variable (i.e. not any previously selected value is available),
-      # then display all choices
-      choices
-    }
-
-    prev_group_by_var(input$group_by_var) # set current group_by_var
-    validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
-
-    optionalSelectInput(
-      session$ns("group_by_vals"),
-      label = "Filter levels",
-      choices = choices,
-      selected = selected,
-      multiple = TRUE,
-      label_help = paste0("Dataset: ", dataname)
-    )
-  })
-
-  summary_plot_chunks <- reactive({
-    req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
-    teal.devel::validate_has_data(data(), 1)
-    validate(need(length(input$variables_select) > 0, "No variables selected"))
-
-    # Create a private stack for this function only.
-    summary_stack <- teal.devel::chunks$new()
-    summary_stack_push <- function(...) {
-      teal.devel::chunks_push(..., chunks = summary_stack)
-    }
-
-    # Add common code into this chunk
-    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = summary_stack)
-
-    if (input$any_na) {
-      new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
-      summary_stack_push(substitute(
-        expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE), # nolint
-        env = list(new_col_name = new_col_name)
-      ))
-    }
-
-    summary_stack_push(substitute(
-      expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
-      env = list(data_keys = data_keys())
-    ))
-
-    summary_stack_push(substitute(
-      expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
-        dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-        tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
-        dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
-        tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-        dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100),
-      env = list(data_frame_call = if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
-        quote(tibble::as_tibble(ANL_FILTERED))
+      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+        common_stack_push(substitute(
+          expr = ANL_FILTERED <- anl_name[, selected_vars], # nolint
+          env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
+        ))
       } else {
-        quote(ANL_FILTERED)
-      })
-    ))
+        common_stack_push(substitute(expr = ANL_FILTERED <- anl_name, env = list(anl_name = as.name(anl_name)))) # nolint
+      }
 
-    # x axis ordering according to number of missing values and alphabet
-    summary_stack_push(quote(
-      expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
-        dplyr::arrange(n_pct, dplyr::desc(col)) %>%
-        dplyr::pull(col) %>%
-        create_cols_labels()
-    ))
+      if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
+        common_stack_push(substitute(
+          expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]], # nolint
+          env = list(group_var = group_var, anl_name = as.name(anl_name))
+        ))
+      }
 
-    # always set "**anyna**" level as the last one
-    if (isolate(input$any_na)) {
-      summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
-    }
+      new_col_name <- "**anyna**" # nolint variable assigned and used
 
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      labs = list(x = "Variable", y = "Missing observations"),
-      theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
-    )
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Summary Obs"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = input$ggtheme
-    )
-
-    summary_stack_push(substitute(
-      p1 <- summary_plot_obs %>%
-        ggplot() +
-        aes(
-          x = factor(create_cols_labels(col), levels = x_levels),
-          y = n_pct,
-          fill = isna
-        ) +
-        geom_bar(position = "fill", stat = "identity") +
-        scale_fill_manual(
-          name = "",
-          values = c("grey90", "#ff2951ff"),
-          labels = c("Present", "Missing")
-        ) +
-        scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
-        geom_text(
-          aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-          hjust = 1,
-          color = "black"
-        ) +
-        labs +
-        ggthemes +
-        themes +
-        coord_flip(),
-      env = list(
-        labs = parsed_ggplot2_args$labs,
-        themes = parsed_ggplot2_args$theme,
-        ggthemes = parsed_ggplot2_args$ggtheme
-      )
-    ))
-
-    if (isTRUE(input$if_patients_plot)) {
-      keys <- data_keys()
-      summary_stack_push(substitute(
-        expr = parent_keys <- keys,
+      common_stack_push(substitute(
+        expr =
+          create_cols_labels <- function(cols, just_label = FALSE) {
+            column_labels <- column_labels_value
+            column_labels[is.na(column_labels) | length(column_labels) == 0] <- ""
+            if (just_label) {
+              labels <- column_labels[cols]
+            } else {
+              labels <- ifelse(cols == new_col_name | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
+            }
+            return(labels)
+          },
         env = list(
-          keys = datasets$get_keys(
-            `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
-          )
+          new_col_name = new_col_name,
+          column_labels_value = c(datasets$get_varlabels(dataname)[selected_vars()], new_col_name = new_col_name)
         )
       ))
-      summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
-      summary_stack_push(
-        quote(
-          summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
-            dplyr::group_by_at(parent_keys) %>%
-            dplyr::summarise_all(anyNA) %>%
-            tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
-            dplyr::group_by_at(c("col")) %>%
-            dplyr::summarise(count_na = sum(anyna)) %>%
-            dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
-            tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
-            dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
-            dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
-        )
+      teal.devel::chunks_safe_eval(chunks = common_stack)
+      common_stack
+    })
+
+    selected_vars <- reactive({
+      req(input$variables_select)
+      keys <- data_keys()
+      vars <- unique(c(keys, input$variables_select))
+      validate(need(length(setdiff(vars, keys)) >= 1, "Please also select non-key columns."))
+      vars
+    })
+
+    vars_summary <- reactive({
+      na_count <- data() %>%
+        sapply(function(x) mean(is.na(x)), USE.NAMES = TRUE) %>%
+        sort(decreasing = TRUE)
+
+      tibble::tibble(
+        key = names(na_count),
+        value = unname(na_count),
+        label = cut(na_count, breaks = seq(from = 0, to = 1, by = 0.1), include.lowest = TRUE)
       )
+    })
+
+    output$variables <- renderUI({
+      choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
+      selected <- choices <- unname(unlist(choices))
+
+      optionalSelectInput(
+        session$ns("variables_select"),
+        label = "Select variables",
+        label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
+        choices = variable_choices(raw_data(), choices),
+        selected = selected,
+        multiple = TRUE
+      )
+    })
+
+    observeEvent(input$filter_na, {
+      choices <- vars_summary() %>%
+        dplyr::select(.data$key) %>%
+        getElement(name = 1)
+
+      selected <- vars_summary() %>%
+        dplyr::filter(.data$value > 0) %>%
+        dplyr::select(.data$key) %>%
+        getElement(name = 1)
+
+      updateOptionalSelectInput(
+        session = session,
+        inputId = "variables_select",
+        choices = variable_choices(raw_data()),
+        selected = selected
+      )
+    })
+
+    output$group_by_var_ui <- renderUI({
+      all_choices <- variable_choices(raw_data())
+      cat_choices <- all_choices[!sapply(raw_data(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
+      validate(
+        need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
+      )
+      optionalSelectInput(
+        session$ns("group_by_var"),
+        label = "Group by variable",
+        choices = cat_choices,
+        selected = `if`(
+          is.null(isolate(input$group_by_var)),
+          cat_choices[1],
+          isolate(input$group_by_var)
+        ),
+        multiple = FALSE,
+        label_help = paste0("Dataset: ", dataname)
+      )
+    })
+
+    output$group_by_vals_ui <- renderUI({
+      req(input$group_by_var)
+
+      choices <- value_choices(raw_data(), input$group_by_var, input$group_by_var)
+      prev_choices <- isolate(input$group_by_vals)
+
+      # determine selected value based on filtered data
+      # display those previously selected values that are still available
+      selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
+        prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
+      } else if (!is.null(prev_choices) &&
+        !any(prev_choices %in% choices) &&
+        isolate(prev_group_by_var()) == input$group_by_var) {
+        # if not any previously selected value is available and the grouping variable is the same,
+        # then display NULL
+        NULL
+      } else {
+        # if new grouping variable (i.e. not any previously selected value is available),
+        # then display all choices
+        choices
+      }
+
+      prev_group_by_var(input$group_by_var) # set current group_by_var
+      validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
+
+      optionalSelectInput(
+        session$ns("group_by_vals"),
+        label = "Filter levels",
+        choices = choices,
+        selected = selected,
+        multiple = TRUE,
+        label_help = paste0("Dataset: ", dataname)
+      )
+    })
+
+    summary_plot_chunks <- reactive({
+      req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
+      teal.devel::validate_has_data(data(), 1)
+      validate(need(length(input$variables_select) > 0, "No variables selected"))
+
+      # Create a private stack for this function only.
+      summary_stack <- teal.devel::chunks$new()
+      summary_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = summary_stack)
+      }
+
+      # Add common code into this chunk
+      teal.devel::chunks_push_chunks(common_code_chunks(), chunks = summary_stack)
+
+      if (input$any_na) {
+        new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
+        summary_stack_push(substitute(
+          expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE), # nolint
+          env = list(new_col_name = new_col_name)
+        ))
+      }
+
+      summary_stack_push(substitute(
+        expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+        env = list(data_keys = data_keys())
+      ))
+
+      summary_stack_push(substitute(
+        expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
+          dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+          tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+          dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
+          tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
+          dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100),
+        env = list(data_frame_call = if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
+          quote(tibble::as_tibble(ANL_FILTERED))
+        } else {
+          quote(ANL_FILTERED)
+        })
+      ))
+
+      # x axis ordering according to number of missing values and alphabet
+      summary_stack_push(quote(
+        expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
+          dplyr::arrange(n_pct, dplyr::desc(col)) %>%
+          dplyr::pull(col) %>%
+          create_cols_labels()
+      ))
+
+      # always set "**anyna**" level as the last one
+      if (isolate(input$any_na)) {
+        summary_stack_push(quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")))
+      }
 
       dev_ggplot2_args <- teal.devel::ggplot2_args(
-        labs = list(x = "", y = "Missing patients"),
-        theme = list(
-          legend.position = "bottom",
-          axis.text.x = quote(element_text(angle = 45, hjust = 1)),
-          axis.text.y = quote(element_blank())
-        )
+        labs = list(x = "Variable", y = "Missing observations"),
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
       )
 
       all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Summary Patients"]],
+        user_plot = ggplot2_args[["Summary Obs"]],
         user_default = ggplot2_args$default,
         module_plot = dev_ggplot2_args
       )
@@ -648,20 +560,20 @@ srv_missing_data <- function(input,
       )
 
       summary_stack_push(substitute(
-        p2 <- summary_plot_patients %>%
+        p1 <- summary_plot_obs %>%
           ggplot() +
-          aes_(
-            x = ~ factor(create_cols_labels(col), levels = x_levels),
-            y = ~n_pct,
-            fill = ~isna
+          aes(
+            x = factor(create_cols_labels(col), levels = x_levels),
+            y = n_pct,
+            fill = isna
           ) +
-          geom_bar(alpha = 1, stat = "identity", position = "fill") +
-          scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+          geom_bar(position = "fill", stat = "identity") +
           scale_fill_manual(
             name = "",
             values = c("grey90", "#ff2951ff"),
             labels = c("Present", "Missing")
           ) +
+          scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
           geom_text(
             aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
             hjust = 1,
@@ -678,467 +590,544 @@ srv_missing_data <- function(input,
         )
       ))
 
-      summary_stack_push(quote({
-        g1 <- ggplotGrob(p1)
-        g2 <- ggplotGrob(p2)
-        g <- gridExtra::gtable_cbind(g1, g2, size = "first")
-        g$heights <- grid::unit.pmax(g1$heights, g2$heights)
-        grid::grid.newpage()
-      }))
-    } else {
-      summary_stack_push(quote({
-        g <- ggplotGrob(p1)
-        grid::grid.newpage()
-      }))
-    }
-
-    summary_stack_push(quote(grid::grid.draw(g)))
-    teal.devel::chunks_safe_eval(summary_stack)
-    summary_stack
-  })
-
-  summary_plot_r <- reactive({
-    teal.devel::chunks_reset()
-    teal.devel::chunks_push_chunks(summary_plot_chunks())
-    teal.devel::chunks_get_var(var = "g")
-  })
-
-  combination_cutoff_chunks <- reactive({
-    combination_cutoff_stack <- teal.devel::chunks$new()
-
-    # Add common code into this chunk
-    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
-
-    teal.devel::chunks_push(
-      quote({
-        combination_cutoff <- ANL_FILTERED %>%
-          dplyr::mutate_all(is.na) %>%
-          dplyr::group_by_all() %>%
-          dplyr::tally() %>%
-          dplyr::ungroup()
-      }),
-      chunks = combination_cutoff_stack
-    )
-
-    teal.devel::chunks_safe_eval(combination_cutoff_stack)
-    combination_cutoff_stack
-  })
-
-  output$cutoff <- renderUI({
-    x <- teal.devel::chunks_get_var("combination_cutoff", combination_cutoff_chunks())$n
-
-    # select 10-th from the top
-    n <- length(x)
-    idx <- max(1, n - 10)
-    prev_value <- isolate(input$combination_cutoff)
-    value <- `if`(
-      is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
-      sort(x, partial = idx)[idx], prev_value
-    )
-
-    optionalSliderInputValMinMax(
-      session$ns("combination_cutoff"),
-      "Combination cut-off",
-      c(value, range(x))
-    )
-  })
-
-  combination_plot_chunks <- reactive({
-    req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
-    teal.devel::validate_has_data(data(), 1)
-    validate(need(length(input$variables_select) > 0, "No variables selected"))
-    req(input$combination_cutoff)
-
-    # Create a private stack for this function only.
-    combination_stack <- teal.devel::chunks$new()
-    combination_stack_push <- function(...) {
-      teal.devel::chunks_push(..., chunks = combination_stack)
-    }
-
-    teal.devel::chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
-
-    combination_stack_push(substitute(
-      expr = data_combination_plot_cutoff <- combination_cutoff %>%
-        dplyr::filter(n >= combination_cutoff_value) %>%
-        dplyr::mutate(id = rank(-n, ties.method = "first")) %>%
-        tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
-        dplyr::arrange(n),
-      env = list(combination_cutoff_value = input$combination_cutoff)
-    ))
-
-    # find keys in dataset not selected in the UI and remove them from dataset
-    keys_not_selected <- setdiff(data_keys(), input$variables_select)
-    if (length(keys_not_selected) > 0) {
-      combination_stack_push(substitute(
-        expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
-          dplyr::filter(!key %in% keys_not_selected),
-        env = list(keys_not_selected = keys_not_selected)
-      ))
-    }
-
-    combination_stack_push(quote(
-      labels <- data_combination_plot_cutoff %>%
-        dplyr::filter(key == key[[1]]) %>%
-        getElement(name = 1)
-    ))
-
-    dev_ggplot2_args1 <- teal.devel::ggplot2_args(
-      labs = list(x = "", y = ""),
-      theme = list(
-        legend.position = "bottom",
-        axis.text.x = quote(element_blank())
-      )
-    )
-
-    all_ggplot2_args1 <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Combinations Hist"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args1
-    )
-
-    parsed_ggplot2_args1 <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args1,
-      ggtheme = "void"
-    )
-
-    dev_ggplot2_args2 <- teal.devel::ggplot2_args(
-      labs = list(x = "", y = ""),
-      theme = list(
-        legend.position = "bottom",
-        axis.text.x = quote(element_blank()),
-        axis.ticks = quote(element_blank()),
-        panel.grid.major = quote(element_blank())
-      )
-    )
-
-    all_ggplot2_args2 <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["Combinations Main"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args2
-    )
-
-    parsed_ggplot2_args2 <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args2,
-      ggtheme = input$ggtheme
-    )
-
-    combination_stack_push(substitute(
-      expr = {
-        p1 <- data_combination_plot_cutoff %>%
-          dplyr::select(id, n) %>%
-          dplyr::distinct() %>%
-          ggplot(aes(x = id, y = n)) +
-          geom_bar(stat = "identity", fill = "#ff2951ff") +
-          geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
-          ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
-          labs1 +
-          ggthemes1 +
-          themes1
-
-        graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
-        graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
-
-        p2 <- data_combination_plot_cutoff %>% ggplot() +
-          aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-          geom_tile(alpha = 0.85, height = 0.95) +
-          scale_fill_manual(
-            name = "",
-            values = c("grey90", "#ff2951ff"),
-            labels = c("Present", "Missing")
-          ) +
-          geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-          geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-          coord_flip() +
-          labs2 +
-          ggthemes2 +
-          themes2
-
-        g1 <- ggplotGrob(p1)
-        g2 <- ggplotGrob(p2)
-
-        g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-        g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
-        grid::grid.newpage()
-        grid::grid.draw(g)
-      },
-      env = list(
-        labs1 = parsed_ggplot2_args1$labs,
-        themes1 = parsed_ggplot2_args1$theme,
-        ggthemes1 = parsed_ggplot2_args1$ggtheme,
-        labs2 = parsed_ggplot2_args2$labs,
-        themes2 = parsed_ggplot2_args2$theme,
-        ggthemes2 = parsed_ggplot2_args2$ggtheme
-      )
-    ))
-
-    teal.devel::chunks_safe_eval(combination_stack)
-    combination_stack
-  })
-
-  combination_plot_r <- reactive({
-    teal.devel::chunks_reset()
-    teal.devel::chunks_push_chunks(combination_plot_chunks())
-    teal.devel::chunks_get_var(var = "g")
-  })
-
-  table_chunks <- reactive({
-    req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
-    teal.devel::validate_has_data(data(), 1)
-
-    # Create a private stack for this function only.
-    table_stack <- teal.devel::chunks$new()
-    table_stack_push <- function(...) {
-      teal.devel::chunks_push(..., chunks = table_stack)
-    }
-
-    # Add common code into this stack
-    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = table_stack)
-
-    # extract the ANL_FILTERED dataset for use in further validation
-    anl_filtered <- teal.devel::chunks_get_var("ANL_FILTERED", chunks = table_stack)
-
-    validate(need(input$count_type, "Please select type of counts"))
-    if (!is.null(input$group_by_var)) {
-      validate(need(!is.null(input$group_by_vals), "Please select both group-by variable and values"))
-    }
-
-    group_var <- input$group_by_var
-
-    validate(
-      need(
-        is.null(group_var) ||
-          nrow(unique(anl_filtered[, group_var])) < 100,
-        "Please select group-by variable with fewer than 100 unique values"
-      )
-    )
-
-    group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
-    variables_select <- input$variables_select
-    vars <- unique(variables_select, group_var)
-    count_type <- input$count_type # nolint (local variable is assigned and used)
-
-    table_stack_push(substitute(
-      expr = cell_values <- function(x) {
-        nas_string <- if ("Missing" %in% count_type) sum(is.na(x)) else ""
-        sum_string <- if ("All" %in% count_type) length(x) else ""
-        fra_string <- if ("Fraction" %in% count_type) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
-
-        trimws(
-          paste(
-            nas_string,
-            if (all(c("Missing", "All") %in% count_type)) "/",
-            sum_string,
-            fra_string
+      if (isTRUE(input$if_patients_plot)) {
+        keys <- data_keys()
+        summary_stack_push(substitute(
+          expr = parent_keys <- keys,
+          env = list(
+            keys = datasets$get_keys(
+              `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
+            )
+          )
+        ))
+        summary_stack_push(quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys])))
+        summary_stack_push(
+          quote(
+            summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+              dplyr::group_by_at(parent_keys) %>%
+              dplyr::summarise_all(anyNA) %>%
+              tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+              dplyr::group_by_at(c("col")) %>%
+              dplyr::summarise(count_na = sum(anyna)) %>%
+              dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
+              tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
+              dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
+              dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
           )
         )
-      },
-      env = list(count_type = count_type)
-    ))
 
-    if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
-      variables <- selected_vars() # nolint (local variable is assigned and used)
-    } else {
-      variables <- colnames(anl_filtered)
-    }
+        dev_ggplot2_args <- teal.devel::ggplot2_args(
+          labs = list(x = "", y = "Missing patients"),
+          theme = list(
+            legend.position = "bottom",
+            axis.text.x = quote(element_text(angle = 45, hjust = 1)),
+            axis.text.y = quote(element_blank())
+          )
+        )
 
-    if (!is.null(group_var)) {
-      table_stack_push(substitute(
-        expr = summary_data <- ANL_FILTERED %>%
-          dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
-          dplyr::group_by_at(group_var) %>%
-          dplyr::filter(group_var_name %in% group_vals) %>%
-          dplyr::summarise_all(cell_values) %>%
-          tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
-          dplyr::mutate(
-            out = paste0(group_var_name, ": ", out),
-            altered_group_var = dplyr::if_else(group_var_name == "", "''", group_var)
-          ) %>%
-          dplyr::select(altered_group_var, Variable, out) %>%
-          tidyr::pivot_wider(names_from = altered_group_var, values_from = out, values_fn = list) %>%
-          dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable),
-        env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
-      ))
-    } else {
-      table_stack_push(quote(
-        summary_data <- ANL_FILTERED %>%
-          dplyr::summarise_all(cell_values) %>%
-          tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable", values_to = "out") %>%
-          dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
-          dplyr::select(Variable, `Variable label`, `Overall missing` = out)
-      ))
-    }
-    table_stack_push(quote({
-      summary_data
-    }))
-    teal.devel::chunks_safe_eval(table_stack)
-    table_stack
-  })
+        all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Summary Patients"]],
+          user_default = ggplot2_args$default,
+          module_plot = dev_ggplot2_args
+        )
 
-  by_subject_plot_chunks <- reactive({
-    req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
-    teal.devel::validate_has_data(data(), 1)
-    validate(need(length(input$variables_select) > 0, "No variables selected"))
-    # Create a private stack for this function only.
-    by_subject_stack <- teal.devel::chunks$new()
-    by_subject_stack_push <- function(...) {
-      teal.devel::chunks_push(..., chunks = by_subject_stack)
-    }
+        parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+          all_ggplot2_args,
+          ggtheme = input$ggtheme
+        )
 
-    # Add common code into this chunk
-    teal.devel::chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
-
-    keys <- data_keys()
-    by_subject_stack_push(substitute(
-      expr = parent_keys <- keys,
-      env = list(keys = `if`(
-        length(datasets$get_parentname(dataname)) == 0,
-        keys,
-        datasets$get_keys(datasets$get_parentname(dataname))
-      ))
-    ))
-
-    by_subject_stack_push(
-      substitute(
-        expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
-        env = list(data_keys = data_keys())
-      )
-    )
-
-    by_subject_stack_push(
-      quote({
-        summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
-          dplyr::group_by_at(parent_keys) %>%
-          dplyr::mutate(id = dplyr::cur_group_id()) %>%
-          dplyr::ungroup() %>%
-          dplyr::group_by_at(c(parent_keys, "id")) %>%
-          dplyr::summarise_all(anyNA) %>%
-          dplyr::ungroup()
-
-        # order subjects by decreasing number of missing and then by
-        # missingness pattern (defined using sha1)
-        order_subjects <- summary_plot_patients %>%
-          dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
-          dplyr::transmute(id = dplyr::row_number(), number_NA = apply(., 1, sum), sha = apply(., 1, digest::sha1)) %>%
-          dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-          getElement(name = "id")
-
-        # order columns by decreasing percent of missing values
-        ordered_columns <- summary_plot_patients %>%
-          dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
-          dplyr::summarise(
-            column = create_cols_labels(colnames(.)),
-            na_count = apply(., MARGIN = 2, FUN = sum),
-            na_percent = na_count / nrow(.) * 100
-          ) %>%
-          dplyr::arrange(na_percent, dplyr::desc(column))
-
-        summary_plot_patients <- summary_plot_patients %>%
-          tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
-          dplyr::mutate(col = create_cols_labels(col))
-      })
-    )
-
-    dev_ggplot2_args <- teal.devel::ggplot2_args(
-      labs = list(x = "", y = ""),
-      theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
-    )
-
-    all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
-      user_plot = ggplot2_args[["By Subject"]],
-      user_default = ggplot2_args$default,
-      module_plot = dev_ggplot2_args
-    )
-
-    parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
-      all_ggplot2_args,
-      ggtheme = input$ggtheme
-    )
-
-    by_subject_stack_push(
-      substitute(
-        expr = {
-          g <- ggplot(summary_plot_patients, aes(
-            x = factor(id, levels = order_subjects),
-            y = factor(col, levels = ordered_columns[["column"]]),
-            fill = isna
-          )) +
-            geom_raster() +
-            annotate(
-              "text",
-              x = length(order_subjects),
-              y = seq_len(nrow(ordered_columns)),
-              hjust = 1,
-              label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+        summary_stack_push(substitute(
+          p2 <- summary_plot_patients %>%
+            ggplot() +
+            aes_(
+              x = ~ factor(create_cols_labels(col), levels = x_levels),
+              y = ~n_pct,
+              fill = ~isna
             ) +
+            geom_bar(alpha = 1, stat = "identity", position = "fill") +
+            scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
             scale_fill_manual(
               name = "",
               values = c("grey90", "#ff2951ff"),
-              labels = c("Present", "Missing (at least one)")
+              labels = c("Present", "Missing")
+            ) +
+            geom_text(
+              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+              hjust = 1,
+              color = "black"
             ) +
             labs +
             ggthemes +
-            themes
-          print(g)
-        },
-        env = list(
-          labs = parsed_ggplot2_args$labs,
-          themes = parsed_ggplot2_args$theme,
-          ggthemes = parsed_ggplot2_args$ggtheme
+            themes +
+            coord_flip(),
+          env = list(
+            labs = parsed_ggplot2_args$labs,
+            themes = parsed_ggplot2_args$theme,
+            ggthemes = parsed_ggplot2_args$ggtheme
+          )
+        ))
+
+        summary_stack_push(quote({
+          g1 <- ggplotGrob(p1)
+          g2 <- ggplotGrob(p2)
+          g <- gridExtra::gtable_cbind(g1, g2, size = "first")
+          g$heights <- grid::unit.pmax(g1$heights, g2$heights)
+          grid::grid.newpage()
+        }))
+      } else {
+        summary_stack_push(quote({
+          g <- ggplotGrob(p1)
+          grid::grid.newpage()
+        }))
+      }
+
+      summary_stack_push(quote(grid::grid.draw(g)))
+      teal.devel::chunks_safe_eval(summary_stack)
+      summary_stack
+    })
+
+    summary_plot_r <- reactive({
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_chunks(summary_plot_chunks())
+      teal.devel::chunks_get_var(var = "g")
+    })
+
+    combination_cutoff_chunks <- reactive({
+      combination_cutoff_stack <- teal.devel::chunks$new()
+
+      # Add common code into this chunk
+      teal.devel::chunks_push_chunks(common_code_chunks(), chunks = combination_cutoff_stack)
+
+      teal.devel::chunks_push(
+        quote({
+          combination_cutoff <- ANL_FILTERED %>%
+            dplyr::mutate_all(is.na) %>%
+            dplyr::group_by_all() %>%
+            dplyr::tally() %>%
+            dplyr::ungroup()
+        }),
+        chunks = combination_cutoff_stack
+      )
+
+      teal.devel::chunks_safe_eval(combination_cutoff_stack)
+      combination_cutoff_stack
+    })
+
+    output$cutoff <- renderUI({
+      x <- teal.devel::chunks_get_var("combination_cutoff", combination_cutoff_chunks())$n
+
+      # select 10-th from the top
+      n <- length(x)
+      idx <- max(1, n - 10)
+      prev_value <- isolate(input$combination_cutoff)
+      value <- `if`(
+        is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
+        sort(x, partial = idx)[idx], prev_value
+      )
+
+      optionalSliderInputValMinMax(
+        session$ns("combination_cutoff"),
+        "Combination cut-off",
+        c(value, range(x))
+      )
+    })
+
+    combination_plot_chunks <- reactive({
+      req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
+      teal.devel::validate_has_data(data(), 1)
+      validate(need(length(input$variables_select) > 0, "No variables selected"))
+      req(input$combination_cutoff)
+
+      # Create a private stack for this function only.
+      combination_stack <- teal.devel::chunks$new()
+      combination_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = combination_stack)
+      }
+
+      teal.devel::chunks_push_chunks(combination_cutoff_chunks(), chunks = combination_stack)
+      combination_stack_push(substitute(
+        expr = data_combination_plot_cutoff <- combination_cutoff %>%
+          dplyr::filter(n >= combination_cutoff_value) %>%
+          dplyr::mutate(id = rank(-n, ties.method = "first")) %>%
+          tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
+          dplyr::arrange(n),
+        env = list(combination_cutoff_value = input$combination_cutoff)
+      ))
+
+      # find keys in dataset not selected in the UI and remove them from dataset
+      keys_not_selected <- setdiff(data_keys(), input$variables_select)
+      if (length(keys_not_selected) > 0) {
+        combination_stack_push(substitute(
+          expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
+            dplyr::filter(!key %in% keys_not_selected),
+          env = list(keys_not_selected = keys_not_selected)
+        ))
+      }
+
+      combination_stack_push(quote(
+        labels <- data_combination_plot_cutoff %>%
+          dplyr::filter(key == key[[1]]) %>%
+          getElement(name = 1)
+      ))
+
+      dev_ggplot2_args1 <- teal.devel::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_blank())
         )
       )
+
+      all_ggplot2_args1 <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Combinations Hist"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args1
+      )
+
+      parsed_ggplot2_args1 <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args1,
+        ggtheme = "void"
+      )
+
+      dev_ggplot2_args2 <- teal.devel::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_blank()),
+          axis.ticks = quote(element_blank()),
+          panel.grid.major = quote(element_blank())
+        )
+      )
+
+      all_ggplot2_args2 <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Combinations Main"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args2
+      )
+
+      parsed_ggplot2_args2 <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args2,
+        ggtheme = input$ggtheme
+      )
+
+      combination_stack_push(substitute(
+        expr = {
+          p1 <- data_combination_plot_cutoff %>%
+            dplyr::select(id, n) %>%
+            dplyr::distinct() %>%
+            ggplot(aes(x = id, y = n)) +
+            geom_bar(stat = "identity", fill = "#ff2951ff") +
+            geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
+            ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+            labs1 +
+            ggthemes1 +
+            themes1
+
+          graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
+          graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
+
+          p2 <- data_combination_plot_cutoff %>% ggplot() +
+            aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+            geom_tile(alpha = 0.85, height = 0.95) +
+            scale_fill_manual(
+              name = "",
+              values = c("grey90", "#ff2951ff"),
+              labels = c("Present", "Missing")
+            ) +
+            geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+            geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+            coord_flip() +
+            labs2 +
+            ggthemes2 +
+            themes2
+
+          g1 <- ggplotGrob(p1)
+          g2 <- ggplotGrob(p2)
+
+          g <- gridExtra::gtable_rbind(g1, g2, size = "last")
+          g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
+          grid::grid.newpage()
+          grid::grid.draw(g)
+        },
+        env = list(
+          labs1 = parsed_ggplot2_args1$labs,
+          themes1 = parsed_ggplot2_args1$theme,
+          ggthemes1 = parsed_ggplot2_args1$ggtheme,
+          labs2 = parsed_ggplot2_args2$labs,
+          themes2 = parsed_ggplot2_args2$theme,
+          ggthemes2 = parsed_ggplot2_args2$ggtheme
+        )
+      ))
+
+      teal.devel::chunks_safe_eval(combination_stack)
+      combination_stack
+    })
+
+    combination_plot_r <- reactive({
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_chunks(combination_plot_chunks())
+      teal.devel::chunks_get_var(var = "g")
+    })
+
+    table_chunks <- reactive({
+      req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
+      teal.devel::validate_has_data(data(), 1)
+
+      # Create a private stack for this function only.
+      table_stack <- teal.devel::chunks$new()
+      table_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = table_stack)
+      }
+
+      # Add common code into this stack
+      teal.devel::chunks_push_chunks(common_code_chunks(), chunks = table_stack)
+
+      # extract the ANL_FILTERED dataset for use in further validation
+      anl_filtered <- teal.devel::chunks_get_var("ANL_FILTERED", chunks = table_stack)
+
+      validate(need(input$count_type, "Please select type of counts"))
+      if (!is.null(input$group_by_var)) {
+        validate(need(!is.null(input$group_by_vals), "Please select both group-by variable and values"))
+      }
+
+      group_var <- input$group_by_var
+
+      validate(
+        need(
+          is.null(group_var) ||
+            nrow(unique(anl_filtered[, group_var])) < 100,
+          "Please select group-by variable with fewer than 100 unique values"
+        )
+      )
+
+      group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
+      variables_select <- input$variables_select
+      vars <- unique(variables_select, group_var)
+      count_type <- input$count_type # nolint (local variable is assigned and used)
+
+      table_stack_push(substitute(
+        expr = cell_values <- function(x) {
+          nas_string <- if ("Missing" %in% count_type) sum(is.na(x)) else ""
+          sum_string <- if ("All" %in% count_type) length(x) else ""
+          fra_string <- if ("Fraction" %in% count_type) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
+
+          trimws(
+            paste(
+              nas_string,
+              if (all(c("Missing", "All") %in% count_type)) "/",
+              sum_string,
+              fra_string
+            )
+          )
+        },
+        env = list(count_type = count_type)
+      ))
+
+      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+        variables <- selected_vars() # nolint (local variable is assigned and used)
+      } else {
+        variables <- colnames(anl_filtered)
+      }
+
+      if (!is.null(group_var)) {
+        table_stack_push(substitute(
+          expr = summary_data <- ANL_FILTERED %>%
+            dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
+            dplyr::group_by_at(group_var) %>%
+            dplyr::filter(group_var_name %in% group_vals) %>%
+            dplyr::summarise_all(cell_values) %>%
+            tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+            dplyr::mutate(
+              out = paste0(group_var_name, ": ", out),
+              altered_group_var = dplyr::if_else(group_var_name == "", "''", group_var)
+            ) %>%
+            dplyr::select(altered_group_var, Variable, out) %>%
+            tidyr::pivot_wider(names_from = altered_group_var, values_from = out, values_fn = list) %>%
+            dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable),
+          env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
+        ))
+      } else {
+        table_stack_push(quote(
+          summary_data <- ANL_FILTERED %>%
+            dplyr::summarise_all(cell_values) %>%
+            tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable", values_to = "out") %>%
+            dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
+            dplyr::select(Variable, `Variable label`, `Overall missing` = out)
+        ))
+      }
+      table_stack_push(quote({
+        summary_data
+      }))
+      teal.devel::chunks_safe_eval(table_stack)
+      table_stack
+    })
+
+    by_subject_plot_chunks <- reactive({
+      req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
+      teal.devel::validate_has_data(data(), 1)
+      validate(need(length(input$variables_select) > 0, "No variables selected"))
+      # Create a private stack for this function only.
+      by_subject_stack <- teal.devel::chunks$new()
+      by_subject_stack_push <- function(...) {
+        teal.devel::chunks_push(..., chunks = by_subject_stack)
+      }
+
+      # Add common code into this chunk
+      teal.devel::chunks_push_chunks(common_code_chunks(), chunks = by_subject_stack)
+
+      keys <- data_keys()
+      by_subject_stack_push(substitute(
+        expr = parent_keys <- keys,
+        env = list(keys = `if`(
+          length(datasets$get_parentname(dataname)) == 0,
+          keys,
+          datasets$get_keys(datasets$get_parentname(dataname))
+        ))
+      ))
+
+      by_subject_stack_push(
+        substitute(
+          expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+          env = list(data_keys = data_keys())
+        )
+      )
+
+      by_subject_stack_push(
+        quote({
+          summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+            dplyr::group_by_at(parent_keys) %>%
+            dplyr::mutate(id = dplyr::cur_group_id()) %>%
+            dplyr::ungroup() %>%
+            dplyr::group_by_at(c(parent_keys, "id")) %>%
+            dplyr::summarise_all(anyNA) %>%
+            dplyr::ungroup()
+
+          # order subjects by decreasing number of missing and then by
+          # missingness pattern (defined using sha1)
+          order_subjects <- summary_plot_patients %>%
+            dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+            dplyr::transmute(
+              id = dplyr::row_number(),
+              number_NA = apply(., 1, sum),
+              sha = apply(., 1, digest::sha1)
+            ) %>%
+            dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+            getElement(name = "id")
+
+          # order columns by decreasing percent of missing values
+          ordered_columns <- summary_plot_patients %>%
+            dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+            dplyr::summarise(
+              column = create_cols_labels(colnames(.)),
+              na_count = apply(., MARGIN = 2, FUN = sum),
+              na_percent = na_count / nrow(.) * 100
+            ) %>%
+            dplyr::arrange(na_percent, dplyr::desc(column))
+
+          summary_plot_patients <- summary_plot_patients %>%
+            tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+            dplyr::mutate(col = create_cols_labels(col))
+        })
+      )
+
+      dev_ggplot2_args <- teal.devel::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
+      )
+
+      all_ggplot2_args <- teal.devel::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["By Subject"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.devel::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = input$ggtheme
+      )
+
+      by_subject_stack_push(
+        substitute(
+          expr = {
+            g <- ggplot(summary_plot_patients, aes(
+              x = factor(id, levels = order_subjects),
+              y = factor(col, levels = ordered_columns[["column"]]),
+              fill = isna
+            )) +
+              geom_raster() +
+              annotate(
+                "text",
+                x = length(order_subjects),
+                y = seq_len(nrow(ordered_columns)),
+                hjust = 1,
+                label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+              ) +
+              scale_fill_manual(
+                name = "",
+                values = c("grey90", "#ff2951ff"),
+                labels = c("Present", "Missing (at least one)")
+              ) +
+              labs +
+              ggthemes +
+              themes
+            print(g)
+          },
+          env = list(
+            labs = parsed_ggplot2_args$labs,
+            themes = parsed_ggplot2_args$theme,
+            ggthemes = parsed_ggplot2_args$ggtheme
+          )
+        )
+      )
+
+      teal.devel::chunks_safe_eval(by_subject_stack)
+      by_subject_stack
+    })
+
+    by_subject_plot_r <- reactive({
+      teal.devel::chunks_reset()
+      teal.devel::chunks_push_chunks(by_subject_plot_chunks())
+      teal.devel::chunks_get_var(var = "g")
+    })
+
+    output$levels_table <- DT::renderDataTable(
+      expr = {
+        if (length(input$variables_select) == 0) {
+          # so that zeroRecords message gets printed
+          # using tibble as it supports weird column names, such as " "
+          tibble::tibble(` ` = logical(0))
+        } else {
+          teal.devel::chunks_reset()
+          teal.devel::chunks_push_chunks(table_chunks())
+          teal.devel::chunks_get_var("summary_data")
+        }
+      },
+      options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
     )
 
-    teal.devel::chunks_safe_eval(by_subject_stack)
-    by_subject_stack
+    teal.devel::plot_with_settings_srv(
+      id = "summary_plot",
+      plot_r = summary_plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+    teal.devel::plot_with_settings_srv(
+      id = "combination_plot",
+      plot_r = combination_plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+    teal.devel::plot_with_settings_srv(
+      id = "by_subject_plot",
+      plot_r = by_subject_plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+    teal.devel::get_rcode_srv(
+      id = "rcode",
+      datasets = datasets,
+      datanames = dataname,
+      modal_title = "R code for missing data "
+    )
   })
-
-  by_subject_plot_r <- reactive({
-    teal.devel::chunks_reset()
-    teal.devel::chunks_push_chunks(by_subject_plot_chunks())
-    teal.devel::chunks_get_var(var = "g")
-  })
-
-  output$levels_table <- DT::renderDataTable(
-    expr = {
-      if (length(input$variables_select) == 0) {
-        # so that zeroRecords message gets printed
-        # using tibble as it supports weird column names, such as " "
-        tibble::tibble(` ` = logical(0))
-      } else {
-        teal.devel::chunks_reset()
-        teal.devel::chunks_push_chunks(table_chunks())
-        teal.devel::chunks_get_var("summary_data")
-      }
-    },
-    options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
-  )
-
-  callModule(
-    teal.devel::plot_with_settings_srv,
-    id = "summary_plot",
-    plot_r = summary_plot_r,
-    height = plot_height,
-    width = plot_width
-  )
-  callModule(
-    teal.devel::plot_with_settings_srv,
-    id = "combination_plot",
-    plot_r = combination_plot_r,
-    height = plot_height,
-    width = plot_width
-  )
-  callModule(
-    teal.devel::plot_with_settings_srv,
-    id = "by_subject_plot",
-    plot_r = by_subject_plot_r,
-    height = plot_height,
-    width = plot_width
-  )
-  callModule(
-    teal.devel::get_rcode_srv,
-    id = "rcode",
-    datasets = datasets,
-    datanames = dataname,
-    modal_title = "R code for missing data "
-  )
 }
