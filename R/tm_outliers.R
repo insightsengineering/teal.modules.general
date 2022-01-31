@@ -789,7 +789,8 @@ srv_outliers <- function(id, datasets, outlier_var,
             substitute(
               expr = ANL_NO_NA <- ANL_NO_NA %>% # nolint
                 dplyr::left_join(
-                  dplyr::select(summary_table_pre, categorical_var_name, order), by = categorical_var
+                  dplyr::select(summary_table_pre, categorical_var_name, order),
+                  by = categorical_var
                 ) %>%
                 dplyr::arrange(order),
               env = list(categorical_var_name = as.name(categorical_var), categorical_var = categorical_var)
