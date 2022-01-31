@@ -4,7 +4,6 @@
 
 # teal.modules.general 0.2.12
 
-# teal.modules.general 0.2.12
 ### Enhancements
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in plot based modules.
