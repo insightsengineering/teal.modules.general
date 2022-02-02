@@ -19,7 +19,9 @@ tm_t_crosstable(
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable X - row values.}
+Object with all available choices with pre-selected option for variable X - row values. In case
+of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} as plot elements should follow the
+selection order.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Object with all available choices with pre-selected option for variable Y - column values
@@ -74,6 +76,7 @@ app <- init(
           }),
           selected = "COUNTRY",
           multiple = TRUE,
+          ordered = TRUE,
           fixed = FALSE
         )
       ),
