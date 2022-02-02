@@ -20,3 +20,4 @@ Default method for \code{\link{create_sparklines}}
 \seealso{
 \code{\link{create_sparklines}}
 }
+\keyword{internal}

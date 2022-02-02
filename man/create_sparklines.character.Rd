@@ -21,3 +21,4 @@ Coerces a character vector to factor and delegates to the \code{create_sparkline
 \seealso{
 \code{\link{create_sparklines}}
 }
+\keyword{internal}

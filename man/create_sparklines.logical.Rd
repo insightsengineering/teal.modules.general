@@ -21,3 +21,4 @@ Coerces logical vector to factor and delegates to the \code{create_sparklines.fa
 \seealso{
 \code{\link{create_sparklines}}
 }
+\keyword{internal}

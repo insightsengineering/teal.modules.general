@@ -456,6 +456,7 @@ create_sparklines <- function(arr, width = 150, ...) {
 #' @inheritParams create_sparklines
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.default <- function(arr, width = 150, ...) { # nolint
@@ -471,6 +472,7 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nolint
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
@@ -512,6 +514,7 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
@@ -553,6 +556,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
@@ -594,6 +598,7 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.character <- function(arr, ...) { # nolint
@@ -610,6 +615,7 @@ create_sparklines.character <- function(arr, ...) { # nolint
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.logical <- function(arr, ...) { # nolint
@@ -626,6 +632,7 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
@@ -667,6 +674,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
+#' @keywords internal
 #'
 #' @seealso \code{\link{create_sparklines}}
 

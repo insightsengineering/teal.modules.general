@@ -27,3 +27,4 @@ Generates the \code{sparkline} HTML code
 \seealso{
 \code{\link{create_sparklines}}
 }
+\keyword{internal}
