@@ -22,3 +22,4 @@ Generates the \code{sparkline} HTML code corresponding to the input array.
 For numeric variables creates a box plot, for character and factors - bar plot.
 Produces an empty string for variables of other types.
 }
+\keyword{internal}

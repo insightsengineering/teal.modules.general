@@ -29,3 +29,4 @@ render_tabset_panel_content(
 \description{
 Renders the left-hand side \code{tabset} panel of the module
 }
+\keyword{internal}

@@ -19,3 +19,4 @@ validate_input(input, plot_var, datasets)
 \description{
 Validates the variable browser inputs
 }
+\keyword{internal}

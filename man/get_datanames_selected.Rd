@@ -18,3 +18,4 @@ shown and in what order. Names in a vector have to correspond with datasets name
 \description{
 a tool for ui and server for getting datanames taking into account the datasets_selected vector
 }
+\keyword{internal}

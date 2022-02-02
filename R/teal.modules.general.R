@@ -13,4 +13,5 @@
 #'
 #' @docType package
 #' @name teal.modules.general
+#' @keywords internal
 NULL

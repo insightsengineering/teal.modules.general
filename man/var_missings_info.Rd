@@ -15,3 +15,4 @@ text describing \code{NA} occurrence.
 \description{
 Summarizes missings occurrence in vector
 }
+\keyword{internal}

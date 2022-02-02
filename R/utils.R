@@ -24,6 +24,7 @@
 #'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.devel")`
 #'
 #' @name shared_params
+#' @keywords internal
 NULL
 
 #' Add axis labels that show facetting variable
@@ -124,6 +125,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #'
 #' @return: call (i.e. expression) of the function provided by \code{fun}
 #'  with arguments provided by \code{str_args}.
+#' @keywords internal
 #'
 #' @examples
 #' \dontrun{
@@ -148,6 +150,7 @@ call_fun_dots <- function(fun, str_args) {
 #'   label to. Defaults to 80.
 #'
 #' @return (\code{character}) String with variable name and label.
+#' @keywords internal
 #'
 #' @examples
 #' \dontrun{
@@ -195,6 +198,7 @@ varname_w_label <- function(var_names,
 #' @param dataname character \code{dataname} from data_extract input.
 #'   This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.
 #' @param filter logical if the connected \code{extract_data_spec} is used with \code{filter} option.
+#' @keywords internal
 extract_input <- function(varname, dataname, filter = FALSE) {
   if (filter) {
     paste0(varname, "-dataset_", dataname, "_singleextract-filter1-vals")

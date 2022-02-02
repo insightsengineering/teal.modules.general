@@ -19,3 +19,4 @@ The format of the variable description is:
 
 Example: \code{"Study Identifier [ADSL.STUDYID]"}
 }
+\keyword{internal}

@@ -363,6 +363,7 @@ srv_data_table <- function(id,
 #' @param datasets_selected (\code{character}) a character vector that says which datasets should be
 #'   shown and in what order. Names in a vector have to correspond with datasets names.
 #' @return (\code{character}) a character vector
+#' @keywords internal
 get_datanames_selected <- function(datasets, datasets_selected) {
   datanames <- datasets$datanames()
 

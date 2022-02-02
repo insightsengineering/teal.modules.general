@@ -16,3 +16,4 @@ render_tab_header(dataset_name, output, datasets)
 \description{
 Renders the text headlining a single tab in the left-hand side tabset panel
 }
+\keyword{internal}
