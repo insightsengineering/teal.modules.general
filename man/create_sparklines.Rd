@@ -68,21 +68,4 @@ Coerces a character vector to factor and delegates to the \code{create_sparkline
 
 Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
 }
-\seealso{
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-
-\code{\link{create_sparklines}}
-}
 \keyword{internal}

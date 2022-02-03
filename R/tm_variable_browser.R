@@ -457,7 +457,6 @@ create_sparklines <- function(arr, width = 150, ...) {
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.default <- function(arr, width = 150, ...) { # nolint
   return(as.character(tags$code("unsupported variable type", style = "color:blue")))
 }
@@ -472,7 +471,6 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -513,7 +511,6 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -554,7 +551,6 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -595,7 +591,6 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.character <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
@@ -611,7 +606,6 @@ create_sparklines.character <- function(arr, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.logical <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
@@ -627,7 +621,6 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   decreasing_order <- TRUE
 
@@ -668,7 +661,6 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-#' @seealso \code{\link{create_sparklines}}
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
