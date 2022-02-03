@@ -93,8 +93,9 @@ app <- init(
             label = "Select variable:",
             choices = variable_choices(ADSL),
             selected = names(ADSL)[5],
-            multiple = FALSE,
-            fixed = FALSE
+            multiple = TRUE,
+            fixed = FALSE,
+            ordered = TRUE
           )
         ),
         y = data_extract_spec(
@@ -121,8 +122,9 @@ app <- init(
           select = select_spec(
             choices = variable_choices(ADLB),
             selected = "AVISIT",
-            multiple = FALSE,
+            multiple = TRUE,
             fixed = FALSE,
+            ordered = TRUE,
             label = "Select variable:"
           )
         ),
