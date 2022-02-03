@@ -453,11 +453,10 @@ create_sparklines <- function(arr, width = 150, ...) {
 
 #' Default method for \code{\link{create_sparklines}}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.default <- function(arr, width = 150, ...) { # nolint
   return(as.character(tags$code("unsupported variable type", style = "color:blue")))
@@ -465,7 +464,6 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nolint
 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
@@ -473,7 +471,7 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nolint
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
@@ -507,7 +505,6 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
@@ -515,7 +512,7 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
@@ -549,7 +546,6 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
@@ -557,7 +553,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
@@ -593,13 +589,12 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #'
 #' Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.character <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
@@ -610,13 +605,12 @@ create_sparklines.character <- function(arr, ...) { # nolint
 #'
 #' Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.logical <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
@@ -625,7 +619,6 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 
 #' Generates the \code{sparkline} HTML code
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} width of the bars (in pixels)
 #'
@@ -633,7 +626,7 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   decreasing_order <- TRUE
@@ -669,15 +662,13 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 
 #' Generates the \code{sparkline} HTML code
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
 #' @keywords internal
-#'
+#' @rdname create_sparklines
 #' @seealso \code{\link{create_sparklines}}
-
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
