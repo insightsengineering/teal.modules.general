@@ -45,3 +45,4 @@ plot
 \description{
 Creates summary plot with statistics relevant to data type.
 }
+\keyword{internal}

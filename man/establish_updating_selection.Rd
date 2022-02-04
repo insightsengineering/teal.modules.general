@@ -22,3 +22,4 @@ tabset panel.
 \note{
 Creates an observer for each dataset (each tab in the tabset panel).
 }
+\keyword{internal}

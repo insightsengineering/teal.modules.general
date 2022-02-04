@@ -40,3 +40,4 @@ ADSL <- synthetic_cdisc_data("latest")$adsl
 varname_w_label("AGE", ADSL)
 }
 }
+\keyword{internal}
