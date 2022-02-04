@@ -18,3 +18,4 @@ outliers (those more than \verb{outlier_definition*IQR below/above Q1/Q3}) are r
 \description{
 Removes the outlier observation from an array
 }
+\keyword{internal}

@@ -425,6 +425,7 @@ srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) 
 #' Summarizes missings occurrence in vector
 #' @param x vector of any type and length
 #' @return text describing \code{NA} occurrence.
+#' @keywords internal
 var_missings_info <- function(x) {
   return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
 }
@@ -441,8 +442,7 @@ var_missings_info <- function(x) {
 #' \href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}
 #'
 #' @return character variable containing the HTML code of the \code{sparkline} HTML widget
-#'
-#' @export
+#' @keywords internal
 #'
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
@@ -453,26 +453,24 @@ create_sparklines <- function(arr, width = 150, ...) {
 
 #' Default method for \code{\link{create_sparklines}}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.default <- function(arr, width = 150, ...) { # nolint
   return(as.character(tags$code("unsupported variable type", style = "color:blue")))
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -505,15 +503,14 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -546,15 +543,14 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' Generates the HTML code for the \code{sparkline} widget
 #'
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
@@ -589,13 +585,12 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #'
 #' Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.character <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
@@ -605,13 +600,12 @@ create_sparklines.character <- function(arr, ...) { # nolint
 #'
 #' Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.logical <- function(arr, ...) { # nolint
   return(create_sparklines(as.factor(arr)))
 }
@@ -619,15 +613,14 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 
 #' Generates the \code{sparkline} HTML code
 #'
-#' @inheritParams create_sparklines
 #' @param bar_spacing \code{numeric} spacing between the bars (in pixels)
 #' @param bar_width \code{numeric} width of the bars (in pixels)
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
   decreasing_order <- TRUE
 
@@ -662,14 +655,12 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 
 #' Generates the \code{sparkline} HTML code
 #'
-#' @inheritParams create_sparklines
 #'
 #' @return \code{character} with HTML code for the \code{sparkline} widget
 #'
 #' @export
-#'
-#' @seealso \code{\link{create_sparklines}}
-
+#' @keywords internal
+#' @rdname create_sparklines
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", style = "color:blue")))
@@ -694,6 +685,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
 #' @param outlier_definition If 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @return text with simple statistics.
+#' @keywords internal
 var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition) {
   if (is.null(dt_rows)) {
     dt_rows <- 10
@@ -790,7 +782,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values.
 #' @return plot
-#'
+#' @keywords internal
 plot_var_summary <- function(var,
                              var_lab,
                              numeric_as_factor,
@@ -937,6 +929,7 @@ plot_var_summary <- function(var,
 #' @param datasets (`FilteredData`) the object containing the dataset
 #' @param dataset_name (`character`) the name of the dataset containing the variable
 #' @param var_name (`character`) the name of the variable
+#' @keywords internal
 get_var_description <- function(datasets, dataset_name, var_name) {
   varlabel <- datasets$get_varlabels(dataname = dataset_name, var_name)
   sprintf(
@@ -958,6 +951,7 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 #' @param datasets (`FilteredData`) the datasets passed to the module
 #'
 #' @returns `logical` TRUE if validations pass; a Shiny validation error otherwise
+#' @keywords internal
 validate_input <- function(input, plot_var, datasets) {
   reactive({
     dataset_name <- input$tabset_panel
@@ -994,6 +988,7 @@ get_plotted_data <- function(input, plot_var, datasets) {
 #' @param output (`session$output`) the shiny session output
 #' @param columns_names (`environment`) the environment containing bindings for each dataset
 #' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
+#' @keywords internal
 render_tabset_panel_content <- function(datanames, output, datasets, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
     input = input,
@@ -1012,6 +1007,7 @@ render_tabset_panel_content <- function(datanames, output, datasets, input, colu
 #'
 #' @param dataset_name (`character`) the name of the dataset contained in the rendered tab
 #' @inheritParams render_tabset_panel_content
+#' @keywords internal
 render_single_tab <- function(dataset_name, output, datasets, input, columns_names, plot_var) {
   render_tab_header(dataset_name, output, datasets)
 
@@ -1028,7 +1024,7 @@ render_single_tab <- function(dataset_name, output, datasets, input, columns_nam
 #'
 #' @param dataset_name (`character`) the name of the dataset of the tab
 #' @inheritParams render_tabset_panel_content
-#'
+#' @keywords internal
 render_tab_header <- function(dataset_name, output, datasets) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
@@ -1050,7 +1046,7 @@ render_tab_header <- function(dataset_name, output, datasets) {
 #'
 #' @param dataset_name (`character`) the name of the dataset
 #' @inheritParams render_tabset_panel_content
-#'
+#' @keywords internal
 render_tab_table <- function(dataset_name, output, datasets, input, columns_names) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
@@ -1143,6 +1139,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
 #' Creates an observer for each dataset (each tab in the tabset panel).
 #'
 #' @inheritParams render_tabset_panel_content
+#' @keywords internal
 establish_updating_selection <- function(datanames, input, plot_var, columns_names) {
   lapply(datanames, function(dataset_name) {
     table_ui_id <- paste0("variable_browser_", dataset_name)
@@ -1183,6 +1180,7 @@ custom_sparkline_formatter <- function(labels, counts) {
 #' @param outlier_definition (`numeric`) if `0` then no outliers are removed, otherwise
 #'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3`) are removed
 #' @returns (`numeric`) vector without the outlier values
+#' @keywords internal
 remove_outliers_from <- function(var, outlier_definition) {
   if (outlier_definition == 0) {
     return(var)

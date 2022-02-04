@@ -28,3 +28,4 @@ call_fun_dots("sum", c("a", "b"))
 eval(call_fun_dots("sum", c("a", "b")))
 }
 }
+\keyword{internal}

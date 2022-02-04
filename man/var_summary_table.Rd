@@ -24,3 +24,4 @@ Creates html summary with statistics relevant to data type. For numeric values i
 tendency measures, for factor returns level counts, for Date  date range, for other just
 number of levels.
 }
+\keyword{internal}

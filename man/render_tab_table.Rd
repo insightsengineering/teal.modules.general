@@ -21,3 +21,4 @@ render_tab_table(dataset_name, output, datasets, input, columns_names)
 The table contains column names, column labels,
 small summary about NA values and a sparkline (if appropriate).
 }
+\keyword{internal}

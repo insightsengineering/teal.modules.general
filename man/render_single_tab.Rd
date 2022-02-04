@@ -30,3 +30,4 @@ render_single_tab(
 Renders a single tab in the left-hand side tabset panel. The rendered tab contains
 information about one dataset out of many presented in the module.
 }
+\keyword{internal}
