@@ -89,9 +89,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
-  if (any(vapply(variables, function(x) !x$select$ordered, logical(1)))) {
-    stop("'variables' doesn't allow unordered selection. Please specify 'ordered = TRUE' in the select_spec")
-  }
 
   args <- as.list(environment())
   module(
