@@ -1,5 +1,4 @@
 # teal.modules.general 0.2.12.9005
-# teal.modules.general 0.2.12.9004
 
 ### Enhancements
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
