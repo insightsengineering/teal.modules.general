@@ -6,8 +6,8 @@
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable X - row values. In case
-#'  of `data_extract_spec` use `select_spec(..., ordered = TRUE)` as plot elements should follow the
-#'  selection order.
+#'  of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
+#'  rendered according to selection order.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.

@@ -11,8 +11,8 @@
 #'
 #' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Plotting variables from an incoming dataset with filtering and selecting. In case of
-#'  `data_extract_spec` use `select_spec(..., ordered = TRUE)` as plot elements should follow the
-#'  selection order.
+#'  `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#'  rendered according to selection order.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.

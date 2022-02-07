@@ -18,8 +18,8 @@ tm_g_scatterplotmatrix(
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting. In case of
-\code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} as plot elements should follow the
-selection order.}
+\code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
+rendered according to selection order.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
