@@ -10,7 +10,9 @@
 #' @inheritParams shared_params
 #'
 #' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Plotting variables from an incoming dataset with filtering and selecting.
+#'  Plotting variables from an incoming dataset with filtering and selecting. In case of
+#'  `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#'  rendered according to selection order.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
@@ -40,6 +42,7 @@
 #'             choices = variable_choices(ADSL),
 #'             selected = c("AGE", "RACE", "SEX"),
 #'             multiple = TRUE,
+#'             ordered = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         ),
@@ -57,6 +60,7 @@
 #'             choices = variable_choices(ADRS),
 #'             selected = c("AGE", "AVAL", "ADY"),
 #'             multiple = TRUE,
+#'             ordered = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         )
@@ -184,7 +188,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
         "na.fail"
       }
 
-      cols_names <- selector_list()$variable()$select_ordered
+      cols_names <- merged_data()$columns_source$variable
 
       validate(need(length(cols_names) > 1, "Need at least 2 columns."))
       teal.devel::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)

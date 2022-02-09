@@ -5,7 +5,9 @@
 #' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Object with all available choices with pre-selected option for variable X - row values.
+#'  Object with all available choices with pre-selected option for variable X - row values. In case
+#'  of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
+#'  rendered according to selection order.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable Y - column values
 #'  \code{data_extract_spec} must not allow multiple selection in this case.
@@ -43,6 +45,7 @@
 #'           }),
 #'           selected = "COUNTRY",
 #'           multiple = TRUE,
+#'           ordered = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -82,7 +85,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
-  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
+  if (any(vapply(y, function(x) x$select$multiple, logical(1)))) {
     stop("'y' should not allow multiple selection")
   }
   checkmate::assert_flag(show_percentage)
@@ -186,7 +189,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
     )
 
     x_ordered <- reactive({
-      selector_list()$x()$select_ordered
+      selector_list()$x()$select
     })
 
     create_table <- reactive({

@@ -17,7 +17,9 @@ tm_g_scatterplotmatrix(
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Plotting variables from an incoming dataset with filtering and selecting.}
+Plotting variables from an incoming dataset with filtering and selecting. In case of
+\code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
+rendered according to selection order.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -64,6 +66,7 @@ app <- init(
             choices = variable_choices(ADSL),
             selected = c("AGE", "RACE", "SEX"),
             multiple = TRUE,
+            ordered = TRUE,
             fixed = FALSE
           )
         ),
@@ -81,6 +84,7 @@ app <- init(
             choices = variable_choices(ADRS),
             selected = c("AGE", "AVAL", "ADY"),
             multiple = TRUE,
+            ordered = TRUE,
             fixed = FALSE
           )
         )

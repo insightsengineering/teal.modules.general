@@ -1,7 +1,12 @@
 # teal.modules.general 0.2.12.9005
-* Switched order of `tm_missing_data` combination plot to show data in descending order.
-* Removed unneeded `n` row in `tm_t_crosstable`.
+
+### Enhancements
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
+* Fixed tracking of the selection order in `data_extract_ui`. All selectors can return ordered selection if one specifies `ordered = TRUE` in `select_spec`.
+* Switched order of `tm_missing_data` combination plot to show data in descending order.
+
+### Miscellaneous
+* Removed unneeded `n` row in `tm_t_crosstable`.
 
 # teal.modules.general 0.2.12
 
