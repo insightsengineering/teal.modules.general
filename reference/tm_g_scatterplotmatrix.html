@@ -24,7 +24,7 @@ determined by the argument variables."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9005</span>
       </span>
     </div>
 
@@ -66,15 +66,6 @@ determined by the argument variables."><!-- mathjax --><script src="https://cdnj
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/insightsengineering/teal.modules.general">
     <span class="fa fa-github"></span>
@@ -117,7 +108,9 @@ determined by the argument <code>variables</code>.</p>
 <dd><p>(<code>character</code>) Label shown in the navigation item for the module.</p></dd>
 <dt>variables</dt>
 <dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
-Plotting variables from an incoming dataset with filtering and selecting.</p></dd>
+Plotting variables from an incoming dataset with filtering and selecting. In case of
+<code>data_extract_spec</code> use <code>select_spec(..., ordered = TRUE)</code> if plot elements should be
+rendered according to selection order.</p></dd>
 <dt>plot_height</dt>
 <dd><p>optional, (<code>numeric</code>) A vector of length three with <code>c(value, min and max)</code>
 for a slider encoding the plot height.</p></dd>
@@ -163,6 +156,7 @@ output to put the output into context. For example the
 <span class="r-in">            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span><span class="op">)</span>,</span>
 <span class="r-in">            selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"RACE"</span>, <span class="st">"SEX"</span><span class="op">)</span>,</span>
 <span class="r-in">            multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span class="r-in">            ordered <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span class="r-in">            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span class="r-in">          <span class="op">)</span></span>
 <span class="r-in">        <span class="op">)</span>,</span>
@@ -180,6 +174,7 @@ output to put the output into context. For example the
 <span class="r-in">            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADRS</span><span class="op">)</span>,</span>
 <span class="r-in">            selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"AVAL"</span>, <span class="st">"ADY"</span><span class="op">)</span>,</span>
 <span class="r-in">            multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span class="r-in">            ordered <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span class="r-in">            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span class="r-in">          <span class="op">)</span></span>
 <span class="r-in">        <span class="op">)</span></span>
@@ -187,7 +182,7 @@ output to put the output into context. For example the
 <span class="r-in">    <span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-02-04 08:55:02.2976 pid:1727 token:[] teal.modules.general Initializing tm_g_scatterplotmatrix</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 2022-02-09 09:00:11.8468 pid:1716 token:[] teal.modules.general Initializing tm_g_scatterplotmatrix</span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
