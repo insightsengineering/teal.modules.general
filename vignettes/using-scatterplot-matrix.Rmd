@@ -83,7 +83,7 @@ app <- init(
     ),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     modules(
       label = "Scatterplot matrix",
       # .. single wide ----

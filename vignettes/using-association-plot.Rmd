@@ -84,7 +84,7 @@ app <- init(
     ),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     # tm_g_association ----
     modules(
       label = "Association plot",

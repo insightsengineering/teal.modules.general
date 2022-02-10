@@ -35,7 +35,7 @@
 #'   ),
 #'   check = TRUE
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_a_pca(
 #'       "PCA",
 #'       data_extract_spec(

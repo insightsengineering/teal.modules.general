@@ -32,7 +32,7 @@
 #'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
 #'     check = TRUE
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
 #'       x = data_extract_spec(

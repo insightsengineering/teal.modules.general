@@ -60,7 +60,7 @@ app <- init(
     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     tm_missing_data(
       ggplot2_args = list(
         "Combinations Hist" =

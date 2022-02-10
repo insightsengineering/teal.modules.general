@@ -34,7 +34,7 @@
 #'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
 #'     check = TRUE
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_g_association(
 #'       ref = data_extract_spec(
 #'         dataname = "ADSL",

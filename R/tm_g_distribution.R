@@ -57,7 +57,7 @@
 #'     code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl",
 #'     check = FALSE
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_g_distribution(
 #'       dist_var = data_extract_spec(
 #'         dataname = "ADSL",

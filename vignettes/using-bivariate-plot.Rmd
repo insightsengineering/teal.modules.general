@@ -87,7 +87,7 @@ app <- init(
     ),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     # tm_g_bivariate ------
     modules(
       label = "Bivariate plot",
