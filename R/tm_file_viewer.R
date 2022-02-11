@@ -18,7 +18,7 @@
 #'   data = teal_data(
 #'     dataset("data", data)
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_file_viewer(
 #'       input_path = list(
 #'         folder = system.file("sample_files", package = "teal.modules.general"),

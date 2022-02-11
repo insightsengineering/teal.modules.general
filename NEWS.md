@@ -7,6 +7,7 @@
 
 ### Miscellaneous
 * Removed unneeded `n` row in `tm_t_crosstable`.
+* Replaced calls to `teal::root_modules` with `teal::modules` following deprecation of `teal::root_modules`.
 
 # teal.modules.general 0.2.12
 

@@ -95,7 +95,7 @@ app <- init(
     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     tm_a_regression(
       label = "Regression",
       response = data_extract_spec(

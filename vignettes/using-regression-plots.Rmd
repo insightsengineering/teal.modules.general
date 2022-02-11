@@ -83,7 +83,7 @@ app <- init(
     ),
     check = TRUE
   ),
-  modules = root_modules(
+  modules = modules(
     modules(
       label = "Regression plots",
       tm_a_regression(

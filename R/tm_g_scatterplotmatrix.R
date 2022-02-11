@@ -31,7 +31,7 @@
 #'     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
 #'     check = TRUE
 #'   ),
-#'   modules = root_modules(
+#'   modules = modules(
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
