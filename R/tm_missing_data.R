@@ -942,7 +942,8 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         table_stack_push(substitute(
           expr = summary_data <- ANL_FILTERED %>%
             dplyr::summarise_all(summ_fn) %>%
-            tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable",
+            tidyr::pivot_longer(tidyselect::everything(),
+              names_to = "Variable",
               values_to = paste0("Missing (N=", nrow(ANL_FILTERED), ")")
             ) %>%
             dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
