@@ -285,12 +285,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
-        shinyWidgets::checkboxGroupButtons(
-          inputId = ns("count_type"),
-          label = "Type of counts",
-          choices = c("Missing", "All", "Fraction"),
-          selected = c("Missing", "All", "Fraction"),
-          justified = TRUE
+        radioButtons(
+          ns("count_type"),
+          label = "Display missing as",
+          choices = c("counts", "proportions"),
+          selected = "counts",
+          inline = TRUE
         )
       )
     ),
@@ -905,54 +905,48 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
       vars <- unique(variables_select, group_var)
       count_type <- input$count_type # nolint (local variable is assigned and used)
 
-      table_stack_push(substitute(
-        expr = cell_values <- function(x) {
-          nas_string <- if ("Missing" %in% count_type) sum(is.na(x)) else ""
-          sum_string <- if ("All" %in% count_type) length(x) else ""
-          fra_string <- if ("Fraction" %in% count_type) sprintf("[%.2f%%]", mean(is.na(x)) * 100) else ""
-
-          trimws(
-            paste(
-              nas_string,
-              if (all(c("Missing", "All") %in% count_type)) "/",
-              sum_string,
-              fra_string
-            )
-          )
-        },
-        env = list(count_type = count_type)
-      ))
-
       if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
         variables <- selected_vars() # nolint (local variable is assigned and used)
       } else {
         variables <- colnames(anl_filtered)
       }
 
+      summ_fn <- if (input$count_type == "counts") {
+        function(x) sum(is.na(x))
+      } else {
+        function(x) round(sum(is.na(x)) / length(x), 4)
+      }
+
+
       if (!is.null(group_var)) {
         table_stack_push(substitute(
-          expr = summary_data <- ANL_FILTERED %>%
-            dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
-            dplyr::group_by_at(group_var) %>%
-            dplyr::filter(group_var_name %in% group_vals) %>%
-            dplyr::summarise_all(cell_values) %>%
-            tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
-            dplyr::mutate(
-              out = paste0(group_var_name, ": ", out),
-              altered_group_var = dplyr::if_else(group_var_name == "", "''", group_var)
-            ) %>%
-            dplyr::select(altered_group_var, Variable, out) %>%
-            tidyr::pivot_wider(names_from = altered_group_var, values_from = out, values_fn = list) %>%
-            dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable),
-          env = list(group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals)
+          expr = {
+            summary_data <- ANL_FILTERED %>%
+              dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
+              dplyr::group_by_at(group_var) %>%
+              dplyr::filter(group_var_name %in% group_vals)
+
+            count_data <- dplyr::summarise(summary_data, n = dplyr::n())
+
+            summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
+              dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
+              tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+              tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
+              dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
+          },
+          env = list(
+            group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
+          )
         ))
       } else {
-        table_stack_push(quote(
-          summary_data <- ANL_FILTERED %>%
-            dplyr::summarise_all(cell_values) %>%
-            tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable", values_to = "out") %>%
-            dplyr::mutate(`Variable label` = create_cols_labels(Variable), just_label = TRUE) %>%
-            dplyr::select(Variable, `Variable label`, `Overall missing` = out)
+        table_stack_push(substitute(
+          expr = summary_data <- ANL_FILTERED %>%
+            dplyr::summarise_all(summ_fn) %>%
+            tidyr::pivot_longer(tidyselect::everything(), names_to = "Variable",
+              values_to = paste0("Missing (N=", nrow(ANL_FILTERED), ")")
+            ) %>%
+            dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
+          env = list(summ_fn = summ_fn)
         ))
       }
       table_stack_push(quote({
