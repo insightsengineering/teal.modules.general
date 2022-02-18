@@ -19,12 +19,8 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 This package contains a set of standard `teal` modules for you to include in your `teal` applications. 
-These include modules for:
-
-- viewing data (including `tm_variable_browser`, `tm_data_table` and `tm_file_viewer`)
-- visualizing data (`tm_g_scatterplot`, `tm_g_association` and many more)
-- understanding missing and outlier values within your data (`tm_missing_data` and `tm_outliers`)
-- performing simple data analysis (`tm_a_pca`, `tm_g_distribution` and `tm_a_regression`)
+These include modules for viewing data (including `tm_variable_browser`, `tm_data_table` and `tm_file_viewer`);
+visualizing data (`tm_g_scatterplot`, `tm_g_association` and many more); understanding missing and outlier values within your data (`tm_missing_data` and `tm_outliers`); and performing simple data analysis (`tm_a_pca`, `tm_g_distribution` and `tm_a_regression`).
 
 These modules work with both `CDISC` and general relational data.  
 
@@ -45,6 +41,8 @@ devtools::install_github("insightsengineering/teal.modules.general@*release")
 This is a basic example app showing a few modules from this package
 
 ```{r example}
+options(teal.log_level = "ERROR")
+
 library(teal.modules.general)
 
 app <- init(

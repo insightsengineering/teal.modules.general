@@ -7,16 +7,13 @@
 <!-- badges: end -->
 
 This package contains a set of standard `teal` modules for you to
-include in your `teal` applications. These include modules for:
-
--   viewing data (including `tm_variable_browser`, `tm_data_table` and
-    `tm_file_viewer`)
--   visualizing data (`tm_g_scatterplot`, `tm_g_association` and many
-    more)
--   understanding missing and outlier values within your data
-    (`tm_missing_data` and `tm_outliers`)
--   performing simple data analysis (`tm_a_pca`, `tm_g_distribution` and
-    `tm_a_regression`)
+include in your `teal` applications. These include modules for viewing
+data (including `tm_variable_browser`, `tm_data_table` and
+`tm_file_viewer`); visualizing data (`tm_g_scatterplot`,
+`tm_g_association` and many more); understanding missing and outlier
+values within your data (`tm_missing_data` and `tm_outliers`); and
+performing simple data analysis (`tm_a_pca`, `tm_g_distribution` and
+`tm_a_regression`).
 
 These modules work with both `CDISC` and general relational data.
 
@@ -41,6 +38,8 @@ devtools::install_github("insightsengineering/teal.modules.general@*release")
 This is a basic example app showing a few modules from this package
 
 ``` r
+options(teal.log_level = "ERROR")
+
 library(teal.modules.general)
 #> Loading required package: ggmosaic
 #> Warning: package 'ggmosaic' was built under R version 4.1.1
@@ -78,9 +77,6 @@ app <- init(
     )
   )
 )
-#> [INFO] 2022-02-18 13:19:18.5311 pid:16632 token:[] teal.modules.general Initializing tm_data_table
-#> [INFO] 2022-02-18 13:19:18.5351 pid:16632 token:[] teal.modules.general Initializing tm_variable_browser
-#> [INFO] 2022-02-18 13:19:18.5551 pid:16632 token:[] teal.modules.general Initializing tm_t_crosstable
 ```
 
 Which is run using:
