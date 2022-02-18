@@ -58,7 +58,7 @@ app <- init(
       x = teal::data_extract_spec("IRIS",
         select = teal::select_spec(
           choices = c("Sepal.Length", "Sepal.Width"),
-          multiple= TRUE
+          multiple = TRUE
         )
       ),
       y = teal::data_extract_spec("IRIS",

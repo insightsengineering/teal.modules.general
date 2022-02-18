@@ -65,7 +65,7 @@ app <- init(
       x = teal::data_extract_spec("IRIS",
         select = teal::select_spec(
           choices = c("Sepal.Length", "Sepal.Width"),
-          multiple= TRUE
+          multiple = TRUE
         )
       ),
       y = teal::data_extract_spec("IRIS",
@@ -78,9 +78,9 @@ app <- init(
     )
   )
 )
-#> [INFO] 2022-02-18 13:12:19.8448 pid:15184 token:[] teal.modules.general Initializing tm_data_table
-#> [INFO] 2022-02-18 13:12:19.8499 pid:15184 token:[] teal.modules.general Initializing tm_variable_browser
-#> [INFO] 2022-02-18 13:12:19.8729 pid:15184 token:[] teal.modules.general Initializing tm_t_crosstable
+#> [INFO] 2022-02-18 13:19:18.5311 pid:16632 token:[] teal.modules.general Initializing tm_data_table
+#> [INFO] 2022-02-18 13:19:18.5351 pid:16632 token:[] teal.modules.general Initializing tm_variable_browser
+#> [INFO] 2022-02-18 13:19:18.5551 pid:16632 token:[] teal.modules.general Initializing tm_t_crosstable
 ```
 
 Which is run using:
