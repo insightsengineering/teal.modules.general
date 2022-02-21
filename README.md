@@ -17,9 +17,10 @@ This repository requires a personal access token to install see here [creating a
 ```r
 Sys.setenv(GITHUB_PAT = "your_access_token_here")
 install.packages("devtools")
-devtools::install_github("insightsengineering/teal.modules.general@*release")
+devtools::install_github("insightsengineering/teal.modules.general@*release", dependencies = FALSE)
 ```
 
-Currently, it is necessary to manually install all of the packages dependencies found on Github (for example `teal`) before installing this package.  
+Currently, it is necessary to manually install all of the package dependencies before installing this package as without
+the `dependencies = FALSE` argument to the `install_github` function it errors. 
 
 See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
