@@ -21,6 +21,6 @@ devtools::install_github("insightsengineering/teal.modules.general@*release", de
 ```
 
 Currently, it is necessary to manually install all of the package dependencies before installing this package as without
-the `dependencies = FALSE` argument to the `install_github` function it errors.
+the `dependencies = FALSE` argument to `install_github` it errors.
 
 See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
