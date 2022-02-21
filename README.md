@@ -1,6 +1,6 @@
 # teal.modules.general
 
-This package contains a set of standard `teal` modules for you to include in your `teal` applications. 
+This package contains a set of standard `teal` modules for you to include in your `teal` applications.
 These include modules for:
 
 - viewing data (including `tm_variable_browser`, `tm_data_table` and `tm_file_viewer`)
@@ -10,7 +10,7 @@ These include modules for:
 
 These modules work with both `CDISC` and general relational data.  
 
-# Installation
+## Installation
 
 This repository requires a personal access token to install see here [creating and using PAT](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Once this is set up, to install the latest released version of the package run:
 
