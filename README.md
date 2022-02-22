@@ -1,6 +1,6 @@
 # teal.modules.general
 
-This package contains a set of standard `teal` modules for you to include in your `teal` applications.
+This package contains a set of standard `teal` modules for you to include in applications.
 These include modules for:
 
 - viewing data (including `tm_variable_browser`, `tm_data_table`, `tm_file_viewer`, ...)
