@@ -8,7 +8,7 @@ These include modules for:
 - understanding missing and outlier values within your data (`tm_missing_data`, `tm_outliers`, ...)
 - performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
 
-These modules work with `CDISC` data, independent dataets and general relational data.  
+These modules work with `CDISC` data, independent datasets and general relational data.  
 
 ## Installation
 
