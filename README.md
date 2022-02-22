@@ -3,12 +3,12 @@
 This package contains a set of standard `teal` modules for you to include in your `teal` applications.
 These include modules for:
 
-- viewing data (including `tm_variable_browser`, `tm_data_table` and `tm_file_viewer`)
-- visualizing data (`tm_g_scatterplot`, `tm_g_association` and many more)
-- understanding missing and outlier values within your data (`tm_missing_data` and `tm_outliers`)
-- performing simple data analysis (`tm_a_pca`, `tm_g_distribution` and `tm_a_regression`).
+- viewing data (including `tm_variable_browser`, `tm_data_table`, `tm_file_viewer`, ...)
+- visualizing data (`tm_g_scatterplot`, `tm_g_association`, ...)
+- understanding missing and outlier values within your data (`tm_missing_data`, `tm_outliers`, ...)
+- performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
 
-These modules work with both `CDISC` and general relational data.  
+These modules work with `CDISC` data, independent dataets and general relational data.  
 
 ## Installation
 
@@ -16,11 +16,11 @@ This repository requires a personal access token to install see here [creating a
 
 ```r
 Sys.setenv(GITHUB_PAT = "your_access_token_here")
-install.packages("devtools")
+if (require("devtools")) install.packages("devtools")
 devtools::install_github("insightsengineering/teal.modules.general@*release", dependencies = FALSE)
 ```
 
-Currently, it is necessary to manually install all of the package dependencies before installing this package as without
-the `dependencies = FALSE` argument to `install_github` it errors.
+You might need to manually install all of the package dependencies before installing this package as without
+the `dependencies = FALSE` argument to `install_github` it may produce an error.
 
 See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
