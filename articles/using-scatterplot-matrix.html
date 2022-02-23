@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9007</span>
       </span>
     </div>
 
@@ -84,15 +84,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -115,9 +106,10 @@ Other releases
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using scatterplot matrix</h1>
-                        <h4 data-toc-skip class="author">Dawid Kałędkowski</h4>
+                        <h4 data-toc-skip class="author">Dawid
+Kałędkowski</h4>
             
-            <h4 data-toc-skip class="date">2022-02-11</h4>
+            <h4 data-toc-skip class="date">2022-02-23</h4>
       
       
       <div class="hidden name"><code>using-scatterplot-matrix.Rmd</code></div>
@@ -126,8 +118,11 @@ Other releases
 
     
     
-<p>Teal application to use scatter plot matrix with various datasets types</p>
-<p>This vignette will guide you through 4 parts to create a teal application using various types of datasets inside an scatter plot matrix module:</p>
+<p>Teal application to use scatter plot matrix with various datasets
+types</p>
+<p>This vignette will guide you through 4 parts to create a teal
+application using various types of datasets inside an scatter plot
+matrix module:</p>
 <ol style="list-style-type: decimal">
 <li>Load Libraries</li>
 <li>Create data sets</li>
@@ -152,11 +147,13 @@ Other releases
 <li>
 <code>ADSL2</code> A wide data set with subject data</li>
 <li>
-<code>ADRS</code> A long data set with response data for subjects at different time points of the study</li>
+<code>ADRS</code> A long data set with response data for subjects at
+different time points of the study</li>
 <li>
 <code>ADTTE</code> A long data set with time to event data</li>
 <li>
-<code>ADLB</code> A long data set with lab measurements for each subject</li>
+<code>ADLB</code> A long data set with lab measurements for each
+subject</li>
 </ol>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scda/man/synthetic_cdisc_data.html" class="external-link">synthetic_cdisc_data</a></span><span class="op">(</span><span class="st">"latest"</span><span class="op">)</span><span class="op">$</span><span class="va">adsl</span> <span class="co"># nolint</span>
@@ -174,7 +171,11 @@ Other releases
 <div class="section level2">
 <h2 id="section-create-an-app-variable">Create an <code>app</code> variable<a class="anchor" aria-label="anchor" href="#section-create-an-app-variable"></a>
 </h2>
-<p>This is the most important section. We will use the <code><a href="https://rdrr.io/pkg/teal/man/init.html" class="external-link">teal::init</a></code> function to create an app. The data will be handed over using <code><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html" class="external-link">teal::cdisc_data</a></code>. The app itself will be constructed by multiple calls of <code>tm_g_scatterplotmatrix</code> using different combinations of data sets.</p>
+<p>This is the most important section. We will use the
+<code><a href="https://rdrr.io/pkg/teal/man/init.html" class="external-link">teal::init</a></code> function to create an app. The data will be
+handed over using <code><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html" class="external-link">teal::cdisc_data</a></code>. The app itself will be
+constructed by multiple calls of <code>tm_g_scatterplotmatrix</code>
+using different combinations of data sets.</p>
 <div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/init.html" class="external-link">init</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span>
@@ -305,10 +306,12 @@ Other releases
 <div class="section level2">
 <h2 id="section-run-the-app">Run the app<a class="anchor" aria-label="anchor" href="#section-run-the-app"></a>
 </h2>
-<p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp</a></code> call will let you run the app. Note that app is only displayed when running this code inside an R session.</p>
+<p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp</a></code> call will let you run the app.
+Note that app is only displayed when running this code inside an R
+session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><iframe data-deferred-src="app2aeb2ee9e9de85c066d5eb04d45463d9/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app607c04270d202f050ba2bb4f9d515760/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
   </div>
 
@@ -324,12 +327,15 @@ Other releases
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by NEST, Adrian Waddell, Pawel Rucki, Dawid Kaledkowski, Sebastian Wolf, Maximilian Mordig, Bartosz Baranowski, Ondrej Slama, Maciej Nasinski, Mahmoud Hallal, Roche.</p>
+<p>Developed by NEST, Adrian Waddell, Pawel Rucki, Dawid Kaledkowski,
+Sebastian Wolf, Maximilian Mordig, Bartosz Baranowski, Ondrej Slama,
+Maciej Nasinski, Mahmoud Hallal, Roche.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
