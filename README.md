@@ -1,38 +1,30 @@
 # teal.modules.general
 
-The modules in this package are generic modules that should work with any data set (not necessarily for clinical trials data).
+This package contains a set of standard `teal` modules for you to include in applications.
+These include modules for:
 
-# Installation
+<!-- markdownlint-disable MD007 MD030 -->
+-   viewing data (including `tm_variable_browser`, `tm_data_table`, `tm_file_viewer`, ...)
+-   visualizing data (`tm_g_scatterplot`, `tm_g_association`, ...)
+-   understanding missing and outlier values within your data (`tm_missing_data`, `tm_outliers`, ...)
+-   performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
+<!-- markdownlint-enable MD007 MD030 -->
 
-## Clone and install manually
-1. Clone the repository
+These modules work with `CDISC` data, independent datasets and general relational data.  
 
-   The repository can be downloaded directly from the `github.com` site as an archive (see [Github tutorial on cloning to learn more](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository)). Alternatively, Git command-line tools offer the same functionality, without the need for manually downloading and unpacking the archive, but require authentication to Github. You can authenticate using an SSH key pair or a Personal Access Token (PAT). Please refer to excellent Github tutorials on [connecting to Github using SSH](https://docs.github.com/en/github/authenticating-to-github) or [creating and using PAT](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-   * Using PAT. Input in the Git Bash console, PowerShell or any Linux shell:
+## Installation
 
-      ```
-      $ git clone https://github.com/insightsengineering/teal.modules.general.git
-      Username: your_username_goes_here
-      Password: your_token_goes_here
-      ```
-   * Using SSH. If set up properly, the repository is ready to be cloned executing:
+This repository requires a personal access token to install see here [creating and using PAT](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Once this is set up, to install the latest released version of the package run:
 
-      ```
-      $ git clone https://github.com/insightsengineering/teal.modules.general.git
-      ```
-   This creates a subdirectory `teal.modules.general` containing the cloned repository.
+```r
+Sys.setenv(GITHUB_PAT = "your_access_token_here")
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("insightsengineering/teal.modules.general@*release", dependencies = FALSE)
+```
 
-2. Build and install
+You might need to manually install all of the package dependencies before installing this package as without
+the `dependencies = FALSE` argument to `install_github` it may produce an error.
 
-   The native R tools provide a quick way to install a package. Run in PowerShell or any Linux shell:
-   ```
-   $ R CMD build teal.modules.general
-   ```
-   This command builds the package and creates an archive. The name of the archive is output by the command at the end of building the package. Then input in the shell:
-   ```
-   $ Rscript -e 'install.packages("name_of_the_archive")
-   ```
-   Here is an example of a real command (with name_of_the_archive substituted by the output of the build command):
-   ```
-   $ Rscript -e 'install.packages("teal.modules.general_0.2.10.9000.tar.gz")'
-   ```
+In order to run many of the examples you will also need to install the [`scda`](https://github.com/insightsengineering/scda) package.
+
+See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
