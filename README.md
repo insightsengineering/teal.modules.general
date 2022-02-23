@@ -3,10 +3,12 @@
 This package contains a set of standard `teal` modules for you to include in applications.
 These include modules for:
 
-- viewing data (including `tm_variable_browser`, `tm_data_table`, `tm_file_viewer`, ...)
-- visualizing data (`tm_g_scatterplot`, `tm_g_association`, ...)
-- understanding missing and outlier values within your data (`tm_missing_data`, `tm_outliers`, ...)
-- performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
+<!-- markdownlint-disable MD007 MD030 -->
+-   viewing data (including `tm_variable_browser`, `tm_data_table`, `tm_file_viewer`, ...)
+-   visualizing data (`tm_g_scatterplot`, `tm_g_association`, ...)
+-   understanding missing and outlier values within your data (`tm_missing_data`, `tm_outliers`, ...)
+-   performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
+<!-- markdownlint-enable MD007 MD030 -->
 
 These modules work with `CDISC` data, independent datasets and general relational data.  
 
