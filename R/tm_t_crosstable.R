@@ -251,7 +251,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
       teal.devel::chunks_push(substitute(
         expr = {
           lyt <- basic_tables %>%
-            split_call() %>%
+          split_call %>% # styler: off
             rtables::add_colcounts() %>%
             tern::summarize_vars(
               vars = x_name,
