@@ -89,4 +89,4 @@ class(app)
 ```{r, eval = FALSE}
 names(app)
 ```
-* The `shiny` function `shinyApp` took these two named R objects and initialized the `shiny` / `teal` app.
+* The `shiny` function `shinyApp` took these two R objects and initialized the `shiny` / `teal` app.
