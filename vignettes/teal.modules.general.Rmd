@@ -79,7 +79,7 @@ shinyApp(app$ui, app$server)
 
 What happened in the above app:
 * In a `teal` app, data and modules are decoupled. 
-* The app developer specified the data and assigned it to the `data`argument 
+* The app developer specified the data and assigned it to the `data` argument 
 * And then specified the module and assigned it to the `modules` argument.
 * The `init` function took these arguments and returned a list, which can be demonstrated by running:
 ```{r, eval = FALSE}
