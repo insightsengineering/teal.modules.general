@@ -19,16 +19,19 @@ in contrast to the intended functions of its sister package, `teal.modules.clini
 clinical data. The modules of `teal.modules.general` can be combined with modules of `teal.modules.clinical` and / or
 other `shiny` modules to build a large `teal` / `shiny` app.
 
+See [`teal's README`](https://github.com/insightsengineering/teal).
 See [`teal.modules.clinical's README`](https://github.com/insightsengineering/teal.modules.clinical).
 
 ### Main features
 
-There are five areas of data science that `teal.modules.general` provides tools and solutions (modules) for, namely:
-* viewing data in tabular form - `tm_variable_browser()`, `tm_data_table()`, `tm_t_crosstable()`
-* visualizing data in plots and graphs - `tm_g_scatterplot()`, `tm_g_association()`, `tm_g_bivariate()`, etc.
-* examining missing and extreme values in data - `tm_missing_data()`, `tm_outliers()`
-* performing data analysis - `tm_a_pca()`, `tm_g_distribution()`, `tm_a_regression()`
-* viewing data and files in a directory - `tm_file_viewer()`
+There are five areas of data science that `teal.modules.general` provides tools and solutions (modules) for:
+* viewing data in tabular form
+* visualizing data in plots and graphs
+* examining missing and extreme values in data
+* performing data analysis
+* viewing data and files in a directory
+
+See [package functions / modules`](https://insightsengineering.github.io/teal.modules.general/reference/index.html).
 
 ### Example application
 
