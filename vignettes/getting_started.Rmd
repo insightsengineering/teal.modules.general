@@ -31,7 +31,7 @@ There are five areas of data science that `teal.modules.general` provides tools 
 
 ### Example application
 
-```{r, eval = FALSE}
+```r
 # a package that contains the data that will be used in this example
 library(scda)
 # calling library(shiny) is not needed because teal already depends on it

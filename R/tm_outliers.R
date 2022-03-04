@@ -385,8 +385,7 @@ srv_outliers <- function(id, datasets, outlier_var,
 
       common_stack_push(substitute(
         expr = {
-          ANL_OUTLIER <- anl_call %>%
-            # nolint
+          ANL_OUTLIER <- anl_call %>% # nolint
             group_expr() %>%
             dplyr::mutate(is_outlier = {
               q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
