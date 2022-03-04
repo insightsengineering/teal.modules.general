@@ -48,7 +48,7 @@ app <- init(
     # raw datasets need to be converted to datasets consumed by teal.
     # cdisc_dataset is a teal function that does that.
     # a set of datasets is converted to a block of data to be managed in one place.
-    # cdisc_data is a teal function does that.
+    # cdisc_data is a teal function that does that.
     cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
     cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
     check = TRUE # to check if the code executes to the data provided, x, i.e. ADSL and ADTTE
@@ -68,7 +68,7 @@ app <- init(
 
 # the above app only contains one module, tm_variable_browser.
 # however, a teal app is generalized to have arbitrary many modules.
-# one way to do that is to list the modules one after another inside of the `modules` function.
+# one way to build a larger app is to list the modules one after another inside of the `modules` function.
 
 # shiny function to initialize the shiny / teal app created above
 shinyApp(app$ui, app$server)
