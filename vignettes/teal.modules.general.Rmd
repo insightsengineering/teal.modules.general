@@ -56,7 +56,7 @@ app <- init(
     cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
     check = TRUE # to check if the code executes to the data provided, x, i.e. ADSL and ADTTE
   ),
-  modules(
+  modules = modules(
     # a function / module from teal.modules.general that will display the two scda datasets in tabular form
     # when this shiny / teal app is run
     tm_variable_browser(
@@ -76,3 +76,17 @@ app <- init(
 # shiny function to initialize the shiny / teal app created above
 shinyApp(app$ui, app$server)
 ```
+
+What happened in the above app:
+* In a `teal` app, data and modules are decoupled. 
+* The app developer specified the data and assigned it to the `data`argument 
+* And then specified the module and assigned it to the `modules` argument.
+* The `init` function took these arguments and returned a list, which can be demonstrated by running:
+```{r, eval = FALSE}
+class(app)
+```
+* This list contains two R objects with names `ui` and `server`.
+```{r, eval = FALSE}
+names(app)
+```
+* The `shiny` function `shinyApp` takes these two named R objects and initialized the `shiny` / `teal` app.
