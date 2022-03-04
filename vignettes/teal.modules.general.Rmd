@@ -18,8 +18,8 @@ in contrast to the intended functions of its sister package, `teal.modules.clini
 clinical data. The modules of `teal.modules.general` can be combined with modules of `teal.modules.clinical` and / or
 other `shiny` modules to build a large `teal` / `shiny` app.
 
-See [`teal's README`](https://github.com/insightsengineering/teal).
-See [`teal.modules.clinical's README`](https://github.com/insightsengineering/teal.modules.clinical).
+See [`teal's README`](https://insightsengineering.github.io/teal/index.html).
+See [`teal.modules.clinical's README`](https://insightsengineering.github.io/teal.modules.clinical/index.html).
 
 ### Main features
 
