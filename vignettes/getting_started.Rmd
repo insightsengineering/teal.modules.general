@@ -38,8 +38,8 @@ library(scda)
 # calling library(teal) is not needed because teal.modules.general already depends on it
 
 # the two datasets from the scda package that will be used in this example 
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADTTE <- synthetic_cdisc_data("latest")$adtte
+ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
+ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
 
 # init, cdisc_data, cdisc_dataset, and modules are functions from teal
 app <- init(
