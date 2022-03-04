@@ -57,7 +57,7 @@ app <- init(
     check = TRUE # to check if the code executes to the data provided, x, i.e. ADSL and ADTTE
   ),
   modules = modules(
-    # tm_variable_browser is a function / module from teal.modules.general that will display the two scda datasets 
+    # tm_variable_browser is a function / module from teal.modules.general that will display the two scda datasets
     # in tabular form when this shiny / teal app is run
     tm_variable_browser(
       # a name to display in the GUI
