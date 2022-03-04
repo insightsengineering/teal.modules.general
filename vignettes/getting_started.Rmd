@@ -1,10 +1,10 @@
 ---
-title: "Getting Started with teal.modules.general"
+title: "Getting started"
 author: "NEST"
 date: "03.03.2022"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting Started with teal.modules.general}
+  %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,18 +16,19 @@ language. `shiny`, and hence `teal`, is implemented to allow the building of lar
 decoupled modules. `teal.modules.general` is a package consisting of a set of modules that are used to build `teal`
 applications. It is "general" in the sense that the intended functions of these modules are more fundamental. This is
 in contrast to the intended functions of its sister package, `teal.modules.clinical`, which is more specialized around
-clinical data.
+clinical data. The modules of `teal.modules.general` can be combined with modules of `teal.modules.clinical` and / or
+other `shiny` modules to build a large `teal` / `shiny` app.
 
 See [`teal.modules.clinical's README`](https://github.com/insightsengineering/teal.modules.clinical).
 
 ### Main features
 
 There are five areas of data science that `teal.modules.general` provides tools and solutions (modules) for, namely:
-* viewing data in tabular form - `tm_variable_browser`, `tm_data_table`, `tm_t_crosstable`
-* visualizing data in plots and graphs - `tm_g_scatterplot`, `tm_g_association`, `tm_g_bivariate`, `tm_g_response`, etc.
-* examining missing and extreme values in data - `tm_missing_data`, `tm_outliers`
-* performing data analysis - `tm_a_pca`, `tm_g_distribution`, `tm_a_regression`
-* viewing data and files in a directory - `tm_file_viewer`
+* viewing data in tabular form - `tm_variable_browser()`, `tm_data_table()`, `tm_t_crosstable()`
+* visualizing data in plots and graphs - `tm_g_scatterplot()`, `tm_g_association()`, `tm_g_bivariate()`, etc.
+* examining missing and extreme values in data - `tm_missing_data()`, `tm_outliers()`
+* performing data analysis - `tm_a_pca()`, `tm_g_distribution()`, `tm_a_regression()`
+* viewing data and files in a directory - `tm_file_viewer()`
 
 ### Example application
 
