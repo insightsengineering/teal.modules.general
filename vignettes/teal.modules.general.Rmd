@@ -1,7 +1,6 @@
 ---
 title: "Getting started teal.modules.general"
 author: "NEST"
-date: "03.03.2022"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting started teal.modules.general}
@@ -38,8 +37,9 @@ See [package functions / modules`](https://insightsengineering.github.io/teal.mo
 ```{r, eval = FALSE}
 # a package that contains the data that will be used in this example
 library(scda)
-# calling library(shiny) is not needed because teal already depends on it
+library(teal.modules.general)
 # calling library(teal) is not needed because teal.modules.general already depends on it
+# calling library(shiny) is not needed because teal already depends on it
 
 # the two datasets from the scda package that will be used in this example
 ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
