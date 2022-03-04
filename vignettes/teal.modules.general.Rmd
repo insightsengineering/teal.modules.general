@@ -1,9 +1,9 @@
 ---
-title: "Getting started teal.modules.general"
+title: "Getting started with teal.modules.general"
 author: "NEST"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started teal.modules.general}
+  %\VignetteIndexEntry{Getting started with teal.modules.general}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
