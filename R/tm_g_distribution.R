@@ -706,7 +706,7 @@ srv_distribution <- function(id,
             g <- plot_call
             print(g)
           },
-          env = list(plot_call = teal::calls_combine_by("+", c(plot_call, parsed_ggplot2_args)))
+          env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
         ))
 
         teal.devel::chunks_safe_eval(distplot_stack)
