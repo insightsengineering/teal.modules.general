@@ -19,14 +19,13 @@ tm_variable_browser(
 shown and in what order. Names in the vector have to correspond with datasets names.
 If vector of length zero (default) then all datasets are shown.}
 
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+\item{pre_output}{(\code{shiny.tag}, optional)\cr
+with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
+into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::ggplot2_args()}}
 with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 

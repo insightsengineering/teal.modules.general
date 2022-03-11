@@ -4,7 +4,6 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @inheritParams teal.devel::standard_layout
 #'
 #' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.

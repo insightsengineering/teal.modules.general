@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Datasets used to compute PCA.

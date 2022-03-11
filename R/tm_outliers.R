@@ -3,7 +3,6 @@
 #' Module to analyze and identify outliers using different methods
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #'
 #' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)

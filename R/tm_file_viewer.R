@@ -5,7 +5,7 @@
 #' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param input_path optional, (`list`) of the input paths to either: specific files of accepted formats,
 #'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
 #'   directory of the application. Will default to current working directory if not supplied.

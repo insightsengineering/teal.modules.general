@@ -8,7 +8,6 @@
 #' then the default is categorical, otherwise it is numeric).
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
@@ -1099,7 +1098,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         # get icons proper for the data types
         icons <- stats::setNames(teal:::variable_types(df), colnames(df))
         icons[intersect(datasets$get_keys(dataset_name), colnames(df))] <- "primary_key"
-        icons <- teal.widgets:::variable_type_icons(icons)
+        icons <- variable_type_icons(icons)
 
         # generate sparklines
         sparklines_html <- vapply(

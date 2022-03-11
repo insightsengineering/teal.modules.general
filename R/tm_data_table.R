@@ -4,7 +4,7 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
+#' @inheritParams shared_params
 #' @param variables_selected (`list`) A named list of character vectors of the variables (i.e. columns)
 #'   which should be initially shown for each dataset. Names of list elements should correspond to the names
 #'   of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that

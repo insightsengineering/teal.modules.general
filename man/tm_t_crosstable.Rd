@@ -32,14 +32,13 @@ Object with all available choices with pre-selected option for variable Y - colu
 
 \item{show_total}{optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.}
 
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+\item{pre_output}{(\code{shiny.tag}, optional)\cr
+with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
+into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
-\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.devel:basic_table_args]{teal.devel::basic_table_args()}}
+\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::basic_table_args()}}
 with settings for the module table.
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 
