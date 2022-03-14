@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">teal.modules.general</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9008</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.12.9010</span>
       </span>
     </div>
 
@@ -49,13 +49,16 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/teal.modules.general.html">Getting started with teal.modules.general</a>
+    </li>
+    <li>
       <a href="../articles/using-association-plot.html">Using association plot</a>
     </li>
     <li>
@@ -84,15 +87,6 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<!-- start_releases -->
-<li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-Other releases
-<span class="caret"></span></a><ul class="dropdown-menu" role="menu">
-   <li><a href="../index.html">latest</a></li>
-   <li><a href="..//index.html"></a></li>
-</ul></li>
-<!-- end_releases -->
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -118,7 +112,7 @@ Other releases
                         <h4 data-toc-skip class="author">Mahmoud
 Hallal</h4>
             
-            <h4 data-toc-skip class="date">2022-02-25</h4>
+            <h4 data-toc-skip class="date">2022-03-14</h4>
       
       
       <div class="hidden name"><code>using-outliers-module.Rmd</code></div>
@@ -170,15 +164,15 @@ subject</li>
 </h2>
 <p>This is the most important section. We will use the
 <code><a href="https://rdrr.io/pkg/teal/man/init.html" class="external-link">teal::init</a></code> function to create an app. The data will be
-handed over using <code><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html" class="external-link">teal::cdisc_data</a></code>. The app itself will be
+handed over using <code><a href="https://rdrr.io/pkg/teal.data/man/cdisc_data.html" class="external-link">teal::cdisc_data</a></code>. The app itself will be
 constructed by multiple calls of <code>tm_outliers</code> using
 different combinations of data sets.</p>
 <div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/init.html" class="external-link">init</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- synthetic_cdisc_data(\"latest\")$adrs"</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/pkg/teal/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>, code <span class="op">=</span> <span class="st">"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb"</span><span class="op">)</span>,
+  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- synthetic_cdisc_data(\"latest\")$adsl"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- synthetic_cdisc_data(\"latest\")$adrs"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>, code <span class="op">=</span> <span class="st">"ADLB &lt;- synthetic_cdisc_data(\"latest\")$adlb"</span><span class="op">)</span>,
     check <span class="op">=</span> <span class="cn">TRUE</span>
   <span class="op">)</span>,
   modules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/modules.html" class="external-link">modules</a></span><span class="op">(</span>
@@ -187,20 +181,20 @@ different combinations of data sets.</p>
       label <span class="op">=</span> <span class="st">"Outliers module"</span>,
       <span class="fu"><a href="../reference/tm_outliers.html">tm_outliers</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Single wide dataset"</span>,
-        outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+        outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
           dataname <span class="op">=</span> <span class="st">"ADSL"</span>,
-          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
             label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="st">"AGE"</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>
           <span class="op">)</span>
         <span class="op">)</span>,
-        categorical_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+        categorical_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
           dataname <span class="op">=</span> <span class="st">"ADSL"</span>,
-          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+          select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
             label <span class="op">=</span> <span class="st">"Select variables:"</span>,
-            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+            choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
             selected <span class="op">=</span> <span class="st">"RACE"</span>,
             multiple <span class="op">=</span> <span class="cn">FALSE</span>,
             fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -210,20 +204,20 @@ different combinations of data sets.</p>
       <span class="fu"><a href="../reference/tm_outliers.html">tm_outliers</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Wide and long datasets"</span>,
         outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADSL"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"AGE"</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
             <span class="op">)</span>
           <span class="op">)</span>,
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADLB"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"CHG2"</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"CHG2"</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"AVAL"</span>,
               multiple <span class="op">=</span> <span class="cn">FALSE</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -231,11 +225,11 @@ different combinations of data sets.</p>
           <span class="op">)</span>
         <span class="op">)</span>,
         categorical_var <span class="op">=</span>
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADSL"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variables:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADSL</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADSL</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"RACE"</span>,
               multiple <span class="op">=</span> <span class="cn">FALSE</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -245,20 +239,20 @@ different combinations of data sets.</p>
       <span class="fu"><a href="../reference/tm_outliers.html">tm_outliers</a></span><span class="op">(</span>
         label <span class="op">=</span> <span class="st">"Multiple long datasets"</span>,
         outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADRS"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADY"</span>, <span class="st">"EOSDY"</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADY"</span>, <span class="st">"EOSDY"</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"ADY"</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
             <span class="op">)</span>
           <span class="op">)</span>,
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADLB"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variable:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"CHG2"</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"CHG2"</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"AVAL"</span>,
               multiple <span class="op">=</span> <span class="cn">FALSE</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -266,21 +260,21 @@ different combinations of data sets.</p>
           <span class="op">)</span>
         <span class="op">)</span>,
         categorical_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADRS"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variables:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ARM"</span>, <span class="st">"ACTARM"</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ARM"</span>, <span class="st">"ACTARM"</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"ARM"</span>,
               multiple <span class="op">=</span> <span class="cn">FALSE</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
             <span class="op">)</span>
           <span class="op">)</span>,
-          <span class="fu"><a href="https://rdrr.io/pkg/teal/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
+          <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span>
             dataname <span class="op">=</span> <span class="st">"ADLB"</span>,
-            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
+            select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/select_spec.html" class="external-link">select_spec</a></span><span class="op">(</span>
               label <span class="op">=</span> <span class="st">"Select variables:"</span>,
-              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/variable_choices.html" class="external-link">variable_choices</a></span><span class="op">(</span><span class="va">ADLB</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ADLB</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
               selected <span class="op">=</span> <span class="st">"RACE"</span>,
               multiple <span class="op">=</span> <span class="cn">FALSE</span>,
               fixed <span class="op">=</span> <span class="cn">FALSE</span>
@@ -300,7 +294,7 @@ Note that app is only displayed when running this code inside an R
 session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><iframe data-deferred-src="app37743d7a03774703fc00a643b28e52ca/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app3720640f6559029e7e1714acc0a8f181/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
   </div>
 

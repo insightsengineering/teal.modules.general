@@ -10,6 +10,9 @@
     <loc>https://github.com/insightsengineering/teal.modules.general/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://github.com/insightsengineering/teal.modules.general/articles/teal.modules.general.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/insightsengineering/teal.modules.general/articles/using-association-plot.html</loc>
   </url>
   <url>
@@ -146,6 +149,9 @@
   </url>
   <url>
     <loc>https://github.com/insightsengineering/teal.modules.general/reference/var_summary_table.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/insightsengineering/teal.modules.general/reference/variable_type_icons.html</loc>
   </url>
   <url>
     <loc>https://github.com/insightsengineering/teal.modules.general/reference/varname_w_label.html</loc>
