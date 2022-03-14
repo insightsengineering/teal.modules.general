@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Object with all available choices with pre-selected option for variable X - row values. In case

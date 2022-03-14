@@ -5,7 +5,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'

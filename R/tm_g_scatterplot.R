@@ -4,7 +4,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Variable
 #'   names selected to plot along the x-axis by default.

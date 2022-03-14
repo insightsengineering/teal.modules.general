@@ -22,6 +22,10 @@
 #'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
 #'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.devel")`
+#' @param pre_output (`shiny.tag`, optional)\cr
+#'  with text placed before the output to put the output into context. For example a title.
+#' @param post_output (`shiny.tag`, optional) with text placed after the output to put the output
+#' into context. For example the [shiny::helpText()] elements are useful.
 #'
 #' @name shared_params
 #' @keywords internal
@@ -216,3 +220,51 @@ shape_names <- c(
   paste("triangle down", c("open", "filled")),
   "plus", "cross", "asterisk"
 )
+
+#' Get icons to represent variable types in dataset
+#'
+#' @param var_type (`character`)\cr
+#'  of R internal types (classes).
+#'
+#' @return (`character`)\cr
+#'  vector of HTML icons corresponding to data type in each column.
+#' @keywords internal
+#'
+#' @examples
+#' teal.modules.general:::variable_type_icons(c(
+#'   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
+#'   "factor", "character", "unknown", ""
+#' ))
+variable_type_icons <- function(var_type) {
+  checkmate::assert_character(var_type, any.missing = FALSE)
+
+  class_to_icon <- list(
+    numeric = "sort-numeric-up",
+    integer = "sort-numeric-up",
+    logical = "pause",
+    Date = "calendar",
+    POSIXct = "calendar",
+    POSIXlt = "calendar",
+    factor = "chart-bar",
+    character = "keyboard",
+    primary_key = "key",
+    unknown = "question-circle"
+  )
+  class_to_icon <- lapply(class_to_icon, function(icon_name) toString(icon(icon_name, lib = "font-awesome")))
+
+  res <- unname(vapply(
+    var_type,
+    FUN.VALUE = character(1),
+    FUN = function(class) {
+      if (class == "") {
+        class
+      } else if (is.null(class_to_icon[[class]])) {
+        class_to_icon[["unknown"]]
+      } else {
+        class_to_icon[[class]]
+      }
+    }
+  ))
+
+  return(res)
+}

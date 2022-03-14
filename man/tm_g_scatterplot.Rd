@@ -75,16 +75,15 @@ rotate by default (\code{FALSE}).}
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{pre_output}{optional, \code{shiny.tag} with text placed before the
-output to put the output into context. For example a title.}
+\item{pre_output}{(\code{shiny.tag}, optional)\cr
+with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{optional, \code{shiny.tag} with text placed after the
-output to put the output into context. For example the
-\code{\link[shiny]{helpText}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
+into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
 \item{table_dec}{optional, (\code{integer}) Number of decimal places used to round numeric values in the table.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:ggplot2_args]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::ggplot2_args()}}
 with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 

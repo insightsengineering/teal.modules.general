@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Which variable to use as the response. You can define one fixed column by using the

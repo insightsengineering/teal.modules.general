@@ -1,7 +1,6 @@
 #' Stack Plots of variables and show association with reference variable
 #' @md
 #'
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)

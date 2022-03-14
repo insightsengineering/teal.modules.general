@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'  Regressor variables from an incoming dataset with filtering and selecting.
@@ -485,7 +484,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -545,7 +544,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -600,7 +599,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -643,7 +642,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -709,7 +708,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -765,7 +764,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )
@@ -815,7 +814,7 @@ srv_a_regression <- function(id,
               print(g)
             },
             env = list(
-              plot = teal::calls_combine_by("+", c(plot, parsed_ggplot2_args))
+              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
           )
         )

@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Datasets used to compute PCA.
@@ -795,7 +794,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
             print(g)
           },
           env = list(
-            plot_call = teal::calls_combine_by("+", pca_plot_biplot_expr)
+            plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
         )
       )
@@ -876,7 +875,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
           },
           env = list(
             pc = pc,
-            plot_call = teal::calls_combine_by("+", ggplot_exprs)
+            plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
         )
       )

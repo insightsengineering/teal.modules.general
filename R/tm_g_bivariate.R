@@ -2,7 +2,6 @@
 #' @md
 #'
 #' @inheritParams teal::module
-#' @inheritParams teal.devel::standard_layout
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
@@ -667,7 +666,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
 
   reduce_plot_call <- function(...) {
     args <- Filter(Negate(is.null), list(...))
-    teal::calls_combine_by("+", args)
+    Reduce(function(x, y) call("+", x, y), args)
   }
 
   plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
