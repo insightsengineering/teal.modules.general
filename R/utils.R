@@ -227,7 +227,7 @@ shape_names <- c(
 #'  of R internal types (classes).
 #'
 #' @return (`character`)\cr
-#'  vector of HTML icons corresponding to  data type in each column.
+#'  vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
 #'
 #' @examples

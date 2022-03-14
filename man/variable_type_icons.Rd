@@ -12,7 +12,7 @@ of R internal types (classes).}
 }
 \value{
 (\code{character})\cr
-vector of HTML icons corresponding to  data type in each column.
+vector of HTML icons corresponding to data type in each column.
 }
 \description{
 Get icons to represent variable types in dataset
