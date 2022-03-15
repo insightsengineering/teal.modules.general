@@ -188,7 +188,7 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
-  teal.devel::standard_layout(
+  teal.widgets::standard_layout(
     output = tagList(
       fluidRow(
         column(
@@ -301,7 +301,7 @@ ui_data_table <- function(id,
   }
 
   tagList(
-    teal.devel::get_dt_rows(ns("data_table"), ns("dt_rows")),
+    teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
       teal::optionalSelectInput(
         ns("variables"),

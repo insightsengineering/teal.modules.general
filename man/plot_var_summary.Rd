@@ -33,11 +33,11 @@ outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}
 \item{records_for_factor}{\code{numeric} if the number of factor levels is >= than this value then
 a graph of the factors isn't shown, only a list of values.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}}
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 }
 \value{
 plot

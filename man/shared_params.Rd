@@ -17,17 +17,17 @@ rotate by default (\code{FALSE}).}
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}}
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
-\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::basic_table_args()}}
+\item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.widgets:basic_table_args]{teal.widgets::basic_table_args()}}
 with settings for the module table.
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 
-For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.devel")}}
+For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}

@@ -96,32 +96,32 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
     server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
-    filters = teal.devel::get_extract_datanames(variables)
+    filters = teal.transform::get_extract_datanames(variables)
   )
 }
 
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
-  is_single_dataset_value <- teal.devel::is_single_dataset(args$variables)
+  is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
   ns <- NS(id)
-  teal.devel::standard_layout(
-    output = teal.devel::white_small_well(
+  teal.widgets::standard_layout(
+    output = teal.widgets::white_small_well(
       textOutput(ns("message")),
       br(),
-      teal.devel::plot_with_settings_ui(id = ns("myplot"))
+      teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
       tags$label("Encodings", class = "text-primary"),
-      teal.devel::datanames_input(args$variables),
-      teal.devel::data_extract_ui(
+      teal.transform::datanames_input(args$variables),
+      teal.transform::data_extract_ui(
         id = ns("variables"),
         label = "Variables",
         data_extract_spec = args$variables,
         is_single_dataset = is_single_dataset_value
       ),
       hr(),
-      teal.devel::panel_group(
-        teal.devel::panel_item(
+      teal.widgets::panel_group(
+        teal.widgets::panel_item(
           title = "Plot settings",
           sliderInput(
             ns("alpha"), "Opacity:",
@@ -144,7 +144,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
-    forms = teal.devel::get_rcode_ui(ns("rcode")),
+    forms = teal::get_rcode_ui(ns("rcode")),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -152,14 +152,14 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 
 srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_width) {
   moduleServer(id, function(input, output, session) {
-    teal.devel::init_chunks()
+    teal.code::init_chunks()
 
-    selector_list <- teal.devel::data_extract_multiple_srv(
+    selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
       datasets = datasets
     )
 
-    merged_data <- teal.devel::data_merge_srv(
+    merged_data <- teal.transform::data_merge_srv(
       datasets = datasets,
       selector_list = selector_list
     )
@@ -169,11 +169,11 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       validate({
         need(!is.null(selector_list()$variables()), "Please select variables")
       })
-      teal.devel::chunks_reset()
-      teal.devel::chunks_push_data_merge(merged_data())
+      teal.code::chunks_reset()
+      teal.code::chunks_push_data_merge(merged_data())
 
-      ANL <- teal.devel::chunks_get_var("ANL") # nolint
-      teal.devel::validate_has_data(ANL, 10)
+      ANL <- teal.code::chunks_get_var("ANL") # nolint
+      teal::validate_has_data(ANL, 10)
 
       alpha <- input$alpha # nolint
       cex <- input$cex # nolint
@@ -190,7 +190,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       cols_names <- merged_data()$columns_source$variable
 
       validate(need(length(cols_names) > 1, "Need at least 2 columns."))
-      teal.devel::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
       varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
@@ -198,14 +198,14 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        teal.devel::chunks_push(substitute(
+        teal.code::chunks_push(substitute(
           expr = ANL <- ANL[, cols_names] %>% # nolint
             dplyr::mutate_if(is.character, as.factor) %>%
             droplevels(),
           env = list(cols_names = cols_names)
         ))
       } else {
-        teal.devel::chunks_push(substitute(
+        teal.code::chunks_push(substitute(
           expr = ANL <- ANL[, cols_names] %>% # nolint
             droplevels(),
           env = list(cols_names = cols_names)
@@ -219,7 +219,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
         shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
 
-        teal.devel::chunks_push(substitute(
+        teal.code::chunks_push(substitute(
           expr = {
             plot <- lattice::splom(
               ANL,
@@ -259,16 +259,16 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
         shinyjs::hide("cor_method")
         shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        teal.devel::chunks_push(substitute(
+        teal.code::chunks_push(substitute(
           expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
           env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
         ))
       }
-      teal.devel::chunks_safe_eval()
+      teal.code::chunks_safe_eval()
     })
 
     # Insert the plot into a plot_with_settings module
-    teal.devel::plot_with_settings_srv(
+    teal.widgets::plot_with_settings_srv(
       id = "myplot",
       plot_r = plot_r,
       height = plot_height,
@@ -303,10 +303,10 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       )
     )
 
-    teal.devel::get_rcode_srv(
+    teal::get_rcode_srv(
       id = "rcode",
       datasets = datasets,
-      datanames = teal.devel::get_extract_datanames(list(variables)),
+      datanames = teal.transform::get_extract_datanames(list(variables)),
       modal_title = show_r_code_title(),
       code_header = show_r_code_title()
     )

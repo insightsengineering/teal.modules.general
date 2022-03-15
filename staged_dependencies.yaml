@@ -2,11 +2,17 @@ current_repo:
   repo: insightsengineering/teal.modules.general
   host: https://github.com
 upstream_repos:
-  insightsengineering/teal.devel:
-    repo: insightsengineering/teal.devel
-    host: https://github.com
   insightsengineering/scda:
     repo: insightsengineering/scda
+    host: https://github.com
+  insightsengineering/teal.widgets:
+    repo: insightsengineering/teal.widgets
+    host: https://github.com
+  insightsengineering/teal.code:
+    repo: insightsengineering/teal.code
+    host: https://github.com
+  insightsengineering/teal.transform:
+    repo: insightsengineering/teal.transform
     host: https://github.com
   insightsengineering/teal:
     repo: insightsengineering/teal

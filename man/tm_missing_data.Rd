@@ -10,8 +10,8 @@ tm_missing_data(
   plot_width = NULL,
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void",
     "test"),
-  ggplot2_args = list(`Combinations Hist` = teal.devel::ggplot2_args(labs =
-    list(caption = NULL)), `Combinations Main` = teal.devel::ggplot2_args(labs =
+  ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
+    list(caption = NULL)), `Combinations Main` = teal.widgets::ggplot2_args(labs =
     list(title = NULL))),
   pre_output = NULL,
   post_output = NULL
@@ -30,13 +30,13 @@ for a slider encoding the plot width.}
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
 Each theme can be chosen by the user during the session. Defaults to \code{"classic"}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.devel:reexports]{teal.devel::ggplot2_args()}}
+\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")}.
 
-For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.devel")}.}
+For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
@@ -63,8 +63,8 @@ app <- init(
     tm_missing_data(
       ggplot2_args = list(
         "Combinations Hist" =
-          teal.devel::ggplot2_args(labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)),
-        "Combinations Main" = teal.devel::ggplot2_args(labs = list(title = NULL))
+          teal.widgets::ggplot2_args(labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)),
+        "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
       )
     )
   )
