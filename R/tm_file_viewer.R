@@ -90,7 +90,7 @@ ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
 
-  teal.devel::standard_layout(
+  teal.widgets::standard_layout(
     output = div(
       uiOutput(ns("output"))
     ),

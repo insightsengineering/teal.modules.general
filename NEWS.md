@@ -16,7 +16,7 @@
 * Added support for logging with the `logger` package and added info level logs upon initialization of a module.
 * Added support for custom arguments for `ggplot2::labs` and `ggplot2::theme` in plot based modules.
 * Added support for custom arguments for `rtables::basic_table` in `tm_t_crosstable`.
-* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `teal.devel::data_merge_srv` and `teal.devel::data_extract_multiple_srv` modules.
+* Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`, and `tm_t_crosstable` modules to adopt the new `teal.transform::data_merge_srv` and `teal.transform::data_extract_multiple_srv` modules.
 * Distinguished bars representing `NA` in plot depicting counts of `tm_variable_browser` with a different color fill.
 * Modified the summary statistics table for numeric columns in `tm_variable_browser` to reflect the plot after `outliers` are removed.
 * Added an option to remove missing values in a `tm_variable_browser` histogram for factor like variables.
@@ -33,9 +33,9 @@
 
 ### Miscellaneous
 * Added R version requirement `R >= 3.6`.
-* Removed `input_id` argument from `teal.devel::data_merge_module` calls in all modules.
-* Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.devel::data_extract_ui`.
-* Updated `teal.devel::data_merge_srv` to use `dplyr::inner_join` instead of `dplyr::left_join` in `tm_outliers` module.
+* Removed `input_id` argument from `teal.transform::data_merge_module` calls in all modules.
+* Refactored the defunct `teal.devel::data_extract_input` into its replacement `teal.transform::data_extract_ui`.
+* Updated `teal.transform::data_merge_srv` to use `dplyr::inner_join` instead of `dplyr::left_join` in `tm_outliers` module.
 * Removed the overlay statistics table in `tm_g_distribution` module.
 * Removed dependency on `test.nest` package.
 * Removed dependency on `utils.nest` package and replaced its functions with equivalents from the `checkmate` package.
@@ -201,7 +201,7 @@
 * Documentation fix for cross table module.
 * Display variable labels in drop-down menu of data table (#393).
 * Optional subsetting and ordering datasets for tm_data_table.
-* Use `teal.devel::chunks_push_data_merge` to include merge code into reproducibility code.
+* Use `teal.code::chunks_push_data_merge` to include merge code into reproducibility code.
 * More consistent coloring behavior between bivariate plots.
 * Updates to missing data module.
 * Updated graph axis labels for the following modules: bivariate plot, missing data, response plot, regression module, scatterplot, scatterplot matrix.

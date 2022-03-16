@@ -12,16 +12,16 @@
 #' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
-#' @param ggplot2_args (`ggplot2_args`) object created by [teal.devel::ggplot2_args()]
+#' @param ggplot2_args (`ggplot2_args`) object created by [teal.widgets::ggplot2_args()]
 #'  with settings for the module plot.
 #'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'
-#'  For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.devel")`
-#' @param basic_table_args (`basic_table_args`) object created by [teal.devel::basic_table_args()]
+#'  For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.widgets")`
+#' @param basic_table_args (`basic_table_args`) object created by [teal.widgets::basic_table_args()]
 #'  with settings for the module table.
 #'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
-#'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.devel")`
+#'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.widgets")`
 #' @param pre_output (`shiny.tag`, optional)\cr
 #'  with text placed before the output to put the output into context. For example a title.
 #' @param post_output (`shiny.tag`, optional) with text placed after the output to put the output
