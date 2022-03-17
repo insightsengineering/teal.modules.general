@@ -56,6 +56,7 @@ Imports:
     stringr,
     teal.code,
     teal.logger,
+    teal.slice,
     teal.transform,
     teal.widgets,
     tern (>= 0.7.6),
