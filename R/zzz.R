@@ -1,3 +1,3 @@
 .onLoad <- function(libname, pkgname) { # nolint
-  teal::register_logger(namespace = "teal.modules.general")
+  teal.logger::register_logger(namespace = "teal.modules.general")
 }
