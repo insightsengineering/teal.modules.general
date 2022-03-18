@@ -1096,7 +1096,7 @@ render_tab_table <- function(dataset_name, output, datasets, input, columns_name
         )
 
         # get icons proper for the data types
-        icons <- stats::setNames(teal:::variable_types(df), colnames(df))
+        icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
         icons[intersect(datasets$get_keys(dataset_name), colnames(df))] <- "primary_key"
         icons <- variable_type_icons(icons)
 

@@ -303,7 +303,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
-      teal::optionalSelectInput(
+      teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",
         choices = choices,

@@ -173,7 +173,7 @@ ui_a_regression <- function(id, ...) {
         selected = args$plot_choices[args$default_plot_type]
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
-      shinyjs::hidden(optionalSliderInput(
+      shinyjs::hidden(teal.widgets::optionalSliderInput(
         ns("outlier"),
         div(
           class = "teal-tooltip",
@@ -192,7 +192,7 @@ ui_a_regression <- function(id, ...) {
         ),
         min = 1, max = 10, value = 9, ticks = FALSE, step = .1
       )),
-      shinyjs::hidden(optionalSelectInput(
+      shinyjs::hidden(teal.widgets::optionalSelectInput(
         ns("label_var"),
         multiple = FALSE,
         label = "Outlier label"
@@ -336,7 +336,7 @@ srv_a_regression <- function(id,
       teal.code::chunks_safe_eval(chunks = chunks_stack)
 
       if (input$show_outlier) {
-        opts <- variable_choices(ANL)
+        opts <- teal.transform::variable_choices(ANL)
         selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
           isolate(input$label_var)
         } else {

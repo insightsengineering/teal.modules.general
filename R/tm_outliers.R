@@ -961,7 +961,7 @@ srv_outliers <- function(id, datasets, outlier_var,
     } else {
       `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
     }
-    choices <- variable_choices(datasets$get_data(dataname))
+    choices <- teal.transform::variable_choices(datasets$get_data(dataname))
 
     observeEvent(common_code_chunks(), {
       ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint

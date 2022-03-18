@@ -409,7 +409,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         session$ns("variables_select"),
         label = "Select variables",
         label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
-        choices = variable_choices(raw_data(), choices),
+        choices = teal.transform::variable_choices(raw_data(), choices),
         selected = selected,
         multiple = TRUE
       )
@@ -428,13 +428,13 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
       teal.widgets::updateOptionalSelectInput(
         session = session,
         inputId = "variables_select",
-        choices = variable_choices(raw_data()),
+        choices = teal.transform::variable_choices(raw_data()),
         selected = selected
       )
     })
 
     output$group_by_var_ui <- renderUI({
-      all_choices <- variable_choices(raw_data())
+      all_choices <- teal.transform::variable_choices(raw_data())
       cat_choices <- all_choices[!sapply(raw_data(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
       validate(
         need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
@@ -456,7 +456,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
     output$group_by_vals_ui <- renderUI({
       req(input$group_by_var)
 
-      choices <- value_choices(raw_data(), input$group_by_var, input$group_by_var)
+      choices <- teal.transform::value_choices(raw_data(), input$group_by_var, input$group_by_var)
       prev_choices <- isolate(input$group_by_vals)
 
       # determine selected value based on filtered data

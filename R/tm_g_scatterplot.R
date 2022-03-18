@@ -287,7 +287,7 @@ ui_g_scatterplot <- function(id, ...) {
           checkboxInput(ns("show_count"), "Show N (number of observations)", value = FALSE),
           shinyjs::hidden(helpText(id = ns("line_msg"), "Trendline needs numeric X and Y variables")),
           teal.widgets::optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
-          shinyjs::hidden(optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
+          shinyjs::hidden(teal.widgets::optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
           teal.widgets::optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
           shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
           shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),

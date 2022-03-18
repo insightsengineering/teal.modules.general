@@ -154,15 +154,15 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (color_settings) {
     if (is.null(color)) {
       color <- x
-      color[[1]]$select <- select_spec(choices = color[[1]]$select$choices, selected = NULL)
+      color[[1]]$select <- teal.transform::select_spec(choices = color[[1]]$select$choices, selected = NULL)
     }
     if (is.null(fill)) {
       fill <- x
-      fill[[1]]$select <- select_spec(choices = fill[[1]]$select$choices, selected = NULL)
+      fill[[1]]$select <- teal.transform::select_spec(choices = fill[[1]]$select$choices, selected = NULL)
     }
     if (is.null(size)) {
       size <- x
-      size[[1]]$select <- select_spec(choices = size[[1]]$select$choices, selected = NULL)
+      size[[1]]$select <- teal.transform::select_spec(choices = size[[1]]$select$choices, selected = NULL)
     }
   } else {
     if (!is.null(c(color, fill, size))) {
