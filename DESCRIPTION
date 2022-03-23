@@ -24,7 +24,6 @@ Depends:
     magrittr,
     R (>= 3.6),
     shiny,
-    shinyTree,
     teal (>= 0.10.1)
 Imports:
     broom,
@@ -50,6 +49,7 @@ Imports:
     rtables (>= 0.4.1),
     scales,
     shinyjs,
+    shinyTree,
     shinyWidgets,
     sparkline,
     stats,
@@ -70,6 +70,8 @@ Suggests:
     scda.2021(>= 0.1.2),
     scda(>= 0.1.2),
     testthat (>= 2.0)
+Remotes:
+    github::shinyTree/shinyTree@91d3390074
 VignetteBuilder:
     knitr
 Encoding: UTF-8
