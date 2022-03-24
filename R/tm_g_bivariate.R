@@ -767,7 +767,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     plot_call <- reduce_plot_call(
       plot_call,
       substitute(
-        geom_mosaic(aes(x = product(xval), fill = yval), na.rm = TRUE),
+        ggmosaic::geom_mosaic(aes(x = ggmosaic::product(xval), fill = yval), na.rm = TRUE),
         env = list(xval = x, yval = y)
       )
     )
