@@ -19,6 +19,7 @@ Authors@R: c(
 Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
 Depends:
+    ggmosaic (>= 0.3.0),
     ggplot2,
     magrittr,
     R (>= 3.6),
@@ -34,7 +35,6 @@ Imports:
     DT,
     forcats,
     ggExtra,
-    ggmosaic (>= 0.3.0),
     ggpmisc (>= 0.4.3),
     ggpp,
     goftest,
