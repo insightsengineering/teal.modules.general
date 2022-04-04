@@ -16,6 +16,8 @@
 #' @keywords internal
 NULL
 
+# nolint start
 # Note ggmosaic (version <= 0.3.3) needs to be DEPENDS as the following does not work if it is imported
 # df <- data.frame(x = c("A", "B", "C", "A"), y = c("Z", "Z", "W", "W"))
 # ggplot(df) +  ggmosaic::geom_mosaic(aes(x = ggmosaic::product(x), fill = y))
+# nolint end
