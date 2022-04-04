@@ -20,10 +20,10 @@ clinical data. The modules of `teal.modules.general` can be combined with module
 other `shiny` modules to build a large `teal` / `shiny` app.
 
 The concepts presented here require knowledge about the core features of `teal`, specifically on how to launch a `teal`
-application and how to pass data into it. Therefore, it is highly recommended to refer to the [`README`](https://insightsengineering.github.io/teal/index.html) file and 
-the introductory [`vignette`](https://insightsengineering.github.io/teal/articles/teal.html) of the `teal` package.
+application and how to pass data into it. Therefore, it is highly recommended to refer to the [README](https://insightsengineering.github.io/teal/index.html) file and 
+the introductory [vignette](https://insightsengineering.github.io/teal/articles/teal.html) of the `teal` package.
 
-See also [`teal.modules.clinical's README`](https://insightsengineering.github.io/teal.modules.clinical/index.html).
+See also `teal.modules.clinical's` [README](https://insightsengineering.github.io/teal.modules.clinical/index.html).
 
 ### Main features
 
@@ -35,7 +35,7 @@ There are five areas of data science that `teal.modules.general` provides tools 
 - examining missing and extreme values in data
 - performing data analysis
 
-See [`package functions / modules`](https://insightsengineering.github.io/teal.modules.general/reference/index.html).
+See [package functions / modules](https://insightsengineering.github.io/teal.modules.general/reference/index.html).
 
 ### Example application
 
