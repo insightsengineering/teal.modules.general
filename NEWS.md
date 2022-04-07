@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.12.9014
+# teal.modules.general 0.2.13
 
 ### Enhancements
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
@@ -10,6 +10,9 @@
 * Removed unneeded `n` row in `tm_t_crosstable`.
 * Replaced calls to `teal::root_modules` with `teal::modules` following deprecation of `teal::root_modules`.
 * Adjusted package imports to take into account changes to the `teal` framework.
+* Added the "Getting started with teal.modules.general" vignette.
+* Updated `README` file.
+* Moved the `ggmosaic` package from `Depends` to `Imports` in the `DESCRIPTION` file.
 
 # teal.modules.general 0.2.12
 
