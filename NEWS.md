@@ -1,6 +1,12 @@
 # teal.modules.general 0.2.13.9000
 
 ### Enhancements
+* Added a slider widget to control the font size of the label in `tm_g_scatterplot`.
+
+
+# teal.modules.general 0.2.13
+
+### Enhancements
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
 * Fixed tracking of the selection order in `data_extract_ui`. All selectors can return ordered selection if one specifies `ordered = TRUE` in `select_spec`.
 * Switched order of `tm_missing_data` combination plot to show data in descending order.
