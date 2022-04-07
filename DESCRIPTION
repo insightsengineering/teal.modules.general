@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.12.9014.3
+Version: 0.2.13
 Date: 2022-01-27
 Authors@R: c(
     person("NEST", , , "basel.nestcicd@roche.com", role = c("aut", "cre")),
@@ -25,7 +25,7 @@ Depends:
     R (>= 3.6),
     shiny,
     shinyTree,
-    teal (>= 0.10.1)
+    teal (>= 0.10.2)
 Imports:
     broom,
     checkmate,
@@ -47,7 +47,7 @@ Imports:
     MASS,
     methods,
     rlang,
-    rtables (>= 0.4.1),
+    rtables (>= 0.5.0),
     scales,
     shinyjs,
     shinyWidgets,
@@ -59,7 +59,7 @@ Imports:
     teal.slice,
     teal.transform,
     teal.widgets,
-    tern (>= 0.7.6),
+    tern (>= 0.7.7),
     tibble,
     tidyr,
     tidyselect,
@@ -67,8 +67,8 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    scda.2021(>= 0.1.2),
-    scda(>= 0.1.2),
+    scda.2021(>= 0.1.3),
+    scda(>= 0.1.3),
     testthat (>= 2.0)
 VignetteBuilder:
     knitr
