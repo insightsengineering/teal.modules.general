@@ -300,7 +300,7 @@ ui_g_scatterplot <- function(id, ...) {
               style = "display: inline-block; width: 70%",
               teal.widgets::optionalSliderInput(
                 ns("pos"), label = NULL,
-                min = 0, max = 1, value = 1, ticks = FALSE, step = .01
+                min = 0, max = 1, value = .99, ticks = FALSE, step = .01
               )
             ),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
