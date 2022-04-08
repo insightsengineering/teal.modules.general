@@ -294,18 +294,19 @@ ui_g_scatterplot <- function(id, ...) {
           uiOutput(ns("num_na_removed")),
           div(
             id = ns("label_pos"),
+            div("Stats position", style = "font-weight: bold;"),
             div(style = "display: inline-block; width: 10%", helpText("Left")),
             div(
               style = "display: inline-block; width: 70%",
               teal.widgets::optionalSliderInput(
-                ns("pos"), "Stats position",
+                ns("pos"), label = NULL,
                 min = 0, max = 1, value = 1, ticks = FALSE, step = .01
               )
             ),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
           ),
           teal.widgets::optionalSliderInput(
-            ns("label_size"), "Stats size",
+            ns("label_size"), "Stats font size",
             min = 3, max = 10, value = 5, ticks = FALSE, step = .1
           ),
           if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
