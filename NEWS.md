@@ -1,4 +1,7 @@
 # teal.modules.general 0.2.13.9000
+### Miscellaneous
+* Added a template to the `pkgdown` site.
+# teal.modules.general 0.2.13
 
 ### Enhancements
 * Rewrote modules to use `moduleServer` and updated call to `plot_with_settings_srv` after changes in `teal.devel`.
