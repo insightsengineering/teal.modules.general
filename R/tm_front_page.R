@@ -6,8 +6,9 @@
 #' @param bold_header_text `string` text to be shown in bold at the top of the module
 #' @param header_text `string` text to be shown (not in bold) at the top of the module
 #' @param tables `named list of dataframes` tables to be shown in the module
-#' @param footnotes `character` a vector of text to be shown at the bottom of the module, the first
-#'   word of each element is shown in bold.
+#' @param footnotes `character vector` text to be shown at the bottom of the module, for each
+#'   element, if named the name is shown first in bold, followed by the value
+#'
 #' @param show_metadata `logical` should the metadata of the datasets be available on the module?
 #' @return A `teal` module to be used in `teal` applications
 #' @export
@@ -38,7 +39,7 @@
 #'       bold_header_text = "Important information here",
 #'       header_text = "Other information added here",
 #'       tables = table_input,
-#'       footnotes = c("X is the first footnote", "Y is the second footnote"),
+#'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
 #'       show_metadata = TRUE
 #'     )
 #'   ),
@@ -108,13 +109,13 @@ ui_front_page <- function(id, ...) {
   }
 
   if (length(args$footnotes) > 0) {
-    footnotes <- strsplit(args$footnotes, "\\s+")
-    footnote_tags <- lapply(footnotes, function(note) {
+    bold_texts <- if (is.null(names(args$footnotes))) rep("", length(args$footnotes)) else names(args$footnotes)
+    footnote_tags <- mapply(function(bold_text, value) {
       list(
-        HTML(paste("<b>", note[1], "</b>", paste(tail(note, -1), collapse = " "))),
+        HTML(paste("<b>", bold_text, "</b>", value)),
         br()
       )
-    })
+    }, bold_text = bold_texts, value = args$footnotes)
   }
 
   tagList(

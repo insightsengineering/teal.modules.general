@@ -22,8 +22,8 @@ tm_front_page(
 
 \item{tables}{\verb{named list of dataframes} tables to be shown in the module}
 
-\item{footnotes}{\code{character} a vector of text to be shown at the bottom of the module, the first
-word of each element is shown in bold.}
+\item{footnotes}{\verb{character vector} text to be shown at the bottom of the module, for each
+element, if named the name is shown first in bold, followed by the value}
 
 \item{show_metadata}{\code{logical} should the metadata of the datasets be available on the module?}
 }
@@ -37,7 +37,7 @@ This \code{teal} module creates a simple front page for your application
 library(scda)
 
 table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
-table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3`= c("A", "B"))
+table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
 table_3 <- data.frame(Info = c("E", "F"), Text = c("G", "H"))
 
 table_input <- list(
@@ -60,7 +60,7 @@ app <- init(
       bold_header_text = "Important information here",
       header_text = "Other information added here",
       tables = table_input,
-      footnotes = c("X is the first footnote", "Y is the second footnote"),
+      footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
       show_metadata = TRUE
     )
   ),
