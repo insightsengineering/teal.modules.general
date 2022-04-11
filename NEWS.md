@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.13.9001
+# teal.modules.general 0.2.13.9002
 
 ### Enhancements
 * Added a slider widget to control the font size of the label in `tm_g_scatterplot`.
