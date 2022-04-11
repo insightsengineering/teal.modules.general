@@ -15,7 +15,7 @@
 #' library(scda)
 #'
 #' table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
-#' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3`= c("A", "B"))
+#' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
 #' table_3 <- data.frame(Info = c("E", "F"), Text = c("G", "H"))
 #'
 #' table_input <- list(
@@ -55,7 +55,6 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           footnotes = character(0),
                           show_metadata = FALSE) {
-
   checkmate::assert_string(label)
   checkmate::assert_string(bold_header_text, null.ok = TRUE)
   checkmate::assert_string(header_text, null.ok = TRUE)
@@ -71,7 +70,7 @@ tm_front_page <- function(label = "Front page",
     server = srv_front_page,
     ui = ui_front_page,
     ui_args = args,
-    server_args = list(tables = tables, show_metadata = show_metadata),
+    server_args = list(tables = tables),
     filters = NULL
   )
 }
@@ -85,13 +84,15 @@ ui_front_page <- function(id, ...) {
   footnote_tags <- list()
 
   if (!is.null(args$bold_header_text)) {
-    header_tags <- c(header_tags,
+    header_tags <- c(
+      header_tags,
       list(tags$strong(args$bold_header_text), br())
     )
   }
 
   if (!is.null(args$header_text)) {
-    header_tags <- c(header_tags,
+    header_tags <- c(
+      header_tags,
       list(p(args$header_text), br())
     )
   }
@@ -108,7 +109,7 @@ ui_front_page <- function(id, ...) {
 
   if (length(args$footnotes) > 0) {
     footnotes <- strsplit(args$footnotes, "\\s+")
-    footnote_tags <- lapply(footnotes, function(note){
+    footnote_tags <- lapply(footnotes, function(note) {
       list(
         HTML(paste("<b>", note[1], "</b>", paste(tail(note, -1), collapse = " "))),
         br()
@@ -120,22 +121,46 @@ ui_front_page <- function(id, ...) {
     header_tags,
     table_tags,
     footnote_tags,
-    if (args$show_metadata) uiOutput(ns("metadata"))
+    if (args$show_metadata) actionButton(ns("metadata_button"), "Show metadata")
   )
 }
 
-srv_front_page <- function(id, datasets, tables, show_metadata) {
+srv_front_page <- function(id, datasets, tables) {
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
 
     lapply(seq_along(tables), function(idx) {
       output[[paste0("table_", idx)]] <- renderTable(tables[[idx]], bordered = TRUE)
     })
 
+    observeEvent(
+      input$metadata_button, showModal(
+        modalDialog(
+          title = "Metadata",
+          dataTableOutput(ns("metadata_table")),
+          size = "l"
+        )
+      )
+    )
 
-    if (show_metadata) {
-      output$metadata <- renderUI({
-        "Metadata to go here"
-      })
-    }
+    output$metadata_table <- renderDataTable({
+      output <- lapply(
+        datasets$datanames(),
+        function(dataname) {
+          single_dataset_metadata <- datasets$get_metadata(dataname)
+          if (is.null(single_dataset_metadata)) {
+            return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
+          }
+          return(data.frame(
+            Dataset = dataname,
+            Name = names(single_dataset_metadata),
+            Value = unlist(unname(single_dataset_metadata))
+          ))
+        }
+      )
+      output <- do.call(rbind, output)
+      validate(need(nrow(output) > 0, "The data has no associated metadata"))
+      output
+    })
   })
 }
