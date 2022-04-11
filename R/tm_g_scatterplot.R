@@ -294,15 +294,21 @@ ui_g_scatterplot <- function(id, ...) {
           uiOutput(ns("num_na_removed")),
           div(
             id = ns("label_pos"),
+            div("Stats position", style = "font-weight: bold;"),
             div(style = "display: inline-block; width: 10%", helpText("Left")),
             div(
               style = "display: inline-block; width: 70%",
               teal.widgets::optionalSliderInput(
-                ns("pos"), "Stats Position",
-                min = 0, max = 1, value = 1, ticks = FALSE, step = .01
+                ns("pos"),
+                label = NULL,
+                min = 0, max = 1, value = .99, ticks = FALSE, step = .01
               )
             ),
             div(style = "display: inline-block; width: 10%", helpText("Right"))
+          ),
+          teal.widgets::optionalSliderInput(
+            ns("label_size"), "Stats font size",
+            min = 3, max = 10, value = 5, ticks = FALSE, step = .1
           ),
           if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
             checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
@@ -566,7 +572,8 @@ srv_g_scatterplot <- function(id,
                                        show_form = input$show_form,
                                        show_r2 = input$show_r2,
                                        show_count = input$show_count,
-                                       pos = input$pos) {
+                                       pos = input$pos,
+                                       label_size = input$label_size) {
         stopifnot(sum(show_form, show_r2, show_count) >= 1)
         aes_label <- paste0(
           "aes(",
@@ -588,12 +595,14 @@ srv_g_scatterplot <- function(id,
             mapping = aes_label,
             formula = rhs_formula,
             parse = TRUE,
-            label.x = pos
+            label.x = pos,
+            size = label_size
           ),
           env = list(
             rhs_formula = rhs_formula,
             pos = pos,
-            aes_label = str2lang(aes_label)
+            aes_label = str2lang(aes_label),
+            label_size = label_size
           )
         )
         substitute(
@@ -616,8 +625,10 @@ srv_g_scatterplot <- function(id,
           if (input$show_count) {
             plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
             shinyjs::show("label_pos")
+            shinyjs::show("label_size")
           } else {
             shinyjs::hide("label_pos")
+            shinyjs::hide("label_size")
           }
         } else {
           shinyjs::show("ci")
@@ -636,8 +647,10 @@ srv_g_scatterplot <- function(id,
           if (input$show_form || input$show_r2 || input$show_count) {
             plot_call <- plot_label_generator(rhs_formula = rhs_formula)
             shinyjs::show("label_pos")
+            shinyjs::show("label_size")
           } else {
             shinyjs::hide("label_pos")
+            shinyjs::hide("label_size")
           }
           plot_call <- substitute(
             expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
@@ -653,8 +666,10 @@ srv_g_scatterplot <- function(id,
         if (input$show_count) {
           plot_call <- plot_label_generator(show_form = FALSE, show_r2 = FALSE)
           shinyjs::show("label_pos")
+          shinyjs::show("label_size")
         } else {
           shinyjs::hide("label_pos")
+          shinyjs::hide("label_size")
         }
         shinyjs::show("line_msg")
       }
