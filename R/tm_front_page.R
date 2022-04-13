@@ -98,8 +98,10 @@ get_header_tags <- function(header_text) {
 
   get_single_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
     tagList(
-      if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
-      tags$p(p_text)
+      tags$div(
+        if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
+        tags$p(p_text)
+      )
     )
   }
 
@@ -128,8 +130,11 @@ get_footer_tags <- function(footnotes) {
   bold_texts <- if (is.null(names(footnotes))) rep("", length(footnotes)) else names(footnotes)
   footnote_tags <- mapply(function(bold_text, value) {
     list(
-      HTML(paste("<b>", bold_text, "</b>", value)),
-      tags$br()
+      tags$div(
+        tags$b(bold_text),
+        value,
+        tags$br()
+      )
     )
   }, bold_text = bold_texts, value = footnotes)
 }
