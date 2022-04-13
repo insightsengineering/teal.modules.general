@@ -129,7 +129,7 @@ get_footer_tags <- function(footnotes) {
   footnote_tags <- mapply(function(bold_text, value) {
     list(
       HTML(paste("<b>", bold_text, "</b>", value)),
-      br()
+      tags$br()
     )
   }, bold_text = bold_texts, value = footnotes)
 }
