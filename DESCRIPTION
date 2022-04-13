@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.13.9001
+Version: 0.2.13.9002
 Date: 2022-04-07
 Authors@R: c(
     person("NEST", , , "basel.nestcicd@roche.com", role = c("aut", "cre")),
@@ -72,6 +72,7 @@ Suggests:
     testthat (>= 2.0)
 VignetteBuilder:
     knitr
+Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
