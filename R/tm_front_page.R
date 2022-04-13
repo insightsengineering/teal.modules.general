@@ -129,7 +129,7 @@ get_header_tags <- function(header_text) {
   }
 
   header_tags <- get_single_header_tags(names(header_text[1]), header_text[1], header_tag = tags$h3)
-  c(header_tags, mapply(get_single_header_tags, tail(names(header_text), -1), tail(header_text, -1)))
+  c(header_tags, mapply(get_single_header_tags, utils::tail(names(header_text), -1), utils::tail(header_text, -1)))
 }
 
 get_table_tags <- function(tables, ns) {
