@@ -82,52 +82,56 @@ tm_front_page <- function(label = "Front page",
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
+  tagList(
+    get_header_tags(args$header_text),
+    get_table_tags(args$tables, ns),
+    args$additional_tags,
+    get_footer_tags(args$footnotes),
+    if (args$show_metadata) actionButton(ns("metadata_button"), "Show metadata")
+  )
+}
 
-  header_tags <- list()
-  table_tags <- list()
-  footnote_tags <- list()
+get_header_tags <- function(header_text) {
+  if (length(header_text) == 0) {
+    return(list())
+  }
 
-  get_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
+  get_single_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
     tagList(
       if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
       tags$p(p_text)
     )
   }
 
-  if (length(args$header_text) > 0) {
-    header_tags <- get_header_tags(names(args$header_text[1]), args$header_text[1], header_tag = tags$h3)
-    header_tags <- c(
-      header_tags, mapply(get_header_tags, tail(names(args$header_text), -1), tail(args$header_text, -1))
+  header_tags <- get_single_header_tags(names(header_text[1]), header_text[1], header_tag = tags$h3)
+  c(header_tags, mapply(get_single_header_tags, tail(names(header_text), -1), tail(header_text, -1)))
+}
+
+get_table_tags <- function(tables, ns) {
+  if (length(tables) == 0) {
+    return(list())
+  }
+  table_names <- names(tables)
+  table_tags <- c(lapply(seq_along(table_names), function(idx) {
+    list(
+      tags$strong(table_names[idx]),
+      tableOutput(ns(paste0("table_", idx)))
     )
-  }
+  }))
+  return(table_tags)
+}
 
-  if (length(args$tables) > 0) {
-    table_names <- names(args$tables)
-    table_tags <- c(lapply(seq_along(table_names), function(idx) {
-      list(
-        tags$strong(table_names[idx]),
-        tableOutput(ns(paste0("table_", idx)))
-      )
-    }))
+get_footer_tags <- function(footnotes) {
+  if (length(footnotes) == 0) {
+    return(list())
   }
-
-  if (length(args$footnotes) > 0) {
-    bold_texts <- if (is.null(names(args$footnotes))) rep("", length(args$footnotes)) else names(args$footnotes)
-    footnote_tags <- mapply(function(bold_text, value) {
-      list(
-        HTML(paste("<b>", bold_text, "</b>", value)),
-        br()
-      )
-    }, bold_text = bold_texts, value = args$footnotes)
-  }
-
-  tagList(
-    header_tags,
-    table_tags,
-    args$additional_tags,
-    footnote_tags,
-    if (args$show_metadata) actionButton(ns("metadata_button"), "Show metadata")
-  )
+  bold_texts <- if (is.null(names(footnotes))) rep("", length(footnotes)) else names(footnotes)
+  footnote_tags <- mapply(function(bold_text, value) {
+    list(
+      HTML(paste("<b>", bold_text, "</b>", value)),
+      br()
+    )
+  }, bold_text = bold_texts, value = footnotes)
 }
 
 srv_front_page <- function(id, datasets, tables, show_metadata) {
@@ -139,7 +143,6 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
     })
 
     if (show_metadata) {
-
       observeEvent(
         input$metadata_button, showModal(
           modalDialog(
@@ -152,7 +155,7 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
 
       metadata_data_frame <- reactive({
         raw_metadata <- lapply(datasets$datanames(), datasets$get_metadata)
-        convert_metadata_to_dataframe(raw_metadata, datasets$datanames() )
+        convert_metadata_to_dataframe(raw_metadata, datasets$datanames())
       })
 
       output$metadata_table <- renderDataTable({
