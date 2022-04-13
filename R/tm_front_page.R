@@ -49,7 +49,6 @@
 #'   header = tags$h1("Sample Application"),
 #'   footer = tags$p("Application footer"),
 #' )
-#'
 #' \dontrun{
 #' shinyApp(app$ui, app$server)
 #' }
@@ -100,12 +99,13 @@ ui_front_page <- function(id, ...) {
         style = "margin-top:30px;margin-bottom:30px;",
         args$additional_tags
       ),
-      if (args$show_metadata)
+      if (args$show_metadata) {
         tags$div(
           id = "front_page_metabutton",
           style = "margin:30px;",
           actionButton(ns("metadata_button"), "Show metadata")
-        ),
+        )
+      },
       tags$footer(
         style = "font-size: 12px;",
         get_footer_tags(args$footnotes)
