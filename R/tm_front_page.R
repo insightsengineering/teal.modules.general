@@ -3,12 +3,14 @@
 #' @description This `teal` module creates a simple front page for your application
 #'
 #' @inheritParams teal::module
-#' @param bold_header_text `string` text to be shown in bold at the top of the module
-#' @param header_text `string` text to be shown (not in bold) at the top of the module
+#' @param header_text `character vector` text to be shown at the top of the module, for each
+#'   element, if named the name is shown first in bold as a header followed by the value. The first
+#'   element's header is displayed larger than the others
 #' @param tables `named list of dataframes` tables to be shown in the module
+#' @param additional_tags `shiny.tag.list` additional shiny tags to be included after the table,
+#'   for example to include an image, `tagList(tags$img(src = "image.png"))`
 #' @param footnotes `character vector` text to be shown at the bottom of the module, for each
 #'   element, if named the name is shown first in bold, followed by the value
-#'
 #' @param show_metadata `logical` should the metadata of the datasets be available on the module?
 #' @return A `teal` module to be used in `teal` applications
 #' @export
@@ -36,8 +38,7 @@
 #'   ),
 #'   modules = modules(
 #'     tm_front_page(
-#'       bold_header_text = "Important information here",
-#'       header_text = "Other information added here",
+#'       header_text = c("Important information" = "It can go here.", "Other information" = "Can go here."),
 #'       tables = table_input,
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
 #'       show_metadata = TRUE
@@ -51,15 +52,15 @@
 #' shinyApp(app$ui, app$server)
 #' }
 tm_front_page <- function(label = "Front page",
-                          bold_header_text = NULL,
-                          header_text = NULL,
+                          header_text = character(0),
                           tables = list(),
+                          additional_tags = tagList(),
                           footnotes = character(0),
                           show_metadata = FALSE) {
   checkmate::assert_string(label)
-  checkmate::assert_string(bold_header_text, null.ok = TRUE)
-  checkmate::assert_string(header_text, null.ok = TRUE)
+  checkmate::assert_character(header_text, min.len = 0, any.missing = FALSE)
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
+  checkmate::assert_class(additional_tags, classes = "shiny.tag.list")
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   checkmate::assert_flag(show_metadata)
 
@@ -71,7 +72,7 @@ tm_front_page <- function(label = "Front page",
     server = srv_front_page,
     ui = ui_front_page,
     ui_args = args,
-    server_args = list(tables = tables),
+    server_args = list(tables = tables, show_metadata = show_metadata),
     filters = NULL
   )
 }
@@ -84,17 +85,17 @@ ui_front_page <- function(id, ...) {
   table_tags <- list()
   footnote_tags <- list()
 
-  if (!is.null(args$bold_header_text)) {
-    header_tags <- c(
-      header_tags,
-      list(tags$strong(args$bold_header_text), br())
+  get_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
+    tagList(
+      if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
+      tags$p(p_text)
     )
   }
 
-  if (!is.null(args$header_text)) {
+  if (length(args$header_text) > 0) {
+    header_tags <- get_header_tags(names(args$header_text[1]), args$header_text[1], header_tag = tags$h3)
     header_tags <- c(
-      header_tags,
-      list(p(args$header_text), br())
+      header_tags, mapply(get_header_tags, tail(names(args$header_text), -1), tail(args$header_text, -1))
     )
   }
 
@@ -121,12 +122,13 @@ ui_front_page <- function(id, ...) {
   tagList(
     header_tags,
     table_tags,
+    args$additional_tags,
     footnote_tags,
     if (args$show_metadata) actionButton(ns("metadata_button"), "Show metadata")
   )
 }
 
-srv_front_page <- function(id, datasets, tables) {
+srv_front_page <- function(id, datasets, tables, show_metadata) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -144,24 +146,30 @@ srv_front_page <- function(id, datasets, tables) {
       )
     )
 
-    output$metadata_table <- renderDataTable({
-      output <- lapply(
-        datasets$datanames(),
-        function(dataname) {
-          single_dataset_metadata <- datasets$get_metadata(dataname)
-          if (is.null(single_dataset_metadata)) {
-            return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
+    if (show_metadata) {
+
+      metadata_data_frame <- reactive({
+        output <- lapply(
+          datasets$datanames(),
+          function(dataname) {
+            single_dataset_metadata <- datasets$get_metadata(dataname)
+            if (is.null(single_dataset_metadata)) {
+              return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
+            }
+            return(data.frame(
+              Dataset = dataname,
+              Name = names(single_dataset_metadata),
+              Value = unlist(lapply(single_dataset_metadata, as.character))
+            ))
           }
-          return(data.frame(
-            Dataset = dataname,
-            Name = names(single_dataset_metadata),
-            Value = unlist(unname(single_dataset_metadata))
-          ))
-        }
-      )
-      output <- do.call(rbind, output)
-      validate(need(nrow(output) > 0, "The data has no associated metadata"))
-      output
-    })
+        )
+        do.call(rbind, output)
+      })
+
+      output$metadata_table <- renderDataTable({
+        validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
+        metadata_data_frame()
+      })
+    }
   })
 }

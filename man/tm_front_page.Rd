@@ -6,9 +6,9 @@
 \usage{
 tm_front_page(
   label = "Front page",
-  bold_header_text = NULL,
-  header_text = NULL,
+  header_text = character(0),
   tables = list(),
+  additional_tags = tagList(),
   footnotes = character(0),
   show_metadata = FALSE
 )
@@ -16,11 +16,14 @@ tm_front_page(
 \arguments{
 \item{label}{(\code{character}) Label shown in the navigation item for the module.}
 
-\item{bold_header_text}{\code{string} text to be shown in bold at the top of the module}
-
-\item{header_text}{\code{string} text to be shown (not in bold) at the top of the module}
+\item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
+element, if named the name is shown first in bold as a header followed by the value. The first
+element's header is displayed larger than the others}
 
 \item{tables}{\verb{named list of dataframes} tables to be shown in the module}
+
+\item{additional_tags}{\code{shiny.tag.list} additional shiny tags to be included after the table,
+for example to include an image, \code{tagList(tags$img(src = "image.png"))}}
 
 \item{footnotes}{\verb{character vector} text to be shown at the bottom of the module, for each
 element, if named the name is shown first in bold, followed by the value}
@@ -57,8 +60,7 @@ app <- init(
   ),
   modules = modules(
     tm_front_page(
-      bold_header_text = "Important information here",
-      header_text = "Other information added here",
+      header_text = c("Important information" = "It can go here.", "Other information" = "Can go here."),
       tables = table_input,
       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
       show_metadata = TRUE

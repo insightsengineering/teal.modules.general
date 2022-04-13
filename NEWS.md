@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.13.9001
 
 ### Enhancements
+* New `teal` module `tm_front_page` to simplify creating a front page for `teal` apps.
 * Added a slider widget to control the font size of the label in `tm_g_scatterplot`.
 
 
