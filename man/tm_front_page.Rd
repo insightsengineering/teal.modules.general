@@ -23,7 +23,7 @@ element's header is displayed larger than the others}
 \item{tables}{\verb{named list of dataframes} tables to be shown in the module}
 
 \item{additional_tags}{\code{shiny.tag.list} or \code{html} additional shiny tags or \code{html} to be included after the table,
-for example to include an image, \code{tagList(tags$img(src = "image.png"))} or to include furthe \code{html},
+for example to include an image, \code{tagList(tags$img(src = "image.png"))} or to include further \code{html},
 \code{HTML("html text here")}}
 
 \item{footnotes}{\verb{character vector} text to be shown at the bottom of the module, for each
