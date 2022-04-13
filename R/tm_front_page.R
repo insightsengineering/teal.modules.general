@@ -83,11 +83,34 @@ ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
   tagList(
-    get_header_tags(args$header_text),
-    get_table_tags(args$tables, ns),
-    args$additional_tags,
-    get_footer_tags(args$footnotes),
-    if (args$show_metadata) actionButton(ns("metadata_button"), "Show metadata")
+    tags$div(
+      id = "front_page_content",
+      style = "margin-left: 30px;",
+      tags$div(
+        id = "front_page_headers",
+        get_header_tags(args$header_text)
+      ),
+      tags$div(
+        id = "front_page_tables",
+        style = "margin-left:30px;",
+        get_table_tags(args$tables, ns)
+      ),
+      tags$div(
+        id = "front_page_custom_html",
+        style = "margin-top:30px;margin-bottom:30px;",
+        args$additional_tags
+      ),
+      if (args$show_metadata)
+        tags$div(
+          id = "front_page_metabutton",
+          style = "margin:30px;",
+          actionButton(ns("metadata_button"), "Show metadata")
+        ),
+      tags$footer(
+        style = "font-size: 12px;",
+        get_footer_tags(args$footnotes)
+      )
+    )
   )
 }
 
@@ -113,10 +136,8 @@ get_table_tags <- function(tables, ns) {
   if (length(tables) == 0) {
     return(list())
   }
-  table_names <- names(tables)
-  table_tags <- c(lapply(seq_along(table_names), function(idx) {
+  table_tags <- c(lapply(seq_along(tables), function(idx) {
     list(
-      tags$strong(table_names[idx]),
       tableOutput(ns(paste0("table_", idx)))
     )
   }))
@@ -144,7 +165,7 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
     ns <- session$ns
 
     lapply(seq_along(tables), function(idx) {
-      output[[paste0("table_", idx)]] <- renderTable(tables[[idx]], bordered = TRUE)
+      output[[paste0("table_", idx)]] <- renderTable(tables[[idx]], bordered = TRUE, caption = names(tables)[idx], caption.placement = "top")
     })
 
     if (show_metadata) {
