@@ -71,7 +71,6 @@ app <- init(
   header = tags$h1("Sample Application"),
   footer = tags$p("Application footer"),
 )
-
 \dontrun{
 shinyApp(app$ui, app$server)
 }
