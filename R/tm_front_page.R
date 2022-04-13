@@ -165,7 +165,12 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
     ns <- session$ns
 
     lapply(seq_along(tables), function(idx) {
-      output[[paste0("table_", idx)]] <- renderTable(tables[[idx]], bordered = TRUE, caption = names(tables)[idx], caption.placement = "top")
+      output[[paste0("table_", idx)]] <- renderTable(
+        tables[[idx]],
+        bordered = TRUE,
+        caption = names(tables)[idx],
+        caption.placement = "top"
+      )
     })
 
     if (show_metadata) {
