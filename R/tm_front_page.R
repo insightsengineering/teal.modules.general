@@ -1,6 +1,6 @@
 #' Front page module
 #'
-#' @description This `teal` module creates a simple front page for your application
+#' @description This `teal` module creates a simple front page for `teal` applications
 #'
 #' @inheritParams teal::module
 #' @param header_text `character vector` text to be shown at the top of the module, for each

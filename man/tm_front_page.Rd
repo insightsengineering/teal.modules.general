@@ -35,7 +35,7 @@ element, if named the name is shown first in bold, followed by the value}
 A \code{teal} module to be used in \code{teal} applications
 }
 \description{
-This \code{teal} module creates a simple front page for your application
+This \code{teal} module creates a simple front page for \code{teal} applications
 }
 \examples{
 library(scda)
