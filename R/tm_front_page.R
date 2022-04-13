@@ -7,8 +7,9 @@
 #'   element, if named the name is shown first in bold as a header followed by the value. The first
 #'   element's header is displayed larger than the others
 #' @param tables `named list of dataframes` tables to be shown in the module
-#' @param additional_tags `shiny.tag.list` additional shiny tags to be included after the table,
-#'   for example to include an image, `tagList(tags$img(src = "image.png"))`
+#' @param additional_tags `shiny.tag.list` or `html` additional shiny tags or `html` to be included after the table,
+#'   for example to include an image, `tagList(tags$img(src = "image.png"))` or to include furthe `html`,
+#'   `HTML("html text here")`
 #' @param footnotes `character vector` text to be shown at the bottom of the module, for each
 #'   element, if named the name is shown first in bold, followed by the value
 #' @param show_metadata `logical` should the metadata of the datasets be available on the module?
@@ -40,6 +41,7 @@
 #'     tm_front_page(
 #'       header_text = c("Important information" = "It can go here.", "Other information" = "Can go here."),
 #'       tables = table_input,
+#'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
 #'       show_metadata = TRUE
 #'     )
@@ -60,7 +62,7 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_string(label)
   checkmate::assert_character(header_text, min.len = 0, any.missing = FALSE)
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
-  checkmate::assert_class(additional_tags, classes = "shiny.tag.list")
+  checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   checkmate::assert_flag(show_metadata)
 
@@ -136,34 +138,21 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
       output[[paste0("table_", idx)]] <- renderTable(tables[[idx]], bordered = TRUE)
     })
 
-    observeEvent(
-      input$metadata_button, showModal(
-        modalDialog(
-          title = "Metadata",
-          dataTableOutput(ns("metadata_table")),
-          size = "l"
-        )
-      )
-    )
-
     if (show_metadata) {
 
-      metadata_data_frame <- reactive({
-        output <- lapply(
-          datasets$datanames(),
-          function(dataname) {
-            single_dataset_metadata <- datasets$get_metadata(dataname)
-            if (is.null(single_dataset_metadata)) {
-              return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
-            }
-            return(data.frame(
-              Dataset = dataname,
-              Name = names(single_dataset_metadata),
-              Value = unlist(lapply(single_dataset_metadata, as.character))
-            ))
-          }
+      observeEvent(
+        input$metadata_button, showModal(
+          modalDialog(
+            title = "Metadata",
+            dataTableOutput(ns("metadata_table")),
+            size = "l"
+          )
         )
-        do.call(rbind, output)
+      )
+
+      metadata_data_frame <- reactive({
+        raw_metadata <- lapply(datasets$datanames(), datasets$get_metadata)
+        convert_metadata_to_dataframe(raw_metadata, datasets$datanames() )
       })
 
       output$metadata_table <- renderDataTable({
@@ -172,4 +161,21 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
       })
     }
   })
+}
+
+# take a list of metadata, one item per dataset (raw_metadata each element from datasets$get_metadata())
+# and the corresponding datanames and output a data.frame with columns {Dataset, Name, Value}.
+# which are, the Dataset the metadata came from, the metadata's name and value
+convert_metadata_to_dataframe <- function(raw_metadata, datanames) {
+  output <- mapply(function(metadata, dataname) {
+    if (is.null(metadata)) {
+      return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
+    }
+    return(data.frame(
+      Dataset = dataname,
+      Name = names(metadata),
+      Value = unname(unlist(lapply(metadata, as.character)))
+    ))
+  }, raw_metadata, datanames, SIMPLIFY = FALSE)
+  do.call(rbind, output)
 }
