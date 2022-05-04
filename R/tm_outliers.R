@@ -302,9 +302,10 @@ srv_outliers <- function(id, datasets, outlier_var,
           common_stack_push(
             id = "ANL_NO_NA_call",
             expression = substitute(
-            expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
-            env = list(outlier_var_name = as.name(outlier_var))
-          ))
+              expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+              env = list(outlier_var_name = as.name(outlier_var))
+            )
+          )
         }
       } else {
         validate(need(input_catvar, "Please select categories to include"))
@@ -363,7 +364,8 @@ srv_outliers <- function(id, datasets, outlier_var,
             expression = substitute(
               expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
-          ))
+            )
+          )
         }
         shinyjs::show("split_outliers")
       }
@@ -393,14 +395,14 @@ srv_outliers <- function(id, datasets, outlier_var,
         expression = substitute(
           expr = {
             ANL_OUTLIER <- anl_call %>% # nolint
-            group_expr %>% # styler: off
+              group_expr() %>%
               dplyr::mutate(is_outlier = {
                 q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                 iqr <- q1_q3[2] - q1_q3[1]
                 !(outlier_var_name >= q1_q3[1] - 1.5 * iqr & outlier_var_name <= q1_q3[2] + 1.5 * iqr)
               }) %>%
-            calculate_outliers %>% # styler: off
-            ungroup_expr %>% # styler: off
+              calculate_outliers() %>%
+              ungroup_expr() %>%
               dplyr::filter(is_outlier | is_outlier_selected) %>%
               dplyr::select(-is_outlier)
             ANL_OUTLIER # used to display table when running show-r-code code
@@ -448,7 +450,8 @@ srv_outliers <- function(id, datasets, outlier_var,
             ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup())
           )
         ) %>%
-        remove_pipe_null())
+          remove_pipe_null()
+      )
 
       if (length(categorical_var) > 0) {
         common_stack_push(
@@ -664,7 +667,8 @@ srv_outliers <- function(id, datasets, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme,
             themes = parsed_ggplot2_args$theme
           )
-      ))
+        )
+      )
 
       boxplot_r_stack_push(id = "print_plot_call", expression = quote(print(g)))
       teal.code::chunks_safe_eval(boxplot_r_stack)

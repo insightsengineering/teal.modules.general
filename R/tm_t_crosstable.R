@@ -239,7 +239,8 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
             title <- plot_title
           },
           env = list(plot_title = plot_title)
-      ))
+        )
+      )
 
       labels_vec <- vapply( # nolint
         x_ordered(),
@@ -253,7 +254,7 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
         expression = substitute(
           expr = {
             lyt <- basic_tables %>%
-            split_call %>% # styler: off
+              split_call() %>%
               rtables::add_colcounts() %>%
               tern::summarize_vars(
                 vars = x_name,
