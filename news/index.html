@@ -16,7 +16,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.13.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.13.9003</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 30px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,141 +67,87 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.13.9002" id="tealmodulesgeneral-02139002">teal.modules.general 0.2.13.9002<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02139002"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.13.9003" id="tealmodulesgeneral-02139003">teal.modules.general 0.2.13.9003<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02139003"></a></h2>
 <div class="section level4">
-<h4 id="enhancements-0-2-13-9002">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-13-9002"></a></h4>
-<ul><li>New <code>teal</code> module <code>tm_front_page</code> to simplify
-creating a front page for <code>teal</code> apps.</li>
-<li>Added a slider widget to control the font size of the label in
-<code>tm_g_scatterplot</code>.</li>
+<h4 id="enhancements-0-2-13-9003">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-13-9003"></a></h4>
+<ul><li>New <code>teal</code> module <code>tm_front_page</code> to simplify creating a front page for <code>teal</code> apps.</li>
+<li>Added a slider widget to control the font size of the label in <code>tm_g_scatterplot</code>.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="miscellaneous-0-2-13-9002">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-13-9002"></a></h4>
+<h4 id="miscellaneous-0-2-13-9003">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-13-9003"></a></h4>
 <ul><li>Added a template to the <code>pkgdown</code> site.</li>
+<li>Output integers without decimal places when selecting points in <code>tm_g_scatterplot</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.13" id="tealmodulesgeneral-0213">teal.modules.general 0.2.13<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-0213"></a></h2>
 <div class="section level4">
 <h4 id="enhancements-0-2-13">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-13"></a></h4>
-<ul><li>Rewrote modules to use <code>moduleServer</code> and updated call to
-<code>plot_with_settings_srv</code> after changes in
-<code>teal.devel</code>.</li>
-<li>Fixed tracking of the selection order in
-<code>data_extract_ui</code>. All selectors can return ordered selection
-if one specifies <code>ordered = TRUE</code> in
-<code>select_spec</code>.</li>
-<li>Switched order of <code>tm_missing_data</code> combination plot to
-show data in descending order.</li>
-<li>Changed <code>By variable levels</code> output in
-<code>tm_missing_data</code> to allow numerical sorting.</li>
+<ul><li>Rewrote modules to use <code>moduleServer</code> and updated call to <code>plot_with_settings_srv</code> after changes in <code>teal.devel</code>.</li>
+<li>Fixed tracking of the selection order in <code>data_extract_ui</code>. All selectors can return ordered selection if one specifies <code>ordered = TRUE</code> in <code>select_spec</code>.</li>
+<li>Switched order of <code>tm_missing_data</code> combination plot to show data in descending order.</li>
+<li>Changed <code>By variable levels</code> output in <code>tm_missing_data</code> to allow numerical sorting.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-13">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-13"></a></h4>
-<ul><li>Removed unneeded <code>n</code> row in
-<code>tm_t_crosstable</code>.</li>
-<li>Replaced calls to <code><a href="https://rdrr.io/pkg/teal/man/root_modules.html" class="external-link">teal::root_modules</a></code> with
-<code><a href="https://rdrr.io/pkg/teal/man/modules.html" class="external-link">teal::modules</a></code> following deprecation of
-<code><a href="https://rdrr.io/pkg/teal/man/root_modules.html" class="external-link">teal::root_modules</a></code>.</li>
-<li>Adjusted package imports to take into account changes to the
-<code>teal</code> framework.</li>
+<ul><li>Removed unneeded <code>n</code> row in <code>tm_t_crosstable</code>.</li>
+<li>Replaced calls to <code><a href="https://rdrr.io/pkg/teal/man/root_modules.html" class="external-link">teal::root_modules</a></code> with <code><a href="https://rdrr.io/pkg/teal/man/modules.html" class="external-link">teal::modules</a></code> following deprecation of <code><a href="https://rdrr.io/pkg/teal/man/root_modules.html" class="external-link">teal::root_modules</a></code>.</li>
+<li>Adjusted package imports to take into account changes to the <code>teal</code> framework.</li>
 <li>Added the “Getting started with teal.modules.general” vignette.</li>
 <li>Updated <code>README</code> file.</li>
-<li>Moved the <code>ggmosaic</code> package from <code>Depends</code> to
-<code>Imports</code> in the <code>DESCRIPTION</code> file.</li>
+<li>Moved the <code>ggmosaic</code> package from <code>Depends</code> to <code>Imports</code> in the <code>DESCRIPTION</code> file.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.12" id="tealmodulesgeneral-0212">teal.modules.general 0.2.12<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-0212"></a></h2>
 <div class="section level4">
 <h4 id="enhancements-0-2-12">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-12"></a></h4>
-<ul><li>Added support for logging with the <code>logger</code> package and
-added info level logs upon initialization of a module.</li>
-<li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code>
-and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
-<li>Added support for custom arguments for
-<code><a href="https://roche.github.io/rtables/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
-<li>Updated <code>tm_outliers</code>,
-<code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and
-<code>tm_t_crosstable</code> modules to adopt the new
-<code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> and
-<code><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_multiple_srv.html" class="external-link">teal.transform::data_extract_multiple_srv</a></code> modules.</li>
-<li>Distinguished bars representing <code>NA</code> in plot depicting
-counts of <code>tm_variable_browser</code> with a different color
-fill.</li>
-<li>Modified the summary statistics table for numeric columns in
-<code>tm_variable_browser</code> to reflect the plot after
-<code>outliers</code> are removed.</li>
-<li>Added an option to remove missing values in a
-<code>tm_variable_browser</code> histogram for factor like
-variables.</li>
-<li>Added ability to sort by <code>Variable</code> and <code>Type</code>
-in <code>tm_variable_browser</code> by separating the variable type
-icons into their own column.</li>
-<li>Updated the <code>Grouped by Subject</code> tab of the
-<code>tm_missing_data</code> module to present data the same way the
-<code>Summary</code> tab does.</li>
-<li>Added support for <code>NA</code> level in grouping variable in
-<code>By variable levels</code> table in <code>tm_missing_data</code>
-module.</li>
-<li>Added informative labels for each level of grouping variable in
-<code>By variable levels</code> table in <code>tm_missing_data</code>
-module.</li>
-<li>Added a checkbox to <code>tm_g_scatterplot</code> to toggle the
-option to free up the x and y axis scales whenever faceting arguments
-are provided.</li>
-<li>Used browser-side processing in <code>tm_data_table</code> so that
-<code>Buttons</code> extension could download full table. Added example
-for advanced usage of <code>DT</code> in the module.</li>
+<ul><li>Added support for logging with the <code>logger</code> package and added info level logs upon initialization of a module.</li>
+<li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
+<li>Added support for custom arguments for <code><a href="https://roche.github.io/rtables/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
+<li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> and <code><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_multiple_srv.html" class="external-link">teal.transform::data_extract_multiple_srv</a></code> modules.</li>
+<li>Distinguished bars representing <code>NA</code> in plot depicting counts of <code>tm_variable_browser</code> with a different color fill.</li>
+<li>Modified the summary statistics table for numeric columns in <code>tm_variable_browser</code> to reflect the plot after <code>outliers</code> are removed.</li>
+<li>Added an option to remove missing values in a <code>tm_variable_browser</code> histogram for factor like variables.</li>
+<li>Added ability to sort by <code>Variable</code> and <code>Type</code> in <code>tm_variable_browser</code> by separating the variable type icons into their own column.</li>
+<li>Updated the <code>Grouped by Subject</code> tab of the <code>tm_missing_data</code> module to present data the same way the <code>Summary</code> tab does.</li>
+<li>Added support for <code>NA</code> level in grouping variable in <code>By variable levels</code> table in <code>tm_missing_data</code> module.</li>
+<li>Added informative labels for each level of grouping variable in <code>By variable levels</code> table in <code>tm_missing_data</code> module.</li>
+<li>Added a checkbox to <code>tm_g_scatterplot</code> to toggle the option to free up the x and y axis scales whenever faceting arguments are provided.</li>
+<li>Used browser-side processing in <code>tm_data_table</code> so that <code>Buttons</code> extension could download full table. Added example for advanced usage of <code>DT</code> in the module.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-0-2-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-12"></a></h4>
-<ul><li>Fixed an error in <code>tm_variable_browser</code> when the selected
-column is <code>logical(1)</code>.</li>
+<ul><li>Fixed an error in <code>tm_variable_browser</code> when the selected column is <code>logical(1)</code>.</li>
 <li>Fixed bugs in the modules’ vignette examples.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-12">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-12"></a></h4>
 <ul><li>Added R version requirement <code>R &gt;= 3.6</code>.</li>
-<li>Removed <code>input_id</code> argument from
-<code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_module.html" class="external-link">teal.transform::data_merge_module</a></code> calls in all
-modules.</li>
-<li>Refactored the defunct <code>teal.devel::data_extract_input</code>
-into its replacement <code><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_ui.html" class="external-link">teal.transform::data_extract_ui</a></code>.</li>
-<li>Updated <code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> to use
-<code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> instead of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join</a></code>
-in <code>tm_outliers</code> module.</li>
-<li>Removed the overlay statistics table in
-<code>tm_g_distribution</code> module.</li>
+<li>Removed <code>input_id</code> argument from <code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_module.html" class="external-link">teal.transform::data_merge_module</a></code> calls in all modules.</li>
+<li>Refactored the defunct <code>teal.devel::data_extract_input</code> into its replacement <code><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_ui.html" class="external-link">teal.transform::data_extract_ui</a></code>.</li>
+<li>Updated <code><a href="https://rdrr.io/pkg/teal.transform/man/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> to use <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> instead of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join</a></code> in <code>tm_outliers</code> module.</li>
+<li>Removed the overlay statistics table in <code>tm_g_distribution</code> module.</li>
 <li>Removed dependency on <code>test.nest</code> package.</li>
-<li>Removed dependency on <code>utils.nest</code> package and replaced
-its functions with equivalents from the <code>checkmate</code>
-package.</li>
+<li>Removed dependency on <code>utils.nest</code> package and replaced its functions with equivalents from the <code>checkmate</code> package.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.11" id="tealmodulesgeneral-0211">teal.modules.general 0.2.11<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-0211"></a></h2>
 <div class="section level4">
 <h4 id="new-features-0-2-11">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-11"></a></h4>
-<ul><li>A new module, <code>tm_file_viewer</code>, was added for the
-visualization of static files.</li>
-<li>A new module, <code>tm_g_distribution</code>, was added for
-distribution analysis.</li>
+<ul><li>A new module, <code>tm_file_viewer</code>, was added for the visualization of static files.</li>
+<li>A new module, <code>tm_g_distribution</code>, was added for distribution analysis.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-0-2-11">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-11"></a></h4>
-<ul><li>Fixed the bar plot order for factor variables in
-<code>tm_variable_browser</code>.</li>
+<ul><li>Fixed the bar plot order for factor variables in <code>tm_variable_browser</code>.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="enhancements-0-2-11">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-11"></a></h4>
-<ul><li>Updated examples and tests using <code>scda</code> synthetic data to
-replace <code>random.cdisc.data</code>. ####
-<code>tm_variable_browser</code>
+<ul><li>Updated examples and tests using <code>scda</code> synthetic data to replace <code>random.cdisc.data</code>. #### <code>tm_variable_browser</code>
 </li>
-<li>Added <code>sparkline</code> support for
-<code>Date</code>/<code>POSIXct</code>/<code>POSIXlt</code> variable
-types.</li>
+<li>Added <code>sparkline</code> support for <code>Date</code>/<code>POSIXct</code>/<code>POSIXlt</code> variable types.</li>
 <li>Fixed histograms to contain at least two bars.</li>
 </ul><div class="section level5">
 <h5 id="tm_outliers-0-2-11"><code>tm_outliers</code><a class="anchor" aria-label="anchor" href="#tm_outliers-0-2-11"></a></h5>
@@ -224,75 +170,49 @@ types.</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_g_scatterplot-0-2-11"><code>tm_g_scatterplot</code><a class="anchor" aria-label="anchor" href="#tm_g_scatterplot-0-2-11"></a></h5>
-<ul><li>Modified the trend line feature of the scatterplot to display the
-raw equation that will equal the actual <code>y</code> value when the
-actual <code>x</code> values are plugged in.</li>
+<ul><li>Modified the trend line feature of the scatterplot to display the raw equation that will equal the actual <code>y</code> value when the actual <code>x</code> values are plugged in.</li>
 </ul></div>
 </div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-11">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-11"></a></h4>
-<ul><li>Updated <code>LICENCE</code> and <code>README</code> with new
-package references.</li>
+<ul><li>Updated <code>LICENCE</code> and <code>README</code> with new package references.</li>
 <li>Added <code>error_on_lint: TRUE</code> to <code>.lintr</code>.</li>
-<li>Updated quantile <code>type = 2</code> argument in
-<code>tm_variable_browser</code> to be in line with STREAM.</li>
+<li>Updated quantile <code>type = 2</code> argument in <code>tm_variable_browser</code> to be in line with STREAM.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.10" id="tealmodulesgeneral-0210">teal.modules.general 0.2.10<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-0210"></a></h2>
 <div class="section level4">
 <h4 id="enhancements-0-2-10">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-10"></a></h4>
-<ul><li>Refactored the internal code of all the modules to optimize their
-performance.</li>
-<li>Refactored <code>tm_g_scatterplot</code> to compute trend line
-statistics using <code><a href="https://docs.r4photobiology.info/ggpmisc/reference/stat_poly_eq.html" class="external-link">ggpmisc::stat_poly_eq</a></code> to simplify code and
-to have labels for each group on the plot.</li>
-<li>Refactored <code>tm_g_scatterplot</code> to enable filtering via the
-Encoding Panel using the new <code>filter_spec</code>
-functionality.</li>
-<li>Added support for logical variables in
-<code>tm_variable_browser</code>.</li>
+<ul><li>Refactored the internal code of all the modules to optimize their performance.</li>
+<li>Refactored <code>tm_g_scatterplot</code> to compute trend line statistics using <code><a href="https://docs.r4photobiology.info/ggpmisc/reference/stat_poly_eq.html" class="external-link">ggpmisc::stat_poly_eq</a></code> to simplify code and to have labels for each group on the plot.</li>
+<li>Refactored <code>tm_g_scatterplot</code> to enable filtering via the Encoding Panel using the new <code>filter_spec</code> functionality.</li>
+<li>Added support for logical variables in <code>tm_variable_browser</code>.</li>
 <li>Updated <code>tm_outliers</code> to handle non-CDISC datasets.</li>
-<li>Updated UI of <code>tm_variable_browser</code> for factor and
-character variables with more than 30 levels.</li>
+<li>Updated UI of <code>tm_variable_browser</code> for factor and character variables with more than 30 levels.</li>
 <li>Updated sparklines to remove NA values for numeric variables.</li>
-<li>Added checkbox to display number of observations on plot to
-<code>tm_g_scatterplot</code>.</li>
-<li>Added validation statements to <code>tm_g_scatterplot</code>
-handling users choosing more than one facet variable.</li>
-<li>Improved performance of <code>tm_variable_browser</code> by a more
-efficient <code>sparkline</code> generation.</li>
-<li>Added the html code type for all datasets labels inside
-<code>tm_missing_data</code>.</li>
-<li>Improved the styling of tool tips in <code>tm_a_regression</code>,
-<code>tm_missing_data</code> and <code>tm_variable_browser</code>.</li>
+<li>Added checkbox to display number of observations on plot to <code>tm_g_scatterplot</code>.</li>
+<li>Added validation statements to <code>tm_g_scatterplot</code> handling users choosing more than one facet variable.</li>
+<li>Improved performance of <code>tm_variable_browser</code> by a more efficient <code>sparkline</code> generation.</li>
+<li>Added the html code type for all datasets labels inside <code>tm_missing_data</code>.</li>
+<li>Improved the styling of tool tips in <code>tm_a_regression</code>, <code>tm_missing_data</code> and <code>tm_variable_browser</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="tealmodulesgeneral-029">teal.modules.general 0.2.9<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-029"></a></h2>
 <div class="section level4">
 <h4 id="enhancements-0-2-9">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-9"></a></h4>
-<ul><li>Added download, enlarge and resize graph options to
-<code>tm_variable_browser</code> module.</li>
-<li>Added download and expand options to the table in
-<code>tm_t_crosstable</code>.</li>
-<li>Enabled selection of custom datasets for
-<code>tm_variable_browser</code> with <code>datasets_selected</code>
-argument.</li>
-<li>Allowed all dataset variables to be used as grouping variables in
-<code>by variable levels</code> tab of <code>tm_missing_data</code>, not
-just those selected to be displayed as rows in the table.</li>
-<li>Enabled the brushing of points in NA categories when facetting in
-<code>tm_g_scatterplot</code>.</li>
+<ul><li>Added download, enlarge and resize graph options to <code>tm_variable_browser</code> module.</li>
+<li>Added download and expand options to the table in <code>tm_t_crosstable</code>.</li>
+<li>Enabled selection of custom datasets for <code>tm_variable_browser</code> with <code>datasets_selected</code> argument.</li>
+<li>Allowed all dataset variables to be used as grouping variables in <code>by variable levels</code> tab of <code>tm_missing_data</code>, not just those selected to be displayed as rows in the table.</li>
+<li>Enabled the brushing of points in NA categories when facetting in <code>tm_g_scatterplot</code>.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-0-2-9">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-9"></a></h4>
-<ul><li>Added persistence for the number of entries displayed in data
-tables.</li>
-<li>Removed ‘treat variable as factor’ checkbox in
-<code>tm_variable_browser</code> if no graph shown.</li>
-<li>Fixed DT length reset in <code>tm_variable_browser</code> on “Show
-parent dataset variables” checkbox tick.</li>
+<ul><li>Added persistence for the number of entries displayed in data tables.</li>
+<li>Removed ‘treat variable as factor’ checkbox in <code>tm_variable_browser</code> if no graph shown.</li>
+<li>Fixed DT length reset in <code>tm_variable_browser</code> on “Show parent dataset variables” checkbox tick.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -301,48 +221,33 @@ parent dataset variables” checkbox tick.</li>
 <h4 id="new-module-0-2-8">New Module<a class="anchor" aria-label="anchor" href="#new-module-0-2-8"></a></h4>
 <div class="section level5">
 <h5 id="tm_outliers-0-2-8"><code>tm_outliers</code><a class="anchor" aria-label="anchor" href="#tm_outliers-0-2-8"></a></h5>
-<ul><li>Added new module <code>tm_outliers</code> to analyse outliers in
-datasets.</li>
+<ul><li>Added new module <code>tm_outliers</code> to analyse outliers in datasets.</li>
 </ul></div>
 </div>
 <div class="section level4">
 <h4 id="enhancements-0-2-8">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-8"></a></h4>
 <div class="section level5">
 <h5 id="tm_g_scatterplot-0-2-8"><code>tm_g_scatterplot</code><a class="anchor" aria-label="anchor" href="#tm_g_scatterplot-0-2-8"></a></h5>
-<ul><li>Added <code>max_deg</code> optional argument to scatterplot to allow
-users to choose the maximum smoothing degree for the trend line.</li>
-<li>Added column and row facetting functionality to the
-scatterplot.</li>
-<li>Added possibility to specify type of join in
-<code>tm_t_crosstable</code>. Incorporate missings resulting from non
-inner join.</li>
+<ul><li>Added <code>max_deg</code> optional argument to scatterplot to allow users to choose the maximum smoothing degree for the trend line.</li>
+<li>Added column and row facetting functionality to the scatterplot.</li>
+<li>Added possibility to specify type of join in <code>tm_t_crosstable</code>. Incorporate missings resulting from non inner join.</li>
 </ul></div>
 </div>
 <div class="section level4">
 <h4 id="bug-fixes-0-2-8">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-8"></a></h4>
-<ul><li>Fixed edge case errors in <code>tm_missing_data</code> caused by
-input <code>dataset</code> not having categorical variables or being a
-<code>data.frame</code> instead of <code>tibble</code>.</li>
-<li>Fixed <code>tm_a_pca</code> biplot plot when coloring with a
-factor/character/numeric with &lt; 6 values variable.</li>
-<li>Fixed typo in outlier definition in
-<code>tm_variable_browser</code>.</li>
+<ul><li>Fixed edge case errors in <code>tm_missing_data</code> caused by input <code>dataset</code> not having categorical variables or being a <code>data.frame</code> instead of <code>tibble</code>.</li>
+<li>Fixed <code>tm_a_pca</code> biplot plot when coloring with a factor/character/numeric with &lt; 6 values variable.</li>
+<li>Fixed typo in outlier definition in <code>tm_variable_browser</code>.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-8">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-8"></a></h4>
-<ul><li>Sparklines no longer shown for numeric variables with more than
-100000 rows.</li>
+<ul><li>Sparklines no longer shown for numeric variables with more than 100000 rows.</li>
 <li>Colors legend for each plot.</li>
-<li>Replaced “Show variables other than in ADSL” checkbox to more
-general “Show parent dataset variables”.</li>
+<li>Replaced “Show variables other than in ADSL” checkbox to more general “Show parent dataset variables”.</li>
 <li>Capitalize default module labels.</li>
-<li>Some of the outputs of <code>tm_missing_data</code> are conditional
-to the data being a CDISC data.</li>
-<li>Added <code>pre_output</code> and <code>post_output</code> arguments
-to <code>tm_data_table</code>, <code>tm_missing_data</code>,
-<code>tm_variable_browser</code>.</li>
-<li>Fixed issue in <code>tm_data_table</code> when selecting “show
-distinct rows” if variable names had non-alphanumeric characters.</li>
+<li>Some of the outputs of <code>tm_missing_data</code> are conditional to the data being a CDISC data.</li>
+<li>Added <code>pre_output</code> and <code>post_output</code> arguments to <code>tm_data_table</code>, <code>tm_missing_data</code>, <code>tm_variable_browser</code>.</li>
+<li>Fixed issue in <code>tm_data_table</code> when selecting “show distinct rows” if variable names had non-alphanumeric characters.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -351,102 +256,67 @@ distinct rows” if variable names had non-alphanumeric characters.</li>
 <h4 id="enhancements-0-2-7">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-7"></a></h4>
 <div class="section level5">
 <h5 id="tm_variable_browser-0-2-7"><code>tm_variable_browser</code><a class="anchor" aria-label="anchor" href="#tm_variable_browser-0-2-7"></a></h5>
-<ul><li>Introduced <code>sparklines</code> for quick, inline variable
-summaries.</li>
+<ul><li>Introduced <code>sparklines</code> for quick, inline variable summaries.</li>
 <li>Added option to remove outliers.</li>
-<li>Histograms and statistics tables are now displayed for variables of
-type <code>Date</code>, <code>POSIXct</code> and
-<code>POSIXlt</code>.</li>
-<li>Character variable summary statistics tables are now displayed in
-decreasing order of occurrences instead of alphabetical.</li>
-<li>Display number of non-missing rows <code>n</code> in statistics
-table for numeric variables.</li>
+<li>Histograms and statistics tables are now displayed for variables of type <code>Date</code>, <code>POSIXct</code> and <code>POSIXlt</code>.</li>
+<li>Character variable summary statistics tables are now displayed in decreasing order of occurrences instead of alphabetical.</li>
+<li>Display number of non-missing rows <code>n</code> in statistics table for numeric variables.</li>
 <li>Added ability to treat numeric variables as categorical.</li>
 <li>
-<code>tm_variable_browser</code> shows from 30 up to 50 levels
-divided in 2 columns for character/factor variables with more than 30
-unique levels.</li>
+<code>tm_variable_browser</code> shows from 30 up to 50 levels divided in 2 columns for character/factor variables with more than 30 unique levels.</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_a_regression-0-2-7"><code>tm_a_regression</code><a class="anchor" aria-label="anchor" href="#tm_a_regression-0-2-7"></a></h5>
-<ul><li>Added support for outlier labels to <code>tm_a_regression</code> and
-provided an additional optional argument,
-<code>default_outlier_label</code> which can be used to specify the
-default column used to label outliers.</li>
+<ul><li>Added support for outlier labels to <code>tm_a_regression</code> and provided an additional optional argument, <code>default_outlier_label</code> which can be used to specify the default column used to label outliers.</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_g_scatterplot-0-2-7"><code>tm_g_scatterplot</code><a class="anchor" aria-label="anchor" href="#tm_g_scatterplot-0-2-7"></a></h5>
 <ul><li>Implemented trend line.</li>
 <li>Added marginal density plots.</li>
 <li>Added option to display rug plot to both axes.</li>
-<li>Added <code>shape</code> and <code>point color</code> arguments. The
-latter users <code><a href="https://rdrr.io/pkg/colourpicker/man/colourInput.html" class="external-link">colourpicker::colourInput</a></code>.</li>
-<li>Added <code>size_by</code> variable to scatterplot and allowed for
-point size to be mapped to a numeric variable.</li>
+<li>Added <code>shape</code> and <code>point color</code> arguments. The latter users <code><a href="https://rdrr.io/pkg/colourpicker/man/colourInput.html" class="external-link">colourpicker::colourInput</a></code>.</li>
+<li>Added <code>size_by</code> variable to scatterplot and allowed for point size to be mapped to a numeric variable.</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_missing_data-0-2-7"><code>tm_missing_data</code><a class="anchor" aria-label="anchor" href="#tm_missing_data-0-2-7"></a></h5>
 <ul><li>Added bar chart to missing data combination plot.</li>
-<li>Removed keys from missing data combinations plot in when they have
-not been selected.</li>
+<li>Removed keys from missing data combinations plot in when they have not been selected.</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_g_bivariate-0-2-7"><code>tm_g_bivariate</code><a class="anchor" aria-label="anchor" href="#tm_g_bivariate-0-2-7"></a></h5>
-<ul><li>Bivariate plots with two continuous variables now allow adding
-lines.</li>
-<li>Show labels on x axis when selecting a categorical variable and
-fixed issues when deselecting variables and datasets in the encodings
-panel (including the addition of meaningful warnings).</li>
+<ul><li>Bivariate plots with two continuous variables now allow adding lines.</li>
+<li>Show labels on x axis when selecting a categorical variable and fixed issues when deselecting variables and datasets in the encodings panel (including the addition of meaningful warnings).</li>
 </ul></div>
 <div class="section level5">
 <h5 id="tm_a_pca-0-2-7"><code>tm_a_pca</code><a class="anchor" aria-label="anchor" href="#tm_a_pca-0-2-7"></a></h5>
-<ul><li>Updated to include <code>Plot settings</code> and
-<code>Plot specific settings</code>.</li>
+<ul><li>Updated to include <code>Plot settings</code> and <code>Plot specific settings</code>.</li>
 </ul></div>
 </div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-7">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-7"></a></h4>
-<ul><li>Integrated <code>is_single_dataset</code> argument for
-<code>data_extract_input</code> function calls to simplify encodings
-panel UI.</li>
-<li>Moved <code>code</code> argument to <code>cdisc_dataset</code> (from
-<code>cdisc_data</code>) in examples and vignettes.</li>
+<ul><li>Integrated <code>is_single_dataset</code> argument for <code>data_extract_input</code> function calls to simplify encodings panel UI.</li>
+<li>Moved <code>code</code> argument to <code>cdisc_dataset</code> (from <code>cdisc_data</code>) in examples and vignettes.</li>
 <li>Require <code>ggmosaic</code> version &gt;= 0.3.0.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="tealmodulesgeneral-026">teal.modules.general 0.2.6<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-026"></a></h2>
-<ul><li>Adds additional plot settings such as themes for
-<code>tm_g_association</code>, <code>tm_g_response</code>, and
-<code>tm_g_scatterplot</code>, as well as point size and opacity
-settings for <code>tm_g_association</code> and
-<code>tm_g_scatterplot</code>.</li>
-<li>Replace <code>pickerInput</code> with
-<code>optionalSelectInput</code> for <code>tm_data_table</code>.</li>
-<li>Adds new <code>facet</code> parameter to <code>tm_g_bivariate</code>
-to specify whether the facet encodings elements should be visible to the
-user by default.</li>
-<li>Replace <code>plot_with_height</code> module with new
-<code>plot_with_settings</code> module.</li>
+<ul><li>Adds additional plot settings such as themes for <code>tm_g_association</code>, <code>tm_g_response</code>, and <code>tm_g_scatterplot</code>, as well as point size and opacity settings for <code>tm_g_association</code> and <code>tm_g_scatterplot</code>.</li>
+<li>Replace <code>pickerInput</code> with <code>optionalSelectInput</code> for <code>tm_data_table</code>.</li>
+<li>Adds new <code>facet</code> parameter to <code>tm_g_bivariate</code> to specify whether the facet encodings elements should be visible to the user by default.</li>
+<li>Replace <code>plot_with_height</code> module with new <code>plot_with_settings</code> module.</li>
 <li>Missing data module now uses chunks to get reproducible R code.</li>
 <li>New theme for missing data module and new label positioning.</li>
 <li>
-<code>tm_data_table</code>: allow developers to pass arguments to
-<code>DT::dataTable</code> and use <code>pickerInput</code> to select
-variables.</li>
+<code>tm_data_table</code>: allow developers to pass arguments to <code>DT::dataTable</code> and use <code>pickerInput</code> to select variables.</li>
 <li>
-<code>tm_g_response</code> a new argument <code>count_labels</code>.
-Counts might be assessed for the frequency plot too.</li>
-<li>Moved missing data module summary plot footer elements to tool tip
-in encodings panels.</li>
-<li>Replaced <code>base</code> plots in <code>tm_a_regression</code>
-with <code>ggplot2</code>.</li>
-<li>Added optional slider to adjust <code>width</code> in
-<code>plot_with_settings</code>.</li>
+<code>tm_g_response</code> a new argument <code>count_labels</code>. Counts might be assessed for the frequency plot too.</li>
+<li>Moved missing data module summary plot footer elements to tool tip in encodings panels.</li>
+<li>Replaced <code>base</code> plots in <code>tm_a_regression</code> with <code>ggplot2</code>.</li>
+<li>Added optional slider to adjust <code>width</code> in <code>plot_with_settings</code>.</li>
 <li>Handle <code>Inf</code> in data gracefully.</li>
 <li>
-<code>tm_variable_browser</code> now outputs the summary table for
-factors with all missing values.</li>
+<code>tm_variable_browser</code> now outputs the summary table for factors with all missing values.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="tealmodulesgeneral-025">teal.modules.general 0.2.5<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-025"></a></h2>
@@ -454,10 +324,8 @@ factors with all missing values.</li>
 <li>Pass on dataname to <code>get_rcode_srv</code>.</li>
 <li>Uses utils function to standardize plot label generation.</li>
 <li>Improved handling of variable labels.</li>
-<li>Removed “Add as filter variable” button from variable browser
-module.</li>
-<li>Scatterplot matrix module now automatically converts characters to
-factors with a message.</li>
+<li>Removed “Add as filter variable” button from variable browser module.</li>
+<li>Scatterplot matrix module now automatically converts characters to factors with a message.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.4" id="tealmodulesgeneral-024">teal.modules.general 0.2.4<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-024"></a></h2>
@@ -465,15 +333,11 @@ factors with a message.</li>
 <li>Documentation fix for cross table module.</li>
 <li>Display variable labels in drop-down menu of data table (#393).</li>
 <li>Optional subsetting and ordering datasets for tm_data_table.</li>
-<li>Use <code><a href="https://rdrr.io/pkg/teal.code/man/chunks_push_data_merge.html" class="external-link">teal.code::chunks_push_data_merge</a></code> to include merge
-code into reproducibility code.</li>
+<li>Use <code><a href="https://rdrr.io/pkg/teal.code/man/chunks_push_data_merge.html" class="external-link">teal.code::chunks_push_data_merge</a></code> to include merge code into reproducibility code.</li>
 <li>More consistent coloring behavior between bivariate plots.</li>
 <li>Updates to missing data module.</li>
-<li>Updated graph axis labels for the following modules: bivariate plot,
-missing data, response plot, regression module, scatterplot, scatterplot
-matrix.</li>
-<li>Simplify scatterplot matrix to display plot within one dataset
-only.</li>
+<li>Updated graph axis labels for the following modules: bivariate plot, missing data, response plot, regression module, scatterplot, scatterplot matrix.</li>
+<li>Simplify scatterplot matrix to display plot within one dataset only.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="tealmodulesgeneral-023">teal.modules.general 0.2.3<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-023"></a></h2>
@@ -488,8 +352,7 @@ only.</li>
 <h2 class="pkg-version" data-toc-text="0.2.2" id="tealmodulesgeneral-022">teal.modules.general 0.2.2<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-022"></a></h2>
 <ul><li>New module to summarise missing data.</li>
 <li>Refactor of variable browser module.</li>
-<li>Correct display of density / frequency option in bivariate
-plot.</li>
+<li>Correct display of density / frequency option in bivariate plot.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="tealmodulesgeneral-021">teal.modules.general 0.2.1<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-021"></a></h2>

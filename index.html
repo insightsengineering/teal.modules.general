@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.13.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.13.9003</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 30px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,44 +85,27 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="tealmodulesgeneral">teal.modules.general<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral"></a>
 </h1></div>
-<p>This package contains a set of standard <code>teal</code> modules for
-you to include in applications. These include modules for:</p>
+<p>This package contains a set of standard <code>teal</code> modules for you to include in applications. These include modules for:</p>
 <!-- markdownlint-disable MD007 MD030 -->
 <ul>
-<li>viewing data (including <code>tm_variable_browser</code>,
-<code>tm_data_table</code>, <code>tm_file_viewer</code>, …)</li>
-<li>visualizing data (<code>tm_g_scatterplot</code>,
-<code>tm_g_association</code>, …)</li>
-<li>understanding missing and outlier values within your data
-(<code>tm_missing_data</code>, <code>tm_outliers</code>, …)</li>
-<li>performing simple data analysis (<code>tm_a_pca</code>,
-<code>tm_g_distribution</code>, <code>tm_a_regression</code>, …).
-<!-- markdownlint-enable MD007 MD030 -->
+<li>viewing data (including <code>tm_variable_browser</code>, <code>tm_data_table</code>, <code>tm_file_viewer</code>, …)</li>
+<li>visualizing data (<code>tm_g_scatterplot</code>, <code>tm_g_association</code>, …)</li>
+<li>understanding missing and outlier values within your data (<code>tm_missing_data</code>, <code>tm_outliers</code>, …)</li>
+<li>performing simple data analysis (<code>tm_a_pca</code>, <code>tm_g_distribution</code>, <code>tm_a_regression</code>, …). <!-- markdownlint-enable MD007 MD030 -->
 </li>
 </ul>
-<p>These modules work with <code>CDISC</code> data, independent datasets
-and general relational data.</p>
+<p>These modules work with <code>CDISC</code> data, independent datasets and general relational data.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>This repository requires a personal access token to install see here
-<a href="https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token" class="external-link">creating
-and using PAT</a>. Once this is set up, to install the latest released
-version of the package run:</p>
+<p>This repository requires a personal access token to install see here <a href="https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token" class="external-link">creating and using PAT</a>. Once this is set up, to install the latest released version of the package run:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>GITHUB_PAT <span class="op">=</span> <span class="st">"your_access_token_here"</span><span class="op">)</span>
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"insightsengineering/teal.modules.general@*release"</span>, dependencies <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>You might need to manually install all of the package dependencies
-before installing this package as without the
-<code>dependencies = FALSE</code> argument to
-<code>install_github</code> it may produce an error.</p>
-<p>In order to run many of the examples you will also need to install
-the <a href="https://github.com/insightsengineering/scda" class="external-link"><code>scda</code></a>
-package.</p>
-<p>See package vignettes
-<code>browseVignettes(package = "teal.modules.general")</code> for usage
-of this package.</p>
+<p>You might need to manually install all of the package dependencies before installing this package as without the <code>dependencies = FALSE</code> argument to <code>install_github</code> it may produce an error.</p>
+<p>In order to run many of the examples you will also need to install the <a href="https://github.com/insightsengineering/scda" class="external-link"><code>scda</code></a> package.</p>
+<p>See package vignettes <code>browseVignettes(package = "teal.modules.general")</code> for usage of this package.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

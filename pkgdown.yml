@@ -1,5 +1,5 @@
 pandoc: 2.17.1.1
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   teal-modules-general: teal-modules-general.html
@@ -11,7 +11,7 @@ articles:
   using-response-plot: using-response-plot.html
   using-scatterplot-matrix: using-scatterplot-matrix.html
   using-scatterplot: using-scatterplot.html
-last_built: 2022-04-15T09:03Z
+last_built: 2022-05-04T10:24Z
 urls:
   reference: https://insightsengineering.github.io/teal.modules.general/reference
   article: https://insightsengineering.github.io/teal.modules.general/articles
