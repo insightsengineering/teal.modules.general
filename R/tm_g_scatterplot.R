@@ -765,11 +765,18 @@ srv_g_scatterplot <- function(id,
         vapply(brushed_df, function(x) is.numeric(x) && !is.integer(x), FUN.VALUE = logical(1))
       ]
 
-      DT::formatRound(
-        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
-        numeric_cols,
-        table_dec
-      )
+      if (length(numeric_cols) > 0) {
+        DT::formatRound(
+          DT::datatable(brushed_df,
+            rownames = FALSE,
+            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+          ),
+          numeric_cols,
+          table_dec
+        )
+      } else {
+        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
+      }
     })
 
     teal::get_rcode_srv(
