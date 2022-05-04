@@ -6,6 +6,7 @@
 
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
+* Output integers without decimal places when selecting points in `tm_g_scatterplot`.
 
 # teal.modules.general 0.2.13
 
