@@ -764,13 +764,22 @@ srv_g_scatterplot <- function(id,
       merged_data <- isolate(teal.code::chunks_get_var("ANL"))
 
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
-      numeric_cols <- names(brushed_df)[vapply(brushed_df, function(x) is.numeric(x), FUN.VALUE = logical(1))]
+      numeric_cols <- names(brushed_df)[
+        vapply(brushed_df, function(x) is.numeric(x) && !is.integer(x), FUN.VALUE = logical(1))
+      ]
 
-      DT::formatRound(
-        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows)),
-        numeric_cols,
-        table_dec
-      )
+      if (length(numeric_cols) > 0) {
+        DT::formatRound(
+          DT::datatable(brushed_df,
+            rownames = FALSE,
+            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+          ),
+          numeric_cols,
+          table_dec
+        )
+      } else {
+        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
+      }
     })
 
     teal::get_rcode_srv(
