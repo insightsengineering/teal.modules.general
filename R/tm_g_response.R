@@ -290,33 +290,45 @@ srv_g_response <- function(id,
       x_cl <- as.name(x) # nolint
 
       if (swap_axes) {
-        teal.code::chunks_push(expression = substitute(
-          expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
-          env = list(x = x, x_cl = x_cl)
-        ))
+        teal.code::chunks_push(
+          id = "reverse_order_call",
+          expression = substitute(
+            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
+            env = list(x = x, x_cl = x_cl)
+          )
+        )
       }
 
-      teal.code::chunks_push(expression = substitute(
-        expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
-        env = list(resp_var = resp_var)
-      ))
+      teal.code::chunks_push(
+        id = "factorize_ANL_call",
+        expression = substitute(
+          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
+          env = list(resp_var = resp_var)
+        )
+      )
       # nolint start
       # rowf and colf will be a NULL if not set by a user
-      teal.code::chunks_push(expression = substitute(
-        expr = ANL2 <- ANL %>%
-          dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
-          dplyr::summarise(ns = dplyr::n()) %>%
-          dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-          dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
-        env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
-      ))
+      teal.code::chunks_push(
+        id = "ANL2_call",
+        expression = substitute(
+          expr = ANL2 <- ANL %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
+            dplyr::summarise(ns = dplyr::n()) %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+            dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
+          env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
+        )
+      )
 
-      teal.code::chunks_push(expression = substitute(
-        expr = ANL3 <- ANL %>%
-          dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-          dplyr::summarise(ns = dplyr::n()),
-        env = list(x_cl = x_cl, rowf = rowf, colf = colf)
-      ))
+      teal.code::chunks_push(
+        id = "ANL3_call",
+        expression = substitute(
+          expr = ANL3 <- ANL %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+            dplyr::summarise(ns = dplyr::n()),
+          env = list(x_cl = x_cl, rowf = rowf, colf = colf)
+        )
+      )
       # nolint end
 
       plot_call <- substitute(
@@ -405,7 +417,7 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
-      teal.code::chunks_push(expression = plot_call, id = "plotCall")
+      teal.code::chunks_push(id = "plot_call", expression = plot_call)
 
       teal.code::chunks_safe_eval()
     })

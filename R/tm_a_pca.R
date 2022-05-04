@@ -304,7 +304,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       ))
 
       teal.code::chunks_push(
-        id = "pca_1",
+        id = "keep_columns_call",
         expression = substitute(
           expr = {
             keep_columns <- keep_cols
@@ -318,7 +318,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
 
       if (na_action == "drop") {
         teal.code::chunks_push(
-          id = "pca_2",
+          id = "ANL_drop_na_call",
           expression = substitute(
             expr = ANL <- tidyr::drop_na(ANL, keep_columns), # nolint
             env = list()
@@ -342,7 +342,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       }
 
       teal.code::chunks_push(
-        id = "pca_3",
+        id = "summary_pca_call",
         expression = substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
@@ -351,7 +351,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       )
 
       teal.code::chunks_push(
-        id = "pca_tbl_importance",
+        id = "pca_tbl_importance_call",
         expression = quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
@@ -360,7 +360,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       )
 
       teal.code::chunks_push(
-        id = "pca_tbl_eigenvector",
+        id = "pca_tbl_eigenvector_call",
         expression = quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector

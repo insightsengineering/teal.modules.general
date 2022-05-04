@@ -198,18 +198,24 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        teal.code::chunks_push(substitute(
-          expr = ANL <- ANL[, cols_names] %>% # nolint
-            dplyr::mutate_if(is.character, as.factor) %>%
-            droplevels(),
-          env = list(cols_names = cols_names)
-        ))
+        teal.code::chunks_push(
+          id = "factorize_ANL_call",
+          expression = substitute(
+            expr = ANL <- ANL[, cols_names] %>% # nolint
+              dplyr::mutate_if(is.character, as.factor) %>%
+              droplevels(),
+            env = list(cols_names = cols_names)
+          )
+        )
       } else {
-        teal.code::chunks_push(substitute(
-          expr = ANL <- ANL[, cols_names] %>% # nolint
-            droplevels(),
-          env = list(cols_names = cols_names)
-        ))
+        teal.code::chunks_push(
+          id = "ANL_drop_levels_call",
+          expression = substitute(
+            expr = ANL <- ANL[, cols_names] %>% # nolint
+              droplevels(),
+            env = list(cols_names = cols_names)
+          )
+        )
       }
 
 
@@ -219,50 +225,56 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
         shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
 
-        teal.code::chunks_push(substitute(
-          expr = {
-            plot <- lattice::splom(
-              ANL,
-              varnames = varnames_value,
-              panel = function(x, y, ...) {
-                lattice::panel.splom(x = x, y = y, ...)
-                cpl <- lattice::current.panel.limits()
-                lattice::panel.text(
-                  mean(cpl$xlim),
-                  mean(cpl$ylim),
-                  get_scatterplotmatrix_stats(
-                    x,
-                    y,
-                    .f = stats::cor.test,
-                    .f_args = list(method = cor_method, na.action = cor_na_action)
-                  ),
-                  alpha = 0.6,
-                  fontsize = 18,
-                  fontface = "bold"
-                )
-              },
-              pch = 16,
-              alpha = alpha_value,
-              cex = cex_value
+        teal.code::chunks_push(
+          id = "plot_call",
+          expression = substitute(
+            expr = {
+              plot <- lattice::splom(
+                ANL,
+                varnames = varnames_value,
+                panel = function(x, y, ...) {
+                  lattice::panel.splom(x = x, y = y, ...)
+                  cpl <- lattice::current.panel.limits()
+                  lattice::panel.text(
+                    mean(cpl$xlim),
+                    mean(cpl$ylim),
+                    get_scatterplotmatrix_stats(
+                      x,
+                      y,
+                      .f = stats::cor.test,
+                      .f_args = list(method = cor_method, na.action = cor_na_action)
+                    ),
+                    alpha = 0.6,
+                    fontsize = 18,
+                    fontface = "bold"
+                  )
+                },
+                pch = 16,
+                alpha = alpha_value,
+                cex = cex_value
+              )
+              print(plot)
+            },
+            env = list(
+              varnames_value = varnames,
+              cor_method = cor_method,
+              cor_na_action = cor_na_action,
+              alpha_value = alpha,
+              cex_value = cex
             )
-            print(plot)
-          },
-          env = list(
-            varnames_value = varnames,
-            cor_method = cor_method,
-            cor_na_action = cor_na_action,
-            alpha_value = alpha,
-            cex_value = cex
           )
-        ))
+        )
       } else {
         shinyjs::hide("cor_method")
         shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        teal.code::chunks_push(substitute(
-          expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
-          env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
-        ))
+        teal.code::chunks_push(
+          id = "plot_call",
+          expression = substitute(
+            expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
+            env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
+          )
+        )
       }
       teal.code::chunks_safe_eval()
     })

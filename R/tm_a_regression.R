@@ -309,29 +309,31 @@ srv_a_regression <- function(id,
       teal.code::chunks_push_new_line(chunks = chunks_stack)
 
       teal.code::chunks_push(
-        id = "form",
+        id = "formula_call",
         expression = substitute(expr = form <- formula, env = list(formula = form)),
         chunks = chunks_stack
       )
 
       teal.code::chunks_push(
-        id = "fit_lm",
+        id = "fit_lm_call",
         expression = quote(fit <- stats::lm(form, data = ANL)) %>% methods::substituteDirect(list(form = form)),
         chunks = chunks_stack
       )
 
-      teal.code::chunks_push(quote({
-        for (regressor in names(fit$contrasts)) {
-          alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
-          names(fit$coefficients) <- gsub(
-            paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
-          )
-        }
-      }),
-      chunks = chunks_stack
+      teal.code::chunks_push(
+        id = "assign_coefficients_names_call",
+        expression = quote({
+          for (regressor in names(fit$contrasts)) {
+            alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
+            names(fit$coefficients) <- gsub(
+              paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
+            )
+          }
+        }),
+        chunks = chunks_stack
       )
 
-      teal.code::chunks_push(id = "summary", expression = quote(summary(fit)), chunks = chunks_stack)
+      teal.code::chunks_push(id = "summary_call", expression = quote(summary(fit)), chunks = chunks_stack)
 
       teal.code::chunks_safe_eval(chunks = chunks_stack)
 
@@ -475,7 +477,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_0",
+          id = "plot_0_call",
           expression = substitute(
             expr = {
               class(fit$residuals) <- NULL
@@ -491,7 +493,7 @@ srv_a_regression <- function(id,
       }
 
       plot_base <- function() {
-        teal.code::chunks_push(id = "plot_0_c", expression = quote({
+        teal.code::chunks_push(id = "plot_0_c_call", expression = quote({
           class(fit$residuals) <- NULL
 
           data <- fortify(fit)
@@ -536,7 +538,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_1a",
+          id = "plot_1a_call",
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
@@ -592,7 +594,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_2",
+          id = "plot_2_call",
           expression = substitute(
             expr = {
               g <- plot
@@ -634,7 +636,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_3",
+          id = "plot_3_call",
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
@@ -701,7 +703,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_4",
+          id = "plot_4_call",
           expression = substitute(
             expr = {
               g <- plot
@@ -756,7 +758,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_5",
+          id = "plot_5_call",
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.hat, data$.stdresid)
@@ -806,7 +808,7 @@ srv_a_regression <- function(id,
         )
 
         teal.code::chunks_push(
-          id = "plot_6",
+          id = "plot_6_call",
           expression = substitute(
             expr = {
               smoothy <- smooth(data$.hat, data$.cooksd)
