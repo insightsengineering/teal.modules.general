@@ -142,7 +142,7 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Table settings",
-          checkboxInput(ns("show_percentage"), "Show percentage", value = show_percentage),
+          checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       )
