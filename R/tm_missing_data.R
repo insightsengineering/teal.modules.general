@@ -1005,7 +1005,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         )
       } else {
         table_stack_push(
-          id = "summary_data_call_2",
+          id = "summary_data_call_1",
           expression = substitute(
             expr = summary_data <- ANL_FILTERED %>%
               dplyr::summarise_all(summ_fn) %>%
@@ -1019,7 +1019,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         )
       }
 
-      table_stack_push(id = "summary_data_call_3", expression = quote(summary_data))
+      table_stack_push(id = "summary_data_call_2", expression = quote(summary_data))
       teal.code::chunks_safe_eval(table_stack)
       table_stack
     })

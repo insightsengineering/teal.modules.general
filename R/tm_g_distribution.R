@@ -826,7 +826,7 @@ srv_distribution <- function(id,
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
           qqplot_stack_push(
-            id = "df_params",
+            id = "df_params_call",
             expression = substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
