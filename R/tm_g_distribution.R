@@ -420,10 +420,13 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        common_stack_push(substitute(
-          expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
-          env = list(g_var = g_var)
-        ))
+        common_stack_push(
+          id = "explicit_missing_values_call",
+          expression = substitute(
+            expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
+            env = list(g_var = g_var)
+          )
+        )
       }
 
       if (length(s_var) > 0) {
@@ -433,10 +436,13 @@ srv_distribution <- function(id,
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
-        common_stack_push(substitute(
-          expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
-          env = list(s_var = s_var)
-        ))
+        common_stack_push(
+          id = "explicit_missing_values_call",
+          expression = substitute(
+            expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
+            env = list(s_var = s_var)
+          )
+        )
       }
 
       validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
@@ -455,23 +461,26 @@ srv_distribution <- function(id,
         )
         params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-        common_stack_push(substitute(
-          expr = {
-            params <- as.list(c(dist_param1, dist_param2))
-            names(params) <- params_names_raw
-          },
-          env = list(
-            dist_param1 = dist_param1,
-            dist_param2 = dist_param2,
-            t_dist = t_dist,
-            params_names_raw = params_names_raw
+        common_stack_push(
+          id = "params_call",
+          expression = substitute(
+            expr = {
+              params <- as.list(c(dist_param1, dist_param2))
+              names(params) <- params_names_raw
+            },
+            env = list(
+              dist_param1 = dist_param1,
+              dist_param2 = dist_param2,
+              params_names_raw = params_names_raw
+            )
           )
-        ))
+        )
       }
 
       if (length(s_var) == 0 && length(g_var) == 0) {
         common_stack_push(
-          substitute(
+          id = "summary_table_call",
+          expression = substitute(
             expr = {
               summary_table <- ANL %>%
                 dplyr::summarise(
@@ -491,7 +500,8 @@ srv_distribution <- function(id,
         )
       } else {
         common_stack_push(
-          substitute(
+          id = "summary_table_call",
+          expression = substitute(
             expr = {
               strata_vars <- strata_vars_raw
               summary_table <- ANL %>%
@@ -649,10 +659,13 @@ srv_distribution <- function(id,
         }
 
         if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-          distplot_stack_push(substitute(
-            df_params <- as.data.frame(append(params, list(name = t_dist))),
-            env = list(t_dist = t_dist)
-          ))
+          distplot_stack_push(
+            id = "df_params_call",
+            expression = substitute(
+              df_params <- as.data.frame(append(params, list(name = t_dist))),
+              env = list(t_dist = t_dist)
+            )
+          )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
 
@@ -701,13 +714,16 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        distplot_stack_push(substitute(
-          expr = {
-            g <- plot_call
-            print(g)
-          },
-          env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-        ))
+        distplot_stack_push(
+          id = "plot_call",
+          expression = substitute(
+            expr = {
+              g <- plot_call
+              print(g)
+            },
+            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
+          )
+        )
 
         teal.code::chunks_safe_eval(distplot_stack)
 
@@ -809,10 +825,13 @@ srv_distribution <- function(id,
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qqplot_stack_push(substitute(
-            df_params <- as.data.frame(append(params, list(name = t_dist))),
-            env = list(t_dist = t_dist)
-          ))
+          qqplot_stack_push(
+            id = "df_params_call",
+            expression = substitute(
+              df_params <- as.data.frame(append(params, list(name = t_dist))),
+              env = list(t_dist = t_dist)
+            )
+          )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
 
@@ -855,13 +874,16 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        qqplot_stack_push(substitute(
-          expr = {
-            g <- plot_call
-            print(g)
-          },
-          env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-        ))
+        qqplot_stack_push(
+          id = "plot_call",
+          expression = substitute(
+            expr = {
+              g <- plot_call
+              print(g)
+            },
+            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
+          )
+        )
 
         teal.code::chunks_safe_eval(qqplot_stack)
 
@@ -1026,7 +1048,8 @@ srv_distribution <- function(id,
 
         if (length(s_var) == 0 && length(g_var) == 0) {
           test_stack_push(
-            substitute(
+            id = "test_stats_call",
+            expression = substitute(
               expr = {
                 test_stats <- ANL %>%
                   dplyr::select(dist_var) %>%
@@ -1038,7 +1061,8 @@ srv_distribution <- function(id,
           )
         } else {
           test_stack_push(
-            substitute(
+            id = "test_stats_call",
+            expression = substitute(
               expr = {
                 test_stats <- ANL %>%
                   dplyr::select(dist_var, s_var, g_var) %>%

@@ -635,10 +635,13 @@ srv_g_scatterplot <- function(id,
           shinyjs::show("show_form")
           shinyjs::show("show_r2")
           if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
-            teal.code::chunks_push(substitute(
-              expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
-              env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-            ))
+            teal.code::chunks_push(
+              id = "filter_ANL_call",
+              expression = substitute(
+                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
+                env = list(x_var = as.name(x_var), y_var = as.name(y_var))
+              )
+            )
           }
           rhs_formula <- substitute(
             expr = y ~ poly(x, smoothing_degree, raw = TRUE),
@@ -729,12 +732,12 @@ srv_g_scatterplot <- function(id,
       }
 
       plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
-      teal.code::chunks_push(plot_call)
+      teal.code::chunks_push(id = "plot_call", expression = plot_call)
 
       # explicitly calling print on the plot inside the chunk evaluates
       # the ggplot call and therefore catches errors
       plot_print_call <- quote(print(p))
-      teal.code::chunks_push(plot_print_call)
+      teal.code::chunks_push(id = "print_plot_call", expression = plot_print_call)
       teal.code::chunks_safe_eval()
       teal.code::chunks_get_var(var = "p")
     })

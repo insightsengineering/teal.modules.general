@@ -299,23 +299,24 @@ srv_tm_g_association <- function(id,
       # association
       ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-      teal.code::chunks_push(substitute(
-        expr = title <- new_title,
-        env = list(new_title = paste(
-          "Association",
-          ifelse(ref_class_cov == "NULL", "for", "between"),
-          paste(lapply(vars_names, function(x) {
-            if (is.numeric(ANL[[x]]) && log_transformation) {
-              varname_w_label(x, ANL, prefix = "Log of ")
-            } else {
-              varname_w_label(x, ANL)
-            }
-          }), collapse = " / "),
-          ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
-        ))
-      ))
-
-      teal.code::chunks_push(quote(print(title)))
+      teal.code::chunks_push(
+        id = "title_call",
+        expression = substitute(
+          expr = title <- new_title,
+          env = list(new_title = paste(
+            "Association",
+            ifelse(ref_class_cov == "NULL", "for", "between"),
+            paste(lapply(vars_names, function(x) {
+              if (is.numeric(ANL[[x]]) && log_transformation) {
+                varname_w_label(x, ANL, prefix = "Log of ")
+              } else {
+                varname_w_label(x, ANL)
+              }
+            }), collapse = " / "),
+            ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
+          ))
+        )
+      )
 
       teal.code::chunks_safe_eval()
 
@@ -356,6 +357,7 @@ srv_tm_g_association <- function(id,
       })
 
       teal.code::chunks_push(
+        id = "plot_call",
         expression = substitute(
           expr = {
             plots <- plot_calls
@@ -364,8 +366,7 @@ srv_tm_g_association <- function(id,
             grid::grid.draw(p)
           },
           env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        ),
-        id = "plotCall"
+        )
       )
     })
 

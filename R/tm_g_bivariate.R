@@ -503,25 +503,31 @@ srv_g_bivariate <- function(id,
         }
       }
 
-      teal.code::chunks_push(substitute(expr = p <- cl, env = list(cl = cl)))
+      teal.code::chunks_push(
+        id = "plot_call",
+        expression = substitute(expr = p <- cl, env = list(cl = cl))
+      )
 
       # Add labels to facets
       nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
       nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
 
       if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-        teal.code::chunks_push(quote(print(p)))
+        teal.code::chunks_push(id = "print_plot_call", expression = quote(print(p)))
         teal.code::chunks_safe_eval()
       } else {
-        teal.code::chunks_push(substitute(
-          expr = {
-            # Add facetting labels
-            # optional: grid.newpage() #nolintr
-            g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
-            grid::grid.draw(g)
-          },
-          env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
-        ))
+        teal.code::chunks_push(
+          id = "grid_draw_call",
+          substitute(
+            expr = {
+              # Add facetting labels
+              # optional: grid.newpage() #nolintr
+              g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+              grid::grid.draw(g)
+            },
+            env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
+          )
+        )
         teal.code::chunks_safe_eval()
         teal.code::chunks_get_var("g")
       }

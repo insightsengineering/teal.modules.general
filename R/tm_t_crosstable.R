@@ -232,13 +232,15 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
         "(columns)"
       )
 
-      teal.code::chunks_push(substitute(
-        expr = {
-          title <- plot_title
-          print(title)
-        },
-        env = list(plot_title = plot_title)
-      ))
+      teal.code::chunks_push(
+        id = "title_call",
+        expression = substitute(
+          expr = {
+            title <- plot_title
+          },
+          env = list(plot_title = plot_title)
+        )
+      )
 
       labels_vec <- vapply( # nolint
         x_ordered(),
@@ -247,48 +249,54 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
         ANL
       )
 
-      teal.code::chunks_push(substitute(
-        expr = {
-          lyt <- basic_tables %>%
-          split_call %>% # styler: off
-            rtables::add_colcounts() %>%
-            tern::summarize_vars(
-              vars = x_name,
-              var_labels = labels_vec,
-              na.rm = FALSE,
-              denom = "N_col",
-              .stats = c("mean_sd", "median", "range", count_value)
-            )
-        },
-        env = list(
-          basic_tables = teal.widgets::parse_basic_table_args(
-            basic_table_args = teal.widgets::resolve_basic_table_args(basic_table_args)
-          ),
-          split_call = if (show_total) {
-            substitute(
-              expr = rtables::split_cols_by(
-                y_name,
-                split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
-              ),
-              env = list(y_name = y_name)
-            )
-          } else {
-            substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
+      teal.code::chunks_push(
+        id = "lyt_call",
+        expression = substitute(
+          expr = {
+            lyt <- basic_tables %>%
+              split_call %>% # styler: off
+              rtables::add_colcounts() %>%
+              tern::summarize_vars(
+                vars = x_name,
+                var_labels = labels_vec,
+                na.rm = FALSE,
+                denom = "N_col",
+                .stats = c("mean_sd", "median", "range", count_value)
+              )
           },
-          x_name = x_name,
-          labels_vec = labels_vec,
-          count_value = ifelse(show_percentage, "count_fraction", "count")
+          env = list(
+            basic_tables = teal.widgets::parse_basic_table_args(
+              basic_table_args = teal.widgets::resolve_basic_table_args(basic_table_args)
+            ),
+            split_call = if (show_total) {
+              substitute(
+                expr = rtables::split_cols_by(
+                  y_name,
+                  split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+                ),
+                env = list(y_name = y_name)
+              )
+            } else {
+              substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
+            },
+            x_name = x_name,
+            labels_vec = labels_vec,
+            count_value = ifelse(show_percentage, "count_fraction", "count")
+          )
         )
-      ))
+      )
 
-      teal.code::chunks_push(substitute(
-        expr = {
-          ANL <- tern::df_explicit_na(ANL) # nolint
-          tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
-          tbl
-        },
-        env = list(y_name = y_name)
-      ))
+      teal.code::chunks_push(
+        id = "tbl_call",
+        expression = substitute(
+          expr = {
+            ANL <- tern::df_explicit_na(ANL) # nolint
+            tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
+            tbl
+          },
+          env = list(y_name = y_name)
+        )
+      )
 
       teal.code::chunks_safe_eval()
     })

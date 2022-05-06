@@ -7,6 +7,7 @@
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
 * Output integers without decimal places when selecting points in `tm_g_scatterplot`.
+* Added names to the `id` parameter of `chunks$push` in all modules.
 
 # teal.modules.general 0.2.13
 
