@@ -737,7 +737,7 @@ srv_g_scatterplot <- function(id,
       # explicitly calling print on the plot inside the chunk evaluates
       # the ggplot call and therefore catches errors
       plot_print_call <- quote(print(p))
-      teal.code::chunks_push(id = "plot_print_call", expression = plot_print_call)
+      teal.code::chunks_push(id = "print_plot_call", expression = plot_print_call)
       teal.code::chunks_safe_eval()
       teal.code::chunks_get_var(var = "p")
     })

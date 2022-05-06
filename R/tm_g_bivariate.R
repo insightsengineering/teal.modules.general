@@ -504,7 +504,7 @@ srv_g_bivariate <- function(id,
       }
 
       teal.code::chunks_push(
-        id = "bivariate_plot_call",
+        id = "plot_call",
         expression = substitute(expr = p <- cl, env = list(cl = cl))
       )
 
