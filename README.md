@@ -10,7 +10,7 @@ These include modules for:
 -   performing simple data analysis (`tm_a_pca`, `tm_g_distribution`, `tm_a_regression`, ...).
 <!-- markdownlint-enable MD007 MD030 -->
 
-These modules work with `CDISC` data, independent datasets and general relational data.  
+These modules work with `CDISC` data, independent datasets and general relational data.
 
 ## Installation
 
@@ -28,3 +28,7 @@ the `dependencies = FALSE` argument to `install_github` it may produce an error.
 In order to run many of the examples you will also need to install the [`scda`](https://github.com/insightsengineering/scda) package.
 
 See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
+
+## Acknowledgment
+
+This package is a result of a joint efforts by many developers and stakeholders. We would like to thank everyone who contributed so far!
