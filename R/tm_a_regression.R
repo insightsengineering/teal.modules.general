@@ -280,7 +280,10 @@ srv_a_regression <- function(id,
       validate(
         need(
           input$plot_type != "Response vs Regressor" || length(regression_var()$regressor) == 1,
-          "Response vs Regressor is only provided for exactly one regressor"
+          paste0(
+            "Response vs Regressor plot is provided only for regressions with exactly one regressor. \n",
+            "Choose another plot or reduce number of regressors"
+          )
         )
       )
       validate(
