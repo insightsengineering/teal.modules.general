@@ -281,7 +281,7 @@ srv_a_regression <- function(id,
         need(
           input$plot_type != "Response vs Regressor" || length(regression_var()$regressor) == 1,
           paste0(
-            "Response vs Regressor plot is provided only for regressions with exactly one regressor. \n",
+            "Response vs Regressor plot is provided only for regressions with exactly one regressor.\n",
             "Choose another plot or reduce number of regressors"
           )
         )
