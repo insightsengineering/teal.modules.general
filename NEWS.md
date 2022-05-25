@@ -3,11 +3,12 @@
 ### Enhancements
 * New `teal` module `tm_front_page` to simplify creating a front page for `teal` apps.
 * Added a slider widget to control the font size of the label in `tm_g_scatterplot`.
+* Output integers without decimal places when selecting points in `tm_g_scatterplot`.
+* Improved the names of the code chunks shown in `Debug Info`.
+* Improved a validation message when the number of regressors is too big in `tm_a_regression.R`.
 
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
-* Output integers without decimal places when selecting points in `tm_g_scatterplot`.
-* Added names to the `id` parameter of `chunks$push` in all modules.
 
 # teal.modules.general 0.2.13
 
