@@ -4,6 +4,9 @@
 * New `teal` module `tm_front_page` to simplify creating a front page for `teal` apps.
 * Added a slider widget to control the font size of the label in `tm_g_scatterplot`.
 
+### Bug fixes
+* Fixed a wrong validation in `tm_a_pca`.
+
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
 * Output integers without decimal places when selecting points in `tm_g_scatterplot`.
