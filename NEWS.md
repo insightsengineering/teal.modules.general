@@ -9,6 +9,7 @@
 
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
+* Updated package authors.
 
 # teal.modules.general 0.2.13
 
