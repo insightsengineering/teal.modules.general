@@ -153,6 +153,13 @@ ui_distribution <- function(id, ...) {
   ns <- NS(id)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
 
+  scales_condition_base <- paste0(
+    "input['",
+    extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE),
+    "']"
+  )
+  scales_condition <- paste0(scales_condition_base, " && ", paste0(scales_condition_base, ".length != 0"))
+
   teal.widgets::standard_layout(
     output = tagList(
       tabsetPanel(
@@ -183,9 +190,7 @@ ui_distribution <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           ),
           conditionalPanel(
-            condition = paste0(
-              "input['", extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE), "'].length != 0"
-            ),
+            condition = scales_condition,
             shinyWidgets::prettyRadioButtons(
               ns("scales_type"),
               label = "Scales:",
