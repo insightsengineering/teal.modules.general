@@ -292,7 +292,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       teal::validate_has_data(ANL, 10)
       teal::validate_has_elements(keep_cols, "Please select columns")
       validate(need(
-        all(vapply(ANL[keep_cols], function(x) is.numeric(x) && !is.infinite(x), logical(1))),
+        all(vapply(ANL[keep_cols], function(x) is.numeric(x) && all(!is.infinite(x)), logical(1))),
         "PCA is only defined for (finite) numeric columns."
       ))
       validate(need(
