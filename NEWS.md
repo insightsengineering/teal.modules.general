@@ -9,6 +9,7 @@
 
 ### Bug fixes
 * Fixed a wrong validation in `tm_a_pca`.
+* Fixed a crash when de-selecting the categorical factor in `tm_outliers`.
 
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
