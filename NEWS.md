@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.13.9011
+# teal.modules.general 0.2.13.9011.1
 
 ### Enhancements
 * New `teal` module `tm_front_page` to simplify creating a front page for `teal` apps.
@@ -9,6 +9,7 @@
 
 ### Bug fixes
 * Fixed a wrong validation in `tm_a_pca`.
+* Fixed a crash when deselecting the categorical factor in `tm_outliers`.
 
 ### Miscellaneous
 * Added a template to the `pkgdown` site.
