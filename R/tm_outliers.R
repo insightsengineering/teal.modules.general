@@ -446,8 +446,12 @@ srv_outliers <- function(id, datasets, outlier_var,
               )
             },
             outlier_var_name = as.name(outlier_var),
-            group_expr = if (isTRUE(split_outliers)) substitute(dplyr::group_by(x), list(x = as.name(categorical_var))),
-            ungroup_expr = if (isTRUE(split_outliers)) substitute(dplyr::ungroup())
+            group_expr = if (isTRUE(split_outliers) && length(categorical_var) != 0) {
+              substitute(dplyr::group_by(x), list(x = as.name(categorical_var)))
+            },
+            ungroup_expr = if (isTRUE(split_outliers) && length(categorical_var) != 0) {
+              substitute(dplyr::ungroup())
+            }
           )
         ) %>%
           remove_pipe_null()
