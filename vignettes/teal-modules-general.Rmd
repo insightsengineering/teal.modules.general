@@ -40,7 +40,7 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 ### Example application
 
 A simple application including a `tm_variable_browser` module could look like this:
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 library(scda)
 library(teal.modules.general)
 
@@ -62,7 +62,9 @@ app <- init(
     )
   )
 )
+```
 
+```{r, eval = FALSE}
 shinyApp(app$ui, app$server)
 ```
 
@@ -83,7 +85,7 @@ In the next step, we use `teal` to create `shiny` `ui` and `server` functions so
 argument tells `teal` about the input data - the two datasets `ADSL` and `ADTTE` - and the `modules`
 argument indicates the modules included in the application. Here, we include only one - `tm_variable_browser`.
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 app <- teal::init(
   data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
@@ -107,7 +109,7 @@ app <- teal::init(
 The `shiny` function `shinyApp` used the `ui` and `server` objects to initialize the `teal` app.
 
 ```{r, eval = FALSE}
-if (interactive()) shiny::shinyApp(app$ui, app$server)
+shiny::shinyApp(app$ui, app$server)
 ```
 
 In a `teal` app, data and modules are decoupled. In the app above:
@@ -116,11 +118,11 @@ In a `teal` app, data and modules are decoupled. In the app above:
 - The app developer specified the module and assigned it to the `modules` argument.
 - The `init` function took these arguments and returned a list, which can be demonstrated by running:
 
-```{r, eval = FALSE}
+```{r, indent = "     ", eval = TRUE}
 class(app)
 ```
 This list contains two R objects named `ui` and `server`.
-```{r, eval = FALSE}
+```{r, indent = "     ", eval = TRUE}
 names(app)
 ```
 
