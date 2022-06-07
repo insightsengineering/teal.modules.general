@@ -85,7 +85,7 @@ In the next step, we use `teal` to create `shiny` `ui` and `server` functions so
 argument tells `teal` about the input data - the two datasets `ADSL` and `ADTTE` - and the `modules`
 argument indicates the modules included in the application. Here, we include only one - `tm_variable_browser`.
 
-```{r, eval = TRUE}
+```{r}
 app <- teal::init(
   data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
