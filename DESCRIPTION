@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General modules to add to a teal application
-Version: 0.2.13.9011.3
+Version: 0.2.13.9011.4
 Date: 2022-04-07
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
