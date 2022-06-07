@@ -40,7 +40,7 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 ### Example application
 
 A simple application including a `tm_variable_browser` module could look like this:
-```{r, eval = TRUE}
+```{r}
 library(scda)
 library(teal.modules.general)
 
