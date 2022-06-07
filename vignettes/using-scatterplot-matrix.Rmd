@@ -11,7 +11,7 @@ vignette: >
 ---
 
 
-Teal application to use scatter plot matrix with various datasets types
+# Teal application to use scatter plot matrix with various datasets types
 
 This vignette will guide you through 4 parts to create a teal application using
 various types of datasets inside an scatter plot matrix module:
@@ -55,8 +55,8 @@ ADLB <- synthetic_cdisc_data("latest")$adlb %>% # nolint
 
 ## Create an `app` variable
 
-This is the most important section. We will use the `teal::init` function to
-create an app. The data will be handed over using `teal::cdisc_data`. The app
+This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/reference/init) function to
+create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/reference/cdisc_data). The app
 itself will be constructed by multiple calls of `tm_g_scatterplotmatrix` using different
 combinations of data sets.
 
