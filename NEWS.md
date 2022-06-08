@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.13.9011.5
+# teal.modules.general 0.2.13.9011.6
 
 ### Enhancements
 * New `teal` module `tm_front_page` to simplify creating a front page for `teal` apps.
