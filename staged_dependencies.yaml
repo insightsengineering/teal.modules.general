@@ -11,6 +11,9 @@ upstream_repos:
   insightsengineering/teal.widgets:
     repo: insightsengineering/teal.widgets
     host: https://github.com
+  insightsengineering/teal.data:
+    repo: insightsengineering/teal.data
+    host: https://github.com
   insightsengineering/teal.code:
     repo: insightsengineering/teal.code
     host: https://github.com
