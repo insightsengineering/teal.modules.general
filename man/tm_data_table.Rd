@@ -146,7 +146,7 @@ app <- init(
         searching = FALSE,
         pageLength = 30,
         lengthMenu = c(5, 15, 25, 50, 100),
-        scrollX = TRUE,
+        scrollX = FALSE,
         dom = "lBrtip",
         buttons = c("copy", "csv", "excel", "pdf", "print"),
         colReorder = TRUE,
