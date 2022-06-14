@@ -209,7 +209,11 @@ srv_tm_g_association <- function(id,
                                  ggplot2_args) {
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
-
+#browser()
+iv <- shinyvalidate::InputValidator$new()
+iv$add_rule("ref[[1]]$select$selected", shinyvalidate::sv_required())
+#iv$add_rule("y-dataset_ADSL_singleextract-select", shinyvalidate::sv_required())
+iv$enable()
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
       datasets = datasets
@@ -244,7 +248,7 @@ srv_tm_g_association <- function(id,
       distribution_theme <- input$distribution_theme
       association_theme <- input$association_theme
 
-      validate(need(ref_name, "need at least one variable selected"))
+      #validate(need(ref_name, "need at least one variable selected"))
 
       is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
       if (is_scatterplot) {

@@ -346,7 +346,11 @@ srv_g_bivariate <- function(id,
                             ggplot2_args) {
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
-
+#browser()
+    iv <- shinyvalidate::InputValidator$new()
+    iv$add_rule("x-dataset_ADSL_singleextract-select", shinyvalidate::sv_required())
+    iv$add_rule("y-dataset_ADSL_singleextract-select", shinyvalidate::sv_required())
+    iv$enable()
     data_extract <- list(
       x = x, y = y, row_facet = row_facet, col_facet = col_facet,
       color = color, fill = fill, size = size
@@ -372,11 +376,12 @@ srv_g_bivariate <- function(id,
     )
 
     plot_r <- reactive({
-      validate({
-        need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
-      })
-
-
+      # validate({
+      #   need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
+      # })
+      # if (is.null(input$`x-dataset_ADSL_singleextract-select`) & is.null(input$`x-dataset_ADSL_singleextract-select`)) {
+      #  iv$enable()
+      # }
       teal.code::chunks_reset()
       teal.code::chunks_push_data_merge(merged_data())
 

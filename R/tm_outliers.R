@@ -231,6 +231,12 @@ srv_outliers <- function(id, datasets, outlier_var,
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
+    iv <- shinyvalidate::InputValidator$new()
+    iv$add_rule("outlier_var-dataset_ADSL_singleextract-select", shinyvalidate::sv_required())
+    iv$add_rule("method", shinyvalidate::sv_required())
+    iv$add_rule("boxplot_alts", shinyvalidate::sv_required())
+  iv$enable()
+
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
     selector_list <- teal.transform::data_extract_multiple_srv(vars, datasets)
 
@@ -253,10 +259,10 @@ srv_outliers <- function(id, datasets, outlier_var,
 
     common_code_chunks <- reactive({
       validate(need(!is.null(reactive_select_input()$outlier()), "Please select an outlier variable dataset"))
-
+      validate(need(iv$is_valid(), "Please refer to encodings red warning!"))
       # Create a private stack for this function only.
       common_stack <- teal.code::chunks$new()
-
+      #browser()
       common_stack_push <- function(...) {
         teal.code::chunks_push(..., chunks = common_stack)
       }
@@ -274,13 +280,11 @@ srv_outliers <- function(id, datasets, outlier_var,
       method <- input$method
       split_outliers <- input$split_outliers
 
-      validate(need(outlier_var, "Please select a variable"))
       teal.code::chunks_validate_custom(
         substitute(expr = length(unique(ANL[[outlier_var]])) > 1, env = list(outlier_var = outlier_var)),
         msg = "Variable has no variation, i.e. only one unique value",
         chunks = common_stack
       )
-      validate(need(input$method, "Please select a method"))
       validate(need(is.numeric(merged_data()$data()[[outlier_var]]), "`Variable` is not numeric"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
@@ -593,7 +597,6 @@ srv_outliers <- function(id, datasets, outlier_var,
 
       # validation
       teal::validate_has_data(ANL, 1)
-      validate(need(input$boxplot_alts, "Please select `Plot type`"))
 
       # boxplot
       plot_call <- quote(ANL %>% ggplot()) # nolint
@@ -919,7 +922,6 @@ srv_outliers <- function(id, datasets, outlier_var,
 
     # slider text
     output$ui_outlier_help <- renderUI({
-      validate(need(input$method, "Please select a method"))
       if (input$method == "IQR") {
         req(input$iqr_slider)
         tags$small(
