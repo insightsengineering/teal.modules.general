@@ -1,6 +1,7 @@
 ADSL
 CDISC
 DT
+Github
 README
 Sparklines
 UI
@@ -9,7 +10,6 @@ dataname
 datanames
 facetting
 ggplot
-github
 pre
 reproducibility
 sparkline
