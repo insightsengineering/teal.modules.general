@@ -245,7 +245,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- formatters::var_labels(datasets$get_data(response[[i]]$dataname))
+      response[[i]]$select$choices <- datasets$get_varlabels(dataname = response[[i]]$dataname)
       response[[1]]$select$choices <- setdiff(
         response[[1]]$select$choices,
         datasets$get_keys(response[[i]]$dataname)
