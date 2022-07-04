@@ -131,6 +131,14 @@ ui_outliers <- function(id, ...) {
       DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
+      ### Reporter
+      shiny::tags$div(
+        teal.reporter::add_card_button_ui(ns("addReportCard")),
+        teal.reporter::download_report_button_ui(ns("downloadButton")),
+        teal.reporter::reset_report_button_ui(ns("resetButton"))
+      ),
+      shiny::tags$br(),
+      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("outlier_var", "categorical_var")]),
       teal.transform::data_extract_ui(
@@ -226,8 +234,9 @@ ui_outliers <- function(id, ...) {
   )
 }
 
-srv_outliers <- function(id, datasets, outlier_var,
+srv_outliers <- function(id, datasets, reporter, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
@@ -1147,5 +1156,44 @@ srv_outliers <- function(id, datasets, outlier_var,
       modal_title = "R Code for outlier",
       code_header = "Outlier"
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        tab_type <- input$tabs
+        card$set_name(paste0("Outliers - ", tab_type))
+        card$append_text(tab_type, "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets)
+        card$append_text("Main Element", "header3")
+        card$append_table(teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack))
+        if (tab_type == "Boxplot") {
+          card$append_plot(box_plot_plot_r())
+        } else if (tab_type == "Density plot") {
+          card$append_plot(density_plot_plot_r())
+        } else if (tab_type == "Cumulative distribution plot") {
+          card$append_plot(cumulative_plot_plot_r())
+        }
+
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }

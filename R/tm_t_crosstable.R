@@ -127,6 +127,14 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
       teal.widgets::table_with_settings_ui(ns("table"))
     ),
     encoding = div(
+      ### Reporter
+      shiny::tags$div(
+        teal.reporter::add_card_button_ui(ns("addReportCard")),
+        teal.reporter::download_report_button_ui(ns("downloadButton")),
+        teal.reporter::reset_report_button_ui(ns("resetButton"))
+      ),
+      shiny::tags$br(),
+      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(list(x, y)),
       teal.transform::data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
@@ -153,7 +161,8 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
   )
 }
 
-srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
+srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
@@ -336,5 +345,35 @@ srv_t_crosstable <- function(id, datasets, label, x, y, basic_table_args) {
       modal_title = show_r_code_title(),
       code_header = show_r_code_title()
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        card$set_name("Cross Table")
+        card$append_text("Cross Table", "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets)
+        card$append_text("Main Element", "header3")
+        card$append_table(table())
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }

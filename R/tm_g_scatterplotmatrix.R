@@ -111,6 +111,14 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = div(
+      ### Reporter
+      shiny::tags$div(
+        teal.reporter::add_card_button_ui(ns("addReportCard")),
+        teal.reporter::download_report_button_ui(ns("downloadButton")),
+        teal.reporter::reset_report_button_ui(ns("resetButton"))
+      ),
+      shiny::tags$br(),
+      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args$variables),
       teal.transform::data_extract_ui(
@@ -150,7 +158,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
-srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_width) {
+srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_height, plot_width) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
@@ -322,6 +331,37 @@ srv_g_scatterplotmatrix <- function(id, datasets, variables, plot_height, plot_w
       modal_title = show_r_code_title(),
       code_header = show_r_code_title()
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        card$set_name("Scatter plot matrix")
+        card$append_text("Scatter plot matrix", "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets)
+        card$append_text("Main Element", "header3")
+        card$append_plot(plot_r())
+
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }
 
