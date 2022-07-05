@@ -289,7 +289,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
     })
 
     # Insert the plot into a plot_with_settings module
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
       plot_r = plot_r,
       height = plot_height,
@@ -339,9 +339,9 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
         card$set_name("Scatter plot matrix")
         card$append_text("Scatter plot matrix", "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
-        card$append_plot(plot_r())
+        card$append_plot(plot_r(), dim = pws$dim())
 
         if (!comment == "") {
           card$append_text("Comment", "header3")

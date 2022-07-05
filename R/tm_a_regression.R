@@ -856,7 +856,7 @@ srv_a_regression <- function(id,
     code_header <- reactive(teal.code::chunks_get_var("form", chunks = fit()))
 
     # Insert the plot into a plot_with_settings module from teal.widgets
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
       plot_r = plot_r,
       height = plot_height,
@@ -887,9 +887,9 @@ srv_a_regression <- function(id,
         card$set_name("Regression plot")
         card$append_text("Regression plot", "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
-        card$append_plot(plot_r())
+        card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)

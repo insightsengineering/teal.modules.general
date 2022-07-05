@@ -1184,19 +1184,19 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
     )
 
-    teal.widgets::plot_with_settings_srv(
+    pws1 <- teal.widgets::plot_with_settings_srv(
       id = "summary_plot",
       plot_r = summary_plot_r,
       height = plot_height,
       width = plot_width
     )
-    teal.widgets::plot_with_settings_srv(
+    pws2 <- teal.widgets::plot_with_settings_srv(
       id = "combination_plot",
       plot_r = combination_plot_r,
       height = plot_height,
       width = plot_width
     )
-    teal.widgets::plot_with_settings_srv(
+    pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
       plot_r = by_subject_plot_r,
       height = plot_height,
@@ -1218,16 +1218,16 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         card$set_name(paste0("Missing data - ", title))
         card$append_text(title, "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
         if (summary_type == "Summary") {
-          card$append_plot(summary_plot_r())
+          card$append_plot(summary_plot_r(), dim = pws1$dim())
         } else if (summary_type == "Combinations") {
-          card$append_plot(combination_plot_r())
+          card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (summary_type == "By variable levels") {
           card$append_table(teal.code::chunks_get_var("summary_data", table_chunks()))
         } else if (summary_type == "Grouped by Subject") {
-          card$append_plot(by_subject_plot_r())
+          card$append_plot(by_subject_plot_r(), dim = pws3$dim())
         }
 
         if (!comment == "") {

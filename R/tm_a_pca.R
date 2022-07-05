@@ -916,7 +916,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
       teal.code::chunks_safe_eval()
     })
 
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "pca_plot",
       plot_r = plot_r,
       height = plot_height,
@@ -979,13 +979,13 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         card$set_name("PCA plot")
         card$append_text("PCA plot", "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Principal components table", "header3")
         card$append_table(teal.code::chunks_get_var("tbl_importance", chunks = computation()))
         card$append_text("Eigenvectors table", "header3")
         card$append_table(teal.code::chunks_get_var("tbl_eigenvector", chunks = computation()))
         card$append_text("PCA plot", "header3")
-        card$append_plot(plot_r())
+        card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)

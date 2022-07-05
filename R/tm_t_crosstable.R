@@ -353,7 +353,7 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
         card$set_name("Cross Table")
         card$append_text("Cross Table", "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
         card$append_table(table())
         if (!comment == "") {

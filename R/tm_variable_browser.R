@@ -406,7 +406,7 @@ srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggpl
       )
     })
 
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "variable_plot",
       plot_r = variable_plot_r,
       height = c(500, 200, 2000)
@@ -433,9 +433,9 @@ srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggpl
         card$set_name("Variable browser plot")
         card$append_text("Variable browser plot", "header2")
         card$append_text("Filter State", "header3")
-        card$append_fs(datasets)
+        card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
-        card$append_plot(variable_plot_r())
+        card$append_plot(variable_plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
