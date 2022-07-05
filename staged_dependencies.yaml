@@ -17,6 +17,9 @@ upstream_repos:
   insightsengineering/teal.code:
     repo: insightsengineering/teal.code
     host: https://github.com
+  insightsengineering/teal.reporter:
+    repo: insightsengineering/teal.reporter
+    host: https://github.com
   insightsengineering/teal.slice:
     repo: insightsengineering/teal.slice
     host: https://github.com
