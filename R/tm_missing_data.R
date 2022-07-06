@@ -1229,7 +1229,6 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         } else if (summary_type == "Grouped by Subject") {
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
         }
-
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)

@@ -1141,7 +1141,7 @@ srv_distribution <- function(id,
       rownames = FALSE
     )
 
-    pws <- teal.widgets::plot_with_settings_srv(
+    pws1 <- teal.widgets::plot_with_settings_srv(
       id = "hist_plot",
       plot_r = dist_r,
       height = plot_height,
@@ -1149,7 +1149,7 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    pws1 <- teal.widgets::plot_with_settings_srv(
+    pws2 <- teal.widgets::plot_with_settings_srv(
       id = "qq_plot",
       plot_r = qq_r,
       height = plot_height,
@@ -1181,9 +1181,9 @@ srv_distribution <- function(id,
         card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
         if (input$tabs == "Histogram") {
-          card$append_plot(dist_r(), dim = pws$dim())
-        } else {
-          card$append_plot(qq_r(), dim = pws1$dim())
+          card$append_plot(dist_r(), dim = pws1$dim())
+        } else if (input$tabs == "QQplot") {
+          card$append_plot(qq_r(), dim = pws2$dim())
         }
         card$append_text("Statistics table", "header3")
         card$append_table(teal.code::chunks_get_var("summary_table", chunks = common_code_chunks()))

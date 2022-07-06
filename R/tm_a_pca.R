@@ -976,8 +976,9 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
     if (with_reporter) {
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("PCA plot")
-        card$append_text("PCA plot", "header2")
+        card$set_name("PCA Plot")
+        card$append_text("PCA Plot", "header2")
+        card$append_text("Principal Component Analysis Plot", "header3")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         card$append_text("Principal components table", "header3")

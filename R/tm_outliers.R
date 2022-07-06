@@ -1175,7 +1175,6 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         } else if (tab_type == "Cumulative distribution plot") {
           card$append_plot(cumulative_plot_plot_r(), dim = cum_density_brush$dim())
         }
-
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)

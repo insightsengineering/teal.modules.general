@@ -451,8 +451,8 @@ srv_g_response <- function(id,
     if (with_reporter) {
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Response plot")
-        card$append_text("Response plot", "header2")
+        card$set_name("Response Plot")
+        card$append_text("Response Plot", "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
