@@ -19,11 +19,9 @@ For releases from August 2022 it is recommended that you [create and use a Githu
 ```r
 Sys.setenv(GITHUB_PAT = "your_access_token_here")
 if (!require("remotes")) install.packages("remotes")
-remotes::install_github("insightsengineering/teal.modules.general@*release", dependencies = FALSE)
+remotes::install_github("insightsengineering/teal.modules.general@*release")
 ```
 
-You might need to manually install all of the package dependencies before installing this package as without
-the `dependencies = FALSE` argument to `install_github` it may produce an error.
 
 In order to run many of the examples you will also need to install the [`scda`](https://insightsengineering.github.io/scda) package.
 
