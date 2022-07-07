@@ -70,7 +70,7 @@ shinyApp(app$ui, app$server)
 
 Let's break the above app into pieces:
 ```r
-library(teal.modules.clinical)
+library(teal.modules.general)
 library(scda)
 ```
 The above lines load the libraries used in this example. `scda` is a package containing sample data which are loaded

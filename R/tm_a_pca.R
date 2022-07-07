@@ -153,6 +153,14 @@ ui_a_pca <- function(id, ...) {
       )
     ),
     encoding = div(
+      ### Reporter
+      shiny::tags$div(
+        teal.reporter::add_card_button_ui(ns("addReportCard")),
+        teal.reporter::download_report_button_ui(ns("downloadButton")),
+        teal.reporter::reset_report_button_ui(ns("resetButton"))
+      ),
+      shiny::tags$br(),
+      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args["dat"]),
       teal.transform::data_extract_ui(
@@ -237,7 +245,8 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) {
+srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggplot2_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     response <- dat
 
@@ -907,7 +916,7 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       teal.code::chunks_safe_eval()
     })
 
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "pca_plot",
       plot_r = plot_r,
       height = plot_height,
@@ -962,5 +971,40 @@ srv_a_pca <- function(id, datasets, dat, plot_height, plot_width, ggplot2_args) 
       datanames = teal.transform::get_extract_datanames(list(dat)),
       modal_title = "R code for PCA"
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        card$set_name("PCA Plot")
+        card$append_text("PCA Plot", "header2")
+        card$append_text("Principal Component Analysis Plot", "header3")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets$get_filter_state())
+        card$append_text("Principal Components Table", "header3")
+        card$append_table(teal.code::chunks_get_var("tbl_importance", chunks = computation()))
+        card$append_text("Eigenvectors Table", "header3")
+        card$append_table(teal.code::chunks_get_var("tbl_eigenvector", chunks = computation()))
+        card$append_text("Plot", "header3")
+        card$append_plot(plot_r(), dim = pws$dim())
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }

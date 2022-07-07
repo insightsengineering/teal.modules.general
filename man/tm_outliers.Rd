@@ -34,7 +34,7 @@ Each theme can be chosen by the user during the session. Defaults to \code{"gray
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-List names should match the following: \code{c("default", "Boxplot","Density plot","Cumulative distribution plot")}.
+List names should match the following: \code{c("default", "Boxplot","Density Plot","Cumulative Distribution Plot")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
