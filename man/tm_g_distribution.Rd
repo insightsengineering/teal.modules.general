@@ -21,7 +21,7 @@ tm_g_distribution(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{dist_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable to consider for the distribution analysis.}

@@ -113,11 +113,6 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
       )
     ),
     encoding = div(
-      tags$label("Encodings", class = "text-primary"),
-      helpText(
-        paste0("Dataset", `if`(length(datanames) > 1, "s", ""), ":"),
-        tags$code(paste(datanames, collapse = ", "))
-      ),
       tagList(
         lapply(
           datanames,
@@ -127,7 +122,8 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
               encoding_missing_data(
                 id = ns(x),
                 summary_per_patient = if_subject_plot,
-                ggtheme = ggtheme
+                ggtheme = ggtheme,
+                datanames = datanames
               )
             )
           }
@@ -139,7 +135,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   )
 }
 
-srv_page_missing_data <- function(id, datasets, plot_height, plot_width, ggplot2_args) {
+srv_page_missing_data <- function(id, datasets, reporter, plot_height, plot_width, ggplot2_args) {
   moduleServer(id, function(input, output, session) {
     lapply(
       datasets$datanames(),
@@ -147,6 +143,7 @@ srv_page_missing_data <- function(id, datasets, plot_height, plot_width, ggplot2
         srv_missing_data(
           id = x,
           datasets = datasets,
+          reporter = reporter,
           dataname = x,
           plot_height = plot_height,
           plot_width = plot_width,
@@ -194,7 +191,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       )
     ),
     tabPanel(
-      "By variable levels",
+      "By Variable Levels",
       teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
       DT::dataTableOutput(ns("levels_table"))
     )
@@ -226,10 +223,23 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
-encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames) {
   ns <- NS(id)
 
   tagList(
+    ### Reporter
+    shiny::tags$div(
+      teal.reporter::add_card_button_ui(ns("addReportCard")),
+      teal.reporter::download_report_button_ui(ns("downloadButton")),
+      teal.reporter::reset_report_button_ui(ns("resetButton"))
+    ),
+    shiny::tags$br(),
+    ###
+    tags$label("Encodings", class = "text-primary"),
+    helpText(
+      paste0("Dataset", `if`(length(datanames) > 1, "s", ""), ":"),
+      tags$code(paste(datanames, collapse = ", "))
+    ),
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
@@ -280,7 +290,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"By variable levels\"", ns("summary_type")),
+      sprintf("$(\"#%s > li.active\").text().trim() == \"By Variable Levels\"", ns("summary_type")),
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
@@ -309,7 +319,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
 }
 
 #' @importFrom rlang .data
-srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, ggplot2_args) {
+srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot_width, ggplot2_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
@@ -357,7 +368,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
         )
       }
 
-      if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
+      if (input$summary_type == "By Variable Levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
         common_stack_push(
           id = "ANL_FILTERED_group_var_call",
           substitute(
@@ -932,7 +943,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
     })
 
     table_chunks <- reactive({
-      req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
+      req(input$summary_type == "By Variable Levels") # needed to trigger show r code update on tab change
       teal::validate_has_data(data(), 1)
 
       # Create a private stack for this function only.
@@ -1158,6 +1169,7 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
       teal.code::chunks_get_var(var = "g")
     })
 
+
     output$levels_table <- DT::renderDataTable(
       expr = {
         if (length(input$variables_select) == 0) {
@@ -1173,19 +1185,19 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
       options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
     )
 
-    teal.widgets::plot_with_settings_srv(
+    pws1 <- teal.widgets::plot_with_settings_srv(
       id = "summary_plot",
       plot_r = summary_plot_r,
       height = plot_height,
       width = plot_width
     )
-    teal.widgets::plot_with_settings_srv(
+    pws2 <- teal.widgets::plot_with_settings_srv(
       id = "combination_plot",
       plot_r = combination_plot_r,
       height = plot_height,
       width = plot_width
     )
-    teal.widgets::plot_with_settings_srv(
+    pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
       plot_r = by_subject_plot_r,
       height = plot_height,
@@ -1197,5 +1209,48 @@ srv_missing_data <- function(id, datasets, dataname, plot_height, plot_width, gg
       datanames = dataname,
       modal_title = "R code for missing data "
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        sum_type <- input$summary_type
+        title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
+        card$set_name(paste0("Missing Data - ", sum_type))
+        card$append_text(title, "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets$get_filter_state())
+        if (sum_type == "Summary") {
+          card$append_text("Plot", "header3")
+          card$append_plot(summary_plot_r(), dim = pws1$dim())
+        } else if (sum_type == "Combinations") {
+          card$append_text("Plot", "header3")
+          card$append_plot(combination_plot_r(), dim = pws2$dim())
+        } else if (sum_type == "By Variable Levels") {
+          card$append_text("Table", "header3")
+          card$append_table(teal.code::chunks_get_var("summary_data", table_chunks()))
+        } else if (sum_type == "Grouped by Subject") {
+          card$append_text("Plot", "header3")
+          card$append_plot(by_subject_plot_r(), dim = pws3$dim())
+        }
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }

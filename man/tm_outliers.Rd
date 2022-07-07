@@ -18,7 +18,7 @@ tm_outliers(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 variable to consider for the outliers analysis.}
@@ -34,7 +34,7 @@ Each theme can be chosen by the user during the session. Defaults to \code{"gray
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-List names should match the following: \code{c("default", "Boxplot","Density plot","Cumulative distribution plot")}.
+List names should match the following: \code{c("default", "Boxplot","Density Plot","Cumulative Distribution Plot")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 

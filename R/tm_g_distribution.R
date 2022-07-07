@@ -173,6 +173,14 @@ ui_distribution <- function(id, ...) {
       DT::dataTableOutput(ns("t_stats"))
     ),
     encoding = div(
+      ### Reporter
+      shiny::tags$div(
+        teal.reporter::add_card_button_ui(ns("addReportCard")),
+        teal.reporter::download_report_button_ui(ns("downloadButton")),
+        teal.reporter::reset_report_button_ui(ns("resetButton"))
+      ),
+      shiny::tags$br(),
+      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("dist_var", "strata_var")]),
       teal.transform::data_extract_ui(
@@ -302,12 +310,14 @@ ui_distribution <- function(id, ...) {
 
 srv_distribution <- function(id,
                              datasets,
+                             reporter,
                              dist_var,
                              strata_var,
                              group_var,
                              plot_height,
                              plot_width,
                              ggplot2_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.code::init_chunks()
 
@@ -1131,7 +1141,7 @@ srv_distribution <- function(id,
       rownames = FALSE
     )
 
-    teal.widgets::plot_with_settings_srv(
+    pws1 <- teal.widgets::plot_with_settings_srv(
       id = "hist_plot",
       plot_r = dist_r,
       height = plot_height,
@@ -1139,7 +1149,7 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    teal.widgets::plot_with_settings_srv(
+    pws2 <- teal.widgets::plot_with_settings_srv(
       id = "qq_plot",
       plot_r = qq_r,
       height = plot_height,
@@ -1160,6 +1170,48 @@ srv_distribution <- function(id,
       modal_title = "R Code for distribution",
       code_header = "Distribution"
     )
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        card$set_name("Association Plot")
+        card$append_text("Association Plot", "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets$get_filter_state())
+        card$append_text("Plot", "header3")
+        if (input$tabs == "Histogram") {
+          card$append_plot(dist_r(), dim = pws1$dim())
+        } else if (input$tabs == "QQplot") {
+          card$append_plot(qq_r(), dim = pws2$dim())
+        }
+        card$append_text("Statistics table", "header3")
+        card$append_table(teal.code::chunks_get_var("summary_table", chunks = common_code_chunks()))
+        tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
+        if (inherits(tests_error, "data.frame")) {
+          card$append_text("Tests table", "header3")
+          card$append_table(tests_r())
+        }
+
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card$append_text("Show R Code", "header3")
+        card$append_src(paste(get_rcode(
+          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          datasets = datasets,
+          title = "",
+          description = ""
+        ), collapse = "\n"))
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }
 

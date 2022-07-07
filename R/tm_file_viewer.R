@@ -79,7 +79,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   module(
     label = label,
     server = srv_viewer,
-    server_args = list(input_path),
+    server_args = list(input_path = input_path),
     ui = ui_viewer,
     ui_args = args,
     filters = NULL
