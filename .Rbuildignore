@@ -45,3 +45,4 @@ coverage.*
 ^\.pre-commit-config\.yaml
 SECURITY.md
 SECURITY.md
+SECURITY.md
