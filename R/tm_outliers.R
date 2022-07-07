@@ -1167,7 +1167,8 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         card$append_text("Main Element", "header3")
-        card$append_table(teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack))
+        summary_table <- teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack)
+        if (!is.null(summary_table)) card$append_table(summary_table)
         if (tab_type == "Boxplot") {
           card$append_plot(box_plot_plot_r(), dim = box_brush$dim())
         } else if (tab_type == "Density plot") {
