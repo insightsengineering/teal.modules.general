@@ -18,7 +18,7 @@ tm_missing_data(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}

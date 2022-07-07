@@ -13,7 +13,7 @@ tm_variable_browser(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
