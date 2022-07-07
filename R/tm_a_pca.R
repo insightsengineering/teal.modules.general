@@ -985,7 +985,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         card$append_table(teal.code::chunks_get_var("tbl_importance", chunks = computation()))
         card$append_text("Eigenvectors Table", "header3")
         card$append_table(teal.code::chunks_get_var("tbl_eigenvector", chunks = computation()))
-        card$append_text("PCA Plot", "header3")
+        card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")

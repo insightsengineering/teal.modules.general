@@ -1179,7 +1179,7 @@ srv_distribution <- function(id,
         card$append_text("Association Plot", "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text("Association Plot", "header3")
+        card$append_text("Plot", "header3")
         if (input$tabs == "Histogram") {
           card$append_plot(dist_r(), dim = pws1$dim())
         } else if (input$tabs == "QQplot") {

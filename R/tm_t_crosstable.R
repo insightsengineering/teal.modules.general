@@ -354,7 +354,7 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
         card$append_text("Cross Table", "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text("Cross Table", "header3")
+        card$append_text("Table", "header3")
         card$append_table(table())
         if (!comment == "") {
           card$append_text("Comment", "header3")

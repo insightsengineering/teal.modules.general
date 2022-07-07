@@ -1175,7 +1175,7 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           card$append_text("Summary Table", "header3")
           card$append_table(summary_table)
         }
-        card$append_text(tab_type, "header3")
+        card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {
           card$append_plot(box_plot_plot_r(), dim = box_brush$dim())
         } else if (tab_type == "Density Plot") {

@@ -1214,20 +1214,23 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
     if (with_reporter) {
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
-        summary_type <- input$summary_type
-        title <- if (summary_type == "By Variable Levels") paste0(summary_type, " Table") else paste0(summary_type, " Plot")
-        card$set_name(paste0("Missing Data - ", summary_type))
+        sum_type <- input$summary_type
+        title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
+        card$set_name(paste0("Missing Data - ", sum_type))
         card$append_text(title, "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text(title, "header3")
-        if (summary_type == "Summary") {
+        if (sum_type == "Summary") {
+          card$append_text("Plot", "header3")
           card$append_plot(summary_plot_r(), dim = pws1$dim())
-        } else if (summary_type == "Combinations") {
+        } else if (sum_type == "Combinations") {
+          card$append_text("Plot", "header3")
           card$append_plot(combination_plot_r(), dim = pws2$dim())
-        } else if (summary_type == "By Variable Levels") {
+        } else if (sum_type == "By Variable Levels") {
+          card$append_text("Table", "header3")
           card$append_table(teal.code::chunks_get_var("summary_data", table_chunks()))
-        } else if (summary_type == "Grouped by Subject") {
+        } else if (sum_type == "Grouped by Subject") {
+          card$append_text("Plot", "header3")
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
         }
         if (!comment == "") {

@@ -808,7 +808,7 @@ srv_g_scatterplot <- function(id,
         card$append_text("Scatter Plot", "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text("Scatter Plot", "header3")
+        card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = brush$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
