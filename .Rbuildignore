@@ -43,6 +43,3 @@ SECURITY.md
 coverage.*
 ^sample_files$
 ^\.pre-commit-config\.yaml
-SECURITY.md
-SECURITY.md
-SECURITY.md
