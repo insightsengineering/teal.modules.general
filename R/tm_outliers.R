@@ -10,7 +10,7 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   categorical factor to split the selected outlier variables on.
 #'
-#' @templateVar ggnames "Boxplot","Density plot","Cumulative distribution plot"
+#' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
 #' @template ggplot2_args_multi
 #'
 #' @export
@@ -77,7 +77,7 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
-  plot_choices <- c("Boxplot", "Density plot", "Cumulative distribution plot")
+  plot_choices <- c("Boxplot", "Density Plot", "Cumulative Distribution Plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
@@ -115,8 +115,8 @@ ui_outliers <- function(id, ...) {
       tabsetPanel(
         id = ns("tabs"),
         tabPanel("Boxplot", teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
-        tabPanel("Density plot", teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
-        tabPanel("Cumulative distribution plot", teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
+        tabPanel("Density Plot", teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
+        tabPanel("Cumulative Distribution Plot", teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
       teal.widgets::optionalSelectInput(
@@ -737,7 +737,7 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Density plot"]],
+        user_plot = ggplot2_args[["Density Plot"]],
         user_default = ggplot2_args$default,
         module_plot = dev_ggplot2_args
       )
@@ -875,7 +875,7 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Cumulative distribution plot"]],
+        user_plot = ggplot2_args[["Cumulative Distribution Plot"]],
         user_default = ggplot2_args$default,
         module_plot = dev_ggplot2_args
       )
@@ -919,9 +919,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       teal.code::chunks_reset()
       if (tab == "Boxplot") {
         teal.code::chunks_push_chunks(box_plot_r_chunks())
-      } else if (tab == "Density plot") {
+      } else if (tab == "Density Plot") {
         teal.code::chunks_push_chunks(density_plot_r_chunks())
-      } else if (tab == "Cumulative distribution plot") {
+      } else if (tab == "Cumulative Distribution Plot") {
         teal.code::chunks_push_chunks(cumulative_plot_r_chunks())
       }
     })
@@ -1033,10 +1033,10 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         plot_brush <- if (tab == "Boxplot") {
           box_plot_plot_r()
           box_brush$brush()
-        } else if (tab == "Density plot") {
+        } else if (tab == "Density Plot") {
           density_plot_plot_r()
           density_brush$brush()
-        } else if (tab == "Cumulative distribution plot") {
+        } else if (tab == "Cumulative Distribution Plot") {
           cumulative_plot_plot_r()
           cum_density_brush$brush()
         }
@@ -1064,10 +1064,10 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
 
           # in density and cumulative plots, ANL does not have a column corresponding to y-axis.
           # so they need to be computed and attached to ANL
-          if (tab == "Density plot") {
+          if (tab == "Density Plot") {
             plot_brush$mapping$y <- "density"
             ANL$density <- plot_brush$ymin # nolint #either ymin or ymax will work
-          } else if (tab == "Cumulative distribution plot") {
+          } else if (tab == "Cumulative Distribution Plot") {
             plot_brush$mapping$y <- "cdf"
             if (length(categorical_var) > 0) {
               ANL <- ANL %>% # nolint
@@ -1082,9 +1082,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           if (nrow(brushed_rows) > 0) {
             # now we need to remove extra column from ANL so that it will have the same columns as ANL_OUTLIER
             # so that dplyr::intersect will work
-            if (tab == "Density plot") {
+            if (tab == "Density Plot") {
               brushed_rows$density <- NULL
-            } else if (tab == "Cumulative distribution plot") {
+            } else if (tab == "Cumulative Distribution Plot") {
               brushed_rows$cdf <- NULL
             } else if (tab == "Boxplot" && length(categorical_var) == 0) {
               brushed_rows[[plot_brush$mapping$x]] <- NULL
@@ -1166,14 +1166,21 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         card$append_text(tab_type, "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text("Main Element", "header3")
-        summary_table <- teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack)
-        if (!is.null(summary_table)) card$append_table(summary_table)
+        summary_table <- tryCatch(
+          expr = teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack),
+          warning = function(e) "warning"
+        )
+
+        if (inherits(summary_table, "data.frame")) {
+          card$append_text("Summary Table", "header3")
+          card$append_table(summary_table)
+        }
+        card$append_text(tab_type, "header3")
         if (tab_type == "Boxplot") {
           card$append_plot(box_plot_plot_r(), dim = box_brush$dim())
-        } else if (tab_type == "Density plot") {
+        } else if (tab_type == "Density Plot") {
           card$append_plot(density_plot_plot_r(), dim = density_brush$dim())
-        } else if (tab_type == "Cumulative distribution plot") {
+        } else if (tab_type == "Cumulative Distribution Plot") {
           card$append_plot(cumulative_plot_plot_r(), dim = cum_density_brush$dim())
         }
         if (!comment == "") {

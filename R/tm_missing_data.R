@@ -191,7 +191,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       )
     ),
     tabPanel(
-      "By variable levels",
+      "By Variable Levels",
       teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
       DT::dataTableOutput(ns("levels_table"))
     )
@@ -290,7 +290,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"By variable levels\"", ns("summary_type")),
+      sprintf("$(\"#%s > li.active\").text().trim() == \"By Variable Levels\"", ns("summary_type")),
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
@@ -368,7 +368,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         )
       }
 
-      if (input$summary_type == "By variable levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
+      if (input$summary_type == "By Variable Levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
         common_stack_push(
           id = "ANL_FILTERED_group_var_call",
           substitute(
@@ -943,7 +943,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
     })
 
     table_chunks <- reactive({
-      req(input$summary_type == "By variable levels") # needed to trigger show r code update on tab change
+      req(input$summary_type == "By Variable Levels") # needed to trigger show r code update on tab change
       teal::validate_has_data(data(), 1)
 
       # Create a private stack for this function only.
@@ -1215,17 +1215,17 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
         summary_type <- input$summary_type
-        title <- paste0(summary_type, " plot")
-        card$set_name(paste0("Missing data - ", title))
+        title <- if (summary_type == "By Variable Levels") paste0(summary_type, " Table") else paste0(summary_type, " Plot")
+        card$set_name(paste0("Missing Data - ", summary_type))
         card$append_text(title, "header2")
         card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
-        card$append_text("Main Element", "header3")
+        card$append_text(title, "header3")
         if (summary_type == "Summary") {
           card$append_plot(summary_plot_r(), dim = pws1$dim())
         } else if (summary_type == "Combinations") {
           card$append_plot(combination_plot_r(), dim = pws2$dim())
-        } else if (summary_type == "By variable levels") {
+        } else if (summary_type == "By Variable Levels") {
           card$append_table(teal.code::chunks_get_var("summary_data", table_chunks()))
         } else if (summary_type == "Grouped by Subject") {
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
