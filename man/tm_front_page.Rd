@@ -14,7 +14,7 @@ tm_front_page(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
 element, if named the name is shown first in bold as a header followed by the value. The first

@@ -131,6 +131,14 @@ ui_variable_browser <- function(id,
       column(
         6,
         teal.widgets::white_small_well(
+          ### Reporter
+          shiny::tags$div(
+            teal.reporter::add_card_button_ui(ns("addReportCard")),
+            teal.reporter::download_report_button_ui(ns("downloadButton")),
+            teal.reporter::reset_report_button_ui(ns("resetButton"))
+          ),
+          shiny::tags$br(),
+          ###
           div(
             class = "clearfix",
             style = "margin: 15px 15px 0px 15px;",
@@ -168,7 +176,8 @@ ui_variable_browser <- function(id,
   )
 }
 
-srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) {
+srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggplot2_args) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
 
     # if there are < this number of unique records then a numeric
@@ -397,7 +406,7 @@ srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) 
       )
     })
 
-    teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "variable_plot",
       plot_r = variable_plot_r,
       height = c(500, 200, 2000)
@@ -416,6 +425,29 @@ srv_variable_browser <- function(id, datasets, datasets_selected, ggplot2_args) 
         }
       )
     })
+
+    ### REPORTER
+    if (with_reporter) {
+      card_fun <- function(comment) {
+        card <- teal.reporter::TealReportCard$new()
+        card$set_name("Variable Browser Plot")
+        card$append_text("Variable Browser Plot", "header2")
+        card$append_text("Filter State", "header3")
+        card$append_fs(datasets$get_filter_state())
+        card$append_text("Plot", "header3")
+        card$append_plot(variable_plot_r(), dim = pws$dim())
+        if (!comment == "") {
+          card$append_text("Comment", "header3")
+          card$append_text(comment)
+        }
+        card
+      }
+
+      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
+      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
+      teal.reporter::reset_report_button_srv("resetButton", reporter)
+    }
+    ###
   })
 }
 

@@ -24,7 +24,7 @@ tm_g_response(
 )
 }
 \arguments{
-\item{label}{(\code{character}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use as the response. You can define one fixed column by using the
