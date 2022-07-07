@@ -113,11 +113,6 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
       )
     ),
     encoding = div(
-      tags$label("Encodings", class = "text-primary"),
-      helpText(
-        paste0("Dataset", `if`(length(datanames) > 1, "s", ""), ":"),
-        tags$code(paste(datanames, collapse = ", "))
-      ),
       tagList(
         lapply(
           datanames,
@@ -127,7 +122,8 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
               encoding_missing_data(
                 id = ns(x),
                 summary_per_patient = if_subject_plot,
-                ggtheme = ggtheme
+                ggtheme = ggtheme,
+                datanames = datanames
               )
             )
           }
@@ -227,7 +223,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
-encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames) {
   ns <- NS(id)
 
   tagList(
@@ -239,6 +235,11 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme) {
     ),
     shiny::tags$br(),
     ###
+    tags$label("Encodings", class = "text-primary"),
+    helpText(
+      paste0("Dataset", `if`(length(datanames) > 1, "s", ""), ":"),
+      tags$code(paste(datanames, collapse = ", "))
+    ),
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
