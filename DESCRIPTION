@@ -64,6 +64,7 @@ Imports:
     utils
 Suggests:
     knitr,
+    nestcolor,
     rmarkdown,
     scda (>= 0.1.3),
     scda.2021 (>= 0.1.3),
@@ -72,6 +73,7 @@ Suggests:
 VignetteBuilder:
     knitr
 Remotes:
+    insightsengineering/nestcolor@*release,
     insightsengineering/scda.2021@*release,
     insightsengineering/scda@*release,
     insightsengineering/teal.code@*release,

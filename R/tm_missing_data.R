@@ -15,6 +15,7 @@
 #' @export
 #'
 #' @examples
+#' library(nestcolor)
 #' library(scda)
 #'
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
@@ -609,7 +610,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
             geom_bar(position = "fill", stat = "identity") +
             scale_fill_manual(
               name = "",
-              values = c("grey90", "#ff2951ff"),
+              values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
               labels = c("Present", "Missing")
             ) +
             scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
@@ -698,7 +699,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
               scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
               scale_fill_manual(
                 name = "",
-                values = c("grey90", "#ff2951ff"),
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
               geom_text(
@@ -888,7 +889,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
               dplyr::select(id, n) %>%
               dplyr::distinct() %>%
               ggplot(aes(x = id, y = n)) +
-              geom_bar(stat = "identity", fill = "#ff2951ff") +
+              geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
               geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
               ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
               labs1 +
@@ -903,7 +904,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
               geom_tile(alpha = 0.85, height = 0.95) +
               scale_fill_manual(
                 name = "",
-                values = c("grey90", "#ff2951ff"),
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
               geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
@@ -1143,7 +1144,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
               ) +
               scale_fill_manual(
                 name = "",
-                values = c("grey90", "#ff2951ff"),
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing (at least one)")
               ) +
               labs +
