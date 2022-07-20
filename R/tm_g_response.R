@@ -26,6 +26,7 @@
 #' @export
 #' @examples
 #' # Response plot with selected response (BMRKR1) and selected x variable (RACE)
+#' library(nestcolor)
 #' library(scda)
 #'
 #' ADSL <- synthetic_cdisc_data("latest")$adsl

@@ -72,6 +72,7 @@ Principal component analysis module
 
 # ADSL example
 
+library(nestcolor)
 library(scda)
 ADSL <- synthetic_cdisc_data("latest")$adsl
 

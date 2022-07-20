@@ -48,6 +48,7 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 Present analysis of missing observations and patients.
 }
 \examples{
+library(nestcolor)
 library(scda)
 
 ADSL <- synthetic_cdisc_data("latest")$adsl

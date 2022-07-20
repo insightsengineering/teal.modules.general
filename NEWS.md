@@ -11,6 +11,7 @@
 * Output integers without decimal places when selecting points in `tm_g_scatterplot`.
 * Improved the names of the code chunks shown in `Debug Info`.
 * Improved a validation message when the number of regressors is too big in `tm_a_regression.R`.
+* Implemented `nestcolor` in examples, refactored `tm_a_pca` and `tm_missing_data` to allow use of `nestcolor`.
 
 ### Bug fixes
 * Fixed a wrong validation in `tm_a_pca`.

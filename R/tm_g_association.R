@@ -25,6 +25,7 @@
 #' @examples
 #' # Association plot of selected reference variable (SEX)
 #' # against other selected variables (BMRKR1)
+#' library(nestcolor)
 #' library(scda)
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'

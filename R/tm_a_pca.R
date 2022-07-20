@@ -24,6 +24,7 @@
 #'
 #' # ADSL example
 #'
+#' library(nestcolor)
 #' library(scda)
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
@@ -464,6 +465,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
                 component = factor(component, levels = unique(stringr::str_sort(component, numeric = TRUE)))
               )
 
+            cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
             g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
               geom_bar(
                 aes(fill = "Single variance"),
@@ -480,8 +482,8 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
                 data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
               ) +
               labs +
-              scale_color_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "black")) +
-              scale_fill_manual(values = c("Cumulative variance" = "darkred", "Single variance" = "lightblue")) +
+              scale_color_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[3])) +
+              scale_fill_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[1])) +
               ggthemes +
               themes
 
@@ -713,8 +715,8 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
 
           quote(
             scale_color_gradient(
-              low = "darkred",
-              high = "lightblue",
+              low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+              high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
               labels = function(x) as.Date(x, origin = "1970-01-01")
             )
           )
@@ -723,7 +725,10 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             id = "pca_plot_response",
             quote(pca_rot$response <- response)
           )
-          quote(scale_color_gradient(low = "darkred", high = "lightblue"))
+          quote(scale_color_gradient(
+            low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+            high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+          ))
         }
 
         pca_plot_biplot_expr <- c(
@@ -851,7 +856,11 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         list(
           quote(ggplot(pca_rot)),
           substitute(
-            geom_bar(aes_string(x = "Variable", y = pc), stat = "identity", color = "black", fill = "lightblue"),
+            geom_bar(aes_string(x = "Variable", y = pc),
+              stat = "identity",
+              color = "black",
+              fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+            ),
             env = list(pc = pc)
           ),
           substitute(

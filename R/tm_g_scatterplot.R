@@ -36,6 +36,7 @@
 #' @export
 #' @examples
 #' # Scatterplot of variables from ADSL dataset
+#' library(nestcolor)
 #' library(scda)
 #'
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
