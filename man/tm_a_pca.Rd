@@ -16,7 +16,7 @@ tm_a_pca(
   font_size = c(12, 8, 20),
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
-  pre_output = NULL ,
+  pre_output = NULL,
   post_output = NULL
 )
 }
