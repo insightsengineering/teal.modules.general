@@ -112,11 +112,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
     ),
     encoding = div(
       ### Reporter
-      shiny::tags$div(
-        teal.reporter::add_card_button_ui(ns("addReportCard")),
-        teal.reporter::download_report_button_ui(ns("downloadButton")),
-        teal.reporter::reset_report_button_ui(ns("resetButton"))
-      ),
+      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       shiny::tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
@@ -338,7 +334,6 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Scatter Plot Matrix")
         card$append_text("Scatter Plot Matrix", "header2")
-        card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
@@ -346,19 +341,15 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_text("Show R Code", "header3")
         card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          chunks = teal.code::get_chunks_object(parent_idx = 2L),
           datasets = datasets,
           title = "",
           description = ""
         ), collapse = "\n"))
         card
       }
-
-      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
-      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
-      teal.reporter::reset_report_button_srv("resetButton", reporter)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })
