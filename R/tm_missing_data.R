@@ -229,11 +229,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 
   tagList(
     ### Reporter
-    shiny::tags$div(
-      teal.reporter::add_card_button_ui(ns("addReportCard")),
-      teal.reporter::download_report_button_ui(ns("downloadButton")),
-      teal.reporter::reset_report_button_ui(ns("resetButton"))
-    ),
+    teal.reporter::simple_reporter_ui(ns("simple_reporter")),
     shiny::tags$br(),
     ###
     tags$label("Encodings", class = "text-primary"),
@@ -1219,7 +1215,6 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         card$set_name(paste0("Missing Data - ", sum_type))
         card$append_text(title, "header2")
-        card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
@@ -1238,19 +1233,15 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_text("Show R Code", "header3")
         card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          chunks = teal.code::get_chunks_object(parent_idx = 2L),
           datasets = datasets,
           title = "",
           description = ""
         ), collapse = "\n"))
         card
       }
-
-      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
-      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
-      teal.reporter::reset_report_button_srv("resetButton", reporter)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })
