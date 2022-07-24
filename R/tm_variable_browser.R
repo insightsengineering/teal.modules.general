@@ -99,11 +99,11 @@ ui_variable_browser <- function(id,
                         tabPanel(
                           dataname,
                           div(
-                            class = "mt-15px",
+                            class = "mt-4",
                             textOutput(ns(paste0("dataset_summary_", dataname)))
                           ),
                           div(
-                            class = "mt-15px",
+                            class = "mt-4",
                             teal.widgets::get_dt_rows(
                               ns(paste0(
                                 "variable_browser_", dataname
@@ -146,7 +146,7 @@ ui_variable_browser <- function(id,
             shiny::tags$br(),
             ###
             div(
-              class = "clearfix mt-15px mr-15px ml-15px",
+              class = "clearfix mt-4 mr-4 ml-4",
               div(
                 class = "pull-left",
                 shinyWidgets::switchInput(
@@ -160,11 +160,11 @@ ui_variable_browser <- function(id,
               )
             ),
             div(
-              class = "clearfix mr-15px mb-15px ml-15px",
+              class = "clearfix mr-4 mb-4 ml-4",
               uiOutput(ns("ui_histogram_display"))
             ),
             div(
-              class = "clearfix mr-15px mb-15px l-15px",
+              class = "clearfix mr-4 mb-4 ml-4",
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
@@ -267,7 +267,7 @@ srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggpl
           )
         ),
         div(
-          class = "ml-15px",
+          class = "ml-4",
           uiOutput(session$ns("ui_density_help")),
           uiOutput(session$ns("ui_outlier_help"))
         )

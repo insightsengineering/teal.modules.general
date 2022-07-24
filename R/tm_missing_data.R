@@ -94,7 +94,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         div(
-          class = "display-flex",
+          class = "flex",
           column(
             width = 12,
             do.call(
@@ -109,7 +109,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
                       column(
                         width = 12,
                         div(
-                          class = "mt-15px",
+                          class = "mt-4",
                           ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
                         )
                       )
@@ -253,9 +253,9 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      span("Select only vars with missings", class = "white-space-normal"),
+      span("Select only vars with missings", class = "whitespace-normal"),
       width = "100%",
-      class = "mb-15px"
+      class = "mb-4"
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),

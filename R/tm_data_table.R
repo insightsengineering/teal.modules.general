@@ -247,7 +247,7 @@ ui_page_data_table <- function(id,
                     column(
                       width = 12,
                       div(
-                        class = "mt-15px",
+                        class = "mt-4",
                         ui_data_table(
                           id = ns(x),
                           choices = choices,

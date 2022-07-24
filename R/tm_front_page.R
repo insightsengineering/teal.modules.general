@@ -90,25 +90,25 @@ ui_front_page <- function(id, ...) {
     ),
     tags$div(
       id = "front_page_content",
-      class = "ml-30px",
+      class = "ml-8",
       tags$div(
         id = "front_page_headers",
         get_header_tags(args$header_text)
       ),
       tags$div(
         id = "front_page_tables",
-        class = "ml-15px",
+        class = "ml-4",
         get_table_tags(args$tables, ns)
       ),
       tags$div(
         id = "front_page_custom_html",
-        class = "mt-15px mb-15px",
+        class = "my-4",
         args$additional_tags
       ),
       if (args$show_metadata) {
         tags$div(
           id = "front_page_metabutton",
-          class = "m-15px",
+          class = "m-4",
           actionButton(ns("metadata_button"), "Show metadata")
         )
       },

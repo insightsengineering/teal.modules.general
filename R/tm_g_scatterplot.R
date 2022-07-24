@@ -310,16 +310,16 @@ ui_g_scatterplot <- function(id, ...) {
             div(
               id = ns("label_pos"),
               div(strong("Stats position")),
-              div(class = "display-inline-block w-10", helpText("Left")),
+              div(class = "inline-block w-10", helpText("Left")),
               div(
-                class = "display-inline-block w-70",
+                class = "inline-block w-70",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
                   label = NULL,
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              div(class = "display-inline-block w-10", helpText("Right"))
+              div(class = "inline-block w-10", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
