@@ -129,7 +129,6 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
     encoding = div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      shiny::tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(list(x, y)),

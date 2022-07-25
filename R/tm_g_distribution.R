@@ -175,7 +175,6 @@ ui_distribution <- function(id, ...) {
     encoding = div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      shiny::tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("dist_var", "strata_var")]),

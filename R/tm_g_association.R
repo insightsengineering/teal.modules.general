@@ -144,7 +144,6 @@ ui_tm_g_association <- function(id, ...) {
     encoding = div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      shiny::tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("ref", "vars")]),

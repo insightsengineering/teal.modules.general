@@ -133,7 +133,6 @@ ui_variable_browser <- function(id,
         teal.widgets::white_small_well(
           ### Reporter
           teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-          shiny::tags$br(),
           ###
           div(
             class = "clearfix",
