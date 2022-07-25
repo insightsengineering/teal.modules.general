@@ -1,7 +1,6 @@
-/* simple custom css rules
-   not transfered to teal as in future the tmg modules will be independent of it */
-
-/*tailwindcss inspired naming*/
+/* teal.modules.general custom css */
+/* not transfered to teal as in future the tmg modules will be independent of it */
+/* tailwindcss inspired naming */
 
 .text-blue {
     color: blue;
