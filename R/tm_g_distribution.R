@@ -253,7 +253,7 @@ ui_distribution <- function(id, ...) {
             class = "teal-tooltip",
             tagList(
               "Distribution:",
-              icon("info-circle"),
+              icon("circle-info"),
               span(
                 class = "tooltiptext",
                 "Default parameters are optimized with MASS::fitdistr function."
