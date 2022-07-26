@@ -251,7 +251,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
           class = "teal-tooltip",
           tagList(
             "Add **anyna** variable",
-            icon("info-circle"),
+            icon("circle-info"),
             span(
               class = "tooltiptext",
               "Describes the number of observations with at least one missing value in any variable."
@@ -267,7 +267,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
             class = "teal-tooltip",
             tagList(
               "Add summary per patients",
-              icon("info-circle"),
+              icon("circle-info"),
               span(
                 class = "tooltiptext",
                 paste(

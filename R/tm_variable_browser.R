@@ -330,7 +330,7 @@ srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggpl
           class = "teal-tooltip",
           tagList(
             "Outlier definition:",
-            icon("info-circle"),
+            icon("circle-info"),
             span(
               class = "tooltiptext",
               paste(
