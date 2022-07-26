@@ -239,8 +239,8 @@ variable_type_icons <- function(var_type) {
   checkmate::assert_character(var_type, any.missing = FALSE)
 
   class_to_icon <- list(
-    numeric = "sort-numeric-up",
-    integer = "sort-numeric-up",
+    numeric = "arrow-up-1-9",
+    integer = "arrow-up-1-9",
     logical = "pause",
     Date = "calendar",
     POSIXct = "calendar",
@@ -248,7 +248,7 @@ variable_type_icons <- function(var_type) {
     factor = "chart-bar",
     character = "keyboard",
     primary_key = "key",
-    unknown = "question-circle"
+    unknown = "circle-question"
   )
   class_to_icon <- lapply(class_to_icon, function(icon_name) toString(icon(icon_name, lib = "font-awesome")))
 
