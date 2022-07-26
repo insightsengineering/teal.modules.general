@@ -845,10 +845,10 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
               all_categories <- lapply(
                 unique(anl[[categorical_var]]),
                 function(x) {
-                  anl_filtered <- anl %>% dplyr::filter(get(categorical_var) == x)
+                  anl <- anl %>% dplyr::filter(get(categorical_var) == x)
                   anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(categorical_var) == x)
-                  ecdf_df <- anl_filtered %>%
-                    dplyr::mutate(y = stats::ecdf(anl_filtered[[outlier_var]])(anl_filtered[[outlier_var]]))
+                  ecdf_df <- anl %>%
+                    dplyr::mutate(y = stats::ecdf(anl[[outlier_var]])(anl[[outlier_var]]))
 
                   dplyr::left_join(
                     ecdf_df,
