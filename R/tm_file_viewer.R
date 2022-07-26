@@ -101,7 +101,7 @@ ui_viewer <- function(id, ...) {
         uiOutput(ns("output"))
       ),
       encoding = div(
-        id = "file_viewer_encoding",
+        class = "file_viewer_encoding",
         tags$label("Encodings", class = "text-primary"),
         shinyTree::shinyTree(
           ns("tree"),
@@ -162,7 +162,7 @@ srv_viewer <- function(id, datasets, input_path) {
         tags$img(src = con_type$selected_path, alt = "file does not exist")
       } else if (file_extension == "pdf") {
         tags$embed(
-          id = "embed_pdf",
+          class = "embed_pdf",
           src = con_type$selected_path
         )
       } else if (!isFALSE(con_type$output_text[1])) {

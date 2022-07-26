@@ -1,5 +1,5 @@
 /* teal.modules.general custom css */
-/* not transfered to teal as in future the tmg modules will be independent of it */
+
 /* tailwindcss inspired naming */
 
 .text-blue {
@@ -66,12 +66,12 @@
 /* per module rules */
 
 /* file viewer */
-#file_viewer_encoding {
+.file_viewer_encoding {
   overflow-y: hidden;
   overflow-x: auto;
 }
 
-#embed_pdf {
+.embed_pdf {
   height:600px;
   width:100%
 }
