@@ -146,25 +146,22 @@ ui_variable_browser <- function(id,
             shiny::tags$br(),
             ###
             div(
-              class = "clearfix mt-4 mr-4 ml-4",
-              div(
-                class = "pull-left",
-                shinyWidgets::switchInput(
-                  inputId = ns("raw_or_filtered"),
-                  label = "Use filtered data",
-                  value = TRUE,
-                  width = "100%",
-                  labelWidth = "130px",
-                  handleWidth = "50px"
-                )
+              class = "block mb-8",
+              shinyWidgets::switchInput(
+                inputId = ns("raw_or_filtered"),
+                label = "Use filtered data",
+                value = TRUE,
+                width = "100%",
+                labelWidth = "130px",
+                handleWidth = "50px"
               )
             ),
             div(
-              class = "clearfix mr-4 mb-4 ml-4",
+              class = "block",
               uiOutput(ns("ui_histogram_display"))
             ),
             div(
-              class = "clearfix mr-4 mb-4 ml-4",
+              class = "block",
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
