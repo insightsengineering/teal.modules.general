@@ -187,7 +187,7 @@ ui_a_regression <- function(id, ...) {
           class = "teal-tooltip",
           tagList(
             "Outlier definition:",
-            icon("info-circle"),
+            icon("circle-info"),
             span(
               class = "tooltiptext",
               paste(
