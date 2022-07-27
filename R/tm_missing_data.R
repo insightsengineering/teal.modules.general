@@ -238,12 +238,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 
   tagList(
     ### Reporter
-    shiny::tags$div(
-      teal.reporter::add_card_button_ui(ns("addReportCard")),
-      teal.reporter::download_report_button_ui(ns("downloadButton")),
-      teal.reporter::reset_report_button_ui(ns("resetButton"))
-    ),
-    shiny::tags$br(),
+    teal.reporter::simple_reporter_ui(ns("simple_reporter")),
     ###
     tags$label("Encodings", class = "text-primary"),
     helpText(
@@ -357,32 +352,32 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         teal.code::chunks_push(..., chunks = common_stack)
       }
 
-      anl_name <- paste0(dataname, "_FILTERED")
-      anl_filtered <- datasets$get_data(dataname, filtered = TRUE)
-      assign(anl_name, anl_filtered)
+      anl_name <- dataname
+      anl <- datasets$get_data(dataname, filtered = TRUE)
+      assign(anl_name, anl)
       teal.code::chunks_reset(chunks = common_stack)
       group_var <- input$group_by_var
 
-      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         common_stack_push(
-          id = "ANL_FILTERED_selection_call",
+          id = "ANL_selection_call",
           expression = substitute(
-            expr = ANL_FILTERED <- anl_name[, selected_vars], # nolint
+            expr = ANL <- anl_name[, selected_vars], # nolint
             env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
           )
         )
       } else {
         common_stack_push(
-          id = "ANL_FILTERED_call",
-          expression = substitute(expr = ANL_FILTERED <- anl_name, env = list(anl_name = as.name(anl_name))) # nolint
+          id = "ANL_call",
+          expression = substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(anl_name))) # nolint
         )
       }
 
       if (input$summary_type == "By Variable Levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
         common_stack_push(
-          id = "ANL_FILTERED_group_var_call",
+          id = "ANL_group_var_call",
           substitute(
-            expr = ANL_FILTERED[[group_var]] <- anl_name[[group_var]], # nolint
+            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
             env = list(group_var = group_var, anl_name = as.name(anl_name))
           )
         )
@@ -540,7 +535,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         summary_stack_push(
           id = "ANL_na_column_call",
           expression = substitute(
-            expr = ANL_FILTERED[[new_col_name]] <- ifelse(rowSums(is.na(ANL_FILTERED)) > 0, NA, FALSE), # nolint
+            expr = AN[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
             env = list(new_col_name = new_col_name)
           )
         )
@@ -549,7 +544,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       summary_stack_push(
         id = "analysis_vars_call",
         expression = substitute(
-          expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+          expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
           env = list(data_keys = data_keys())
         )
       )
@@ -560,13 +555,13 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
           expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
             dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
             tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
-            dplyr::mutate(n_not_na = nrow(ANL_FILTERED) - n_na) %>%
+            dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
             tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-            dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL_FILTERED) * 100),
+            dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
           env = list(data_frame_call = if (!inherits(datasets$get_data(dataname, filtered = TRUE), "tbl_df")) {
-            quote(tibble::as_tibble(ANL_FILTERED))
+            quote(tibble::as_tibble(ANL))
           } else {
-            quote(ANL_FILTERED)
+            quote(ANL)
           })
         )
       )
@@ -655,13 +650,13 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         )
         summary_stack_push(
           id = "ndistinct_subjects_call",
-          expression = quote(ndistinct_subjects <- dplyr::n_distinct(ANL_FILTERED[, parent_keys]))
+          expression = quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys]))
         )
 
         summary_stack_push(
           id = "summary_plot_patients_call",
           expression = quote(
-            summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
               dplyr::group_by_at(parent_keys) %>%
               dplyr::summarise_all(anyNA) %>%
               tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
@@ -771,7 +766,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       teal.code::chunks_push(
         id = "combination_cutoff_call",
         expression = quote({
-          combination_cutoff <- ANL_FILTERED %>%
+          combination_cutoff <- ANL %>%
             dplyr::mutate_all(is.na) %>%
             dplyr::group_by_all() %>%
             dplyr::tally() %>%
@@ -965,8 +960,8 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       # Add common code into this stack
       teal.code::chunks_push_chunks(common_code_chunks(), chunks = table_stack)
 
-      # extract the ANL_FILTERED dataset for use in further validation
-      anl_filtered <- teal.code::chunks_get_var("ANL_FILTERED", chunks = table_stack)
+      # extract the ANL dataset for use in further validation
+      anl <- teal.code::chunks_get_var("ANL", chunks = table_stack)
 
       validate(need(input$count_type, "Please select type of counts"))
       if (!is.null(input$group_by_var)) {
@@ -978,7 +973,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       validate(
         need(
           is.null(group_var) ||
-            nrow(unique(anl_filtered[, group_var])) < 100,
+            nrow(unique(anl[, group_var])) < 100,
           "Please select group-by variable with fewer than 100 unique values"
         )
       )
@@ -988,10 +983,10 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       vars <- unique(variables_select, group_var)
       count_type <- input$count_type # nolint (local variable is assigned and used)
 
-      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl_filtered)) {
+      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         variables <- selected_vars() # nolint (local variable is assigned and used)
       } else {
-        variables <- colnames(anl_filtered)
+        variables <- colnames(anl)
       }
 
       summ_fn <- if (input$count_type == "counts") {
@@ -1006,7 +1001,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
           id = "summary_data_call_1",
           expression = substitute(
             expr = {
-              summary_data <- ANL_FILTERED %>%
+              summary_data <- ANL %>%
                 dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
                 dplyr::group_by_at(group_var) %>%
                 dplyr::filter(group_var_name %in% group_vals)
@@ -1028,11 +1023,11 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         table_stack_push(
           id = "summary_data_call_1",
           expression = substitute(
-            expr = summary_data <- ANL_FILTERED %>%
+            expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
               tidyr::pivot_longer(tidyselect::everything(),
                 names_to = "Variable",
-                values_to = paste0("Missing (N=", nrow(ANL_FILTERED), ")")
+                values_to = paste0("Missing (N=", nrow(ANL), ")")
               ) %>%
               dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
             env = list(summ_fn = summ_fn)
@@ -1074,7 +1069,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       by_subject_stack_push(
         id = "analysis_vars_call",
         expression = substitute(
-          expr = analysis_vars <- setdiff(colnames(ANL_FILTERED), data_keys),
+          expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
           env = list(data_keys = data_keys())
         )
       )
@@ -1082,7 +1077,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
       by_subject_stack_push(
         id = "summary_plot_patients_call",
         expression = quote({
-          summary_plot_patients <- ANL_FILTERED[, c(parent_keys, analysis_vars)] %>%
+          summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
             dplyr::group_by_at(parent_keys) %>%
             dplyr::mutate(id = dplyr::cur_group_id()) %>%
             dplyr::ungroup() %>%
@@ -1228,7 +1223,6 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         card$set_name(paste0("Missing Data - ", sum_type))
         card$append_text(title, "header2")
-        card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
@@ -1247,19 +1241,15 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_text("Show R Code", "header3")
         card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          chunks = teal.code::get_chunks_object(parent_idx = 2L),
           datasets = datasets,
           title = "",
           description = ""
         ), collapse = "\n"))
         card
       }
-
-      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
-      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
-      teal.reporter::reset_report_button_srv("resetButton", reporter)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })

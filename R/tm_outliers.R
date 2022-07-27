@@ -132,12 +132,7 @@ ui_outliers <- function(id, ...) {
     ),
     encoding = div(
       ### Reporter
-      shiny::tags$div(
-        teal.reporter::add_card_button_ui(ns("addReportCard")),
-        teal.reporter::download_report_button_ui(ns("downloadButton")),
-        teal.reporter::reset_report_button_ui(ns("resetButton"))
-      ),
-      shiny::tags$br(),
+      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("outlier_var", "categorical_var")]),
@@ -845,10 +840,10 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
               all_categories <- lapply(
                 unique(anl[[categorical_var]]),
                 function(x) {
-                  anl_filtered <- anl %>% dplyr::filter(get(categorical_var) == x)
+                  anl <- anl %>% dplyr::filter(get(categorical_var) == x)
                   anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(categorical_var) == x)
-                  ecdf_df <- anl_filtered %>%
-                    dplyr::mutate(y = stats::ecdf(anl_filtered[[outlier_var]])(anl_filtered[[outlier_var]]))
+                  ecdf_df <- anl %>%
+                    dplyr::mutate(y = stats::ecdf(anl[[outlier_var]])(anl[[outlier_var]]))
 
                   dplyr::left_join(
                     ecdf_df,
@@ -1164,7 +1159,6 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         tab_type <- input$tabs
         card$set_name(paste0("Outliers - ", tab_type))
         card$append_text(tab_type, "header2")
-        card$append_text("Filter State", "header3")
         card$append_fs(datasets$get_filter_state())
         summary_table <- tryCatch(
           expr = teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack),
@@ -1187,19 +1181,15 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_text("Show R Code", "header3")
         card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 1L),
+          chunks = teal.code::get_chunks_object(parent_idx = 2L),
           datasets = datasets,
           title = "",
           description = ""
         ), collapse = "\n"))
         card
       }
-
-      teal.reporter::add_card_button_srv("addReportCard", reporter = reporter, card_fun = card_fun)
-      teal.reporter::download_report_button_srv("downloadButton", reporter = reporter)
-      teal.reporter::reset_report_button_srv("resetButton", reporter)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })
