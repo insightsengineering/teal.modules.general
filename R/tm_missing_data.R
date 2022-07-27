@@ -85,54 +85,63 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
 
   if_subject_plot <- inherits(datasets, "CDISCFilteredData")
 
-  teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      div(
-        style = "display: flex;",
-        column(
-          width = 12,
-          do.call(
-            tabsetPanel,
-            c(
-              id = ns("dataname_tab"),
-              lapply(
-                datanames,
-                function(x) {
-                  tabPanel(
-                    title = x,
-                    column(
-                      width = 12,
-                      div(style = "height:10px;"),
-                      ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
+  shiny::tagList(
+    shiny::singleton(
+      tags$head(
+        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
+      )
+    ),
+    teal.widgets::standard_layout(
+      output = teal.widgets::white_small_well(
+        div(
+          class = "flex",
+          column(
+            width = 12,
+            do.call(
+              tabsetPanel,
+              c(
+                id = ns("dataname_tab"),
+                lapply(
+                  datanames,
+                  function(x) {
+                    tabPanel(
+                      title = x,
+                      column(
+                        width = 12,
+                        div(
+                          class = "mt-4",
+                          ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
+                        )
+                      )
                     )
-                  )
-                }
+                  }
+                )
               )
             )
           )
         )
-      )
-    ),
-    encoding = div(
-      tagList(
-        lapply(
-          datanames,
-          function(x) {
-            conditionalPanel(
-              sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
-              encoding_missing_data(
-                id = ns(x),
-                summary_per_patient = if_subject_plot,
-                ggtheme = ggtheme,
-                datanames = datanames
+      ),
+      encoding = div(
+        tagList(
+          lapply(
+            datanames,
+            function(x) {
+              conditionalPanel(
+                sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
+                encoding_missing_data(
+                  id = ns(x),
+                  summary_per_patient = if_subject_plot,
+                  ggtheme = ggtheme,
+                  datanames = datanames
+                )
               )
-            )
-          }
+            }
+          )
         )
-      )
-    ),
-    pre_output = pre_output,
-    post_output = post_output
+      ),
+      pre_output = pre_output,
+      post_output = post_output
+    )
   )
 }
 
@@ -239,9 +248,9 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      span(style = "white-space: normal;", "Select only vars with missings"),
+      span("Select only vars with missings", class = "whitespace-normal"),
       width = "100%",
-      style = "margin-bottom: 1rem;"
+      class = "mb-4"
     ),
     conditionalPanel(
       sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
