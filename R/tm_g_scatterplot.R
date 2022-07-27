@@ -227,18 +227,18 @@ ui_g_scatterplot <- function(id, ...) {
         tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
-    ),
-    encoding = div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
-      tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      teal.transform::data_extract_ui(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
+      ),
+      encoding = div(
+        ### Reporter
+        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+        ###
+        tags$label("Encodings", class = "text-primary"),
+        teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
+        teal.transform::data_extract_ui(
+          id = ns("x"),
+          label = "X variable",
+          data_extract_spec = args$x,
+          is_single_dataset = is_single_dataset_value
         ),
         teal.transform::data_extract_ui(
           id = ns("y"),
