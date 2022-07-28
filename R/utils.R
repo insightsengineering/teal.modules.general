@@ -289,4 +289,3 @@ include_css_files <- function(pattern = "*") {
   }
   return(shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS))))
 }
-
