@@ -73,72 +73,71 @@ ui_variable_browser <- function(id,
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
-  teal.widgets::standard_layout(
-    output = fluidRow(
-      htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
-      column(
-        6,
-        # variable browser
-        teal.widgets::white_small_well(
-          do.call(
-            tabsetPanel,
-            c(
-              id = ns("tabset_panel"),
-              do.call(
-                tagList,
-                stats::setNames(
-                  lapply(
-                    datanames,
-                    function(dataname) {
-                      tabPanel(
-                        dataname,
-                        div(
-                          style = "margin-top: 15px;",
-                          textOutput(ns(paste0("dataset_summary_", dataname)))
-                        ),
-                        div(
-                          style = "margin-top: 15px;",
-                          teal.widgets::get_dt_rows(
-                            ns(paste0(
-                              "variable_browser_", dataname
-                            )),
-                            ns(
-                              paste0("variable_browser_", dataname, "_rows")
-                            )
+  shiny::tagList(
+    include_css_files("custom"),
+    teal.widgets::standard_layout(
+      output = fluidRow(
+        htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
+        column(
+          6,
+          # variable browser
+          teal.widgets::white_small_well(
+            do.call(
+              tabsetPanel,
+              c(
+                id = ns("tabset_panel"),
+                do.call(
+                  tagList,
+                  stats::setNames(
+                    lapply(
+                      datanames,
+                      function(dataname) {
+                        tabPanel(
+                          dataname,
+                          div(
+                            class = "mt-4",
+                            textOutput(ns(paste0("dataset_summary_", dataname)))
                           ),
-                          DT::dataTableOutput(ns(paste0(
-                            "variable_browser_", dataname
-                          )), width = "100%")
+                          div(
+                            class = "mt-4",
+                            teal.widgets::get_dt_rows(
+                              ns(paste0(
+                                "variable_browser_", dataname
+                              )),
+                              ns(
+                                paste0("variable_browser_", dataname, "_rows")
+                              )
+                            ),
+                            DT::dataTableOutput(ns(paste0(
+                              "variable_browser_", dataname
+                            )), width = "100%")
+                          )
                         )
-                      )
-                    }
-                  ),
-                  NULL
+                      }
+                    ),
+                    NULL
+                  )
                 )
               )
-            )
-          ),
-          { # nolint
-            x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-            if (inherits(datasets, "CDISCFilteredData")) {
-              x
-            } else {
-              shinyjs::hidden(x)
+            ),
+            { # nolint
+              x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
+              if (inherits(datasets, "CDISCFilteredData")) {
+                x
+              } else {
+                shinyjs::hidden(x)
+              }
             }
-          }
-        )
-      ),
-      column(
-        6,
-        teal.widgets::white_small_well(
-          ### Reporter
-          teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-          ###
-          div(
-            class = "clearfix",
-            style = "margin: 15px 15px 0px 15px;",
+          )
+        ),
+        column(
+          6,
+          teal.widgets::white_small_well(
+            ### Reporter
+            teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+            ###
             div(
-              class = "pull-left",
+              class = "block mb-8",
               shinyWidgets::switchInput(
                 inputId = ns("raw_or_filtered"),
                 label = "Use filtered data",
@@ -147,27 +146,25 @@ ui_variable_browser <- function(id,
                 labelWidth = "130px",
                 handleWidth = "50px"
               )
-            )
-          ),
-          div(
-            class = "clearfix;",
-            style = "margin: 0px 15px 15px 15px;",
-            uiOutput(ns("ui_histogram_display"))
-          ),
-          div(
-            class = "clearfix;",
-            style = "margin: 0px 15px 15px 15px;",
-            uiOutput(ns("ui_numeric_display"))
-          ),
-          teal.widgets::plot_with_settings_ui(ns("variable_plot")),
-          br(),
-          teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
-          DT::dataTableOutput(ns("variable_summary_table"))
+            ),
+            div(
+              class = "block",
+              uiOutput(ns("ui_histogram_display"))
+            ),
+            div(
+              class = "block",
+              uiOutput(ns("ui_numeric_display"))
+            ),
+            teal.widgets::plot_with_settings_ui(ns("variable_plot")),
+            br(),
+            teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
+            DT::dataTableOutput(ns("variable_summary_table"))
+          )
         )
-      )
-    ),
-    pre_output = pre_output,
-    post_output = post_output
+      ),
+      pre_output = pre_output,
+      post_output = post_output
+    )
   )
 }
 
@@ -258,7 +255,7 @@ srv_variable_browser <- function(id, datasets, reporter, datasets_selected, ggpl
           )
         ),
         div(
-          style = "margin-left: 15px;",
+          class = "ml-4",
           uiOutput(session$ns("ui_density_help")),
           uiOutput(session$ns("ui_outlier_help"))
         )
@@ -482,7 +479,7 @@ create_sparklines <- function(arr, width = 150, ...) {
 #' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.default <- function(arr, width = 150, ...) { # nolint
-  return(as.character(tags$code("unsupported variable type", style = "color:blue")))
+  return(as.character(tags$code("unsupported variable type", class = "text-blue")))
 }
 
 #' Generates the HTML code for the \code{sparkline} widget
@@ -501,9 +498,9 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
   if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", style = "color:blue")))
+    return(as.character(tags$code("only NA", class = "text-blue")))
   } else if (bins == 1) {
-    return(as.character(tags$code("one date", style = "color:blue")))
+    return(as.character(tags$code("one date", class = "text-blue")))
   }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
@@ -541,9 +538,9 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
   if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", style = "color:blue")))
+    return(as.character(tags$code("only NA", class = "text-blue")))
   } else if (bins == 1) {
-    return(as.character(tags$code("one date-time", style = "color:blue")))
+    return(as.character(tags$code("one date-time", class = "text-blue")))
   }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
@@ -581,9 +578,9 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
   binwidth <- get_bin_width(arr_num, 1)
   bins <- floor(diff(range(arr_num)) / binwidth) + 1
   if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", style = "color:blue")))
+    return(as.character(tags$code("only NA", class = "text-blue")))
   } else if (bins == 1) {
-    return(as.character(tags$code("one date-time", style = "color:blue")))
+    return(as.character(tags$code("one date-time", class = "text-blue")))
   }
   counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
   max_value <- max(counts)
@@ -650,11 +647,11 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 
   counts <- table(arr)
   if (length(counts) >= 100) {
-    return(as.character(tags$code("> 99 levels", style = "color:blue")))
+    return(as.character(tags$code("> 99 levels", class = "text-blue")))
   } else if (length(counts) == 0) {
-    return(as.character(tags$code("no levels", style = "color:blue")))
+    return(as.character(tags$code("no levels", class = "text-blue")))
   } else if (length(counts) == 1) {
-    return(as.character(tags$code("one level", style = "color:blue")))
+    return(as.character(tags$code("one level", class = "text-blue")))
   }
 
   # Summarize the occurences of different levels
@@ -687,10 +684,10 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #' @rdname create_sparklines
 create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
   if (any(is.infinite(arr))) {
-    return(as.character(tags$code("infinite values", style = "color:blue")))
+    return(as.character(tags$code("infinite values", class = "text-blue")))
   }
   if (length(arr) > 100000) {
-    return(as.character(tags$code("Too many rows (>100000)", style = "color:blue")))
+    return(as.character(tags$code("Too many rows (>100000)", class = "text-blue")))
   }
 
   arr <- arr[!is.na(arr)]
