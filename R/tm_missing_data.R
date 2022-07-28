@@ -86,11 +86,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
   if_subject_plot <- inherits(datasets, "CDISCFilteredData")
 
   shiny::tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         div(

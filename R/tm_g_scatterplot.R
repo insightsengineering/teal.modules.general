@@ -216,11 +216,7 @@ ui_g_scatterplot <- function(id, ...) {
   )
 
   shiny::tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),

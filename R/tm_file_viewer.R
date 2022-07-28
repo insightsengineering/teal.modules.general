@@ -91,11 +91,7 @@ ui_viewer <- function(id, ...) {
   ns <- NS(id)
 
   shiny::tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = div(
         uiOutput(ns("output"))

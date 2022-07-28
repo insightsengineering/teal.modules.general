@@ -190,11 +190,7 @@ ui_page_data_table <- function(id,
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
   shiny::tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = tagList(
         fluidRow(
@@ -218,6 +214,7 @@ ui_page_data_table <- function(id,
           )
         ),
         fluidRow(
+          class = "mb-8",
           column(
             width = 12,
             do.call(
@@ -260,8 +257,7 @@ ui_page_data_table <- function(id,
               )
             )
           )
-        ),
-        div(style = "height:30px;")
+        )
       ),
       pre_output = pre_output,
       post_output = post_output

@@ -74,11 +74,7 @@ ui_variable_browser <- function(id,
   datanames <- get_datanames_selected(datasets, datasets_selected)
 
   shiny::tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = fluidRow(
         htmlwidgets::getDependency("sparkline"), # needed for sparklines to work

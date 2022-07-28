@@ -83,11 +83,7 @@ ui_front_page <- function(id, ...) {
   ns <- NS(id)
 
   tagList(
-    shiny::singleton(
-      tags$head(
-        shiny::includeCSS(system.file("css/custom.css", package = "teal.modules.general"))
-      )
-    ),
+    include_css_files("custom"),
     tags$div(
       id = "front_page_content",
       class = "ml-8",
