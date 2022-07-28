@@ -41,12 +41,12 @@
   display: inline-block;
 }
 
-.block {
-  display: block;
-}
-
 .flex {
   display: flex;
+}
+
+.block {
+  display: block;
 }
 
 .w-10 {
