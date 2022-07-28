@@ -215,121 +215,124 @@ ui_g_scatterplot <- function(id, ...) {
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-      tags$h1("Selected points:", style = "text-align:center; font-weight: bold; font-size:150%;"),
-      teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
-      DT::dataTableOutput(ns("data_table"), width = "100%")
-    ),
-    encoding = div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
-      tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
-      teal.transform::data_extract_ui(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
+  shiny::tagList(
+    include_css_files("custom"),
+    teal.widgets::standard_layout(
+      output = teal.widgets::white_small_well(
+        teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
+        tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
+        teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
+        DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-      teal.transform::data_extract_ui(
-        id = ns("y"),
-        label = "Y variable",
-        data_extract_spec = args$y,
-        is_single_dataset = is_single_dataset_value
-      ),
-      if (!is.null(args$color_by)) {
+      encoding = div(
+        ### Reporter
+        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+        ###
+        tags$label("Encodings", class = "text-primary"),
+        teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
         teal.transform::data_extract_ui(
-          id = ns("color_by"),
-          label = "Color by variable",
-          data_extract_spec = args$color_by,
+          id = ns("x"),
+          label = "X variable",
+          data_extract_spec = args$x,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$size_by)) {
+        ),
         teal.transform::data_extract_ui(
-          id = ns("size_by"),
-          label = "Size by variable",
-          data_extract_spec = args$size_by,
+          id = ns("y"),
+          label = "Y variable",
+          data_extract_spec = args$y,
           is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$row_facet)) {
-        teal.transform::data_extract_ui(
-          id = ns("row_facet"),
-          label = "Row facetting",
-          data_extract_spec = args$row_facet,
-          is_single_dataset = is_single_dataset_value
-        )
-      },
-      if (!is.null(args$col_facet)) {
-        teal.transform::data_extract_ui(
-          id = ns("col_facet"),
-          label = "Column facetting",
-          data_extract_spec = args$col_facet,
-          is_single_dataset = is_single_dataset_value
-        )
-      },
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
-          title = "Plot settings",
-          teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
-          teal.widgets::optionalSelectInput(
-            inputId = ns("shape"),
-            label = "Points shape:",
-            choices = args$shape,
-            selected = args$shape[1],
-            multiple = FALSE
-          ),
-          colourpicker::colourInput(ns("color"), "Points color:", "black"),
-          teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE, step = .1),
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
-          checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
-          checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
-          checkboxInput(ns("show_count"), "Show N (number of observations)", value = FALSE),
-          shinyjs::hidden(helpText(id = ns("line_msg"), "Trendline needs numeric X and Y variables")),
-          teal.widgets::optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
-          shinyjs::hidden(teal.widgets::optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
-          teal.widgets::optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
-          shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
-          shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
-          uiOutput(ns("num_na_removed")),
-          div(
-            id = ns("label_pos"),
-            div("Stats position", style = "font-weight: bold;"),
-            div(style = "display: inline-block; width: 10%", helpText("Left")),
-            div(
-              style = "display: inline-block; width: 70%",
-              teal.widgets::optionalSliderInput(
-                ns("pos"),
-                label = NULL,
-                min = 0, max = 1, value = .99, ticks = FALSE, step = .01
-              )
+        ),
+        if (!is.null(args$color_by)) {
+          teal.transform::data_extract_ui(
+            id = ns("color_by"),
+            label = "Color by variable",
+            data_extract_spec = args$color_by,
+            is_single_dataset = is_single_dataset_value
+          )
+        },
+        if (!is.null(args$size_by)) {
+          teal.transform::data_extract_ui(
+            id = ns("size_by"),
+            label = "Size by variable",
+            data_extract_spec = args$size_by,
+            is_single_dataset = is_single_dataset_value
+          )
+        },
+        if (!is.null(args$row_facet)) {
+          teal.transform::data_extract_ui(
+            id = ns("row_facet"),
+            label = "Row facetting",
+            data_extract_spec = args$row_facet,
+            is_single_dataset = is_single_dataset_value
+          )
+        },
+        if (!is.null(args$col_facet)) {
+          teal.transform::data_extract_ui(
+            id = ns("col_facet"),
+            label = "Column facetting",
+            data_extract_spec = args$col_facet,
+            is_single_dataset = is_single_dataset_value
+          )
+        },
+        teal.widgets::panel_group(
+          teal.widgets::panel_item(
+            title = "Plot settings",
+            teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+            teal.widgets::optionalSelectInput(
+              inputId = ns("shape"),
+              label = "Points shape:",
+              choices = args$shape,
+              selected = args$shape[1],
+              multiple = FALSE
             ),
-            div(style = "display: inline-block; width: 10%", helpText("Right"))
-          ),
-          teal.widgets::optionalSliderInput(
-            ns("label_size"), "Stats font size",
-            min = 3, max = 10, value = 5, ticks = FALSE, step = .1
-          ),
-          if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
-            checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
-          },
-          teal.widgets::optionalSelectInput(
-            inputId = ns("ggtheme"),
-            label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-            selected = args$ggtheme,
-            multiple = FALSE
+            colourpicker::colourInput(ns("color"), "Points color:", "black"),
+            teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE, step = .1),
+            checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+            checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
+            checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
+            checkboxInput(ns("show_count"), "Show N (number of observations)", value = FALSE),
+            shinyjs::hidden(helpText(id = ns("line_msg"), "Trendline needs numeric X and Y variables")),
+            teal.widgets::optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
+            shinyjs::hidden(teal.widgets::optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
+            teal.widgets::optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
+            shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
+            shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
+            uiOutput(ns("num_na_removed")),
+            div(
+              id = ns("label_pos"),
+              div(strong("Stats position")),
+              div(class = "inline-block w-10", helpText("Left")),
+              div(
+                class = "inline-block w-70",
+                teal.widgets::optionalSliderInput(
+                  ns("pos"),
+                  label = NULL,
+                  min = 0, max = 1, value = .99, ticks = FALSE, step = .01
+                )
+              ),
+              div(class = "inline-block w-10", helpText("Right"))
+            ),
+            teal.widgets::optionalSliderInput(
+              ns("label_size"), "Stats font size",
+              min = 3, max = 10, value = 5, ticks = FALSE, step = .1
+            ),
+            if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
+              checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
+            },
+            teal.widgets::optionalSelectInput(
+              inputId = ns("ggtheme"),
+              label = "Theme (by ggplot):",
+              choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+              selected = args$ggtheme,
+              multiple = FALSE
+            )
           )
         )
-      )
-    ),
-    forms = teal::get_rcode_ui(ns("rcode")),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+      ),
+      forms = teal::get_rcode_ui(ns("rcode")),
+      pre_output = args$pre_output,
+      post_output = args$post_output
+    )
   )
 }
 

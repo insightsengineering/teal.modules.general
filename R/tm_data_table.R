@@ -188,74 +188,80 @@ ui_page_data_table <- function(id,
   ns <- NS(id)
 
   datanames <- get_datanames_selected(datasets, datasets_selected)
-  teal.widgets::standard_layout(
-    output = tagList(
-      fluidRow(
-        column(
-          width = 6,
-          radioButtons(
-            ns("if_filtered"),
-            NULL,
-            choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
-            selected = TRUE,
-            inline = TRUE
+
+  shiny::tagList(
+    include_css_files("custom"),
+    teal.widgets::standard_layout(
+      output = tagList(
+        fluidRow(
+          column(
+            width = 6,
+            radioButtons(
+              ns("if_filtered"),
+              NULL,
+              choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
+              selected = TRUE,
+              inline = TRUE
+            )
+          ),
+          column(
+            width = 6,
+            checkboxInput(
+              ns("if_distinct"),
+              "Show only distinct rows:",
+              value = FALSE
+            )
           )
         ),
-        column(
-          width = 6,
-          checkboxInput(
-            ns("if_distinct"),
-            "Show only distinct rows:",
-            value = FALSE
-          )
-        )
-      ),
-      fluidRow(
-        column(
-          width = 12,
-          do.call(
-            tabsetPanel,
-            lapply(
-              datanames,
-              function(x) {
-                dataset <- datasets$get_data(x, filtered = FALSE)
-                choices <- names(dataset)
-                labels <- vapply(
-                  dataset,
-                  function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
-                  character(1)
-                )
-                names(choices) <- ifelse(
-                  is.na(labels) | labels == "",
-                  choices,
-                  paste(choices, labels, sep = ": ")
-                )
-                selected <- if (!is.null(selected[[x]])) {
-                  selected[[x]]
-                } else {
-                  utils::head(choices)
-                }
-                tabPanel(
-                  title = x,
-                  column(
-                    width = 12,
-                    div(style = "height:10px;"),
-                    ui_data_table(
-                      id = ns(x),
-                      choices = choices,
-                      selected = selected
+        fluidRow(
+          class = "mb-8",
+          column(
+            width = 12,
+            do.call(
+              tabsetPanel,
+              lapply(
+                datanames,
+                function(x) {
+                  dataset <- datasets$get_data(x, filtered = FALSE)
+                  choices <- names(dataset)
+                  labels <- vapply(
+                    dataset,
+                    function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                    character(1)
+                  )
+                  names(choices) <- ifelse(
+                    is.na(labels) | labels == "",
+                    choices,
+                    paste(choices, labels, sep = ": ")
+                  )
+                  selected <- if (!is.null(selected[[x]])) {
+                    selected[[x]]
+                  } else {
+                    utils::head(choices)
+                  }
+                  tabPanel(
+                    title = x,
+                    column(
+                      width = 12,
+                      div(
+                        class = "mt-4",
+                        ui_data_table(
+                          id = ns(x),
+                          choices = choices,
+                          selected = selected
+                        )
+                      )
                     )
                   )
-                )
-              }
+                }
+              )
             )
           )
         )
       ),
-      div(style = "height:30px;")
-    ),
-    pre_output = pre_output,
-    post_output = post_output
+      pre_output = pre_output,
+      post_output = post_output
+    )
   )
 }
 

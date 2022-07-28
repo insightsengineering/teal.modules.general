@@ -90,21 +90,24 @@ ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
 
-  teal.widgets::standard_layout(
-    output = div(
-      uiOutput(ns("output"))
-    ),
-    encoding = div(
-      tags$label("Encodings", class = "text-primary"),
-      shinyTree::shinyTree(
-        ns("tree"),
-        dragAndDrop = FALSE,
-        sort = FALSE,
-        wholerow = TRUE,
-        theme = "proton",
-        multiple = FALSE
+  shiny::tagList(
+    include_css_files("custom"),
+    teal.widgets::standard_layout(
+      output = div(
+        uiOutput(ns("output"))
       ),
-      style = "overflow-y: none; overflow-x: auto;"
+      encoding = div(
+        class = "file_viewer_encoding",
+        tags$label("Encodings", class = "text-primary"),
+        shinyTree::shinyTree(
+          ns("tree"),
+          dragAndDrop = FALSE,
+          sort = FALSE,
+          wholerow = TRUE,
+          theme = "proton",
+          multiple = FALSE
+        )
+      )
     )
   )
 }
@@ -155,7 +158,7 @@ srv_viewer <- function(id, datasets, input_path) {
         tags$img(src = con_type$selected_path, alt = "file does not exist")
       } else if (file_extension == "pdf") {
         tags$embed(
-          style = "height:600px; width:100%",
+          class = "embed_pdf",
           src = con_type$selected_path
         )
       } else if (!isFALSE(con_type$output_text[1])) {

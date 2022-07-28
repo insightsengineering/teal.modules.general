@@ -81,33 +81,35 @@ tm_front_page <- function(label = "Front page",
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
+
   tagList(
+    include_css_files("custom"),
     tags$div(
       id = "front_page_content",
-      style = "margin-left: 30px;",
+      class = "ml-8",
       tags$div(
         id = "front_page_headers",
         get_header_tags(args$header_text)
       ),
       tags$div(
         id = "front_page_tables",
-        style = "margin-left:30px;",
+        class = "ml-4",
         get_table_tags(args$tables, ns)
       ),
       tags$div(
         id = "front_page_custom_html",
-        style = "margin-top:30px;margin-bottom:30px;",
+        class = "my-4",
         args$additional_tags
       ),
       if (args$show_metadata) {
         tags$div(
           id = "front_page_metabutton",
-          style = "margin:30px;",
+          class = "m-4",
           actionButton(ns("metadata_button"), "Show metadata")
         )
       },
       tags$footer(
-        style = "font-size: 12px;",
+        class = ".small",
         get_footer_tags(args$footnotes)
       )
     )
