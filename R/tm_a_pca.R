@@ -146,6 +146,7 @@ ui_a_pca <- function(id, ...) {
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       tags$div(
+        class = "overflow-scroll",
         uiOutput(ns("tbl_importance_ui")),
         hr(),
         uiOutput(ns("tbl_eigenvector_ui")),
