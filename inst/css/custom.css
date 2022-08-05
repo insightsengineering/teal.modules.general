@@ -49,6 +49,10 @@
   display: block;
 }
 
+.overflow-scroll {
+  overflow: scroll;
+}
+
 .w-10 {
   width: 10%;
 }

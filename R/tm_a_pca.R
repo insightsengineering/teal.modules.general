@@ -143,101 +143,105 @@ ui_a_pca <- function(id, ...) {
     color_selector[[i]]$select$selected <- NULL
   }
 
-  teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      tags$div(
-        uiOutput(ns("tbl_importance_ui")),
-        hr(),
-        uiOutput(ns("tbl_eigenvector_ui")),
-        hr(),
-        teal.widgets::plot_with_settings_ui(id = ns("pca_plot"))
-      )
-    ),
-    encoding = div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
-      tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args["dat"]),
-      teal.transform::data_extract_ui(
-        id = ns("dat"),
-        label = "Data selection",
-        data_extract_spec = args$dat,
-        is_single_dataset = is_single_dataset_value
-      ),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
-          title = "Display",
-          collapsed = FALSE,
-          checkboxGroupInput(
-            ns("tables_display"),
-            "Tables display",
-            choices = c("PC importance" = "importance", "Eigenvectors" = "eigenvector"),
-            selected = c("importance", "eigenvector")
-          ),
-          radioButtons(
-            ns("plot_type"),
-            label = "Plot type",
-            choices = args$plot_choices,
-            selected = args$plot_choices[1]
-          )
-        ),
-        teal.widgets::panel_item(
-          title = "Pre-processing",
-          radioButtons(
-            ns("standardization"), "Standardization",
-            choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
-            selected = "center_scale"
-          ),
-          radioButtons(
-            ns("na_action"), "NA action",
-            choices = c("None" = "none", "Drop" = "drop"),
-            selected = "none"
-          )
-        ),
-        teal.widgets::panel_item(
-          title = "Selected plot specific settings",
-          collapsed = FALSE,
-          uiOutput(ns("plot_settings")),
-          conditionalPanel(
-            condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
-            list(
-              teal.transform::data_extract_ui(
-                id = ns("response"),
-                label = "Color by",
-                data_extract_spec = color_selector,
-                is_single_dataset = is_single_dataset_value
-              ),
-              teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
-              teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
-            )
-          )
-        ),
-        teal.widgets::panel_item(
-          title = "Plot settings",
-          collapsed = TRUE,
-          conditionalPanel(
-            condition = sprintf(
-              "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
-              ns("plot_type"),
-              ns("plot_type")
-            ),
-            list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
-          ),
-          teal.widgets::optionalSelectInput(
-            inputId = ns("ggtheme"),
-            label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
-            selected = args$ggtheme,
-            multiple = FALSE
-          ),
-          teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
+  shiny::tagList(
+    include_css_files("custom"),
+    teal.widgets::standard_layout(
+      output = teal.widgets::white_small_well(
+        tags$div(
+          class = "overflow-scroll",
+          uiOutput(ns("tbl_importance_ui")),
+          hr(),
+          uiOutput(ns("tbl_eigenvector_ui")),
+          hr(),
+          teal.widgets::plot_with_settings_ui(id = ns("pca_plot"))
         )
-      )
-    ),
-    forms = teal::get_rcode_ui(ns("rcode")),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+      ),
+      encoding = div(
+        ### Reporter
+        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+        ###
+        tags$label("Encodings", class = "text-primary"),
+        teal.transform::datanames_input(args["dat"]),
+        teal.transform::data_extract_ui(
+          id = ns("dat"),
+          label = "Data selection",
+          data_extract_spec = args$dat,
+          is_single_dataset = is_single_dataset_value
+        ),
+        teal.widgets::panel_group(
+          teal.widgets::panel_item(
+            title = "Display",
+            collapsed = FALSE,
+            checkboxGroupInput(
+              ns("tables_display"),
+              "Tables display",
+              choices = c("PC importance" = "importance", "Eigenvectors" = "eigenvector"),
+              selected = c("importance", "eigenvector")
+            ),
+            radioButtons(
+              ns("plot_type"),
+              label = "Plot type",
+              choices = args$plot_choices,
+              selected = args$plot_choices[1]
+            )
+          ),
+          teal.widgets::panel_item(
+            title = "Pre-processing",
+            radioButtons(
+              ns("standardization"), "Standardization",
+              choices = c("None" = "none", "Center" = "center", "Center & Scale" = "center_scale"),
+              selected = "center_scale"
+            ),
+            radioButtons(
+              ns("na_action"), "NA action",
+              choices = c("None" = "none", "Drop" = "drop"),
+              selected = "none"
+            )
+          ),
+          teal.widgets::panel_item(
+            title = "Selected plot specific settings",
+            collapsed = FALSE,
+            uiOutput(ns("plot_settings")),
+            conditionalPanel(
+              condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
+              list(
+                teal.transform::data_extract_ui(
+                  id = ns("response"),
+                  label = "Color by",
+                  data_extract_spec = color_selector,
+                  is_single_dataset = is_single_dataset_value
+                ),
+                teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+                teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
+              )
+            )
+          ),
+          teal.widgets::panel_item(
+            title = "Plot settings",
+            collapsed = TRUE,
+            conditionalPanel(
+              condition = sprintf(
+                "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+                ns("plot_type"),
+                ns("plot_type")
+              ),
+              list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
+            ),
+            teal.widgets::optionalSelectInput(
+              inputId = ns("ggtheme"),
+              label = "Theme (by ggplot):",
+              choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+              selected = args$ggtheme,
+              multiple = FALSE
+            ),
+            teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
+          )
+        )
+      ),
+      forms = teal::get_rcode_ui(ns("rcode")),
+      pre_output = args$pre_output,
+      post_output = args$post_output
+    )
   )
 }
 
