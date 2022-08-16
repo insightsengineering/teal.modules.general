@@ -517,9 +517,9 @@ srv_g_bivariate <- function(id,
       # Add labels to facets
       nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
       nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
-      with_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
+      without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
-      print_call <- if (with_facet) {
+      print_call <- if (without_facet) {
         quote(print(p))
       } else {
         substitute(
