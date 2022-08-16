@@ -823,13 +823,14 @@ srv_a_regression <- function(id,
       quosure <- if (input_type == "Response vs Regressor") {
         plot_type_0()
       } else {
+        plot_base_q <- plot_base()
         switch(input_type,
-          "Residuals vs Fitted" = plot_base() %>% plot_type_1(),
-          "Normal Q-Q" = plot_base() %>% plot_type_2(),
-          "Scale-Location" = plot_base() %>% plot_type_3(),
-          "Cook's distance" = plot_base() %>% plot_type_4(),
-          "Residuals vs Leverage" = plot_base() %>% plot_type_5(),
-          "Cook's dist vs Leverage" = plot_base() %>% plot_type_6()
+          "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
+          "Normal Q-Q" = plot_base_q %>% plot_type_2(),
+          "Scale-Location" = plot_base_q %>% plot_type_3(),
+          "Cook's distance" = plot_base_q %>% plot_type_4(),
+          "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
+          "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
       quosure
