@@ -377,8 +377,8 @@ srv_g_bivariate <- function(id,
     )
 
     anl_merged_q <- reactive({
-      new_quosure(env = data) %>%
-        eval_code(as.expression(anl_merged_input()$expr))
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -533,8 +533,8 @@ srv_g_bivariate <- function(id,
         )
       }
 
-      eval_code(merged$anl_q_r(), substitute(expr = p <- cl, env = list(cl = cl)), name = "plot_call") %>%
-        eval_code(print_call, name = "print_call")
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- cl, env = list(cl = cl)), name = "plot_call") %>%
+        teal.code::eval_code(print_call, name = "print_call")
     })
 
     plot_r <- shiny::reactive(output_q()[["p"]])
