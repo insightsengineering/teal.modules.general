@@ -234,7 +234,6 @@ srv_a_regression <- function(id,
                              default_outlier_label) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-
     selector_list <- teal.transform::data_extract_multiple_srv(list(response = response, regressor = regressor), data)
 
     anl_merged_input <- teal.transform::merge_expression_module(
@@ -352,7 +351,8 @@ srv_a_regression <- function(id,
 
       teal.code::eval_code(merged$anl_q_r(), "") %>%
         teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form)),
-                             name = "fit_lm_call") %>%
+          name = "fit_lm_call"
+        ) %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
             alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
@@ -486,18 +486,20 @@ srv_a_regression <- function(id,
         teal.code::eval_code(
           fit_r(),
           quote({
-          class(fit$residuals) <- NULL
+            class(fit$residuals) <- NULL
 
-          data <- fortify(fit)
+            data <- fortify(fit)
 
-          smooth <- function(x, y) {
-            as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
-          }
+            smooth <- function(x, y) {
+              as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
+            }
 
-          smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
+            smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
-          reg_form <- deparse(fit$call[[2]])
-        }), name = "plot_0_c_call")
+            reg_form <- deparse(fit$call[[2]])
+          }),
+          name = "plot_0_c_call"
+        )
       }
 
       plot_type_1 <- function(plot_base) {

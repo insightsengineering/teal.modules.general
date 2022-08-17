@@ -750,7 +750,6 @@ srv_distribution <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-
         ANL <- common_q()[["ANL"]] # nolint
         if ("params" %in% ls(common_q()@env)) {
           params <- common_q()[["params"]]

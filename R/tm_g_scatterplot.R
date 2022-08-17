@@ -756,7 +756,7 @@ srv_g_scatterplot <- function(id,
     plot_r <- reactive(output_q()[["p"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
-    brush <- teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "scatter_plot",
       plot_r = plot_r,
       height = plot_height,
@@ -765,7 +765,7 @@ srv_g_scatterplot <- function(id,
     )
 
     output$data_table <- DT::renderDataTable({
-      plot_brush <- brush$brush()
+      plot_brush <- pws$brush()
 
       if (!is.null(plot_brush)) {
         validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
@@ -806,7 +806,7 @@ srv_g_scatterplot <- function(id,
         card$append_text("Scatter Plot", "header2")
         card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = brush$dim())
+        card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
