@@ -214,7 +214,6 @@ srv_tm_g_association <- function(id,
                                  ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
       datasets = data
