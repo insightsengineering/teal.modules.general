@@ -207,6 +207,7 @@ ui_tm_g_association <- function(id, ...) {
 srv_tm_g_association <- function(id,
                                  data,
                                  reporter,
+                                 filter_panel_api,
                                  ref,
                                  vars,
                                  plot_height,
