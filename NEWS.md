@@ -1,7 +1,10 @@
-# teal.modules.general 0.2.14.9013
+# teal.modules.general 0.2.14.9014
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
+
+### Bug fixes
+* Fixed an overflow for very wide `tm_a_pca` tables.
 
 # teal.modules.general 0.2.14
 
