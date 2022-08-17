@@ -198,14 +198,14 @@ ui_tm_g_association <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
 srv_tm_g_association <- function(id,
-                                 datasets,
+                                 data,
                                  reporter,
                                  ref,
                                  vars,
@@ -214,34 +214,43 @@ srv_tm_g_association <- function(id,
                                  ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
 
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
-      datasets = datasets
+      datasets = data
     )
 
-    merged_data <- teal.transform::data_merge_srv(
-      datasets = datasets,
-      selector_list = selector_list
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      datasets = data,
+      selector_list = selector_list,
+      join_keys = attr(data, "join_keys")
     )
 
-    chunks_reactive <- reactive({
+    anl_merged_q <- reactive({
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
+
+    # chunks_reactive <- reactive({
+    output_q <- reactive({
       validate({
         need(
           !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
           "Please select reference and associated variables"
         )
       })
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data())
 
-      ANL <- teal.code::chunks_get_var("ANL") # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 3)
 
-      vars_names <- merged_data()$columns_source$vars
+      vars_names <- merged$anl_input_r()$columns_source$vars
 
-      ref_name <- as.vector(merged_data()$columns_source$ref)
+      ref_name <- as.vector(merged$anl_input_r()$columns_source$ref)
       association <- input$association
       show_dist <- input$show_dist
       log_transformation <- input$log_transformation
@@ -305,26 +314,10 @@ srv_tm_g_association <- function(id,
       # association
       ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-      teal.code::chunks_push(
-        id = "title_call",
-        expression = substitute(
-          expr = title <- new_title,
-          env = list(new_title = paste(
-            "Association",
-            ifelse(ref_class_cov == "NULL", "for", "between"),
-            paste(lapply(vars_names, function(x) {
-              if (is.numeric(ANL[[x]]) && log_transformation) {
-                varname_w_label(x, ANL, prefix = "Log of ")
-              } else {
-                varname_w_label(x, ANL)
-              }
-            }), collapse = " / "),
-            ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
-          ))
-        )
-      )
+      print_call <- quote(print(p))
 
-      teal.code::chunks_safe_eval()
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- ref_call, env = list(ref_call = ref_call)), name = "plot_call") %>%
+        teal.code::eval_code(print_call, name = "print_call")
 
       var_calls <- lapply(vars_names, function(var_i) {
         var_class <- class(ANL[[var_i]])
@@ -362,26 +355,16 @@ srv_tm_g_association <- function(id,
         )
       })
 
-      teal.code::chunks_push(
-        id = "plot_call",
-        expression = substitute(
-          expr = {
-            plots <- plot_calls
-            p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
-            grid::grid.newpage()
-            grid::grid.draw(p)
-          },
-          env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))
-        )
-      )
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = {
+        plots <- plot_calls
+        p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+        grid::grid.newpage()
+        grid::grid.draw(p)
+      }, env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))), name = "plot_call") %>%
+        teal.code::eval_code(print_call, name = "plot_call")
     })
 
-    plot_r <- reactive({
-      teal.code::chunks_uneval()
-      chunks_reactive()
-      teal.code::chunks_safe_eval()
-      teal.code::chunks_get_var(var = "p")
-    })
+    plot_r <- shiny::reactive(output_q()[["p"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -390,17 +373,10 @@ srv_tm_g_association <- function(id,
       width = plot_width
     )
 
-    output$title <- renderText({
-      chunks_reactive()
-      teal.code::chunks_get_var("title")
-    })
-
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(ref, vars)),
-      modal_title = "R Code for the Association Plot",
-      code_header = "Association Plot"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "Association Plot"
     )
 
     ### REPORTER
@@ -409,19 +385,14 @@ srv_tm_g_association <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Association Plot")
         card$append_text("Association Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
