@@ -150,18 +150,16 @@ ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
     pre_output = pre_output,
     post_output = post_output
   )
 }
 
-srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_args) {
+srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
 
     observeEvent(
       eventExpr = {
@@ -185,30 +183,39 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
       }
     })
 
-    merged_data_r <- teal.transform::data_merge_srv(
-      datasets = datasets,
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      datasets = data,
+      join_keys = attr(data, "join_keys"),
       selector_list = selector_list,
       merge_function = merge_function
+    )
+
+    anl_merged_q <- reactive({
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
     )
 
     x_ordered <- reactive({
       selector_list()$x()$select
     })
 
-    create_table <- reactive({
+    output_q <- reactive({
       validate({
         need(!is.null(selector_list()$x()) && !is.null(selector_list()$y()), "Please select row and column values")
       })
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data_r())
 
-      ANL <- teal.code::chunks_get_var("ANL") # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       # As this is a summary
       teal::validate_has_data(ANL, 3)
 
       x_name <- x_ordered()
-      y_name <- as.vector(merged_data_r()$columns_source$y)
+      y_name <- as.vector(merged$anl_input_r()$columns_source$y)
 
       validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
       validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
@@ -236,16 +243,6 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
         "(columns)"
       )
 
-      teal.code::chunks_push(
-        id = "title_call",
-        expression = substitute(
-          expr = {
-            title <- plot_title
-          },
-          env = list(plot_title = plot_title)
-        )
-      )
-
       labels_vec <- vapply( # nolint
         x_ordered(),
         varname_w_label,
@@ -253,92 +250,78 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
         ANL
       )
 
-      teal.code::chunks_push(
-        id = "lyt_call",
-        expression = substitute(
+      teal.code::eval_code(
+        merged$anl_q_r(),
+        substitute(
           expr = {
-            lyt <- basic_tables %>%
+            title <- plot_title
+          },
+          env = list(plot_title = plot_title)
+        ),
+        name = "title_call"
+      ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = {
+              lyt <- basic_tables %>%
               split_call %>% # styler: off
-              rtables::add_colcounts() %>%
-              tern::summarize_vars(
-                vars = x_name,
-                var_labels = labels_vec,
-                na.rm = FALSE,
-                denom = "N_col",
-                .stats = c("mean_sd", "median", "range", count_value)
-              )
-          },
-          env = list(
-            basic_tables = teal.widgets::parse_basic_table_args(
-              basic_table_args = teal.widgets::resolve_basic_table_args(basic_table_args)
-            ),
-            split_call = if (show_total) {
-              substitute(
-                expr = rtables::split_cols_by(
-                  y_name,
-                  split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
-                ),
-                env = list(y_name = y_name)
-              )
-            } else {
-              substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
+                rtables::add_colcounts() %>%
+                tern::summarize_vars(
+                  vars = x_name,
+                  var_labels = labels_vec,
+                  na.rm = FALSE,
+                  denom = "N_col",
+                  .stats = c("mean_sd", "median", "range", count_value)
+                )
             },
-            x_name = x_name,
-            labels_vec = labels_vec,
-            count_value = ifelse(show_percentage, "count_fraction", "count")
-          )
+            env = list(
+              basic_tables = teal.widgets::parse_basic_table_args(
+                basic_table_args = teal.widgets::resolve_basic_table_args(basic_table_args)
+              ),
+              split_call = if (show_total) {
+                substitute(
+                  expr = rtables::split_cols_by(
+                    y_name,
+                    split_fun = rtables::add_overall_level(label = "Total", first = FALSE)
+                  ),
+                  env = list(y_name = y_name)
+                )
+              } else {
+                substitute(rtables::split_cols_by(y_name), env = list(y_name = y_name))
+              },
+              x_name = x_name,
+              labels_vec = labels_vec,
+              count_value = ifelse(show_percentage, "count_fraction", "count")
+            )
+          ),
+          name = "lyt_call"
+        ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = {
+              ANL <- tern::df_explicit_na(ANL) # nolint
+              tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
+              tbl
+            },
+            env = list(y_name = y_name)
+          ),
+          name = "tbl_call"
         )
-      )
-
-      teal.code::chunks_push(
-        id = "tbl_call",
-        expression = substitute(
-          expr = {
-            ANL <- tern::df_explicit_na(ANL) # nolint
-            tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
-            tbl
-          },
-          env = list(y_name = y_name)
-        )
-      )
-
-      teal.code::chunks_safe_eval()
     })
 
-    output$title <- renderText({
-      create_table()
-      teal.code::chunks_get_var("title")
-    })
+    output$title <- renderText(output_q()[["title"]])
 
-    table <- reactive({
-      create_table()
-      teal.code::chunks_get_var("tbl")
-    })
+    table_r <- reactive(output_q()[["tbl"]])
 
     teal.widgets::table_with_settings_srv(
       id = "table",
-      table_r = table
+      table_r = table_r
     )
 
-    show_r_code_title <- reactive(
-      if (is.null(selector_list()$x()) || is.null(selector_list()$y())) {
-        paste("Cross-Table")
-      } else {
-        paste(
-          "Cross-Table of",
-          paste0(merged_data_r()$columns_source$x, collapse = ", "),
-          "vs.",
-          merged_data_r()$columns_source$y
-        )
-      }
-    )
-
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(x, y)),
-      modal_title = show_r_code_title(),
-      code_header = show_r_code_title()
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "Show R Code for Cross-Table"
     )
 
     ### REPORTER
@@ -347,19 +330,14 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Cross Table")
         card$append_text("Cross Table", "header2")
-        card$append_fs(datasets$get_filter_state())
+        card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Table", "header3")
-        card$append_table(table())
+        card$append_table(table_r())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

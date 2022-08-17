@@ -435,7 +435,6 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
-
       teal.code::eval_code(quosure, plot_call)
     })
 
