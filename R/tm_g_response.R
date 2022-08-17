@@ -206,15 +206,16 @@ ui_g_response <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
 srv_g_response <- function(id,
-                           datasets,
+                           data,
                            reporter,
+                           filter_panel_api,
                            response,
                            x,
                            row_facet,
@@ -224,12 +225,11 @@ srv_g_response <- function(id,
                            ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
     data_extract <- list(response, x, row_facet, col_facet)
     names(data_extract) <- c("response", "x", "row_facet", "col_facet")
     data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
     reactive_select_input <- reactive({
       selectors <- selector_list()
@@ -242,33 +242,44 @@ srv_g_response <- function(id,
       selectors
     })
 
-    merged_data <- teal.transform::data_merge_srv(
+    anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
-      datasets = datasets
+      datasets = data,
+      join_keys = attr(data, "join_keys")
     )
 
-    plot_r <- reactive({
+    anl_merged_q <- reactive({
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
+
+    output_q <- reactive({
       validate({
         need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
       })
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data())
 
-      ANL <- teal.code::chunks_get_var("ANL") # nolint
+      quosure <- merged$anl_q_r()
+
+      ANL <- quosure[["ANL"]] # nolint
       teal::validate_has_data(ANL, 10)
 
-      resp_var <- as.vector(merged_data()$columns_source$response)
-      x <- as.vector(merged_data()$columns_source$x)
+      resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
+      x <- as.vector(merged$anl_input_r()$columns_source$x)
 
-      row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      row_facet_name <- if (length(merged$anl_input_r()$columns_source$row_facet) == 0) {
         character(0)
       } else {
-        as.vector(merged_data()$columns_source$row_facet)
+        as.vector(merged$anl_input_r()$columns_source$row_facet)
       }
-      col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      col_facet_name <- if (length(merged$anl_input_r()$columns_source$col_facet) == 0) {
         character(0)
       } else {
-        as.vector(merged_data()$columns_source$col_facet)
+        as.vector(merged$anl_input_r()$columns_source$col_facet)
       }
       validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
       validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
@@ -296,45 +307,46 @@ srv_g_response <- function(id,
       x_cl <- as.name(x) # nolint
 
       if (swap_axes) {
-        teal.code::chunks_push(
-          id = "reverse_order_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
             env = list(x = x, x_cl = x_cl)
-          )
+          ),
+          name = "reverse_order_call"
         )
       }
 
-      teal.code::chunks_push(
-        id = "factorize_ANL_call",
-        expression = substitute(
+      quosure <- teal.code::eval_code(
+        quosure,
+        substitute(
           expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
           env = list(resp_var = resp_var)
+        ),
+        name = "factorize_ANL_call"
+      ) %>%
+        # nolint start
+        # rowf and colf will be a NULL if not set by a user
+        teal.code::eval_code(
+          substitute(
+            expr = ANL2 <- ANL %>%
+              dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
+              dplyr::summarise(ns = dplyr::n()) %>%
+              dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+              dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
+            env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
+          ),
+          name = "ANL2_call"
+        ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = ANL3 <- ANL %>%
+              dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
+              dplyr::summarise(ns = dplyr::n()),
+            env = list(x_cl = x_cl, rowf = rowf, colf = colf)
+          ),
+          name = "ANL3_call"
         )
-      )
-      # nolint start
-      # rowf and colf will be a NULL if not set by a user
-      teal.code::chunks_push(
-        id = "ANL2_call",
-        expression = substitute(
-          expr = ANL2 <- ANL %>%
-            dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
-            dplyr::summarise(ns = dplyr::n()) %>%
-            dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-            dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
-          env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
-        )
-      )
-
-      teal.code::chunks_push(
-        id = "ANL3_call",
-        expression = substitute(
-          expr = ANL3 <- ANL %>%
-            dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-            dplyr::summarise(ns = dplyr::n()),
-          env = list(x_cl = x_cl, rowf = rowf, colf = colf)
-        )
-      )
       # nolint end
 
       plot_call <- substitute(
@@ -423,10 +435,11 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
-      teal.code::chunks_push(id = "plot_call", expression = plot_call)
 
-      teal.code::chunks_safe_eval()
+      teal.code::eval_code(quosure, plot_call)
     })
+
+    plot_r <- reactive(output_q()[["p"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -436,11 +449,10 @@ srv_g_response <- function(id,
       width = plot_width
     )
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(response, x, row_facet, col_facet)),
-      modal_title = "R Code for Response Plot"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "Show R Code for Response"
     )
 
     ### REPORTER
@@ -449,19 +461,14 @@ srv_g_response <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Response Plot")
         card$append_text("Response Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

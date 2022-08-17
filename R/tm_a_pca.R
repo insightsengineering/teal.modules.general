@@ -345,8 +345,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
           env = list(
             keep_cols = keep_cols
-          ))
-        msg = paste0(
+          )
+        )
+        msg <- paste0(
           "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
           "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
         )
@@ -635,32 +636,32 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           name = "pca_plot_vars_rot_1"
         ) %>%
           teal.code::eval_code(
-          if (is.logical(pca$center) && !pca$center) {
+            if (is.logical(pca$center) && !pca$center) {
+              substitute(
+                expr = {
+                  rot_vars <- rot_vars %>%
+                    tibble::column_to_rownames("label") %>%
+                    sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
+                    tibble::rownames_to_column("label") %>%
+                    dplyr::mutate(
+                      xstart = mean(pca$x[, x_axis], na.rm = TRUE),
+                      ystart = mean(pca$x[, y_axis], na.rm = TRUE)
+                    )
+                },
+                env = list(x_axis = x_axis, y_axis = y_axis)
+              )
+            } else {
+              quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
+            },
+            name = "pca_plot_vars_rot_2"
+          ) %>%
+          teal.code::eval_code(
             substitute(
-              expr = {
-                rot_vars <- rot_vars %>%
-                  tibble::column_to_rownames("label") %>%
-                  sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
-                  tibble::rownames_to_column("label") %>%
-                  dplyr::mutate(
-                    xstart = mean(pca$x[, x_axis], na.rm = TRUE),
-                    ystart = mean(pca$x[, y_axis], na.rm = TRUE)
-                  )
-              },
-              env = list(x_axis = x_axis, y_axis = y_axis)
-            )
-          } else {
-            quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
-          },
-          name = "pca_plot_vars_rot_2"
-        ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
-            env = list(variables = variables)
-          ),
-          name = "pca_plot_vars_rot_3"
-        )
+              expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
+              env = list(variables = variables)
+            ),
+            name = "pca_plot_vars_rot_3"
+          )
       }
 
       pca_plot_biplot_expr <- list(quote(ggplot()))
@@ -682,8 +683,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         RP <- quosure[["RP"]]
 
-        rp_keys <- setdiff(colnames(RP),
-                           as.character(unlist(merged$rsp_input_r()$columns_source))) # nolint
+        rp_keys <- setdiff(
+          colnames(RP),
+          as.character(unlist(merged$rsp_input_r()$columns_source))
+        ) # nolint
 
         response <- RP[[resp_col]]
 
@@ -905,19 +908,20 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot final ----
     output_q <- reactive({
-      computation() %>% {
-      if (input$plot_type == "Elbow plot") {
-        plot_elbow(.)
-      } else if (input$plot_type == "Circle plot") {
-        plot_circle(.)
-      } else if (input$plot_type == "Biplot") {
-        plot_biplot(.)
-      } else if (input$plot_type == "Eigenvector plot") {
-        plot_pc_var(.)
-      } else {
-        stop("Unknown plot")
-      }
-      }
+      computation() %>%
+        {
+          if (input$plot_type == "Elbow plot") {
+            plot_elbow(.)
+          } else if (input$plot_type == "Circle plot") {
+            plot_circle(.)
+          } else if (input$plot_type == "Biplot") {
+            plot_biplot(.)
+          } else if (input$plot_type == "Eigenvector plot") {
+            plot_pc_var(.)
+          } else {
+            stop("Unknown plot")
+          }
+        }
     })
 
     plot_r <- reactive(output_q()[["g"]])
