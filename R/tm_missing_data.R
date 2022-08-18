@@ -329,6 +329,10 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     data_r <- data[[dataname]]
 
     data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
+    data_parent_keys <- reactive({
+      keys <- attr(data, "join_keys")$get(dataname)
+      keys[["ADSL"]]
+    })
 
     # chunks needed by all three outputs stored here
     common_code <- reactive({
@@ -615,12 +619,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
 
       if (isTRUE(input$if_patients_plot)) {
-        keys <- data_keys()
         quosure <- teal.code::eval_code(
           quosure,
           substitute(
             expr = parent_keys <- keys,
-            env = list(keys = keys)
+            env = list(keys = data_parent_keys())
           ),
           name = "parent_keys_call"
         ) %>% teal.code::eval_code(
@@ -1004,13 +1007,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         ggtheme = input$ggtheme
       )
 
-      keys <- data_keys()
-
       teal.code::eval_code(
         common_code(),
         substitute(
           expr = parent_keys <- keys,
-          env = list(keys = keys)
+          env = list(keys = data_parent_keys())
         ),
         name = "parent_keys_call"
       ) %>%
