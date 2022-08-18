@@ -315,26 +315,12 @@ srv_distribution <- function(id,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
     anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = reactive_select_input,
+      selector_list = selector_list,
       datasets = data,
       join_keys = attr(data, "join_keys")
     )
@@ -409,7 +395,7 @@ srv_distribution <- function(id,
     common_q <- reactive({
       # Create a private stack for this function only.
       validate({
-        need("dist_i" %in% names(reactive_select_input()), "Please select a variable")
+        need(length(merged$anl_input_r()$columns_source$dist_i) > 0, "Please select a variable")
       })
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
