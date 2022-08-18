@@ -333,7 +333,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     # chunks needed by all three outputs stored here
     common_code <- reactive({
       anl_name <- dataname
-      anl <- data[[dataname]]()
+      anl <- data_r()
       assign(anl_name, anl)
       group_var <- input$group_by_var
 
@@ -384,7 +384,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             },
           env = list(
             new_col_name = new_col_name,
-            column_labels_value = c(formatters::var_labels(data[[dataname]]())[selected_vars()],
+            column_labels_value = c(formatters::var_labels(data_r())[selected_vars()],
                                     new_col_name = new_col_name)
           )
         ),
@@ -535,7 +535,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
             tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
             dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
-          env = list(data_frame_call = if (!inherits(data[[dataname]](), "tbl_df")) {
+          env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
             quote(tibble::as_tibble(ANL))
           } else {
             quote(ANL)
