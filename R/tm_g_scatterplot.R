@@ -355,22 +355,10 @@ srv_g_scatterplot <- function(id,
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
     )
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
     anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = reactive_select_input,
+      selector_list = selector_list,
       datasets = data,
       join_keys = attr(data, "join_keys"),
       merge_function = "dplyr::inner_join"
@@ -400,10 +388,7 @@ srv_g_scatterplot <- function(id,
 
     if (!is.null(color_by)) {
       observeEvent(
-        eventExpr = {
-          req(length(reactive_select_input()) > 0)
-          merged$anl_input_r()$columns_source$color_by
-        },
+        eventExpr = merged$anl_input_r()$columns_source$color_by,
         handlerExpr = {
           color_by_var <- as.vector(merged$anl_input_r()$columns_source$color_by)
           if (length(color_by_var) > 0) {
@@ -428,11 +413,8 @@ srv_g_scatterplot <- function(id,
 
 
     observeEvent(
-      eventExpr = {
-        req(length(reactive_select_input()) > 0)
-        merged$anl_input_r()$columns_source$col_facet
-        merged$anl_input_r()$columns_source$row_facet
-      }, handlerExpr = {
+      eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
+      handlerExpr = {
         if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
           length(merged$anl_input_r()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
@@ -443,12 +425,7 @@ srv_g_scatterplot <- function(id,
     )
 
     output_q <- reactive({
-      validate({
-        need(all(c("x", "y") %in% names(reactive_select_input())), "Please select X and Y variables")
-      })
-
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
-      teal::validate_has_data(ANL, 10)
 
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
       y_var <- as.vector(merged$anl_input_r()$columns_source$y)
@@ -475,7 +452,7 @@ srv_g_scatterplot <- function(id,
       smoothing_degree <- as.integer(input$smoothing_degree)
       ci <- input$ci # nolint
 
-      validate(need(!is.null(ggtheme), "Please select a theme."))
+      validate(need(length(x_var) > 0 && length(y_var) > 0, "Please select X and Y variables"))
       validate(need(length(x_var) == 1, "There must be exactly one x var."))
       validate(need(length(y_var) == 1, "There must be exactly one y var."))
       validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
@@ -504,7 +481,8 @@ srv_g_scatterplot <- function(id,
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
       }
-
+      validate(need(!is.null(ggtheme), "Please select a theme."))
+      teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
       facet_cl <- facet_ggplot_call(
