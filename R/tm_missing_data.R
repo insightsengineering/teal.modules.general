@@ -331,7 +331,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
     data_parent_keys <- reactive({
       keys <- attr(data, "join_keys")$get(dataname)
-      keys[["ADSL"]]
+      if ("ADSL" %in% names(keys)) {
+        keys[["ADSL"]]
+      } else {
+        keys[[dataname]]
+      }
     })
 
     # chunks needed by all three outputs stored here
