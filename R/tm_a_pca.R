@@ -257,33 +257,19 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-    dat_selector <- teal.transform::data_extract_srv(id = "dat", data, dat)
-
     anl_merged_input <- teal.transform::merge_expression_module(
       datasets = data,
       join_keys = attr(data, "join_keys"),
-      data_extract = list(dat = dat)
-    )
-
-    response_merged_input <- teal.transform::merge_expression_module(
-      datasets = data,
-      join_keys = attr(data, "join_keys"),
-      data_extract = list(response = response),
-      anl_name = "RP"
+      data_extract = list(dat = dat, response = response)
     )
 
     anl_merged_q <- reactive({
-      q <- teal.code::new_quosure(env = data) %>%
+      teal.code::new_quosure(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
-      if (length(as.character(merged$rsp_input_r()$columns_source$response)) > 0) {
-        q <- teal.code::eval_code(q, as.expression(merged$rsp_input_r()$expr))
-      }
-      q
     })
 
     merged <- list(
       anl_input_r = anl_merged_input,
-      rsp_input_r = response_merged_input,
       anl_q_r = anl_merged_q
     )
 
@@ -291,7 +277,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     computation <- reactive({
       validate({
         need(
-          !is.null(dat_selector()), "Please select data"
+          !is.null(merged$anl_input_r()$columns_source$dat), "Please select data"
         )
       })
 
@@ -595,7 +581,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       ANL <- quosure[["ANL"]] # nolint
 
-      resp_col <- as.character(merged$rsp_input_r()$columns_source$response)
+      resp_col <- as.character(merged$anl_input_r()$columns_source$response)
+      dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       x_axis <- input$x_axis # nolint
       y_axis <- input$y_axis # nolint
       variables <- input$variables # nolint
@@ -677,18 +664,16 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dev_labs <- list()
       } else {
         validate(need(
-          !resp_col %in% colnames(ANL),
+          !resp_col %in% dat_cols,
           "Response column must be different from the original variables (that were used for PCA)."
         ))
 
-        RP <- quosure[["RP"]]
-
         rp_keys <- setdiff(
-          colnames(RP),
-          as.character(unlist(merged$rsp_input_r()$columns_source))
+          colnames(ANL),
+          as.character(unlist(merged$anl_input_r()$columns_source))
         ) # nolint
 
-        response <- RP[[resp_col]]
+        response <- ANL[[resp_col]]
 
         aes_biplot <- substitute(
           aes_string(x = x_axis, y = y_axis, color = "response"),
@@ -697,11 +682,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         quosure <- teal.code::eval_code(
           quosure,
-          substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col)),
+          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col)),
           name = "pca_plot_response_base"
         )
 
-        dev_labs <- list(color = varname_w_label(resp_col, RP))
+        dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
         scales_biplot <- if (is.character(response) ||
           is.factor(response) ||
@@ -938,7 +923,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     output$tbl_importance <- renderTable(
       expr = {
         req("importance" %in% input$tables_display)
-        chunks_stack <- computation()[["tbl_importance"]]
+        computation()[["tbl_importance"]]
       },
       bordered = TRUE,
       align = "c",
@@ -957,7 +942,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     output$tbl_eigenvector <- renderTable(
       expr = {
         req("eigenvector" %in% input$tables_display)
-        chunks_stack <- computation()[["tbl_eigenvector"]]
+        computation()[["tbl_eigenvector"]]
       },
       bordered = TRUE,
       align = "c",
