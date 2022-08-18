@@ -348,18 +348,20 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       nenv <- list()
       nenv[["ANL"]] <- anl
 
+      quosure <- teal.code::new_quosure(data)
+
       quosure <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
-        teal.code::new_quosure(
-          env = list2env(nenv),
-          code = substitute(
+        teal.code::eval_code(
+          quosure,
+          substitute(
             expr = ANL <- anl_name[, selected_vars], # nolint
             env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
           )
         )
       } else {
-        teal.code::new_quosure(
-          env = list2env(nenv),
-          code = substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(anl_name))) # nolint
+        teal.code::eval_code(
+          quosure,
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(anl_name))) # nolint
         )
       }
 
