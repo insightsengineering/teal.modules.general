@@ -326,7 +326,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
 
-    data_r <- reactive({data[[dataname]]()})
+    data_r <- data[[dataname]]
 
     data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
 
