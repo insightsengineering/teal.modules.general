@@ -4,7 +4,7 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Datasets used to compute PCA.
+#'   Columns used to compute PCA.
 #' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 #'   length three with `c(value, min, max)`.
@@ -38,7 +38,7 @@
 #'   modules = modules(
 #'     tm_a_pca(
 #'       "PCA",
-#'       data_extract_spec(
+#'       dat = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
@@ -275,28 +275,22 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # computation ----
     computation <- reactive({
-      validate({
-        need(
-          !is.null(merged$anl_input_r()$columns_source$dat), "Please select data"
-        )
-      })
-
+      # inputs
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale") # nolint
       scale <- standardization == "center_scale"
-
-      validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
-
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
-      teal::validate_has_data(ANL, 10)
+      # inputs validation
+      validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
       teal::validate_has_elements(keep_cols, "Please select columns")
       validate(need(
         all(vapply(ANL[keep_cols], function(x) is.numeric(x) && all(!is.infinite(x)), logical(1))),
         "PCA is only defined for (finite) numeric columns."
       ))
+      teal::validate_has_data(ANL, 10)
       validate(need(
         na_action != "none" | !anyNA(ANL[keep_cols]),
         paste(
@@ -308,12 +302,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       quosure <- teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
-          expr = {
-            keep_columns <- keep_cols
-          },
-          env = list(
-            keep_cols = keep_cols
-          )
+          expr = keep_columns <- keep_cols,
+          env = list(keep_cols = keep_cols)
         ),
         name = "keep_columns_call"
       )
