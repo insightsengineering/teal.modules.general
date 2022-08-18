@@ -179,15 +179,11 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     # plot
     output_q <- reactive({
-      validate({
-        need(!is.null(selector_list()$variables()), "Please select variables")
-      })
-
       quosure <- merged$anl_q_r()
 
       ANL <- quosure[["ANL"]] # nolint
-      teal::validate_has_data(ANL, 10)
 
+      cols_names <- merged$anl_input_r()$columns_source$variables
       alpha <- input$alpha # nolint
       cex <- input$cex # nolint
       add_cor <- input$cor # nolint
@@ -200,9 +196,8 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         "na.fail"
       }
 
-      cols_names <- merged$anl_input_r()$columns_source$variable
-
       validate(need(length(cols_names) > 1, "Need at least 2 columns."))
+      teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
