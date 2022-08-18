@@ -83,7 +83,7 @@ ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL
   ns <- NS(id)
   datanames <- names(data)
 
-  if_subject_plot <- "ADSL" %in% names(data)
+  if_subject_plot <- !is.null(attr(data, "join_keys"))
 
   shiny::tagList(
     include_css_files("custom"),
