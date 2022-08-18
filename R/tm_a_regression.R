@@ -234,8 +234,6 @@ srv_a_regression <- function(id,
                              default_outlier_label) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    selector_list <- teal.transform::data_extract_multiple_srv(list(response = response, regressor = regressor), data)
-
     anl_merged_input <- teal.transform::merge_expression_module(
       datasets = data,
       join_keys = attr(data, "join_keys"),
@@ -243,7 +241,14 @@ srv_a_regression <- function(id,
     )
 
     regression_var <- reactive({
-      req(!is.null(selector_list()$response()) && !is.null(selector_list()$regressor()))
+      validate(
+        need(
+          !is.null(anl_merged_input()$columns_source$response) &&
+            !is.null(anl_merged_input()$columns_source$regressor),
+          "Please select regressor and response variables"
+        )
+      )
+
       list(
         response = as.vector(anl_merged_input()$columns_source$response),
         regressor = as.vector(anl_merged_input()$columns_source$regressor)
@@ -255,21 +260,9 @@ srv_a_regression <- function(id,
         eval_code(as.expression(anl_merged_input()$expr))
     })
 
-    merged <- list(
-      anl_input_r = anl_merged_input,
-      anl_q_r = anl_merged_q
-    )
-
     # sets chunk object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      validate({
-        need(
-          !is.null(selector_list()$response()) && !is.null(selector_list()$regressor()),
-          "Please select regressor and response variables"
-        )
-      })
-
-      ANL <- merged$anl_q_r()[["ANL"]]
+      ANL <- anl_merged_q()[["ANL"]]
       teal::validate_has_data(ANL, 10)
 
       # validation
@@ -349,7 +342,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      teal.code::eval_code(merged$anl_q_r(), "") %>%
+      teal.code::eval_code(anl_merged_q(), "") %>%
         teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form)),
           name = "fit_lm_call"
         ) %>%
@@ -405,7 +398,7 @@ srv_a_regression <- function(id,
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]] # chunk already evaluated
-        ANL <- merged$anl_q_r()[["ANL"]] # nolint
+        ANL <- anl_merged_q()[["ANL"]] # nolint
 
         stopifnot(ncol(fit$model) == 2)
 
