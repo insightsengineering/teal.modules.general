@@ -236,7 +236,6 @@ srv_tm_g_association <- function(id,
       anl_q_r = anl_merged_q
     )
 
-    # chunks_reactive <- reactive({
     output_q <- reactive({
       validate({
         need(
@@ -316,9 +315,6 @@ srv_tm_g_association <- function(id,
 
       print_call <- quote(print(p))
 
-      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- ref_call, env = list(ref_call = ref_call)), name = "plot_call") %>%
-        teal.code::eval_code(print_call, name = "print_call")
-
       var_calls <- lapply(vars_names, function(var_i) {
         var_class <- class(ANL[[var_i]])
         if (is.numeric(ANL[[var_i]]) && log_transformation) {
@@ -355,13 +351,35 @@ srv_tm_g_association <- function(id,
         )
       })
 
-      teal.code::eval_code(merged$anl_q_r(), substitute(expr = {
-        plots <- plot_calls
-        p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
-        grid::grid.newpage()
-        grid::grid.draw(p)
-      }, env = list(plot_calls = do.call("call", c(list("list", ref_call), var_calls), quote = TRUE))), name = "plot_call") %>%
-        teal.code::eval_code(print_call, name = "plot_call")
+      teal.code::eval_code(
+        merged$anl_q_r(),
+        substitute(
+          expr = title <- new_title,
+          env = list(new_title = paste(
+            "Association",
+            ifelse(ref_class_cov == "NULL", "for", "between"),
+            paste(lapply(vars_names, function(x) {
+              if (is.numeric(ANL[[x]]) && log_transformation) {
+                varname_w_label(x, ANL, prefix = "Log of ")
+              } else {
+                varname_w_label(x, ANL)
+              }
+            }), collapse = " / "),
+            ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
+          ))
+        ),
+        name = "title_call") %>%
+        teal.code::eval_code(
+          substitute(expr = {
+          plots <- plot_calls
+          p <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
+          grid::grid.newpage()
+          grid::grid.draw(p)
+          },
+          env = list(
+            plot_calls = do.call("call", c(list("list", ref_call), var_calls),
+                                 quote = TRUE))),
+        name = "plot_call")
     })
 
     plot_r <- shiny::reactive(output_q()[["p"]])
@@ -372,6 +390,10 @@ srv_tm_g_association <- function(id,
       height = plot_height,
       width = plot_width
     )
+
+    output$title <- renderText({
+      output_q()[["title"]]
+    })
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
