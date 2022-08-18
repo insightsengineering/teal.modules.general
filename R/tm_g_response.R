@@ -225,25 +225,12 @@ srv_g_response <- function(id,
                            ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
-    data_extract <- list(response, x, row_facet, col_facet)
-    names(data_extract) <- c("response", "x", "row_facet", "col_facet")
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
+    data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
 
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
     anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = reactive_select_input,
+      selector_list = selector_list,
       datasets = data,
       join_keys = attr(data, "join_keys")
     )
@@ -259,17 +246,19 @@ srv_g_response <- function(id,
     )
 
     output_q <- reactive({
-      validate({
-        need(all(c("response", "x") %in% names(reactive_select_input())), "Please select a response and x variable")
-      })
-
       quosure <- merged$anl_q_r()
-
       ANL <- quosure[["ANL"]] # nolint
-      teal::validate_has_data(ANL, 10)
-
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
+
+      validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
+      validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
+      validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
+      validate(need(length(x) == 1, "Please define a column for X variable"))
+      validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
+      validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
+      teal::validate_has_data(ANL, 10)
+      teal::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
       row_facet_name <- if (length(merged$anl_input_r()$columns_source$row_facet) == 0) {
         character(0)
@@ -281,15 +270,6 @@ srv_g_response <- function(id,
       } else {
         as.vector(merged$anl_input_r()$columns_source$col_facet)
       }
-      validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
-      validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
-      validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
-      validate(need(length(x) == 1, "Please define a column for X variable"))
-      validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
-      validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
-
-
-      teal::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
       freq <- input$freq == "frequency"
       swap_axes <- input$coord_flip
