@@ -377,9 +377,8 @@ srv_g_bivariate <- function(id,
     output_q <- reactive({
       validate({
         need(
-          length(merged$anl_input_r()$columns_source$x) > 0 ||
-            length(merged$anl_input_r()$columns_source$y) > 0,
-          "Please select x and/or y variable(s)"
+          length(merged$anl_input_r()$columns_source$x) > 0 || length(merged$anl_input_r()$columns_source$y) > 0,
+          "x-variable and y-variable aren't correctly specified. At least one should be valid."
         )
       })
 
@@ -390,13 +389,6 @@ srv_g_bivariate <- function(id,
       x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
       y_col_vec <- as.vector(merged$anl_input_r()$columns_source$y)
       y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
-
-      validate(
-        need(
-          !identical(x_name, character(0)) || !identical(y_name, character(0)),
-          "x-variable and y-variable aren't correctly specified. At least one should be valid."
-        )
-      )
 
       row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
       col_facet_name <- as.vector(merged$anl_input_r()$col_facet)
