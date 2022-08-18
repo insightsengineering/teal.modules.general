@@ -356,22 +356,10 @@ srv_g_bivariate <- function(id,
       color = color, fill = fill, size = size
     )
 
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
     anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = reactive_select_input,
+      selector_list = selector_list,
       datasets = data,
       join_keys = attr(data, "join_keys")
     )
@@ -388,7 +376,11 @@ srv_g_bivariate <- function(id,
 
     output_q <- reactive({
       validate({
-        need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
+        need(
+          length(merged$anl_input_r()$columns_source$x) > 0 ||
+            length(merged$anl_input_r()$columns_source$y) > 0,
+          "Please select x and/or y variable(s)"
+        )
       })
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
