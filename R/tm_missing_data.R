@@ -328,7 +328,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     data_r <- reactive({data[[dataname]]()})
 
-    data_keys <- reactive(unlist(attr(data, "join_keys")[[dataname]]))
+    data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
 
     # chunks needed by all three outputs stored here
     common_code <- reactive({
