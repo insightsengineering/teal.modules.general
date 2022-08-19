@@ -314,6 +314,7 @@ srv_distribution <- function(id,
                              plot_width,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
 
@@ -1133,7 +1134,7 @@ srv_distribution <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Association Plot")
         card$append_text("Association Plot", "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         if (input$tabs == "Histogram") {
           card$append_plot(dist_r(), dim = pws1$dim())

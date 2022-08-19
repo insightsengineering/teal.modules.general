@@ -323,6 +323,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 #' @importFrom rlang .data
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
 
@@ -1165,7 +1166,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         card$set_name(paste0("Missing Data - ", sum_type))
         card$append_text(title, "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
           card$append_plot(g_summary_plot_r(), dim = pws1$dim())

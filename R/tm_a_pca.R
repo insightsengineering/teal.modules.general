@@ -247,6 +247,7 @@ ui_a_pca <- function(id, ...) {
 
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     response <- dat
 
@@ -965,7 +966,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         card$set_name("PCA Plot")
         card$append_text("PCA Plot", "header2")
         card$append_text("Principal Component Analysis Plot", "header3")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Principal Components Table", "header3")
         card$append_table(computation()[["tbl_importance"]])
         card$append_text("Eigenvectors Table", "header3")

@@ -155,6 +155,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
@@ -337,7 +338,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Scatter Plot Matrix")
         card$append_text("Scatter Plot Matrix", "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {

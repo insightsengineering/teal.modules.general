@@ -351,6 +351,7 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
@@ -782,7 +783,7 @@ srv_g_scatterplot <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Scatter Plot")
         card$append_text("Scatter Plot", "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {

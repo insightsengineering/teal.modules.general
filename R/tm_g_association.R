@@ -216,6 +216,7 @@ srv_tm_g_association <- function(id,
                                  plot_width,
                                  ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
@@ -415,7 +416,7 @@ srv_tm_g_association <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Association Plot")
         card$append_text("Association Plot", "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {

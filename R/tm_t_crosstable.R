@@ -158,6 +158,7 @@ ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_out
 
 srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
 
@@ -322,7 +323,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Cross Table")
         card$append_text("Cross Table", "header2")
-        card$append_fs(filter_panel_api$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Table", "header3")
         card$append_table(table_r())
         if (!comment == "") {
