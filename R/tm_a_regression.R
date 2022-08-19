@@ -256,8 +256,8 @@ srv_a_regression <- function(id,
     })
 
     anl_merged_q <- reactive({
-      new_quosure(env = data) %>%
-        eval_code(as.expression(anl_merged_input()$expr))
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     # sets chunk object and populates it with data merge call and fit expression
