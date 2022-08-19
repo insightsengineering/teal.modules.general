@@ -110,7 +110,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   )
 }
 
-ui_t_crosstable <- function(id, datasets, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
 
@@ -200,26 +200,18 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       anl_q_r = anl_merged_q
     )
 
-    x_ordered <- reactive({
-      selector_list()$x()$select
-    })
-
     output_q <- reactive({
-      validate({
-        need(!is.null(selector_list()$x()) && !is.null(selector_list()$y()), "Please select row and column values")
-      })
-
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       # As this is a summary
-      teal::validate_has_data(ANL, 3)
 
-      x_name <- x_ordered()
+      x_name <- as.vector(merged$anl_input_r()$columns_source$x)
       y_name <- as.vector(merged$anl_input_r()$columns_source$y)
 
-      validate(need(!identical(x_name, character(0)), "Please define column for row variable that is not empty."))
-      validate(need(!identical(y_name, character(0)), "Please define column for column variable that is not empty."))
+      validate(need(length(x_name) > 0, "Please define column for row variable that is not empty."))
+      validate(need(length(y_name) > 0, "Please define column for column variable that is not empty."))
 
+      teal::validate_has_data(ANL, 3)
       teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
 
       is_allowed_class <- function(x) is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x)
@@ -243,8 +235,8 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         "(columns)"
       )
 
-      labels_vec <- vapply( # nolint
-        x_ordered(),
+      labels_vec <- vapply(
+        x_name,
         varname_w_label,
         character(1),
         ANL
