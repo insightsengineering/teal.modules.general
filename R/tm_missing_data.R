@@ -733,7 +733,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     summary_plot_r <- reactive(summary_plot_q()[["g"]])
 
-    combination_cutoff_r <- reactive({
+    combination_cutoff_q <- reactive({
       teal.code::eval_code(
         common_code_q(),
         quote({
@@ -748,7 +748,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     })
 
     output$cutoff <- renderUI({
-      x <- combination_cutoff_r()[["combination_cutoff"]]$n
+      x <- combination_cutoff_q()[["combination_cutoff"]]$n
 
       # select 10-th from the top
       n <- length(x)
@@ -773,7 +773,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       req(input$combination_cutoff)
 
       quosure <- teal.code::eval_code(
-        combination_cutoff_r(),
+        combination_cutoff_q(),
         substitute(
           expr = data_combination_plot_cutoff <- combination_cutoff %>%
             dplyr::filter(n >= combination_cutoff_value) %>%
@@ -1138,7 +1138,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       width = plot_width
     )
 
-    final_reactive <- reactive({
+    final_q <- reactive({
       sum_type <- input$summary_type
       if (sum_type == "Summary") {
         summary_plot_q()
@@ -1153,7 +1153,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(final_reactive())),
+      verbatim_content = reactive(teal.code::get_code(final_q())),
       title = "Show R Code for Missing Data"
     )
 
@@ -1183,7 +1183,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(teal.code::get_code(final_reactive()), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(final_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
