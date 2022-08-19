@@ -339,14 +339,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     })
 
     # chunks needed by all three outputs stored here
-    common_code <- reactive({
+    common_code_q <- reactive({
       anl_name <- dataname
       anl <- data_r()
       assign(anl_name, anl)
       group_var <- input$group_by_var
-
-      nenv <- list()
-      nenv[["ANL"]] <- anl
 
       quosure <- teal.code::new_quosure(data)
 
@@ -395,7 +392,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           env = list(
             new_col_name = new_col_name,
             column_labels_value = c(formatters::var_labels(data_r())[selected_vars()],
-                                    new_col_name = new_col_name)
+              new_col_name = new_col_name
+            )
           )
         ),
         name = "create_cols_labels_function_call"
@@ -412,7 +410,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     })
 
     vars_summary <- reactive({
-
       na_count <- data_r() %>%
         sapply(function(x) mean(is.na(x)), USE.NAMES = TRUE) %>%
         sort(decreasing = TRUE)
@@ -511,12 +508,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
     })
 
-    summary_plot_r <- reactive({
+    summary_plot_q <- reactive({
       req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
       validate(need(length(input$variables_select) > 0, "No variables selected"))
 
-      quosure <- common_code()
+      quosure <- common_code_q()
 
       if (input$any_na) {
         new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
@@ -538,31 +535,31 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         name = "analysis_vars_call"
       ) %>%
         teal.code::eval_code(
-        substitute(
-          expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
-            dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-            tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
-            dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
-            tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-            dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
-          env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
-            quote(tibble::as_tibble(ANL))
-          } else {
-            quote(ANL)
-          })
-        ),
-        name = "summary_plot_obs_call"
-      ) %>%
-      # x axis ordering according to number of missing values and alphabet
-      teal.code::eval_code(
-        quote(
-          expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
-            dplyr::arrange(n_pct, dplyr::desc(col)) %>%
-            dplyr::pull(col) %>%
-            create_cols_labels()
-        ),
-        name = "x_levels_call"
-      )
+          substitute(
+            expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
+              dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+              tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+              dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
+              tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
+              dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
+            env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
+              quote(tibble::as_tibble(ANL))
+            } else {
+              quote(ANL)
+            })
+          ),
+          name = "summary_plot_obs_call"
+        ) %>%
+        # x axis ordering according to number of missing values and alphabet
+        teal.code::eval_code(
+          quote(
+            expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
+              dplyr::arrange(n_pct, dplyr::desc(col)) %>%
+              dplyr::pull(col) %>%
+              create_cols_labels()
+          ),
+          name = "x_levels_call"
+        )
 
       # always set "**anyna**" level as the last one
       if (isolate(input$any_na)) {
@@ -632,25 +629,26 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             env = list(keys = data_parent_keys())
           ),
           name = "parent_keys_call"
-        ) %>% teal.code::eval_code(
-          quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys])),
-          name = "ndistinct_subjects_call"
         ) %>%
           teal.code::eval_code(
-          quote(
-            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-              dplyr::group_by_at(parent_keys) %>%
-              dplyr::summarise_all(anyNA) %>%
-              tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
-              dplyr::group_by_at(c("col")) %>%
-              dplyr::summarise(count_na = sum(anyna)) %>%
-              dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
-              tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
-              dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
-              dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
-          ),
-          name = "summary_plot_patients_call"
-        )
+            quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys])),
+            name = "ndistinct_subjects_call"
+          ) %>%
+          teal.code::eval_code(
+            quote(
+              summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+                dplyr::group_by_at(parent_keys) %>%
+                dplyr::summarise_all(anyNA) %>%
+                tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+                dplyr::group_by_at(c("col")) %>%
+                dplyr::summarise(count_na = sum(anyna)) %>%
+                dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
+                tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
+                dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
+                dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
+            ),
+            name = "summary_plot_patients_call"
+          )
 
         dev_ggplot2_args <- teal.widgets::ggplot2_args(
           labs = list(x = "", y = "Missing patients"),
@@ -733,11 +731,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
     })
 
-    g_summary_plot_r <- reactive(summary_plot_r()[["g"]])
+    summary_plot_r <- reactive(summary_plot_q()[["g"]])
 
     combination_cutoff_r <- reactive({
       teal.code::eval_code(
-        common_code(),
+        common_code_q(),
         quote({
           combination_cutoff <- ANL %>%
             dplyr::mutate_all(is.na) %>%
@@ -768,7 +766,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
     })
 
-    combination_plot_r <- reactive({
+    combination_plot_q <- reactive({
       req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
       validate(need(length(input$variables_select) > 0, "No variables selected"))
@@ -905,14 +903,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
     })
 
-    g_combination_plot_r <- reactive(combination_plot_r()[["g"]])
+    combination_plot_r <- reactive(combination_plot_q()[["g"]])
 
-    table_r <- reactive({
+    summary_table_q <- reactive({
       req(input$summary_type == "By Variable Levels") # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
 
       # extract the ANL dataset for use in further validation
-      anl <- common_code()[["ANL"]]
+      anl <- common_code_q()[["ANL"]]
 
       validate(need(input$count_type, "Please select type of counts"))
       if (!is.null(input$group_by_var)) {
@@ -946,7 +944,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         function(x) round(sum(is.na(x)) / length(x), 4)
       }
 
-      quosure <- common_code()
+      quosure <- common_code_q()
 
       if (!is.null(group_var)) {
         quosure <- teal.code::eval_code(
@@ -992,7 +990,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       teal.code::eval_code(quosure, quote(summary_data), name = "summary_data_call_2")
     })
 
-    by_subject_plot_r <- reactive({
+    summary_table_r <- reactive(summary_table_q()[["summary_data"]])
+
+    by_subject_plot_q <- reactive({
       req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
       validate(need(length(input$variables_select) > 0, "No variables selected"))
@@ -1014,93 +1014,95 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
 
       teal.code::eval_code(
-        common_code(),
+        common_code_q(),
         substitute(
           expr = parent_keys <- keys,
           env = list(keys = data_parent_keys())
         ),
         name = "parent_keys_call"
       ) %>%
-teal.code::eval_code(
-        substitute(
-          expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
-          env = list(data_keys = data_keys())
-        ),
-        name = "analysis_vars_call"
-      ) %>% teal.code::eval_code(
-        quote({
-          summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-            dplyr::group_by_at(parent_keys) %>%
-            dplyr::mutate(id = dplyr::cur_group_id()) %>%
-            dplyr::ungroup() %>%
-            dplyr::group_by_at(c(parent_keys, "id")) %>%
-            dplyr::summarise_all(anyNA) %>%
-            dplyr::ungroup()
+        teal.code::eval_code(
+          substitute(
+            expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
+            env = list(data_keys = data_keys())
+          ),
+          name = "analysis_vars_call"
+        ) %>%
+        teal.code::eval_code(
+          quote({
+            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+              dplyr::group_by_at(parent_keys) %>%
+              dplyr::mutate(id = dplyr::cur_group_id()) %>%
+              dplyr::ungroup() %>%
+              dplyr::group_by_at(c(parent_keys, "id")) %>%
+              dplyr::summarise_all(anyNA) %>%
+              dplyr::ungroup()
 
-          # order subjects by decreasing number of missing and then by
-          # missingness pattern (defined using sha1)
-          order_subjects <- summary_plot_patients %>%
-            dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
-            dplyr::transmute(
-              id = dplyr::row_number(),
-              number_NA = apply(., 1, sum),
-              sha = apply(., 1, digest::sha1)
-            ) %>%
-            dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-            getElement(name = "id")
+            # order subjects by decreasing number of missing and then by
+            # missingness pattern (defined using sha1)
+            order_subjects <- summary_plot_patients %>%
+              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::transmute(
+                id = dplyr::row_number(),
+                number_NA = apply(., 1, sum),
+                sha = apply(., 1, digest::sha1)
+              ) %>%
+              dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+              getElement(name = "id")
 
-          # order columns by decreasing percent of missing values
-          ordered_columns <- summary_plot_patients %>%
-            dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
-            dplyr::summarise(
-              column = create_cols_labels(colnames(.)),
-              na_count = apply(., MARGIN = 2, FUN = sum),
-              na_percent = na_count / nrow(.) * 100
-            ) %>%
-            dplyr::arrange(na_percent, dplyr::desc(column))
+            # order columns by decreasing percent of missing values
+            ordered_columns <- summary_plot_patients %>%
+              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::summarise(
+                column = create_cols_labels(colnames(.)),
+                na_count = apply(., MARGIN = 2, FUN = sum),
+                na_percent = na_count / nrow(.) * 100
+              ) %>%
+              dplyr::arrange(na_percent, dplyr::desc(column))
 
-          summary_plot_patients <- summary_plot_patients %>%
-            tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
-            dplyr::mutate(col = create_cols_labels(col))
-        }),
-        name = "summary_plot_patients_call"
-      ) %>% teal.code::eval_code(
-        substitute(
-          expr = {
-            g <- ggplot(summary_plot_patients, aes(
-              x = factor(id, levels = order_subjects),
-              y = factor(col, levels = ordered_columns[["column"]]),
-              fill = isna
-            )) +
-              geom_raster() +
-              annotate(
-                "text",
-                x = length(order_subjects),
-                y = seq_len(nrow(ordered_columns)),
-                hjust = 1,
-                label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
-              ) +
-              scale_fill_manual(
-                name = "",
-                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-                labels = c("Present", "Missing (at least one)")
-              ) +
-              labs +
-              ggthemes +
-              themes
-            print(g)
-          },
-          env = list(
-            labs = parsed_ggplot2_args$labs,
-            themes = parsed_ggplot2_args$theme,
-            ggthemes = parsed_ggplot2_args$ggtheme
-          )
-        ),
-        name = "plot_call"
-      )
+            summary_plot_patients <- summary_plot_patients %>%
+              tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::mutate(col = create_cols_labels(col))
+          }),
+          name = "summary_plot_patients_call"
+        ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = {
+              g <- ggplot(summary_plot_patients, aes(
+                x = factor(id, levels = order_subjects),
+                y = factor(col, levels = ordered_columns[["column"]]),
+                fill = isna
+              )) +
+                geom_raster() +
+                annotate(
+                  "text",
+                  x = length(order_subjects),
+                  y = seq_len(nrow(ordered_columns)),
+                  hjust = 1,
+                  label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+                ) +
+                scale_fill_manual(
+                  name = "",
+                  values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+                  labels = c("Present", "Missing (at least one)")
+                ) +
+                labs +
+                ggthemes +
+                themes
+              print(g)
+            },
+            env = list(
+              labs = parsed_ggplot2_args$labs,
+              themes = parsed_ggplot2_args$theme,
+              ggthemes = parsed_ggplot2_args$ggtheme
+            )
+          ),
+          name = "plot_call"
+        )
     })
 
-    g_by_subject_plot_r <- reactive(by_subject_plot_r()[["g"]])
+    by_subject_plot_r <- reactive(by_subject_plot_q()[["g"]])
 
     output$levels_table <- DT::renderDataTable(
       expr = {
@@ -1109,7 +1111,7 @@ teal.code::eval_code(
           # using tibble as it supports weird column names, such as " "
           tibble::tibble(` ` = logical(0))
         } else {
-          table_r()[["summary_data"]]
+          summary_table_r()
         }
       },
       options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
@@ -1117,21 +1119,21 @@ teal.code::eval_code(
 
     pws1 <- teal.widgets::plot_with_settings_srv(
       id = "summary_plot",
-      plot_r = g_summary_plot_r,
+      plot_r = summary_plot_r,
       height = plot_height,
       width = plot_width
     )
 
     pws2 <- teal.widgets::plot_with_settings_srv(
       id = "combination_plot",
-      plot_r = g_combination_plot_r,
+      plot_r = combination_plot_r,
       height = plot_height,
       width = plot_width
     )
 
     pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
-      plot_r = g_by_subject_plot_r,
+      plot_r = by_subject_plot_r,
       height = plot_height,
       width = plot_width
     )
@@ -1139,13 +1141,13 @@ teal.code::eval_code(
     final_reactive <- reactive({
       sum_type <- input$summary_type
       if (sum_type == "Summary") {
-        summary_plot_r()
+        summary_plot_q()
       } else if (sum_type == "Combinations") {
-        combination_plot_r()
+        combination_plot_q()
       } else if (sum_type == "By Variable Levels") {
-        table_r()
+        table_q()
       } else if (sum_type == "Grouped by Subject") {
-        by_subject_plot_r()
+        by_subject_plot_q()
       }
     })
 
