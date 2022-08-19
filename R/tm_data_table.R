@@ -200,17 +200,7 @@ ui_page_data_table <- function(id,
       output = tagList(
         fluidRow(
           column(
-            width = 6,
-            radioButtons(
-              ns("if_filtered"),
-              NULL,
-              choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
-              selected = TRUE,
-              inline = TRUE
-            )
-          ),
-          column(
-            width = 6,
+            width = 12,
             checkboxInput(
               ns("if_distinct"),
               "Show only distinct rows:",
@@ -274,11 +264,9 @@ ui_page_data_table <- function(id,
 # server page module
 srv_page_data_table <- function(id,
                                 data,
-                                filter_panel_api,
                                 datasets_selected,
                                 dt_args,
                                 dt_options) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
@@ -291,7 +279,6 @@ srv_page_data_table <- function(id,
         srv_data_table(
           id = x,
           data = data,
-          filter_panel_api = filter_panel_api,
           dataname = x,
           if_filtered = if_filtered,
           if_distinct = if_distinct,
@@ -334,7 +321,6 @@ ui_data_table <- function(id,
 
 srv_data_table <- function(id,
                            data,
-                           filter_panel_api,
                            dataname,
                            if_filtered,
                            if_distinct,
@@ -346,14 +332,6 @@ srv_data_table <- function(id,
       variables <- input$variables
 
       validate(need(variables, "need valid variable names"))
-
-      observeEvent(if_filtered(), {
-        if (!if_filtered()) {
-          filter_panel_api$turn_off()
-        } else {
-          filter_panel_api$turn_on()
-        }
-      }, ignoreInit = TRUE)
 
       df <- data[[dataname]]()
 
