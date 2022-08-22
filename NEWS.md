@@ -1,6 +1,6 @@
 # teal.modules.general 0.2.14.9014
 
-### Breking changes
+### Breaking changes
 
 * Replaced `chunks` with simpler `Quosure` class.
 * Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelApi`).
