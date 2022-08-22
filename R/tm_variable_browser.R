@@ -1069,11 +1069,18 @@ render_tab_table <- function(dataset_name, output, data, input, columns_names) {
     expr = {
       df <- data[[dataset_name]]()
 
-      df_vars <- if (isTRUE(input$show_parent_vars)) {
-        colnames(data[[dataset_name]]())
-      } else {
-        colnames(data[[dataset_name]]())
+      get_vars_df <- function(input, dataset_name, parent_name, data) {
+        data_cols <- colnames(data[[dataset_name]]())
+        if (isTRUE(input$show_parent_vars)) {
+          data_cols
+        } else if (dataset_name != parent_name && parent_name %in% names(data)) {
+          setdiff(data_cols, colnames(data[[parent_name]]()))
+        } else {
+          data_cols
+        }
       }
+
+      df_vars <- get_vars_df(input, dataset_name, "ADSL", data)
 
       df <- df[df_vars]
 
