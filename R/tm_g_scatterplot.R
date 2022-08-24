@@ -473,7 +473,6 @@ srv_g_scatterplot <- function(id,
       log_x <- input$log_x
       log_y <- input$log_y
 
-
       validate(need(!is.null(ggtheme), "Please select a theme."))
       validate(need(length(x_var) == 1, "There must be exactly one x var."))
       validate(need(length(y_var) == 1, "There must be exactly one y var."))
@@ -502,6 +501,13 @@ srv_g_scatterplot <- function(id,
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
+      }
+
+      if (log_x) {
+        validate(need(is.numeric(ANL[[x_var]]), "X variable can only be log transformed if it is numeric."))
+      }
+      if (log_y) {
+        validate(need(is.numeric(ANL[[y_var]]), "Y variable can only be log transformed if it is numeric."))
       }
 
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
