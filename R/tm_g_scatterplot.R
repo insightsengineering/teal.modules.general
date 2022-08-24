@@ -504,10 +504,24 @@ srv_g_scatterplot <- function(id,
       }
 
       if (log_x) {
-        validate(need(is.numeric(ANL[[x_var]]), "X variable can only be log transformed if it is numeric."))
+        validate(
+          need(
+            is.numeric(ANL[[x_var]]) && all(
+              ANL[[x_var]] > 0 | is.na(ANL[[x_var]])
+            ),
+            "X variable can only be log transformed if variable is numeric and all values are positive."
+          )
+        )
       }
       if (log_y) {
-        validate(need(is.numeric(ANL[[y_var]]), "Y variable can only be log transformed if it is numeric."))
+        validate(
+          need(
+            is.numeric(ANL[[y_var]]) && all(
+              ANL[[y_var]] > 0 | is.na(ANL[[y_var]])
+            ),
+            "Y variable can only be log transformed if variable is numeric and all values are positive."
+          )
+        )
       }
 
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
