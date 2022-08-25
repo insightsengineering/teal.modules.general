@@ -243,7 +243,7 @@ ui_g_scatterplot <- function(id, ...) {
           data_extract_spec = args$y,
           is_single_dataset = is_single_dataset_value
         ),
-        checkboxInput(ns("log_y"), "Use log transformation for Y variable", value = FALSE),
+        checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
         if (!is.null(args$color_by)) {
           teal.transform::data_extract_ui(
             id = ns("color_by"),
