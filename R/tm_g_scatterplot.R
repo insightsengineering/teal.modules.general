@@ -257,7 +257,7 @@ ui_g_scatterplot <- function(id, ...) {
           condition = paste0("input['", ns("log_y"), "'] == true"),
           radioButtons(
             ns("log_y_base"),
-            label = "Base",
+            label = NULL,
             inline = TRUE,
             choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
           )
