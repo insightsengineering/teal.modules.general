@@ -592,7 +592,7 @@ srv_g_scatterplot <- function(id,
         teal.code::chunks_push(
           id = "log_x_transformation",
           expression = substitute(
-            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]),
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
             env = list(
               x_var = x_var,
               log_x_fn = as.name(log_x_fn),
@@ -607,7 +607,7 @@ srv_g_scatterplot <- function(id,
         teal.code::chunks_push(
           id = "log_y_transformation",
           expression = substitute(
-            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]),
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
             env = list(
               y_var = y_var,
               log_y_fn = as.name(log_y_fn),
@@ -845,9 +845,10 @@ srv_g_scatterplot <- function(id,
     )
 
     output$data_table <- DT::renderDataTable({
-      # if not dependent on plot_r() it tries to print a table before chunks are populated with the correct ANL
+      # if not dependent on plot_r() initially it tries to print a table
+      # before chunks are populated with the correct ANL
       # in plot_r which ends up in a bunch of warnings that ANL is not in chunks
-      plot_r()
+      isolate(plot_r())
       plot_brush <- brush$brush()
 
       if (!is.null(plot_brush)) {
