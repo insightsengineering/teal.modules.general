@@ -587,19 +587,25 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-      log_x_fn <- if(log_x) switch(
-        input$log_x_base,
-        natural = "log",
-        base10 = "log10",
-        base2 = "log2"
-      ) else NULL
+      log_x_fn <- if (log_x) {
+        switch(input$log_x_base,
+          natural = "log",
+          base10 = "log10",
+          base2 = "log2"
+        )
+      } else {
+        NULL
+      }
 
-      log_y_fn <- if(log_y) switch(
-        input$log_y_base,
-        natural = "log",
-        base10 = "log10",
-        base2 = "log2"
-      ) else NULL
+      log_y_fn <- if (log_y) {
+        switch(input$log_y_base,
+          natural = "log",
+          base10 = "log10",
+          base2 = "log2"
+        )
+      } else {
+        NULL
+      }
 
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
