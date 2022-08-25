@@ -2,6 +2,7 @@
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
+* Added log transformation options to `tm_g_scatterplot`.
 
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
