@@ -237,6 +237,15 @@ ui_g_scatterplot <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         ),
         checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_x"), "'] == true"),
+          radioButtons(
+            ns("log_x_base"),
+            label = "Base",
+            inline = TRUE,
+            choices = c("Natural" = "natural", "Base 10" = "base10", "Base 2" = "base2")
+          )
+        ),
         teal.transform::data_extract_ui(
           id = ns("y"),
           label = "Y variable",
@@ -244,6 +253,15 @@ ui_g_scatterplot <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         ),
         checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_y"), "'] == true"),
+          radioButtons(
+            ns("log_y_base"),
+            label = "Base",
+            inline = TRUE,
+            choices = c("Natural" = "natural", "Base 10" = "base10", "Base 2" = "base2")
+          )
+        ),
         if (!is.null(args$color_by)) {
           teal.transform::data_extract_ui(
             id = ns("color_by"),
@@ -569,6 +587,20 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
+      log_x_fn <- if(log_x) switch(
+        input$log_x_base,
+        natural = "log",
+        base10 = "log10",
+        base2 = "log2"
+      ) else NULL
+
+      log_y_fn <- if(log_y) switch(
+        input$log_y_base,
+        natural = "log",
+        base10 = "log10",
+        base2 = "log2"
+      ) else NULL
+
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
           expr = plot_call +
@@ -576,8 +608,8 @@ srv_g_scatterplot <- function(id,
             geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
           env = list(
             plot_call = plot_call,
-            x_name = if (log_x) bquote(log(.(as.name(x_var)))) else as.name(x_var),
-            y_name = if (log_y) bquote(log(.(as.name(y_var)))) else as.name(y_var),
+            x_name = if (log_x) bquote(.(as.name(log_x_fn))(.(as.name(x_var)))) else as.name(x_var),
+            y_name = if (log_y) bquote(.(as.name(log_y_fn))(.(as.name(y_var)))) else as.name(y_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
             shape_value = shape,
@@ -591,8 +623,8 @@ srv_g_scatterplot <- function(id,
             geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
           env = list(
             plot_call = plot_call,
-            x_name = if (log_x) bquote(log(.(as.name(x_var)))) else as.name(x_var),
-            y_name = if (log_y) bquote(log(.(as.name(y_var)))) else as.name(y_var),
+            x_name = if (log_x) bquote(.(as.name(log_x_fn))(.(as.name(x_var)))) else as.name(x_var),
+            y_name = if (log_y) bquote(.(as.name(log_y_fn))(.(as.name(y_var)))) else as.name(y_var),
             color_by_var_name = as.name(color_by_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
@@ -719,13 +751,13 @@ srv_g_scatterplot <- function(id,
       y_label <- varname_w_label(
         y_var,
         ANL,
-        prefix = if (log_y) "log (" else NULL,
+        prefix = if (log_y) paste(log_y_fn, "(") else NULL,
         suffix = if (log_y) ")" else NULL
       )
       x_label <- varname_w_label(
         x_var,
         ANL,
-        prefix = if (log_x) "log (" else NULL,
+        prefix = if (log_x) paste(log_x_fn, "(") else NULL,
         suffix = if (log_x) ")" else NULL
       )
 
