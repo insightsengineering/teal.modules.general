@@ -243,7 +243,7 @@ ui_g_scatterplot <- function(id, ...) {
             ns("log_x_base"),
             label = "Base",
             inline = TRUE,
-            choices = c("Natural" = "natural", "Base 10" = "base10", "Base 2" = "base2")
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
           )
         ),
         teal.transform::data_extract_ui(
@@ -259,7 +259,7 @@ ui_g_scatterplot <- function(id, ...) {
             ns("log_y_base"),
             label = "Base",
             inline = TRUE,
-            choices = c("Natural" = "natural", "Base 10" = "base10", "Base 2" = "base2")
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
           )
         ),
         if (!is.null(args$color_by)) {
@@ -587,24 +587,34 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-      log_x_fn <- if (log_x) {
-        switch(input$log_x_base,
-          natural = "log",
-          base10 = "log10",
-          base2 = "log2"
+      if (log_x) {
+        log_x_fn <- input$log_x_base
+        teal.code::chunks_push(
+          id = "log_x_transformation",
+          expression = substitute(
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]),
+            env = list(
+              x_var = x_var,
+              log_x_fn = as.name(log_x_fn),
+              log_x_var = paste0(log_x_fn, "_", x_var)
+            )
+          )
         )
-      } else {
-        NULL
       }
 
-      log_y_fn <- if (log_y) {
-        switch(input$log_y_base,
-          natural = "log",
-          base10 = "log10",
-          base2 = "log2"
+      if (log_y) {
+        log_y_fn <- input$log_y_base
+        teal.code::chunks_push(
+          id = "log_y_transformation",
+          expression = substitute(
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]),
+            env = list(
+              y_var = y_var,
+              log_y_fn = as.name(log_y_fn),
+              log_y_var = paste0(log_y_fn, "_", y_var)
+            )
+          )
         )
-      } else {
-        NULL
       }
 
       plot_call <- if (length(color_by_var) == 0) {
@@ -614,8 +624,8 @@ srv_g_scatterplot <- function(id,
             geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
           env = list(
             plot_call = plot_call,
-            x_name = if (log_x) bquote(.(as.name(log_x_fn))(.(as.name(x_var)))) else as.name(x_var),
-            y_name = if (log_y) bquote(.(as.name(log_y_fn))(.(as.name(y_var)))) else as.name(y_var),
+            x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
+            y_name = if (log_y) as.name(paste0(log_y_fn, "_", y_var)) else as.name(y_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
             shape_value = shape,
@@ -629,8 +639,8 @@ srv_g_scatterplot <- function(id,
             geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
           env = list(
             plot_call = plot_call,
-            x_name = if (log_x) bquote(.(as.name(log_x_fn))(.(as.name(x_var)))) else as.name(x_var),
-            y_name = if (log_y) bquote(.(as.name(log_y_fn))(.(as.name(y_var)))) else as.name(y_var),
+            x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
+            y_name = if (log_y) as.name(paste0(log_y_fn, "_", y_var)) else as.name(y_var),
             color_by_var_name = as.name(color_by_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
