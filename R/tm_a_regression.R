@@ -233,7 +233,7 @@ srv_a_regression <- function(id,
                              ggplot2_args,
                              default_outlier_label) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     anl_merged_input <- teal.transform::merge_expression_module(
       datasets = data,

@@ -351,7 +351,7 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
