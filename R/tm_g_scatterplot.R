@@ -236,11 +236,31 @@ ui_g_scatterplot <- function(id, ...) {
           data_extract_spec = args$x,
           is_single_dataset = is_single_dataset_value
         ),
+        checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_x"), "'] == true"),
+          radioButtons(
+            ns("log_x_base"),
+            label = NULL,
+            inline = TRUE,
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
+          )
+        ),
         teal.transform::data_extract_ui(
           id = ns("y"),
           label = "Y variable",
           data_extract_spec = args$y,
           is_single_dataset = is_single_dataset_value
+        ),
+        checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_y"), "'] == true"),
+          radioButtons(
+            ns("log_y_base"),
+            label = NULL,
+            inline = TRUE,
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
+          )
         ),
         if (!is.null(args$color_by)) {
           teal.transform::data_extract_ui(
@@ -351,7 +371,7 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
@@ -453,7 +473,10 @@ srv_g_scatterplot <- function(id,
       smoothing_degree <- as.integer(input$smoothing_degree)
       ci <- input$ci # nolint
 
-      validate(need(length(x_var) > 0 && length(y_var) > 0, "Please select X and Y variables"))
+      log_x <- input$log_x
+      log_y <- input$log_y
+
+      validate(need(!is.null(ggtheme), "Please select a theme."))
       validate(need(length(x_var) == 1, "There must be exactly one x var."))
       validate(need(length(y_var) == 1, "There must be exactly one y var."))
       validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
@@ -482,9 +505,29 @@ srv_g_scatterplot <- function(id,
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
       }
-      validate(need(!is.null(ggtheme), "Please select a theme."))
-      teal::validate_has_data(ANL, 10)
+
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+
+      if (log_x) {
+        validate(
+          need(
+            is.numeric(ANL[[x_var]]) && all(
+              ANL[[x_var]] > 0 | is.na(ANL[[x_var]])
+            ),
+            "X variable can only be log transformed if variable is numeric and all values are positive."
+          )
+        )
+      }
+      if (log_y) {
+        validate(
+          need(
+            is.numeric(ANL[[y_var]]) && all(
+              ANL[[y_var]] > 0 | is.na(ANL[[y_var]])
+            ),
+            "Y variable can only be log transformed if variable is numeric and all values are positive."
+          )
+        )
+      }
 
       facet_cl <- facet_ggplot_call(
         row_facet_name,
@@ -508,6 +551,40 @@ srv_g_scatterplot <- function(id,
         )
       } else {
         size
+      }
+
+      plot_q <- merged$anl_q_r()
+
+      if (log_x) {
+        log_x_fn <- input$log_x_base
+        plot_q <- teal.code::eval_code(
+          object = plot_q,
+          name = "log_x_transformation",
+          code = substitute(
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
+            env = list(
+              x_var = x_var,
+              log_x_fn = as.name(log_x_fn),
+              log_x_var = paste0(log_x_fn, "_", x_var)
+            )
+          )
+        )
+      }
+
+      if (log_y) {
+        log_y_fn <- input$log_y_base
+        plot_q <- teal.code::eval_code(
+          object = plot_q,
+          name = "log_y_transformation",
+          code = substitute(
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
+            env = list(
+              y_var = y_var,
+              log_y_fn = as.name(log_y_fn),
+              log_y_var = paste0(log_y_fn, "_", y_var)
+            )
+          )
+        )
       }
 
       pre_pro_anl <- if (input$show_count) {
@@ -536,8 +613,8 @@ srv_g_scatterplot <- function(id,
             ggplot2::geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
           env = list(
             plot_call = plot_call,
-            x_name = as.name(x_var),
-            y_name = as.name(y_var),
+            x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
+            y_name = if (log_y) as.name(paste0(log_y_fn, "_", y_var)) else as.name(y_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
             shape_value = shape,
@@ -551,8 +628,8 @@ srv_g_scatterplot <- function(id,
             ggplot2::geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
           env = list(
             plot_call = plot_call,
-            x_name = as.name(x_var),
-            y_name = as.name(y_var),
+            x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
+            y_name = if (log_y) as.name(paste0(log_y_fn, "_", y_var)) else as.name(y_var),
             color_by_var_name = as.name(color_by_var),
             alpha_value = alpha,
             point_sizes = point_sizes,
@@ -676,8 +753,18 @@ srv_g_scatterplot <- function(id,
         plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
       }
 
-      y_label <- varname_w_label(y_var, ANL)
-      x_label <- varname_w_label(x_var, ANL)
+      y_label <- varname_w_label(
+        y_var,
+        ANL,
+        prefix = if (log_y) paste(log_y_fn, "(") else NULL,
+        suffix = if (log_y) ")" else NULL
+      )
+      x_label <- varname_w_label(
+        x_var,
+        ANL,
+        prefix = if (log_x) paste(log_x_fn, "(") else NULL,
+        suffix = if (log_x) ")" else NULL
+      )
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(y = y_label, x = x_label),
@@ -728,7 +815,7 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
 
-      teal.code::eval_code(merged$anl_q_r(), plot_call, name = "plot_call") %>%
+      teal.code::eval_code(plot_q, plot_call, name = "plot_call") %>%
         teal.code::eval_code(quote(print(p)), name = "print_call")
     })
 

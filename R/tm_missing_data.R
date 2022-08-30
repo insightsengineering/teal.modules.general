@@ -323,7 +323,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 #' @importFrom rlang .data
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
 

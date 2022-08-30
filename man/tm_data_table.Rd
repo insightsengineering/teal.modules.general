@@ -11,6 +11,7 @@ tm_data_table(
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),
+  server_rendering = FALSE,
   pre_output = NULL,
   post_output = NULL
 )
@@ -32,6 +33,9 @@ If vector of length zero (default) then all datasets are shown.}
 
 \item{dt_options}{(named \code{list}) The \code{options} argument to \code{DT::datatable}. By default
 \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
+
+\item{server_rendering}{(\code{logical}) should the data table be rendered server side
+(see \code{server} argument of \code{DT::renderDataTable()})}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}

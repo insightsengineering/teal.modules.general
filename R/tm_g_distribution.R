@@ -314,7 +314,7 @@ srv_distribution <- function(id,
                              plot_width,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
 
