@@ -234,8 +234,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelApi")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
     selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
 
@@ -267,6 +265,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
     cat_dataname <- categorical_var[[1]]$dataname
 
+    n_outlier_missing <- reactive({
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      validate(need(outlier_var, "Please select a variable"))
+      ANL <- merged$anl_q_r()[["ANL"]]
+      sum(is.na(ANL[[outlier_var]]))
+    })
+
     common_code_q <- reactive({
       input_catvar <- input[[extract_input(
         "categorical_var",
@@ -282,15 +287,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-
       validate(need(outlier_var, "Please select a variable"))
-
-      code <- substitute(expr = length(unique(ANL[[outlier_var]])) > 1, env = list(outlier_var = outlier_var))
-      msg <- "Variable has no variation, i.e. only one unique value"
-      validate(need(all(eval(code, quosure@env)), msg))
-
-      validate(need(input$method, "Please select a method"))
       validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
+      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
+      validate(need(input$method, "Please select a method"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
@@ -306,15 +306,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
         shinyjs::hide("split_outliers")
-        contains_na <- anyNA(ANL[, outlier_var])
-        if (contains_na) {
+        if (n_outlier_missing() > 0) {
           quosure <- teal.code::eval_code(
             quosure,
             substitute(
-              expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
             ),
-            name = "ANL_NO_NA_call"
+            name = "removing NA entries from ANL"
           )
         }
       } else {
@@ -369,12 +368,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         }
 
-        contains_na <- anyNA(ANL[, outlier_var, drop = TRUE])
-        if (contains_na) {
+        if (n_outlier_missing() > 0) {
           quosure <- teal.code::eval_code(
             quosure,
             substitute(
-              expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
             ),
             name = "ANL_NO_NA_filter_call"
@@ -407,7 +405,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         quosure,
         substitute(
           expr = {
-            ANL_OUTLIER <- anl_call %>% # nolint
+            ANL_OUTLIER <- ANL %>% # nolint
               group_expr %>% # styler: off
               dplyr::mutate(is_outlier = {
                 q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
@@ -421,7 +419,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ANL_OUTLIER # used to display table when running show-r-code code
           },
           env = list(
-            anl_call = if (contains_na) quote(ANL_NO_NA) else quote(ANL),
             calculate_outliers = if (method == "IQR") {
               substitute(
                 expr = dplyr::mutate(is_outlier_selected = {
@@ -578,18 +575,24 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       quosure
     })
+            validate(need(outlier_var, "Please select a variable"))
 
     output$summary_table <- DT::renderDataTable(
       expr = {
-        suppressWarnings(
-          common_code_q()[["summary_table"]]
-        )
-      },
-      options = list(
-        dom = "t",
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
-      )
+        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+        if (length(categorical_var) > 0) {
+          DT::datatable(
+            common_code_q()[["summary_table"]],
+            options = list(
+              dom = "t",
+              autoWidth = TRUE,
+              columnDefs = list(list(width = "200px", targets = "_all"))
+            )
+          )
+        } else {
+          NULL
+        }
+      }
     )
 
     # boxplot/violinplot #nolint
@@ -790,12 +793,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
-        contains_na <- "ANL_NO_NA" %in% ls(quosure@env)
-        ANL <- if (contains_na) { # nolint
+        ANL <- if (n_outlier_missing() > 0) { # nolint
           quosure <- teal.code::eval_code(
             quosure,
             substitute(
-              expr = ANL_NO_NA <- ANL_NO_NA %>% # nolint
+              expr = ANL <- ANL %>% # nolint
                 dplyr::left_join(
                   dplyr::select(summary_table_pre, categorical_var_name, order),
                   by = categorical_var
@@ -805,9 +807,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ),
             name = "ANL_NO_NA_call"
           )
-          quote(ANL_NO_NA)
-        } else {
-          quote(ANL)
         }
 
         quosure <- teal.code::eval_code(
@@ -989,11 +988,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
         ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
         ANL <- common_code_q()[["ANL"]] # nolint
-        contains_na <- "ANL_NO_NA" %in% ls(common_code_q()@env)
-        if (contains_na) {
-          ANL_NO_NA <- common_code_q()[["ANL_NO_NA"]] # nolint
-          ANL <- ANL_NO_NA # nolint
-        }
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
           box_pws$brush()
@@ -1082,7 +1076,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     )
 
     output$total_outliers <- renderUI({
-      ANL <- common_code_q()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
       teal::validate_has_data(ANL, 1)
       ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint
@@ -1098,16 +1092,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     output$total_missing <- renderUI({
-      contains_na <- "ANL_NO_NA" %in% ls(common_code_q()@env)
-      if (contains_na) {
-        ANL_NO_NA <- common_code_q()[["ANL_NO_NA"]] # nolint
+      if (n_outlier_missing() > 0) {
+        ANL <- merged$anl_q_r()[["ANL"]]
         helpText(
           sprintf(
             "%s %d / %d [%.02f%%]",
             "Total number of row(s) with missing values:",
-            nrow(ANL) - nrow(ANL_NO_NA),
+            n_outlier_missing(),
             nrow(ANL),
-            100 * (nrow(ANL) - nrow(ANL_NO_NA)) / nrow(ANL)
+            100 * (n_outlier_missing()) / nrow(ANL)
           )
         )
       }
@@ -1127,12 +1120,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         card$set_name(paste0("Outliers - ", tab_type))
         card$append_text(tab_type, "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
-        summary_table <- tryCatch(
-          expr = common_code_q()[["summary_table"]],
-          warning = function(e) "summary_table not available"
-        )
 
-        if (inherits(summary_table, "data.frame")) {
+        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+        if (length(categorical_var) > 0) {
+          summary_table <- common_code_q()[["summary_table"]]
           card$append_text("Summary Table", "header3")
           card$append_table(summary_table)
         }
