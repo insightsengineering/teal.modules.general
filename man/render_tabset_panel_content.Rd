@@ -7,7 +7,7 @@
 render_tabset_panel_content(
   datanames,
   output,
-  datasets,
+  data,
   input,
   columns_names,
   plot_var
@@ -18,7 +18,7 @@ render_tabset_panel_content(
 
 \item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(\code{FilteredData}) the object containing all datasets}
+\item{data}{(\code{list}) the object containing all datasets}
 
 \item{input}{(\code{session$input}) the shiny session input}
 
