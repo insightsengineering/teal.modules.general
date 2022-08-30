@@ -268,7 +268,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     n_outlier_missing <- reactive({
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       validate(need(outlier_var, "Please select a variable"))
-      ANL <- merged$anl_q_r()[["ANL"]]
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
       sum(is.na(ANL[[outlier_var]]))
     })
 
@@ -279,7 +279,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         filter = is_cat_filter_spec
       )]]
 
-      ANL <- merged$anl_q_r()[["ANL"]]
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
       quosure <- merged$anl_q_r()
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
@@ -1093,7 +1093,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     output$total_missing <- renderUI({
       if (n_outlier_missing() > 0) {
-        ANL <- merged$anl_q_r()[["ANL"]]
+        ANL <- merged$anl_q_r()[["ANL"]] # nolint
         helpText(
           sprintf(
             "%s %d / %d [%.02f%%]",

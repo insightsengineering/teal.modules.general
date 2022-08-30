@@ -704,7 +704,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             )
           ),
           name = "p2_plot_call"
-        ) %>% teal.code::eval_code(
+        ) %>%
+        teal.code::eval_code(
           quote({
             g1 <- ggplotGrob(p1)
             g2 <- ggplotGrob(p2)
