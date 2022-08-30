@@ -4,10 +4,10 @@
 \alias{get_var_description}
 \title{Returns a short variable description.}
 \usage{
-get_var_description(datasets, dataset_name, var_name)
+get_var_description(data, dataset_name, var_name)
 }
 \arguments{
-\item{datasets}{(\code{FilteredData}) the object containing the dataset}
+\item{data}{(\code{list}) the object containing the dataset}
 
 \item{dataset_name}{(\code{character}) the name of the dataset containing the variable}
 
