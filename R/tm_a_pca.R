@@ -322,17 +322,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       }
 
       if (scale) {
-        code <- substitute(
-          vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
-          env = list(
-            keep_cols = keep_cols
-          )
-        )
+        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
+
         msg <- paste0(
           "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
           "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
         )
-        validate(need(all(eval(code, quosure@env)), msg))
+        validate(need(all(not_single), msg))
       }
 
       quosure <- teal.code::eval_code(
