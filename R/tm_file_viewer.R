@@ -112,7 +112,7 @@ ui_viewer <- function(id, ...) {
   )
 }
 
-srv_viewer <- function(id, datasets, input_path) {
+srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
     temp_dir <- tempfile()
     if (!dir.exists(temp_dir)) {
