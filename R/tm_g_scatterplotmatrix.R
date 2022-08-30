@@ -169,6 +169,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
     )
 
     anl_merged_q <- reactive({
+      req(anl_merged_input())
       teal.code::new_quosure(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
