@@ -991,7 +991,7 @@ get_plotted_data <- function(input, plot_var, data) {
   varname <- plot_var$variable[[input$tabset_panel]]
   df <- data[[dataset_name]]()
 
-  var_description <-  formatters::var_labels(df)[[varname]]
+  var_description <- formatters::var_labels(df)[[varname]]
   list(data = df[[varname]], var_description = var_description)
 }
 
