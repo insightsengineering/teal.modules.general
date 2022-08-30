@@ -241,7 +241,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
           quosure,
           substitute(
             expr = {
-              plot <- lattice::splom(
+              g <- lattice::splom(
                 ANL,
                 varnames = varnames_value,
                 panel = function(x, y, ...) {
@@ -265,7 +265,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
                 alpha = alpha_value,
                 cex = cex_value
               )
-              print(plot)
+              print(g)
             },
             env = list(
               varnames_value = varnames,
