@@ -4,7 +4,7 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Datasets used to compute PCA.
+#'   Columns used to compute PCA.
 #' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
 #'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
 #'   length three with `c(value, min, max)`.
@@ -38,7 +38,7 @@
 #'   modules = modules(
 #'     tm_a_pca(
 #'       "PCA",
-#'       data_extract_spec(
+#'       dat = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
@@ -237,16 +237,17 @@ ui_a_pca <- function(id, ...) {
             teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
           )
         )
-      ),
-      forms = teal::get_rcode_ui(ns("rcode")),
-      pre_output = args$pre_output,
-      post_output = args$post_output
-    )
+      )
+    ),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
-srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggplot2_args) {
+srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     response <- dat
 
@@ -254,56 +255,47 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- datasets$get_varlabels(dataname = response[[i]]$dataname)
-      response[[1]]$select$choices <- setdiff(
-        response[[1]]$select$choices,
-        datasets$get_keys(response[[i]]$dataname)
+      response[[i]]$select$choices <- formatters::var_labels(data[[response[[i]]$dataname]]())
+      response[[i]]$select$choices <- setdiff(
+        response[[i]]$select$choices,
+        unlist(attr(data, "join_keys")$get(response[[i]]$dataname))
       )
     }
 
-    teal.code::init_chunks()
-
-    dat_selector <- teal.transform::data_extract_srv(id = "dat", datasets, dat)
-
-    anl_data <- teal.transform::data_merge_module(
-      datasets = datasets,
-      data_extract = list(dat = dat)
+    anl_merged_input <- teal.transform::merge_expression_module(
+      datasets = data,
+      join_keys = attr(data, "join_keys"),
+      data_extract = list(dat = dat, response = response)
     )
 
-    response_data <- teal.transform::data_merge_module(
-      datasets = datasets,
-      data_extract = list(response = response),
-      anl_name = "RP"
+    anl_merged_q <- reactive({
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
     )
 
     # computation ----
     computation <- reactive({
-      validate({
-        need(
-          !is.null(dat_selector()), "Please select data"
-        )
-      })
-      chunks_stack <- teal.code::chunks$new()
-
-      keep_cols <- as.character(anl_data()$columns_source$dat)
+      # inputs
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale") # nolint
       scale <- standardization == "center_scale"
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
+      # inputs validation
       validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
-
-      teal.code::chunks_reset(chunks = chunks_stack)
-      teal.code::chunks_push_chunks(anl_data()$chunks, chunks = chunks_stack)
-
-      ANL <- anl_data()$data() # nolint
-
-      teal::validate_has_data(ANL, 10)
       teal::validate_has_elements(keep_cols, "Please select columns")
       validate(need(
         all(vapply(ANL[keep_cols], function(x) is.numeric(x) && all(!is.infinite(x)), logical(1))),
         "PCA is only defined for (finite) numeric columns."
       ))
+      teal::validate_has_data(ANL, 10)
       validate(need(
         na_action != "none" | !anyNA(ANL[keep_cols]),
         paste(
@@ -312,86 +304,73 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         )
       ))
 
-      teal.code::chunks_push(
-        id = "keep_columns_call",
-        expression = substitute(
-          expr = {
-            keep_columns <- keep_cols
-          },
-          env = list(
-            keep_cols = keep_cols
-          )
+      quosure <- teal.code::eval_code(
+        merged$anl_q_r(),
+        substitute(
+          expr = keep_columns <- keep_cols,
+          env = list(keep_cols = keep_cols)
         ),
-        chunks = chunks_stack
+        name = "keep_columns_call"
       )
 
       if (na_action == "drop") {
-        teal.code::chunks_push(
-          id = "ANL_drop_na_call",
-          expression = substitute(
-            expr = ANL <- tidyr::drop_na(ANL, keep_columns), # nolint
-            env = list()
-          ),
-          chunks = chunks_stack
+        quosure <- teal.code::eval_code(
+          quosure,
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns)), # nolint
+          name = "ANL_drop_na_call"
         )
       }
 
       if (scale) {
-        teal.code::chunks_validate_custom(
-          substitute(
-            expr = vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1)),
-            env = list(keep_cols = keep_cols)
-          ),
-          msg = paste0(
-            "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
-            "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
-          ),
-          chunks = chunks_stack
+        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
+
+        msg <- paste0(
+          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
+          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
         )
+        validate(need(all(not_single), msg))
       }
 
-      teal.code::chunks_push(
-        id = "summary_pca_call",
-        expression = substitute(
+      quosure <- teal.code::eval_code(
+        quosure,
+        substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
         ),
-        chunks = chunks_stack
+        name = "summary_pca_call"
       )
 
-      teal.code::chunks_push(
-        id = "pca_tbl_importance_call",
-        expression = quote({
+      quosure <- teal.code::eval_code(
+        quosure,
+        quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
         }),
-        chunks = chunks_stack
+        name = "pca_tbl_importance_call"
       )
 
-      teal.code::chunks_push(
-        id = "pca_tbl_eigenvector_call",
-        expression = quote({
+      quosure <- teal.code::eval_code(
+        quosure,
+        quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
         }),
-        chunks = chunks_stack
+        name = "pca_tbl_eigenvector_call"
       )
 
-      teal.code::chunks_safe_eval(chunks = chunks_stack)
-
-      chunks_stack
+      quosure
     })
 
     # plot args ----
     output$plot_settings <- renderUI({
       # reactivity triggers
-      chunks_stack <- computation()
+      quosure <- computation()
 
       ns <- session$ns
 
-      pca <- teal.code::chunks_get_var("pca", chunks = chunks_stack)
+      pca <- quosure[["pca"]]
       chcs_pcs <- colnames(pca$rotation)
-      chcs_vars <- teal.code::chunks_get_var("keep_cols", chunks = chunks_stack)
+      chcs_vars <- quosure[["keep_columns"]]
 
       tagList(
         conditionalPanel(
@@ -421,7 +400,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
     })
 
     # plot elbow ----
-    plot_elbow <- function() {
+    plot_elbow <- function(base_q) {
       ggtheme <- input$ggtheme
       validate(need(ggtheme, "Please select a theme."))
       rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
@@ -453,9 +432,9 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         ggtheme = ggtheme
       )
 
-      teal.code::chunks_push(
-        id = "pca_plot",
-        expression = substitute(
+      teal.code::eval_code(
+        base_q,
+        substitute(
           expr = {
             elb_dat <- pca$importance[c("Proportion of Variance", "Cumulative Proportion"), ] %>%
               dplyr::as_tibble(rownames = "metric") %>%
@@ -493,14 +472,13 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        name = "pca_plot"
       )
-
-      invisible(NULL)
     }
 
     # plot circle ----
-    plot_circle <- function() {
+    plot_circle <- function(base_q) {
       validate(
         need(input$x_axis, "Need additional plot settings - x axis"),
         need(input$y_axis, "Need additional plot settings - y axis"),
@@ -542,9 +520,9 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         ggtheme = ggtheme
       )
 
-      teal.code::chunks_push(
-        id = "pca_plot",
-        expression = substitute(
+      teal.code::eval_code(
+        base_q,
+        substitute(
           expr = {
             pca_rot <- pca$rotation[, c(x_axis, y_axis)] %>%
               dplyr::as_tibble(rownames = "label") %>%
@@ -577,27 +555,29 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        name = "pca_plot"
       )
-
-      invisible(NULL)
     }
 
     # plot biplot ----
-    plot_biplot <- function() {
+    plot_biplot <- function(base_q) {
       validate(
         need(input$x_axis, "Need additional plot settings - x axis"),
         need(input$y_axis, "Need additional plot settings - y axis")
       )
       validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
 
-      rd <- response_data()
+      quosure <- base_q
 
-      resp_col <- as.character(rd$columns_source$response)
+      ANL <- quosure[["ANL"]] # nolint
+
+      resp_col <- as.character(merged$anl_input_r()$columns_source$response)
+      dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       x_axis <- input$x_axis # nolint
       y_axis <- input$y_axis # nolint
       variables <- input$variables # nolint
-      pca <- teal.code::chunks_get_var("pca")
+      pca <- quosure[["pca"]]
 
       ggtheme <- input$ggtheme
       validate(need(ggtheme, "Please select a theme."))
@@ -607,19 +587,20 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
       size <- input$size # nolint
       font_size <- input$font_size # nolint
 
-      teal.code::chunks_push(
-        id = "pca_plot_data_rot",
-        expression = substitute(
+      quosure <- teal.code::eval_code(
+        quosure,
+        substitute(
           expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
           env = list(x_axis = x_axis, y_axis = y_axis)
-        )
+        ),
+        name = "pca_plot_data_rot"
       )
 
       # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
       if (!is.null(input$variables)) {
-        teal.code::chunks_push(
-          id = "pca_plot_vars_rot_1",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
             r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
             v_scale <- rowSums(pca$rotation ^ 2) # styler: off
@@ -629,38 +610,36 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
                 dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
-          )
-        )
-
-        # determine start of arrows
-        teal.code::chunks_push(
-          id = "pca_plot_vars_rot_2",
-          expression = if (is.logical(pca$center) && !pca$center) {
+          ),
+          name = "pca_plot_vars_rot_1"
+        ) %>%
+          teal.code::eval_code(
+            if (is.logical(pca$center) && !pca$center) {
+              substitute(
+                expr = {
+                  rot_vars <- rot_vars %>%
+                    tibble::column_to_rownames("label") %>%
+                    sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
+                    tibble::rownames_to_column("label") %>%
+                    dplyr::mutate(
+                      xstart = mean(pca$x[, x_axis], na.rm = TRUE),
+                      ystart = mean(pca$x[, y_axis], na.rm = TRUE)
+                    )
+                },
+                env = list(x_axis = x_axis, y_axis = y_axis)
+              )
+            } else {
+              quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
+            },
+            name = "pca_plot_vars_rot_2"
+          ) %>%
+          teal.code::eval_code(
             substitute(
-              expr = {
-                rot_vars <- rot_vars %>%
-                  tibble::column_to_rownames("label") %>%
-                  sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
-                  tibble::rownames_to_column("label") %>%
-                  dplyr::mutate(
-                    xstart = mean(pca$x[, x_axis], na.rm = TRUE),
-                    ystart = mean(pca$x[, y_axis], na.rm = TRUE)
-                  )
-              },
-              env = list(x_axis = x_axis, y_axis = y_axis)
-            )
-          } else {
-            quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
-          }
-        )
-
-        teal.code::chunks_push(
-          id = "pca_plot_vars_rot_3",
-          expression = substitute(
-            expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
-            env = list(variables = variables)
+              expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
+              env = list(variables = variables)
+            ),
+            name = "pca_plot_vars_rot_3"
           )
-        )
       }
 
       pca_plot_biplot_expr <- list(quote(ggplot()))
@@ -675,41 +654,45 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         )
         dev_labs <- list()
       } else {
-        ANL <- teal.code::chunks_get_var("ANL") # nolint
         validate(need(
-          !resp_col %in% colnames(ANL),
+          !resp_col %in% dat_cols,
           "Response column must be different from the original variables (that were used for PCA)."
         ))
-        rp <- teal.code::chunks_get_var("RP")
 
-        rp_keys <- setdiff(colnames(rp), as.character(unlist(rd$columns_source))) # nolint
+        rp_keys <- setdiff(
+          colnames(ANL),
+          as.character(unlist(merged$anl_input_r()$columns_source))
+        ) # nolint
 
-        response <- rp[[resp_col]]
+        response <- ANL[[resp_col]]
 
         aes_biplot <- substitute(
           aes_string(x = x_axis, y = y_axis, color = "response"),
           env = list(x_axis = x_axis, y_axis = y_axis)
         )
 
-        teal.code::chunks_push(
-          id = "pca_plot_response_base",
-          substitute(response <- RP[[resp_col]], env = list(resp_col = resp_col))
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col)),
+          name = "pca_plot_response_base"
         )
 
-        dev_labs <- list(color = varname_w_label(resp_col, rp))
+        dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
         scales_biplot <- if (is.character(response) ||
           is.factor(response) ||
           (is.numeric(response) && length(unique(response)) <= 6)) {
-          teal.code::chunks_push(
-            id = "pca_plot_response",
-            quote(pca_rot$response <- as.factor(response))
+          quosure <- teal.code::eval_code(
+            quosure,
+            quote(pca_rot$response <- as.factor(response)),
+            name = "pca_plot_response"
           )
           quote(scale_color_brewer(palette = "Dark2"))
         } else if (class(response) == "Date") {
-          teal.code::chunks_push(
-            id = "pca_plot_response",
-            quote(pca_rot$response <- numeric(response))
+          quosure <- teal.code::eval_code(
+            quosure,
+            quote(pca_rot$response <- numeric(response)),
+            name = "pca_plot_response"
           )
 
           quote(
@@ -720,9 +703,10 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             )
           )
         } else {
-          teal.code::chunks_push(
-            id = "pca_plot_response",
-            quote(pca_rot$response <- response)
+          quosure <- teal.code::eval_code(
+            quosure,
+            quote(pca_rot$response <- response),
+            name = "pca_plot_response"
           )
           quote(scale_color_gradient(
             low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
@@ -799,9 +783,9 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         parsed_ggplot2_args
       )
 
-      teal.code::chunks_push(
-        id = "pca_plot_final",
-        expression = substitute(
+      teal.code::eval_code(
+        quosure,
+        substitute(
           expr = {
             g <- plot_call
             print(g)
@@ -809,14 +793,13 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
-        )
+        ),
+        name = "pca_plot_final"
       )
-
-      invisible(NULL)
     }
 
     # plot pc_var ----
-    plot_pc_var <- function() {
+    plot_pc_var <- function(base_q) {
       validate(need(input$pc, "Need additional plot settings - PC"))
 
       pc <- input$pc # nolint
@@ -879,9 +862,9 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         parsed_ggplot2_args$theme
       )
 
-      teal.code::chunks_push(
-        id = "pca_plot",
-        expression = substitute(
+      teal.code::eval_code(
+        base_q,
+        substitute(
           expr = {
             pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
               dplyr::as_tibble(rownames = "Variable")
@@ -894,35 +877,30 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             pc = pc,
             plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
-        )
+        ),
+        name = "pca_plot"
       )
-
-      invisible(NULL)
     }
 
     # plot final ----
-    plot_r <- reactive({
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(computation())
-
-      if (input$plot_type == "Elbow plot") {
-        plot_elbow()
-      } else if (input$plot_type == "Circle plot") {
-        plot_circle()
-      } else if (input$plot_type == "Biplot") {
-        if (length(response_data()$columns_source$response) > 0) {
-          teal.code::chunks_push_chunks(response_data()$chunks, overwrite = TRUE)
+    output_q <- reactive({
+      computation() %>%
+        {
+          if (input$plot_type == "Elbow plot") {
+            plot_elbow(.)
+          } else if (input$plot_type == "Circle plot") {
+            plot_circle(.)
+          } else if (input$plot_type == "Biplot") {
+            plot_biplot(.)
+          } else if (input$plot_type == "Eigenvector plot") {
+            plot_pc_var(.)
+          } else {
+            stop("Unknown plot")
+          }
         }
-
-        plot_biplot()
-      } else if (input$plot_type == "Eigenvector plot") {
-        plot_pc_var()
-      } else {
-        stop("Unknown plot")
-      }
-
-      teal.code::chunks_safe_eval()
     })
+
+    plot_r <- reactive(output_q()[["g"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "pca_plot",
@@ -936,8 +914,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
     output$tbl_importance <- renderTable(
       expr = {
         req("importance" %in% input$tables_display)
-        chunks_stack <- computation()
-        teal.code::chunks_get_var("tbl_importance", chunks = chunks_stack)
+        computation()[["tbl_importance"]]
       },
       bordered = TRUE,
       align = "c",
@@ -956,8 +933,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
     output$tbl_eigenvector <- renderTable(
       expr = {
         req("eigenvector" %in% input$tables_display)
-        chunks_stack <- computation()
-        teal.code::chunks_get_var("tbl_eigenvector", chunks = chunks_stack)
+        computation()[["tbl_eigenvector"]]
       },
       bordered = TRUE,
       align = "c",
@@ -973,11 +949,10 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
       )
     })
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(dat)),
-      modal_title = "R code for PCA"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "R Code for PCA"
     )
 
     ### REPORTER
@@ -987,23 +962,18 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
         card$set_name("PCA Plot")
         card$append_text("PCA Plot", "header2")
         card$append_text("Principal Component Analysis Plot", "header3")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Principal Components Table", "header3")
-        card$append_table(teal.code::chunks_get_var("tbl_importance", chunks = computation()))
+        card$append_table(computation()[["tbl_importance"]])
         card$append_text("Eigenvectors Table", "header3")
-        card$append_table(teal.code::chunks_get_var("tbl_eigenvector", chunks = computation()))
+        card$append_table(computation()[["tbl_eigenvector"]])
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

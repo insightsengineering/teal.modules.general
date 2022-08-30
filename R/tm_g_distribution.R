@@ -297,15 +297,16 @@ ui_distribution <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
 srv_distribution <- function(id,
-                             datasets,
+                             data,
                              reporter,
+                             filter_panel_api,
                              dist_var,
                              strata_var,
                              group_var,
@@ -313,28 +314,26 @@ srv_distribution <- function(id,
                              plot_width,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      join_keys = attr(data, "join_keys")
+    )
+
+    anl_merged_q <- reactive({
+      teal.code::new_quosure(env = data) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
-    merged_data <- teal.transform::data_merge_srv(
-      selector_list = reactive_select_input,
-      datasets = datasets
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
     )
 
     observeEvent(
@@ -345,7 +344,7 @@ srv_distribution <- function(id,
       ),
       handlerExpr = {
         if (length(input$t_dist) != 0) {
-          dist_var2 <- as.vector(merged_data()$columns_source$dist_i)
+          dist_var2 <- as.vector(merged$anl_input_r()$columns_source$dist_i)
 
           get_dist_params <- function(x, dist) {
             if (dist == "unif") {
@@ -359,7 +358,7 @@ srv_distribution <- function(id,
             )
           }
 
-          ANL <- datasets$get_data(as.character(dist_var[[1]]$dataname), filtered = TRUE) # nolint
+          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]] # nolint
           params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
           params_vec <- round(unname(unlist(params)), 2)
           params_names <- names(params)
@@ -375,9 +374,9 @@ srv_distribution <- function(id,
     )
 
     merge_vars <- reactive({
-      dist_var <- as.vector(merged_data()$columns_source$dist_i)
-      s_var <- as.vector(merged_data()$columns_source$strata_i)
-      g_var <- as.vector(merged_data()$columns_source$group_i)
+      dist_var <- as.vector(merged$anl_input_r()$columns_source$dist_i)
+      s_var <- as.vector(merged$anl_input_r()$columns_source$strata_i)
+      g_var <- as.vector(merged$anl_input_r()$columns_source$group_i)
 
       dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
       s_var_name <- if (length(s_var)) as.name(s_var) else NULL
@@ -394,21 +393,13 @@ srv_distribution <- function(id,
     })
 
     # common chunks ----
-    common_code_chunks <- reactive({
+    common_q <- reactive({
       # Create a private stack for this function only.
       validate({
-        need("dist_i" %in% names(reactive_select_input()), "Please select a variable")
+        need(length(merged$anl_input_r()$columns_source$dist_i) > 0, "Please select a variable")
       })
 
-      common_stack <- teal.code::chunks$new()
-
-      common_stack_push <- function(...) {
-        teal.code::chunks_push(..., chunks = common_stack)
-      }
-
-      teal.code::chunks_push_data_merge(isolate(merged_data()), common_stack)
-      ANL <- teal.code::chunks_get_var("ANL", common_stack) # nolint
-
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
       dist_var <- merge_vars()$dist_var
       s_var <- merge_vars()$s_var
       g_var <- merge_vars()$g_var
@@ -423,6 +414,8 @@ srv_distribution <- function(id,
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
 
+      quosure <- teal.code::eval_code(merged$anl_q_r(), "")
+
       if (length(g_var) > 0) {
         validate(
           need(
@@ -430,12 +423,13 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        common_stack_push(
-          id = "explicit_missing_values_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
             env = list(g_var = g_var)
-          )
+          ),
+          name = "explicit_missing_values_call"
         )
       }
 
@@ -446,12 +440,13 @@ srv_distribution <- function(id,
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
-        common_stack_push(
-          id = "explicit_missing_values_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
             env = list(s_var = s_var)
-          )
+          ),
+          name = "explicit_missing_values_call"
         )
       }
 
@@ -471,9 +466,9 @@ srv_distribution <- function(id,
         )
         params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-        common_stack_push(
-          id = "params_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
               params <- as.list(c(dist_param1, dist_param2))
               names(params) <- params_names_raw
@@ -483,14 +478,15 @@ srv_distribution <- function(id,
               dist_param2 = dist_param2,
               params_names_raw = params_names_raw
             )
-          )
+          ),
+          name = "params_call"
         )
       }
 
       if (length(s_var) == 0 && length(g_var) == 0) {
-        common_stack_push(
-          id = "summary_table_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
               summary_table <- ANL %>%
                 dplyr::summarise(
@@ -506,12 +502,13 @@ srv_distribution <- function(id,
               dist_var_name = as.name(dist_var),
               roundn = roundn
             )
-          )
+          ),
+          name = "summary_table_call"
         )
       } else {
-        common_stack_push(
-          id = "summary_table_call",
-          expression = substitute(
+        quosure <- teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
               strata_vars <- strata_vars_raw
               summary_table <- ANL %>%
@@ -530,19 +527,18 @@ srv_distribution <- function(id,
               strata_vars_raw = c(g_var, s_var),
               roundn = roundn
             )
-          )
+          ),
+          name = "summary_table_call"
         )
       }
 
-      teal.code::chunks_safe_eval(chunks = common_stack)
-
-      common_stack
+      quosure
     })
 
     # distplot chunks ----
-    dist_plot_r_chunks <- eventReactive(
+    dist_q <- eventReactive(
       eventExpr = {
-        common_code_chunks()
+        common_q()
         input$scales_type
         input$main_type
         input$bins
@@ -550,20 +546,8 @@ srv_distribution <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-        # Create a private stack for this function only.
-        distplot_stack <- teal.code::chunks$new()
-
-        ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()) # nolint
-        if ("params" %in% common_code_chunks()$ls()) {
-          params <- teal.code::chunks_get_var("params", common_code_chunks())
-        }
-        summary_table <- teal.code::chunks_get_var("summary_table", common_code_chunks()) # nolint
-
-        teal.code::chunks_reset(chunks = distplot_stack)
-
-        distplot_stack_push <- function(...) {
-          teal.code::chunks_push(..., chunks = distplot_stack)
-        }
+        ANL <- common_q()[["ANL"]] # nolint
+        summary_table <- common_q()[["summary_table"]] # nolint
 
         # isolated as common chunks already triggered the reactivity
         dist_var <- merge_vars()$dist_var
@@ -585,11 +569,13 @@ srv_distribution <- function(id,
 
         validate(need(ggtheme, "Please select a theme."))
 
+        quosure <- teal.code::eval_code(common_q(), "")
+
         m_type <- if (main_type_var == "Density") "..density.." else "..count.."
         m_type2 <- if (main_type_var == "Density") {
           "..density.."
         } else {
-          paste(diff(range(merged_data()$data()[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
+          paste(diff(range(ANL[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
         }
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
@@ -669,12 +655,13 @@ srv_distribution <- function(id,
         }
 
         if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-          distplot_stack_push(
-            id = "df_params_call",
-            expression = substitute(
+          quosure <- teal.code::eval_code(
+            quosure,
+            substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            )
+            ),
+            name = "df_params_call"
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -724,46 +711,31 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        distplot_stack_push(
-          id = "plot_call",
-          expression = substitute(
+        teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
               g <- plot_call
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          )
+          ),
+          name = "plot_call"
         )
-
-        teal.code::chunks_safe_eval(distplot_stack)
-
-        distplot_stack
       }
     )
 
     # qqplot chunks ----
-    qq_plot_r_chunks <- eventReactive(
+    qq_q <- eventReactive(
       eventExpr = {
-        common_code_chunks()
+        common_q()
         input$scales_type
         input$qq_line
         is.null(input$ggtheme)
       },
       valueExpr = {
-        # Create a private stack for this function only.
-        qqplot_stack <- teal.code::chunks$new()
-
-        ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()) # nolint
-        if ("params" %in% common_code_chunks()$ls()) {
-          params <- teal.code::chunks_get_var("params", common_code_chunks())
-        }
-        summary_table <- teal.code::chunks_get_var("summary_table", common_code_chunks())
-
-        teal.code::chunks_reset(chunks = qqplot_stack)
-
-        qqplot_stack_push <- function(...) {
-          teal.code::chunks_push(..., chunks = qqplot_stack)
-        }
+        ANL <- common_q()[["ANL"]] # nolint
+        summary_table <- common_q()[["summary_table"]]
 
         # isolated as common chunks already triggered the reactivity
         dist_var <- merge_vars()$dist_var
@@ -782,6 +754,8 @@ srv_distribution <- function(id,
         validate(need(ggtheme, "Please select a theme."))
         validate(need(t_dist, "Please select the theoretical distribution."))
         validate_dist_parameters(t_dist, dist_param1, dist_param2)
+
+        quosure <- teal.code::eval_code(common_q(), "")
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
@@ -835,12 +809,13 @@ srv_distribution <- function(id,
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qqplot_stack_push(
-            id = "df_params_call",
-            expression = substitute(
+          quosure <- teal.code::eval_code(
+            quosure,
+            substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            )
+            ),
+            name = "df_params_call"
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -884,46 +859,32 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        qqplot_stack_push(
-          id = "plot_call",
-          expression = substitute(
+        teal.code::eval_code(
+          quosure,
+          substitute(
             expr = {
               g <- plot_call
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          )
+          ),
+          name = "plot_call"
         )
-
-        teal.code::chunks_safe_eval(qqplot_stack)
-
-        qqplot_stack
       }
     )
 
     # test chunks ----
-    test_r_chunks <- eventReactive(
+    test_q <- eventReactive(
       ignoreNULL = FALSE,
       eventExpr = {
-        common_code_chunks()
+        common_q()
         input$dist_param1
         input$dist_param2
         input$dist_tests
       },
       valueExpr = {
         # Create a private stack for this function only.
-        test_stack <- teal.code::chunks$new()
-
-        ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()) # nolint
-        if ("params" %in% common_code_chunks()$ls()) {
-          params <- teal.code::chunks_get_var("params", common_code_chunks())
-        }
-
-        teal.code::chunks_reset(chunks = test_stack)
-
-        test_stack_push <- function(...) {
-          teal.code::chunks_push(..., chunks = test_stack)
-        }
+        ANL <- common_q()[["ANL"]] # nolint
 
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
@@ -1056,10 +1017,12 @@ srv_distribution <- function(id,
           s_var_name = s_var_name
         )
 
+        quosure <- teal.code::eval_code(common_q(), "")
+
         if (length(s_var) == 0 && length(g_var) == 0) {
-          test_stack_push(
-            id = "test_stats_call",
-            expression = substitute(
+          quosure <- teal.code::eval_code(
+            quosure,
+            substitute(
               expr = {
                 test_stats <- ANL %>%
                   dplyr::select(dist_var) %>%
@@ -1067,12 +1030,13 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            )
+            ),
+            name = "test_stats_call"
           )
         } else {
-          test_stack_push(
-            id = "test_stats_call",
-            expression = substitute(
+          quosure <- teal.code::eval_code(
+            quosure,
+            substitute(
               expr = {
                 test_stats <- ANL %>%
                   dplyr::select(dist_var, s_var, g_var) %>%
@@ -1082,53 +1046,44 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            )
+            ),
+            name = "test_stats_call"
           )
         }
-
-        teal.code::chunks_safe_eval(test_stack)
-
-        test_stack
+        quosure
       }
     )
 
     # outputs ----
     ## building main chunk
-    observe({
+    output_q <- reactive({
       tab <- input$tabs
       req(tab) # tab is NULL upon app launch, hence will crash without this statement
 
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(common_code_chunks())
+      quosure_final <- common_q()
       # wrapped in if since test chunk could lead into validate error - we do want to continue
-      test_r_chunks_out <- try(test_r_chunks(), silent = TRUE)
+      test_r_chunks_out <- try(test_q(), silent = TRUE)
       if (!inherits(test_r_chunks_out, c("try-error", "error"))) {
-        teal.code::chunks_push_chunks(test_r_chunks_out)
+        quosure_final <- teal.code::join(quosure_final, test_q())
       }
 
       if (tab == "Histogram") {
-        teal.code::chunks_push_chunks(dist_plot_r_chunks())
+        quosure_final <- teal.code::join(quosure_final, dist_q())
       } else if (tab == "QQplot") {
-        teal.code::chunks_push_chunks(qq_plot_r_chunks())
+        quosure_final <- teal.code::join(quosure_final, qq_q())
       }
+      quosure_final
     })
 
 
-    dist_r <- reactive({
-      teal.code::chunks_get_var(var = "g", chunks = dist_plot_r_chunks())
-    })
+    dist_r <- reactive(dist_q()[["g"]])
 
-    qq_r <- reactive({
-      teal.code::chunks_get_var(var = "g", chunks = qq_plot_r_chunks())
-    })
+    qq_r <- reactive(qq_q()[["g"]])
 
-    tests_r <- reactive({
-      teal.code::chunks_get_var(var = "test_stats", chunks = test_r_chunks())
-    })
-
+    tests_r <- reactive(test_q()[["test_stats"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = teal.code::chunks_get_var("summary_table", chunks = common_code_chunks()),
+      expr = common_q()[["summary_table"]],
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1158,12 +1113,10 @@ srv_distribution <- function(id,
       rownames = FALSE
     )
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(dist_var, strata_var, group_var)),
-      modal_title = "R Code for distribution",
-      code_header = "Distribution"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "R Code for distribution"
     )
 
     ### REPORTER
@@ -1172,7 +1125,7 @@ srv_distribution <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Association Plot")
         card$append_text("Association Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         if (input$tabs == "Histogram") {
           card$append_plot(dist_r(), dim = pws1$dim())
@@ -1180,7 +1133,8 @@ srv_distribution <- function(id,
           card$append_plot(qq_r(), dim = pws2$dim())
         }
         card$append_text("Statistics table", "header3")
-        card$append_table(teal.code::chunks_get_var("summary_table", chunks = common_code_chunks()))
+
+        card$append_table(common_q()[["summary_table"]])
         tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
         if (inherits(tests_error, "data.frame")) {
           card$append_text("Tests table", "header3")
@@ -1191,12 +1145,7 @@ srv_distribution <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
