@@ -575,7 +575,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       quosure
     })
-            validate(need(outlier_var, "Please select a variable"))
+    validate(need(outlier_var, "Please select a variable"))
 
     output$summary_table <- DT::renderDataTable(
       expr = {
