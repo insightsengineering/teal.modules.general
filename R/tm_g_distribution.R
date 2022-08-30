@@ -547,9 +547,6 @@ srv_distribution <- function(id,
       },
       valueExpr = {
         ANL <- common_q()[["ANL"]] # nolint
-        if ("params" %in% ls(common_q()@env)) {
-          params <- common_q()[["params"]]
-        }
         summary_table <- common_q()[["summary_table"]] # nolint
 
         # isolated as common chunks already triggered the reactivity
@@ -738,9 +735,6 @@ srv_distribution <- function(id,
       },
       valueExpr = {
         ANL <- common_q()[["ANL"]] # nolint
-        if ("params" %in% ls(common_q()@env)) {
-          params <- common_q()[["params"]]
-        }
         summary_table <- common_q()[["summary_table"]]
 
         # isolated as common chunks already triggered the reactivity
@@ -891,9 +885,6 @@ srv_distribution <- function(id,
       valueExpr = {
         # Create a private stack for this function only.
         ANL <- common_q()[["ANL"]] # nolint
-        if ("params" %in% ls(common_q()@env)) {
-          params <- common_q()[["params"]]
-        }
 
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
