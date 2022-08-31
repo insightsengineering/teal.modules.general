@@ -253,6 +253,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     )
 
     anl_merged_q <- reactive({
+      req(anl_merged_input())
       teal.code::new_quosure(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
@@ -472,41 +473,39 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         quosure <- teal.code::eval_code(
           quosure,
           substitute(
-            expr = {
-              summary_table_pre <- ANL_OUTLIER %>%
-                dplyr::filter(is_outlier_selected) %>%
-                dplyr::select(outlier_var_name, categorical_var_name) %>%
-                dplyr::group_by(categorical_var_name) %>%
-                dplyr::summarise(n_outliers = dplyr::n()) %>%
-                dplyr::right_join(
-                  ANL %>%
-                    dplyr::select(outlier_var_name, categorical_var_name) %>%
-                    dplyr::group_by(categorical_var_name) %>%
-                    dplyr::summarise(
-                      total_in_cat = dplyr::n(),
-                      n_na = sum(is.na(outlier_var_name) | is.na(categorical_var_name))
-                    ),
-                  by = categorical_var
-                ) %>%
-                # This is important as there may be categorical variables with natural orderings, e.g. AGE.
-                # The plots should be displayed by default in increasing order in these situations.
-                # dplyr::arrange will sort integer, factor, and character data types in the expected way.
-                dplyr::arrange(categorical_var_name) %>%
-                dplyr::mutate(
-                  n_outliers = dplyr::if_else(is.na(n_outliers), 0, as.numeric(n_outliers)),
-                  display_str = dplyr::if_else(
-                    n_outliers > 0,
-                    sprintf("%d [%.02f%%]", n_outliers, 100 * n_outliers / total_in_cat),
-                    "0"
+            expr = summary_table_pre <- ANL_OUTLIER %>%
+              dplyr::filter(is_outlier_selected) %>%
+              dplyr::select(outlier_var_name, categorical_var_name) %>%
+              dplyr::group_by(categorical_var_name) %>%
+              dplyr::summarise(n_outliers = dplyr::n()) %>%
+              dplyr::right_join(
+                ANL %>%
+                  dplyr::select(outlier_var_name, categorical_var_name) %>%
+                  dplyr::group_by(categorical_var_name) %>%
+                  dplyr::summarise(
+                    total_in_cat = dplyr::n(),
+                    n_na = sum(is.na(outlier_var_name) | is.na(categorical_var_name))
                   ),
-                  display_str_na = dplyr::if_else(
-                    n_na > 0,
-                    sprintf("%d [%.02f%%]", n_na, 100 * n_na / total_in_cat),
-                    "0"
-                  ),
-                  order = seq_along(n_outliers)
-                )
-            },
+                by = categorical_var
+              ) %>%
+              # This is important as there may be categorical variables with natural orderings, e.g. AGE.
+              # The plots should be displayed by default in increasing order in these situations.
+              # dplyr::arrange will sort integer, factor, and character data types in the expected way.
+              dplyr::arrange(categorical_var_name) %>%
+              dplyr::mutate(
+                n_outliers = dplyr::if_else(is.na(n_outliers), 0, as.numeric(n_outliers)),
+                display_str = dplyr::if_else(
+                  n_outliers > 0,
+                  sprintf("%d [%.02f%%]", n_outliers, 100 * n_outliers / total_in_cat),
+                  "0"
+                ),
+                display_str_na = dplyr::if_else(
+                  n_na > 0,
+                  sprintf("%d [%.02f%%]", n_na, 100 * n_na / total_in_cat),
+                  "0"
+                ),
+                order = seq_along(n_outliers)
+              ),
             env = list(
               categorical_var = categorical_var,
               categorical_var_name = as.name(categorical_var),
@@ -765,12 +764,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # plot
       plot_call <- substitute(
-        expr = ANL %>% ggplot(aes(x = outlier_var_name)) +
-          stat_ecdf(),
+        expr = ANL %>% ggplot(aes(x = outlier_var_name)) + stat_ecdf(),
         env = list(outlier_var_name = as.name(outlier_var))
       )
-
-      plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
+      plot_call <- if (length(categorical_var) == 0) {
         teal.code::eval_code(
           quosure,
           substitute(
@@ -793,33 +790,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
-        ANL <- if (n_outlier_missing() > 0) { # nolint
-          quosure <- teal.code::eval_code(
-            quosure,
-            substitute(
-              expr = ANL <- ANL %>% # nolint
-                dplyr::left_join(
-                  dplyr::select(summary_table_pre, categorical_var_name, order),
-                  by = categorical_var
-                ) %>%
-                dplyr::arrange(order),
-              env = list(categorical_var_name = as.name(categorical_var), categorical_var = categorical_var)
-            ),
-            name = "ANL_NO_NA_call"
-          )
-        }
-
         quosure <- teal.code::eval_code(
           quosure,
           substitute(
             expr = {
               all_categories <- lapply(
-                unique(anl[[categorical_var]]),
+                unique(ANL[[categorical_var]]),
                 function(x) {
-                  anl <- anl %>% dplyr::filter(get(categorical_var) == x)
+                  ANL <- ANL %>% dplyr::filter(get(categorical_var) == x)
                   anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(categorical_var) == x)
-                  ecdf_df <- anl %>%
-                    dplyr::mutate(y = stats::ecdf(anl[[outlier_var]])(anl[[outlier_var]]))
+                  ecdf_df <- ANL %>%
+                    dplyr::mutate(y = stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]))
 
                   dplyr::left_join(
                     ecdf_df,
@@ -831,7 +812,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               )
               outlier_points <- do.call(rbind, all_categories)
             },
-            env = list(anl = ANL, categorical_var = categorical_var, outlier_var = outlier_var)
+            env = list(categorical_var = categorical_var, outlier_var = outlier_var)
           ),
           name = "outlier_points_call"
         )
