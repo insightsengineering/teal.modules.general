@@ -949,7 +949,7 @@ plot_var_summary <- function(var,
 #' @param var_name (`character`) the name of the variable
 #' @keywords internal
 get_var_description <- function(data, dataset_name, var_name) {
-  varlabel <- formatters::var_labels(data[[dataset_name]]())[[var_name]]
+  varlabel <- var_labels(data[[dataset_name]]())[[var_name]]
   sprintf(
     "%s [%s.%s]",
     if (is.na(varlabel)) var_name else varlabel,
@@ -991,7 +991,7 @@ get_plotted_data <- function(input, plot_var, data) {
   varname <- plot_var$variable[[input$tabset_panel]]
   df <- data[[dataset_name]]()
 
-  var_description <- formatters::var_labels(df)[[varname]]
+  var_description <- var_labels(df)[[varname]]
   list(data = df[[varname]], var_description = var_description)
 }
 

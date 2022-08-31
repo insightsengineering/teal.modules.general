@@ -392,7 +392,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             },
           env = list(
             new_col_name = new_col_name,
-            column_labels_value = c(formatters::var_labels(data_r())[selected_vars()],
+            column_labels_value = c(var_labels(data_r())[selected_vars()],
               new_col_name = new_col_name
             )
           )
