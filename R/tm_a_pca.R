@@ -237,11 +237,11 @@ ui_a_pca <- function(id, ...) {
             teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
           )
         )
-      )
-    ),
-    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+      ),
+      forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+      pre_output = args$pre_output,
+      post_output = args$post_output
+    )
   )
 }
 
