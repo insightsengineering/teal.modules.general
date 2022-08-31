@@ -27,6 +27,4 @@ the \code{formatters} package is the source of the function.
 \examples{
 x <- iris
 var_labels(x)
-var_labels(x) <- paste("label for", names(iris))
-var_labels(x)
 }
