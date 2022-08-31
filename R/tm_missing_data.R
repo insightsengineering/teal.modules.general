@@ -364,7 +364,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       }
 
       if (input$summary_type == "By Variable Levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
-        quosure <- tea.code::eval_code(
+        quosure <- teal.code::eval_code(
           quosure,
           substitute(
             expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
