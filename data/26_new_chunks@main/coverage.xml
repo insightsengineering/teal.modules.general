@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage line-rate="0.0241203531020763" branch-rate="0" lines-covered="194" lines-valid="8043" branches-covered="0" branches-valid="0" complexity="0" version="3.5.1" timestamp="2022-08-31 07:28:58">
+<coverage line-rate="0.0240545567265964" branch-rate="0" lines-covered="194" lines-valid="8065" branches-covered="0" branches-valid="0" complexity="0" version="3.5.1" timestamp="2022-08-31 07:57:51">
   <sources/>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0241203531020763" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0240545567265964" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -16448,6 +16448,32 @@
                 <line number="290" hits="0" branch="false"/>
               </lines>
             </method>
+            <method name="var_labels" signature="" line-rate="0" branch-rate="0">
+              <lines>
+                <line number="317" hits="0" branch="false"/>
+                <line number="318" hits="0" branch="false"/>
+                <line number="319" hits="0" branch="false"/>
+                <line number="321" hits="0" branch="false"/>
+                <line number="322" hits="0" branch="false"/>
+                <line number="324" hits="0" branch="false"/>
+                <line number="325" hits="0" branch="false"/>
+                <line number="326" hits="0" branch="false"/>
+                <line number="327" hits="0" branch="false"/>
+                <line number="328" hits="0" branch="false"/>
+                <line number="329" hits="0" branch="false"/>
+                <line number="330" hits="0" branch="false"/>
+                <line number="331" hits="0" branch="false"/>
+                <line number="332" hits="0" branch="false"/>
+                <line number="333" hits="0" branch="false"/>
+                <line number="334" hits="0" branch="false"/>
+                <line number="335" hits="0" branch="false"/>
+                <line number="337" hits="0" branch="false"/>
+                <line number="339" hits="0" branch="false"/>
+                <line number="341" hits="0" branch="false"/>
+                <line number="342" hits="0" branch="false"/>
+                <line number="345" hits="0" branch="false"/>
+              </lines>
+            </method>
           </methods>
           <lines>
             <line number="74" hits="0" branch="false"/>
@@ -16546,6 +16572,28 @@
             <line number="287" hits="0" branch="false"/>
             <line number="288" hits="0" branch="false"/>
             <line number="290" hits="0" branch="false"/>
+            <line number="317" hits="0" branch="false"/>
+            <line number="318" hits="0" branch="false"/>
+            <line number="319" hits="0" branch="false"/>
+            <line number="321" hits="0" branch="false"/>
+            <line number="322" hits="0" branch="false"/>
+            <line number="324" hits="0" branch="false"/>
+            <line number="325" hits="0" branch="false"/>
+            <line number="326" hits="0" branch="false"/>
+            <line number="327" hits="0" branch="false"/>
+            <line number="328" hits="0" branch="false"/>
+            <line number="329" hits="0" branch="false"/>
+            <line number="330" hits="0" branch="false"/>
+            <line number="331" hits="0" branch="false"/>
+            <line number="332" hits="0" branch="false"/>
+            <line number="333" hits="0" branch="false"/>
+            <line number="334" hits="0" branch="false"/>
+            <line number="335" hits="0" branch="false"/>
+            <line number="337" hits="0" branch="false"/>
+            <line number="339" hits="0" branch="false"/>
+            <line number="341" hits="0" branch="false"/>
+            <line number="342" hits="0" branch="false"/>
+            <line number="345" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="zzz.R" filename="R/zzz.R" line-rate="0" branch-rate="0" complexity="0">
