@@ -31,7 +31,6 @@ Imports:
     dplyr,
     DT,
     forcats,
-    formatters,
     ggExtra,
     ggpmisc (>= 0.4.3),
     ggpp,
