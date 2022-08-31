@@ -306,11 +306,11 @@ include_css_files <- function(pattern = "*") {
 #'
 #' @note the `formatters` package is the source of the function.
 #'
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' x <- iris
-#' var_labels(x)
+#' teal.modules.clinical::var_labels(x)
 var_labels <- function(x, fill = FALSE) {
   stopifnot(is.data.frame(x))
   if (NCOL(x) == 0) {

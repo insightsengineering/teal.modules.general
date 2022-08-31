@@ -26,5 +26,6 @@ the \code{formatters} package is the source of the function.
 }
 \examples{
 x <- iris
-var_labels(x)
+teal.modules.clinical::var_labels(x)
 }
+\keyword{internal}
