@@ -764,7 +764,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # plot
       plot_call <- substitute(
-        expr = ANL %>% ggplot(aes(x = outlier_var_name)) + stat_ecdf(),
+        expr = ANL %>% ggplot(aes(x = outlier_var_name)) +
+          stat_ecdf(),
         env = list(outlier_var_name = as.name(outlier_var))
       )
       plot_call <- if (length(categorical_var) == 0) {
