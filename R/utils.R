@@ -315,8 +315,9 @@ include_css_files <- function(pattern = "*") {
 #' var_labels(x)
 var_labels <- function(x, fill = FALSE) {
   stopifnot(is.data.frame(x))
-  if(NCOL(x) == 0)
+  if (NCOL(x) == 0) {
     return(character())
+  }
 
   y <- Map(function(col, colname) {
     label <- attr(col, "label")
@@ -333,7 +334,6 @@ var_labels <- function(x, fill = FALSE) {
       }
       as.vector(label)
     }
-
   }, x, colnames(x))
 
   labels <- unlist(y, recursive = FALSE, use.names = TRUE)
@@ -343,5 +343,4 @@ var_labels <- function(x, fill = FALSE) {
   }
 
   labels
-
 }
