@@ -24,8 +24,4 @@ This functions returns a named character vector with the variable labels
 \note{
 the \code{formatters} package is the source of the function.
 }
-\examples{
-x <- iris
-teal.modules.clinical::var_labels(x)
-}
 \keyword{internal}
