@@ -269,6 +269,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     )
 
     anl_merged_q <- reactive({
+      req(anl_merged_input())
       teal.code::new_quosure(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
@@ -884,20 +885,17 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot final ----
     output_q <- reactive({
-      computation() %>%
-        {
-          if (input$plot_type == "Elbow plot") {
-            plot_elbow(.)
-          } else if (input$plot_type == "Circle plot") {
-            plot_circle(.)
-          } else if (input$plot_type == "Biplot") {
-            plot_biplot(.)
-          } else if (input$plot_type == "Eigenvector plot") {
-            plot_pc_var(.)
-          } else {
-            stop("Unknown plot")
-          }
-        }
+      if (input$plot_type == "Elbow plot") {
+        plot_elbow(computation())
+      } else if (input$plot_type == "Circle plot") {
+        plot_circle(computation())
+      } else if (input$plot_type == "Biplot") {
+        plot_biplot(computation())
+      } else if (input$plot_type == "Eigenvector plot") {
+        plot_pc_var(computation())
+      } else {
+        stop("Unknown plot")
+      }
     })
 
     plot_r <- reactive(output_q()[["g"]])

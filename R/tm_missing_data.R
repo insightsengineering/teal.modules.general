@@ -1147,7 +1147,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       } else if (sum_type == "Combinations") {
         combination_plot_q()
       } else if (sum_type == "By Variable Levels") {
-        table_q()
+        summary_table_q()
       } else if (sum_type == "Grouped by Subject") {
         by_subject_plot_q()
       }
@@ -1170,16 +1170,16 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
-          card$append_plot(g_summary_plot_r(), dim = pws1$dim())
+          card$append_plot(summary_plot_r(), dim = pws1$dim())
         } else if (sum_type == "Combinations") {
           card$append_text("Plot", "header3")
-          card$append_plot(g_combination_plot_r(), dim = pws2$dim())
+          card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (sum_type == "By Variable Levels") {
           card$append_text("Table", "header3")
-          card$append_table(table_r[["summary_data"]])
+          card$append_table(summary_table_r[["summary_data"]])
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")
-          card$append_plot(g_by_subject_plot_r(), dim = pws3$dim())
+          card$append_plot(by_subject_plot_r(), dim = pws3$dim())
         }
         if (!comment == "") {
           card$append_text("Comment", "header3")
