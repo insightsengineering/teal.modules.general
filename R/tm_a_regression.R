@@ -397,7 +397,7 @@ srv_a_regression <- function(id,
 
       validate(need(!is.null(ggtheme), "Please select a theme."))
 
-      plot_type_0 <- function() {
+      plot_type_0 <- reactive({
         fit <- fit_r()[["fit"]] # chunk already evaluated
         ANL <- anl_merged_q()[["ANL"]] # nolint
 
@@ -474,11 +474,12 @@ srv_a_regression <- function(id,
           ),
           name = "plot_0_call"
         )
-      }
+      })
 
-      plot_base <- function() {
+      plot_base <- reactive({
+        base_fit <- fit_r()
         teal.code::eval_code(
-          fit_r(),
+          base_fit,
           quote({
             class(fit$residuals) <- NULL
 
@@ -494,7 +495,7 @@ srv_a_regression <- function(id,
           }),
           name = "plot_0_c_call"
         )
-      }
+      })
 
       plot_type_1 <- function(plot_base) {
         shinyjs::show("size")
