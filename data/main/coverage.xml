@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage line-rate="0.0234554467416274" branch-rate="0" lines-covered="194" lines-valid="8271" branches-covered="0" branches-valid="0" complexity="0" version="3.5.1" timestamp="2022-08-25 13:23:34">
+<coverage line-rate="0.0234554467416274" branch-rate="0" lines-covered="194" lines-valid="8271" branches-covered="0" branches-valid="0" complexity="0" version="3.6.1" timestamp="2022-09-02 12:48:13">
   <sources/>
   <packages>
     <package name="teal.modules.general" line-rate="0.0234554467416274" branch-rate="0" complexity="0">
