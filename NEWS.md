@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.14.9016
+# teal.modules.general 0.2.14.9017
 
 ### Breaking changes
 
@@ -12,6 +12,7 @@
 
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
+* Fixed the join type functionality in the `tm_t_crosstable`.
 
 # teal.modules.general 0.2.14
 
