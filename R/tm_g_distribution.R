@@ -393,7 +393,7 @@ srv_distribution <- function(id,
       )
     })
 
-    # common chunks ----
+    # common quosure
     common_q <- reactive({
       # Create a private stack for this function only.
       validate({
@@ -536,7 +536,7 @@ srv_distribution <- function(id,
       quosure
     })
 
-    # distplot chunks ----
+    # distplot quosure ----
     dist_q <- eventReactive(
       eventExpr = {
         common_q()
@@ -550,7 +550,6 @@ srv_distribution <- function(id,
         ANL <- common_q()[["ANL"]] # nolint
         summary_table <- common_q()[["summary_table"]] # nolint
 
-        # isolated as common chunks already triggered the reactivity
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
         g_var <- merge_vars()$g_var
@@ -726,7 +725,7 @@ srv_distribution <- function(id,
       }
     )
 
-    # qqplot chunks ----
+    # qqplot quosure ----
     qq_q <- eventReactive(
       eventExpr = {
         common_q()
@@ -738,7 +737,6 @@ srv_distribution <- function(id,
         ANL <- common_q()[["ANL"]] # nolint
         summary_table <- common_q()[["summary_table"]]
 
-        # isolated as common chunks already triggered the reactivity
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
         g_var <- merge_vars()$g_var
@@ -874,7 +872,7 @@ srv_distribution <- function(id,
       }
     )
 
-    # test chunks ----
+    # test quosure ----
     test_q <- eventReactive(
       ignoreNULL = FALSE,
       eventExpr = {
@@ -1063,8 +1061,8 @@ srv_distribution <- function(id,
 
       quosure_final <- common_q()
       # wrapped in if since test chunk could lead into validate error - we do want to continue
-      test_r_chunks_out <- try(test_q(), silent = TRUE)
-      if (!inherits(test_r_chunks_out, c("try-error", "error"))) {
+      test_r_quosure_out <- try(test_q(), silent = TRUE)
+      if (!inherits(test_r_quosure_out, c("try-error", "error"))) {
         quosure_final <- teal.code::join(quosure_final, test_q())
       }
 

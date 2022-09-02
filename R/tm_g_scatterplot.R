@@ -708,12 +708,13 @@ srv_g_scatterplot <- function(id,
           shinyjs::show("show_form")
           shinyjs::show("show_r2")
           if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
-            teal.code::chunks_push(
-              id = "filter_ANL_call",
-              expression = substitute(
+            plot_q <- teal.code::eval_code(
+              plot_q,
+              substitute(
                 expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-              )
+              ),
+              name = "filter_ANL_call"
             )
           }
           rhs_formula <- substitute(

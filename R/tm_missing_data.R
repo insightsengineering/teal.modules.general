@@ -339,7 +339,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       }
     })
 
-    # chunks needed by all three outputs stored here
     common_code_q <- reactive({
       anl_name <- dataname
       anl <- data_r()
