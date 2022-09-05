@@ -16,6 +16,8 @@
 #'   (must not include `data` or `options`).
 #' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
 #'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
+#' @param server_rendering (`logical`) should the data table be rendered server side
+#'   (see `server` argument of `DT::renderDataTable()`)
 #' @details
 #'   The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables. If this is something
 #'   you require then set `options(DT.TOJSON_ARGS =  list(na = "string"))` before running the module.
@@ -142,6 +144,7 @@ tm_data_table <- function(label = "Data Table",
                             lengthMenu = c(5, 15, 30, 100),
                             scrollX = TRUE
                           ),
+                          server_rendering = FALSE,
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
@@ -162,12 +165,19 @@ tm_data_table <- function(label = "Data Table",
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
   )
 
+  checkmate::assert_flag(server_rendering)
+
   module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
     filters = if (length(datasets_selected) == 0) "all" else datasets_selected,
-    server_args = list(datasets_selected = datasets_selected, dt_args = dt_args, dt_options = dt_options),
+    server_args = list(
+      datasets_selected = datasets_selected,
+      dt_args = dt_args,
+      dt_options = dt_options,
+      server_rendering = server_rendering
+    ),
     ui_args = list(
       selected = variables_selected,
       datasets_selected = datasets_selected,
@@ -271,7 +281,8 @@ srv_page_data_table <- function(id,
                                 datasets,
                                 datasets_selected,
                                 dt_args,
-                                dt_options) {
+                                dt_options,
+                                server_rendering) {
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
@@ -288,7 +299,8 @@ srv_page_data_table <- function(id,
           if_filtered = if_filtered,
           if_distinct = if_distinct,
           dt_args = dt_args,
-          dt_options = dt_options
+          dt_options = dt_options,
+          server_rendering = server_rendering
         )
       }
     )
@@ -330,9 +342,10 @@ srv_data_table <- function(id,
                            if_filtered,
                            if_distinct,
                            dt_args,
-                           dt_options) {
+                           dt_options,
+                           server_rendering) {
   moduleServer(id, function(input, output, session) {
-    output$data_table <- DT::renderDataTable(server = FALSE, {
+    output$data_table <- DT::renderDataTable(server = server_rendering, {
       variables <- input$variables
 
       validate(need(variables, "need valid variable names"))

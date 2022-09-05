@@ -1,10 +1,13 @@
-# teal.modules.general 0.2.14.9014
+# teal.modules.general 0.2.14.9017
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
+* Added log transformation options to `tm_g_scatterplot`.
+* Added `server_rendering` flag to `tm_data_table` to control whether the table is rendered server or client side.
 
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
+* Fixed the join type functionality in the `tm_t_crosstable`.
 
 # teal.modules.general 0.2.14
 

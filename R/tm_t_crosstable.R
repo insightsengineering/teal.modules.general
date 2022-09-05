@@ -178,10 +178,10 @@ srv_t_crosstable <- function(id, datasets, reporter, label, x, y, basic_table_ar
     )
 
     merge_function <- reactive({
-      if (is.null(input$merge_fun)) {
+      if (is.null(input$join_fun)) {
         "dplyr::full_join"
       } else {
-        input$merge_fun
+        input$join_fun
       }
     })
 
