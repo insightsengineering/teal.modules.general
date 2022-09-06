@@ -269,7 +269,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     )
 
     anl_merged_q <- reactive({
-      browser()
       req(anl_merged_input())
       teal.code::new_quosure(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
