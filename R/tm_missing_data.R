@@ -340,11 +340,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     })
 
     common_code_q <- reactive({
-      anl_name <- dataname
-      anl <- data_r()
-      assign(anl_name, anl)
       group_var <- input$group_by_var
-
+      anl <- data_r()
       quosure <- teal.code::new_quosure(data)
 
       quosure <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
@@ -352,13 +349,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           quosure,
           substitute(
             expr = ANL <- anl_name[, selected_vars], # nolint
-            env = list(anl_name = as.name(anl_name), selected_vars = selected_vars())
+            env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
       } else {
         teal.code::eval_code(
           quosure,
-          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(anl_name))) # nolint
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint
         )
       }
 
@@ -735,15 +732,16 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     summary_plot_r <- reactive(summary_plot_q()[["g"]])
 
     combination_cutoff_q <- reactive({
+      req(common_code_q())
       teal.code::eval_code(
         common_code_q(),
-        quote({
+        quote(
           combination_cutoff <- ANL %>%
             dplyr::mutate_all(is.na) %>%
             dplyr::group_by_all() %>%
             dplyr::tally() %>%
             dplyr::ungroup()
-        }),
+        ),
         name = "combination_cutoff_call"
       )
     })
@@ -768,10 +766,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     })
 
     combination_plot_q <- reactive({
-      req(input$summary_type == "Combinations") # needed to trigger show r code update on tab change
-      teal::validate_has_data(data_r(), 1)
       validate(need(length(input$variables_select) > 0, "No variables selected"))
-      req(input$combination_cutoff)
+      req(input$summary_type == "Combinations", input$combination_cutoff, combination_cutoff_q())
+      teal::validate_has_data(data_r(), 1)
 
       quosure <- teal.code::eval_code(
         combination_cutoff_q(),
@@ -907,7 +904,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     combination_plot_r <- reactive(combination_plot_q()[["g"]])
 
     summary_table_q <- reactive({
-      req(input$summary_type == "By Variable Levels") # needed to trigger show r code update on tab change
+      req(input$summary_type == "By Variable Levels", common_code_q()) # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
 
       # extract the ANL dataset for use in further validation
