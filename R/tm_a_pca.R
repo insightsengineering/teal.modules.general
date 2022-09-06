@@ -281,6 +281,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # computation ----
     computation <- reactive({
+      req(merged$anl_q_r())
       # inputs
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
@@ -365,6 +366,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot args ----
     output$plot_settings <- renderUI({
       # reactivity triggers
+      req(computation())
       quosure <- computation()
 
       ns <- session$ns
@@ -885,6 +887,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot final ----
     output_q <- reactive({
+      req(computation())
       if (input$plot_type == "Elbow plot") {
         plot_elbow(computation())
       } else if (input$plot_type == "Circle plot") {
@@ -911,7 +914,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # tables ----
     output$tbl_importance <- renderTable(
       expr = {
-        req("importance" %in% input$tables_display)
+        req("importance" %in% input$tables_display, computation())
         computation()[["tbl_importance"]]
       },
       bordered = TRUE,
@@ -930,7 +933,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     output$tbl_eigenvector <- renderTable(
       expr = {
-        req("eigenvector" %in% input$tables_display)
+        req("eigenvector" %in% input$tables_display, req(computation()))
         computation()[["tbl_eigenvector"]]
       },
       bordered = TRUE,
