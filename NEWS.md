@@ -1,4 +1,9 @@
-# teal.modules.general 0.2.14.9016
+# teal.modules.general 0.2.14.9018
+
+### Breaking changes
+
+* Replaced `chunks` with simpler `Quosure` class.
+* Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelAPI`).
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
@@ -7,6 +12,7 @@
 
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
+* Fixed the join type functionality in the `tm_t_crosstable`.
 
 # teal.modules.general 0.2.14
 
