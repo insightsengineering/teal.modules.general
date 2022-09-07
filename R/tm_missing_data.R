@@ -904,7 +904,10 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     combination_plot_r <- reactive(combination_plot_q()[["g"]])
 
     summary_table_q <- reactive({
-      req(input$summary_type == "By Variable Levels", common_code_q()) # needed to trigger show r code update on tab change
+      req(
+        input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
+        common_code_q()
+      )
       teal::validate_has_data(data_r(), 1)
 
       # extract the ANL dataset for use in further validation
