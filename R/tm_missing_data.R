@@ -249,7 +249,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       class = "mb-4"
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == \"Summary\" || $(\"#%1$s > a.active\").text().trim() == \"Summary\"",
+              ns("summary_type")),
       checkboxInput(
         ns("any_na"),
         div(
@@ -287,11 +288,13 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       }
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == \"Combinations\" || $(\"#%1$s > a.active\").text().trim() == \"Combinations\"",
+              ns("summary_type")),
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"By Variable Levels\"", ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == \"By Variable Levels\" || $(\"#%1$s > a.active\").text().trim() == \"By Variable Levels\"", 
+              ns("summary_type")),
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
