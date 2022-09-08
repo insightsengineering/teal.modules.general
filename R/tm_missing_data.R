@@ -124,8 +124,11 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
             function(x) {
               conditionalPanel(
                 sprintf(
-                  "$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
-                   ns("dataname_tab"), x),
+                  paste0("$(\"#%1$s > li.active\").text().trim() == '%2$s' || ",
+                         "$(\"#%1$s > li a.active\").text().trim() == '%2$s'"),
+                  ns("dataname_tab"),
+                  x
+                ),
                 encoding_missing_data(
                   id = ns(x),
                   summary_per_patient = if_subject_plot,
@@ -251,7 +254,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       class = "mb-4"
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
               ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
@@ -290,12 +293,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       }
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
               ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
               ns("summary_type"), "By Variable Levels"),
       tagList(
         uiOutput(ns("group_by_var_ui")),
