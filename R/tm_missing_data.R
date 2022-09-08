@@ -123,7 +123,9 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
             datanames,
             function(x) {
               conditionalPanel(
-                sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
+                sprintf(
+                  "$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+                   ns("dataname_tab"), x),
                 encoding_missing_data(
                   id = ns(x),
                   summary_per_patient = if_subject_plot,
@@ -249,8 +251,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       class = "mb-4"
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == \"Summary\" || $(\"#%1$s > a.active\").text().trim() == \"Summary\"",
-              ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+              ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
         div(
@@ -288,13 +290,13 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       }
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == \"Combinations\" || $(\"#%1$s > a.active\").text().trim() == \"Combinations\"",
-              ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+              ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%1$s > li.active\").text().trim() == \"By Variable Levels\" || $(\"#%1$s > a.active\").text().trim() == \"By Variable Levels\"", 
-              ns("summary_type")),
+      sprintf("$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > a.active\").text().trim() == '%2$s'",
+              ns("summary_type"), "By Variable Levels"),
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
