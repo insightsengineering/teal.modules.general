@@ -123,6 +123,7 @@ ui_page_missing_data <- function(id, datasets, pre_output = NULL, post_output = 
             datanames,
             function(x) {
               conditionalPanel(
+                # supporting the bs3 and higher version at the same time
                 sprintf(
                   paste0(
                     "$(\"#%1$s > li.active\").text().trim() == '%2$s' || ",
@@ -256,6 +257,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       class = "mb-4"
     ),
     conditionalPanel(
+      # supporting the bs3 and higher version at the same time
       sprintf(
         "$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
         ns("summary_type"), "Summary"
@@ -297,6 +299,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       }
     ),
     conditionalPanel(
+      # supporting the bs3 and higher version at the same time
       sprintf(
         "$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
         ns("summary_type"), "Combinations"
@@ -304,6 +307,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
+      # supporting the bs3 and higher version at the same time
       sprintf(
         "$(\"#%1$s > li.active\").text().trim() == '%2$s' || $(\"#%1$s > li a.active\").text().trim() == '%2$s'",
         ns("summary_type"), "By Variable Levels"
