@@ -708,7 +708,7 @@ srv_a_pca <- function(id, datasets, reporter, dat, plot_height, plot_width, ggpl
             quote(pca_rot$response <- as.factor(response))
           )
           quote(scale_color_brewer(palette = "Dark2"))
-        } else if (class(response) == "Date") {
+        } else if (inherits(response, "Date")) {
           teal.code::chunks_push(
             id = "pca_plot_response",
             quote(pca_rot$response <- numeric(response))
