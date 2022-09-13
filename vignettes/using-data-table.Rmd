@@ -29,7 +29,7 @@ library(scda) # used to create data sets
 
 ## Create data sets
 
-Inside this app 2 datasets will be used
+Inside this app 3 datasets will be used
 
 1. `ADSL` A wide data set with subject data
 2. `ADTTE` A long data set with time to event data
