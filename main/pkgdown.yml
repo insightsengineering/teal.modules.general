@@ -6,12 +6,13 @@ articles:
   using-association-plot: using-association-plot.html
   using-bivariate-plot: using-bivariate-plot.html
   using-cross-table: using-cross-table.html
+  using-data-table: using-data-table.html
   using-outliers-module: using-outliers-module.html
   using-regression-plots: using-regression-plots.html
   using-response-plot: using-response-plot.html
   using-scatterplot-matrix: using-scatterplot-matrix.html
   using-scatterplot: using-scatterplot.html
-last_built: 2022-09-06T08:20Z
+last_built: 2022-09-14T06:50Z
 urls:
   reference: https://insightsengineering.github.io/teal.modules.general/main/reference
   article: https://insightsengineering.github.io/teal.modules.general/main/articles
