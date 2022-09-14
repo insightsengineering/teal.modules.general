@@ -91,9 +91,6 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
-  if (!requireNamespace("methods", quietly = TRUE)) {
-    stop("Cannot load methods - please install the package or restart your session.")
-  }
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
