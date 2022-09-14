@@ -39,7 +39,10 @@
 #'   ),
 #'   modules = modules(
 #'     tm_front_page(
-#'       header_text = c("Important information" = "It can go here.", "Other information" = "Can go here."),
+#'       header_text = c(
+#'         "Important information" = "It can go here.",
+#'         "Other information" = "Can go here."
+#'       ),
 #'       tables = table_input,
 #'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),

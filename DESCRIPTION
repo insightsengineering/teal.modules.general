@@ -1,6 +1,6 @@
 Type: Package
 Package: teal.modules.general
-Title: General modules to add to a teal application
+Title: General Modules to Add to a `teal` Application
 Version: 0.2.14.9018
 Date: 2022-09-06
 Authors@R: c(

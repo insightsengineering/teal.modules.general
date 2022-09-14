@@ -36,7 +36,7 @@ create_sparklines(arr, width = 150, ...)
 \item{width}{\code{numeric} the width of the \code{sparkline} widget (pixels)}
 
 \item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
-\href{http://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
+\href{https://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
 
 \item{bar_spacing}{\code{numeric} spacing between the bars (in pixels)}
 
