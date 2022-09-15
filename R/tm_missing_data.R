@@ -30,8 +30,9 @@
 #'   modules = modules(
 #'     tm_missing_data(
 #'       ggplot2_args = list(
-#'         "Combinations Hist" =
-#'           teal.widgets::ggplot2_args(labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)),
+#'         "Combinations Hist" = teal.widgets::ggplot2_args(
+#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'         ),
 #'         "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
 #'       )
 #'     )

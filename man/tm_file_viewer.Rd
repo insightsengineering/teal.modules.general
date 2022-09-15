@@ -33,7 +33,8 @@ app <- init(
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-        url = "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+        url =
+          "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
       )
     )
   )
