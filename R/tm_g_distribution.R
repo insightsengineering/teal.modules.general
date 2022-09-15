@@ -121,6 +121,9 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (!requireNamespace("MASS", quietly = TRUE)) {
     stop("Cannot load MASS - please install the package or restart your session.")
   }
+  if (!requireNamespace("broom", quietly = TRUE)) {
+    stop("Cannot load broom - please install the package or restart your session.")
+  }
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
   if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
   if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
