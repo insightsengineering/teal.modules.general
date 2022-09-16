@@ -9,6 +9,11 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
+#' @param parent_dataname (`character`) If this dataname exists in `datasets_selected`
+#'   then an extra checkbox will be shown to allow users to not show variables in other datasets
+#'   which exist in this dataname.
+#'   This is typically used to remove `ADSL` columns in CDISC data. In non CDISC data this
+#'   can be ignored.
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
@@ -42,12 +47,14 @@
 #' }
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
+                                parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
   checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
+  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   datasets_selected <- unique(datasets_selected)
 
@@ -56,9 +63,14 @@ tm_variable_browser <- function(label = "Variable Browser",
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
-    server_args = list(datasets_selected = datasets_selected, ggplot2_args = ggplot2_args),
+    server_args = list(
+      datasets_selected = datasets_selected,
+      parent_dataname = parent_dataname,
+      ggplot2_args = ggplot2_args
+    ),
     ui_args = list(
       datasets_selected = datasets_selected,
+      parent_dataname = parent_dataname,
       pre_output = pre_output,
       post_output = post_output
     )
@@ -69,6 +81,7 @@ tm_variable_browser <- function(label = "Variable Browser",
 ui_variable_browser <- function(id,
                                 data,
                                 datasets_selected,
+                                parent_dataname,
                                 pre_output = NULL,
                                 post_output = NULL) {
   ns <- NS(id)
@@ -129,7 +142,7 @@ ui_variable_browser <- function(id,
             ),
             { # nolint
               x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-              if (!is.null(attr(data, "join_keys"))) {
+              if (length(parent_dataname) > 0 && parent_dataname %in% datanames) {
                 x
               } else {
                 shinyjs::hidden(x)
@@ -164,7 +177,11 @@ ui_variable_browser <- function(id,
   )
 }
 
-srv_variable_browser <- function(id, data, reporter, filter_panel_api, datasets_selected, ggplot2_args) {
+srv_variable_browser <- function(id,
+                                 data,
+                                 reporter,
+                                 filter_panel_api,
+                                 datasets_selected, parent_dataname, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
@@ -216,6 +233,7 @@ srv_variable_browser <- function(id, data, reporter, filter_panel_api, datasets_
       output = output,
       data = data,
       datanames = datanames,
+      parent_dataname = parent_dataname,
       columns_names = columns_names,
       plot_var = plot_var
     )
@@ -1000,17 +1018,19 @@ get_plotted_data <- function(input, plot_var, data) {
 #' Renders the left-hand side `tabset` panel of the module
 #'
 #' @param datanames (`character`) the name of the dataset
+#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
 #' @param data (`list`) the object containing all datasets
 #' @param input (`session$input`) the shiny session input
 #' @param output (`session$output`) the shiny session output
 #' @param columns_names (`environment`) the environment containing bindings for each dataset
 #' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
 #' @keywords internal
-render_tabset_panel_content <- function(datanames, output, data, input, columns_names, plot_var) {
+render_tabset_panel_content <- function(datanames, parent_dataname, output, data, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
     input = input,
     output = output,
     data = data,
+    parent_dataname = parent_dataname,
     columns_names = columns_names,
     plot_var = plot_var
   )
@@ -1023,13 +1043,15 @@ render_tabset_panel_content <- function(datanames, output, data, input, columns_
 #' information about one dataset out of many presented in the module.
 #'
 #' @param dataset_name (`character`) the name of the dataset contained in the rendered tab
+#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
-render_single_tab <- function(dataset_name, output, data, input, columns_names, plot_var) {
+render_single_tab <- function(dataset_name, parent_dataname, output, data, input, columns_names, plot_var) {
   render_tab_header(dataset_name, output, data)
 
   render_tab_table(
     dataset_name = dataset_name,
+    parent_dataname = parent_dataname,
     output = output,
     data = data,
     input = input,
@@ -1062,9 +1084,10 @@ render_tab_header <- function(dataset_name, output, data) {
 #' small summary about NA values and a sparkline (if appropriate).
 #'
 #' @param dataset_name (`character`) the name of the dataset
+#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
-render_tab_table <- function(dataset_name, output, data, input, columns_names) {
+render_tab_table <- function(dataset_name, parent_dataname, output, data, input, columns_names) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
   output[[table_ui_id]] <- DT::renderDataTable(
@@ -1082,9 +1105,10 @@ render_tab_table <- function(dataset_name, output, data, input, columns_names) {
         }
       }
 
-      df_vars <- get_vars_df(input, dataset_name, "ADSL", data)
-
-      df <- df[df_vars]
+      if (length(parent_dataname) > 0 ){
+        df_vars <- get_vars_df(input, dataset_name, parent_dataname, data)
+        df <- df[df_vars]
+      }
 
       if (is.null(df) || ncol(df) == 0) {
         columns_names[[dataset_name]] <- character(0)

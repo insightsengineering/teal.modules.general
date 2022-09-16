@@ -4,10 +4,20 @@
 \alias{render_single_tab}
 \title{Renders a single tab in the left-hand side tabset panel}
 \usage{
-render_single_tab(dataset_name, output, data, input, columns_names, plot_var)
+render_single_tab(
+  dataset_name,
+  parent_dataname,
+  output,
+  data,
+  input,
+  columns_names,
+  plot_var
+)
 }
 \arguments{
 \item{dataset_name}{(\code{character}) the name of the dataset contained in the rendered tab}
+
+\item{parent_dataname}{(\code{character}) the name of a parent dataname to filter out variables from}
 
 \item{output}{(\code{session$output}) the shiny session output}
 
