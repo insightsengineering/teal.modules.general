@@ -346,7 +346,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      teal.code::eval_code(anl_merged_q(), "") %>%
+      anl_merged_q() %>%
         teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))
         ) %>%
         teal.code::eval_code(quote({

@@ -419,7 +419,7 @@ srv_distribution <- function(id,
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
 
-      quosure <- teal.code::eval_code(merged$anl_q_r(), "")
+      quosure <- merged$anl_q_r()
 
       if (length(g_var) > 0) {
         validate(
@@ -568,7 +568,7 @@ srv_distribution <- function(id,
 
         validate(need(ggtheme, "Please select a theme."))
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        quosure <- common_q()
 
         m_type <- if (main_type_var == "Density") "..density.." else "..count.."
         m_type2 <- if (main_type_var == "Density") {
@@ -751,7 +751,7 @@ srv_distribution <- function(id,
         validate(need(t_dist, "Please select the theoretical distribution."))
         validate_dist_parameters(t_dist, dist_param1, dist_param2)
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        quosure <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
@@ -1011,7 +1011,7 @@ srv_distribution <- function(id,
           s_var_name = s_var_name
         )
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        quosure <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
           quosure <- teal.code::eval_code(
