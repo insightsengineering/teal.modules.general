@@ -433,8 +433,7 @@ srv_distribution <- function(id,
           substitute(
             expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
             env = list(g_var = g_var)
-          ),
-          name = "explicit_missing_values_call"
+          )
         )
       }
 
@@ -450,8 +449,7 @@ srv_distribution <- function(id,
           substitute(
             expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
             env = list(s_var = s_var)
-          ),
-          name = "explicit_missing_values_call"
+          )
         )
       }
 
@@ -483,8 +481,7 @@ srv_distribution <- function(id,
               dist_param2 = dist_param2,
               params_names_raw = params_names_raw
             )
-          ),
-          name = "params_call"
+          )
         )
       }
 
@@ -507,8 +504,7 @@ srv_distribution <- function(id,
               dist_var_name = as.name(dist_var),
               roundn = roundn
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       } else {
         quosure <- teal.code::eval_code(
@@ -532,8 +528,7 @@ srv_distribution <- function(id,
               strata_vars_raw = c(g_var, s_var),
               roundn = roundn
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       }
 
@@ -664,8 +659,7 @@ srv_distribution <- function(id,
             substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            ),
-            name = "df_params_call"
+            )
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -723,8 +717,7 @@ srv_distribution <- function(id,
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          ),
-          name = "plot_call"
+          )
         )
       }
     )
@@ -817,8 +810,7 @@ srv_distribution <- function(id,
             substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            ),
-            name = "df_params_call"
+            )
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -870,8 +862,7 @@ srv_distribution <- function(id,
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          ),
-          name = "plot_call"
+          )
         )
       }
     )
@@ -1033,8 +1024,7 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            ),
-            name = "test_stats_call"
+            )
           )
         } else {
           quosure <- teal.code::eval_code(
@@ -1049,8 +1039,7 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            ),
-            name = "test_stats_call"
+            )
           )
         }
         quosure

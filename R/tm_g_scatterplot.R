@@ -562,7 +562,6 @@ srv_g_scatterplot <- function(id,
         log_x_fn <- input$log_x_base
         plot_q <- teal.code::eval_code(
           object = plot_q,
-          name = "log_x_transformation",
           code = substitute(
             expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
             env = list(
@@ -578,7 +577,6 @@ srv_g_scatterplot <- function(id,
         log_y_fn <- input$log_y_base
         plot_q <- teal.code::eval_code(
           object = plot_q,
-          name = "log_y_transformation",
           code = substitute(
             expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
             env = list(
@@ -715,8 +713,7 @@ srv_g_scatterplot <- function(id,
               substitute(
                 expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-              ),
-              name = "filter_ANL_call"
+              )
             )
           }
           rhs_formula <- substitute(
@@ -819,8 +816,8 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
 
-      teal.code::eval_code(plot_q, plot_call, name = "plot_call") %>%
-        teal.code::eval_code(quote(print(p)), name = "print_call")
+      teal.code::eval_code(plot_q, plot_call) %>%
+        teal.code::eval_code(quote(print(p)))
     })
 
     plot_r <- reactive(output_q()[["p"]])

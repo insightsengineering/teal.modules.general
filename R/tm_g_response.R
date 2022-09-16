@@ -296,8 +296,7 @@ srv_g_response <- function(id,
           substitute(
             expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
             env = list(x = x, x_cl = x_cl)
-          ),
-          name = "reverse_order_call"
+          )
         )
       }
 
@@ -306,8 +305,7 @@ srv_g_response <- function(id,
         substitute(
           expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
           env = list(resp_var = resp_var)
-        ),
-        name = "factorize_ANL_call"
+        )
       ) %>%
         # nolint start
         # rowf and colf will be a NULL if not set by a user
@@ -319,8 +317,7 @@ srv_g_response <- function(id,
               dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
               dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
             env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
-          ),
-          name = "ANL2_call"
+          )
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -328,8 +325,7 @@ srv_g_response <- function(id,
               dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
               dplyr::summarise(ns = dplyr::n()),
             env = list(x_cl = x_cl, rowf = rowf, colf = colf)
-          ),
-          name = "ANL3_call"
+          )
         )
       # nolint end
 
