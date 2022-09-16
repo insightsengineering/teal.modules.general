@@ -77,6 +77,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    pre_output = NULL,
                                    post_output = NULL) {
   logger::log_info("Initializing tm_g_scatterplotmatrix")
+  if (!requireNamespace("lattice", quietly = TRUE)) {
+    stop("Cannot load lattice - please install the package or restart your session.")
+  }
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
   checkmate::assert_string(label)
