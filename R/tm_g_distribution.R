@@ -274,7 +274,8 @@ ui_distribution <- function(id, ...) {
               )
             ),
             choices = c("normal", "lognormal", "gamma", "unif"),
-            selected = NULL, multiple = FALSE
+            selected = NULL, 
+            multiple = FALSE
           ),
           numericInput(ns("dist_param1"), label = "param1", value = NULL),
           numericInput(ns("dist_param2"), label = "param2", value = NULL),
