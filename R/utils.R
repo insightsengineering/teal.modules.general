@@ -290,6 +290,7 @@ include_css_files <- function(pattern = "*") {
   return(shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS))))
 }
 
+
 #' Get a string with js code checking if the specific tab is clicked
 #' @description will be the input for `shiny::conditionalPanel()`
 #' @param id `character(1)` the id of the tab panel with tabs.
