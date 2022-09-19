@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is_tab_active_js}
 \alias{is_tab_active_js}
-\title{Get a string with js code checking if the specific tab is clicked}
+\title{Get a string with java-script code checking if the specific tab is clicked}
 \usage{
 is_tab_active_js(id, name)
 }
