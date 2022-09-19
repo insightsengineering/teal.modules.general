@@ -30,8 +30,9 @@
 #'   modules = modules(
 #'     tm_missing_data(
 #'       ggplot2_args = list(
-#'         "Combinations Hist" =
-#'           teal.widgets::ggplot2_args(labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)),
+#'         "Combinations Hist" = teal.widgets::ggplot2_args(
+#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'         ),
 #'         "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
 #'       )
 #'     )
@@ -53,6 +54,12 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
+  if (!requireNamespace("gridExtra", quietly = TRUE)) {
+    stop("Cannot load gridExtra - please install the package or restart your session.")
+  }
+  if (!requireNamespace("rlang", quietly = TRUE)) {
+    stop("Cannot load rlang - please install the package or restart your session.")
+  }
   logger::log_info("Initializing tm_missing_data")
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
@@ -319,7 +326,6 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
-#' @importFrom rlang .data
 srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
@@ -441,12 +447,12 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
 
     observeEvent(input$filter_na, {
       choices <- vars_summary() %>%
-        dplyr::select(.data$key) %>%
+        dplyr::select(rlang::.data$key) %>%
         getElement(name = 1)
 
       selected <- vars_summary() %>%
-        dplyr::filter(.data$value > 0) %>%
-        dplyr::select(.data$key) %>%
+        dplyr::filter(rlang::.data$value > 0) %>%
+        dplyr::select(rlang::.data$key) %>%
         getElement(name = 1)
 
       teal.widgets::updateOptionalSelectInput(
@@ -1088,7 +1094,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
             dplyr::transmute(
               id = dplyr::row_number(),
               number_NA = apply(., 1, sum),
-              sha = apply(., 1, digest::sha1)
+              sha = apply(., 1, rlang::hash)
             ) %>%
             dplyr::arrange(dplyr::desc(number_NA), sha) %>%
             getElement(name = "id")
