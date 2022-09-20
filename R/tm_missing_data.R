@@ -84,7 +84,7 @@ ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL
   ns <- NS(id)
   datanames <- names(data)
 
-  if_subject_plot <- !is.null(attr(data, "join_keys"))
+  if_subject_plot <- !is.null(get_join_keys(data))
 
   shiny::tagList(
     include_css_files("custom"),
@@ -325,14 +325,15 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
 
     data_r <- data[[dataname]]
 
-    data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
+    data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
     data_parent_keys <- reactive({
-      keys <- attr(data, "join_keys")$get(dataname)
+      keys <- get_join_keys(data)$get(dataname)
       if ("ADSL" %in% names(keys)) {
         keys[["ADSL"]]
       } else {
@@ -343,7 +344,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     common_code_q <- reactive({
       group_var <- input$group_by_var
       anl <- data_r()
-      qenv <- teal.code::new_qenv(data)
+      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code(data))
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         teal.code::eval_code(

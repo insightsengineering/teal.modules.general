@@ -374,6 +374,7 @@ srv_g_scatterplot <- function(id,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
@@ -383,7 +384,7 @@ srv_g_scatterplot <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 

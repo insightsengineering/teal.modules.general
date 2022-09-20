@@ -161,6 +161,7 @@ ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_out
 srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
 

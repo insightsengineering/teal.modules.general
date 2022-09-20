@@ -187,6 +187,7 @@ srv_page_data_table <- function(id,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))

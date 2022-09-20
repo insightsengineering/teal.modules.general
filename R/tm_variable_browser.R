@@ -167,6 +167,7 @@ ui_variable_browser <- function(id,
 srv_variable_browser <- function(id, data, reporter, filter_panel_api, datasets_selected, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
 
     # if there are < this number of unique records then a numeric
