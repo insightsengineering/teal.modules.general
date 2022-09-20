@@ -232,7 +232,7 @@ srv_tm_g_association <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

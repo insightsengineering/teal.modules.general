@@ -129,7 +129,7 @@ ui_variable_browser <- function(id,
             ),
             { # nolint
               x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-              if (!is.null(attr(data, "join_keys"))) {
+              if (!is.null(get_join_keys(data))) {
                 x
               } else {
                 shinyjs::hidden(x)
@@ -1047,7 +1047,7 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data[[dataset_name]]()
-    key <- attr(data, "join_keys")$get(dataset_name)[[dataset_name]]
+    key <- get_join_keys(data)$get(dataset_name)[[dataset_name]]
     sprintf(
       "Dataset with %s unique key rows and %s variables",
       nrow(unique(`if`(length(key) > 0, df[, key, drop = FALSE], df))),
@@ -1123,7 +1123,7 @@ render_tab_table <- function(dataset_name, output, data, input, columns_names) {
 
         # get icons proper for the data types
         icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
-        icons[intersect(attr(data, "join_keys")$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+        icons[intersect(get_join_keys(data)$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
         icons <- variable_type_icons(icons)
 
         # generate sparklines

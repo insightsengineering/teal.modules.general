@@ -165,13 +165,13 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       selector_list = selector_list
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
