@@ -114,7 +114,6 @@ ui_viewer <- function(id, ...) {
 }
 
 srv_viewer <- function(id, input_path) {
-  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     temp_dir <- tempfile()
     if (!dir.exists(temp_dir)) {
