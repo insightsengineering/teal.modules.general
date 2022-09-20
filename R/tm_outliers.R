@@ -315,8 +315,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             substitute(
               expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
-            ),
-            name = "removing NA entries from ANL"
+            )
           )
         }
       } else {
@@ -352,8 +351,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 categorical_var = categorical_var,
                 categorical_var_name = as.name(categorical_var)
               )
-            ),
-            name = "ANL_character_NA_call"
+            )
           )
         }
 
@@ -366,8 +364,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 categorical_var_name = as.name(categorical_var),
                 categorical_var_levels = input_catlevels
               )
-            ),
-            name = "ANL_filter_call"
+            )
           )
         }
 
@@ -377,8 +374,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             substitute(
               expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
-            ),
-            name = "ANL_NO_NA_filter_call"
+            )
           )
         }
         shinyjs::show("split_outliers")
@@ -467,8 +463,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             }
           )
         ) %>%
-          remove_pipe_null(),
-        name = "ANL_OUTLIER_call"
+          remove_pipe_null()
       )
 
       if (length(categorical_var) > 0) {
@@ -513,8 +508,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               categorical_var_name = as.name(categorical_var),
               outlier_var_name = as.name(outlier_var)
             )
-          ),
-          name = "summary_table_pre_call_1"
+          )
         )
         # now to handle when user chooses to order based on amount of outliers
         if (order_by_outlier) {
@@ -524,8 +518,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               summary_table_pre <- summary_table_pre %>%
                 dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
                 dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
-            ),
-            name = "summary_table_pre_call_2"
+            )
           )
         }
 
@@ -563,8 +556,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               categorical_var = categorical_var,
               categorical_var_name = as.name(categorical_var)
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       }
 
@@ -684,10 +676,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme,
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     # density plot
@@ -745,10 +736,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     # Cumulative distribution plot
@@ -788,8 +778,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 dplyr::filter(!is.na(is_outlier_selected))
             },
             env = list(outlier_var = outlier_var)
-          ),
-          name = "outlier_points_call"
+          )
         )
         plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
@@ -816,8 +805,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               outlier_points <- do.call(rbind, all_categories)
             },
             env = list(categorical_var = categorical_var, outlier_var = outlier_var)
-          ),
-          name = "outlier_points_call"
+          )
         )
         plot_call <- substitute(
           expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
@@ -855,10 +843,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     final_q <- reactive({

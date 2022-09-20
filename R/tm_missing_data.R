@@ -366,8 +366,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           substitute(
             expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
             env = list(group_var = group_var, anl_name = as.name(anl_name))
-          ),
-          name = "ANL_group_var_call"
+          )
         )
       }
 
@@ -393,8 +392,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               new_col_name = new_col_name
             )
           )
-        ),
-        name = "create_cols_labels_function_call"
+        )
       )
       quosure
     })
@@ -529,8 +527,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         substitute(
           expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
           env = list(data_keys = data_keys())
-        ),
-        name = "analysis_vars_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
@@ -545,8 +542,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             } else {
               quote(ANL)
             })
-          ),
-          name = "summary_plot_obs_call"
+          )
         ) %>%
         # x axis ordering according to number of missing values and alphabet
         teal.code::eval_code(
@@ -555,16 +551,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               dplyr::arrange(n_pct, dplyr::desc(col)) %>%
               dplyr::pull(col) %>%
               create_cols_labels()
-          ),
-          name = "x_levels_call"
+          )
         )
 
       # always set "**anyna**" level as the last one
       if (isolate(input$any_na)) {
         quosure <- teal.code::eval_code(
           quosure,
-          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")),
-          name = "x_levels_anyna_call"
+          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
         )
       }
 
@@ -615,8 +609,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "p1_plot_call"
+        )
       )
 
       if (isTRUE(input$if_patients_plot)) {
@@ -625,13 +618,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           substitute(
             expr = parent_keys <- keys,
             env = list(keys = data_parent_keys())
-          ),
-          name = "parent_keys_call"
+          )
         ) %>%
-          teal.code::eval_code(
-            quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys])),
-            name = "ndistinct_subjects_call"
-          ) %>%
+          teal.code::eval_code(quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys]))) %>%
           teal.code::eval_code(
             quote(
               summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
@@ -644,8 +633,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
                 tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
                 dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
                 dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
-            ),
-            name = "summary_plot_patients_call"
+            )
           )
 
         dev_ggplot2_args <- teal.widgets::ggplot2_args(
@@ -699,8 +687,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               themes = parsed_ggplot2_args$theme,
               ggthemes = parsed_ggplot2_args$ggtheme
             )
-          ),
-          name = "p2_plot_call"
+          )
         ) %>%
           teal.code::eval_code(
             quote({
@@ -709,8 +696,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               g <- gridExtra::gtable_cbind(g1, g2, size = "first")
               g$heights <- grid::unit.pmax(g1$heights, g2$heights)
               grid::grid.newpage()
-            }),
-            name = "final_plot_call"
+            })
           )
       } else {
         quosure <- teal.code::eval_code(
@@ -718,15 +704,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           quote({
             g <- ggplotGrob(p1)
             grid::grid.newpage()
-          }),
-          name = "final_plot_call"
+          })
         )
       }
 
       teal.code::eval_code(
         quosure,
-        quote(grid::grid.draw(g)),
-        name = "grid_draw_call"
+        quote(grid::grid.draw(g))
       )
     })
 
@@ -742,8 +726,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             dplyr::group_by_all() %>%
             dplyr::tally() %>%
             dplyr::ungroup()
-        ),
-        name = "combination_cutoff_call"
+        )
       )
     })
 
@@ -780,8 +763,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
             dplyr::arrange(n),
           env = list(combination_cutoff_value = input$combination_cutoff)
-        ),
-        name = "data_combination_plot_cutoff_call_1"
+        )
       )
 
       # find keys in dataset not selected in the UI and remove them from dataset
@@ -793,8 +775,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
               dplyr::filter(!key %in% keys_not_selected),
             env = list(keys_not_selected = keys_not_selected)
-          ),
-          name = "data_combination_plot_cutoff_call_2"
+          )
         )
       }
 
@@ -804,8 +785,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           labels <- data_combination_plot_cutoff %>%
             dplyr::filter(key == key[[1]]) %>%
             getElement(name = 1)
-        ),
-        name = "labels_call"
+        )
       )
 
       dev_ggplot2_args1 <- teal.widgets::ggplot2_args(
@@ -897,8 +877,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             themes2 = parsed_ggplot2_args2$theme,
             ggthemes2 = parsed_ggplot2_args2$ggtheme
           )
-        ),
-        name = "grid_draw_call"
+        )
       )
     })
 
@@ -969,8 +948,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             env = list(
               group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
             )
-          ),
-          name = "summary_data_call_1"
+          )
         )
       } else {
         quosure <- teal.code::eval_code(
@@ -984,12 +962,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               ) %>%
               dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
             env = list(summ_fn = summ_fn)
-          ),
-          name = "summary_data_call_1"
+          )
         )
       }
 
-      teal.code::eval_code(quosure, quote(summary_data), name = "summary_data_call_2")
+      teal.code::eval_code(quosure, quote(summary_data))
     })
 
     summary_table_r <- reactive(summary_table_q()[["summary_data"]])
@@ -1020,15 +997,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         substitute(
           expr = parent_keys <- keys,
           env = list(keys = data_parent_keys())
-        ),
-        name = "parent_keys_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
             expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
             env = list(data_keys = data_keys())
-          ),
-          name = "analysis_vars_call"
+          )
         ) %>%
         teal.code::eval_code(
           quote({
@@ -1065,8 +1040,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             summary_plot_patients <- summary_plot_patients %>%
               tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
               dplyr::mutate(col = create_cols_labels(col))
-          }),
-          name = "summary_plot_patients_call"
+          })
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -1099,8 +1073,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               themes = parsed_ggplot2_args$theme,
               ggthemes = parsed_ggplot2_args$ggtheme
             )
-          ),
-          name = "plot_call"
+          )
         )
     })
 

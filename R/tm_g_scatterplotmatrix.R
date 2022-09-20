@@ -215,8 +215,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
             env = list(cols_names = cols_names)
-          ),
-          name = "factorize_ANL_call"
+          )
         )
       } else {
         quosure <- teal.code::eval_code(
@@ -225,8 +224,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
             expr = ANL <- ANL[, cols_names] %>% # nolint
               droplevels(),
             env = list(cols_names = cols_names)
-          ),
-          name = "ANL_drop_levels_call"
+          )
         )
       }
 
@@ -274,8 +272,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
               alpha_value = alpha,
               cex_value = cex
             )
-          ),
-          name = "plot_call"
+          )
         )
       } else {
         shinyjs::hide("cor_method")
@@ -289,8 +286,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
               g
             },
             env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
-          ),
-          name = "plot_call"
+          )
         )
       }
       quosure

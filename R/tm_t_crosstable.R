@@ -253,8 +253,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
             title <- plot_title
           },
           env = list(plot_title = plot_title)
-        ),
-        name = "title_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
@@ -289,8 +288,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
               labels_vec = labels_vec,
               count_value = ifelse(show_percentage, "count_fraction", "count")
             )
-          ),
-          name = "lyt_call"
+          )
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -300,8 +298,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
               tbl
             },
             env = list(y_name = y_name)
-          ),
-          name = "tbl_call"
+          )
         )
     })
 

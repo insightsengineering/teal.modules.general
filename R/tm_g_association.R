@@ -371,8 +371,7 @@ srv_tm_g_association <- function(id,
             }), collapse = " / "),
             ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
           ))
-        ),
-        name = "title_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
@@ -387,8 +386,7 @@ srv_tm_g_association <- function(id,
                 quote = TRUE
               )
             )
-          ),
-          name = "plot_call"
+          )
         )
     })
 

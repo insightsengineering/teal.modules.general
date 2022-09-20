@@ -313,15 +313,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = keep_columns <- keep_cols,
           env = list(keep_cols = keep_cols)
-        ),
-        name = "keep_columns_call"
+        )
       )
 
       if (na_action == "drop") {
         quosure <- teal.code::eval_code(
           quosure,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns)), # nolint
-          name = "ANL_drop_na_call"
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint
         )
       }
 
@@ -340,8 +338,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
-        ),
-        name = "summary_pca_call"
+        )
       )
 
       quosure <- teal.code::eval_code(
@@ -349,20 +346,16 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
-        }),
-        name = "pca_tbl_importance_call"
+        })
       )
 
-      quosure <- teal.code::eval_code(
+      teal.code::eval_code(
         quosure,
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
-        }),
-        name = "pca_tbl_eigenvector_call"
+        })
       )
-
-      quosure
     })
 
     # plot args ----
@@ -477,8 +470,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        name = "pca_plot"
+        )
       )
     }
 
@@ -560,8 +552,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        name = "pca_plot"
+        )
       )
     }
 
@@ -597,8 +588,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
           env = list(x_axis = x_axis, y_axis = y_axis)
-        ),
-        name = "pca_plot_data_rot"
+        )
       )
 
       # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
@@ -615,8 +605,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
                 dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
-          ),
-          name = "pca_plot_vars_rot_1"
+          )
         ) %>%
           teal.code::eval_code(
             if (is.logical(pca$center) && !pca$center) {
@@ -635,15 +624,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
             } else {
               quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
-            },
-            name = "pca_plot_vars_rot_2"
+            }
           ) %>%
           teal.code::eval_code(
             substitute(
               expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
               env = list(variables = variables)
-            ),
-            name = "pca_plot_vars_rot_3"
+            )
           )
       }
 
@@ -678,8 +665,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         quosure <- teal.code::eval_code(
           quosure,
-          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col)),
-          name = "pca_plot_response_base"
+          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col))
         )
 
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
@@ -689,15 +675,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           (is.numeric(response) && length(unique(response)) <= 6)) {
           quosure <- teal.code::eval_code(
             quosure,
-            quote(pca_rot$response <- as.factor(response)),
-            name = "pca_plot_response"
+            quote(pca_rot$response <- as.factor(response))
           )
           quote(scale_color_brewer(palette = "Dark2"))
         } else if (inherits(response, "Date")) {
           quosure <- teal.code::eval_code(
             quosure,
-            quote(pca_rot$response <- numeric(response)),
-            name = "pca_plot_response"
+            quote(pca_rot$response <- numeric(response))
           )
 
           quote(
@@ -710,8 +694,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         } else {
           quosure <- teal.code::eval_code(
             quosure,
-            quote(pca_rot$response <- response),
-            name = "pca_plot_response"
+            quote(pca_rot$response <- response)
           )
           quote(scale_color_gradient(
             low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
@@ -798,8 +781,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
-        ),
-        name = "pca_plot_final"
+        )
       )
     }
 
@@ -882,8 +864,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             pc = pc,
             plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
-        ),
-        name = "pca_plot"
+        )
       )
     }
 
