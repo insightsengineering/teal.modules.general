@@ -71,8 +71,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_a_regression <- function(label = "Regression Analysis",
                             regressor,
@@ -260,7 +260,7 @@ srv_a_regression <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -811,7 +811,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      quosure <- if (input_type == "Response vs Regressor") {
+      qenv <- if (input_type == "Response vs Regressor") {
         plot_type_0()
       } else {
         plot_base_q <- plot_base()
@@ -824,7 +824,7 @@ srv_a_regression <- function(id,
           "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
-      quosure
+      qenv
     })
 
 

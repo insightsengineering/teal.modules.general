@@ -67,8 +67,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 tm_t_crosstable <- function(label = "Cross Table",
@@ -195,7 +195,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

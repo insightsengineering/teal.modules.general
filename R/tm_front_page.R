@@ -52,8 +52,8 @@
 #'   header = tags$h1("Sample Application"),
 #'   footer = tags$p("Application footer"),
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_front_page <- function(label = "Front page",
                           header_text = character(0),

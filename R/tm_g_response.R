@@ -65,8 +65,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_response <- function(label = "Response Plot",
                           response,
@@ -240,7 +240,7 @@ srv_g_response <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -250,8 +250,8 @@ srv_g_response <- function(id,
     )
 
     output_q <- reactive({
-      quosure <- merged$anl_q_r()
-      ANL <- quosure[["ANL"]] # nolint
+      qenv <- merged$anl_q_r()
+      ANL <- qenv[["ANL"]] # nolint
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
@@ -291,8 +291,8 @@ srv_g_response <- function(id,
       x_cl <- as.name(x) # nolint
 
       if (swap_axes) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
             env = list(x = x, x_cl = x_cl)
@@ -300,8 +300,8 @@ srv_g_response <- function(id,
         )
       }
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
           env = list(resp_var = resp_var)
@@ -415,7 +415,7 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
-      teal.code::eval_code(quosure, plot_call)
+      teal.code::eval_code(qenv, plot_call)
     })
 
     plot_r <- reactive(output_q()[["p"]])

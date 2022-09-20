@@ -37,8 +37,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),

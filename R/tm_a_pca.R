@@ -53,8 +53,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 tm_a_pca <- function(label = "Principal Component Analysis",
@@ -272,7 +272,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -308,7 +308,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
       ))
 
-      quosure <- teal.code::eval_code(
+      qenv <- teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
           expr = keep_columns <- keep_cols,
@@ -317,8 +317,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
 
       if (na_action == "drop") {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint
         )
       }
@@ -333,16 +333,16 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         validate(need(all(not_single), msg))
       }
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
         )
       )
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
@@ -350,7 +350,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
 
       teal.code::eval_code(
-        quosure,
+        qenv,
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
@@ -362,13 +362,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     output$plot_settings <- renderUI({
       # reactivity triggers
       req(computation())
-      quosure <- computation()
+      qenv <- computation()
 
       ns <- session$ns
 
-      pca <- quosure[["pca"]]
+      pca <- qenv[["pca"]]
       chcs_pcs <- colnames(pca$rotation)
-      chcs_vars <- quosure[["keep_columns"]]
+      chcs_vars <- qenv[["keep_columns"]]
 
       tagList(
         conditionalPanel(
@@ -564,16 +564,16 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
       validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
 
-      quosure <- base_q
+      qenv <- base_q
 
-      ANL <- quosure[["ANL"]] # nolint
+      ANL <- qenv[["ANL"]] # nolint
 
       resp_col <- as.character(merged$anl_input_r()$columns_source$response)
       dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       x_axis <- input$x_axis # nolint
       y_axis <- input$y_axis # nolint
       variables <- input$variables # nolint
-      pca <- quosure[["pca"]]
+      pca <- qenv[["pca"]]
 
       ggtheme <- input$ggtheme
       validate(need(ggtheme, "Please select a theme."))
@@ -583,8 +583,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       size <- input$size # nolint
       font_size <- input$font_size # nolint
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
           env = list(x_axis = x_axis, y_axis = y_axis)
@@ -593,8 +593,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
       if (!is.null(input$variables)) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
             r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
@@ -663,8 +663,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           env = list(x_axis = x_axis, y_axis = y_axis)
         )
 
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col))
         )
 
@@ -673,14 +673,14 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         scales_biplot <- if (is.character(response) ||
           is.factor(response) ||
           (is.numeric(response) && length(unique(response)) <= 6)) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             quote(pca_rot$response <- as.factor(response))
           )
           quote(scale_color_brewer(palette = "Dark2"))
         } else if (inherits(response, "Date")) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             quote(pca_rot$response <- numeric(response))
           )
 
@@ -692,8 +692,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             )
           )
         } else {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             quote(pca_rot$response <- response)
           )
           quote(scale_color_gradient(
@@ -772,7 +772,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
 
       teal.code::eval_code(
-        quosure,
+        qenv,
         substitute(
           expr = {
             g <- plot_call

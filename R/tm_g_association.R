@@ -67,8 +67,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_association <- function(label = "Association",
                              ref,
@@ -231,7 +231,7 @@ srv_tm_g_association <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(env = data) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
