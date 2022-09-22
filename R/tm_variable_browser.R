@@ -37,8 +37,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
@@ -129,7 +129,7 @@ ui_variable_browser <- function(id,
             ),
             { # nolint
               x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-              if (!is.null(attr(data, "join_keys"))) {
+              if (!is.null(get_join_keys(data))) {
                 x
               } else {
                 shinyjs::hidden(x)
@@ -167,6 +167,7 @@ ui_variable_browser <- function(id,
 srv_variable_browser <- function(id, data, reporter, filter_panel_api, datasets_selected, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
 
     # if there are < this number of unique records then a numeric
@@ -1046,7 +1047,12 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data[[dataset_name]]()
-    key <- attr(data, "join_keys")$get(dataset_name)[[dataset_name]]
+    join_keys <- get_join_keys(data)
+    if (!is.null(join_keys)) {
+      key <- get_join_keys(data)$get(dataset_name)[[dataset_name]]
+    } else {
+      key <- NULL
+    }
     sprintf(
       "Dataset with %s unique key rows and %s variables",
       nrow(unique(`if`(length(key) > 0, df[, key, drop = FALSE], df))),
@@ -1122,7 +1128,11 @@ render_tab_table <- function(dataset_name, output, data, input, columns_names) {
 
         # get icons proper for the data types
         icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
-        icons[intersect(attr(data, "join_keys")$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+
+        join_keys <- get_join_keys(data)
+        if (!is.null(join_keys)) {
+          icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+        }
         icons <- variable_type_icons(icons)
 
         # generate sparklines
