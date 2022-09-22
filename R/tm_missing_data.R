@@ -54,6 +54,12 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
+  if (!requireNamespace("gridExtra", quietly = TRUE)) {
+    stop("Cannot load gridExtra - please install the package or restart your session.")
+  }
+  if (!requireNamespace("rlang", quietly = TRUE)) {
+    stop("Cannot load rlang - please install the package or restart your session.")
+  }
   logger::log_info("Initializing tm_missing_data")
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
@@ -321,7 +327,6 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
-#' @importFrom rlang .data
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -434,12 +439,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     observeEvent(input$filter_na, {
       choices <- vars_summary() %>%
-        dplyr::select(.data$key) %>%
+        dplyr::select(rlang::.data$key) %>%
         getElement(name = 1)
 
       selected <- vars_summary() %>%
-        dplyr::filter(.data$value > 0) %>%
-        dplyr::select(.data$key) %>%
+        dplyr::filter(rlang::.data$value > 0) %>%
+        dplyr::select(rlang::.data$key) %>%
         getElement(name = 1)
 
       teal.widgets::updateOptionalSelectInput(

@@ -141,6 +141,15 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
+  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
+    stop("Cannot load ggpmisc - please install the package or restart your session.")
+  }
+  if (!requireNamespace("ggExtra", quietly = TRUE)) {
+    stop("Cannot load ggExtra - please install the package or restart your session.")
+  }
+  if (!requireNamespace("colourpicker", quietly = TRUE)) {
+    stop("Cannot load colourpicker - please install the package or restart your session.")
+  }
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)

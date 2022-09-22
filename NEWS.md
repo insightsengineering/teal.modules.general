@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.14.9019
+# teal.modules.general 0.2.14.9020
 
 ### Breaking changes
 
@@ -13,6 +13,10 @@
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
 * Fixed the join type functionality in the `tm_t_crosstable`.
+
+### Miscellaneous
+* Moved packages only used in one module from `Imports` to `Suggests` in the `DESCRIPTION` file.
+* Moved `magrittr` package from `Depends` to `Imports` in the `DESCRIPTION` file.
 
 # teal.modules.general 0.2.14
 
