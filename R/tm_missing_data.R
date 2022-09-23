@@ -439,12 +439,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     observeEvent(input$filter_na, {
       choices <- vars_summary() %>%
-        dplyr::select(rlang::.data$key) %>%
+        dplyr::select(!!as.name("key")) %>%
         getElement(name = 1)
 
       selected <- vars_summary() %>%
-        dplyr::filter(rlang::.data$value > 0) %>%
-        dplyr::select(rlang::.data$key) %>%
+        dplyr::filter(!!as.name("value") > 0) %>%
+        dplyr::select(!!as.name("key")) %>%
         getElement(name = 1)
 
       teal.widgets::updateOptionalSelectInput(
