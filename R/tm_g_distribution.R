@@ -257,30 +257,31 @@ ui_distribution <- function(id, ...) {
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             collapsed = FALSE
           )
-        )
-      ),
-      teal.widgets::panel_item(
-        "Theoretical Distribution",
-        teal.widgets::optionalSelectInput(
-          ns("t_dist"),
-          div(
-            class = "teal-tooltip",
-            tagList(
-              "Distribution:",
-              icon("circle-info"),
-              span(
-                class = "tooltiptext",
-                "Default parameters are optimized with MASS::fitdistr function."
-              )
-            )
-          ),
-          choices = c("normal", "lognormal", "gamma", "unif"),
-          selected = NULL, multiple = FALSE
         ),
-        numericInput(ns("dist_param1"), label = "param1", value = NULL),
-        numericInput(ns("dist_param2"), label = "param2", value = NULL),
-        span(actionButton(ns("params_reset"), "Reset params")),
-        collapsed = FALSE
+        teal.widgets::panel_item(
+          "Theoretical Distribution",
+          teal.widgets::optionalSelectInput(
+            ns("t_dist"),
+            div(
+              class = "teal-tooltip",
+              tagList(
+                "Distribution:",
+                icon("circle-info"),
+                span(
+                  class = "tooltiptext",
+                  "Default parameters are optimized with MASS::fitdistr function."
+                )
+              )
+            ),
+            choices = c("normal", "lognormal", "gamma", "unif"),
+            selected = NULL,
+            multiple = FALSE
+          ),
+          numericInput(ns("dist_param1"), label = "param1", value = NULL),
+          numericInput(ns("dist_param2"), label = "param2", value = NULL),
+          span(actionButton(ns("params_reset"), "Reset params")),
+          collapsed = FALSE
+        )
       ),
       teal.widgets::panel_item(
         "Tests",
