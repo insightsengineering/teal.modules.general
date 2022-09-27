@@ -80,8 +80,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            x,
@@ -329,7 +329,12 @@ ui_g_bivariate <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+      teal.widgets::verbatim_popup_ui("warnings", button_label = "Show Warnings")
+      ),
+
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -337,8 +342,9 @@ ui_g_bivariate <- function(id, ...) {
 
 
 srv_g_bivariate <- function(id,
-                            datasets,
+                            data,
                             reporter,
+                            filter_panel_api,
                             x,
                             y,
                             row_facet,
@@ -351,71 +357,63 @@ srv_g_bivariate <- function(id,
                             plot_width,
                             ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     data_extract <- list(
       x = x, y = y, row_facet = row_facet, col_facet = col_facet,
       color = color, fill = fill, size = size
     )
 
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
-    merged_data <- teal.transform::data_merge_srv(
-      selector_list = reactive_select_input,
-      datasets = datasets
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      join_keys = get_join_keys(data)
     )
 
-    plot_r <- reactive({
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      teal.code::new_qenv(tdata2env(data), code = teal.data::get_code(data)) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
+
+    output_q <- reactive({
       validate({
-        need(any(c("x", "y") %in% names(reactive_select_input())), "Please select x and/or y variable(s)")
-      })
-
-
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data())
-
-      ANL <- teal.code::chunks_get_var("ANL") # nolint
-      teal::validate_has_data(ANL, 3)
-
-      x_col_vec <- as.vector(merged_data()$columns_source$x)
-      x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
-      y_col_vec <- as.vector(merged_data()$columns_source$y)
-      y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
-
-      validate(
         need(
-          !identical(x_name, character(0)) || !identical(y_name, character(0)),
+          length(merged$anl_input_r()$columns_source$x) > 0 || length(merged$anl_input_r()$columns_source$y) > 0,
           "x-variable and y-variable aren't correctly specified. At least one should be valid."
         )
-      )
+      })
 
-      row_facet_name <- as.vector(merged_data()$columns_source$row_facet)
-      col_facet_name <- as.vector(merged_data()$columns_source$col_facet)
-      color_name <- if ("color" %in% names(merged_data()$columns_source)) {
-        as.vector(merged_data()$columns_source$color)
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      teal::validate_has_data(ANL, 3)
+
+      x_col_vec <- as.vector(merged$anl_input_r()$columns_source$x)
+      x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
+      y_col_vec <- as.vector(merged$anl_input_r()$columns_source$y)
+      y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
+
+      row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
+      col_facet_name <- as.vector(merged$anl_input_r()$col_facet)
+      color_name <- if ("color" %in% names(merged$anl_input_r()$columns_source)) {
+        as.vector(merged$anl_input_r()$columns_source$color)
       } else {
         character(0)
       }
-      fill_name <- if ("fill" %in% names(merged_data()$columns_source)) {
-        as.vector(merged_data()$columns_source$fill)
+      fill_name <- if ("fill" %in% names(merged$anl_input_r()$columns_source)) {
+        as.vector(merged$anl_input_r()$columns_source$fill)
       } else {
         character(0)
       }
-      size_name <- if ("size" %in% names(merged_data()$columns_source)) {
-        as.vector(merged_data()$columns_source$size)
+      size_name <- if ("size" %in% names(merged$anl_input_r()$columns_source)) {
+        as.vector(merged$anl_input_r()$columns_source$size)
       } else {
         character(0)
       }
@@ -510,35 +508,30 @@ srv_g_bivariate <- function(id,
         }
       }
 
-      teal.code::chunks_push(
-        id = "plot_call",
-        expression = substitute(expr = p <- cl, env = list(cl = cl))
-      )
-
       # Add labels to facets
       nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
       nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
+      without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
-      if ((is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting) {
-        teal.code::chunks_push(id = "print_plot_call", expression = quote(print(p)))
-        teal.code::chunks_safe_eval()
+      print_call <- if (without_facet) {
+        quote(print(p))
       } else {
-        teal.code::chunks_push(
-          id = "grid_draw_call",
-          substitute(
-            expr = {
-              # Add facetting labels
-              # optional: grid.newpage() #nolintr
-              g <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
-              grid::grid.draw(g)
-            },
-            env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
-          )
+        substitute(
+          expr = {
+            # Add facetting labels
+            # optional: grid.newpage() #nolintr
+            p <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+            grid::grid.draw(p)
+          },
+          env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
         )
-        teal.code::chunks_safe_eval()
-        teal.code::chunks_get_var("g")
       }
+
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- cl, env = list(cl = cl))) %>%
+        teal.code::eval_code(print_call)
     })
+
+    plot_r <- shiny::reactive(output_q()[["p"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -547,11 +540,17 @@ srv_g_bivariate <- function(id,
       width = plot_width
     )
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
+      id = "warnings",
+      reactive(paste(get_warnings(output_q()), collapse = "\n")),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_code(output_q())))
+    )
+
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(x, y, row_facet, col_facet, color, fill, size)),
-      modal_title = "R Code for a Bivariate plot"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "Bivariate Plot"
     )
 
     ### REPORTER
@@ -560,19 +559,14 @@ srv_g_bivariate <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Bivariate Plot")
         card$append_text("Bivariate Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

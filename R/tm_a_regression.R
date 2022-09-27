@@ -71,8 +71,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_a_regression <- function(label = "Regression Analysis",
                             regressor,
@@ -217,7 +217,7 @@ ui_a_regression <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -225,8 +225,9 @@ ui_a_regression <- function(id, ...) {
 
 
 srv_a_regression <- function(id,
-                             datasets,
+                             data,
                              reporter,
+                             filter_panel_api,
                              response,
                              regressor,
                              plot_height,
@@ -234,40 +235,39 @@ srv_a_regression <- function(id,
                              ggplot2_args,
                              default_outlier_label) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
-    selector_list <- teal.transform::data_extract_multiple_srv(list(response = response, regressor = regressor), datasets)
-
-    merged_data <- teal.transform::data_merge_module(
-      datasets = datasets,
+    anl_merged_input <- teal.transform::merge_expression_module(
+      datasets = data,
+      join_keys = get_join_keys(data),
       data_extract = list(response = response, regressor = regressor)
     )
 
     regression_var <- reactive({
-      req(!is.null(selector_list()$response()) && !is.null(selector_list()$regressor()))
+      validate(
+        need(
+          !is.null(anl_merged_input()$columns_source$response) &&
+            !is.null(anl_merged_input()$columns_source$regressor),
+          "Please select regressor and response variables"
+        )
+      )
+
       list(
-        response = as.vector(merged_data()$columns_source$response),
-        regressor = as.vector(merged_data()$columns_source$regressor)
+        response = as.vector(anl_merged_input()$columns_source$response),
+        regressor = as.vector(anl_merged_input()$columns_source$regressor)
       )
     })
 
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
     # sets chunk object and populates it with data merge call and fit expression
-    fit <- reactive({
-      validate({
-        need(
-          !is.null(selector_list()$response()) && !is.null(selector_list()$regressor()),
-          "Please select regressor and response variables"
-        )
-      })
-
-      chunks_stack <- teal.code::chunks$new()
-
-      teal.code::chunks_reset(chunks = chunks_stack)
-
-      teal.code::chunks_push_chunks(merged_data()$chunks, chunks = chunks_stack)
-
-      ANL <- teal.code::chunks_get_var("ANL", chunks = chunks_stack) # nolint
+    fit_r <- reactive({
+      ANL <- anl_merged_q()[["ANL"]]
       teal::validate_has_data(ANL, 10)
 
       # validation
@@ -316,37 +316,6 @@ srv_a_regression <- function(id,
         )
       )
 
-      teal.code::chunks_push_new_line(chunks = chunks_stack)
-
-      teal.code::chunks_push(
-        id = "formula_call",
-        expression = substitute(expr = form <- formula, env = list(formula = form)),
-        chunks = chunks_stack
-      )
-
-      teal.code::chunks_push(
-        id = "fit_lm_call",
-        expression = quote(fit <- stats::lm(form, data = ANL)) %>% methods::substituteDirect(list(form = form)),
-        chunks = chunks_stack
-      )
-
-      teal.code::chunks_push(
-        id = "assign_coefficients_names_call",
-        expression = quote({
-          for (regressor in names(fit$contrasts)) {
-            alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
-            names(fit$coefficients) <- gsub(
-              paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
-            )
-          }
-        }),
-        chunks = chunks_stack
-      )
-
-      teal.code::chunks_push(id = "summary_call", expression = quote(summary(fit)), chunks = chunks_stack)
-
-      teal.code::chunks_safe_eval(chunks = chunks_stack)
-
       if (input$show_outlier) {
         opts <- teal.transform::variable_choices(ANL)
         selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
@@ -378,7 +347,18 @@ srv_a_regression <- function(id,
         )
       }
 
-      chunks_stack
+      anl_merged_q() %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))
+        ) %>%
+        teal.code::eval_code(quote({
+          for (regressor in names(fit$contrasts)) {
+            alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
+            names(fit$coefficients) <- gsub(
+              paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
+            )
+          }
+        })) %>%
+        teal.code::eval_code(quote(summary(fit)))
     })
 
     label_col <- reactive({
@@ -411,22 +391,18 @@ srv_a_regression <- function(id,
       }
     })
 
-
-    plot_r <- reactive({
+    output_q <- reactive({
       alpha <- input$alpha # nolint
       size <- input$size # nolint
       ggtheme <- input$ggtheme # nolint
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(fit())
-
       validate(need(!is.null(ggtheme), "Please select a theme."))
 
       plot_type_0 <- function() {
-        fit <- teal.code::chunks_get_var("fit") # chunk already evaluated
-        ANL <- teal.code::chunks_get_var("ANL") # nolint
+        fit <- fit_r()[["fit"]] # chunk already evaluated
+        ANL <- anl_merged_q()[["ANL"]] # nolint
 
         stopifnot(ncol(fit$model) == 2)
 
@@ -486,9 +462,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_0_call",
-          expression = substitute(
+        teal.code::eval_code(
+          fit_r(),
+          substitute(
             expr = {
               class(fit$residuals) <- NULL
               data <- fortify(fit)
@@ -503,22 +479,26 @@ srv_a_regression <- function(id,
       }
 
       plot_base <- function() {
-        teal.code::chunks_push(id = "plot_0_c_call", expression = quote({
-          class(fit$residuals) <- NULL
+        base_fit <- fit_r()
+        teal.code::eval_code(
+          base_fit,
+          quote({
+            class(fit$residuals) <- NULL
 
-          data <- fortify(fit)
+            data <- fortify(fit)
 
-          smooth <- function(x, y) {
-            as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
-          }
+            smooth <- function(x, y) {
+              as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
+            }
 
-          smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
+            smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
-          reg_form <- deparse(fit$call[[2]])
-        }))
+            reg_form <- deparse(fit$call[[2]])
+          })
+        )
       }
 
-      plot_type_1 <- function() {
+      plot_type_1 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -547,9 +527,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_1a_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               smoothy <- smooth(data$.fitted, data$.resid)
               g <- plot
@@ -562,7 +542,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      plot_type_2 <- function() {
+      plot_type_2 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -603,9 +583,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_2_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               g <- plot
               print(g)
@@ -617,7 +597,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      plot_type_3 <- function() {
+      plot_type_3 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -645,9 +625,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_3_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
               g <- plot
@@ -660,7 +640,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      plot_type_4 <- function() {
+      plot_type_4 <- function(plot_base) {
         shinyjs::hide("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -712,9 +692,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_4_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               g <- plot
               print(g)
@@ -727,7 +707,7 @@ srv_a_regression <- function(id,
       }
 
 
-      plot_type_5 <- function() {
+      plot_type_5 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -767,9 +747,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_5_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               smoothy <- smooth(data$.hat, data$.stdresid)
               g <- plot
@@ -782,7 +762,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      plot_type_6 <- function() {
+      plot_type_6 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -817,9 +797,9 @@ srv_a_regression <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.code::chunks_push(
-          id = "plot_6_call",
-          expression = substitute(
+        teal.code::eval_code(
+          plot_base,
+          substitute(
             expr = {
               smoothy <- smooth(data$.hat, data$.cooksd)
               g <- plot
@@ -832,25 +812,25 @@ srv_a_regression <- function(id,
         )
       }
 
-      if (input_type == "Response vs Regressor") {
+      qenv <- if (input_type == "Response vs Regressor") {
         plot_type_0()
       } else {
-        plot_base()
+        plot_base_q <- plot_base()
         switch(input_type,
-          "Residuals vs Fitted" = plot_type_1(),
-          "Normal Q-Q" = plot_type_2(),
-          "Scale-Location" = plot_type_3(),
-          "Cook's distance" = plot_type_4(),
-          "Residuals vs Leverage" = plot_type_5(),
-          "Cook's dist vs Leverage" = plot_type_6()
+          "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
+          "Normal Q-Q" = plot_base_q %>% plot_type_2(),
+          "Scale-Location" = plot_base_q %>% plot_type_3(),
+          "Cook's distance" = plot_base_q %>% plot_type_4(),
+          "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
+          "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
-
-      teal.code::chunks_safe_eval()
+      qenv
     })
 
 
-    code_header <- reactive(teal.code::chunks_get_var("form", chunks = fit()))
+    fitted <- reactive(output_q()[["fit"]])
+    plot_r <- reactive(output_q()[["g"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -860,21 +840,14 @@ srv_a_regression <- function(id,
       width = plot_width
     )
 
-    fitted <- reactive(teal.code::chunks_get_var("fit", chunks = fit()))
-
     output$text <- renderText({
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(response, regressor)),
-      modal_title = "R code for the regression plot",
-      code_header = paste0(
-        "Regression plot of ",
-        format(code_header())
-      )
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "R code for the regression plot",
     )
 
     ### REPORTER
@@ -883,19 +856,14 @@ srv_a_regression <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Linear Regression Plot")
         card$append_text("Linear Regression Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

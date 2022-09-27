@@ -40,8 +40,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
@@ -99,14 +99,19 @@ tm_data_table <- function(label = "Data Table",
 
 # ui page module
 ui_page_data_table <- function(id,
-                               datasets,
+                               data,
                                selected,
                                datasets_selected,
                                pre_output = NULL,
                                post_output = NULL) {
   ns <- NS(id)
 
-  datanames <- get_datanames_selected(datasets, datasets_selected)
+  datanames <- names(data)
+
+  if (!identical(datasets_selected, character(0))) {
+    stopifnot(all(datasets_selected %in% datanames))
+    datanames <- datasets_selected
+  }
 
   shiny::tagList(
     include_css_files("custom"),
@@ -114,17 +119,7 @@ ui_page_data_table <- function(id,
       output = tagList(
         fluidRow(
           column(
-            width = 6,
-            radioButtons(
-              ns("if_filtered"),
-              NULL,
-              choices = c("unfiltered data" = FALSE, "filtered data" = TRUE),
-              selected = TRUE,
-              inline = TRUE
-            )
-          ),
-          column(
-            width = 6,
+            width = 12,
             checkboxInput(
               ns("if_distinct"),
               "Show only distinct rows:",
@@ -141,7 +136,7 @@ ui_page_data_table <- function(id,
               lapply(
                 datanames,
                 function(x) {
-                  dataset <- datasets$get_data(x, filtered = FALSE)
+                  dataset <- isolate(data[[x]]())
                   choices <- names(dataset)
                   labels <- vapply(
                     dataset,
@@ -187,23 +182,24 @@ ui_page_data_table <- function(id,
 
 # server page module
 srv_page_data_table <- function(id,
-                                datasets,
+                                data,
                                 datasets_selected,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- get_datanames_selected(datasets, datasets_selected)
+    datanames <- names(data)
 
     lapply(
       datanames,
       function(x) {
         srv_data_table(
           id = x,
-          datasets = datasets,
+          data = data,
           dataname = x,
           if_filtered = if_filtered,
           if_distinct = if_distinct,
@@ -246,23 +242,23 @@ ui_data_table <- function(id,
 }
 
 srv_data_table <- function(id,
-                           datasets,
+                           data,
                            dataname,
                            if_filtered,
                            if_distinct,
                            dt_args,
                            dt_options,
                            server_rendering) {
+
   moduleServer(id, function(input, output, session) {
+
     output$data_table <- DT::renderDataTable(server = server_rendering, {
+
       variables <- input$variables
 
       validate(need(variables, "need valid variable names"))
 
-      df <- datasets$get_data(
-        dataname,
-        filtered = if_filtered()
-      )
+      df <- data[[dataname]]()
 
       validate(need(df, paste("data", dataname, "is empty")))
 
@@ -283,22 +279,4 @@ srv_data_table <- function(id,
       do.call(DT::datatable, dt_args)
     })
   })
-}
-
-#' a tool for ui and server for getting datanames taking into account the datasets_selected vector
-#'
-#' @param datasets teal datasets object
-#' @param datasets_selected (\code{character}) a character vector that says which datasets should be
-#'   shown and in what order. Names in a vector have to correspond with datasets names.
-#' @return (\code{character}) a character vector
-#' @keywords internal
-get_datanames_selected <- function(datasets, datasets_selected) {
-  datanames <- datasets$datanames()
-
-  if (!identical(datasets_selected, character(0))) {
-    stopifnot(all(datasets_selected %in% datanames))
-    datanames <- datasets_selected
-  }
-
-  return(datanames)
 }

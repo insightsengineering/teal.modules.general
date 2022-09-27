@@ -52,8 +52,8 @@
 #'   header = tags$h1("Sample Application"),
 #'   footer = tags$p("Application footer"),
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_front_page <- function(label = "Front page",
                           header_text = character(0),
@@ -77,7 +77,7 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables, show_metadata = show_metadata),
-    filters = NULL
+    filters = if (show_metadata) "all" else NULL
   )
 }
 
@@ -165,7 +165,8 @@ get_footer_tags <- function(footnotes) {
   }, bold_text = bold_texts, value = footnotes)
 }
 
-srv_front_page <- function(id, datasets, tables, show_metadata) {
+srv_front_page <- function(id, data, tables, show_metadata) {
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -190,8 +191,10 @@ srv_front_page <- function(id, datasets, tables, show_metadata) {
       )
 
       metadata_data_frame <- reactive({
-        raw_metadata <- lapply(datasets$datanames(), datasets$get_metadata)
-        convert_metadata_to_dataframe(raw_metadata, datasets$datanames())
+        convert_metadata_to_dataframe(
+          lapply(names(data), function(dataname) get_metadata(data, dataname)),
+          names(data)
+        )
       })
 
       output$metadata_table <- renderDataTable({

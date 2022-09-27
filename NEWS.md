@@ -1,5 +1,10 @@
 # teal.modules.general 0.2.14.9021
 
+### Breaking changes
+
+* Replaced `chunks` with simpler `qenv` class.
+* Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelAPI`).
+
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
 * Added log transformation options to `tm_g_scatterplot`.
