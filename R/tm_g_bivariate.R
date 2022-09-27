@@ -329,7 +329,12 @@ ui_g_bivariate <- function(id, ...) {
         )
       )
     ),
-    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+      teal.widgets::verbatim_popup_ui("warnings", button_label = "Show Warnings")
+      ),
+
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -370,7 +375,7 @@ srv_g_bivariate <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = teal.data::get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -533,6 +538,13 @@ srv_g_bivariate <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width
+    )
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warnings",
+      reactive(paste(get_warnings(output_q()), collapse = "\n")),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_code(output_q())))
     )
 
     teal.widgets::verbatim_popup_srv(
