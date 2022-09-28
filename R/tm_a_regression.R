@@ -348,8 +348,7 @@ srv_a_regression <- function(id,
       }
 
       anl_merged_q() %>%
-        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))
-        ) %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))) %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
             alts <- paste0(levels(ANL[[regressor]]), collapse = "|")

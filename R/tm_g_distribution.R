@@ -320,7 +320,6 @@ ui_distribution <- function(id, ...) {
       teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings"),
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-
     pre_output = args$pre_output,
     post_output = args$post_output
   )
