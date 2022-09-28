@@ -155,7 +155,10 @@ ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_out
         )
       )
     ),
-    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
     pre_output = pre_output,
     post_output = post_output
   )
@@ -199,7 +202,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -313,6 +316,12 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     teal.widgets::table_with_settings_srv(
       id = "table",
       table_r = table_r
+    )
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(get_warnings(output_q())),
+      title = "Warning"
     )
 
     teal.widgets::verbatim_popup_srv(

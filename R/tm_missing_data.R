@@ -323,7 +323,10 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       )
     ),
     hr(),
-    teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
   )
 }
 
@@ -349,7 +352,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     common_code_q <- reactive({
       group_var <- input$group_by_var
       anl <- data_r()
-      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code(data))
+      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data))
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         teal.code::eval_code(
@@ -1131,6 +1134,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         by_subject_plot_q()
       }
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(final_q())),
+      title = "Warning"
+    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

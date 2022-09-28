@@ -240,7 +240,10 @@ ui_a_pca <- function(id, ...) {
           )
         )
       ),
-      forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+      forms = tagList(
+        teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+      ),
       pre_output = args$pre_output,
       post_output = args$post_output
     )
@@ -273,7 +276,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -933,6 +936,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         align = "center"
       )
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
+      title = "Warning"
+    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

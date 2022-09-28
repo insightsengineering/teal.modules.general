@@ -529,7 +529,9 @@ srv_g_bivariate <- function(id,
         teal.code::eval_code(print_call)
     })
 
-    plot_r <- shiny::reactive(output_q()[["p"]])
+    plot_r <- shiny::reactive({
+      output_q()[["p"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -540,9 +542,8 @@ srv_g_bivariate <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "warnings",
-      reactive(teal.code::get_warnings(output_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
+      verbatim_content = reactive(get_warnings(output_q())),
+      title = "Warning"
     )
 
     teal.widgets::verbatim_popup_srv(

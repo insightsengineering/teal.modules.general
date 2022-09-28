@@ -217,7 +217,10 @@ ui_a_regression <- function(id, ...) {
         )
       )
     ),
-    forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -261,7 +264,7 @@ srv_a_regression <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -842,6 +845,12 @@ srv_a_regression <- function(id,
     output$text <- renderText({
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
+      title = "Warning"
+    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
