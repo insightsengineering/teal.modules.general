@@ -244,7 +244,7 @@ srv_g_response <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = teal.data::get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -440,7 +440,7 @@ srv_g_response <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(get_code_tdata(output_q())),
       title = "Show R Code for Response"
     )
 
