@@ -9,6 +9,7 @@
 * Added the `teal.reporter` functionality to all modules.
 * Added log transformation options to `tm_g_scatterplot`.
 * Added `server_rendering` flag to `tm_data_table` to control whether the table is rendered server or client side.
+* Added `parent_dataname` argument to `tm_variable_browser` to allow specification of parent dataset for this module.
 
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.

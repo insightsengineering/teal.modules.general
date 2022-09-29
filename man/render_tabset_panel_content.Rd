@@ -6,6 +6,7 @@
 \usage{
 render_tabset_panel_content(
   datanames,
+  parent_dataname,
   output,
   data,
   input,
@@ -15,6 +16,8 @@ render_tabset_panel_content(
 }
 \arguments{
 \item{datanames}{(\code{character}) the name of the dataset}
+
+\item{parent_dataname}{(\code{character}) the name of a parent dataname to filter out variables from}
 
 \item{output}{(\code{session$output}) the shiny session output}
 
