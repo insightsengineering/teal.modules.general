@@ -336,7 +336,7 @@ srv_g_response <- function(id,
       plot_call <- substitute(
         expr =
           ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position, dd = ""),
+            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,
@@ -435,7 +435,8 @@ srv_g_response <- function(id,
     teal.widgets::verbatim_popup_srv(
       id = "warning",
       verbatim_content = reactive(teal.code::get_warnings(output_q())),
-      title = "Warning"
+      title = "Warning",
+      disabled =reactive(is.null(output_q()) || is.null(teal.code::get_warnings(output_q())))
     )
 
     teal.widgets::verbatim_popup_srv(

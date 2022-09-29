@@ -1084,7 +1084,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     teal.widgets::verbatim_popup_srv(
       id = "warning",
       verbatim_content = reactive(teal.code::get_warnings(final_q())),
-      title = "Warning"
+      title = "Warning",
+      disabled = reactive(is.null(final_q()) || is.null(teal.code::get_warnings(final_q())))
     )
 
     teal.widgets::verbatim_popup_srv(
