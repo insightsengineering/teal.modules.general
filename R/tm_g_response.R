@@ -434,13 +434,13 @@ srv_g_response <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "warning",
-      verbatim_content = reactive(get_warnings(output_q())),
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
       title = "Warning"
     )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(output_q())),
       title = "Show R Code for Response"
     )
 

@@ -331,7 +331,7 @@ ui_g_bivariate <- function(id, ...) {
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
-      teal.widgets::verbatim_popup_ui("warnings", button_label = "Show Warnings")
+      teal.widgets::verbatim_popup_ui(ns("warnings"), button_label = "Show Warnings")
     ),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -542,7 +542,7 @@ srv_g_bivariate <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "warnings",
-      verbatim_content = reactive(get_warnings(output_q())),
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
       title = "Warning"
     )
 

@@ -320,7 +320,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     teal.widgets::verbatim_popup_srv(
       id = "warning",
-      verbatim_content = reactive(get_warnings(output_q())),
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
       title = "Warning"
     )
 
