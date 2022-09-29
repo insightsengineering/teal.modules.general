@@ -42,8 +42,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_variable_browser <- function(label = "Variable Browser",
                                 datasets_selected = character(0),
@@ -52,6 +52,15 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
+  if (!requireNamespace("sparkline", quietly = TRUE)) {
+    stop("Cannot load sparkline - please install the package or restart your session.")
+  }
+  if (!requireNamespace("htmlwidgets", quietly = TRUE)) {
+    stop("Cannot load htmlwidgets - please install the package or restart your session.")
+  }
+  if (!requireNamespace("jsonlite", quietly = TRUE)) {
+    stop("Cannot load jsonlite - please install the package or restart your session.")
+  }
   checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
@@ -184,6 +193,7 @@ srv_variable_browser <- function(id,
                                  datasets_selected, parent_dataname, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
 
     # if there are < this number of unique records then a numeric
@@ -1068,7 +1078,12 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data[[dataset_name]]()
-    key <- attr(data, "join_keys")$get(dataset_name)[[dataset_name]]
+    join_keys <- get_join_keys(data)
+    if (!is.null(join_keys)) {
+      key <- get_join_keys(data)$get(dataset_name)[[dataset_name]]
+    } else {
+      key <- NULL
+    }
     sprintf(
       "Dataset with %s unique key rows and %s variables",
       nrow(unique(`if`(length(key) > 0, df[, key, drop = FALSE], df))),
@@ -1146,7 +1161,11 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
         # get icons proper for the data types
         icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
-        icons[intersect(attr(data, "join_keys")$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+
+        join_keys <- get_join_keys(data)
+        if (!is.null(join_keys)) {
+          icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+        }
         icons <- variable_type_icons(icons)
 
         # generate sparklines

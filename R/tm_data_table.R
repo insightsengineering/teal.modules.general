@@ -40,8 +40,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
@@ -136,7 +136,7 @@ ui_page_data_table <- function(id,
               lapply(
                 datanames,
                 function(x) {
-                  dataset <- data[[x]]()
+                  dataset <- isolate(data[[x]]())
                   choices <- names(dataset)
                   labels <- vapply(
                     dataset,
@@ -187,6 +187,7 @@ srv_page_data_table <- function(id,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
@@ -248,8 +249,11 @@ srv_data_table <- function(id,
                            dt_args,
                            dt_options,
                            server_rendering) {
+
   moduleServer(id, function(input, output, session) {
+
     output$data_table <- DT::renderDataTable(server = server_rendering, {
+
       variables <- input$variables
 
       validate(need(variables, "need valid variable names"))

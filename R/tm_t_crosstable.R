@@ -67,8 +67,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 tm_t_crosstable <- function(label = "Cross Table",
@@ -80,6 +80,9 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
+  if (!requireNamespace("rtables", quietly = TRUE)) {
+    stop("Cannot load rtables - please install the package or restart your session.")
+  }
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
 
@@ -161,6 +164,7 @@ ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_out
 srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
 
@@ -188,14 +192,14 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       selector_list = selector_list,
       merge_function = merge_function
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -253,8 +257,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
             title <- plot_title
           },
           env = list(plot_title = plot_title)
-        ),
-        name = "title_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
@@ -289,8 +292,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
               labels_vec = labels_vec,
               count_value = ifelse(show_percentage, "count_fraction", "count")
             )
-          ),
-          name = "lyt_call"
+          )
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -300,8 +302,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
               tbl
             },
             env = list(y_name = y_name)
-          ),
-          name = "tbl_call"
+          )
         )
     })
 

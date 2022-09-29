@@ -67,8 +67,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
@@ -77,6 +77,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    pre_output = NULL,
                                    post_output = NULL) {
   logger::log_info("Initializing tm_g_scatterplotmatrix")
+  if (!requireNamespace("lattice", quietly = TRUE)) {
+    stop("Cannot load lattice - please install the package or restart your session.")
+  }
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
   checkmate::assert_string(label)
@@ -156,6 +159,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
@@ -164,13 +168,13 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       selector_list = selector_list
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -181,9 +185,9 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     # plot
     output_q <- reactive({
-      quosure <- merged$anl_q_r()
+      qenv <- merged$anl_q_r()
 
-      ANL <- quosure[["ANL"]] # nolint
+      ANL <- qenv[["ANL"]] # nolint
 
       cols_names <- merged$anl_input_r()$columns_source$variables
       alpha <- input$alpha # nolint
@@ -208,25 +212,23 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL <- ANL[, cols_names] %>% # nolint
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
             env = list(cols_names = cols_names)
-          ),
-          name = "factorize_ANL_call"
+          )
         )
       } else {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL <- ANL[, cols_names] %>% # nolint
               droplevels(),
             env = list(cols_names = cols_names)
-          ),
-          name = "ANL_drop_levels_call"
+          )
         )
       }
 
@@ -237,8 +239,8 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
 
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               g <- lattice::splom(
@@ -274,26 +276,24 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
               alpha_value = alpha,
               cex_value = cex
             )
-          ),
-          name = "plot_call"
+          )
         )
       } else {
         shinyjs::hide("cor_method")
         shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               g <- lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value)
               g
             },
             env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
-          ),
-          name = "plot_call"
+          )
         )
       }
-      quosure
+      qenv
     })
 
     plot_r <- reactive(output_q()[["g"]])

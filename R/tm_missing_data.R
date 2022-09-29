@@ -38,8 +38,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
@@ -54,6 +54,12 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
+  if (!requireNamespace("gridExtra", quietly = TRUE)) {
+    stop("Cannot load gridExtra - please install the package or restart your session.")
+  }
+  if (!requireNamespace("rlang", quietly = TRUE)) {
+    stop("Cannot load rlang - please install the package or restart your session.")
+  }
   logger::log_info("Initializing tm_missing_data")
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
@@ -84,7 +90,7 @@ ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL
   ns <- NS(id)
   datanames <- names(data)
 
-  if_subject_plot <- !is.null(attr(data, "join_keys"))
+  if_subject_plot <- !is.null(get_join_keys(data))
 
   shiny::tagList(
     include_css_files("custom"),
@@ -321,18 +327,18 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
-#' @importFrom rlang .data
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
 
     data_r <- data[[dataname]]
 
-    data_keys <- reactive(attr(data, "join_keys")$get(dataname)[[dataname]])
+    data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
     data_parent_keys <- reactive({
-      keys <- attr(data, "join_keys")$get(dataname)
+      keys <- get_join_keys(data)$get(dataname)
       if ("ADSL" %in% names(keys)) {
         keys[["ADSL"]]
       } else {
@@ -343,11 +349,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     common_code_q <- reactive({
       group_var <- input$group_by_var
       anl <- data_r()
-      quosure <- teal.code::new_quosure(data)
+      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code(data))
 
-      quosure <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
+      qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         teal.code::eval_code(
-          quosure,
+          qenv,
           substitute(
             expr = ANL <- anl_name[, selected_vars], # nolint
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
@@ -355,26 +361,25 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         )
       } else {
         teal.code::eval_code(
-          quosure,
+          qenv,
           substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint
         )
       }
 
       if (input$summary_type == "By Variable Levels" && !is.null(group_var) && !(group_var %in% selected_vars())) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
             env = list(group_var = group_var, anl_name = as.name(anl_name))
-          ),
-          name = "ANL_group_var_call"
+          )
         )
       }
 
       new_col_name <- "**anyna**" # nolint variable assigned and used
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr =
             create_cols_labels <- function(cols, just_label = FALSE) {
@@ -393,10 +398,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               new_col_name = new_col_name
             )
           )
-        ),
-        name = "create_cols_labels_function_call"
+        )
       )
-      quosure
+      qenv
     })
 
     selected_vars <- reactive({
@@ -435,12 +439,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
 
     observeEvent(input$filter_na, {
       choices <- vars_summary() %>%
-        dplyr::select(.data$key) %>%
+        dplyr::select(!!as.name("key")) %>%
         getElement(name = 1)
 
       selected <- vars_summary() %>%
-        dplyr::filter(.data$value > 0) %>%
-        dplyr::select(.data$key) %>%
+        dplyr::filter(!!as.name("value") > 0) %>%
+        dplyr::select(!!as.name("key")) %>%
         getElement(name = 1)
 
       teal.widgets::updateOptionalSelectInput(
@@ -511,12 +515,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       teal::validate_has_data(data_r(), 1)
       validate(need(length(input$variables_select) > 0, "No variables selected"))
 
-      quosure <- common_code_q()
+      qenv <- common_code_q()
 
       if (input$any_na) {
         new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
             env = list(new_col_name = new_col_name)
@@ -524,13 +528,12 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         )
       }
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
           env = list(data_keys = data_keys())
-        ),
-        name = "analysis_vars_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
@@ -545,8 +548,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             } else {
               quote(ANL)
             })
-          ),
-          name = "summary_plot_obs_call"
+          )
         ) %>%
         # x axis ordering according to number of missing values and alphabet
         teal.code::eval_code(
@@ -555,16 +557,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               dplyr::arrange(n_pct, dplyr::desc(col)) %>%
               dplyr::pull(col) %>%
               create_cols_labels()
-          ),
-          name = "x_levels_call"
+          )
         )
 
       # always set "**anyna**" level as the last one
       if (isolate(input$any_na)) {
-        quosure <- teal.code::eval_code(
-          quosure,
-          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**")),
-          name = "x_levels_anyna_call"
+        qenv <- teal.code::eval_code(
+          qenv,
+          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
         )
       }
 
@@ -584,8 +584,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         ggtheme = input$ggtheme
       )
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           p1 <- summary_plot_obs %>%
             ggplot() +
@@ -615,23 +615,18 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "p1_plot_call"
+        )
       )
 
       if (isTRUE(input$if_patients_plot)) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = parent_keys <- keys,
             env = list(keys = data_parent_keys())
-          ),
-          name = "parent_keys_call"
+          )
         ) %>%
-          teal.code::eval_code(
-            quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys])),
-            name = "ndistinct_subjects_call"
-          ) %>%
+          teal.code::eval_code(quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys]))) %>%
           teal.code::eval_code(
             quote(
               summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
@@ -644,8 +639,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
                 tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
                 dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
                 dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
-            ),
-            name = "summary_plot_patients_call"
+            )
           )
 
         dev_ggplot2_args <- teal.widgets::ggplot2_args(
@@ -668,8 +662,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           ggtheme = input$ggtheme
         )
 
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             p2 <- summary_plot_patients %>%
               ggplot() +
@@ -699,8 +693,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               themes = parsed_ggplot2_args$theme,
               ggthemes = parsed_ggplot2_args$ggtheme
             )
-          ),
-          name = "p2_plot_call"
+          )
         ) %>%
           teal.code::eval_code(
             quote({
@@ -709,24 +702,21 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               g <- gridExtra::gtable_cbind(g1, g2, size = "first")
               g$heights <- grid::unit.pmax(g1$heights, g2$heights)
               grid::grid.newpage()
-            }),
-            name = "final_plot_call"
+            })
           )
       } else {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           quote({
             g <- ggplotGrob(p1)
             grid::grid.newpage()
-          }),
-          name = "final_plot_call"
+          })
         )
       }
 
       teal.code::eval_code(
-        quosure,
-        quote(grid::grid.draw(g)),
-        name = "grid_draw_call"
+        qenv,
+        quote(grid::grid.draw(g))
       )
     })
 
@@ -742,8 +732,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             dplyr::group_by_all() %>%
             dplyr::tally() %>%
             dplyr::ungroup()
-        ),
-        name = "combination_cutoff_call"
+        )
       )
     })
 
@@ -771,7 +760,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       req(input$summary_type == "Combinations", input$combination_cutoff, combination_cutoff_q())
       teal::validate_has_data(data_r(), 1)
 
-      quosure <- teal.code::eval_code(
+      qenv <- teal.code::eval_code(
         combination_cutoff_q(),
         substitute(
           expr = data_combination_plot_cutoff <- combination_cutoff %>%
@@ -780,32 +769,29 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
             dplyr::arrange(n),
           env = list(combination_cutoff_value = input$combination_cutoff)
-        ),
-        name = "data_combination_plot_cutoff_call_1"
+        )
       )
 
       # find keys in dataset not selected in the UI and remove them from dataset
       keys_not_selected <- setdiff(data_keys(), input$variables_select)
       if (length(keys_not_selected) > 0) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
               dplyr::filter(!key %in% keys_not_selected),
             env = list(keys_not_selected = keys_not_selected)
-          ),
-          name = "data_combination_plot_cutoff_call_2"
+          )
         )
       }
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         quote(
           labels <- data_combination_plot_cutoff %>%
             dplyr::filter(key == key[[1]]) %>%
             getElement(name = 1)
-        ),
-        name = "labels_call"
+        )
       )
 
       dev_ggplot2_args1 <- teal.widgets::ggplot2_args(
@@ -849,7 +835,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       )
 
       teal.code::eval_code(
-        quosure,
+        qenv,
         substitute(
           expr = {
             p1 <- data_combination_plot_cutoff %>%
@@ -897,8 +883,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             themes2 = parsed_ggplot2_args2$theme,
             ggthemes2 = parsed_ggplot2_args2$ggtheme
           )
-        ),
-        name = "grid_draw_call"
+        )
       )
     })
 
@@ -946,11 +931,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         function(x) round(sum(is.na(x)) / length(x), 4)
       }
 
-      quosure <- common_code_q()
+      qenv <- common_code_q()
 
       if (!is.null(group_var)) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               summary_data <- ANL %>%
@@ -969,12 +954,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             env = list(
               group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
             )
-          ),
-          name = "summary_data_call_1"
+          )
         )
       } else {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
@@ -984,12 +968,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               ) %>%
               dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
             env = list(summ_fn = summ_fn)
-          ),
-          name = "summary_data_call_1"
+          )
         )
       }
 
-      teal.code::eval_code(quosure, quote(summary_data), name = "summary_data_call_2")
+      teal.code::eval_code(qenv, quote(summary_data))
     })
 
     summary_table_r <- reactive(summary_table_q()[["summary_data"]])
@@ -1020,15 +1003,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         substitute(
           expr = parent_keys <- keys,
           env = list(keys = data_parent_keys())
-        ),
-        name = "parent_keys_call"
+        )
       ) %>%
         teal.code::eval_code(
           substitute(
             expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
             env = list(data_keys = data_keys())
-          ),
-          name = "analysis_vars_call"
+          )
         ) %>%
         teal.code::eval_code(
           quote({
@@ -1065,8 +1046,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
             summary_plot_patients <- summary_plot_patients %>%
               tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
               dplyr::mutate(col = create_cols_labels(col))
-          }),
-          name = "summary_plot_patients_call"
+          })
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -1099,8 +1079,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
               themes = parsed_ggplot2_args$theme,
               ggthemes = parsed_ggplot2_args$ggtheme
             )
-          ),
-          name = "plot_call"
+          )
         )
     })
 

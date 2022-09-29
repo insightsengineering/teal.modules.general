@@ -1,8 +1,8 @@
-# teal.modules.general 0.2.14.9019
+# teal.modules.general 0.2.14.9021
 
 ### Breaking changes
 
-* Replaced `chunks` with simpler `Quosure` class.
+* Replaced `chunks` with simpler `qenv` class.
 * Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelAPI`).
 
 ### Enhancements
@@ -14,6 +14,10 @@
 ### Bug fixes
 * Fixed an overflow for very wide `tm_a_pca` tables.
 * Fixed the join type functionality in the `tm_t_crosstable`.
+
+### Miscellaneous
+* Moved packages only used in one module from `Imports` to `Suggests` in the `DESCRIPTION` file.
+* Moved `magrittr` package from `Depends` to `Imports` in the `DESCRIPTION` file.
 
 # teal.modules.general 0.2.14
 

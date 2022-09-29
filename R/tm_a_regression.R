@@ -71,8 +71,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_a_regression <- function(label = "Regression Analysis",
                             regressor,
@@ -236,10 +236,11 @@ srv_a_regression <- function(id,
                              default_outlier_label) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     anl_merged_input <- teal.transform::merge_expression_module(
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       data_extract = list(response = response, regressor = regressor)
     )
 
@@ -260,7 +261,7 @@ srv_a_regression <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -346,9 +347,8 @@ srv_a_regression <- function(id,
         )
       }
 
-      teal.code::eval_code(anl_merged_q(), "") %>%
-        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form)),
-          name = "fit_lm_call"
+      anl_merged_q() %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))
         ) %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
@@ -357,8 +357,8 @@ srv_a_regression <- function(id,
               paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
             )
           }
-        }), name = "assign_coefficients_names_call") %>%
-        teal.code::eval_code(quote(summary(fit)), name = "summary_call")
+        })) %>%
+        teal.code::eval_code(quote(summary(fit)))
     })
 
     label_col <- reactive({
@@ -474,8 +474,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_0_call"
+          )
         )
       }
 
@@ -495,8 +494,7 @@ srv_a_regression <- function(id,
             smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
             reg_form <- deparse(fit$call[[2]])
-          }),
-          name = "plot_0_c_call"
+          })
         )
       }
 
@@ -540,8 +538,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_1a_call"
+          )
         )
       }
 
@@ -596,8 +593,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_2_call"
+          )
         )
       }
 
@@ -640,8 +636,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_3_call"
+          )
         )
       }
 
@@ -707,8 +702,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_4_call"
+          )
         )
       }
 
@@ -764,8 +758,7 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_5_call"
+          )
         )
       }
 
@@ -815,12 +808,11 @@ srv_a_regression <- function(id,
             env = list(
               plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
             )
-          ),
-          name = "plot_6_call"
+          )
         )
       }
 
-      quosure <- if (input_type == "Response vs Regressor") {
+      qenv <- if (input_type == "Response vs Regressor") {
         plot_type_0()
       } else {
         plot_base_q <- plot_base()
@@ -833,7 +825,7 @@ srv_a_regression <- function(id,
           "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
-      quosure
+      qenv
     })
 
 

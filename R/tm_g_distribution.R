@@ -43,8 +43,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 #' # Example with clinical data
@@ -90,8 +90,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_distribution <- function(label = "Distribution Module",
                               dist_var,
@@ -109,6 +109,21 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
+  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
+    stop("Cannot load ggpmisc - please install the package or restart your session.")
+  }
+  if (!requireNamespace("ggpp", quietly = TRUE)) {
+    stop("Cannot load ggpp - please install the package or restart your session.")
+  }
+  if (!requireNamespace("goftest", quietly = TRUE)) {
+    stop("Cannot load goftest - please install the package or restart your session.")
+  }
+  if (!requireNamespace("MASS", quietly = TRUE)) {
+    stop("Cannot load MASS - please install the package or restart your session.")
+  }
+  if (!requireNamespace("broom", quietly = TRUE)) {
+    stop("Cannot load broom - please install the package or restart your session.")
+  }
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
   if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
   if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
@@ -319,6 +334,7 @@ srv_distribution <- function(id,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
 
@@ -327,12 +343,12 @@ srv_distribution <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = attr(data, "join_keys")
+      join_keys = get_join_keys(data)
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -397,7 +413,7 @@ srv_distribution <- function(id,
       )
     })
 
-    # common quosure
+    # common qenv
     common_q <- reactive({
       # Create a private stack for this function only.
       validate({
@@ -419,7 +435,7 @@ srv_distribution <- function(id,
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
 
-      quosure <- teal.code::eval_code(merged$anl_q_r(), "")
+      qenv <- merged$anl_q_r()
 
       if (length(g_var) > 0) {
         validate(
@@ -428,13 +444,12 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
             env = list(g_var = g_var)
-          ),
-          name = "explicit_missing_values_call"
+          )
         )
       }
 
@@ -445,13 +460,12 @@ srv_distribution <- function(id,
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
             env = list(s_var = s_var)
-          ),
-          name = "explicit_missing_values_call"
+          )
         )
       }
 
@@ -471,8 +485,8 @@ srv_distribution <- function(id,
         )
         params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
 
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               params <- as.list(c(dist_param1, dist_param2))
@@ -483,14 +497,13 @@ srv_distribution <- function(id,
               dist_param2 = dist_param2,
               params_names_raw = params_names_raw
             )
-          ),
-          name = "params_call"
+          )
         )
       }
 
       if (length(s_var) == 0 && length(g_var) == 0) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               summary_table <- ANL %>%
@@ -507,12 +520,11 @@ srv_distribution <- function(id,
               dist_var_name = as.name(dist_var),
               roundn = roundn
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       } else {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               strata_vars <- strata_vars_raw
@@ -532,15 +544,14 @@ srv_distribution <- function(id,
               strata_vars_raw = c(g_var, s_var),
               roundn = roundn
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       }
 
-      quosure
+      qenv
     })
 
-    # distplot quosure ----
+    # distplot qenv ----
     dist_q <- eventReactive(
       eventExpr = {
         common_q()
@@ -573,7 +584,7 @@ srv_distribution <- function(id,
 
         validate(need(ggtheme, "Please select a theme."))
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        qenv <- common_q()
 
         m_type <- if (main_type_var == "Density") "..density.." else "..count.."
         m_type2 <- if (main_type_var == "Density") {
@@ -659,13 +670,12 @@ srv_distribution <- function(id,
         }
 
         if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            ),
-            name = "df_params_call"
+            )
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -716,20 +726,19 @@ srv_distribution <- function(id,
         )
 
         teal.code::eval_code(
-          quosure,
+          qenv,
           substitute(
             expr = {
               g <- plot_call
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          ),
-          name = "plot_call"
+          )
         )
       }
     )
 
-    # qqplot quosure ----
+    # qqplot qenv ----
     qq_q <- eventReactive(
       eventExpr = {
         common_q()
@@ -758,7 +767,7 @@ srv_distribution <- function(id,
         validate(need(t_dist, "Please select the theoretical distribution."))
         validate_dist_parameters(t_dist, dist_param1, dist_param2)
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        qenv <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
@@ -812,13 +821,12 @@ srv_distribution <- function(id,
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               df_params <- as.data.frame(append(params, list(name = t_dist))),
               env = list(t_dist = t_dist)
-            ),
-            name = "df_params_call"
+            )
           )
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
@@ -863,20 +871,19 @@ srv_distribution <- function(id,
         )
 
         teal.code::eval_code(
-          quosure,
+          qenv,
           substitute(
             expr = {
               g <- plot_call
               print(g)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          ),
-          name = "plot_call"
+          )
         )
       }
     )
 
-    # test quosure ----
+    # test qenv ----
     test_q <- eventReactive(
       ignoreNULL = FALSE,
       eventExpr = {
@@ -1020,11 +1027,11 @@ srv_distribution <- function(id,
           s_var_name = s_var_name
         )
 
-        quosure <- teal.code::eval_code(common_q(), "")
+        qenv <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = {
                 test_stats <- ANL %>%
@@ -1033,12 +1040,11 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            ),
-            name = "test_stats_call"
+            )
           )
         } else {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = {
                 test_stats <- ANL %>%
@@ -1049,33 +1055,32 @@ srv_distribution <- function(id,
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
-            ),
-            name = "test_stats_call"
+            )
           )
         }
-        quosure
+        qenv
       }
     )
 
     # outputs ----
-    ## building main chunk
+    ## building main qenv
     output_q <- reactive({
       tab <- input$tabs
       req(tab) # tab is NULL upon app launch, hence will crash without this statement
 
-      quosure_final <- common_q()
-      # wrapped in if since test chunk could lead into validate error - we do want to continue
-      test_r_quosure_out <- try(test_q(), silent = TRUE)
-      if (!inherits(test_r_quosure_out, c("try-error", "error"))) {
-        quosure_final <- teal.code::join(quosure_final, test_q())
+      qenv_final <- common_q()
+      # wrapped in if since could lead into validate error - we do want to continue
+      test_r_qenv_out <- try(test_q(), silent = TRUE)
+      if (!inherits(test_r_qenv_out, c("try-error", "error"))) {
+        qenv_final <- teal.code::join(qenv_final, test_q())
       }
 
       if (tab == "Histogram") {
-        quosure_final <- teal.code::join(quosure_final, dist_q())
+        qenv_final <- teal.code::join(qenv_final, dist_q())
       } else if (tab == "QQplot") {
-        quosure_final <- teal.code::join(quosure_final, qq_q())
+        qenv_final <- teal.code::join(qenv_final, qq_q())
       }
-      quosure_final
+      qenv_final
     })
 
 

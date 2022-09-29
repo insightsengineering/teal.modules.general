@@ -57,8 +57,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 tm_outliers <- function(label = "Outliers Module",
@@ -235,6 +235,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
     selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
@@ -250,13 +251,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -283,7 +284,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )]]
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
-      quosure <- merged$anl_q_r()
+      qenv <- merged$anl_q_r()
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -310,13 +311,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       if (length(categorical_var) == 0) {
         shinyjs::hide("split_outliers")
         if (n_outlier_missing() > 0) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
-            ),
-            name = "removing NA entries from ANL"
+            )
           )
         }
       } else {
@@ -338,8 +338,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
         # If there are both string values "NA" and missing values NA, value_choices function should output a warning
         if ("NA" %in% input_catlevels) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = {
                 ANL[[categorical_var]] <- dplyr::if_else( # nolint
@@ -352,33 +352,30 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 categorical_var = categorical_var,
                 categorical_var_name = as.name(categorical_var)
               )
-            ),
-            name = "ANL_character_NA_call"
+            )
           )
         }
 
         if (is_cat_filter_spec && !all(unique(ANL[[categorical_var]]) %in% input_catlevels)) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
               env = list(
                 categorical_var_name = as.name(categorical_var),
                 categorical_var_levels = input_catlevels
               )
-            ),
-            name = "ANL_filter_call"
+            )
           )
         }
 
         if (n_outlier_missing() > 0) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             substitute(
               expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
-            ),
-            name = "ANL_NO_NA_filter_call"
+            )
           )
         }
         shinyjs::show("split_outliers")
@@ -404,8 +401,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         return(as.call(c(x[[1]], lapply(x[-1], remove_pipe_null))))
       }
 
-      quosure <- teal.code::eval_code(
-        quosure,
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = {
             ANL_OUTLIER <- ANL %>% # nolint
@@ -467,13 +464,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             }
           )
         ) %>%
-          remove_pipe_null(),
-        name = "ANL_OUTLIER_call"
+          remove_pipe_null()
       )
 
       if (length(categorical_var) > 0) {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = summary_table_pre <- ANL_OUTLIER %>%
               dplyr::filter(is_outlier_selected) %>%
@@ -513,24 +509,22 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               categorical_var_name = as.name(categorical_var),
               outlier_var_name = as.name(outlier_var)
             )
-          ),
-          name = "summary_table_pre_call_1"
+          )
         )
         # now to handle when user chooses to order based on amount of outliers
         if (order_by_outlier) {
-          quosure <- teal.code::eval_code(
-            quosure,
+          qenv <- teal.code::eval_code(
+            qenv,
             quote(
               summary_table_pre <- summary_table_pre %>%
                 dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
                 dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
-            ),
-            name = "summary_table_pre_call_2"
+            )
           )
         }
 
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               # In order for geom_rug to work properly when reordering takes place inside facet_grid,
@@ -563,18 +557,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               categorical_var = categorical_var,
               categorical_var_name = as.name(categorical_var)
             )
-          ),
-          name = "summary_table_call"
+          )
         )
       }
 
-      if (length(categorical_var) > 0 && nrow(quosure[["ANL_OUTLIER"]]) > 0) {
+      if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
       } else {
         shinyjs::hide("order_by_outlier")
       }
 
-      quosure
+      qenv
     })
     validate(need(outlier_var, "Please select a variable"))
 
@@ -684,10 +677,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme,
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     # density plot
@@ -745,10 +737,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     # Cumulative distribution plot
@@ -756,7 +747,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       ANL <- common_code_q()[["ANL"]] # nolint
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
 
-      quosure <- common_code_q()
+      qenv <- common_code_q()
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -772,7 +763,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
       plot_call <- if (length(categorical_var) == 0) {
         teal.code::eval_code(
-          quosure,
+          qenv,
           substitute(
             expr = {
               ecdf_df <- ANL %>%
@@ -788,13 +779,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 dplyr::filter(!is.na(is_outlier_selected))
             },
             env = list(outlier_var = outlier_var)
-          ),
-          name = "outlier_points_call"
+          )
         )
         plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
-        quosure <- teal.code::eval_code(
-          quosure,
+        qenv <- teal.code::eval_code(
+          qenv,
           substitute(
             expr = {
               all_categories <- lapply(
@@ -816,8 +806,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               outlier_points <- do.call(rbind, all_categories)
             },
             env = list(categorical_var = categorical_var, outlier_var = outlier_var)
-          ),
-          name = "outlier_points_call"
+          )
         )
         plot_call <- substitute(
           expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
@@ -842,7 +831,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       teal.code::eval_code(
-        quosure,
+        qenv,
         substitute(
           expr = g <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
@@ -855,10 +844,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             themes = parsed_ggplot2_args$theme,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
-        ),
-        name = "plot_call"
+        )
       ) %>%
-        teal.code::eval_code(quote(print(g)), name = "print_plot_call")
+        teal.code::eval_code(quote(print(g)))
     })
 
     final_q <- reactive({
@@ -1042,7 +1030,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
 
         display_table$is_outlier_selected <- NULL
-        keys <- attr(data, "join_keys")$get(dataname)[[dataname]]
+        keys <- get_join_keys(data)$get(dataname)[[dataname]]
         datas <- data[[dataname]]()
         dplyr::left_join(
           display_table,

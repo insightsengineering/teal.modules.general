@@ -115,8 +115,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplot <- function(label = "Scatterplot",
                              x,
@@ -141,6 +141,15 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
+  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
+    stop("Cannot load ggpmisc - please install the package or restart your session.")
+  }
+  if (!requireNamespace("ggExtra", quietly = TRUE)) {
+    stop("Cannot load ggExtra - please install the package or restart your session.")
+  }
+  if (!requireNamespace("colourpicker", quietly = TRUE)) {
+    stop("Cannot load colourpicker - please install the package or restart your session.")
+  }
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -374,6 +383,7 @@ srv_g_scatterplot <- function(id,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
@@ -383,13 +393,13 @@ srv_g_scatterplot <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = attr(data, "join_keys"),
+      join_keys = get_join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_quosure(env = data) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -562,7 +572,6 @@ srv_g_scatterplot <- function(id,
         log_x_fn <- input$log_x_base
         plot_q <- teal.code::eval_code(
           object = plot_q,
-          name = "log_x_transformation",
           code = substitute(
             expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
             env = list(
@@ -578,7 +587,6 @@ srv_g_scatterplot <- function(id,
         log_y_fn <- input$log_y_base
         plot_q <- teal.code::eval_code(
           object = plot_q,
-          name = "log_y_transformation",
           code = substitute(
             expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
             env = list(
@@ -715,8 +723,7 @@ srv_g_scatterplot <- function(id,
               substitute(
                 expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-              ),
-              name = "filter_ANL_call"
+              )
             )
           }
           rhs_formula <- substitute(
@@ -819,8 +826,8 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
 
-      teal.code::eval_code(plot_q, plot_call, name = "plot_call") %>%
-        teal.code::eval_code(quote(print(p)), name = "print_call")
+      teal.code::eval_code(plot_q, plot_call) %>%
+        teal.code::eval_code(quote(print(p)))
     })
 
     plot_r <- reactive(output_q()[["p"]])
