@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.14.9021
+# teal.modules.general 0.2.14.9022
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
