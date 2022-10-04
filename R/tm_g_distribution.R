@@ -1190,8 +1190,8 @@ srv_distribution <- function(id,
     if (with_reporter) {
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Association Plot")
-        card$append_text("Association Plot", "header2")
+        card$set_name("Distribution Plot")
+        card$append_text("Distribution Plot", "header2")
         card$append_fs(datasets$get_filter_state())
         card$append_text("Plot", "header3")
         if (input$tabs == "Histogram") {
