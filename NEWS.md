@@ -2,12 +2,14 @@
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
+* Implemented `nestcolor` in the examples, refactored `tm_a_pca` and `tm_missing_data` to allow using `nestcolor`.
 * Added log transformation options to `tm_g_scatterplot`.
 * Added `server_rendering` flag to `tm_data_table` to control whether the table is rendered server or client side.
 
 ### Bug fixes
-* Fixed an overflow for very wide `tm_a_pca` tables.
-* Fixed the join type functionality in the `tm_t_crosstable`.
+* Fixed the overflow of very wide `tm_a_pca` tables.
+* Fixed the join type functionality in `tm_t_crosstable`.
+* Fixed a bug in `tm_missing_data` when selecting only variables with missings.
 
 ### Miscellaneous
 * Moved packages only used in one module from `Imports` to `Suggests` in the `DESCRIPTION` file.
@@ -21,7 +23,6 @@
 * Output integers without decimal places when selecting points in `tm_g_scatterplot`.
 * Improved the names of the code chunks shown in `Debug Info`.
 * Improved a validation message when the number of regressors is too big in `tm_a_regression.R`.
-* Implemented `nestcolor` in examples, refactored `tm_a_pca` and `tm_missing_data` to allow use of `nestcolor`.
 
 ### Bug fixes
 * Fixed a wrong validation in `tm_a_pca`.
