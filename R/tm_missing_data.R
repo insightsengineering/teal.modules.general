@@ -1223,8 +1223,9 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         card <- teal.reporter::TealReportCard$new()
         sum_type <- input$summary_type
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
-        card$set_name(paste0("Missing Data - ", sum_type))
-        card$append_text(title, "header2")
+        title_dataname <- paste(title, dataname, sep = " - ")
+        card$set_name(paste("Missing Data", sum_type, dataname, sep = " - "))
+        card$append_text(title_dataname, "header2")
         card$append_fs(datasets$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
