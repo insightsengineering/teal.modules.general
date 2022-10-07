@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage line-rate="0.0233537980016853" branch-rate="0" lines-covered="194" lines-valid="8307" branches-covered="0" branches-valid="0" complexity="0" version="3.6.1" timestamp="2022-10-06 11:11:39">
+<coverage line-rate="0.0233509870004815" branch-rate="0" lines-covered="194" lines-valid="8308" branches-covered="0" branches-valid="0" complexity="0" version="3.6.1" timestamp="2022-10-07 14:06:46">
   <sources/>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0233537980016853" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0233509870004815" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -3846,7 +3846,7 @@
             <line number="241" hits="0" branch="false"/>
           </lines>
         </class>
-        <class name="tm_front_page.R" filename="R/tm_front_page.R" line-rate="0.0894308943089431" branch-rate="0" complexity="0">
+        <class name="tm_front_page.R" filename="R/tm_front_page.R" line-rate="0.0887096774193548" branch-rate="0" complexity="0">
           <methods>
             <method name="tm_front_page" signature="" line-rate="0" branch-rate="0">
               <lines>
@@ -3972,24 +3972,24 @@
                 <line number="188" hits="0" branch="false"/>
                 <line number="189" hits="0" branch="false"/>
                 <line number="190" hits="0" branch="false"/>
-                <line number="192" hits="0" branch="false"/>
+                <line number="191" hits="0" branch="false"/>
                 <line number="193" hits="0" branch="false"/>
                 <line number="194" hits="0" branch="false"/>
                 <line number="195" hits="0" branch="false"/>
-                <line number="197" hits="0" branch="false"/>
+                <line number="196" hits="0" branch="false"/>
                 <line number="198" hits="0" branch="false"/>
                 <line number="199" hits="0" branch="false"/>
                 <line number="200" hits="0" branch="false"/>
                 <line number="201" hits="0" branch="false"/>
                 <line number="202" hits="0" branch="false"/>
+                <line number="203" hits="0" branch="false"/>
               </lines>
             </method>
             <method name="convert_metadata_to_dataframe" signature="" line-rate="1" branch-rate="0">
               <lines>
-                <line number="209" hits="4" branch="false"/>
                 <line number="210" hits="4" branch="false"/>
-                <line number="211" hits="2" branch="false"/>
-                <line number="212" hits="4" branch="false"/>
+                <line number="211" hits="4" branch="false"/>
+                <line number="212" hits="2" branch="false"/>
                 <line number="213" hits="4" branch="false"/>
                 <line number="214" hits="4" branch="false"/>
                 <line number="215" hits="4" branch="false"/>
@@ -3997,6 +3997,7 @@
                 <line number="217" hits="4" branch="false"/>
                 <line number="218" hits="4" branch="false"/>
                 <line number="219" hits="4" branch="false"/>
+                <line number="220" hits="4" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -4103,20 +4104,20 @@
             <line number="188" hits="0" branch="false"/>
             <line number="189" hits="0" branch="false"/>
             <line number="190" hits="0" branch="false"/>
-            <line number="192" hits="0" branch="false"/>
+            <line number="191" hits="0" branch="false"/>
             <line number="193" hits="0" branch="false"/>
             <line number="194" hits="0" branch="false"/>
             <line number="195" hits="0" branch="false"/>
-            <line number="197" hits="0" branch="false"/>
+            <line number="196" hits="0" branch="false"/>
             <line number="198" hits="0" branch="false"/>
             <line number="199" hits="0" branch="false"/>
             <line number="200" hits="0" branch="false"/>
             <line number="201" hits="0" branch="false"/>
             <line number="202" hits="0" branch="false"/>
-            <line number="209" hits="4" branch="false"/>
+            <line number="203" hits="0" branch="false"/>
             <line number="210" hits="4" branch="false"/>
-            <line number="211" hits="2" branch="false"/>
-            <line number="212" hits="4" branch="false"/>
+            <line number="211" hits="4" branch="false"/>
+            <line number="212" hits="2" branch="false"/>
             <line number="213" hits="4" branch="false"/>
             <line number="214" hits="4" branch="false"/>
             <line number="215" hits="4" branch="false"/>
@@ -4124,6 +4125,7 @@
             <line number="217" hits="4" branch="false"/>
             <line number="218" hits="4" branch="false"/>
             <line number="219" hits="4" branch="false"/>
+            <line number="220" hits="4" branch="false"/>
           </lines>
         </class>
         <class name="tm_g_association.R" filename="R/tm_g_association.R" line-rate="0" branch-rate="0" complexity="0">
