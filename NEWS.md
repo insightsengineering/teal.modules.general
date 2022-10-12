@@ -10,6 +10,7 @@
 * Fixed the overflow of very wide `tm_a_pca` tables.
 * Fixed the join type functionality in `tm_t_crosstable`.
 * Fixed a bug in `tm_missing_data` when selecting only variables with missings.
+* Fixed a bug in `tm_missing_data` when using `any_na`.
 
 ### Miscellaneous
 * Moved packages only used in one module from `Imports` to `Suggests` in the `DESCRIPTION` file.
