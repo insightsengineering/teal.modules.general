@@ -537,7 +537,7 @@ srv_missing_data <- function(id, datasets, reporter, dataname, plot_height, plot
         summary_stack_push(
           id = "ANL_na_column_call",
           expression = substitute(
-            expr = AN[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
             env = list(new_col_name = new_col_name)
           )
         )
