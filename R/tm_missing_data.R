@@ -130,7 +130,7 @@ ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL
             datanames,
             function(x) {
               conditionalPanel(
-                sprintf("$(\"#%s > li.active\").text().trim() == \"%s\"", ns("dataname_tab"), x),
+                is_tab_active_js(ns("dataname_tab"), x),
                 encoding_missing_data(
                   id = ns(x),
                   summary_per_patient = if_subject_plot,
@@ -257,7 +257,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       class = "mb-4"
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"Summary\"", ns("summary_type")),
+      is_tab_active_js(ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
         div(
@@ -295,11 +295,11 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       }
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"Combinations\"", ns("summary_type")),
+      is_tab_active_js(ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff"))
     ),
     conditionalPanel(
-      sprintf("$(\"#%s > li.active\").text().trim() == \"By Variable Levels\"", ns("summary_type")),
+      is_tab_active_js(ns("summary_type"), "By Variable Levels"),
       tagList(
         uiOutput(ns("group_by_var_ui")),
         uiOutput(ns("group_by_vals_ui")),
@@ -1154,8 +1154,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         card <- teal.reporter::TealReportCard$new()
         sum_type <- input$summary_type
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
-        card$set_name(paste0("Missing Data - ", sum_type))
-        card$append_text(title, "header2")
+        title_dataname <- paste(title, dataname, sep = " - ")
+        card$set_name(paste("Missing Data", sum_type, dataname, sep = " - "))
+        card$append_text(title_dataname, "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         if (sum_type == "Summary") {
           card$append_text("Plot", "header3")
