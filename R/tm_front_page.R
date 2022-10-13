@@ -185,7 +185,8 @@ srv_front_page <- function(id, data, tables, show_metadata) {
           modalDialog(
             title = "Metadata",
             dataTableOutput(ns("metadata_table")),
-            size = "l"
+            size = "l",
+            easyClose = TRUE
           )
         )
       )
