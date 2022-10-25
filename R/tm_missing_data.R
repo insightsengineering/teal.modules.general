@@ -1139,7 +1139,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       id = "warning",
       verbatim_content = reactive(teal.code::get_warnings(final_q())),
       title = "Warning",
-      disabled = reactive(is.null(final_q()) || is.null(teal.code::get_warnings(final_q())))
+      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
     )
 
     teal.widgets::verbatim_popup_srv(
