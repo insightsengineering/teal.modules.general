@@ -1,11 +1,11 @@
 # teal.modules.general 0.2.15.9000
 
-# teal.modules.general 0.2.15
-
 ### Breaking changes
 
 * Replaced `chunks` with simpler `qenv` class.
 * Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelAPI`).
+
+# teal.modules.general 0.2.15
 
 ### Enhancements
 * Added the `teal.reporter` functionality to all modules.
