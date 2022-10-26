@@ -335,11 +335,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
+
     prev_group_by_var <- reactiveVal("")
 
     data_r <- data[[dataname]]
 
     data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
+
     data_parent_keys <- reactive({
       keys <- get_join_keys(data)$get(dataname)
       if ("ADSL" %in% names(keys)) {
@@ -1123,6 +1125,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     )
 
     final_q <- reactive({
+      req(input$summary_type)
       sum_type <- input$summary_type
       if (sum_type == "Summary") {
         summary_plot_q()
