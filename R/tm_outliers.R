@@ -853,6 +853,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     final_q <- reactive({
+      req(input$tabs)
       tab_type <- input$tabs
       if (tab_type == "Boxplot") {
         boxplot_q()
