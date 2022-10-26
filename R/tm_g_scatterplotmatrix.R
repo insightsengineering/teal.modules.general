@@ -189,7 +189,6 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
     # plot
     output_q <- reactive({
       qenv <- merged$anl_q_r()
-
       ANL <- qenv[["ANL"]] # nolint
 
       cols_names <- merged$anl_input_r()$columns_source$variables
@@ -199,7 +198,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       cor_method <- input$cor_method # nolint
       cor_na_omit <- input$cor_na_omit # nolint
 
-      cor_na_action <- if (cor_na_omit) {
+      cor_na_action <- if (isTruthy(cor_na_omit)) {
         "na.omit"
       } else {
         "na.fail"
