@@ -27,8 +27,8 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{parent_dataname}{(\code{character}) If this dataname exists in then "the by subject"graph is displayed.
-For CDISC data. In non CDISC data this can be ignored.}
+\item{parent_dataname}{(\code{character(1)}) If this dataname exists in then "the by subject"graph is displayed.
+For CDISC data. In non CDISC data this can be ignored. Defaults to \code{"ADSL"}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.

@@ -9,11 +9,11 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character`) If this dataname exists in `datasets_selected`
+#' @param parent_dataname (`character(1)`) If this dataname exists in `datasets_selected`
 #'   then an extra checkbox will be shown to allow users to not show variables in other datasets
 #'   which exist in this dataname.
 #'   This is typically used to remove `ADSL` columns in CDISC data. In non CDISC data this
-#'   can be ignored.
+#'   can be ignored. Defaults to `"ADSL"`.
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
