@@ -7,6 +7,10 @@
 * Replaced `chunks` with simpler `qenv` class.
 * Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (list of reactive datasets) and `filter_panel_api` (`FilterPanelAPI`).
 
+### Enhancements
+
+* Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
+
 # teal.modules.general 0.2.15
 
 ### Enhancements
@@ -14,7 +18,6 @@
 * Implemented `nestcolor` in the examples, refactored `tm_a_pca` and `tm_missing_data` to allow using `nestcolor`.
 * Added log transformation options to `tm_g_scatterplot`.
 * Added `server_rendering` flag to `tm_data_table` to control whether the table is rendered server or client side.
-* Added `parent_dataname` argument to `tm_variable_browser` to allow specification of parent dataset for this module.
 
 ### Bug fixes
 * Fixed the overflow of very wide `tm_a_pca` tables.
