@@ -925,7 +925,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       validate(
         need(
           is.null(group_var) ||
-            nrow(unique(anl[, group_var, drop = FALSE])) < 100,
+            length(unique(anl[[group_var]])) < 100,
           "Please select group-by variable with fewer than 100 unique values"
         )
       )
