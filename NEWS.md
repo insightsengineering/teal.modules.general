@@ -2,6 +2,15 @@
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 
+### Breaking changes
+
+* Replaced `chunks` with simpler `qenv` class.
+* Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (`tdata` object) and `filter_panel_api` (`FilterPanelAPI`).
+
+### Enhancements
+
+* Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
+
 # teal.modules.general 0.2.15
 
 ### Enhancements

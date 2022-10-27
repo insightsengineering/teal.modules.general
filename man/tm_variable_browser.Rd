@@ -7,6 +7,7 @@
 tm_variable_browser(
   label = "Variable Browser",
   datasets_selected = character(0),
+  parent_dataname = "ADSL",
   pre_output = NULL,
   post_output = NULL,
   ggplot2_args = teal.widgets::ggplot2_args()
@@ -18,6 +19,12 @@ tm_variable_browser(
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
 If vector of length zero (default) then all datasets are shown.}
+
+\item{parent_dataname}{(\code{character(1)}) If this dataname exists in \code{datasets_selected}
+then an extra checkbox will be shown to allow users to not show variables in other datasets
+which exist in this dataname.
+This is typically used to remove \code{ADSL} columns in CDISC data. In non CDISC data this
+can be ignored. Defaults to \code{"ADSL"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
@@ -61,7 +68,7 @@ app <- init(
     )
   )
 )
-\dontrun{
-shinyApp(app$ui, app$server)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
 }
 }

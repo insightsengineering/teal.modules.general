@@ -24,7 +24,7 @@ tm_a_pca(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
 
 \item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Datasets used to compute PCA.}
+Columns used to compute PCA.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -86,7 +86,7 @@ app <- teal::init(
   modules = modules(
     tm_a_pca(
       "PCA",
-      data_extract_spec(
+      dat = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
           choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
@@ -101,8 +101,8 @@ app <- teal::init(
     )
   )
 )
-\dontrun{
-shinyApp(app$ui, app$server)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
 }
 
 }

@@ -115,8 +115,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplot <- function(label = "Scatterplot",
                              x,
@@ -360,7 +360,10 @@ ui_g_scatterplot <- function(id, ...) {
           )
         )
       ),
-      forms = teal::get_rcode_ui(ns("rcode")),
+      forms = tagList(
+        teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings"),
+        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+      ),
       pre_output = args$pre_output,
       post_output = args$post_output
     )
@@ -368,8 +371,9 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 srv_g_scatterplot <- function(id,
-                              datasets,
+                              data,
                               reporter,
+                              filter_panel_api,
                               x,
                               y,
                               color_by,
@@ -381,36 +385,36 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
     )
-    data_extract <- data_extract[!vapply(data_extract, is.null, logical(1))]
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
 
-    reactive_select_input <- reactive({
-      selectors <- selector_list()
-      extract_names <- names(selectors)
-      for (extract in extract_names) {
-        if (is.null(selectors[[extract]]) || length(selectors[[extract]]()$select) == 0) {
-          selectors <- selectors[-which(names(selectors) == extract)]
-        }
-      }
-      selectors
-    })
-
-    merged_data <- teal.transform::data_merge_srv(
-      selector_list = reactive_select_input,
-      datasets = datasets,
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      join_keys = get_join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
+
     trend_line_is_applicable <- reactive({
-      ANL <- merged_data()$data() # nolint
-      x_var <- as.vector(merged_data()$columns_source$x)
-      y_var <- as.vector(merged_data()$columns_source$y)
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+      y_var <- as.vector(merged$anl_input_r()$columns_source$y)
       length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
     })
 
@@ -421,12 +425,9 @@ srv_g_scatterplot <- function(id,
 
     if (!is.null(color_by)) {
       observeEvent(
-        eventExpr = {
-          req(length(reactive_select_input()) > 0)
-          merged_data()$columns_source$color_by
-        },
+        eventExpr = merged$anl_input_r()$columns_source$color_by,
         handlerExpr = {
-          color_by_var <- as.vector(merged_data()$columns_source$color_by)
+          color_by_var <- as.vector(merged$anl_input_r()$columns_source$color_by)
           if (length(color_by_var) > 0) {
             shinyjs::hide("color")
           } else {
@@ -438,9 +439,9 @@ srv_g_scatterplot <- function(id,
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
-        ANL <- merged_data()$data() # nolint
-        x_var <- as.vector(merged_data()$columns_source$x)
-        y_var <- as.vector(merged_data()$columns_source$y)
+        ANL <- merged$anl_q_r()[["ANL"]] # nolint
+        x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+        y_var <- as.vector(merged$anl_input_r()$columns_source$y)
         if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
           shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
         }
@@ -449,13 +450,10 @@ srv_g_scatterplot <- function(id,
 
 
     observeEvent(
-      eventExpr = {
-        req(length(reactive_select_input()) > 0)
-        merged_data()$columns_source$col_facet
-        merged_data()$columns_source$row_facet
-      }, handlerExpr = {
-        if (length(merged_data()$columns_source$col_facet) == 0 &&
-          length(merged_data()$columns_source$row_facet) == 0) {
+      eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
+      handlerExpr = {
+        if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
+          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -463,30 +461,22 @@ srv_g_scatterplot <- function(id,
       }
     )
 
-    plot_r <- reactive({
-      validate({
-        need(all(c("x", "y") %in% names(reactive_select_input())), "Please select X and Y variables")
-      })
+    output_q <- reactive({
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data())
-
-      ANL <- merged_data()$data() # nolint
-      teal::validate_has_data(ANL, 10)
-
-      x_var <- as.vector(merged_data()$columns_source$x)
-      y_var <- as.vector(merged_data()$columns_source$y)
-      color_by_var <- as.vector(merged_data()$columns_source$color_by)
-      size_by_var <- as.vector(merged_data()$columns_source$size_by)
-      row_facet_name <- if (length(merged_data()$columns_source$row_facet) == 0) {
+      x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+      y_var <- as.vector(merged$anl_input_r()$columns_source$y)
+      color_by_var <- as.vector(merged$anl_input_r()$columns_source$color_by)
+      size_by_var <- as.vector(merged$anl_input_r()$columns_source$size_by)
+      row_facet_name <- if (length(merged$anl_input_r()$columns_source$row_facet) == 0) {
         character(0)
       } else {
-        as.vector(merged_data()$columns_source$row_facet)
+        as.vector(merged$anl_input_r()$columns_source$row_facet)
       }
-      col_facet_name <- if (length(merged_data()$columns_source$col_facet) == 0) {
+      col_facet_name <- if (length(merged$anl_input_r()$columns_source$col_facet) == 0) {
         character(0)
       } else {
-        as.vector(merged_data()$columns_source$col_facet)
+        as.vector(merged$anl_input_r()$columns_source$col_facet)
       }
       alpha <- input$alpha # nolint
       size <- input$size # nolint
@@ -532,6 +522,8 @@ srv_g_scatterplot <- function(id,
         ))
       }
 
+      teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+
       if (log_x) {
         validate(
           need(
@@ -552,8 +544,6 @@ srv_g_scatterplot <- function(id,
           )
         )
       }
-
-      teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
       facet_cl <- facet_ggplot_call(
         row_facet_name,
@@ -579,6 +569,38 @@ srv_g_scatterplot <- function(id,
         size
       }
 
+      plot_q <- merged$anl_q_r()
+
+      if (log_x) {
+        log_x_fn <- input$log_x_base
+        plot_q <- teal.code::eval_code(
+          object = plot_q,
+          code = substitute(
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
+            env = list(
+              x_var = x_var,
+              log_x_fn = as.name(log_x_fn),
+              log_x_var = paste0(log_x_fn, "_", x_var)
+            )
+          )
+        )
+      }
+
+      if (log_y) {
+        log_y_fn <- input$log_y_base
+        plot_q <- teal.code::eval_code(
+          object = plot_q,
+          code = substitute(
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
+            env = list(
+              y_var = y_var,
+              log_y_fn = as.name(log_y_fn),
+              log_y_var = paste0(log_y_fn, "_", y_var)
+            )
+          )
+        )
+      }
+
       pre_pro_anl <- if (input$show_count) {
         paste0(
           "ANL %>% dplyr::group_by(",
@@ -598,41 +620,11 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
-      if (log_x) {
-        log_x_fn <- input$log_x_base
-        teal.code::chunks_push(
-          id = "log_x_transformation",
-          expression = substitute(
-            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
-            env = list(
-              x_var = x_var,
-              log_x_fn = as.name(log_x_fn),
-              log_x_var = paste0(log_x_fn, "_", x_var)
-            )
-          )
-        )
-      }
-
-      if (log_y) {
-        log_y_fn <- input$log_y_base
-        teal.code::chunks_push(
-          id = "log_y_transformation",
-          expression = substitute(
-            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
-            env = list(
-              y_var = y_var,
-              log_y_fn = as.name(log_y_fn),
-              log_y_var = paste0(log_y_fn, "_", y_var)
-            )
-          )
-        )
-      }
-
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
           expr = plot_call +
-            aes(x = x_name, y = y_name) +
-            geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
+            ggplot2::aes(x = x_name, y = y_name) +
+            ggplot2::geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value, color = color_value),
           env = list(
             plot_call = plot_call,
             x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
@@ -646,8 +638,8 @@ srv_g_scatterplot <- function(id,
       } else {
         substitute(
           expr = plot_call +
-            aes(x = x_name, y = y_name, color = color_by_var_name) +
-            geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
+            ggplot2::aes(x = x_name, y = y_name, color = color_by_var_name) +
+            ggplot2::geom_point(alpha = alpha_value, size = point_sizes, shape = shape_value),
           env = list(
             plot_call = plot_call,
             x_name = if (log_x) as.name(paste0(log_x_fn, "_", x_var)) else as.name(x_var),
@@ -729,9 +721,9 @@ srv_g_scatterplot <- function(id,
           shinyjs::show("show_form")
           shinyjs::show("show_r2")
           if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
-            teal.code::chunks_push(
-              id = "filter_ANL_call",
-              expression = substitute(
+            plot_q <- teal.code::eval_code(
+              plot_q,
+              substitute(
                 expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
               )
@@ -750,7 +742,7 @@ srv_g_scatterplot <- function(id,
             shinyjs::hide("label_size")
           }
           plot_call <- substitute(
-            expr = plot_call + geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
+            expr = plot_call + ggplot2::geom_smooth(formula = rhs_formula, se = TRUE, level = ci, method = "lm"),
             env = list(plot_call = plot_call, rhs_formula = rhs_formula, ci = ci)
           )
         }
@@ -836,18 +828,15 @@ srv_g_scatterplot <- function(id,
       }
 
       plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
-      teal.code::chunks_push(id = "plot_call", expression = plot_call)
 
-      # explicitly calling print on the plot inside the chunk evaluates
-      # the ggplot call and therefore catches errors
-      plot_print_call <- quote(print(p))
-      teal.code::chunks_push(id = "print_plot_call", expression = plot_print_call)
-      teal.code::chunks_safe_eval()
-      teal.code::chunks_get_var(var = "p")
+      teal.code::eval_code(plot_q, plot_call) %>%
+        teal.code::eval_code(quote(print(p)))
     })
 
+    plot_r <- reactive(output_q()[["p"]])
+
     # Insert the plot into a plot_with_settings module from teal.widgets
-    brush <- teal.widgets::plot_with_settings_srv(
+    pws <- teal.widgets::plot_with_settings_srv(
       id = "scatter_plot",
       plot_r = plot_r,
       height = plot_height,
@@ -856,17 +845,13 @@ srv_g_scatterplot <- function(id,
     )
 
     output$data_table <- DT::renderDataTable({
-      # if not dependent on plot_r() initially it tries to print a table
-      # before chunks are populated with the correct ANL
-      # in plot_r which ends up in a bunch of warnings that ANL is not in chunks
-      isolate(plot_r())
-      plot_brush <- brush$brush()
+      plot_brush <- pws$brush()
 
       if (!is.null(plot_brush)) {
         validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
       }
 
-      merged_data <- isolate(teal.code::chunks_get_var("ANL"))
+      merged_data <- isolate(output_q()[["ANL"]])
 
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
       numeric_cols <- names(brushed_df)[
@@ -887,12 +872,17 @@ srv_g_scatterplot <- function(id,
       }
     })
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
+    )
+
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(x, y, color_by, size_by, row_facet, col_facet)),
-      modal_title = "R Code for a scatterplot",
-      code_header = "Scatterplot"
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "R Code for scatterplot"
     )
 
     ### REPORTER
@@ -901,19 +891,14 @@ srv_g_scatterplot <- function(id,
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Scatter Plot")
         card$append_text("Scatter Plot", "header2")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = brush$dim())
+        card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
