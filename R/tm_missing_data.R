@@ -323,7 +323,10 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       )
     ),
     hr(),
-    teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
   )
 }
 
@@ -332,11 +335,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
+
     prev_group_by_var <- reactiveVal("")
 
     data_r <- data[[dataname]]
 
     data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
+
     data_parent_keys <- reactive({
       keys <- get_join_keys(data)$get(dataname)
       if ("ADSL" %in% names(keys)) {
@@ -349,7 +354,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     common_code_q <- reactive({
       group_var <- input$group_by_var
       anl <- data_r()
-      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code(data))
+      qenv <- teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data))
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         teal.code::eval_code(
@@ -1120,6 +1125,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     )
 
     final_q <- reactive({
+      req(input$summary_type)
       sum_type <- input$summary_type
       if (sum_type == "Summary") {
         summary_plot_q()
@@ -1131,6 +1137,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         by_subject_plot_q()
       }
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(final_q())),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
+    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

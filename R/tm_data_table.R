@@ -249,11 +249,8 @@ srv_data_table <- function(id,
                            dt_args,
                            dt_options,
                            server_rendering) {
-
   moduleServer(id, function(input, output, session) {
-
     output$data_table <- DT::renderDataTable(server = server_rendering, {
-
       variables <- input$variables
 
       validate(need(variables, "need valid variable names"))

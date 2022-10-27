@@ -360,7 +360,10 @@ ui_g_scatterplot <- function(id, ...) {
           )
         )
       ),
-      forms = teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
+      forms = tagList(
+        teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings"),
+        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+      ),
       pre_output = args$pre_output,
       post_output = args$post_output
     )
@@ -399,7 +402,7 @@ srv_g_scatterplot <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code(data)) %>%
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -868,6 +871,13 @@ srv_g_scatterplot <- function(id,
         DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
       }
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
+    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
