@@ -20,11 +20,11 @@ tm_variable_browser(
 shown and in what order. Names in the vector have to correspond with datasets names.
 If vector of length zero (default) then all datasets are shown.}
 
-\item{parent_dataname}{(\code{character}) If this dataname exists in \code{datasets_selected}
+\item{parent_dataname}{(\code{character(1)}) If this dataname exists in \code{datasets_selected}
 then an extra checkbox will be shown to allow users to not show variables in other datasets
 which exist in this dataname.
 This is typically used to remove \code{ADSL} columns in CDISC data. In non CDISC data this
-can be ignored.}
+can be ignored. Defaults to \code{"ADSL"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}

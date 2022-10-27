@@ -4,7 +4,8 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#'
+#' @param parent_dataname (`character(1)`) If this dataname exists in then "the by subject"graph is displayed.
+#'   For CDISC data. In non CDISC data this can be ignored. Defaults to `"ADSL"`.
 #' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
@@ -44,6 +45,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            parent_dataname = "ADSL",
                             ggtheme = c(
                               "classic", "gray", "bw", "linedraw",
                               "light", "dark", "minimal", "void", "test"
@@ -64,6 +66,7 @@ tm_missing_data <- function(label = "Missing data",
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_string(label)
+  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -79,18 +82,24 @@ tm_missing_data <- function(label = "Missing data",
   module(
     label,
     server = srv_page_missing_data,
-    server_args = list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
+    server_args = list(
+      parent_dataname = parent_dataname, plot_height = plot_height,
+      plot_width = plot_width, ggplot2_args = ggplot2_args
+    ),
     ui = ui_page_missing_data,
     filters = "all",
-    ui_args = list(pre_output = pre_output, post_output = post_output, ggtheme = ggtheme)
+    ui_args = list(
+      parent_dataname = parent_dataname, pre_output = pre_output,
+      post_output = post_output, ggtheme = ggtheme
+    )
   )
 }
 
-ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL, ggtheme) {
+ui_page_missing_data <- function(id, data, parent_dataname, pre_output = NULL, post_output = NULL, ggtheme) {
   ns <- NS(id)
   datanames <- names(data)
 
-  if_subject_plot <- !is.null(get_join_keys(data))
+  if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
 
   shiny::tagList(
     include_css_files("custom"),
@@ -148,7 +157,8 @@ ui_page_missing_data <- function(id, data, pre_output = NULL, post_output = NULL
   )
 }
 
-srv_page_missing_data <- function(id, data, reporter, filter_panel_api, plot_height, plot_width, ggplot2_args) {
+srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
+                                  plot_height, plot_width, ggplot2_args) {
   moduleServer(id, function(input, output, session) {
     lapply(
       names(data),
@@ -159,6 +169,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, plot_hei
           reporter = reporter,
           filter_panel_api = filter_panel_api,
           dataname = x,
+          parent_dataname = parent_dataname,
           plot_height = plot_height,
           plot_width = plot_width,
           ggplot2_args = ggplot2_args
@@ -330,7 +341,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
-srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plot_height, plot_width, ggplot2_args) {
+srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
+                             plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
@@ -343,11 +355,15 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
     data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
 
     data_parent_keys <- reactive({
-      keys <- get_join_keys(data)$get(dataname)
-      if ("ADSL" %in% names(keys)) {
-        keys[["ADSL"]]
+      if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
+        keys <- get_join_keys(data)$get(dataname)
+        if (parent_dataname %in% names(keys)) {
+          keys[[parent_dataname]]
+        } else {
+          keys[[dataname]]
+        }
       } else {
-        keys[[dataname]]
+        NULL
       }
     })
 
@@ -360,7 +376,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
         teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- anl_name[, selected_vars], # nolint
+            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
@@ -376,7 +392,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
           qenv,
           substitute(
             expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
-            env = list(group_var = group_var, anl_name = as.name(anl_name))
+            env = list(group_var = group_var, anl_name = as.name(dataname))
           )
         )
       }
@@ -910,11 +926,10 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       }
 
       group_var <- input$group_by_var
-
       validate(
         need(
           is.null(group_var) ||
-            nrow(unique(anl[, group_var])) < 100,
+            length(unique(anl[[group_var]])) < 100,
           "Please select group-by variable with fewer than 100 unique values"
         )
       )
@@ -939,6 +954,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, plo
       qenv <- common_code_q()
 
       if (!is.null(group_var)) {
+        validate(need(length(variables_select) > 1 || variables_select != group_var,
+                      "If only one variable is selected it must not be the grouping variable."))
+
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
