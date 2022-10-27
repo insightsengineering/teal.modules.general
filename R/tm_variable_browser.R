@@ -195,7 +195,6 @@ srv_variable_browser <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     # if there are < this number of unique records then a numeric
     # variable can be treated as a factor and all factors with < this groups
     # have their values plotted
@@ -763,7 +762,6 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 
     DT::datatable(summary, rownames = FALSE, options = list(dom = "<t>", pageLength = dt_rows))
   } else if (is.factor(x) || is.character(x) || (is.numeric(x) && numeric_as_factor) || is.logical(x)) {
-
     # make sure factor is ordered numeric
     if (is.numeric(x)) {
       x <- factor(x, levels = sort(unique(x)))
@@ -1120,7 +1118,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
         }
       }
 
-      if (length(parent_dataname) > 0 ){
+      if (length(parent_dataname) > 0) {
         df_vars <- get_vars_df(input, dataset_name, parent_dataname, data)
         df <- df[df_vars]
       }

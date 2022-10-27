@@ -333,7 +333,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       id = "warning",
       verbatim_content = reactive(teal.code::get_warnings(output_q())),
       title = "Warning",
-      disabled =reactive(is.null(teal.code::get_warnings(output_q())))
+      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
     )
 
     teal.widgets::verbatim_popup_srv(
@@ -407,11 +407,12 @@ get_scatterplotmatrix_stats <- function(x, y,
     if (anyNA(stat)) {
       return("NA")
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(c(
-        paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-        paste0("P:", round(stat$p.value, round_pval))
-      ),
-      collapse = "\n"
+      return(paste(
+        c(
+          paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
+          paste0("P:", round(stat$p.value, round_pval))
+        ),
+        collapse = "\n"
       ))
     } else {
       stop("function not supported")

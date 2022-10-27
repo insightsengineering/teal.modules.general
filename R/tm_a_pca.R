@@ -29,11 +29,12 @@
 #' ADSL <- synthetic_cdisc_data("latest")$adsl
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(cdisc_dataset(
-#'     "ADSL", ADSL,
-#'     code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
-#'   ),
-#'   check = TRUE
+#'   data = cdisc_data(
+#'     cdisc_dataset(
+#'       "ADSL", ADSL,
+#'       code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+#'     ),
+#'     check = TRUE
 #'   ),
 #'   modules = modules(
 #'     tm_a_pca(

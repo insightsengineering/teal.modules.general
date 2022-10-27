@@ -347,7 +347,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     prev_group_by_var <- reactiveVal("")
 
     data_r <- data[[dataname]]
@@ -954,8 +953,10 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       qenv <- common_code_q()
 
       if (!is.null(group_var)) {
-        validate(need(length(variables_select) > 1 || variables_select != group_var,
-                      "If only one variable is selected it must not be the grouping variable."))
+        validate(need(
+          length(variables_select) > 1 || variables_select != group_var,
+          "If only one variable is selected it must not be the grouping variable."
+        ))
 
         qenv <- teal.code::eval_code(
           qenv,
