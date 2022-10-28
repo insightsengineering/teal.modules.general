@@ -1052,7 +1052,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::transmute(
                 id = dplyr::row_number(),
                 number_NA = apply(., 1, sum),
-                sha = apply(., 1, digest::sha1)
+                sha = apply(., 1, rlang::hash)
               ) %>%
               dplyr::arrange(dplyr::desc(number_NA), sha) %>%
               getElement(name = "id")

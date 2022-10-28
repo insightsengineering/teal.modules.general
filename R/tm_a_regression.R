@@ -270,7 +270,7 @@ srv_a_regression <- function(id,
 
     # sets chunk object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      ANL <- anl_merged_q()[["ANL"]]
+      ANL <- anl_merged_q()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 10)
 
       # validation
