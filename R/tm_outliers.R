@@ -764,8 +764,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           stat_ecdf(),
         env = list(outlier_var_name = as.name(outlier_var))
       )
-      plot_call <- if (length(categorical_var) == 0) {
-        teal.code::eval_code(
+      if (length(categorical_var) == 0) {
+        qenv <- teal.code::eval_code(
           qenv,
           substitute(
             expr = {
@@ -784,7 +784,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             env = list(outlier_var = outlier_var)
           )
         )
-        plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
         qenv <- teal.code::eval_code(
           qenv,
