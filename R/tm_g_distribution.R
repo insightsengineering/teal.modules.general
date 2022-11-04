@@ -1079,10 +1079,12 @@ srv_distribution <- function(id,
         qenv_final <- teal.code::join(qenv_final, test_q())
       }
 
-      if (tab == "Histogram") {
-        qenv_final <- teal.code::join(qenv_final, dist_q())
+      qenv_final <- if (tab == "Histogram") {
+        req(dist_q())
+        teal.code::join(qenv_final, dist_q())
       } else if (tab == "QQplot") {
-        qenv_final <- teal.code::join(qenv_final, qq_q())
+        req(qq_q())
+        teal.code::join(qenv_final, qq_q())
       }
       qenv_final
     })
