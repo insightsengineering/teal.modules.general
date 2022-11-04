@@ -487,7 +487,7 @@ srv_a_regression <- function(id,
           quote({
             class(fit$residuals) <- NULL
 
-            data <- fortify(fit)
+            data <- ggplot2::fortify(fit)
 
             smooth <- function(x, y) {
               as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
