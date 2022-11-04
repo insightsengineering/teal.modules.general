@@ -76,9 +76,6 @@
     <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/extract_input.html</loc>
   </url>
   <url>
-    <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/get_datanames_selected.html</loc>
-  </url>
-  <url>
     <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/get_scatterplotmatrix_stats.html</loc>
   </url>
   <url>
@@ -164,6 +161,9 @@
   </url>
   <url>
     <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/validate_input.html</loc>
+  </url>
+  <url>
+    <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/var_labels.html</loc>
   </url>
   <url>
     <loc>https://insightsengineering.github.io/teal.modules.general/main/reference/var_missings_info.html</loc>
