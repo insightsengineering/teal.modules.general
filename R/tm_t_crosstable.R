@@ -115,7 +115,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   )
 }
 
-ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
 
@@ -156,7 +156,7 @@ ui_t_crosstable <- function(id, data, x, y, show_percentage, show_total, pre_out
       )
     ),
     forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("warning"), "Show warnings"),
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
     pre_output = pre_output,
