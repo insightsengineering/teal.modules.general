@@ -7,7 +7,7 @@
 get_var_description(data, dataset_name, var_name)
 }
 \arguments{
-\item{data}{(\code{list}) the object containing the dataset}
+\item{data}{(\code{tdata}) the object containing the dataset}
 
 \item{dataset_name}{(\code{character}) the name of the dataset containing the variable}
 

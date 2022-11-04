@@ -21,7 +21,7 @@ render_tabset_panel_content(
 
 \item{output}{(\code{session$output}) the shiny session output}
 
-\item{data}{(\code{list}) the object containing all datasets}
+\item{data}{(\code{tdata}) the object containing all datasets}
 
 \item{input}{(\code{session$input}) the shiny session input}
 
