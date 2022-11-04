@@ -268,7 +268,7 @@ srv_a_regression <- function(id,
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
-    # sets chunk object and populates it with data merge call and fit expression
+    # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
       ANL <- anl_merged_q()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 10)
@@ -403,7 +403,7 @@ srv_a_regression <- function(id,
       validate(need(!is.null(ggtheme), "Please select a theme."))
 
       plot_type_0 <- function() {
-        fit <- fit_r()[["fit"]] # chunk already evaluated
+        fit <- fit_r()[["fit"]]
         ANL <- anl_merged_q()[["ANL"]] # nolint
 
         stopifnot(ncol(fit$model) == 2)
