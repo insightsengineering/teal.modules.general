@@ -4,14 +4,14 @@
 \alias{render_tab_header}
 \title{Renders the text headlining a single tab in the left-hand side tabset panel}
 \usage{
-render_tab_header(dataset_name, output, datasets)
+render_tab_header(dataset_name, output, data)
 }
 \arguments{
 \item{dataset_name}{(\code{character}) the name of the dataset of the tab}
 
 \item{output}{(\code{session$output}) the shiny session output}
 
-\item{datasets}{(\code{FilteredData}) the object containing all datasets}
+\item{data}{(\code{tdata}) the object containing all datasets}
 }
 \description{
 Renders the text headlining a single tab in the left-hand side tabset panel

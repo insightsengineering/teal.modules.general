@@ -67,8 +67,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
@@ -150,53 +150,62 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
-srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_height, plot_width) {
+srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
-      datasets = datasets
+      datasets = data
     )
 
-    merged_data <- teal.transform::data_merge_srv(
-      datasets = datasets,
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      datasets = data,
+      join_keys = get_join_keys(data),
       selector_list = selector_list
     )
 
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
+
     # plot
-    plot_r <- reactive({
-      validate({
-        need(!is.null(selector_list()$variables()), "Please select variables")
-      })
-      teal.code::chunks_reset()
-      teal.code::chunks_push_data_merge(merged_data())
+    output_q <- reactive({
+      qenv <- merged$anl_q_r()
+      ANL <- qenv[["ANL"]] # nolint
 
-      ANL <- teal.code::chunks_get_var("ANL") # nolint
-      teal::validate_has_data(ANL, 10)
-
+      cols_names <- merged$anl_input_r()$columns_source$variables
       alpha <- input$alpha # nolint
       cex <- input$cex # nolint
       add_cor <- input$cor # nolint
       cor_method <- input$cor_method # nolint
       cor_na_omit <- input$cor_na_omit # nolint
 
-      cor_na_action <- if (cor_na_omit) {
+      cor_na_action <- if (isTruthy(cor_na_omit)) {
         "na.omit"
       } else {
         "na.fail"
       }
 
-      cols_names <- merged_data()$columns_source$variable
-
       validate(need(length(cols_names) > 1, "Need at least 2 columns."))
+      teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
@@ -205,9 +214,9 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        teal.code::chunks_push(
-          id = "factorize_ANL_call",
-          expression = substitute(
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
             expr = ANL <- ANL[, cols_names] %>% # nolint
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
@@ -215,9 +224,9 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
           )
         )
       } else {
-        teal.code::chunks_push(
-          id = "ANL_drop_levels_call",
-          expression = substitute(
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
             expr = ANL <- ANL[, cols_names] %>% # nolint
               droplevels(),
             env = list(cols_names = cols_names)
@@ -232,11 +241,11 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
         shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
 
-        teal.code::chunks_push(
-          id = "plot_call",
-          expression = substitute(
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
             expr = {
-              plot <- lattice::splom(
+              g <- lattice::splom(
                 ANL,
                 varnames = varnames_value,
                 panel = function(x, y, ...) {
@@ -260,7 +269,7 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
                 alpha = alpha_value,
                 cex = cex_value
               )
-              print(plot)
+              print(g)
             },
             env = list(
               varnames_value = varnames,
@@ -275,16 +284,21 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
         shinyjs::hide("cor_method")
         shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        teal.code::chunks_push(
-          id = "plot_call",
-          expression = substitute(
-            expr = lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value),
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = {
+              g <- lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value)
+              g
+            },
             env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
           )
         )
       }
-      teal.code::chunks_safe_eval()
+      qenv
     })
+
+    plot_r <- reactive(output_q()[["g"]])
 
     # Insert the plot into a plot_with_settings module
     pws <- teal.widgets::plot_with_settings_srv(
@@ -297,8 +311,8 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
     # show a message if conversion to factors took place
     output$message <- renderText({
       req(selector_list()$variables())
-      ANL <- merged_data()$data() # nolint
-      cols_names <- unique(unname(do.call(c, merged_data()$columns_source)))
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         is_single <- sum(check_char) == 1
@@ -315,19 +329,17 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
       }
     })
 
-    show_r_code_title <- reactive(
-      paste0(
-        "Scatterplotmatrix of ",
-        paste(unlist(merged_data()$columns_source), collapse = ", ")
-      )
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(output_q())),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
     )
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(variables)),
-      modal_title = show_r_code_title(),
-      code_header = show_r_code_title()
+      verbatim_content = reactive(teal.code::get_code(output_q())),
+      title = "Show R Code for Scatterplotmatrix"
     )
 
     ### REPORTER
@@ -336,19 +348,14 @@ srv_g_scatterplotmatrix <- function(id, datasets, reporter, variables, plot_heig
         card <- teal.reporter::TealReportCard$new()
         card$set_name("Scatter Plot Matrix")
         card$append_text("Scatter Plot Matrix", "header2")
-        card$append_fs(datasets$get_filter_state())
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
@@ -400,11 +407,12 @@ get_scatterplotmatrix_stats <- function(x, y,
     if (anyNA(stat)) {
       return("NA")
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(c(
-        paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-        paste0("P:", round(stat$p.value, round_pval))
-      ),
-      collapse = "\n"
+      return(paste(
+        c(
+          paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
+          paste0("P:", round(stat$p.value, round_pval))
+        ),
+        collapse = "\n"
       ))
     } else {
       stop("function not supported")

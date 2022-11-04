@@ -8,6 +8,7 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
+  parent_dataname = "ADSL",
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void",
     "test"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
@@ -25,6 +26,9 @@ for a slider encoding the plot height.}
 
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
+
+\item{parent_dataname}{(\code{character(1)}) If this dataname exists in then "the by subject"graph is displayed.
+For CDISC data. In non CDISC data this can be ignored. Defaults to \code{"ADSL"}.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
 One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
@@ -71,7 +75,7 @@ app <- init(
     )
   )
 )
-\dontrun{
-shinyApp(app$ui, app$server)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
 }
 }

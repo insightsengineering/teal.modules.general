@@ -57,8 +57,8 @@
 #'     )
 #'   )
 #' )
-#' \dontrun{
-#' shinyApp(app$ui, app$server)
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
 #' }
 #'
 tm_outliers <- function(label = "Outliers Module",
@@ -225,20 +225,23 @@ ui_outliers <- function(id, ...) {
         )
       )
     ),
-    forms = teal::get_rcode_ui(ns("rcode")),
+    forms = tagList(
+      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
+    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
 }
 
-srv_outliers <- function(id, datasets, reporter, outlier_var,
+srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+  checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    teal.code::init_chunks()
-
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-    selector_list <- teal.transform::data_extract_multiple_srv(vars, datasets)
+    selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
 
     reactive_select_input <- reactive({
       if (is.null(selector_list()$categorical_var) || length(selector_list()$categorical_var()$select) == 0) {
@@ -248,52 +251,59 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       }
     })
 
-    merged_data <- teal.transform::data_merge_srv(
+    anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
-      datasets = datasets,
+      datasets = data,
+      join_keys = get_join_keys(data),
       merge_function = "dplyr::inner_join"
+    )
+
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
     )
 
     is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
     cat_dataname <- categorical_var[[1]]$dataname
 
-    common_code_chunks <- reactive({
-      validate(need(!is.null(reactive_select_input()$outlier()), "Please select an outlier variable dataset"))
+    n_outlier_missing <- reactive({
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      validate(need(outlier_var, "Please select a variable"))
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      sum(is.na(ANL[[outlier_var]]))
+    })
 
-      # Create a private stack for this function only.
-      common_stack <- teal.code::chunks$new()
-
-      common_stack_push <- function(...) {
-        teal.code::chunks_push(..., chunks = common_stack)
-      }
-
+    common_code_q <- reactive({
       input_catvar <- input[[extract_input(
         "categorical_var",
         cat_dataname,
         filter = is_cat_filter_spec
       )]]
 
-      teal.code::chunks_push_data_merge(merged_data(), common_stack)
-      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      qenv <- merged$anl_q_r()
+
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-
       validate(need(outlier_var, "Please select a variable"))
-      teal.code::chunks_validate_custom(
-        substitute(expr = length(unique(ANL[[outlier_var]])) > 1, env = list(outlier_var = outlier_var)),
-        msg = "Variable has no variation, i.e. only one unique value",
-        chunks = common_stack
-      )
+      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
+      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
       validate(need(input$method, "Please select a method"))
-      validate(need(is.numeric(merged_data()$data()[[outlier_var]]), "`Variable` is not numeric"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
           length(categorical_var) == 0,
-          merged_data()$data(),
-          merged_data()$data()[, names(merged_data()$data()) != categorical_var]
+          ANL,
+          ANL[, names(ANL) != categorical_var]
         ),
         min_nrow = 10,
         complete = TRUE,
@@ -303,12 +313,11 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
         shinyjs::hide("split_outliers")
-        contains_na <- anyNA(merged_data()$data()[, outlier_var])
-        if (contains_na) {
-          common_stack_push(
-            id = "ANL_NO_NA_call",
-            expression = substitute(
-              expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+        if (n_outlier_missing() > 0) {
+          qenv <- teal.code::eval_code(
+            qenv,
+            substitute(
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
             )
           )
@@ -317,9 +326,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         validate(need(input_catvar, "Please select categories to include"))
 
         validate(need(
-          is.factor(merged_data()$data()[[categorical_var]]) ||
-            is.character(merged_data()$data()[[categorical_var]]) ||
-            is.integer(merged_data()$data()[[categorical_var]]),
+          is.factor(ANL[[categorical_var]]) ||
+            is.character(ANL[[categorical_var]]) ||
+            is.integer(ANL[[categorical_var]]),
           "`Categorical factor` must be `factor`, `character`, or `integer`"
         ))
         validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
@@ -332,9 +341,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
 
         # If there are both string values "NA" and missing values NA, value_choices function should output a warning
         if ("NA" %in% input_catlevels) {
-          common_stack_push(
-            id = "ANL_character_NA_call",
-            expression = substitute(
+          qenv <- teal.code::eval_code(
+            qenv,
+            substitute(
               expr = {
                 ANL[[categorical_var]] <- dplyr::if_else( # nolint
                   is.na(ANL[[categorical_var]]),
@@ -350,10 +359,10 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           )
         }
 
-        if (is_cat_filter_spec && !all(unique(merged_data()$data()[[categorical_var]]) %in% input_catlevels)) {
-          common_stack_push(
-            id = "ANL_filter_call",
-            expression = substitute(
+        if (is_cat_filter_spec && !all(unique(ANL[[categorical_var]]) %in% input_catlevels)) {
+          qenv <- teal.code::eval_code(
+            qenv,
+            substitute(
               expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
               env = list(
                 categorical_var_name = as.name(categorical_var),
@@ -363,12 +372,11 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           )
         }
 
-        contains_na <- anyNA(merged_data()$data()[, outlier_var])
-        if (contains_na) {
-          common_stack_push(
-            id = "ANL_NO_NA_filter_call",
-            expression = substitute(
-              expr = ANL_NO_NA <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+        if (n_outlier_missing() > 0) {
+          qenv <- teal.code::eval_code(
+            qenv,
+            substitute(
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
               env = list(outlier_var_name = as.name(outlier_var))
             )
           )
@@ -396,11 +404,11 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         return(as.call(c(x[[1]], lapply(x[-1], remove_pipe_null))))
       }
 
-      common_stack_push(
-        id = "ANL_OUTLIER_call",
-        expression = substitute(
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
           expr = {
-            ANL_OUTLIER <- anl_call %>% # nolint
+            ANL_OUTLIER <- ANL %>% # nolint
               group_expr %>% # styler: off
               dplyr::mutate(is_outlier = {
                 q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
@@ -414,7 +422,6 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
             ANL_OUTLIER # used to display table when running show-r-code code
           },
           env = list(
-            anl_call = if (contains_na) quote(ANL_NO_NA) else quote(ANL),
             calculate_outliers = if (method == "IQR") {
               substitute(
                 expr = dplyr::mutate(is_outlier_selected = {
@@ -464,44 +471,42 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       )
 
       if (length(categorical_var) > 0) {
-        common_stack_push(
-          id = "summary_table_pre_call_1",
-          expression = substitute(
-            expr = {
-              summary_table_pre <- ANL_OUTLIER %>%
-                dplyr::filter(is_outlier_selected) %>%
-                dplyr::select(outlier_var_name, categorical_var_name) %>%
-                dplyr::group_by(categorical_var_name) %>%
-                dplyr::summarise(n_outliers = dplyr::n()) %>%
-                dplyr::right_join(
-                  ANL %>%
-                    dplyr::select(outlier_var_name, categorical_var_name) %>%
-                    dplyr::group_by(categorical_var_name) %>%
-                    dplyr::summarise(
-                      total_in_cat = dplyr::n(),
-                      n_na = sum(is.na(outlier_var_name) | is.na(categorical_var_name))
-                    ),
-                  by = categorical_var
-                ) %>%
-                # This is important as there may be categorical variables with natural orderings, e.g. AGE.
-                # The plots should be displayed by default in increasing order in these situations.
-                # dplyr::arrange will sort integer, factor, and character data types in the expected way.
-                dplyr::arrange(categorical_var_name) %>%
-                dplyr::mutate(
-                  n_outliers = dplyr::if_else(is.na(n_outliers), 0L, n_outliers),
-                  display_str = dplyr::if_else(
-                    n_outliers > 0,
-                    sprintf("%d [%.02f%%]", n_outliers, 100 * n_outliers / total_in_cat),
-                    "0"
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = summary_table_pre <- ANL_OUTLIER %>%
+              dplyr::filter(is_outlier_selected) %>%
+              dplyr::select(outlier_var_name, categorical_var_name) %>%
+              dplyr::group_by(categorical_var_name) %>%
+              dplyr::summarise(n_outliers = dplyr::n()) %>%
+              dplyr::right_join(
+                ANL %>%
+                  dplyr::select(outlier_var_name, categorical_var_name) %>%
+                  dplyr::group_by(categorical_var_name) %>%
+                  dplyr::summarise(
+                    total_in_cat = dplyr::n(),
+                    n_na = sum(is.na(outlier_var_name) | is.na(categorical_var_name))
                   ),
-                  display_str_na = dplyr::if_else(
-                    n_na > 0,
-                    sprintf("%d [%.02f%%]", n_na, 100 * n_na / total_in_cat),
-                    "0"
-                  ),
-                  order = seq_along(n_outliers)
-                )
-            },
+                by = categorical_var
+              ) %>%
+              # This is important as there may be categorical variables with natural orderings, e.g. AGE.
+              # The plots should be displayed by default in increasing order in these situations.
+              # dplyr::arrange will sort integer, factor, and character data types in the expected way.
+              dplyr::arrange(categorical_var_name) %>%
+              dplyr::mutate(
+                n_outliers = dplyr::if_else(is.na(n_outliers), 0, as.numeric(n_outliers)),
+                display_str = dplyr::if_else(
+                  n_outliers > 0,
+                  sprintf("%d [%.02f%%]", n_outliers, 100 * n_outliers / total_in_cat),
+                  "0"
+                ),
+                display_str_na = dplyr::if_else(
+                  n_na > 0,
+                  sprintf("%d [%.02f%%]", n_na, 100 * n_na / total_in_cat),
+                  "0"
+                ),
+                order = seq_along(n_outliers)
+              ),
             env = list(
               categorical_var = categorical_var,
               categorical_var_name = as.name(categorical_var),
@@ -511,18 +516,19 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         )
         # now to handle when user chooses to order based on amount of outliers
         if (order_by_outlier) {
-          common_stack_push(
-            id = "summary_table_pre_call_2",
-            expression = quote(
+          qenv <- teal.code::eval_code(
+            qenv,
+            quote(
               summary_table_pre <- summary_table_pre %>%
                 dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
                 dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
             )
           )
         }
-        common_stack_push(
-          id = "summary_table_call",
-          expression = substitute(
+
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
             expr = {
               # In order for geom_rug to work properly when reordering takes place inside facet_grid,
               # all tables must have the column used for reording.
@@ -558,44 +564,41 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         )
       }
 
-      teal.code::chunks_safe_eval(chunks = common_stack)
-      if (length(categorical_var) > 0 && nrow(teal.code::chunks_get_var("ANL_OUTLIER", common_stack)) > 0) {
+      if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
       } else {
         shinyjs::hide("order_by_outlier")
       }
-      list(common_stack = common_stack)
+
+      qenv
     })
+    validate(need(outlier_var, "Please select a variable"))
 
     output$summary_table <- DT::renderDataTable(
       expr = {
-        suppressWarnings(
-          teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack)
-        )
-      },
-      options = list(
-        dom = "t",
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
-      )
+        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+        if (length(categorical_var) > 0) {
+          DT::datatable(
+            common_code_q()[["summary_table"]],
+            options = list(
+              dom = "t",
+              autoWidth = TRUE,
+              columnDefs = list(list(width = "200px", targets = "_all"))
+            )
+          )
+        } else {
+          NULL
+        }
+      }
     )
 
     # boxplot/violinplot #nolint
-    box_plot_r_chunks <- reactive({
+    boxplot_q <- reactive({
+      ANL <- common_code_q()[["ANL"]] # nolint
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
 
-      # Create a private stack for this function only.
-      boxplot_r_stack <- teal.code::chunks$new()
-      boxplot_r_stack_push <- function(...) {
-        teal.code::chunks_push(..., chunks = boxplot_r_stack)
-      }
-
-      # Add common code into this chunk
-      teal.code::chunks_push_chunks(common_code_chunks()$common_stack, chunks = boxplot_r_stack)
-      ANL <- teal.code::chunks_get_var("ANL", boxplot_r_stack) # nolint
-      ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", boxplot_r_stack) # nolint
-
-      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
       # validation
       teal::validate_has_data(ANL, 1)
@@ -665,9 +668,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         ggtheme = input$ggtheme
       )
 
-      boxplot_r_stack_push(
-        id = "plot_call",
-        expression = substitute(
+      teal.code::eval_code(
+        common_code_q(),
+        substitute(
           expr = g <- plot_call +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
@@ -678,34 +681,17 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
             themes = parsed_ggplot2_args$theme
           )
         )
-      )
-
-      boxplot_r_stack_push(id = "print_plot_call", expression = quote(print(g)))
-      teal.code::chunks_safe_eval(boxplot_r_stack)
-      boxplot_r_stack
-    })
-
-    box_plot_plot_r <- reactive({
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(box_plot_r_chunks())
-      teal.code::chunks_get_var(var = "g", chunks = box_plot_r_chunks())
+      ) %>%
+        teal.code::eval_code(quote(print(g)))
     })
 
     # density plot
-    density_plot_r_chunks <- reactive({
-      # Create a private stack for this function only.
-      density_r_stack <- teal.code::chunks$new()
-      density_r_stack_push <- function(...) {
-        teal.code::chunks_push(..., chunks = density_r_stack)
-      }
+    density_plot_q <- reactive({
+      ANL <- common_code_q()[["ANL"]] # nolint
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
 
-      # Add common code into this chunk
-      teal.code::chunks_push_chunks(common_code_chunks()$common_stack, chunks = density_r_stack)
-      ANL <- teal.code::chunks_get_var("ANL", density_r_stack) # nolint
-      ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", density_r_stack) # nolint
-
-      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
       # validation
       teal::validate_has_data(ANL, 1)
@@ -744,9 +730,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         ggtheme = input$ggtheme
       )
 
-      density_r_stack_push(
-        id = "plot_call",
-        expression = substitute(
+      teal.code::eval_code(
+        common_code_q(),
+        substitute(
           expr = g <- plot_call + labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,
@@ -755,33 +741,19 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
-      )
-      density_r_stack_push(id = "print_plot_call", expression = quote(print(g)))
-      teal.code::chunks_safe_eval(density_r_stack)
-      density_r_stack
-    })
-
-    density_plot_plot_r <- reactive({
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(density_plot_r_chunks())
-      teal.code::chunks_get_var(var = "g", chunks = density_plot_r_chunks())
+      ) %>%
+        teal.code::eval_code(quote(print(g)))
     })
 
     # Cumulative distribution plot
-    cumulative_plot_r_chunks <- reactive({
-      # Create a private stack for this function only.
-      cumulative_r_stack <- teal.code::chunks$new()
-      cumulative_r_stack_push <- function(...) {
-        teal.code::chunks_push(..., chunks = cumulative_r_stack)
-      }
+    cumulative_plot_q <- reactive({
+      ANL <- common_code_q()[["ANL"]] # nolint
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
 
-      # Add common code into this chunk
-      teal.code::chunks_push_chunks(common_code_chunks()$common_stack, chunks = cumulative_r_stack)
-      ANL <- teal.code::chunks_get_var("ANL", cumulative_r_stack) # nolint
-      ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", cumulative_r_stack) # nolint
+      qenv <- common_code_q()
 
-      outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-      categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+      outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+      categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
       # validation
       teal::validate_has_data(ANL, 1)
@@ -792,60 +764,38 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
           stat_ecdf(),
         env = list(outlier_var_name = as.name(outlier_var))
       )
+      if (length(categorical_var) == 0) {
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = {
+              ecdf_df <- ANL %>%
+                dplyr::mutate(
+                  y = stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
+                )
 
-      plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
-        cumulative_r_stack_push(
-          id = "outlier_points_call",
-          expression =
-            substitute(
-              expr = {
-                ecdf_df <- ANL %>%
-                  dplyr::mutate(
-                    y = stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]])
-                  )
-
-                outlier_points <- dplyr::left_join(
-                  ecdf_df,
-                  ANL_OUTLIER,
-                  by = dplyr::setdiff(names(ecdf_df), "y")
-                ) %>%
-                  dplyr::filter(!is.na(is_outlier_selected))
-              },
-              env = list(outlier_var = outlier_var)
-            )
-        )
-        plot_call <- substitute(expr = plot_call, env = list(plot_call = plot_call))
-      } else {
-        contains_na <- !is.null(suppressWarnings(teal.code::chunks_get_var("ANL_NO_NA", cumulative_r_stack)))
-        ANL <- if (contains_na) { # nolint
-          cumulative_r_stack_push(
-            id = "ANL_NO_NA_call",
-            expression =
-              substitute(
-                expr = ANL_NO_NA <- ANL_NO_NA %>% # nolint
-                  dplyr::left_join(
-                    dplyr::select(summary_table_pre, categorical_var_name, order),
-                    by = categorical_var
-                  ) %>%
-                  dplyr::arrange(order),
-                env = list(categorical_var_name = as.name(categorical_var), categorical_var = categorical_var)
-              )
+              outlier_points <- dplyr::left_join(
+                ecdf_df,
+                ANL_OUTLIER,
+                by = dplyr::setdiff(names(ecdf_df), "y")
+              ) %>%
+                dplyr::filter(!is.na(is_outlier_selected))
+            },
+            env = list(outlier_var = outlier_var)
           )
-          quote(ANL_NO_NA)
-        } else {
-          quote(ANL)
-        }
-        cumulative_r_stack_push(
-          id = "outlier_points_call",
-          expression = substitute(
+        )
+      } else {
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
             expr = {
               all_categories <- lapply(
-                unique(anl[[categorical_var]]),
+                unique(ANL[[categorical_var]]),
                 function(x) {
-                  anl <- anl %>% dplyr::filter(get(categorical_var) == x)
+                  ANL <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint
                   anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(categorical_var) == x)
-                  ecdf_df <- anl %>%
-                    dplyr::mutate(y = stats::ecdf(anl[[outlier_var]])(anl[[outlier_var]]))
+                  ecdf_df <- ANL %>%
+                    dplyr::mutate(y = stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]))
 
                   dplyr::left_join(
                     ecdf_df,
@@ -857,7 +807,7 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
               )
               outlier_points <- do.call(rbind, all_categories)
             },
-            env = list(anl = ANL, categorical_var = categorical_var, outlier_var = outlier_var)
+            env = list(categorical_var = categorical_var, outlier_var = outlier_var)
           )
         )
         plot_call <- substitute(
@@ -882,9 +832,9 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         ggtheme = input$ggtheme
       )
 
-      cumulative_r_stack_push(
-        id = "plot_call",
-        expression = substitute(
+      teal.code::eval_code(
+        qenv,
+        substitute(
           expr = g <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
@@ -897,29 +847,19 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
-      )
-
-      cumulative_r_stack_push(id = "print_plot_call", expression = quote(print(g)))
-      teal.code::chunks_safe_eval(cumulative_r_stack)
-      cumulative_r_stack
+      ) %>%
+        teal.code::eval_code(quote(print(g)))
     })
 
-    cumulative_plot_plot_r <- reactive({
-      teal.code::chunks_reset()
-      teal.code::chunks_push_chunks(cumulative_plot_r_chunks())
-      teal.code::chunks_get_var(var = "g", chunks = cumulative_plot_r_chunks())
-    })
-
-    observeEvent(input$tabs, {
-      tab <- input$tabs
-      req(tab) # tab is NULL upon app launch, hence will crash without this statement
-      teal.code::chunks_reset()
-      if (tab == "Boxplot") {
-        teal.code::chunks_push_chunks(box_plot_r_chunks())
-      } else if (tab == "Density Plot") {
-        teal.code::chunks_push_chunks(density_plot_r_chunks())
-      } else if (tab == "Cumulative Distribution Plot") {
-        teal.code::chunks_push_chunks(cumulative_plot_r_chunks())
+    final_q <- reactive({
+      req(input$tabs)
+      tab_type <- input$tabs
+      if (tab_type == "Boxplot") {
+        boxplot_q()
+      } else if (tab_type == "Density Plot") {
+        density_plot_q()
+      } else if (tab_type == "Cumulative Distribution Plot") {
+        cumulative_plot_q()
       }
     })
 
@@ -971,40 +911,40 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
       }
     })
 
-    box_brush <- teal.widgets::plot_with_settings_srv(
+    boxplot_r <- reactive(boxplot_q()[["g"]])
+    density_plot_r <- reactive(density_plot_q()[["g"]])
+    cumulative_plot_r <- reactive(cumulative_plot_q()[["g"]])
+
+    box_pws <- teal.widgets::plot_with_settings_srv(
       id = "box_plot",
-      plot_r = box_plot_plot_r,
+      plot_r = boxplot_r,
       height = plot_height,
       width = plot_width,
       brushing = TRUE
     )
 
-    density_brush <- teal.widgets::plot_with_settings_srv(
+    density_pws <- teal.widgets::plot_with_settings_srv(
       id = "density_plot",
-      plot_r = density_plot_plot_r,
+      plot_r = density_plot_r,
       height = plot_height,
       width = plot_width,
       brushing = TRUE
     )
 
-    cum_density_brush <- teal.widgets::plot_with_settings_srv(
+    cum_density_pws <- teal.widgets::plot_with_settings_srv(
       id = "cum_density_plot",
-      plot_r = cumulative_plot_plot_r,
+      plot_r = cumulative_plot_r,
       height = plot_height,
       width = plot_width,
       brushing = TRUE
     )
 
-    dataname <- datasets$datanames()[[1]]
-    dataname <- if (!is.function(datasets$get_parentname)) {
-      dataname
-    } else {
-      `if`(length(datasets$get_parentname(dataname)) == 0, dataname, datasets$get_parentname(dataname))
-    }
-    choices <- teal.transform::variable_choices(datasets$get_data(dataname))
+    dataname <- names(data)[[1]]
 
-    observeEvent(common_code_chunks(), {
-      ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+    choices <- teal.transform::variable_choices(data[[dataname]]())
+
+    observeEvent(common_code_q(), {
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
       teal.widgets::updateOptionalSelectInput(
         session,
         inputId = "table_ui_columns",
@@ -1018,24 +958,20 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
         validate(need(!is.null(reactive_select_input()$outlier()), ""))
-        outlier_var <- as.vector(merged_data()$columns_source$outlier_var)
-        categorical_var <- as.vector(merged_data()$columns_source$categorical_var)
+        outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
+        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
-        ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
-        ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-        ANL_NO_NA <- suppressWarnings(teal.code::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
-        if (!is.null(ANL_NO_NA)) {
-          ANL <- ANL_NO_NA # nolint
-        }
+        ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+        ANL <- common_code_q()[["ANL"]] # nolint
         plot_brush <- if (tab == "Boxplot") {
-          box_plot_plot_r()
-          box_brush$brush()
+          boxplot_r()
+          box_pws$brush()
         } else if (tab == "Density Plot") {
-          density_plot_plot_r()
-          density_brush$brush()
+          density_plot_r()
+          density_pws$brush()
         } else if (tab == "Cumulative Distribution Plot") {
-          cumulative_plot_plot_r()
-          cum_density_brush$brush()
+          cumulative_plot_r()
+          cum_density_pws$brush()
         }
 
         # removing unused column ASAP
@@ -1097,11 +1033,11 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         }
 
         display_table$is_outlier_selected <- NULL
-        keys <- datasets$get_keys(dataname)
-        data <- datasets$get_data(dataname)
+        keys <- get_join_keys(data)$get(dataname)[[dataname]]
+        datas <- data[[dataname]]()
         dplyr::left_join(
           display_table,
-          dplyr::select(data, dplyr::setdiff(names(data), dplyr::setdiff(names(display_table), keys))),
+          dplyr::select(datas, dplyr::setdiff(names(datas), dplyr::setdiff(names(display_table), keys))),
           by = keys
         ) %>%
           dplyr::select(union(names(display_table), input$table_ui_columns))
@@ -1115,8 +1051,8 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
     )
 
     output$total_outliers <- renderUI({
-      ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-      ANL_OUTLIER <- teal.code::chunks_get_var("ANL_OUTLIER", common_code_chunks()$common_stack) # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
       teal::validate_has_data(ANL, 1)
       ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint
       h5(
@@ -1131,27 +1067,31 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
     })
 
     output$total_missing <- renderUI({
-      ANL <- teal.code::chunks_get_var("ANL", common_code_chunks()$common_stack) # nolint
-      ANL_NO_NA <- suppressWarnings(teal.code::chunks_get_var("ANL_NO_NA", common_code_chunks()$common_stack)) # nolint
-      if (!is.null(ANL_NO_NA)) {
+      if (n_outlier_missing() > 0) {
+        ANL <- merged$anl_q_r()[["ANL"]] # nolint
         helpText(
           sprintf(
             "%s %d / %d [%.02f%%]",
             "Total number of row(s) with missing values:",
-            nrow(ANL) - nrow(ANL_NO_NA),
+            n_outlier_missing(),
             nrow(ANL),
-            100 * (nrow(ANL) - nrow(ANL_NO_NA)) / nrow(ANL)
+            100 * (n_outlier_missing()) / nrow(ANL)
           )
         )
       }
     })
 
-    teal::get_rcode_srv(
+    teal.widgets::verbatim_popup_srv(
+      id = "warning",
+      verbatim_content = reactive(teal.code::get_warnings(final_q())),
+      title = "Warning",
+      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
+    )
+
+    teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      datasets = datasets,
-      datanames = teal.transform::get_extract_datanames(list(outlier_var, categorical_var)),
-      modal_title = "R Code for outlier",
-      code_header = "Outlier"
+      verbatim_content = reactive(teal.code::get_code(final_q())),
+      title = "Show R Code for Outlier"
     )
 
     ### REPORTER
@@ -1161,34 +1101,27 @@ srv_outliers <- function(id, datasets, reporter, outlier_var,
         tab_type <- input$tabs
         card$set_name(paste0("Outliers - ", tab_type))
         card$append_text(tab_type, "header2")
-        card$append_fs(datasets$get_filter_state())
-        summary_table <- tryCatch(
-          expr = teal.code::chunks_get_var("summary_table", common_code_chunks()$common_stack),
-          warning = function(e) "warning"
-        )
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
 
-        if (inherits(summary_table, "data.frame")) {
+        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+        if (length(categorical_var) > 0) {
+          summary_table <- common_code_q()[["summary_table"]]
           card$append_text("Summary Table", "header3")
           card$append_table(summary_table)
         }
         card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {
-          card$append_plot(box_plot_plot_r(), dim = box_brush$dim())
+          card$append_plot(boxplot_r(), dim = box_pws$dim())
         } else if (tab_type == "Density Plot") {
-          card$append_plot(density_plot_plot_r(), dim = density_brush$dim())
+          card$append_plot(density_plot_r(), dim = density_pws$dim())
         } else if (tab_type == "Cumulative Distribution Plot") {
-          card$append_plot(cumulative_plot_plot_r(), dim = cum_density_brush$dim())
+          card$append_plot(cumulative_plot_r(), dim = cum_density_pws$dim())
         }
         if (!comment == "") {
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(get_rcode(
-          chunks = teal.code::get_chunks_object(parent_idx = 2L),
-          datasets = datasets,
-          title = "",
-          description = ""
-        ), collapse = "\n"))
+        card$append_src(paste(teal.code::get_code(final_q()), collapse = "\n"))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
