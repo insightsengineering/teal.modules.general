@@ -1,5 +1,9 @@
 # teal.modules.general
 
+<!-- start badges -->
+[![Code Coverage](https://raw.githubusercontent.com/insightsengineering/teal.modules.general/_xml_coverage_reports/data/main/badge.svg)](https://raw.githubusercontent.com/insightsengineering/teal.modules.general/_xml_coverage_reports/data/main/coverage.xml)
+<!-- end badges -->
+
 This package contains a set of standard `teal` modules for you to include in applications.
 These include modules for:
 
