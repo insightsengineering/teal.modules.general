@@ -404,7 +404,7 @@ srv_tm_g_association <- function(id,
             },
             env = list(
               plot_calls = do.call("call", c(list("list", ref_call), var_calls),
-                                   quote = TRUE
+                quote = TRUE
               )
             )
           )
