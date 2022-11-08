@@ -84,7 +84,7 @@ testthat::test_that("bivariate_ggplot_call with single data factor", {
   )
   testthat::expect_match(
     bivariate_ggplot_call("factor", "NULL", FALSE) %>% deparse(width.cutoff = 300),
-    "Proportion"
+    "Fraction"
   )
   testthat::expect_match(
     bivariate_ggplot_call("NULL", "factor") %>% deparse(width.cutoff = 300),
@@ -92,6 +92,6 @@ testthat::test_that("bivariate_ggplot_call with single data factor", {
   )
   testthat::expect_match(
     bivariate_ggplot_call("NULL", "factor", FALSE) %>% deparse(width.cutoff = 300),
-    "Proportion"
+    "Fraction"
   )
 })
