@@ -10,6 +10,7 @@
 ### Enhancements
 
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
+* Better UI labels in `tm_g_association`.
 
 # teal.modules.general 0.2.15
 
