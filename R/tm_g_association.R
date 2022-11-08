@@ -360,7 +360,7 @@ srv_tm_g_association <- function(id,
       })
 
       # helper function to format variable name
-      foo <- function(x) {
+      format_varnames <- function(x) {
         if (is.numeric(ANL[[x]]) && log_transformation) {
           varname_w_label(x, ANL, prefix = "Log of ")
         } else {
@@ -373,17 +373,17 @@ srv_tm_g_association <- function(id,
                  "0" = sprintf("Value distribution for %s", ref_cl_lbl),
                  "1" = sprintf("Association between %s and %s",
                                ref_cl_lbl,
-                               foo(vars_names)),
+                               format_varnames(vars_names)),
                  sprintf("Associations between %s and: %s",
                          ref_cl_lbl,
-                         paste(lapply(vars_names, foo), collapse = ", "))
+                         paste(lapply(vars_names, format_varnames), collapse = ", "))
           )
         } else {
           switch(as.character(length(vars_names)),
                  "0" = sprintf("Value distribution for %s", ref_cl_lbl),
                  sprintf("Value distributions for %s and %s",
                          ref_cl_lbl,
-                         paste(lapply(vars_names, foo), collapse = ", "))
+                         paste(lapply(vars_names, format_varnames), collapse = ", "))
           )
         }
 
