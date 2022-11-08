@@ -370,20 +370,26 @@ srv_tm_g_association <- function(id,
       new_title <-
         if (association) {
           switch(as.character(length(vars_names)),
-                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-                 "1" = sprintf("Association between %s and %s",
-                               ref_cl_lbl,
-                               foo(vars_names)),
-                 sprintf("Associations between %s and: %s",
-                         ref_cl_lbl,
-                         paste(lapply(vars_names, foo), collapse = ", "))
+            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+            "1" = sprintf(
+              "Association between %s and %s",
+              ref_cl_lbl,
+              foo(vars_names)
+            ),
+            sprintf(
+              "Associations between %s and: %s",
+              ref_cl_lbl,
+              paste(lapply(vars_names, foo), collapse = ", ")
+            )
           )
         } else {
           switch(as.character(length(vars_names)),
-                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-                 sprintf("Value distributions for %s and %s",
-                         ref_cl_lbl,
-                         paste(lapply(vars_names, foo), collapse = ", "))
+            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+            sprintf(
+              "Value distributions for %s and %s",
+              ref_cl_lbl,
+              paste(lapply(vars_names, foo), collapse = ", ")
+            )
           )
         }
 
@@ -404,7 +410,7 @@ srv_tm_g_association <- function(id,
             },
             env = list(
               plot_calls = do.call("call", c(list("list", ref_call), var_calls),
-                                   quote = TRUE
+                quote = TRUE
               )
             )
           )
