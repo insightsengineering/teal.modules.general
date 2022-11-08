@@ -163,12 +163,12 @@ ui_tm_g_association <- function(id, ...) {
       ),
       checkboxInput(
         ns("association"),
-        "Association with the reference variable",
+        "Association with reference variable",
         value = args$show_association
       ),
       checkboxInput(
         ns("show_dist"),
-        "Distribution",
+        "Scaled frequencies",
         value = FALSE
       ),
       checkboxInput(
@@ -359,22 +359,39 @@ srv_tm_g_association <- function(id,
         )
       })
 
+      # helper function to format variable name
+      format_varnames <- function(x) {
+        if (is.numeric(ANL[[x]]) && log_transformation) {
+          varname_w_label(x, ANL, prefix = "Log of ")
+        } else {
+          varname_w_label(x, ANL)
+        }
+      }
+      new_title <-
+        if (association) {
+          switch(as.character(length(vars_names)),
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 "1" = sprintf("Association between %s and %s",
+                               ref_cl_lbl,
+                               format_varnames(vars_names)),
+                 sprintf("Associations between %s and: %s",
+                         ref_cl_lbl,
+                         paste(lapply(vars_names, format_varnames), collapse = ", "))
+          )
+        } else {
+          switch(as.character(length(vars_names)),
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 sprintf("Value distributions for %s and %s",
+                         ref_cl_lbl,
+                         paste(lapply(vars_names, format_varnames), collapse = ", "))
+          )
+        }
+
       teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
           expr = title <- new_title,
-          env = list(new_title = paste(
-            "Association",
-            ifelse(ref_class_cov == "NULL", "for", "between"),
-            paste(lapply(vars_names, function(x) {
-              if (is.numeric(ANL[[x]]) && log_transformation) {
-                varname_w_label(x, ANL, prefix = "Log of ")
-              } else {
-                varname_w_label(x, ANL)
-              }
-            }), collapse = " / "),
-            ifelse(ref_class_cov == "NULL", "", paste("and", ref_cl_lbl))
-          ))
+          env = list(new_title = new_title)
         )
       ) %>%
         teal.code::eval_code(
