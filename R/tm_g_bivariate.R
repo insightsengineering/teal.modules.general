@@ -751,7 +751,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       plot_call <- reduce_plot_call(
         plot_call,
         quote(geom_bar(aes(y = ..prop.., group = 1))),
-        quote(ylab("Proportion"))
+        quote(ylab("Fraction"))
       )
     }
   } else if (x_class == "NULL" && y_class == "factor") {
@@ -767,7 +767,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
       plot_call <- reduce_plot_call(
         plot_call,
         quote(geom_bar(aes(y = ..prop.., group = 1))),
-        quote(ylab("Proportion"))
+        quote(ylab("Fraction"))
       )
     }
     # Numeric Plots
