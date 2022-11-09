@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.15.9003
+# teal.modules.general 0.2.15.9004
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 
@@ -10,6 +10,7 @@
 ### Enhancements
 
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
+* Improved UI labels and plot panel title in `tm_g_association`.
 
 # teal.modules.general 0.2.15
 
