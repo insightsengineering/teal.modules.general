@@ -18,6 +18,14 @@
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
 #'
+#' @aliases
+#'   tm_variable_browser_ui,
+#'   tm_variable_browser_srv,
+#'   tm_variable_browser,
+#'   variable_browser_ui,
+#'   variable_browser_srv,
+#'   variable_browser
+#'
 #'
 #' @export
 #'
