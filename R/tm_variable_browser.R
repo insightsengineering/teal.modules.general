@@ -216,8 +216,9 @@ srv_variable_browser <- function(id,
 
     datanames <- names(data)
 
-    if (!identical(datasets_selected, character(0))) {
-      stopifnot(all(datasets_selected %in% datanames))
+    checkmate::assert_character(datasets_selected)
+    checkmate::assert_subset(datasets_selected, datanames)
+    if (length(datasets_selected) != 0L){
       datanames <- datasets_selected
     }
 
