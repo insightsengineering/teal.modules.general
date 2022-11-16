@@ -112,6 +112,7 @@ ui_variable_browser <- function(id,
 
   shiny::tagList(
     include_css_files("custom"),
+    shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = fluidRow(
         htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
@@ -151,14 +152,9 @@ ui_variable_browser <- function(id,
                 )
               )
             ),
-            { # nolint
-              x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-              if (length(parent_dataname) > 0 && parent_dataname %in% datanames) {
-                x
-              } else {
-                shinyjs::hidden(x)
-              }
-            }
+            shinyjs::hidden({
+              checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
+            })
           )
         ),
         column(
@@ -220,6 +216,10 @@ srv_variable_browser <- function(id,
     if (length(datasets_selected) != 0L){
       datanames <- datasets_selected
     }
+
+    # conditionally display checkbox
+    shinyjs::toggle(id = "show_parent_vars",
+                    condition = length(parent_dataname) > 0 && parent_dataname %in% datanames)
 
     columns_names <- new.env() # nolint
 
