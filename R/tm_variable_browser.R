@@ -156,7 +156,18 @@ ui_variable_browser <- function(id,
               } else {
                 shinyjs::hidden(x)
               }
-            }
+            },
+            # input user-defined text size
+            teal.widgets::panel_item(
+              title = "Plot settings",
+              collapsed = TRUE,
+              teal.widgets::optionalSliderInputValMinMax(
+                inputId = ns("font_size"),
+                label = "Font Size",
+                value_min_max = c(15L, 5L, 30L),
+                step = 1L,
+                ticks = FALSE)
+            )
           )
         ),
         column(
