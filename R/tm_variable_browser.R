@@ -320,7 +320,8 @@ srv_variable_browser <- function(id,
         unique_entries <- length(unique(df[[varname]]))
         if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
           list(
-            checkboxInput(session$ns("numeric_as_factor"),
+            checkboxInput(
+              session$ns("numeric_as_factor"),
               "Treat variable as factor",
               value = `if`(
                 is.null(isolate(input$numeric_as_factor)),
@@ -1064,12 +1065,12 @@ get_plotted_data <- function(input, plot_var, data) {
 #' @keywords internal
 render_tabset_panel_content <- function(datanames, parent_dataname, output, data, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
-    input = input,
-    output = output,
-    data = data,
-    parent_dataname = parent_dataname,
-    columns_names = columns_names,
-    plot_var = plot_var
+         input = input,
+         output = output,
+         data = data,
+         parent_dataname = parent_dataname,
+         columns_names = columns_names,
+         plot_var = plot_var
   )
 }
 
