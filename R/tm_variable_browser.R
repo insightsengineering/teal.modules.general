@@ -935,7 +935,9 @@ plot_var_summary <- function(var,
           label = outlier_text,
           x = Inf, y = Inf,
           hjust = 1.02, vjust = 1.2,
-          color = "black"
+          color = "black",
+          # explicitly modify geom text size according
+          size = ggplot2_args[["theme"]][["text"]][["size"]]/3.5
         )
       }
       p
