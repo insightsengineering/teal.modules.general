@@ -256,7 +256,6 @@ srv_variable_browser <- function(id,
 
       numeric_ui <- tagList(
         fluidRow(
-          sliderInput(session$ns("font_size"), label = "font size", min = 10, max = 30, value = 30, step = 2),
           div(
             class = "col-md-4",
             shinyWidgets::switchInput(
@@ -423,8 +422,7 @@ srv_variable_browser <- function(id,
         display_density = display_density,
         outlier_definition = outlier_definition,
         records_for_factor = .unique_records_for_factor,
-        ggplot2_args = ggplot2_args,
-        font_size = input$font_size
+        ggplot2_args = ggplot2_args
       )
     })
 
@@ -838,8 +836,7 @@ plot_var_summary <- function(var,
                              remove_NA_hist = FALSE, # nolint
                              outlier_definition,
                              records_for_factor,
-                             ggplot2_args,
-                             font_size) {
+                             ggplot2_args) {
   checkmate::assert_flag(display_density)
 
   grid::grid.newpage()
@@ -950,7 +947,7 @@ plot_var_summary <- function(var,
       # numeric not as factor
       plot_main <- plot_main +
         theme_light() +
-        list(labs = do.call("labs", all_ggplot2_args$labs)) + theme(text = element_text(size = font_size))
+        list(labs = do.call("labs", all_ggplot2_args$labs))
     } else {
       # factor low number of levels OR numeric as factor OR Date
       plot_main <- plot_main +
@@ -958,7 +955,7 @@ plot_var_summary <- function(var,
         list(
           labs = do.call("labs", all_ggplot2_args$labs),
           theme = do.call("theme", all_ggplot2_args$theme)
-        ) +  theme(text = element_text(size = font_size))
+        )
     }
     plot_main <- ggplotGrob(plot_main)
   }
