@@ -258,6 +258,18 @@ srv_variable_browser <- function(id,
       plot_var = plot_var
     )
 
+    # add used-defined text size to ggplot arguments passed from caller frame
+    user_ggplot2_args <- reactive({
+      teal.widgets::ggplot2_args(
+        theme = list("text" = ggplot2::element_text(size = input[["font_size"]])))
+    })
+    all_ggplot2_args <- reactive({
+      teal.widgets::resolve_ggplot2_args(
+        user_plot = user_ggplot2_args(),
+        module_plot = ggplot2_args
+      )
+    })
+
     output$ui_numeric_display <- renderUI({
       dataname <- input$tabset_panel
       varname <- plot_var$variable[[input$tabset_panel]]
