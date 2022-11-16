@@ -158,14 +158,7 @@ ui_variable_browser <- function(id,
               } else {
                 shinyjs::hidden(x)
               }
-            },
-            # input user-defined text size
-            teal.widgets::panel_item(
-              title = "Plot settings",
-              collapsed = TRUE,
-              sliderInput(inputId = ns("font_size"), label = "Font Size",
-                          min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)
-            ),
+            }
           )
         ),
         column(
@@ -183,6 +176,14 @@ ui_variable_browser <- function(id,
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
+            br(),
+            # input user-defined text size
+            teal.widgets::panel_item(
+              title = "Plot settings",
+              collapsed = TRUE,
+              sliderInput(inputId = ns("font_size"), label = "Font Size",
+                          min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)
+            ),
             br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
