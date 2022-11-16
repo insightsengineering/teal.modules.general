@@ -445,7 +445,7 @@ srv_variable_browser <- function(id,
         display_density = display_density,
         outlier_definition = outlier_definition,
         records_for_factor = .unique_records_for_factor,
-        ggplot2_args = ggplot2_args
+        ggplot2_args = all_ggplot2_args()
       )
     })
 
