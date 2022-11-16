@@ -163,13 +163,9 @@ ui_variable_browser <- function(id,
             teal.widgets::panel_item(
               title = "Plot settings",
               collapsed = TRUE,
-              teal.widgets::optionalSliderInputValMinMax(
-                inputId = ns("font_size"),
-                label = "Font Size",
-                value_min_max = c(15L, 5L, 30L),
-                step = 1L,
-                ticks = FALSE)
-            )
+              sliderInput(inputId = ns("font_size"), label = "Font Size",
+                          min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)
+            ),
           )
         ),
         column(
