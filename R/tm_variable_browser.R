@@ -117,35 +117,29 @@ ui_variable_browser <- function(id,
                 id = ns("tabset_panel"),
                 do.call(
                   tagList,
-                  stats::setNames(
-                    lapply(
-                      datanames,
-                      function(dataname) {
-                        tabPanel(
-                          dataname,
-                          div(
-                            class = "mt-4",
-                            textOutput(ns(paste0("dataset_summary_", dataname)))
-                          ),
-                          div(
-                            class = "mt-4",
-                            teal.widgets::get_dt_rows(
-                              ns(paste0(
-                                "variable_browser_", dataname
-                              )),
-                              ns(
-                                paste0("variable_browser_", dataname, "_rows")
-                              )
-                            ),
-                            DT::dataTableOutput(ns(paste0(
-                              "variable_browser_", dataname
-                            )), width = "100%")
+                  lapply(datanames, function(dataname) {
+                    tabPanel(
+                      dataname,
+                      div(
+                        class = "mt-4",
+                        textOutput(ns(paste0("dataset_summary_", dataname)))
+                      ),
+                      div(
+                        class = "mt-4",
+                        teal.widgets::get_dt_rows(
+                          ns(paste0(
+                            "variable_browser_", dataname
+                          )),
+                          ns(
+                            paste0("variable_browser_", dataname, "_rows")
                           )
-                        )
-                      }
-                    ),
-                    NULL
-                  )
+                        ),
+                        DT::dataTableOutput(ns(paste0(
+                          "variable_browser_", dataname
+                        )), width = "100%")
+                      )
+                    )
+                  })
                 )
               )
             ),
