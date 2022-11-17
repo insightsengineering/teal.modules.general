@@ -18,6 +18,14 @@
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
 #'
+#' @aliases
+#'   tm_variable_browser_ui,
+#'   tm_variable_browser_srv,
+#'   tm_variable_browser,
+#'   variable_browser_ui,
+#'   variable_browser_srv,
+#'   variable_browser
+#'
 #'
 #' @export
 #'
@@ -104,6 +112,7 @@ ui_variable_browser <- function(id,
 
   shiny::tagList(
     include_css_files("custom"),
+    shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = fluidRow(
         htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
@@ -117,46 +126,35 @@ ui_variable_browser <- function(id,
                 id = ns("tabset_panel"),
                 do.call(
                   tagList,
-                  stats::setNames(
-                    lapply(
-                      datanames,
-                      function(dataname) {
-                        tabPanel(
-                          dataname,
-                          div(
-                            class = "mt-4",
-                            textOutput(ns(paste0("dataset_summary_", dataname)))
-                          ),
-                          div(
-                            class = "mt-4",
-                            teal.widgets::get_dt_rows(
-                              ns(paste0(
-                                "variable_browser_", dataname
-                              )),
-                              ns(
-                                paste0("variable_browser_", dataname, "_rows")
-                              )
-                            ),
-                            DT::dataTableOutput(ns(paste0(
-                              "variable_browser_", dataname
-                            )), width = "100%")
+                  lapply(datanames, function(dataname) {
+                    tabPanel(
+                      dataname,
+                      div(
+                        class = "mt-4",
+                        textOutput(ns(paste0("dataset_summary_", dataname)))
+                      ),
+                      div(
+                        class = "mt-4",
+                        teal.widgets::get_dt_rows(
+                          ns(paste0(
+                            "variable_browser_", dataname
+                          )),
+                          ns(
+                            paste0("variable_browser_", dataname, "_rows")
                           )
-                        )
-                      }
-                    ),
-                    NULL
-                  )
+                        ),
+                        DT::dataTableOutput(ns(paste0(
+                          "variable_browser_", dataname
+                        )), width = "100%")
+                      )
+                    )
+                  })
                 )
               )
             ),
-            { # nolint
-              x <- checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
-              if (length(parent_dataname) > 0 && parent_dataname %in% datanames) {
-                x
-              } else {
-                shinyjs::hidden(x)
-              }
-            }
+            shinyjs::hidden({
+              checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
+            })
           )
         ),
         column(
@@ -174,6 +172,30 @@ ui_variable_browser <- function(id,
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
+            br(),
+            # input user-defined text size
+            teal.widgets::panel_item(
+              title = "Plot settings",
+              collapsed = TRUE,
+              selectInput(
+                inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                choices = c(
+                  "gray", "bw", "linedraw", "light",
+                  "dark", "minimal", "classic", "void", "test"
+                ),
+                selected = "grey"
+              ),
+              fluidRow(
+                column(6, sliderInput(
+                  inputId = ns("font_size"), label = "font size",
+                  min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
+                )),
+                column(6, sliderInput(
+                  inputId = ns("label_rotation"), label = "rotate x labels",
+                  min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
+                ))
+              )
+            ),
             br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
@@ -205,10 +227,17 @@ srv_variable_browser <- function(id,
 
     datanames <- names(data)
 
-    if (!identical(datasets_selected, character(0))) {
-      stopifnot(all(datasets_selected %in% datanames))
+    checkmate::assert_character(datasets_selected)
+    checkmate::assert_subset(datasets_selected, datanames)
+    if (length(datasets_selected) != 0L) {
       datanames <- datasets_selected
     }
+
+    # conditionally display checkbox
+    shinyjs::toggle(
+      id = "show_parent_vars",
+      condition = length(parent_dataname) > 0 && parent_dataname %in% datanames
+    )
 
     columns_names <- new.env() # nolint
 
@@ -246,6 +275,26 @@ srv_variable_browser <- function(id,
       columns_names = columns_names,
       plot_var = plot_var
     )
+    # add used-defined text size to ggplot arguments passed from caller frame
+    all_ggplot2_args <- reactive({
+      user_text <- teal.widgets::ggplot2_args(
+        theme = list(
+          "text" = ggplot2::element_text(size = input[["font_size"]]),
+          "axis.text.x" = ggplot2::element_text(angle = input[["label_rotation"]], hjust = 1)
+        )
+      )
+      user_theme <- getFromNamespace(sprintf("theme_%s", input[["ggplot_theme"]]), ns = "ggplot2")
+      user_theme <- user_theme()
+      # temporary fix to circumvent assertion issue with resolve_ggplot2_args
+      # drop problematic elements
+      user_theme <- user_theme[grep("strip.text.y.left", names(user_theme), fixed = TRUE, invert = TRUE)]
+
+      teal.widgets::resolve_ggplot2_args(
+        user_plot = user_text,
+        user_default = teal.widgets::ggplot2_args(theme = user_theme),
+        module_plot = ggplot2_args
+      )
+    })
 
     output$ui_numeric_display <- renderUI({
       dataname <- input$tabset_panel
@@ -294,7 +343,8 @@ srv_variable_browser <- function(id,
         unique_entries <- length(unique(df[[varname]]))
         if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
           list(
-            checkboxInput(session$ns("numeric_as_factor"),
+            checkboxInput(
+              session$ns("numeric_as_factor"),
               "Treat variable as factor",
               value = `if`(
                 is.null(isolate(input$numeric_as_factor)),
@@ -422,7 +472,7 @@ srv_variable_browser <- function(id,
         display_density = display_density,
         outlier_definition = outlier_definition,
         records_for_factor = .unique_records_for_factor,
-        ggplot2_args = ggplot2_args
+        ggplot2_args = all_ggplot2_args()
       )
     })
 
@@ -838,6 +888,7 @@ plot_var_summary <- function(var,
                              records_for_factor,
                              ggplot2_args) {
   checkmate::assert_flag(display_density)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   grid::grid.newpage()
 
@@ -912,7 +963,9 @@ plot_var_summary <- function(var,
           label = outlier_text,
           x = Inf, y = Inf,
           hjust = 1.02, vjust = 1.2,
-          color = "black"
+          color = "black",
+          # explicitly modify geom text size according
+          size = ggplot2_args[["theme"]][["text"]][["size"]] / 3.5
         )
       }
       p
@@ -933,10 +986,9 @@ plot_var_summary <- function(var,
   }
 
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
-    labs = list(x = var_lab),
-    theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
+    labs = list(x = var_lab)
   )
-
+  ###
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
@@ -947,7 +999,10 @@ plot_var_summary <- function(var,
       # numeric not as factor
       plot_main <- plot_main +
         theme_light() +
-        list(labs = do.call("labs", all_ggplot2_args$labs))
+        list(
+          labs = do.call("labs", all_ggplot2_args$labs),
+          theme = do.call("theme", all_ggplot2_args$theme)
+        )
     } else {
       # factor low number of levels OR numeric as factor OR Date
       plot_main <- plot_main +
