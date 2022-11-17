@@ -264,15 +264,21 @@ srv_variable_browser <- function(id,
       columns_names = columns_names,
       plot_var = plot_var
     )
-
     # add used-defined text size to ggplot arguments passed from caller frame
-    user_ggplot2_args <- reactive({
-      teal.widgets::ggplot2_args(
-        theme = list("text" = ggplot2::element_text(size = input[["font_size"]])))
-    })
     all_ggplot2_args <- reactive({
+      user_text <- teal.widgets::ggplot2_args(
+        theme = list("text" = ggplot2::element_text(size = input[["font_size"]]),
+                     "axis.text.x" = ggplot2::element_text(angle = input[["label_rotation"]], hjust = 1))
+      )
+      user_theme <- getFromNamespace(sprintf("theme_%s", input[["ggplot_theme"]]), ns = "ggplot2")
+      user_theme <- user_theme()
+      # temporary fix to circumvent assertion issue with resolve_ggplot2_args
+      # drop problematic elements
+      user_theme <- user_theme[grep("strip.text.y.left", names(user_theme), fixed = TRUE, invert = TRUE)]
+
       teal.widgets::resolve_ggplot2_args(
-        user_plot = user_ggplot2_args(),
+        user_plot = user_text,
+        user_default = teal.widgets::ggplot2_args(theme = user_theme),
         module_plot = ggplot2_args
       )
     })
@@ -967,10 +973,9 @@ plot_var_summary <- function(var,
   }
 
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
-    labs = list(x = var_lab),
-    theme = list(axis.text.x = element_text(angle = 45, hjust = 1))
+    labs = list(x = var_lab)
   )
-
+###
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
