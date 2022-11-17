@@ -862,6 +862,7 @@ plot_var_summary <- function(var,
                              records_for_factor,
                              ggplot2_args) {
   checkmate::assert_flag(display_density)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   grid::grid.newpage()
 
