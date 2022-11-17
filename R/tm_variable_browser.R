@@ -177,16 +177,25 @@ ui_variable_browser <- function(id,
             teal.widgets::panel_item(
               title = "Plot settings",
               collapsed = TRUE,
-              selectInput(inputId = ns("ggplot_theme"), label = "ggplot2 theme",
-                          choices = c("gray", "bw", "linedraw", "light",
-                                      "dark", "minimal", "classic", "void", "test"),
-                          selected = "grey"),
-              fluidRow(
-                column(6, sliderInput(inputId = ns("font_size"), label = "font size",
-                                      min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)),
-                column(6, sliderInput(inputId = ns("label_rotation"), label = "rotate x labels",
-                                      min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE)))
+              selectInput(
+                inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                choices = c(
+                  "gray", "bw", "linedraw", "light",
+                  "dark", "minimal", "classic", "void", "test"
+                ),
+                selected = "grey"
               ),
+              fluidRow(
+                column(6, sliderInput(
+                  inputId = ns("font_size"), label = "font size",
+                  min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
+                )),
+                column(6, sliderInput(
+                  inputId = ns("label_rotation"), label = "rotate x labels",
+                  min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
+                ))
+              )
+            ),
             br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
@@ -220,13 +229,15 @@ srv_variable_browser <- function(id,
 
     checkmate::assert_character(datasets_selected)
     checkmate::assert_subset(datasets_selected, datanames)
-    if (length(datasets_selected) != 0L){
+    if (length(datasets_selected) != 0L) {
       datanames <- datasets_selected
     }
 
     # conditionally display checkbox
-    shinyjs::toggle(id = "show_parent_vars",
-                    condition = length(parent_dataname) > 0 && parent_dataname %in% datanames)
+    shinyjs::toggle(
+      id = "show_parent_vars",
+      condition = length(parent_dataname) > 0 && parent_dataname %in% datanames
+    )
 
     columns_names <- new.env() # nolint
 
@@ -267,8 +278,10 @@ srv_variable_browser <- function(id,
     # add used-defined text size to ggplot arguments passed from caller frame
     all_ggplot2_args <- reactive({
       user_text <- teal.widgets::ggplot2_args(
-        theme = list("text" = ggplot2::element_text(size = input[["font_size"]]),
-                     "axis.text.x" = ggplot2::element_text(angle = input[["label_rotation"]], hjust = 1))
+        theme = list(
+          "text" = ggplot2::element_text(size = input[["font_size"]]),
+          "axis.text.x" = ggplot2::element_text(angle = input[["label_rotation"]], hjust = 1)
+        )
       )
       user_theme <- getFromNamespace(sprintf("theme_%s", input[["ggplot_theme"]]), ns = "ggplot2")
       user_theme <- user_theme()
@@ -952,7 +965,7 @@ plot_var_summary <- function(var,
           hjust = 1.02, vjust = 1.2,
           color = "black",
           # explicitly modify geom text size according
-          size = ggplot2_args[["theme"]][["text"]][["size"]]/3.5
+          size = ggplot2_args[["theme"]][["text"]][["size"]] / 3.5
         )
       }
       p
@@ -975,7 +988,7 @@ plot_var_summary <- function(var,
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
     labs = list(x = var_lab)
   )
-###
+  ###
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
@@ -986,8 +999,10 @@ plot_var_summary <- function(var,
       # numeric not as factor
       plot_main <- plot_main +
         theme_light() +
-        list(labs = do.call("labs", all_ggplot2_args$labs),
-             theme = do.call("theme", all_ggplot2_args$theme))
+        list(
+          labs = do.call("labs", all_ggplot2_args$labs),
+          theme = do.call("theme", all_ggplot2_args$theme)
+        )
     } else {
       # factor low number of levels OR numeric as factor OR Date
       plot_main <- plot_main +
@@ -1075,12 +1090,12 @@ get_plotted_data <- function(input, plot_var, data) {
 #' @keywords internal
 render_tabset_panel_content <- function(datanames, parent_dataname, output, data, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
-         input = input,
-         output = output,
-         data = data,
-         parent_dataname = parent_dataname,
-         columns_names = columns_names,
-         plot_var = plot_var
+    input = input,
+    output = output,
+    data = data,
+    parent_dataname = parent_dataname,
+    columns_names = columns_names,
+    plot_var = plot_var
   )
 }
 
