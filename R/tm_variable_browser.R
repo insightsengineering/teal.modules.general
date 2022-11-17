@@ -184,7 +184,7 @@ ui_variable_browser <- function(id,
               fluidRow(
                 column(6, sliderInput(inputId = ns("font_size"), label = "font size",
                                       min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)),
-                column(6, sliderInput(inputId = ns("label_rotation"), label = "rorate x labels",
+                column(6, sliderInput(inputId = ns("label_rotation"), label = "rotate x labels",
                                       min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE)))
               ),
             br(),
