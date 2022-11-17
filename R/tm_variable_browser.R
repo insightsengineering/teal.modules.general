@@ -177,9 +177,16 @@ ui_variable_browser <- function(id,
             teal.widgets::panel_item(
               title = "Plot settings",
               collapsed = TRUE,
-              sliderInput(inputId = ns("font_size"), label = "Font Size",
-                          min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)
-            ),
+              selectInput(inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                          choices = c("gray", "bw", "linedraw", "light",
+                                      "dark", "minimal", "classic", "void", "test"),
+                          selected = "grey"),
+              fluidRow(
+                column(6, sliderInput(inputId = ns("font_size"), label = "font size",
+                                      min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE)),
+                column(6, sliderInput(inputId = ns("label_rotation"), label = "rorate x labels",
+                                      min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE)))
+              ),
             br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
