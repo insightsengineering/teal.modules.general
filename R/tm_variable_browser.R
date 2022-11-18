@@ -283,7 +283,7 @@ srv_variable_browser <- function(id,
           "axis.text.x" = ggplot2::element_text(angle = input[["label_rotation"]], hjust = 1)
         )
       )
-      user_theme <- getFromNamespace(sprintf("theme_%s", input[["ggplot_theme"]]), ns = "ggplot2")
+      user_theme <- utils::getFromNamespace(sprintf("theme_%s", input[["ggplot_theme"]]), ns = "ggplot2")
       user_theme <- user_theme()
       # temporary fix to circumvent assertion issue with resolve_ggplot2_args
       # drop problematic elements
