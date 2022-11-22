@@ -98,7 +98,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
+    server_args = list(label = label, variables = variables, plot_height = plot_height, plot_width = plot_width),
     filters = teal.transform::get_extract_datanames(variables)
   )
 }
@@ -159,7 +159,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
-srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
+srv_g_scatterplotmatrix <- function(id, label, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
@@ -344,9 +344,10 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Scatter Plot Matrix")
+        card$set_name(label)
         card$append_text("Scatter Plot Matrix", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")

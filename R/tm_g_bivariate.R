@@ -83,7 +83,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_g_bivariate <- function(label = "Bivariate Plots",
+tm_g_bivariate <- function(label = "Bivariate Plot",
                            x,
                            y,
                            row_facet = NULL,
@@ -192,7 +192,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(label = label, plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
     filters = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -340,6 +340,7 @@ ui_g_bivariate <- function(id, ...) {
 
 
 srv_g_bivariate <- function(id,
+                            label,
                             data,
                             reporter,
                             filter_panel_api,
@@ -555,9 +556,10 @@ srv_g_bivariate <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Bivariate Plot")
+        card$set_name(label)
         card$append_text("Bivariate Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")

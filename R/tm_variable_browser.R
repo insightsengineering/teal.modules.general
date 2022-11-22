@@ -76,11 +76,12 @@ tm_variable_browser <- function(label = "Variable Browser",
   datasets_selected <- unique(datasets_selected)
 
   module(
-    label,
+    label = label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
     filters = "all",
     server_args = list(
+      label = label,
       datasets_selected = datasets_selected,
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
@@ -209,6 +210,7 @@ ui_variable_browser <- function(id,
 }
 
 srv_variable_browser <- function(id,
+                                 label,
                                  data,
                                  reporter,
                                  filter_panel_api,
@@ -498,9 +500,10 @@ srv_variable_browser <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Variable Browser Plot")
+        card$set_name(label)
         card$append_text("Variable Browser Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")

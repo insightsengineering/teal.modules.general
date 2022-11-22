@@ -164,7 +164,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
   )
 }
 
-srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
+srv_t_crosstable <- function(id, label, data, reporter, filter_panel_api, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
@@ -333,9 +333,10 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Cross Table")
+        card$set_name(label)
         card$append_text("Cross Table", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Table", "header3")

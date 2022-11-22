@@ -95,7 +95,7 @@ tm_outliers <- function(label = "Outliers Module",
     server = srv_outliers,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(label = label, plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
     ui = ui_outliers,
     ui_args = args,
@@ -234,7 +234,7 @@ ui_outliers <- function(id, ...) {
   )
 }
 
-srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
+srv_outliers <- function(id, label, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -1096,10 +1096,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
         tab_type <- input$tabs
-        card$set_name(paste0("Outliers - ", tab_type))
+        card$set_name(paste0(label, " - ", tab_type))
         card$append_text(tab_type, "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
 

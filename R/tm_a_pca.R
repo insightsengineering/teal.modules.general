@@ -124,6 +124,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     server_args = c(
       data_extract_list,
       list(
+        label = label,
         plot_height = plot_height,
         plot_width = plot_width,
         ggplot2_args = ggplot2_args
@@ -251,7 +252,7 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
-srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
+srv_a_pca <- function(id, label, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
@@ -953,9 +954,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("PCA Plot")
+        card$set_name(label)
         card$append_text("PCA Plot", "header2")
         card$append_text("Principal Component Analysis Plot", "header3")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())

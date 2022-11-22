@@ -159,7 +159,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     server = srv_distribution,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(label = label, plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
     ui = ui_distribution,
     ui_args = args,
@@ -327,6 +327,7 @@ ui_distribution <- function(id, ...) {
 }
 
 srv_distribution <- function(id,
+                             label,
                              data,
                              reporter,
                              filter_panel_api,
@@ -1141,10 +1142,12 @@ srv_distribution <- function(id,
     )
 
     ### REPORTER
+
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Distribution Plot")
+        card$set_name(label)
         card$append_text("Distribution Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")

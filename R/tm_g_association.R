@@ -126,7 +126,7 @@ tm_g_association <- function(label = "Association",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(label = label, plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
     ),
     filters = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -210,6 +210,7 @@ ui_tm_g_association <- function(id, ...) {
 }
 
 srv_tm_g_association <- function(id,
+                                 label,
                                  data,
                                  reporter,
                                  filter_panel_api,
@@ -445,9 +446,10 @@ srv_tm_g_association <- function(id,
 
     ### REPORTER
     if (with_reporter) {
+      card_name <- label
       card_fun <- function(comment) {
         card <- teal.reporter::TealReportCard$new()
-        card$set_name("Association Plot")
+        card$set_name(label)
         card$append_text("Association Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")

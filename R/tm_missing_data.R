@@ -80,10 +80,10 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
   module(
-    label,
+    label = label,
     server = srv_page_missing_data,
     server_args = list(
-      parent_dataname = parent_dataname, plot_height = plot_height,
+      label = label, parent_dataname = parent_dataname, plot_height = plot_height,
       plot_width = plot_width, ggplot2_args = ggplot2_args
     ),
     ui = ui_page_missing_data,
@@ -157,7 +157,7 @@ ui_page_missing_data <- function(id, data, parent_dataname, pre_output = NULL, p
   )
 }
 
-srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
+srv_page_missing_data <- function(id, label, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args) {
   moduleServer(id, function(input, output, session) {
     lapply(
@@ -165,6 +165,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
       function(x) {
         srv_missing_data(
           id = x,
+          label = label,
           data = data,
           reporter = reporter,
           filter_panel_api = filter_panel_api,
@@ -341,7 +342,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
-srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
+srv_missing_data <- function(id, label, data, reporter, filter_panel_api, dataname, parent_dataname,
                              plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -1172,12 +1173,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_name <- label
+      card_fun <- function(comment, label = card_name) {
         card <- teal.reporter::TealReportCard$new()
         sum_type <- input$summary_type
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         title_dataname <- paste(title, dataname, sep = " - ")
-        card$set_name(paste("Missing Data", sum_type, dataname, sep = " - "))
+        card$set_name(paste(label, sum_type, dataname, sep = " - "))
         card$append_text(title_dataname, "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         if (sum_type == "Summary") {
