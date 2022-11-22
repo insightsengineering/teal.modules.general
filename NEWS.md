@@ -13,6 +13,9 @@
 * Improved UI labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
 
+### Bug fixes
+* Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
+
 # teal.modules.general 0.2.15
 
 ### Enhancements
