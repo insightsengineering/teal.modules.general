@@ -213,7 +213,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(label = label, plot_height = plot_height, plot_width = plot_width, table_dec = table_dec, ggplot2_args = ggplot2_args)
+      list(
+        label = label, plot_height = plot_height, plot_width = plot_width,
+        table_dec = table_dec, ggplot2_args = ggplot2_args
+      )
     ),
     filters = teal.transform::get_extract_datanames(data_extract_list)
   )
