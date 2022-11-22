@@ -499,6 +499,9 @@ srv_g_scatterplot <- function(id,
       validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
       validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
       validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
+      if ((length(row_facet_name) + length(col_facet_name)) > 1) {
+        validate(need(row_facet_name != col_facet_name, "Row and column facetting variables must be different."))
+      }
       validate(need(
         length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
         "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
