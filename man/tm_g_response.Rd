@@ -96,7 +96,7 @@ app <- init(
   ),
   modules = modules(
     tm_g_response(
-      label = "Response Plots",
+      label = "Response Plot",
       response = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(

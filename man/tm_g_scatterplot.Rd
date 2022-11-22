@@ -110,7 +110,7 @@ app <- init(
   ),
   modules = modules(
     tm_g_scatterplot(
-      label = "Scatterplot Choices",
+      label = "Scatterplot",
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(

@@ -5,7 +5,7 @@
 \title{Univariate and bivariate visualizations}
 \usage{
 tm_g_bivariate(
-  label = "Bivariate Plots",
+  label = "Bivariate Plot",
   x,
   y,
   row_facet = NULL,
