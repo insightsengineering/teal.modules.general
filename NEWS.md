@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.15.9007
+# teal.modules.general 0.2.15.9008
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 
@@ -12,6 +12,9 @@
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
 * Improved UI labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
+
+### Bug fixes
+* Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
 
 # teal.modules.general 0.2.15
 
