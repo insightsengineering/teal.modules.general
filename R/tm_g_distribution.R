@@ -707,7 +707,7 @@ srv_distribution <- function(id,
             expr = plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
               aes(x, color = color),
-              fun = mapped_dist,
+              fun = mapped_dist_name,
               n = ndensity,
               size = 2,
               args = params
@@ -717,7 +717,8 @@ srv_distribution <- function(id,
               plot_call = plot_call,
               dist_var = dist_var,
               ndensity = ndensity,
-              mapped_dist = unname(map_dist[t_dist])
+              mapped_dist = unname(map_dist[t_dist]),
+              mapped_dist_name = as.name(unname(map_dist[t_dist]))
             )
           )
         }
