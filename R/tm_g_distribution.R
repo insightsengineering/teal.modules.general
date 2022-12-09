@@ -258,29 +258,32 @@ ui_distribution <- function(id, ...) {
             collapsed = FALSE
           )
         ),
-        teal.widgets::panel_item(
-          "Theoretical Distribution",
-          teal.widgets::optionalSelectInput(
-            ns("t_dist"),
-            div(
-              class = "teal-tooltip",
-              tagList(
-                "Distribution:",
-                icon("circle-info"),
-                span(
-                  class = "tooltiptext",
-                  "Default parameters are optimized with MASS::fitdistr function."
+        conditionalPanel(
+          condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
+          teal.widgets::panel_item(
+            "Theoretical Distribution",
+            teal.widgets::optionalSelectInput(
+              ns("t_dist"),
+              div(
+                class = "teal-tooltip",
+                tagList(
+                  "Distribution:",
+                  icon("circle-info"),
+                  span(
+                    class = "tooltiptext",
+                    "Default parameters are optimized with MASS::fitdistr function."
+                  )
                 )
-              )
+              ),
+              choices = c("normal", "lognormal", "gamma", "unif"),
+              selected = NULL,
+              multiple = FALSE
             ),
-            choices = c("normal", "lognormal", "gamma", "unif"),
-            selected = NULL,
-            multiple = FALSE
-          ),
-          numericInput(ns("dist_param1"), label = "param1", value = NULL),
-          numericInput(ns("dist_param2"), label = "param2", value = NULL),
-          span(actionButton(ns("params_reset"), "Reset params")),
-          collapsed = FALSE
+            numericInput(ns("dist_param1"), label = "param1", value = NULL),
+            numericInput(ns("dist_param2"), label = "param2", value = NULL),
+            span(actionButton(ns("params_reset"), "Reset params")),
+            collapsed = FALSE
+          )
         )
       ),
       teal.widgets::panel_item(
@@ -704,7 +707,7 @@ srv_distribution <- function(id,
             expr = plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
               aes(x, color = color),
-              fun = mapped_dist,
+              fun = mapped_dist_name,
               n = ndensity,
               size = 2,
               args = params
@@ -714,7 +717,8 @@ srv_distribution <- function(id,
               plot_call = plot_call,
               dist_var = dist_var,
               ndensity = ndensity,
-              mapped_dist = unname(map_dist[t_dist])
+              mapped_dist = unname(map_dist[t_dist]),
+              mapped_dist_name = as.name(unname(map_dist[t_dist]))
             )
           )
         }
