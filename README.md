@@ -19,7 +19,6 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/insightsengineering/teal.modules.general?color=red\&label=open%20issues)](https://github.com/insightsengineering/teal.modules.general/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
 <!-- end badges -->
 
-
 This package contains a set of standard `teal` modules for you to include in applications.
 These include modules for:
 
