@@ -178,30 +178,38 @@ ui_a_regression <- function(id, ...) {
         selected = args$plot_choices[args$default_plot_type]
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
-      shinyjs::hidden(teal.widgets::optionalSliderInput(
-        ns("outlier"),
-        div(
-          class = "teal-tooltip",
-          tagList(
-            "Outlier definition:",
-            icon("circle-info"),
-            span(
-              class = "tooltiptext",
-              paste(
-                "Use the slider to choose the cut-off value to define outliers.",
-                "Points with a Cook's distance greater than",
-                "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+      conditionalPanel(
+        condition = "input['show_outlier']",
+        ns = ns,
+        teal.widgets::optionalSliderInput(
+          ns("outlier"),
+          div(
+            class = "teal-tooltip",
+            tagList(
+              "Outlier definition:",
+              icon("circle-info"),
+              span(
+                class = "tooltiptext",
+                paste(
+                  "Use the slider to choose the cut-off value to define outliers.",
+                  "Points with a Cook's distance greater than",
+                  "the value on the slider times the mean of the Cook's distance of the dataset will have labels."
+                )
               )
             )
-          )
-        ),
-        min = 1, max = 10, value = 9, ticks = FALSE, step = .1
-      )),
-      shinyjs::hidden(teal.widgets::optionalSelectInput(
-        ns("label_var"),
-        multiple = FALSE,
-        label = "Outlier label"
-      )),
+          ),
+          min = 1, max = 10, value = 9, ticks = FALSE, step = .1
+        )
+      ),
+      conditionalPanel(
+        condition = "input['show_outlier']",
+        ns = ns,
+        teal.widgets::optionalSelectInput(
+          ns("label_var"),
+          multiple = FALSE,
+          label = "Outlier label"
+        )
+      ),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -241,24 +249,66 @@ srv_a_regression <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    anl_merged_input <- teal.transform::merge_expression_module(
+
+    rule_rvr1 <- function(value) {
+      if (isTRUE(input$plot_type == "Response vs Regressor")) {
+        if (length(value) > 1L)
+          "This plot can only have one regressor."
+      }
+    }
+    rule_rvr2 <- function(other){
+      function(value) {
+        if (isTRUE(input$plot_type == "Response vs Regressor")) {
+          otherval <- selector_list()[[other]]()$select
+          if (isTRUE(value == otherval))
+            "Response vs Regressor must be different."
+        }
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(response = response, regressor = regressor),
       datasets = data,
-      join_keys = get_join_keys(data),
-      data_extract = list(response = response, regressor = regressor)
+      select_validation_rule = list(
+        regressor = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("At least one regressor should be selected."),
+          rule_rvr1,
+          rule_rvr2("response")
+        ),
+        response = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("At least one response should be selected."),
+          rule_rvr2("regressor")
+        )
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
+
+    iv_out <- shinyvalidate::InputValidator$new()
+    iv_out$condition(~ isTRUE(input$show_outlier))
+    iv_out$add_rule("label_var", shinyvalidate::sv_required("Please provide an `Outlier label` variable"))
+    iv_out$enable()
+
+    iv_theme <- shinyvalidate::InputValidator$new()
+    iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+    iv_theme$enable()
+
+
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      join_keys = get_join_keys(data)
     )
 
     regression_var <- reactive({
-      validate(
-        need(
-          !is.null(anl_merged_input()$columns_source$response) &&
-            !is.null(anl_merged_input()$columns_source$regressor),
-          "Please select regressor and response variables"
-        )
-      )
+      teal::validate_inputs(iv_r())
 
       list(
-        response = as.vector(anl_merged_input()$columns_source$response),
-        regressor = as.vector(anl_merged_input()$columns_source$regressor)
+        response = selector_list()$response()$select,
+        regressor = selector_list()$regressor()$select
       )
     })
 
@@ -273,35 +323,7 @@ srv_a_regression <- function(id,
       ANL <- anl_merged_q()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 10)
 
-      # validation
-      validate(
-        need(
-          length(regression_var()$regressor) > 0,
-          "At least one regressor should be selected."
-        )
-      )
-      validate(
-        need(
-          length(regression_var()$response) == 1,
-          "Response variable should be of length one."
-        )
-      )
       validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
-      validate(
-        need(
-          input$plot_type != "Response vs Regressor" || length(regression_var()$regressor) == 1,
-          paste0(
-            "Response vs Regressor plot is provided only for regressions with exactly one regressor.\n",
-            "Choose another plot or reduce number of regressors"
-          )
-        )
-      )
-      validate(
-        need(
-          input$plot_type != "Response vs Regressor" || regression_var()$regressor != regression_var()$response,
-          "Response vs Regressor is only provided if regression and response variables are different"
-        )
-      )
 
       teal::validate_has_data(
         ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
@@ -364,7 +386,8 @@ srv_a_regression <- function(id,
     })
 
     label_col <- reactive({
-      validate(need(input$label_var, "`Display outlier labels` field is checked but `Outlier label` field is empty"))
+      teal::validate_inputs(iv_out)
+
       substitute(
         expr = dplyr::if_else(
           data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
@@ -383,16 +406,6 @@ srv_a_regression <- function(id,
       )
     })
 
-    observeEvent(input$show_outlier, {
-      if (input$show_outlier) {
-        shinyjs::show("outlier")
-        shinyjs::show("label_var")
-      } else {
-        shinyjs::hide("outlier")
-        shinyjs::hide("label_var")
-      }
-    })
-
     output_q <- reactive({
       alpha <- input$alpha # nolint
       size <- input$size # nolint
@@ -400,7 +413,7 @@ srv_a_regression <- function(id,
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
-      validate(need(!is.null(ggtheme), "Please select a theme."))
+      teal::validate_inputs(iv_theme)
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
@@ -843,6 +856,9 @@ srv_a_regression <- function(id,
     )
 
     output$text <- renderText({
+      req(iv_r()$is_valid())
+      req(iv_out$is_valid())
+      req(iv_theme$is_valid())
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
