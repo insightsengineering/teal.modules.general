@@ -222,10 +222,9 @@ srv_tm_g_association <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     overlap_vars <- function(value) {
       if (length(selector_list()$ref()$select) != 0 &&
-          selector_list()$ref()$select %in% selector_list()$vars()$select) {
+        selector_list()$ref()$select %in% selector_list()$vars()$select) {
         "Associated variables and reference variable cannot overlap"
       }
     }

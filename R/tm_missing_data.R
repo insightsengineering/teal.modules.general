@@ -376,13 +376,15 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
       iv_summary_table$add_rule(
         "group_by_var",
-        ~ if (length(.) > 0 && length(input$variables_select) == 1 && (.) == input$variables_select)
+        ~ if (length(.) > 0 && length(input$variables_select) == 1 && (.) == input$variables_select) {
           "If only one reference variable is selected it must not be the grouping variable."
+        }
       )
       iv_summary_table$add_rule(
         "variables_select",
-        ~ if (length(input$group_by_var) > 0 && length(.) == 1 && (.) == input$group_by_var)
+        ~ if (length(input$group_by_var) > 0 && length(.) == 1 && (.) == input$group_by_var) {
           "If only one reference variable is selected it must not be the grouping variable."
+        }
       )
       iv_summary_table$enable()
       iv$enable()
@@ -482,7 +484,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     output$variables <- renderUI({
-
       choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
       selected <- choices <- unname(unlist(choices))
 

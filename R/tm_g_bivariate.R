@@ -364,8 +364,9 @@ srv_g_bivariate <- function(id,
     )
 
     x_y_selection <- function(value) {
-      if (length(selector_list()$x()$select) == 0 && length(selector_list()$y()$select) == 0)
+      if (length(selector_list()$x()$select) == 0 && length(selector_list()$y()$select) == 0) {
         "Please select at least one of x-variable or y-variable"
+      }
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(
