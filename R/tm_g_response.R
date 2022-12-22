@@ -234,7 +234,20 @@ srv_g_response <- function(id,
   moduleServer(id, function(input, output, session) {
     data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        response = shinyvalidate::sv_required("Please define a column for the response variable"),
+        x = shinyvalidate::sv_required("Please define a column for X variable")
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -254,15 +267,13 @@ srv_g_response <- function(id,
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
+
       qenv <- merged$anl_q_r()
       ANL <- qenv[["ANL"]] # nolint
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
-      validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
-      validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
-      validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
-      validate(need(length(x) == 1, "Please define a column for X variable"))
       validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
       validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
       teal::validate_has_data(ANL, 10)
@@ -284,8 +295,6 @@ srv_g_response <- function(id,
       counts <- input$count_labels
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       ggtheme <- input$ggtheme
-
-      validate(need(!is.null(ggtheme), "Please select a theme."))
 
       arg_position <- if (freq) "stack" else "fill" # nolint
 

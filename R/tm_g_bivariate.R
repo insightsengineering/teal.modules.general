@@ -363,7 +363,25 @@ srv_g_bivariate <- function(id,
       color = color, fill = fill, size = size
     )
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+    x_y_selection <- function(value) {
+      if (length(selector_list()$x()$select) == 0 && length(selector_list()$y()$select) == 0)
+        "Please select at least one of x-variable or y-variable"
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        x = x_y_selection,
+        y = x_y_selection
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -383,12 +401,7 @@ srv_g_bivariate <- function(id,
     )
 
     output_q <- reactive({
-      validate({
-        need(
-          length(merged$anl_input_r()$columns_source$x) > 0 || length(merged$anl_input_r()$columns_source$y) > 0,
-          "x-variable and y-variable aren't correctly specified. At least one should be valid."
-        )
-      })
+      teal::validate_inputs(iv_r())
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 3)
@@ -450,7 +463,6 @@ srv_g_bivariate <- function(id,
 
 
       teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
-      validate(need(!is.null(ggtheme), "Please select a theme."))
 
       cl <- bivariate_plot_call(
         data_name = "ANL",

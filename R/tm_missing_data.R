@@ -348,10 +348,47 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
-
     data_r <- data[[dataname]]
-
     data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
+
+    rr <- function(vars_select) {
+      function(value) {
+        length(value) > 0 && (length(vars_select) > 1 || value != vars_select)
+      }
+    }
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      vars <- unique(c(data_keys(), input$variables_select))
+      iv$add_rule(
+        "variables_select",
+        shinyvalidate::sv_required("At least one reference variable needs to be selected.")
+      )
+      iv$add_rule(
+        "variables_select",
+        ~ if (length(setdiff(vars, data_keys())) < 1) "Please also select non-key columns."
+      )
+      iv_summary_table <- shinyvalidate::InputValidator$new()
+      iv_summary_table$condition(~ input$summary_type == "By Variable Levels")
+      iv_summary_table$add_rule("count_type", shinyvalidate::sv_required("Please select type of counts"))
+      iv_summary_table$add_rule(
+        "group_by_vals",
+        shinyvalidate::sv_required("Please select both group-by variable and values")
+      )
+      iv_summary_table$add_rule(
+        "group_by_var",
+        ~ if (length(.) > 0 && length(input$variables_select) == 1 && (.) == input$variables_select)
+          "If only one reference variable is selected it must not be the grouping variable."
+      )
+      iv_summary_table$add_rule(
+        "variables_select",
+        ~ if (length(input$group_by_var) > 0 && length(.) == 1 && (.) == input$group_by_var)
+          "If only one reference variable is selected it must not be the grouping variable."
+      )
+      iv_summary_table$enable()
+      iv$enable()
+      iv
+    })
+
 
     data_parent_keys <- reactive({
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
@@ -367,6 +404,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     common_code_q <- reactive({
+      teal::validate_inputs(iv_r())
+
       group_var <- input$group_by_var
       anl <- data_r()
       qenv <- teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data))
@@ -427,7 +466,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       req(input$variables_select)
       keys <- data_keys()
       vars <- unique(c(keys, input$variables_select))
-      validate(need(length(setdiff(vars, keys)) >= 1, "Please also select non-key columns."))
       vars
     })
 
@@ -444,6 +482,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     output$variables <- renderUI({
+
       choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
       selected <- choices <- unname(unlist(choices))
 
@@ -533,7 +572,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     summary_plot_q <- reactive({
       req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
-      validate(need(length(input$variables_select) > 0, "No variables selected"))
 
       qenv <- common_code_q()
 
@@ -776,7 +814,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     combination_plot_q <- reactive({
-      validate(need(length(input$variables_select) > 0, "No variables selected"))
       req(input$summary_type == "Combinations", input$combination_cutoff, combination_cutoff_q())
       teal::validate_has_data(data_r(), 1)
 
@@ -919,11 +956,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
 
-      validate(need(input$count_type, "Please select type of counts"))
-      if (!is.null(input$group_by_var)) {
-        validate(need(!is.null(input$group_by_vals), "Please select both group-by variable and values"))
-      }
-
       group_var <- input$group_by_var
       validate(
         need(
@@ -953,11 +985,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       qenv <- common_code_q()
 
       if (!is.null(group_var)) {
-        validate(need(
-          length(variables_select) > 1 || variables_select != group_var,
-          "If only one variable is selected it must not be the grouping variable."
-        ))
-
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -1002,9 +1029,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     summary_table_r <- reactive(summary_table_q()[["summary_data"]])
 
     by_subject_plot_q <- reactive({
-      req(input$summary_type == "Grouped by Subject") # needed to trigger show r code update on tab change
+      req(input$summary_type == "Grouped by Subject", common_code_q()) # needed to trigger show r code update on tab change
       teal::validate_has_data(data_r(), 1)
-      validate(need(length(input$variables_select) > 0, "No variables selected"))
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = "", y = ""),

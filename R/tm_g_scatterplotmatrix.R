@@ -166,8 +166,16 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
-      datasets = data
+      datasets = data,
+      select_validation_rule = list(
+        variables = ~ if (length(.) <= 1) "Please select at least 2 columns."
+      )
     )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
@@ -188,6 +196,8 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     # plot
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
+
       qenv <- merged$anl_q_r()
       ANL <- qenv[["ANL"]] # nolint
 
@@ -204,7 +214,6 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         "na.fail"
       }
 
-      validate(need(length(cols_names) > 1, "Need at least 2 columns."))
       teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
 

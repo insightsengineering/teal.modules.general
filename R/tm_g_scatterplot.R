@@ -391,7 +391,38 @@ srv_g_scatterplot <- function(id,
     data_extract <- list(
       x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
     )
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        x = ~ if (length(.) != 1) "Please select exactly one x var.",
+        y = ~ if (length(.) != 1) "Please select exactly one y var.",
+        color_by = ~ if (length(.) > 1) "There must be 1 or no color variable.",
+        size_by = ~ if (length(.) > 1) "There must be 1 or no size variable.",
+        row_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
+          ~ if (length(.) == 1 &&
+            length(selector_list()$col_facet()$select) == 1 &&
+            (.) == selector_list()$col_facet()$select) {
+            "Row and column facetting variables must be different."
+          }
+        ),
+        col_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
+          ~ if (length(.) == 1 &&
+            length(selector_list()$row_facet()$select) == 1 &&
+            (.) == selector_list()$row_facet()$select) {
+            "Row and column facetting variables must be different."
+          }
+        )
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -462,6 +493,8 @@ srv_g_scatterplot <- function(id,
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
+
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -492,16 +525,6 @@ srv_g_scatterplot <- function(id,
       log_x <- input$log_x
       log_y <- input$log_y
 
-      validate(need(!is.null(ggtheme), "Please select a theme."))
-      validate(need(length(x_var) == 1, "There must be exactly one x var."))
-      validate(need(length(y_var) == 1, "There must be exactly one y var."))
-      validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
-      validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
-      validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
-      validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
-      if (length(row_facet_name) * length(col_facet_name) > 0) {
-        validate(need(row_facet_name != col_facet_name, "Row and column facetting variables must be different."))
-      }
       validate(need(
         length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
         "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
