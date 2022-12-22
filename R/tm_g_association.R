@@ -222,10 +222,31 @@ srv_tm_g_association <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
+
+    overlap_vars <- function(value) {
+      if (length(selector_list()$ref()$select) != 0 &&
+          selector_list()$ref()$select %in% selector_list()$vars()$select) {
+        "Associated variables and reference variable cannot overlap"
+      }
+    }
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
-      datasets = data
+      datasets = data,
+      select_validation_rule = list(
+        ref = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("At least one reference variable needs to be selected."),
+          overlap_vars
+        ),
+        vars = overlap_vars
+      )
     )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("distribution_theme", shinyvalidate::sv_required("Please select a theme"))
+      iv$add_rule("association_theme", shinyvalidate::sv_required("Please select a theme"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
@@ -245,12 +266,7 @@ srv_tm_g_association <- function(id,
     )
 
     output_q <- reactive({
-      validate({
-        need(
-          !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
-          "Please select reference and associated variables"
-        )
-      })
+      teal::validate_inputs(iv_r())
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 3)
@@ -266,8 +282,7 @@ srv_tm_g_association <- function(id,
       distribution_theme <- input$distribution_theme
       association_theme <- input$association_theme
 
-      validate(need(ref_name, "need at least one variable selected"))
-
+      req(ref_name)
       is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
       if (is_scatterplot) {
         shinyjs::show("alpha")
@@ -280,9 +295,6 @@ srv_tm_g_association <- function(id,
         alpha <- 0.5
         size <- 2
       }
-
-      validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
-      validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
       teal::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
@@ -417,7 +429,10 @@ srv_tm_g_association <- function(id,
         )
     })
 
-    plot_r <- shiny::reactive(output_q()[["p"]])
+    plot_r <- shiny::reactive({
+      shiny::req(iv_r()$is_valid())
+      output_q()[["p"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
