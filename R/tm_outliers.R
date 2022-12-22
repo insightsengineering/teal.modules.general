@@ -240,8 +240,33 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-    selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
+
+    rule_diff <- function(other, message) {
+      function(value, msg = message) {
+        others <- selector_list()[[other]]()$select
+        if (isTRUE(is.element(value, others)))
+          msg
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      list(outlier_var = outlier_var, categorical_var = categorical_var),
+      datasets = data,
+      select_validation_rule = list(
+          outlier_var = shinyvalidate::sv_required("Please select variable"),
+          categorical_var = rule_diff( # to fix: this rule will appear in every window if true
+              "outlier_var",
+              message = "`Variable` and `Categorical factor` cannot be the same"
+            )
+        )
+      )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
+      iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     reactive_select_input <- reactive({
       if (is.null(selector_list()$categorical_var) || length(selector_list()$categorical_var()$select) == 0) {
@@ -274,7 +299,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     n_outlier_missing <- reactive({
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
-      validate(need(outlier_var, "Please select a variable"))
+      teal::validate_inputs(iv_r())
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       sum(is.na(ANL[[outlier_var]]))
     })
@@ -288,16 +313,27 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       qenv <- merged$anl_q_r()
-
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-      validate(need(outlier_var, "Please select a variable"))
-      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
-      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
-      validate(need(input$method, "Please select a method"))
+      validate(need(outlier_var, "")) # to fix: complete removal causes app to break
+
+      teal::validate_has_data(ANL, 1)
+
+      iv_var <- shinyvalidate::InputValidator$new()
+      iv_var$add_rule(
+        "outlier_var",
+        ~ if (isFALSE(is.numeric(ANL[[outlier_var]]))) "Variable is not numeric"
+        )
+      iv_var$add_rule(
+        "outlier_var",
+        ~ if (isTRUE(length(unique(ANL[[outlier_var]])) <= 1)) "Variable has no variation, i.e. only one unique value"
+        )
+      iv_var$enable()
+      teal::validate_inputs(iv_var, header = "Issue with selected variable")
+
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
@@ -323,15 +359,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         }
       } else {
-        validate(need(input_catvar, "Please select categories to include"))
 
-        validate(need(
-          is.factor(ANL[[categorical_var]]) ||
-            is.character(ANL[[categorical_var]]) ||
-            is.integer(ANL[[categorical_var]]),
-          "`Categorical factor` must be `factor`, `character`, or `integer`"
-        ))
-        validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
+        validate(need(input_catvar, "Please select categories to include"))
 
         input_catlevels <- if (is_cat_filter_spec) {
           input_catvar
@@ -572,7 +601,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       qenv
     })
-    validate(need(outlier_var, "Please select a variable"))
 
     output$summary_table <- DT::renderDataTable(
       expr = {
@@ -602,7 +630,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # validation
       teal::validate_has_data(ANL, 1)
-      validate(need(input$boxplot_alts, "Please select `Plot type`"))
 
       # boxplot
       plot_call <- quote(ANL %>% ggplot()) # nolint
@@ -865,7 +892,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # slider text
     output$ui_outlier_help <- renderUI({
-      validate(need(input$method, "Please select a method"))
+      validate(need(input$method, "")) # breaks if removed
       if (input$method == "IQR") {
         req(input$iqr_slider)
         tags$small(
