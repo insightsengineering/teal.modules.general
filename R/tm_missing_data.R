@@ -353,14 +353,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      vars <- unique(c(data_keys(), input$variables_select))
       iv$add_rule(
         "variables_select",
         shinyvalidate::sv_required("At least one reference variable needs to be selected.")
       )
       iv$add_rule(
         "variables_select",
-        ~ if (length(setdiff(vars, data_keys())) < 1) "Please also select non-key columns."
+        ~ if (length(setdiff((.), data_keys())) < 1) "Please also select non-key columns."
       )
       iv_summary_table <- shinyvalidate::InputValidator$new()
       iv_summary_table$condition(~ input$summary_type == "By Variable Levels")
@@ -381,7 +380,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           "If only one reference variable is selected it must not be the grouping variable."
         }
       )
-      iv_summary_table$enable()
+      iv$add_validator(iv_summary_table)
       iv$enable()
       iv
     })

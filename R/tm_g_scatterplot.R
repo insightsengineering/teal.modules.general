@@ -397,23 +397,27 @@ srv_g_scatterplot <- function(id,
       select_validation_rule = list(
         x = ~ if (length(.) != 1) "Please select exactly one x var.",
         y = ~ if (length(.) != 1) "Please select exactly one y var.",
-        color_by = ~ if (length(.) > 1) "There must be 1 or no color variable.",
-        size_by = ~ if (length(.) > 1) "There must be 1 or no size variable.",
+        color_by = ~ if (length(.) > 1) "There cannot be more than 1 color variable.",
+        size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
         row_facet = shinyvalidate::compose_rules(
           ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
-          ~ if (length(.) == 1 &&
-            length(selector_list()$col_facet()$select) == 1 &&
-            (.) == selector_list()$col_facet()$select) {
-            "Row and column facetting variables must be different."
+          ~ if ("col_facet" %in% names(selector_list())) {
+              if (
+                length(.) == 1 &&
+                length(selector_list()$col_facet()$select) == 1 &&
+                (.) == selector_list()$col_facet()$select)
+                "Row and column facetting variables must be different."
           }
         ),
         col_facet = shinyvalidate::compose_rules(
           ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
-          ~ if (length(.) == 1 &&
-            length(selector_list()$row_facet()$select) == 1 &&
-            (.) == selector_list()$row_facet()$select) {
-            "Row and column facetting variables must be different."
-          }
+          ~ if ("row_facet" %in% names(selector_list())) {
+              if (
+                length(.) == 1 &&
+                length(selector_list()$row_facet()$select) == 1 &&
+                (.) == selector_list()$row_facet()$select)
+                "Row and column facetting variables must be different."
+            }
         )
       )
     )
@@ -421,7 +425,7 @@ srv_g_scatterplot <- function(id,
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
-      teal.transform::compose_and_enable_validators(iv, selector_list)
+      teal.transform::compose_and_enable_validators(iv, selector_list, names(selector_list))
     })
 
     anl_merged_input <- teal.transform::merge_expression_srv(

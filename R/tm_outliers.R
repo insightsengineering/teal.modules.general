@@ -248,17 +248,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       select_validation_rule = list(
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
-          ~ if (
-            length(selector_list()$categorical_var()$select) > 0 &&
+          ~ if ("categorical_var" %in% names(selector_list())) {
+            if (length(selector_list()$categorical_var()$select) > 0 &&
               selector_list()$categorical_var()$select == (.)) {
-            "`Variable` and `Categorical factor` cannot be the same"
+              "`Variable` and `Categorical factor` cannot be the same"
+            }
           }
         )
       ),
       filter_validation_rule = list(
         categorical_var = shinyvalidate::compose_rules(
-          ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-            length(selector_list()$categorical_var()$filters[[1]]$selected) == 0) {
+          ~ if (length(selector_list()$categorical_var()$select) > 0 && length(.) == 0) {
             "Please select the filter levels"
           },
           ~ if (length(selector_list()$categorical_var()$select) > 0 &&

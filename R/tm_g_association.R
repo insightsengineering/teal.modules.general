@@ -222,21 +222,18 @@ srv_tm_g_association <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    overlap_vars <- function(value) {
-      if (length(selector_list()$ref()$select) != 0 &&
-        selector_list()$ref()$select %in% selector_list()$vars()$select) {
-        "Associated variables and reference variable cannot overlap"
-      }
-    }
+
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
       datasets = data,
       select_validation_rule = list(
         ref = shinyvalidate::compose_rules(
-          shinyvalidate::sv_required("At least one reference variable needs to be selected."),
-          overlap_vars
+          shinyvalidate::sv_required("A reference variable needs to be selected."),
+          ~ if (length(.) != 0 && (.) %in% selector_list()$vars()$select)
+            "Associated variables and reference variable cannot overlap"
         ),
-        vars = overlap_vars
+        vars = ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
+          "Associated variables and reference variable cannot overlap"
       )
     )
 

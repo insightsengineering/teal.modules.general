@@ -239,7 +239,29 @@ srv_g_response <- function(id,
       datasets = data,
       select_validation_rule = list(
         response = shinyvalidate::sv_required("Please define a column for the response variable"),
-        x = shinyvalidate::sv_required("Please define a column for X variable")
+        x = shinyvalidate::sv_required("Please define a column for X variable"),
+        row_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
+          ~ if ("col_facet" %in% names(selector_list())) {
+            if (
+              length(.) == 1 &&
+                length(selector_list()$col_facet()$select) == 1 &&
+                (.) == selector_list()$col_facet()$select) {
+              "Row and column facetting variables must be different."
+            }
+          }
+        ),
+        col_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
+          ~ if ("row_facet" %in% names(selector_list())) {
+            if (
+              length(.) == 1 &&
+                length(selector_list()$row_facet()$select) == 1 &&
+                (.) == selector_list()$row_facet()$select) {
+              "Row and column facetting variables must be different."
+            }
+          }
+        )
       )
     )
 
