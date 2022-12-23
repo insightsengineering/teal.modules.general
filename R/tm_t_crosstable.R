@@ -173,32 +173,15 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       data_extract = list(x = x, y = y),
       datasets = data,
       select_validation_rule = list(
-
-        outlier_var = shinyvalidate::compose_rules(
-          shinyvalidate::sv_required("Please select a variable"),
-          ~ if (
-            length(selector_list()$categorical_var()$select) > 0 &&
-            selector_list()$categorical_var()$select == (.))
-            "`Variable` and `Categorical factor` cannot be the same"
-        )
-      ),
-      filter_validation_rule = list(
-        categorical_var = shinyvalidate::compose_rules(
-          ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-                length(selector_list()$categorical_var()$filters[[1]]$selected) == 0)
-            "Please select the filter levels",
-          ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-                length(selector_list()$outlier_var()$select) > 0 &&
-                selector_list()$outlier_var()$select == selector_list()$categorical_var()$select)
-            "`Variable` and `Categorical factor` cannot be the same"
-        )
+        x = shinyvalidate::sv_required("Please define column for row variable that is not empty."),
+        y = shinyvalidate::sv_required("Please define column for column variable that is not empty.")
       )
     )
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
-      iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
+      #iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
+      #iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
@@ -250,9 +233,6 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
       x_name <- as.vector(merged$anl_input_r()$columns_source$x)
       y_name <- as.vector(merged$anl_input_r()$columns_source$y)
-
-      validate(need(length(x_name) > 0, "Please define column for row variable that is not empty."))
-      validate(need(length(y_name) > 0, "Please define column for column variable that is not empty."))
 
       teal::validate_has_data(ANL, 3)
       teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
@@ -343,7 +323,10 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     output$title <- renderText(output_q()[["title"]])
 
-    table_r <- reactive(output_q()[["tbl"]])
+    table_r <- reactive({
+      shiny::req(iv_r()$is_valid())
+      output_q()[["tbl"]]
+    })
 
     teal.widgets::table_with_settings_srv(
       id = "table",
