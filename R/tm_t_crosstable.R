@@ -169,7 +169,38 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(x = x, y = y),
+      datasets = data,
+      select_validation_rule = list(
+
+        outlier_var = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("Please select a variable"),
+          ~ if (
+            length(selector_list()$categorical_var()$select) > 0 &&
+            selector_list()$categorical_var()$select == (.))
+            "`Variable` and `Categorical factor` cannot be the same"
+        )
+      ),
+      filter_validation_rule = list(
+        categorical_var = shinyvalidate::compose_rules(
+          ~ if (length(selector_list()$categorical_var()$select) > 0 &&
+                length(selector_list()$categorical_var()$filters[[1]]$selected) == 0)
+            "Please select the filter levels",
+          ~ if (length(selector_list()$categorical_var()$select) > 0 &&
+                length(selector_list()$outlier_var()$select) > 0 &&
+                selector_list()$outlier_var()$select == selector_list()$categorical_var()$select)
+            "`Variable` and `Categorical factor` cannot be the same"
+        )
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
+      iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     observeEvent(
       eventExpr = {
@@ -212,6 +243,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       # As this is a summary

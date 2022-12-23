@@ -241,13 +241,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-    selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
 
     selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = list(outlier_var = outlier_var, categorical_var = categorical_var),
+      data_extract = vars,
       datasets = data,
       select_validation_rule = list(
-
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
           ~ if (
