@@ -351,11 +351,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     data_r <- data[[dataname]]
     data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
 
-    rr <- function(vars_select) {
-      function(value) {
-        length(value) > 0 && (length(vars_select) > 1 || value != vars_select)
-      }
-    }
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
       vars <- unique(c(data_keys(), input$variables_select))
