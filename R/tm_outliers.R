@@ -250,19 +250,22 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           shinyvalidate::sv_required("Please select a variable"),
           ~ if (
             length(selector_list()$categorical_var()$select) > 0 &&
-            selector_list()$categorical_var()$select == (.))
+              selector_list()$categorical_var()$select == (.)) {
             "`Variable` and `Categorical factor` cannot be the same"
+          }
         )
       ),
       filter_validation_rule = list(
         categorical_var = shinyvalidate::compose_rules(
           ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-                length(selector_list()$categorical_var()$filters[[1]]$selected) == 0)
-            "Please select the filter levels",
+            length(selector_list()$categorical_var()$filters[[1]]$selected) == 0) {
+            "Please select the filter levels"
+          },
           ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-                length(selector_list()$outlier_var()$select) > 0 &&
-                selector_list()$outlier_var()$select == selector_list()$categorical_var()$select)
+            length(selector_list()$outlier_var()$select) > 0 &&
+            selector_list()$outlier_var()$select == selector_list()$categorical_var()$select) {
             "`Variable` and `Categorical factor` cannot be the same"
+          }
         )
       )
     )
@@ -456,7 +459,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                   q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
                   !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                      outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                    outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
                 }),
                 env = list(
                   outlier_var_name = as.name(outlier_var),

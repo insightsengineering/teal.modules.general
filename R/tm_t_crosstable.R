@@ -180,8 +180,6 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      #iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
-      #iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
@@ -230,7 +228,6 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       # As this is a summary
-
       x_name <- as.vector(merged$anl_input_r()$columns_source$x)
       y_name <- as.vector(merged$anl_input_r()$columns_source$y)
 

@@ -1025,7 +1025,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     summary_table_r <- reactive(summary_table_q()[["summary_data"]])
 
     by_subject_plot_q <- reactive({
-      req(input$summary_type == "Grouped by Subject", common_code_q()) # needed to trigger show r code update on tab change
+      # needed to trigger show r code update on tab change
+      req(input$summary_type == "Grouped by Subject", common_code_q())
+
       teal::validate_has_data(data_r(), 1)
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
