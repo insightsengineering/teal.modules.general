@@ -12,6 +12,7 @@
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
 * Improved UI labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
+* Updated encodings input checks to use `shinyvalidate::InputValidator` instead of `shiny::validate` for better UI experience.   
 
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
