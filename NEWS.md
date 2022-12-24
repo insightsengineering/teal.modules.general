@@ -16,6 +16,7 @@
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
 * Fixed a bug in `tm_g_distribution` to plot the theoretical distribution with newer `ggplot2` version.
+* Fixed a bug in `tm_g_bivariate` when adding lines checkbox was available if one of x or y was unselected.
 
 # teal.modules.general 0.2.15
 
