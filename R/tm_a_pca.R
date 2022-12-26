@@ -269,7 +269,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-
     rule_diff <- function(other) {
       function(value) {
         others <- selector_list()[[other]]()$select
@@ -290,7 +289,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     )
 
-    rule_dupl <- function(value) {
+    rule_dupl <- function(...) {
       if (isTRUE(input$x_axis == input$y_axis))
         "Please choose different X and Y axes."
     }
@@ -319,16 +318,15 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # computation ----
     computation <- reactive({
       req(merged$anl_q_r())
+      teal::validate_inputs(iv_r())
+
       # inputs
-      keep_cols <- selector_list()$dat()$select
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale") # nolint
       scale <- standardization == "center_scale"
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
-
-      # inputs validation
-      teal::validate_inputs(iv_r())
 
       teal::validate_has_data(ANL, 10)
       validate(need(
@@ -583,8 +581,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       ANL <- qenv[["ANL"]] # nolint
 
-      resp_col <- selector_list()$response()$select
-      dat_cols <- selector_list()$dat()$select
+      resp_col <- as.character(merged$anl_input_r()$columns_source$response)
+      dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       x_axis <- input$x_axis # nolint
       y_axis <- input$y_axis # nolint
       variables <- input$variables # nolint
@@ -663,7 +661,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         rp_keys <- setdiff(
           colnames(ANL),
-          unname(unlist(lapply(selector_list(), function(x) x()$select)))
+          as.character(unlist(merged$anl_input_r()$columns_source))
         ) # nolint
 
         response <- ANL[[resp_col]]
@@ -880,32 +878,18 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       iv_extra <- shinyvalidate::InputValidator$new()
       iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
 
-      iv_elbow <- shinyvalidate::InputValidator$new()
-      iv_elbow$condition(~ input$plot_type == "Elbow plot")
-
-      iv_circle <- shinyvalidate::InputValidator$new()
-      iv_circle$condition(~ input$plot_type == "Circle plot")
-      iv_circle$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
-      iv_circle$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
-      iv_circle$add_rule("x_axis", rule_dupl)
-      iv_circle$add_rule("y_axis", rule_dupl)
-      iv_circle$add_rule("variables", shinyvalidate::sv_required("Need Variables"))
-
-      iv_biplot <- shinyvalidate::InputValidator$new()
-      iv_biplot$condition(~ input$plot_type == "Biplot")
-      iv_biplot$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
-      iv_biplot$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
-      iv_biplot$add_rule("x_axis", rule_dupl)
-      iv_biplot$add_rule("y_axis", rule_dupl)
-
-      iv_eigen <- shinyvalidate::InputValidator$new()
-      iv_eigen$condition(~ input$plot_type == "Eigenvector plot")
-      iv_eigen$add_rule("pc", shinyvalidate::sv_required("Need PC"))
-
-      iv_extra$add_validator(iv_elbow)
-      iv_extra$add_validator(iv_circle)
-      iv_extra$add_validator(iv_biplot)
-      iv_extra$add_validator(iv_eigen)
+      if (input$plot_type %in% c("Circle plot", "Biplot")) {
+        iv_extra$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
+        iv_extra$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
+        iv_extra$add_rule("x_axis", rule_dupl)
+        iv_extra$add_rule("y_axis", rule_dupl)
+      }
+      if (input$plot_type == "Circle plot") {
+        iv_extra$add_rule("variables", shinyvalidate::sv_required("Need Variables"))
+      }
+      if (input$plot_type == "Eigenvector plot") {
+        iv_extra$add_rule("pc", shinyvalidate::sv_required("Need PC"))
+      }
 
       iv_extra$enable()
       teal::validate_inputs(iv_extra, header = "Plot settings are required")

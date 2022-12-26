@@ -343,18 +343,14 @@ srv_distribution <- function(id,
                 "Kolmogorov-Smirnov (two-samples)",
                 "one-way ANOVA")
     rule_req <- function(value) {
-      # if (isTRUE(input$dist_tests %in% dists1)) {
         if (!shinyvalidate::input_provided(value))
           "Please select stratify variable."
-      # }
     }
-    rule_dupl <- function(value) {
-        # if (identical(input$dist_tests, "Fligner-Killeen")) {
+    rule_dupl <- function(...) {
           strata <- selector_list()$strata_i()$select
           group <- selector_list()$group_i()$select
           if (isTRUE(strata == group))
             "Please select different variables for strata and group."
-        # }
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(
@@ -386,7 +382,6 @@ srv_distribution <- function(id,
     iv_theme$enable()
 
     rule_dist_loc <- function(value) {
-      # if (is.null(input$t_dist)) return(NULL)
       switch(
         input$t_dist,
         "normal" = NULL,
@@ -395,7 +390,6 @@ srv_distribution <- function(id,
         "unif" = NULL)
     }
     rule_dist_disp <- function(value) {
-      # if (is.null(input$t_dist)) return(NULL)
       switch(
         input$t_dist,
         "normal" = if (value < 0) "mean must be non-negative",
@@ -407,7 +401,6 @@ srv_distribution <- function(id,
                "Anderson-Darling (one-sample)",
                "Cramer-von Mises (one-sample)")
     rule_dist <- function(value) {
-      # if (isTRUE(input$tabs, "QQplot" || input$dist_tests %in% dist2)) return(NULL)
       if(!shinyvalidate::input_provided(value))
         "Please select the theoretical distribution."
     }
@@ -419,9 +412,6 @@ srv_distribution <- function(id,
     )
     iv_dist$add_rule("dist_param1", crule(rule_dist_loc, !is.null(input$t_dist)))
     iv_dist$add_rule("dist_param2", crule(rule_dist_disp, !is.null(input$t_dist)))
-    # iv_dist$add_rule("t_dist", rule_dist)
-    # iv_dist$add_rule("dist_param1", rule_dist_loc)
-    # iv_dist$add_rule("dist_param2", rule_dist_disp)
     iv_dist$enable()
 
 
@@ -845,8 +835,7 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_theme)
-        teal::validate_inputs(iv_dist)
+        teal::validate_inputs(iv_dist, iv_theme)
 
         qenv <- common_q()
 

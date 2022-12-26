@@ -199,11 +199,7 @@ ui_a_regression <- function(id, ...) {
             )
           ),
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
-        )
-      ),
-      conditionalPanel(
-        condition = "input['show_outlier']",
-        ns = ns,
+        ),
         teal.widgets::optionalSelectInput(
           ns("label_var"),
           multiple = FALSE,
@@ -256,12 +252,12 @@ srv_a_regression <- function(id,
           "This plot can only have one regressor."
       }
     }
-    rule_rvr2 <- function(other){
+    rule_rvr2 <- function(other) {
       function(value) {
         if (isTRUE(input$plot_type == "Response vs Regressor")) {
           otherval <- selector_list()[[other]]()$select
           if (isTRUE(value == otherval))
-            "Response vs Regressor must be different."
+            "Response and Regressor must be different."
         }
       }
     }
@@ -307,8 +303,8 @@ srv_a_regression <- function(id,
       teal::validate_inputs(iv_r())
 
       list(
-        response = selector_list()$response()$select,
-        regressor = selector_list()$regressor()$select
+        response = as.vector(anl_merged_input()$columns_source$response),
+        regressor = as.vector(anl_merged_input()$columns_source$regressor)
       )
     })
 
@@ -386,7 +382,7 @@ srv_a_regression <- function(id,
     })
 
     label_col <- reactive({
-      teal::validate_inputs(iv_out)
+      teal::validate_inputs(iv_out, iv_theme)
 
       substitute(
         expr = dplyr::if_else(
@@ -413,7 +409,7 @@ srv_a_regression <- function(id,
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
-      teal::validate_inputs(iv_theme)
+      teal::validate_inputs(iv_r(), iv_theme)
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
