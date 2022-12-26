@@ -150,14 +150,7 @@ ui_a_pca <- function(id, ...) {
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        tags$div(
-          class = "overflow-scroll",
-          uiOutput(ns("tbl_importance_ui")),
-          hr(),
-          uiOutput(ns("tbl_eigenvector_ui")),
-          hr(),
-          teal.widgets::plot_with_settings_ui(id = ns("pca_plot"))
-        )
+        uiOutput(ns("all_plots"))
       ),
       encoding = div(
         ### Reporter
@@ -298,6 +291,25 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
+    iv_extra <- reactive({
+      iv_extra <- shinyvalidate::InputValidator$new()
+      if (input$plot_type %in% c("Circle plot", "Biplot")) {
+        iv_extra$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
+        iv_extra$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
+        iv_extra$add_rule("x_axis", rule_dupl)
+        iv_extra$add_rule("y_axis", rule_dupl)
+      }
+      if (input$plot_type == "Circle plot") {
+        iv_extra$add_rule("variables", shinyvalidate::sv_required("Need Variables"))
+      }
+      if (input$plot_type == "Eigenvector plot") {
+        iv_extra$add_rule("pc", shinyvalidate::sv_required("Need PC"))
+      }
+      iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+      iv_extra$enable()
+      iv_extra
+    })
+
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
@@ -315,11 +327,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       anl_q_r = anl_merged_q
     )
 
-    # computation ----
-    computation <- reactive({
+    validation <- reactive({
       req(merged$anl_q_r())
-      teal::validate_inputs(iv_r())
-
       # inputs
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
@@ -336,6 +345,28 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           "or select \"Drop\" in the NA actions inside the encodings panel (left)."
         )
       ))
+      if (scale) {
+        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
+
+        msg <- paste0(
+          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
+          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
+        )
+        validate(need(all(not_single), msg))
+      }
+    })
+
+    # computation ----
+    computation <- reactive({
+      validation()
+
+      # inputs
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
+      na_action <- input$na_action
+      standardization <- input$standardization
+      center <- standardization %in% c("center", "center_scale") # nolint
+      scale <- standardization == "center_scale"
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -350,16 +381,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           qenv,
           quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint
         )
-      }
-
-      if (scale) {
-        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
-
-        msg <- paste0(
-          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
-          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
-        )
-        validate(need(all(not_single), msg))
       }
 
       qenv <- teal.code::eval_code(
@@ -390,6 +411,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot args ----
     output$plot_settings <- renderUI({
       # reactivity triggers
+      req(iv_r()$is_valid())
       req(computation())
       qenv <- computation()
 
@@ -875,25 +897,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot final ----
     output_q <- reactive({
       req(computation())
-      iv_extra <- shinyvalidate::InputValidator$new()
-      iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
-
-      if (input$plot_type %in% c("Circle plot", "Biplot")) {
-        iv_extra$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
-        iv_extra$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
-        iv_extra$add_rule("x_axis", rule_dupl)
-        iv_extra$add_rule("y_axis", rule_dupl)
-      }
-      if (input$plot_type == "Circle plot") {
-        iv_extra$add_rule("variables", shinyvalidate::sv_required("Need Variables"))
-      }
-      if (input$plot_type == "Eigenvector plot") {
-        iv_extra$add_rule("pc", shinyvalidate::sv_required("Need PC"))
-      }
-
-      iv_extra$enable()
-      teal::validate_inputs(iv_extra, header = "Plot settings are required")
-
       switch(input$plot_type,
              "Elbow plot" = plot_elbow(computation()),
              "Circle plot" = plot_circle(computation()),
@@ -950,6 +953,20 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         tags$h4("Eigenvectors"),
         tableOutput(session$ns("tbl_eigenvector")),
         align = "center"
+      )
+    })
+
+    output$all_plots <- renderUI({
+      teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
+                                            "Plot settings are required" = iv_extra()))
+      validation()
+      tags$div(
+        class = "overflow-scroll",
+        uiOutput(session$ns("tbl_importance_ui")),
+        hr(),
+        uiOutput(session$ns("tbl_eigenvector_ui")),
+        hr(),
+        teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
       )
     })
 
