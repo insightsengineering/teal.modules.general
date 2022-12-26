@@ -39,7 +39,8 @@
 #'
 #' iv <- InputValidator$new()
 #' iv$add_rule("id", sv_required())
-#' iv$add_rule("id", crule(sv_in_set(set), !is.null(set)))
+#' iv$add_rule("id", crule(custom_rule, !is.null(set)))
+#' iv$add_rule("id", crule(~ if(!. %in% set), !is.null(set)))
 #' }
 #'
 #' @export
