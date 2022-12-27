@@ -262,14 +262,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-    rule_diff <- function(other) {
-      function(value) {
-        others <- selector_list()[[other]]()$select
-        if (isTRUE(is.element(value, others)))
-          "Response must not have been used for PCA."
-      }
-    }
-
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(dat = dat, response = response),
       datasets = data,
@@ -277,7 +269,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dat = ~if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
         response = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          rule_diff("dat")
+          ~ if (isTRUE(is.element(., selector_list()$dat()$select)))
+            "Response must not have been used for PCA."
         )
       )
     )
