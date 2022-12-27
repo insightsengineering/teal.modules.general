@@ -291,24 +291,19 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
-    iv_extra <- reactive({
-      iv_extra <- shinyvalidate::InputValidator$new()
-      if (input$plot_type %in% c("Circle plot", "Biplot")) {
-        iv_extra$add_rule("x_axis", shinyvalidate::sv_required("Need X axis"))
-        iv_extra$add_rule("y_axis", shinyvalidate::sv_required("Need Y axis"))
-        iv_extra$add_rule("x_axis", rule_dupl)
-        iv_extra$add_rule("y_axis", rule_dupl)
-      }
-      if (input$plot_type == "Circle plot") {
-        iv_extra$add_rule("variables", shinyvalidate::sv_required("Need Variables"))
-      }
-      if (input$plot_type == "Eigenvector plot") {
-        iv_extra$add_rule("pc", shinyvalidate::sv_required("Need PC"))
-      }
-      iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
-      iv_extra$enable()
-      iv_extra
-    })
+    iv_extra <- shinyvalidate::InputValidator$new()
+    iv_extra$add_rule("x_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need X axis",
+                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need Y axis",
+                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("x_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("variables", crule(~ if (!shinyvalidate::input_provided(.)) "Need Variables",
+                                         identical(input$plot_type, "Circle plot")))
+    iv_extra$add_rule("pc", crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
+                                  identical(input$plot_type, "Eigenvector plot")))
+    iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+    iv_extra$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -958,7 +953,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     output$all_plots <- renderUI({
       teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
-                                            "Plot settings are required" = iv_extra()))
+                                            "Plot settings are required" = iv_extra))
       validation()
       tags$div(
         class = "overflow-scroll",
