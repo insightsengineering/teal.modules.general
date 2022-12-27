@@ -280,6 +280,7 @@ srv_a_regression <- function(id,
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
@@ -287,10 +288,6 @@ srv_a_regression <- function(id,
     iv_out$condition(~ isTRUE(input$show_outlier))
     iv_out$add_rule("label_var", shinyvalidate::sv_required("Please provide an `Outlier label` variable"))
     iv_out$enable()
-
-    iv_theme <- shinyvalidate::InputValidator$new()
-    iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
-    iv_theme$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -381,7 +378,7 @@ srv_a_regression <- function(id,
     })
 
     label_col <- reactive({
-      teal::validate_inputs(iv_out, iv_theme)
+      teal::validate_inputs(iv_out)
 
       substitute(
         expr = dplyr::if_else(
@@ -408,7 +405,7 @@ srv_a_regression <- function(id,
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
-      teal::validate_inputs(iv_r(), iv_theme)
+      teal::validate_inputs(iv_r())
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
@@ -853,7 +850,6 @@ srv_a_regression <- function(id,
     output$text <- renderText({
       req(iv_r()$is_valid())
       req(iv_out$is_valid())
-      req(iv_theme$is_valid())
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 

@@ -414,7 +414,6 @@ srv_distribution <- function(id,
     iv_dist$add_rule("dist_param2", crule(rule_dist_disp, !is.null(input$t_dist)))
     iv_dist$enable()
 
-
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
