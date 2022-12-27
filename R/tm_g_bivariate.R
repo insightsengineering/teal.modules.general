@@ -363,18 +363,34 @@ srv_g_bivariate <- function(id,
       color = color, fill = fill, size = size
     )
 
-    x_y_selection <- function(value) {
-      if (length(selector_list()$x()$select) == 0 && length(selector_list()$y()$select) == 0) {
-        "Please select at least one of x-variable or y-variable"
-      }
-    }
-
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = data_extract,
       datasets = data,
       select_validation_rule = list(
-        x = x_y_selection,
-        y = x_y_selection
+        x = ~ if (length(.) == 0 && length(selector_list()$y()$select) == 0)
+          "Please select at least one of x-variable or y-variable",
+        y = ~ if (length(.) == 0 && length(selector_list()$x()$select) == 0)
+          "Please select at least one of x-variable or y-variable",
+        row_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
+          ~ if ("col_facet" %in% names(selector_list())) {
+            if (
+              length(.) == 1 &&
+              length(selector_list()$col_facet()$select) == 1 &&
+              (.) == selector_list()$col_facet()$select)
+              "Row and column facetting variables must be different."
+          }
+        ),
+        col_facet = shinyvalidate::compose_rules(
+          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
+          ~ if ("row_facet" %in% names(selector_list())) {
+            if (
+              length(.) == 1 &&
+              length(selector_list()$row_facet()$select) == 1 &&
+              (.) == selector_list()$row_facet()$select)
+              "Row and column facetting variables must be different."
+          }
+        )
       )
     )
 

@@ -180,6 +180,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("join_fun", shinyvalidate::sv_required("Please select a joining function."))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
