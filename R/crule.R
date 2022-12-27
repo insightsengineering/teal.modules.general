@@ -46,10 +46,7 @@
 #' @export
 #'
 crule <- function(rule, condition, ...) {
-  checkmate::assert(
-    checkmate::check_class(rule, "function"),
-    checkmate::check_class(rule, "formula")
-  )
+  checkmate::assert_multi_class(rule, c("function", "formula"))
   checkmate::assert_class(substitute(condition), "call")
 
   if (inherits(rule, "formula")) {
