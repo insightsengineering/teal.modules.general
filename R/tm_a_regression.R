@@ -292,7 +292,6 @@ srv_a_regression <- function(id,
     iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
     iv_theme$enable()
 
-
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
