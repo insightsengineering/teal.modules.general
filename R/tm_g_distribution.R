@@ -343,14 +343,14 @@ srv_distribution <- function(id,
                 "Kolmogorov-Smirnov (two-samples)",
                 "one-way ANOVA")
     rule_req <- function(value) {
-        if (!shinyvalidate::input_provided(value))
-          "Please select stratify variable."
+      if (!shinyvalidate::input_provided(value))
+        "Please select stratify variable."
     }
     rule_dupl <- function(...) {
-          strata <- selector_list()$strata_i()$select
-          group <- selector_list()$group_i()$select
-          if (isTRUE(strata == group))
-            "Please select different variables for strata and group."
+      strata <- selector_list()$strata_i()$select
+      group <- selector_list()$group_i()$select
+      if (isTRUE(strata == group))
+        "Please select different variables for strata and group."
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(
@@ -374,7 +374,13 @@ srv_distribution <- function(id,
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      teal.transform::compose_and_enable_validators(iv, selector_list)
+      teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = "dist_i")
+    })
+
+    iv_r_dist <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(
+        iv, selector_list, validator_names = c("strata_i", "group_i"))
     })
 
     iv_theme <- shinyvalidate::InputValidator$new()
@@ -834,7 +840,7 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_dist, iv_theme)
+        teal::validate_inputs(iv_r_dist(), iv_dist, iv_theme)
 
         qenv <- common_q()
 
@@ -1135,16 +1141,9 @@ srv_distribution <- function(id,
       qenv_final
     })
 
-
     dist_r <- reactive(dist_q()[["g"]])
 
     qq_r <- reactive(qq_q()[["g"]])
-
-    tests_r <- reactive({
-      req(iv_r()$is_valid())
-      req(iv_dist$is_valid())
-      test_q()[["test_stats"]]
-    })
 
     output$summary_table <- DT::renderDataTable(
       expr = if(iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
@@ -1154,6 +1153,12 @@ srv_distribution <- function(id,
       ),
       rownames = FALSE
     )
+
+    tests_r <- reactive({
+      req(iv_r()$is_valid())
+      teal::validate_inputs(iv_r_dist(), iv_dist)
+      test_q()[["test_stats"]]
+    })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
       id = "hist_plot",
