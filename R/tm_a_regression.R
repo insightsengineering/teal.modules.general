@@ -207,7 +207,7 @@ ui_a_regression <- function(id, ...) {
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),

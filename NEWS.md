@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.15.9010
 
 * Examples now use `scda.2022` rather than `scda.2021`.
+* Forced ggtheme to be always selected in all modules.
 
 ### Breaking changes
 
