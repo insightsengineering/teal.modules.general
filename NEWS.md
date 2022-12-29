@@ -1,4 +1,4 @@
-# teal.modules.general 0.2.15.9010
+# teal.modules.general 0.2.15.9011
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 * Added function `crule` to allow conditional input validation.
@@ -18,6 +18,7 @@
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
 * Fixed a bug in `tm_g_distribution` to plot the theoretical distribution with newer `ggplot2` version.
+* Fixed a bug in `tm_g_bivariate` when adding lines checkbox was available if one of x or y was deselected.
 
 # teal.modules.general 0.2.15
 

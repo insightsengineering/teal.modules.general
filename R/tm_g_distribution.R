@@ -887,7 +887,7 @@ srv_distribution <- function(id,
         plot_call <- substitute(
           expr = plot_call +
             stat_qq(distribution = mapped_dist, dparams = params),
-          env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
+          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
@@ -922,7 +922,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call +
               stat_qq_line(distribution = mapped_dist, dparams = params),
-            env = list(plot_call = plot_call, mapped_dist = unname(map_dist[t_dist]))
+            env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
           )
         }
 
