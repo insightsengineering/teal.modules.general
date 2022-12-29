@@ -60,7 +60,13 @@ create an app. The data will be handed over using [`teal.data::cdisc_data`](http
 itself will be constructed by multiple calls of `tm_g_scatterplot` using different
 combinations of data sets.
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r ggExtra, include = FALSE}
+ggExtra_available <- requireNamespace("ggExtra", quietly = TRUE)
+```
+```{r, include = !ggExtra_available}
+# NOTE: The code will not be run as package ggExtra is not installed.
+```
+```{r, eval = ggExtra_available, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
@@ -371,6 +377,6 @@ app <- init(
 A simple `shiny::shinyApp` call will let you run the app.
 Note that app is only displayed when running this code inside an R session.
 
-```{r echo=TRUE}
+```{r, eval = ggExtra_available, echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
