@@ -183,14 +183,14 @@ ui_tm_g_association <- function(id, ...) {
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Scatterplot points size:", c(2, 1, 8), ticks = FALSE),
           checkboxInput(ns("swap_axes"), "Swap axes", value = FALSE),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = FALSE),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("distribution_theme"),
             label = "Distribution theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
             selected = args$distribution_theme,
             multiple = FALSE
           ),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("association_theme"),
             label = "Association theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),

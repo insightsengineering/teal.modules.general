@@ -308,7 +308,7 @@ ui_g_bivariate <- function(id, ...) {
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),

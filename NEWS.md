@@ -1,7 +1,5 @@
 # teal.modules.general 0.2.15.9011
 
-* Examples now use `scda.2022` rather than `scda.2021`.
-
 ### Breaking changes
 
 * Replaced `chunks` with simpler `qenv` class.
@@ -12,11 +10,16 @@
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
 * Improved UI labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
+* Forced ggplot theme to be always selected in all modules.
 
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
 * Fixed a bug in `tm_g_distribution` to plot the theoretical distribution with newer `ggplot2` version.
 * Fixed a bug in `tm_g_bivariate` when adding lines checkbox was available if one of x or y was deselected.
+
+### Miscellaneous
+
+* Examples now use `scda.2022` rather than `scda.2021`.
 
 # teal.modules.general 0.2.15
 

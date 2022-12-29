@@ -230,7 +230,7 @@ ui_a_pca <- function(id, ...) {
               ),
               list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
             ),
-            teal.widgets::optionalSelectInput(
+            selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
