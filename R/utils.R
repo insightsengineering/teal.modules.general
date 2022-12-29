@@ -371,15 +371,6 @@ is_tab_active_js <- function(id, name) {
 #' For example, `input$id == "x"` will return `logical(0)` if input$id is NULL
 #' and `NA` if input$id is NA, whereas `isTRUE(input$id == "x")` will reliably return `FALSE`.
 #'
-#' @section Expression length:
-#' There is a yet unsolved bug that causes `crule` to fail if the condition is too long,
-#' i.e. requires too many characters to specify. This is somehow tied to text wrapping in the console.
-#' Efforts are being undertaken to remove this bug but for the time being it has to be avoided.
-#' For example, if the application raises `Error in str2lang(s) : argument must be character`
-#' and condition` is `input$id %in% c(element1, element2, element3, element, element5')`,
-#' consider assigning `allowed <- c(element1, element2, element3, element, element5')`
-#' and pass `condition = isTRUE(input$id %in% allowed)`.
-#'
 #' @param rule `function` or `formula` that specifies a validation rule and a failing message
 #' @param condition `call` that specifies when to check `rule`, see `Details`
 #' @param ... additional arguments passed to `rule`
@@ -408,10 +399,10 @@ crule <- function(rule, condition, ...) {
   if (inherits(rule, "formula")) {
     rule <- rlang::as_function(rule)
   }
-  # add backstop for Error in str2lang(s) : argument must be a character string resulting from... line break in console???
 
+  dep <- paste(deparse(substitute(condition)), collapse = "")
   ex <- list(
-    str2lang(sprintf("if (isFALSE(%s)) return(NULL)", deparse(substitute(condition)))),
+    str2lang(sprintf("if (isFALSE(%s)) return(NULL)", dep)),
     body(rule)
   )
   body(rule) <- as.call(c(as.name("{"), ex))

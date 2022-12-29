@@ -33,15 +33,6 @@ in an \code{isTRUE} call so that missing values or NULLs do not crash evaluation
 For example, \code{input$id == "x"} will return \code{logical(0)} if input$id is NULL
 and \code{NA} if input$id is NA, whereas \code{isTRUE(input$id == "x")} will reliably return \code{FALSE}.
 }
-\section{Expression length}{
-
-There is a yet unsolved bug that causes \code{crule} to fail if the condition is too long,
-i.e. requires too many characters to specify. This is somehow tied to text wrapping in the console.
-Efforts are being undertaken to remove this bug but for the time being it has to be avoided.
-For example, if the application raises \verb{Error in str2lang(s) : argument must be character}
-and condition\code{is}input$id \%in\% c(element1, element2, element3, element, element5')\verb{, consider assigning }allowed <- c(element1, element2, element3, element, element5')\verb{and pass}condition = isTRUE(input$id \%in\% allowed)`.
-}
-
 \examples{
 \notrun{
 library(shinyvalidate)
