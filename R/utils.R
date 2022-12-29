@@ -381,13 +381,18 @@ is_tab_active_js <- function(id, name) {
 #' @seealso `[shinyvalidate::InputValidator]`
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' library(shinyvalidate)
+#'
+#' set <- c("element1", "element2")
+#'
+#' custom_rule <- function(value) {
+#'   if (! value %in% set) sprintf("id must be a set of %s", paste(set, collapse = ", "))
+#' }
 #'
 #' iv <- InputValidator$new()
 #' iv$add_rule("id", sv_required())
 #' iv$add_rule("id", crule(custom_rule, !is.null(set)))
-#' iv$add_rule("id", crule(~ if(!. %in% set), !is.null(set)))
 #' }
 #'
 #' @export
