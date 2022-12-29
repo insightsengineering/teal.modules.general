@@ -2,6 +2,7 @@
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 * Forced ggplot theme to be always selected in all modules.
+* Added backstop for missing package `ggExtra` in vignette _Using scatterplot_.
 
 ### Breaking changes
 
