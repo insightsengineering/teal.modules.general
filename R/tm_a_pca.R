@@ -150,14 +150,7 @@ ui_a_pca <- function(id, ...) {
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        tags$div(
-          class = "overflow-scroll",
-          uiOutput(ns("tbl_importance_ui")),
-          hr(),
-          uiOutput(ns("tbl_eigenvector_ui")),
-          hr(),
-          teal.widgets::plot_with_settings_ui(id = ns("pca_plot"))
-        )
+        uiOutput(ns("all_plots"))
       ),
       encoding = div(
         ### Reporter
@@ -269,10 +262,46 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-    anl_merged_input <- teal.transform::merge_expression_module(
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(dat = dat, response = response),
       datasets = data,
-      join_keys = get_join_keys(data),
-      data_extract = list(dat = dat, response = response)
+      select_validation_rule = list(
+        dat = ~if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
+        response = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          ~ if (isTRUE(is.element(., selector_list()$dat()$select)))
+            "Response must not have been used for PCA."
+        )
+      )
+    )
+
+    rule_dupl <- function(...) {
+      if (isTRUE(input$x_axis == input$y_axis))
+        "Please choose different X and Y axes."
+    }
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
+
+    iv_extra <- shinyvalidate::InputValidator$new()
+    iv_extra$add_rule("x_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need X axis",
+                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need Y axis",
+                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("x_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("variables", crule(~ if (!shinyvalidate::input_provided(.)) "Need Variables",
+                                         identical(input$plot_type, "Circle plot")))
+    iv_extra$add_rule("pc", crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
+                                  identical(input$plot_type, "Eigenvector plot")))
+    iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+    iv_extra$enable()
+
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      join_keys = get_join_keys(data)
     )
 
     anl_merged_q <- reactive({
@@ -286,8 +315,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       anl_q_r = anl_merged_q
     )
 
-    # computation ----
-    computation <- reactive({
+    validation <- reactive({
       req(merged$anl_q_r())
       # inputs
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
@@ -297,21 +325,36 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       scale <- standardization == "center_scale"
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
-      # inputs validation
-      validate(need(length(keep_cols) > 1, "Please select more than 1 variable to perform PCA."))
-      teal::validate_has_elements(keep_cols, "Please select columns")
-      validate(need(
-        all(vapply(ANL[keep_cols], function(x) is.numeric(x) && all(!is.infinite(x)), logical(1))),
-        "PCA is only defined for (finite) numeric columns."
-      ))
       teal::validate_has_data(ANL, 10)
       validate(need(
         na_action != "none" | !anyNA(ANL[keep_cols]),
         paste(
           "There are NAs in the dataset. Please deal with them in preprocessing",
-          'or select "Drop" in the NA actions inside the encodings panel (left).'
+          "or select \"Drop\" in the NA actions inside the encodings panel (left)."
         )
       ))
+      if (scale) {
+        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
+
+        msg <- paste0(
+          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
+          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
+        )
+        validate(need(all(not_single), msg))
+      }
+    })
+
+    # computation ----
+    computation <- reactive({
+      validation()
+
+      # inputs
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
+      na_action <- input$na_action
+      standardization <- input$standardization
+      center <- standardization %in% c("center", "center_scale") # nolint
+      scale <- standardization == "center_scale"
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -326,16 +369,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           qenv,
           quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint
         )
-      }
-
-      if (scale) {
-        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
-
-        msg <- paste0(
-          "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
-          "but one or more of your columns has/have a variance value of zero, indicating all values are identical"
-        )
-        validate(need(all(not_single), msg))
       }
 
       qenv <- teal.code::eval_code(
@@ -366,6 +399,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot args ----
     output$plot_settings <- renderUI({
       # reactivity triggers
+      req(iv_r()$is_valid())
       req(computation())
       qenv <- computation()
 
@@ -405,7 +439,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot elbow ----
     plot_elbow <- function(base_q) {
       ggtheme <- input$ggtheme
-      validate(need(ggtheme, "Please select a theme."))
       rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
       font_size <- input$font_size # nolint
 
@@ -417,7 +450,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         theme = list(
           legend.position = "right",
           legend.spacing.y = quote(grid::unit(-5, "pt")),
-          legend.title = quote(element_text(vjust = 8)),
+          legend.title = quote(element_text(vjust = 25)),
           axis.text.x = substitute(
             element_text(angle = angle_value, hjust = hjust_value),
             list(angle_value = angle_value, hjust_value = hjust_value)
@@ -481,19 +514,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot circle ----
     plot_circle <- function(base_q) {
-      validate(
-        need(input$x_axis, "Need additional plot settings - x axis"),
-        need(input$y_axis, "Need additional plot settings - y axis"),
-        need(input$variables, "Need additional plot settings - variables")
-      )
-      validate(need(input$x_axis != input$y_axis, "Please choose different X and Y axes."))
-
       x_axis <- input$x_axis # nolint
       y_axis <- input$y_axis # nolint
       variables <- input$variables # nolint
-
       ggtheme <- input$ggtheme
-      validate(need(ggtheme, "Please select a theme."))
 
       rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
       font_size <- input$font_size # nolint
@@ -563,12 +587,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot biplot ----
     plot_biplot <- function(base_q) {
-      validate(
-        need(input$x_axis, "Need additional plot settings - x axis"),
-        need(input$y_axis, "Need additional plot settings - y axis")
-      )
-      validate(need(isTRUE(input$x_axis != input$y_axis), "Please choose different X and Y axes."))
-
       qenv <- base_q
 
       ANL <- qenv[["ANL"]] # nolint
@@ -581,7 +599,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       pca <- qenv[["pca"]]
 
       ggtheme <- input$ggtheme
-      validate(need(ggtheme, "Please select a theme."))
 
       rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
       alpha <- input$alpha # nolint
@@ -602,8 +619,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           qenv,
           substitute(
             expr = {
-            r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
-            v_scale <- rowSums(pca$rotation ^ 2) # styler: off
+              r <- sqrt(qchisq(0.69, df = 2)) * prod(colMeans(pca_rot ^ 2)) ^ (1 / 4) # styler: off
+              v_scale <- rowSums(pca$rotation ^ 2) # styler: off
 
               rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
                 dplyr::as_tibble(rownames = "label") %>%
@@ -651,10 +668,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
         dev_labs <- list()
       } else {
-        validate(need(
-          !resp_col %in% dat_cols,
-          "Response column must be different from the original variables (that were used for PCA)."
-        ))
 
         rp_keys <- setdiff(
           colnames(ANL),
@@ -676,8 +689,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
         scales_biplot <- if (is.character(response) ||
-          is.factor(response) ||
-          (is.numeric(response) && length(unique(response)) <= 6)) {
+                             is.factor(response) ||
+                             (is.numeric(response) && length(unique(response)) <= 6)) {
           qenv <- teal.code::eval_code(
             qenv,
             quote(pca_rot$response <- as.factor(response))
@@ -792,12 +805,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot pc_var ----
     plot_pc_var <- function(base_q) {
-      validate(need(input$pc, "Need additional plot settings - PC"))
-
       pc <- input$pc # nolint
-
       ggtheme <- input$ggtheme
-      validate(need(ggtheme, "Please select a theme."))
 
       rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
       font_size <- input$font_size # nolint
@@ -831,9 +840,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           quote(ggplot(pca_rot)),
           substitute(
             geom_bar(aes_string(x = "Variable", y = pc),
-              stat = "identity",
-              color = "black",
-              fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+                     stat = "identity",
+                     color = "black",
+                     fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
             ),
             env = list(pc = pc)
           ),
@@ -876,20 +885,19 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot final ----
     output_q <- reactive({
       req(computation())
-      if (input$plot_type == "Elbow plot") {
-        plot_elbow(computation())
-      } else if (input$plot_type == "Circle plot") {
-        plot_circle(computation())
-      } else if (input$plot_type == "Biplot") {
-        plot_biplot(computation())
-      } else if (input$plot_type == "Eigenvector plot") {
-        plot_pc_var(computation())
-      } else {
-        stop("Unknown plot")
-      }
+      teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
+                                            "Plot settings are required" = iv_extra))
+      switch(input$plot_type,
+             "Elbow plot" = plot_elbow(computation()),
+             "Circle plot" = plot_circle(computation()),
+             "Biplot" = plot_biplot(computation()),
+             "Eigenvector plot" = plot_pc_var(computation()),
+             stop("Unknown plot"))
     })
 
-    plot_r <- reactive(output_q()[["g"]])
+    plot_r <- reactive({
+      output_q()[["g"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "pca_plot",
@@ -935,6 +943,20 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         tags$h4("Eigenvectors"),
         tableOutput(session$ns("tbl_eigenvector")),
         align = "center"
+      )
+    })
+
+    output$all_plots <- renderUI({
+      teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
+                                            "Plot settings are required" = iv_extra))
+      validation()
+      tags$div(
+        class = "overflow-scroll",
+        uiOutput(session$ns("tbl_importance_ui")),
+        hr(),
+        uiOutput(session$ns("tbl_eigenvector_ui")),
+        hr(),
+        teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
       )
     })
 

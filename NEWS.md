@@ -1,6 +1,7 @@
 # teal.modules.general 0.2.15.9011
 
 * Examples now use `scda.2022` rather than `scda.2021`.
+* Added function `crule` to allow conditional input validation.
 
 ### Breaking changes
 

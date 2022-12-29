@@ -109,21 +109,14 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
-  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
-    stop("Cannot load ggpmisc - please install the package or restart your session.")
+
+  extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
+  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
+  if (length(missing_packages) > 0L) {
+    stop(sprintf("Cannot load package(s): %s.\nInstall or restart your session.",
+                 paste(missing_packages, sep = ", ")))
   }
-  if (!requireNamespace("ggpp", quietly = TRUE)) {
-    stop("Cannot load ggpp - please install the package or restart your session.")
-  }
-  if (!requireNamespace("goftest", quietly = TRUE)) {
-    stop("Cannot load goftest - please install the package or restart your session.")
-  }
-  if (!requireNamespace("MASS", quietly = TRUE)) {
-    stop("Cannot load MASS - please install the package or restart your session.")
-  }
-  if (!requireNamespace("broom", quietly = TRUE)) {
-    stop("Cannot load broom - please install the package or restart your session.")
-  }
+
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
   if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
   if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
@@ -343,9 +336,89 @@ srv_distribution <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    data_extract <- list(dist_i = dist_var, strata_i = strata_var, group_i = group_var)
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+    dists1 <- c("Fligner-Killeen",
+                "t-test (two-samples, not paired)",
+                "F-test",
+                "Kolmogorov-Smirnov (two-samples)",
+                "one-way ANOVA")
+    rule_req <- function(value) {
+      if (!shinyvalidate::input_provided(value))
+        "Please select stratify variable."
+    }
+    rule_dupl <- function(...) {
+      strata <- selector_list()$strata_i()$select
+      group <- selector_list()$group_i()$select
+      if (isTRUE(strata == group))
+        "Please select different variables for strata and group."
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(
+        dist_i = dist_var,
+        strata_i = strata_var,
+        group_i = group_var
+      ),
+      data,
+      select_validation_rule = list(
+        dist_i = shinyvalidate::sv_required("Please select a variable")
+      ),
+      filter_validation_rule = list(
+        strata_i = shinyvalidate::compose_rules(
+          crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
+          crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+        ),
+        group_i = crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = "dist_i")
+    })
+
+    iv_r_dist <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(
+        iv, selector_list, validator_names = c("strata_i", "group_i"))
+    })
+
+    iv_theme <- shinyvalidate::InputValidator$new()
+    iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+    iv_theme$enable()
+
+    rule_dist_loc <- function(value) {
+      switch(
+        input$t_dist,
+        "normal" = NULL,
+        "lognormal" = NULL,
+        "gamma" = if (value <= 0) "rate must be positive",
+        "unif" = NULL)
+    }
+    rule_dist_disp <- function(value) {
+      switch(
+        input$t_dist,
+        "normal" = if (value < 0) "mean must be non-negative",
+        "lognormal" = if (value < 0) "meanlog must be non-negative",
+        "gamma" = if (value <= 0) "shape must be positive",
+        "unif" = NULL)
+    }
+    dist2 <- c("Kolmogorov-Smirnov (one-sample)",
+               "Anderson-Darling (one-sample)",
+               "Cramer-von Mises (one-sample)")
+    rule_dist <- function(value) {
+      if(!shinyvalidate::input_provided(value))
+        "Please select the theoretical distribution."
+    }
+    iv_dist <- shinyvalidate::InputValidator$new()
+    iv_dist$add_rule("t_dist",
+                     crule(rule_dist,
+                           isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
+                     )
+    )
+    iv_dist$add_rule("dist_param1", crule(rule_dist_loc, !is.null(input$t_dist)))
+    iv_dist$add_rule("dist_param2", crule(rule_dist_disp, !is.null(input$t_dist)))
+    iv_dist$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -402,6 +475,8 @@ srv_distribution <- function(id,
     )
 
     merge_vars <- reactive({
+      teal::validate_inputs(iv_r())
+
       dist_var <- as.vector(merged$anl_input_r()$columns_source$dist_i)
       s_var <- as.vector(merged$anl_input_r()$columns_source$strata_i)
       g_var <- as.vector(merged$anl_input_r()$columns_source$group_i)
@@ -423,9 +498,6 @@ srv_distribution <- function(id,
     # common qenv
     common_q <- reactive({
       # Create a private stack for this function only.
-      validate({
-        need(length(merged$anl_input_r()$columns_source$dist_i) > 0, "Please select a variable")
-      })
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       dist_var <- merge_vars()$dist_var
@@ -480,17 +552,13 @@ srv_distribution <- function(id,
       teal::validate_has_data(ANL, 1, complete = TRUE)
 
       if (length(t_dist) != 0) {
-        map_distr_nams <- data.frame(
-          distr = c("normal", "lognormal", "gamma", "unif"),
-          namparam = I(list(
-            c("mean", "sd"),
-            c("meanlog", "sdlog"),
-            c("shape", "rate"),
-            c("min", "max")
-          )),
-          stringsAsFactors = FALSE
+        map_distr_nams <- list(
+          normal = c("mean", "sd"),
+          lognormal = c("meanlog", "sdlog"),
+          gamma = c("shape", "rate"),
+          unif = c("min", "max")
         )
-        params_names_raw <- map_distr_nams$namparam[match(t_dist, map_distr_nams$distr)][[1]]
+        params_names_raw <- map_distr_nams[[t_dist]]
 
         qenv <- teal.code::eval_code(
           qenv,
@@ -589,7 +657,7 @@ srv_distribution <- function(id,
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
 
-        validate(need(ggtheme, "Please select a theme."))
+        teal::validate_inputs(iv_theme)
 
         qenv <- common_q()
 
@@ -603,17 +671,17 @@ srv_distribution <- function(id,
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes(dist_var_name)) +
-              geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
+              geom_histogram(
+                position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
             env = list(
-              m_type = m_type,
-              bins_var = bins_var,
-              dist_var_name = as.name(dist_var)
+              m_type = m_type, bins_var = bins_var, dist_var_name = as.name(dist_var)
             )
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
+              geom_histogram(
+                position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
             env = list(
               m_type = m_type,
               bins_var = bins_var,
@@ -625,7 +693,8 @@ srv_distribution <- function(id,
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
-              geom_histogram(position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
+              geom_histogram(
+                position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
               facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = m_type,
@@ -771,26 +840,19 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        validate(need(ggtheme, "Please select a theme."))
-        validate(need(t_dist, "Please select the theoretical distribution."))
-        validate_dist_parameters(t_dist, dist_param1, dist_param2)
+        teal::validate_inputs(iv_r_dist(), iv_dist, iv_theme)
 
         qenv <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes_string(sample = dist_var)),
-            env = list(
-              dist_var = dist_var
-            )
+            env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
-            env = list(
-              dist_var = dist_var,
-              s_var = s_var
-            )
+            env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
@@ -860,10 +922,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call +
               stat_qq_line(distribution = mapped_dist, dparams = params),
-            env = list(
-              plot_call = plot_call,
-              mapped_dist = as.name(unname(map_dist[t_dist]))
-            )
+            env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
           )
         }
 
@@ -927,21 +986,12 @@ srv_distribution <- function(id,
           validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
         }
 
+
         if (dist_tests %in% c(
-          "Kolmogorov-Smirnov (one-sample)",
-          "Anderson-Darling (one-sample)",
-          "Cramer-von Mises (one-sample)"
-        )) {
-          validate(need(t_dist, "Please select the theoretical distribution."))
-        } else if (dist_tests == "Fligner-Killeen") {
-          validate(need(s_var, "Please select stratify variable."))
-          validate(need(!identical(s_var, g_var), "Please select different variables for strata and group."))
-        } else if (dist_tests %in% c(
           "t-test (two-samples, not paired)",
           "F-test",
           "Kolmogorov-Smirnov (two-samples)"
         )) {
-          validate(need(s_var, "Please select stratify variable."))
           if (length(g_var) == 0 && length(s_var) > 0) {
             validate(need(
               length(unique(ANL[[s_var]])) == 2,
@@ -950,14 +1000,12 @@ srv_distribution <- function(id,
           }
           if (length(g_var) > 0 && length(s_var) > 0) {
             validate(need(
-              all(stats::na.omit(as.vector(tapply(
-                ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))
-              ) == 2))),
+              all(stats::na.omit(as.vector(
+                tapply(ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))
+              ),
               "Please select stratify variable with 2 levels, per each group."
             ))
           }
-        } else if (dist_tests == "one-way ANOVA") {
-          validate(need(s_var, "Please select stratify variable."))
         }
 
         map_dist <- stats::setNames(
@@ -1093,21 +1141,24 @@ srv_distribution <- function(id,
       qenv_final
     })
 
-
     dist_r <- reactive(dist_q()[["g"]])
 
     qq_r <- reactive(qq_q()[["g"]])
 
-    tests_r <- reactive(test_q()[["test_stats"]])
-
     output$summary_table <- DT::renderDataTable(
-      expr = common_q()[["summary_table"]],
+      expr = if(iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
       ),
       rownames = FALSE
     )
+
+    tests_r <- reactive({
+      req(iv_r()$is_valid())
+      teal::validate_inputs(iv_r_dist(), iv_dist)
+      test_q()[["test_stats"]]
+    })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
       id = "hist_plot",
@@ -1177,34 +1228,4 @@ srv_distribution <- function(id,
     }
     ###
   })
-}
-
-#' @description
-#' Validates the parameters of the given theoretical distribution.
-#'
-#' @note Returns a Shiny validation error if the parameters don't meet
-#' the assumptions of the theoretical distribution.
-#'
-#' @param dist_type (`character(1)`) the family of a distribution
-#' @param dist_param1 (`numeric(1)`) the first parameter of the distribution
-#' @param dist_param2 (`numeric(1)`) the second parameter of the distribution
-#' @return NULL
-#' @noRd
-validate_dist_parameters <- function(dist_type, dist_param1, dist_param2) {
-  switch(dist_type,
-    "normal" = {
-      validate(need(dist_param2 >= 0, "Variance of the normal distribution needs to be nonnegative"))
-    },
-    "lognormal" = {
-      validate(need(dist_param2 >= 0, "Sigma parameter of the log-normal distribution needs to be nonnegative"))
-    },
-    "gamma" = {
-      validate(need(
-        dist_param1 > 0 && dist_param2 > 0,
-        "k and theta parameters of the gamma distribution need to be positive"
-      ))
-    },
-    "unif" = NULL
-  )
-  NULL
 }
