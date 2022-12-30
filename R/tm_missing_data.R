@@ -362,7 +362,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         ~ if (length(setdiff((.), data_keys())) < 1) "Please also select non-key columns."
       )
       iv_summary_table <- shinyvalidate::InputValidator$new()
-      iv_summary_table$condition(~ input$summary_type == "By Variable Levels")
+      iv_summary_table$condition(~ isTRUE(input$summary_type == "By Variable Levels"))
       iv_summary_table$add_rule("count_type", shinyvalidate::sv_required("Please select type of counts"))
       iv_summary_table$add_rule(
         "group_by_vals",
