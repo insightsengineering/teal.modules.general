@@ -363,9 +363,6 @@ srv_g_bivariate <- function(id,
       color = color, fill = fill, size = size
     )
 
-    selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = data_extract,
-      datasets = data,
     rule_var <- function(other) {
       function(value) {
         othervalue <- selector_list()[[other]]()$select
@@ -390,15 +387,13 @@ srv_g_bivariate <- function(id,
         row_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
-          rule_diff("col_facet")
+          crule(rule_diff("col_facet"), !is.null(input$row_facet))
         ),
         col_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
-          rule_diff("row_facet")
+          crule(rule_diff("row_facet"), !is.null(input$col_facet))
         )
-      )
-    )
       )
     )
 
