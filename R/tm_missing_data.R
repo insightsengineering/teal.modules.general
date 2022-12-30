@@ -325,7 +325,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     ),
     teal.widgets::panel_item(
       title = "Plot settings",
-      teal.widgets::optionalSelectInput(
+      selectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
         choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),

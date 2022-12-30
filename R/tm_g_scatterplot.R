@@ -350,7 +350,7 @@ ui_g_scatterplot <- function(id, ...) {
             if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
               checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
             },
-            teal.widgets::optionalSelectInput(
+            selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
