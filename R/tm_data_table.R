@@ -255,13 +255,15 @@ srv_data_table <- function(id,
 
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
-      iv$add_rule("variables", ~ if (!all((.) %in% names(df))) "Not all selected variables exist in the data")
+    iv$add_rule("variables", shinyvalidate::sv_in_set(
+      set = names(data[[dataname]]()), message_fmt = "Not all selected variables exist in the data"
+    ))
       iv$enable()
-      req(iv$is_valid())
+      teal::validate_inputs(iv)
 
       variables <- input$variables
 
-      validate(need(df, paste("data", dataname, "is empty")))
+      teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
       dataframe_selected <- if (if_distinct()) {
         dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
