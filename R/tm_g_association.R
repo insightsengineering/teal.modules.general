@@ -229,11 +229,14 @@ srv_tm_g_association <- function(id,
       select_validation_rule = list(
         ref = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("A reference variable needs to be selected."),
-          ~ if (length(.) != 0 && (.) %in% selector_list()$vars()$select)
+          ~ if ((.) %in% selector_list()$vars()$select)
             "Associated variables and reference variable cannot overlap"
         ),
-        vars = ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
+        vars = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("An associated variable needs to be selected."),
+          ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
           "Associated variables and reference variable cannot overlap"
+        )
       )
     )
 
@@ -278,7 +281,6 @@ srv_tm_g_association <- function(id,
       distribution_theme <- input$distribution_theme
       association_theme <- input$association_theme
 
-      req(ref_name)
       is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
       if (is_scatterplot) {
         shinyjs::show("alpha")
