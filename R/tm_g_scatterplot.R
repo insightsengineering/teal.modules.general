@@ -141,15 +141,14 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
-  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
-    stop("Cannot load ggpmisc - please install the package or restart your session.")
+
+  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
+  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
+  if (length(missing_packages) > 0L) {
+    stop(sprintf("Cannot load package(s): %s.\nInstall or restart your session.",
+                 paste(missing_packages, sep = ", ")))
   }
-  if (!requireNamespace("ggExtra", quietly = TRUE)) {
-    stop("Cannot load ggExtra - please install the package or restart your session.")
-  }
-  if (!requireNamespace("colourpicker", quietly = TRUE)) {
-    stop("Cannot load colourpicker - please install the package or restart your session.")
-  }
+
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -389,8 +388,24 @@ srv_g_scatterplot <- function(id,
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
-      x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
+      x = x,
+      y = y,
+      color_by = color_by,
+      size_by = size_by,
+      row_facet = row_facet,
+      col_facet = col_facet
     )
+
+    rule_diff <- function(other) {
+      function(value) {
+        if (!is.null(selector_list()[[other]]()$select)) {
+          othervalue <- selector_list()[[other]]()$select
+          if (identical(value, othervalue))
+            "Row and column facetting variables must be different."
+        }
+      }
+    }
+
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = data_extract,
       datasets = data,
@@ -400,31 +415,26 @@ srv_g_scatterplot <- function(id,
         color_by = ~ if (length(.) > 1) "There cannot be more than 1 color variable.",
         size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
         row_facet = shinyvalidate::compose_rules(
-          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
-          ~ if ("col_facet" %in% names(selector_list())) {
-            if (
-              length(.) == 1 &&
-              length(selector_list()$col_facet()$select) == 1 &&
-              (.) == selector_list()$col_facet()$select)
-              "Row and column facetting variables must be different."
-          }
+          shinyvalidate::sv_optional(),
+          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
+          rule_diff("col_facet")
         ),
         col_facet = shinyvalidate::compose_rules(
-          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
-          ~ if ("row_facet" %in% names(selector_list())) {
-            if (
-              length(.) == 1 &&
-              length(selector_list()$row_facet()$select) == 1 &&
-              (.) == selector_list()$row_facet()$select)
-              "Row and column facetting variables must be different."
-          }
+          shinyvalidate::sv_optional(),
+          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
+          rule_diff("row_facet")
         )
       )
     )
 
     iv_r <- reactive({
+      iv_facet <- shinyvalidate::InputValidator$new()
+      iv_child <- teal.transform::compose_and_enable_validators(iv_facet, selector_list,
+                                                                validator_names = c("row_facet", "col_facet"))
       iv <- shinyvalidate::InputValidator$new()
-      teal.transform::compose_and_enable_validators(iv, selector_list, names(selector_list))
+      iv$add_validator(iv_child)
+      teal.transform::compose_and_enable_validators(iv, selector_list,
+                                                    validator_names = c("x", "y", "color_by", "scale_by"))
     })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
