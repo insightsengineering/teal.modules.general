@@ -407,7 +407,7 @@ srv_distribution <- function(id,
                "Anderson-Darling (one-sample)",
                "Cramer-von Mises (one-sample)")
     rule_dist <- function(value) {
-      if(!shinyvalidate::input_provided(value))
+      if (!shinyvalidate::input_provided(value))
         "Please select the theoretical distribution."
     }
     iv_dist <- shinyvalidate::InputValidator$new()
@@ -1146,7 +1146,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(qq_q()[["g"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = if(iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
+      expr = if (iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
