@@ -546,20 +546,32 @@ srv_g_scatterplot <- function(id,
         length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
         "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
       ))
-      if (add_density && length(color_by_var) > 0) {
-        validate(need(
-          !is.numeric(ANL[[color_by_var]]),
-          "Marginal plots cannot be produced when the points are colored by numeric variables.
-        \n Uncheck the 'Add marginal density' checkbox to display the plot."
-        ))
-        validate(need(
-          !(inherits(ANL[[color_by_var]], "Date") ||
-              inherits(ANL[[color_by_var]], "POSIXct") ||
-              inherits(ANL[[color_by_var]], "POSIXlt")),
-          "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
-        \n Uncheck the 'Add marginal density' checkbox to display the plot."
-        ))
-      }
+
+      iv_marginal <- shinyvalidate::InputValidator$new()
+      iv_marginal$condition(~ isTRUE(add_density && length(color_by_var) > 0))
+      iv_marginal$add_rule("add_density", ~ if (is.numeric(ANL[[color_by_var]]))
+        "Marginal plots unavailable when points are colored by numeric variables.")
+
+      iv_marginal$add_rule("add_density", ~ if (checkmate::test_multi_class(
+        ., classes = c("Date", "POSIXct", "POSIXlt")))
+        "Marginal plots unavailable when points are colored by Date or POSIX variables.")
+      iv_marginal$enable()
+      teal::validate_inputs(iv_marginal, header = "Uncheck the 'Add marginal density' checkbox to display the plot.")
+
+      # if (add_density && length(color_by_var) > 0) {
+      #   validate(need(
+      #     !is.numeric(ANL[[color_by_var]]),
+      #     "Marginal plots cannot be produced when the points are colored by numeric variables.
+      #   \n Uncheck the 'Add marginal density' checkbox to display the plot."
+      #   ))
+      #   validate(need(
+      #     !(inherits(ANL[[color_by_var]], "Date") ||
+      #         inherits(ANL[[color_by_var]], "POSIXct") ||
+      #         inherits(ANL[[color_by_var]], "POSIXlt")),
+      #     "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
+      #   \n Uncheck the 'Add marginal density' checkbox to display the plot."
+      #   ))
+      # }
 
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
