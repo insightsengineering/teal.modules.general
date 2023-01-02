@@ -404,7 +404,6 @@ srv_g_bivariate <- function(id,
       iv_child$condition(~ isTRUE(input$facetting))
 
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
       iv$add_validator(iv_child)
       teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = c("x", "y"))
     })

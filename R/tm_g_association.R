@@ -242,8 +242,6 @@ srv_tm_g_association <- function(id,
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("distribution_theme", shinyvalidate::sv_required("Please select a theme"))
-      iv$add_rule("association_theme", shinyvalidate::sv_required("Please select a theme"))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 

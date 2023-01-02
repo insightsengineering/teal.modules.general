@@ -383,10 +383,6 @@ srv_distribution <- function(id,
         iv, selector_list, validator_names = c("strata_i", "group_i"))
     })
 
-    iv_theme <- shinyvalidate::InputValidator$new()
-    iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
-    iv_theme$enable()
-
     rule_dist_loc <- function(value) {
       switch(
         input$t_dist,
@@ -657,8 +653,6 @@ srv_distribution <- function(id,
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_theme)
-
         qenv <- common_q()
 
         m_type <- if (main_type_var == "Density") "..density.." else "..count.."
@@ -840,7 +834,7 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_r_dist(), iv_dist, iv_theme)
+        teal::validate_inputs(iv_r_dist(), iv_dist)
 
         qenv <- common_q()
 

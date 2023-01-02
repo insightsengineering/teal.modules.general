@@ -280,7 +280,6 @@ srv_a_regression <- function(id,
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 

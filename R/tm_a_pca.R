@@ -295,7 +295,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
                                          identical(input$plot_type, "Circle plot")))
     iv_extra$add_rule("pc", crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
                                   identical(input$plot_type, "Eigenvector plot")))
-    iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
     iv_extra$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
