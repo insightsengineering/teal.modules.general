@@ -109,29 +109,7 @@ ui_outliers <- function(id, ...) {
   is_single_dataset_value <- teal.transform::is_single_dataset(args$outlier_var, args$categorical_var)
 
   teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      uiOutput(ns("total_outliers")),
-      DT::dataTableOutput(ns("summary_table")),
-      uiOutput(ns("total_missing")),
-      br(), hr(),
-      tabsetPanel(
-        id = ns("tabs"),
-        tabPanel("Boxplot", teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
-        tabPanel("Density Plot", teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
-        tabPanel("Cumulative Distribution Plot", teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
-      ),
-      br(), hr(),
-      teal.widgets::optionalSelectInput(
-        inputId = ns("table_ui_columns"),
-        label = "Choose additional columns",
-        choices = NULL,
-        selected = NULL,
-        multiple = TRUE
-      ),
-      h4("Outlier Table"),
-      teal.widgets::get_dt_rows(ns("table_ui"), ns("table_ui_rows")),
-      DT::dataTableOutput(ns("table_ui"))
-    ),
+    output = uiOutput(ns("output_whole")),
     encoding = div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
@@ -309,14 +287,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     cat_dataname <- categorical_var[[1]]$dataname
 
     n_outlier_missing <- reactive({
-      teal::validate_inputs(iv_r())
+      shiny::req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       sum(is.na(ANL[[outlier_var]]))
     })
 
     common_code_q <- reactive({
-      teal::validate_inputs(iv_r())
+      shiny::req(iv_r()$is_valid())
 
       input_catvar <- input[[extract_input(
         "categorical_var",
@@ -1122,6 +1100,39 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
       }
+    })
+
+    output$output_whole <- renderUI({
+      teal::validate_inputs(iv_r())
+      teal.widgets::white_small_well(
+        uiOutput(session$ns("total_outliers")),
+        DT::dataTableOutput(session$ns("summary_table")),
+        uiOutput(session$ns("total_missing")),
+        br(), hr(),
+        tabsetPanel(
+          id = session$ns("tabs"),
+          tabPanel(
+            "Boxplot",
+            teal.widgets::plot_with_settings_ui(id = session$ns("box_plot"))),
+          tabPanel(
+            "Density Plot",
+            teal.widgets::plot_with_settings_ui(id = session$ns("density_plot"))),
+          tabPanel(
+            "Cumulative Distribution Plot",
+            teal.widgets::plot_with_settings_ui(id = session$ns("cum_density_plot")))
+        ),
+        br(), hr(),
+        teal.widgets::optionalSelectInput(
+          inputId = session$ns("table_ui_columns"),
+          label = "Choose additional columns",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE
+        ),
+        h4("Outlier Table"),
+        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows")),
+        DT::dataTableOutput(session$ns("table_ui"))
+      )
     })
 
     teal.widgets::verbatim_popup_srv(
