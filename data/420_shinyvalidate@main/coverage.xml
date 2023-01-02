@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage line-rate="0.0229979950465857" branch-rate="0" lines-covered="195" lines-valid="8479" branches-covered="0" branches-valid="0" complexity="0" version="3.6.1" timestamp="2023-01-02 09:56:19">
+<coverage line-rate="0.0230278696268304" branch-rate="0" lines-covered="195" lines-valid="8468" branches-covered="0" branches-valid="0" complexity="0" version="3.6.1" timestamp="2023-01-02 10:58:56">
   <sources/>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0229979950465857" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0230278696268304" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -17276,21 +17276,6 @@
                 <line number="352" hits="0" branch="false"/>
               </lines>
             </method>
-            <method name="crule" signature="" line-rate="0" branch-rate="0">
-              <lines>
-                <line number="401" hits="0" branch="false"/>
-                <line number="402" hits="0" branch="false"/>
-                <line number="404" hits="0" branch="false"/>
-                <line number="405" hits="0" branch="false"/>
-                <line number="408" hits="0" branch="false"/>
-                <line number="409" hits="0" branch="false"/>
-                <line number="410" hits="0" branch="false"/>
-                <line number="411" hits="0" branch="false"/>
-                <line number="412" hits="0" branch="false"/>
-                <line number="413" hits="0" branch="false"/>
-                <line number="414" hits="0" branch="false"/>
-              </lines>
-            </method>
           </methods>
           <lines>
             <line number="74" hits="0" branch="false"/>
@@ -17415,17 +17400,6 @@
             <line number="350" hits="0" branch="false"/>
             <line number="351" hits="0" branch="false"/>
             <line number="352" hits="0" branch="false"/>
-            <line number="401" hits="0" branch="false"/>
-            <line number="402" hits="0" branch="false"/>
-            <line number="404" hits="0" branch="false"/>
-            <line number="405" hits="0" branch="false"/>
-            <line number="408" hits="0" branch="false"/>
-            <line number="409" hits="0" branch="false"/>
-            <line number="410" hits="0" branch="false"/>
-            <line number="411" hits="0" branch="false"/>
-            <line number="412" hits="0" branch="false"/>
-            <line number="413" hits="0" branch="false"/>
-            <line number="414" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="zzz.R" filename="R/zzz.R" line-rate="0" branch-rate="0" complexity="0">
