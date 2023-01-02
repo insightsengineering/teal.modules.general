@@ -438,7 +438,7 @@ srv_g_bivariate <- function(id,
       y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
 
       row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
-      col_facet_name <- as.vector(merged$anl_input_r()$col_facet)
+      col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
       color_name <- if ("color" %in% names(merged$anl_input_r()$columns_source)) {
         as.vector(merged$anl_input_r()$columns_source$color)
       } else {

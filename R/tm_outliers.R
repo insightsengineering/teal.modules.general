@@ -242,18 +242,22 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
+    rule_diff <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()$select
+        if (length(othervalue) > 0 && othervalue == value) {
+          "`Variable` and `Categorical factor` cannot be the same"
+        }
+      }
+    }
+
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = vars,
       datasets = data,
       select_validation_rule = list(
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
-          ~ if ("categorical_var" %in% names(selector_list())) {
-            if (length(selector_list()$categorical_var()$select) > 0 &&
-              selector_list()$categorical_var()$select == (.)) {
-              "`Variable` and `Categorical factor` cannot be the same"
-            }
-          }
+          crule(rule_diff("categorical_var"), "categorical_var" %in% names(selector_list()))
         )
       ),
       filter_validation_rule = list(
