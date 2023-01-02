@@ -275,26 +275,44 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     )
 
-    rule_dupl <- function(...) {
-      if (isTRUE(input$x_axis == input$y_axis))
-        "Please choose different X and Y axes."
-    }
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
     iv_extra <- shinyvalidate::InputValidator$new()
-    iv_extra$add_rule("x_axis", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need X axis",
-                                            isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("y_axis", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need Y axis",
-                                            isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("x_axis", teal::crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("y_axis", teal::crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("variables", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need Variables",
-                                               identical(input$plot_type, "Circle plot")))
-    iv_extra$add_rule("pc", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
-                                        identical(input$plot_type, "Eigenvector plot")))
+    iv_extra$add_rule("x_axis", function(value) {
+      if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
+        if (!shinyvalidate::input_provided(value))
+          "Need X axis"
+      }
+    })
+    iv_extra$add_rule("y_axis", function(value) {
+      if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
+        if (!shinyvalidate::input_provided(value))
+          "Need Y axis"
+      }
+    })
+    rule_dupl <- function(...) {
+      if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
+        if (isTRUE(input$x_axis == input$y_axis))
+          "Please choose different X and Y axes."
+      }
+    }
+    iv_extra$add_rule("x_axis", rule_dupl)
+    iv_extra$add_rule("y_axis", rule_dupl)
+    iv_extra$add_rule("variables", function(value) {
+      if (identical(input$plot_type, "Circle plot")) {
+        if (!shinyvalidate::input_provided(value))
+          "Need Variables"
+      }
+    })
+    iv_extra$add_rule("pc", function(value) {
+      if (identical(input$plot_type, "Eigenvector plot")) {
+        if (!shinyvalidate::input_provided(value))
+          "Need PC"
+      }
+    })
     iv_extra$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
