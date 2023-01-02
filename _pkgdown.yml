@@ -30,4 +30,3 @@ reference:
     contents:
       - add_facet_labels
       - get_scatterplotmatrix_stats
-      - crule
