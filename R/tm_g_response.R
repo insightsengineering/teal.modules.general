@@ -245,8 +245,8 @@ srv_g_response <- function(id,
           ~ if ("col_facet" %in% names(selector_list())) {
             if (
               length(.) == 1 &&
-                length(selector_list()$col_facet()$select) == 1 &&
-                (.) == selector_list()$col_facet()$select) {
+              length(selector_list()$col_facet()$select) == 1 &&
+              (.) == selector_list()$col_facet()$select) {
               "Row and column facetting variables must be different."
             }
           }
@@ -256,8 +256,8 @@ srv_g_response <- function(id,
           ~ if ("row_facet" %in% names(selector_list())) {
             if (
               length(.) == 1 &&
-                length(selector_list()$row_facet()$select) == 1 &&
-                (.) == selector_list()$row_facet()$select) {
+              length(selector_list()$row_facet()$select) == 1 &&
+              (.) == selector_list()$row_facet()$select) {
               "Row and column facetting variables must be different."
             }
           }
@@ -366,7 +366,7 @@ srv_g_response <- function(id,
       plot_call <- substitute(
         expr =
           ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,

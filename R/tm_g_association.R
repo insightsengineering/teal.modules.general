@@ -235,7 +235,7 @@ srv_tm_g_association <- function(id,
         vars = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("An associated variable needs to be selected."),
           ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
-          "Associated variables and reference variable cannot overlap"
+            "Associated variables and reference variable cannot overlap"
         )
       )
     )
@@ -378,26 +378,26 @@ srv_tm_g_association <- function(id,
       new_title <-
         if (association) {
           switch(as.character(length(vars_names)),
-            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-            "1" = sprintf(
-              "Association between %s and %s",
-              ref_cl_lbl,
-              format_varnames(vars_names)
-            ),
-            sprintf(
-              "Associations between %s and: %s",
-              ref_cl_lbl,
-              paste(lapply(vars_names, format_varnames), collapse = ", ")
-            )
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 "1" = sprintf(
+                   "Association between %s and %s",
+                   ref_cl_lbl,
+                   format_varnames(vars_names)
+                 ),
+                 sprintf(
+                   "Associations between %s and: %s",
+                   ref_cl_lbl,
+                   paste(lapply(vars_names, format_varnames), collapse = ", ")
+                 )
           )
         } else {
           switch(as.character(length(vars_names)),
-            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-            sprintf(
-              "Value distributions for %s and %s",
-              ref_cl_lbl,
-              paste(lapply(vars_names, format_varnames), collapse = ", ")
-            )
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 sprintf(
+                   "Value distributions for %s and %s",
+                   ref_cl_lbl,
+                   paste(lapply(vars_names, format_varnames), collapse = ", ")
+                 )
           )
         }
 
@@ -418,7 +418,7 @@ srv_tm_g_association <- function(id,
             },
             env = list(
               plot_calls = do.call("call", c(list("list", ref_call), var_calls),
-                quote = TRUE
+                                   quote = TRUE
               )
             )
           )

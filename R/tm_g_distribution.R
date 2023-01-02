@@ -365,10 +365,10 @@ srv_distribution <- function(id,
       ),
       filter_validation_rule = list(
         strata_i = shinyvalidate::compose_rules(
-          crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
-          crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+          teal::crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
+          teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
         ),
-        group_i = crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+        group_i = teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
       )
     )
 
@@ -408,12 +408,12 @@ srv_distribution <- function(id,
     }
     iv_dist <- shinyvalidate::InputValidator$new()
     iv_dist$add_rule("t_dist",
-                     crule(rule_dist,
-                           isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
+                     teal::crule(rule_dist,
+                                 isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
                      )
     )
-    iv_dist$add_rule("dist_param1", crule(rule_dist_loc, !is.null(input$t_dist)))
-    iv_dist$add_rule("dist_param2", crule(rule_dist_disp, !is.null(input$t_dist)))
+    iv_dist$add_rule("dist_param1", teal::crule(rule_dist_loc, !is.null(input$t_dist)))
+    iv_dist$add_rule("dist_param2", teal::crule(rule_dist_disp, !is.null(input$t_dist)))
     iv_dist$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
@@ -761,7 +761,7 @@ srv_distribution <- function(id,
         }
 
         if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-          length(t_dist) != 0 && m_type == "..density..") {
+            length(t_dist) != 0 && m_type == "..density..") {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")
@@ -1053,15 +1053,15 @@ srv_distribution <- function(id,
         )
 
         tests_base <- switch(dist_tests,
-          "Kolmogorov-Smirnov (one-sample)" = sks_args,
-          "Shapiro-Wilk" = ssw_args,
-          "Fligner-Killeen" = mfil_args,
-          "one-way ANOVA" = manov_args,
-          "t-test (two-samples, not paired)" = mt_args,
-          "F-test" = mv_args,
-          "Kolmogorov-Smirnov (two-samples)" = mks_args,
-          "Anderson-Darling (one-sample)" = sad_args,
-          "Cramer-von Mises (one-sample)" = scvm_args
+                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
+                             "Shapiro-Wilk" = ssw_args,
+                             "Fligner-Killeen" = mfil_args,
+                             "one-way ANOVA" = manov_args,
+                             "t-test (two-samples, not paired)" = mt_args,
+                             "F-test" = mv_args,
+                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
+                             "Anderson-Darling (one-sample)" = sad_args,
+                             "Cramer-von Mises (one-sample)" = scvm_args
         )
 
         env <- list(

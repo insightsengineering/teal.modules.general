@@ -823,12 +823,12 @@ srv_a_regression <- function(id,
       } else {
         plot_base_q <- plot_base()
         switch(input_type,
-          "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
-          "Normal Q-Q" = plot_base_q %>% plot_type_2(),
-          "Scale-Location" = plot_base_q %>% plot_type_3(),
-          "Cook's distance" = plot_base_q %>% plot_type_4(),
-          "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
-          "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
+               "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
+               "Normal Q-Q" = plot_base_q %>% plot_type_2(),
+               "Scale-Location" = plot_base_q %>% plot_type_3(),
+               "Cook's distance" = plot_base_q %>% plot_type_4(),
+               "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
+               "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
       qenv
