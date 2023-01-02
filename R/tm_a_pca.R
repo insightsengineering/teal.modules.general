@@ -223,7 +223,7 @@ ui_a_pca <- function(id, ...) {
               ),
               list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
             ),
-            teal.widgets::optionalSelectInput(
+            selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -285,17 +285,16 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     iv_extra <- shinyvalidate::InputValidator$new()
-    iv_extra$add_rule("x_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need X axis",
-                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("y_axis", crule(~ if (!shinyvalidate::input_provided(.)) "Need Y axis",
-                                      isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("x_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("y_axis", crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
-    iv_extra$add_rule("variables", crule(~ if (!shinyvalidate::input_provided(.)) "Need Variables",
-                                         identical(input$plot_type, "Circle plot")))
-    iv_extra$add_rule("pc", crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
-                                  identical(input$plot_type, "Eigenvector plot")))
-    iv_extra$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
+    iv_extra$add_rule("x_axis", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need X axis",
+                                            isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need Y axis",
+                                            isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("x_axis", teal::crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("y_axis", teal::crule(rule_dupl, isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))))
+    iv_extra$add_rule("variables", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need Variables",
+                                               identical(input$plot_type, "Circle plot")))
+    iv_extra$add_rule("pc", teal::crule(~ if (!shinyvalidate::input_provided(.)) "Need PC",
+                                        identical(input$plot_type, "Eigenvector plot")))
     iv_extra$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(

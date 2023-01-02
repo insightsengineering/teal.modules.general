@@ -198,7 +198,7 @@ ui_g_response <- function(id, ...) {
           checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -369,7 +369,7 @@ srv_g_response <- function(id,
       plot_call <- substitute(
         expr =
           ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,

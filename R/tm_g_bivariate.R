@@ -308,7 +308,7 @@ ui_g_bivariate <- function(id, ...) {
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
-          teal.widgets::optionalSelectInput(
+          selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -404,7 +404,6 @@ srv_g_bivariate <- function(id,
       iv_child$condition(~ isTRUE(input$facetting))
 
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
       iv$add_validator(iv_child)
       teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = c("x", "y"))
     })

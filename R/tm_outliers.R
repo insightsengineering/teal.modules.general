@@ -216,7 +216,7 @@ ui_outliers <- function(id, ...) {
       ),
       teal.widgets::panel_item(
         title = "Plot settings",
-        teal.widgets::optionalSelectInput(
+        selectInput(
           inputId = ns("ggtheme"),
           label = "Theme (by ggplot):",
           choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -266,8 +266,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             "Please select the filter levels"
           },
           ~ if (length(selector_list()$categorical_var()$select) > 0 &&
-            length(selector_list()$outlier_var()$select) > 0 &&
-            selector_list()$outlier_var()$select == selector_list()$categorical_var()$select) {
+                length(selector_list()$outlier_var()$select) > 0 &&
+                selector_list()$outlier_var()$select == selector_list()$categorical_var()$select) {
             "`Variable` and `Categorical factor` cannot be the same"
           }
         )
@@ -463,7 +463,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                   q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
                   !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                    outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                      outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
                 }),
                 env = list(
                   outlier_var_name = as.name(outlier_var),

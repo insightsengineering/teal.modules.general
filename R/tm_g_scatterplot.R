@@ -350,7 +350,7 @@ ui_g_scatterplot <- function(id, ...) {
             if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
               checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
             },
-            teal.widgets::optionalSelectInput(
+            selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -402,29 +402,28 @@ srv_g_scatterplot <- function(id,
         row_facet = shinyvalidate::compose_rules(
           ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
           ~ if ("col_facet" %in% names(selector_list())) {
-              if (
-                length(.) == 1 &&
-                length(selector_list()$col_facet()$select) == 1 &&
-                (.) == selector_list()$col_facet()$select)
-                "Row and column facetting variables must be different."
+            if (
+              length(.) == 1 &&
+              length(selector_list()$col_facet()$select) == 1 &&
+              (.) == selector_list()$col_facet()$select)
+              "Row and column facetting variables must be different."
           }
         ),
         col_facet = shinyvalidate::compose_rules(
           ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
           ~ if ("row_facet" %in% names(selector_list())) {
-              if (
-                length(.) == 1 &&
-                length(selector_list()$row_facet()$select) == 1 &&
-                (.) == selector_list()$row_facet()$select)
-                "Row and column facetting variables must be different."
-            }
+            if (
+              length(.) == 1 &&
+              length(selector_list()$row_facet()$select) == 1 &&
+              (.) == selector_list()$row_facet()$select)
+              "Row and column facetting variables must be different."
+          }
         )
       )
     )
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
       teal.transform::compose_and_enable_validators(iv, selector_list, names(selector_list))
     })
 
@@ -488,7 +487,7 @@ srv_g_scatterplot <- function(id,
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
         if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
-          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+            length(merged$anl_input_r()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -545,8 +544,8 @@ srv_g_scatterplot <- function(id,
         ))
         validate(need(
           !(inherits(ANL[[color_by_var]], "Date") ||
-            inherits(ANL[[color_by_var]], "POSIXct") ||
-            inherits(ANL[[color_by_var]], "POSIXlt")),
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")),
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
@@ -891,8 +890,8 @@ srv_g_scatterplot <- function(id,
       if (length(numeric_cols) > 0) {
         DT::formatRound(
           DT::datatable(brushed_df,
-            rownames = FALSE,
-            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+                        rownames = FALSE,
+                        options = list(scrollX = TRUE, pageLength = input$data_table_rows)
           ),
           numeric_cols,
           table_dec

@@ -304,7 +304,7 @@ ui_distribution <- function(id, ...) {
       ),
       teal.widgets::panel_item(
         title = "Plot settings",
-        teal.widgets::optionalSelectInput(
+        selectInput(
           inputId = ns("ggtheme"),
           label = "Theme (by ggplot):",
           choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
@@ -365,10 +365,10 @@ srv_distribution <- function(id,
       ),
       filter_validation_rule = list(
         strata_i = shinyvalidate::compose_rules(
-          crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
-          crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+          teal::crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
+          teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
         ),
-        group_i = crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+        group_i = teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
       )
     )
 
@@ -382,10 +382,6 @@ srv_distribution <- function(id,
       teal.transform::compose_and_enable_validators(
         iv, selector_list, validator_names = c("strata_i", "group_i"))
     })
-
-    iv_theme <- shinyvalidate::InputValidator$new()
-    iv_theme$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme."))
-    iv_theme$enable()
 
     rule_dist_loc <- function(value) {
       switch(
@@ -407,17 +403,17 @@ srv_distribution <- function(id,
                "Anderson-Darling (one-sample)",
                "Cramer-von Mises (one-sample)")
     rule_dist <- function(value) {
-      if(!shinyvalidate::input_provided(value))
+      if (!shinyvalidate::input_provided(value))
         "Please select the theoretical distribution."
     }
     iv_dist <- shinyvalidate::InputValidator$new()
     iv_dist$add_rule("t_dist",
-                     crule(rule_dist,
-                           isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
+                     teal::crule(rule_dist,
+                                 isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
                      )
     )
-    iv_dist$add_rule("dist_param1", crule(rule_dist_loc, !is.null(input$t_dist)))
-    iv_dist$add_rule("dist_param2", crule(rule_dist_disp, !is.null(input$t_dist)))
+    iv_dist$add_rule("dist_param1", teal::crule(rule_dist_loc, !is.null(input$t_dist)))
+    iv_dist$add_rule("dist_param2", teal::crule(rule_dist_disp, !is.null(input$t_dist)))
     iv_dist$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
@@ -657,8 +653,6 @@ srv_distribution <- function(id,
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_theme)
-
         qenv <- common_q()
 
         m_type <- if (main_type_var == "Density") "..density.." else "..count.."
@@ -767,7 +761,7 @@ srv_distribution <- function(id,
         }
 
         if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-          length(t_dist) != 0 && m_type == "..density..") {
+            length(t_dist) != 0 && m_type == "..density..") {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")
@@ -840,7 +834,7 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        teal::validate_inputs(iv_r_dist(), iv_dist, iv_theme)
+        teal::validate_inputs(iv_r_dist(), iv_dist)
 
         qenv <- common_q()
 
@@ -1059,15 +1053,15 @@ srv_distribution <- function(id,
         )
 
         tests_base <- switch(dist_tests,
-          "Kolmogorov-Smirnov (one-sample)" = sks_args,
-          "Shapiro-Wilk" = ssw_args,
-          "Fligner-Killeen" = mfil_args,
-          "one-way ANOVA" = manov_args,
-          "t-test (two-samples, not paired)" = mt_args,
-          "F-test" = mv_args,
-          "Kolmogorov-Smirnov (two-samples)" = mks_args,
-          "Anderson-Darling (one-sample)" = sad_args,
-          "Cramer-von Mises (one-sample)" = scvm_args
+                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
+                             "Shapiro-Wilk" = ssw_args,
+                             "Fligner-Killeen" = mfil_args,
+                             "one-way ANOVA" = manov_args,
+                             "t-test (two-samples, not paired)" = mt_args,
+                             "F-test" = mv_args,
+                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
+                             "Anderson-Darling (one-sample)" = sad_args,
+                             "Cramer-von Mises (one-sample)" = scvm_args
         )
 
         env <- list(
@@ -1146,7 +1140,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(qq_q()[["g"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = if(iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
+      expr = if (iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
