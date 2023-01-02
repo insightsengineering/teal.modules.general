@@ -337,20 +337,23 @@ srv_distribution <- function(id,
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
 
-    dists1 <- c("Fligner-Killeen",
-                "t-test (two-samples, not paired)",
-                "F-test",
-                "Kolmogorov-Smirnov (two-samples)",
-                "one-way ANOVA")
     rule_req <- function(value) {
-      if (!shinyvalidate::input_provided(value))
-        "Please select stratify variable."
+      if (isTRUE(input$dist_tests %in% c("Fligner-Killeen",
+                                         "t-test (two-samples, not paired)",
+                                         "F-test",
+                                         "Kolmogorov-Smirnov (two-samples)",
+                                         "one-way ANOVA"))) {
+        if (!shinyvalidate::input_provided(value))
+          "Please select stratify variable."
+      }
     }
     rule_dupl <- function(...) {
-      strata <- selector_list()$strata_i()$select
-      group <- selector_list()$group_i()$select
-      if (isTRUE(strata == group))
-        "Please select different variables for strata and group."
+      if (identical(input$dist_tests, "Fligner-Killeen")) {
+        strata <- selector_list()$strata_i()$select
+        group <- selector_list()$group_i()$select
+        if (isTRUE(strata == group))
+          "Please select different variables for strata and group."
+      }
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(
@@ -365,10 +368,10 @@ srv_distribution <- function(id,
       ),
       filter_validation_rule = list(
         strata_i = shinyvalidate::compose_rules(
-          teal::crule(rule_req, isTRUE(input$dist_tests %in% dists1)),
-          teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+          rule_req,
+          rule_dupl
         ),
-        group_i = teal::crule(rule_dupl, identical(input$dist_tests, "Fligner-Killeen"))
+        group_i = rule_dupl
       )
     )
 
@@ -382,38 +385,39 @@ srv_distribution <- function(id,
       teal.transform::compose_and_enable_validators(
         iv, selector_list, validator_names = c("strata_i", "group_i"))
     })
-
     rule_dist_loc <- function(value) {
-      switch(
-        input$t_dist,
-        "normal" = NULL,
-        "lognormal" = NULL,
-        "gamma" = if (value <= 0) "rate must be positive",
-        "unif" = NULL)
+      if (!is.null(input$t_dist)) {
+        switch(
+          input$t_dist,
+          "normal" = NULL,
+          "lognormal" = NULL,
+          "gamma" = if (value <= 0) "rate must be positive",
+          "unif" = NULL)
+      }
     }
     rule_dist_disp <- function(value) {
-      switch(
-        input$t_dist,
-        "normal" = if (value < 0) "mean must be non-negative",
-        "lognormal" = if (value < 0) "meanlog must be non-negative",
-        "gamma" = if (value <= 0) "shape must be positive",
-        "unif" = NULL)
+      if (!is.null(input$t_dist)) {
+        switch(
+          input$t_dist,
+          "normal" = if (value < 0) "mean must be non-negative",
+          "lognormal" = if (value < 0) "meanlog must be non-negative",
+          "gamma" = if (value <= 0) "shape must be positive",
+          "unif" = NULL)
+      }
     }
-    dist2 <- c("Kolmogorov-Smirnov (one-sample)",
-               "Anderson-Darling (one-sample)",
-               "Cramer-von Mises (one-sample)")
     rule_dist <- function(value) {
-      if (!shinyvalidate::input_provided(value))
-        "Please select the theoretical distribution."
+      if (isTRUE(input$tabs == "QQplot" ||
+                 input$dist_tests %in% c("Kolmogorov-Smirnov (one-sample)",
+                                         "Anderson-Darling (one-sample)",
+                                         "Cramer-von Mises (one-sample)"))) {
+        if (!shinyvalidate::input_provided(value))
+          "Please select the theoretical distribution."
+      }
     }
     iv_dist <- shinyvalidate::InputValidator$new()
-    iv_dist$add_rule("t_dist",
-                     teal::crule(rule_dist,
-                                 isTRUE(input$tabs == "QQplot" || input$dist_tests %in% dist2)
-                     )
-    )
-    iv_dist$add_rule("dist_param1", teal::crule(rule_dist_loc, !is.null(input$t_dist)))
-    iv_dist$add_rule("dist_param2", teal::crule(rule_dist_disp, !is.null(input$t_dist)))
+    iv_dist$add_rule("t_dist", rule_dist)
+    iv_dist$add_rule("dist_param1", rule_dist_loc)
+    iv_dist$add_rule("dist_param2", rule_dist_disp)
     iv_dist$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
