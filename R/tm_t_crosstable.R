@@ -173,8 +173,8 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       data_extract = list(x = x, y = y),
       datasets = data,
       select_validation_rule = list(
-        x = shinyvalidate::sv_required("Please define column for row variable that is not empty."),
-        y = shinyvalidate::sv_required("Please define column for column variable that is not empty.")
+        x = shinyvalidate::sv_required("Please define column for row variable."),
+        y = shinyvalidate::sv_required("Please define column for column variable.")
       )
     )
 
