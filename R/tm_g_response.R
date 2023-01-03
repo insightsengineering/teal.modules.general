@@ -236,9 +236,11 @@ srv_g_response <- function(id,
 
     rule_diff <- function(other) {
       function(value) {
-        othervalue <- selector_list()[[other]]()$select
-        if (identical(value, othervalue))
-          "Row and column facetting variables must be different."
+        if (!is.null(input$row_facet)) {
+          othervalue <- selector_list()[[other]]()$select
+          if (identical(value, othervalue))
+            "Row and column facetting variables must be different."
+        }
       }
     }
 
@@ -251,12 +253,12 @@ srv_g_response <- function(id,
         row_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
-          crule(rule_diff("col_facet"), !is.null(input$row_facet))
+          rule_diff("col_facet")
         ),
         col_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
-          crule(rule_diff("row_facet"), !is.null(input$col_facet))
+          rule_diff("row_facet")
         )
       )
     )
