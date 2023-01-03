@@ -242,7 +242,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       ),
       filter_validation_rule = list(
         categorical_var = shinyvalidate::compose_rules(
-          ~ if (length(selector_list()$categorical_var()$select) > 0 && length(.) == 0) {
+          ~ if (length(selector_list()$categorical_var()$filters[[1]]$columns) > 0 && length(.) == 0) {
             "Please select the filter levels"
           },
           rule_diff("outlier_var")
