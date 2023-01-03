@@ -165,6 +165,13 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'row_facet' should not allow multiple selection")
+  }
+  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'col_facet' should not allow multiple selection")
+  }
   checkmate::assert_character(shape)
 
   checkmate::assert_int(max_deg, lower = 1L)
@@ -416,12 +423,10 @@ srv_g_scatterplot <- function(id,
         size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
         row_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
           rule_diff("col_facet")
         ),
         col_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
           rule_diff("row_facet")
         )
       )

@@ -140,7 +140,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     stop("'y' should not allow multiple selection")
   }
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'row_facet' should not allow multiple selection")
+  }
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'col_facet' should not allow multiple selection")
+  }
   checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
   if (!all(vapply(color, function(x) !x$select$multiple, logical(1)))) {
     stop("'color' should not allow multiple selection")
@@ -406,12 +412,10 @@ srv_g_bivariate <- function(id,
         y = rule_var("x"),
         row_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
           rule_diff("col_facet")
         ),
         col_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
           rule_diff("row_facet")
         )
       )
