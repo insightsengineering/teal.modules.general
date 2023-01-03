@@ -236,7 +236,7 @@ srv_g_response <- function(id,
 
     rule_diff <- function(other) {
       function(value) {
-        if (!is.null(input$row_facet)) {
+        if (!is.null(selector_list()[[other]]()$select)) {
           othervalue <- selector_list()[[other]]()$select
           if (identical(value, othervalue))
             "Row and column facetting variables must be different."
@@ -264,15 +264,9 @@ srv_g_response <- function(id,
     )
 
     iv_r <- reactive({
-      iv_facet <- shinyvalidate::InputValidator$new()
-      iv_child <- teal.transform::compose_and_enable_validators(iv_facet, selector_list,
-                                                                validator_names = c("row_facet", "col_facet"))
-      iv_child$condition(~ isTRUE(any(c("row_facet", "col_facet") %in% names(selector_list()))))
-
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
-      iv$add_validator(iv_child)
-      teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = c("x", "response"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
     })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
