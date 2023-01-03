@@ -902,8 +902,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot final ----
     output_q <- reactive({
       req(computation())
-      teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
-                                            "Plot settings are required" = iv_extra))
+      # teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
+      #                                       "Plot settings are required" = iv_extra))
+      teal::validate_inputs(iv_r())
+      teal::validate_inputs(iv_extra, header = "Plot settings are required")
+
       switch(input$plot_type,
              "Elbow plot" = plot_elbow(computation()),
              "Circle plot" = plot_circle(computation()),
@@ -964,8 +967,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     output$all_plots <- renderUI({
-      teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
-                                            "Plot settings are required" = iv_extra))
+      # teal::validate_inputs_segregated(list("Some inputs require attention" = iv_r(),
+      #                                       "Plot settings are required" = iv_extra))
+      teal::validate_inputs(iv_r())
+      teal::validate_inputs(iv_extra, header = "Plot settings are required")
+
       validation()
       tags$div(
         class = "overflow-scroll",
