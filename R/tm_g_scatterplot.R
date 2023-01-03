@@ -429,12 +429,8 @@ srv_g_scatterplot <- function(id,
 
     iv_r <- reactive({
       iv_facet <- shinyvalidate::InputValidator$new()
-      iv_child <- teal.transform::compose_and_enable_validators(iv_facet, selector_list,
-                                                                validator_names = c("row_facet", "col_facet"))
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_validator(iv_child)
-      teal.transform::compose_and_enable_validators(iv, selector_list,
-                                                    validator_names = c("x", "y", "color_by", "scale_by"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
     })
     iv_facet <- shinyvalidate::InputValidator$new()
     iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
