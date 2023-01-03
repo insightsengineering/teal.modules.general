@@ -390,7 +390,7 @@ srv_g_bivariate <- function(id,
     }
     rule_diff <- function(other) {
       function(value) {
-        if (!is.null(selector_list()[[other]]()$select)) {
+        if (!is.null(input[[other]])) {
           othervalue <- selector_list()[[other]]()$select
           if (identical(value, othervalue))
             "Row and column facetting variables must be different."
