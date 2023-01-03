@@ -436,6 +436,12 @@ srv_g_scatterplot <- function(id,
       teal.transform::compose_and_enable_validators(iv, selector_list,
                                                     validator_names = c("x", "y", "color_by", "scale_by"))
     })
+    iv_facet <- shinyvalidate::InputValidator$new()
+    iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
+                                           (length(selector_list()$row_facet()$select) > 0L ||
+                                            length(selector_list()$col_facet()$select) > 0L))
+      "Uncheck or remove facetting.")
+    iv_facet$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -492,7 +498,6 @@ srv_g_scatterplot <- function(id,
       }
     })
 
-
     observeEvent(
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
@@ -506,7 +511,10 @@ srv_g_scatterplot <- function(id,
     )
 
     output_q <- reactive({
-      teal::validate_inputs(iv_r())
+      teal::validate_inputs_segregated(list(
+        "Some inputs require attention" = iv_r(),
+        "Marginal density is not supported when faceting is used." = iv_facet
+      ))
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
@@ -547,31 +555,20 @@ srv_g_scatterplot <- function(id,
         "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
       ))
 
-      iv_marginal <- shinyvalidate::InputValidator$new()
-      iv_marginal$condition(~ isTRUE(add_density && length(color_by_var) > 0))
-      iv_marginal$add_rule("add_density", ~ if (is.numeric(ANL[[color_by_var]]))
-        "Marginal plots unavailable when points are colored by numeric variables.")
-
-      iv_marginal$add_rule("add_density", ~ if (checkmate::test_multi_class(
-        ., classes = c("Date", "POSIXct", "POSIXlt")))
-        "Marginal plots unavailable when points are colored by Date or POSIX variables.")
-      iv_marginal$enable()
-      teal::validate_inputs(iv_marginal, header = "Uncheck the 'Add marginal density' checkbox to display the plot.")
-
-      # if (add_density && length(color_by_var) > 0) {
-      #   validate(need(
-      #     !is.numeric(ANL[[color_by_var]]),
-      #     "Marginal plots cannot be produced when the points are colored by numeric variables.
-      #   \n Uncheck the 'Add marginal density' checkbox to display the plot."
-      #   ))
-      #   validate(need(
-      #     !(inherits(ANL[[color_by_var]], "Date") ||
-      #         inherits(ANL[[color_by_var]], "POSIXct") ||
-      #         inherits(ANL[[color_by_var]], "POSIXlt")),
-      #     "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
-      #   \n Uncheck the 'Add marginal density' checkbox to display the plot."
-      #   ))
-      # }
+      if (add_density && length(color_by_var) > 0) {
+        validate(need(
+          !is.numeric(ANL[[color_by_var]]),
+          "Marginal plots cannot be produced when the points are colored by numeric variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
+        validate(need(
+          !(inherits(ANL[[color_by_var]], "Date") ||
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")),
+          "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
+      }
 
       teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
 
@@ -602,13 +599,13 @@ srv_g_scatterplot <- function(id,
         free_x_scales = isTRUE(input$free_scales),
         free_y_scales = isTRUE(input$free_scales)
       )
-      if (!is.null(facet_cl)) {
-        validate(need(
-          !add_density,
-          "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
-        or remove facetting."
-        ))
-      }
+      # if (!is.null(facet_cl)) {
+      #   validate(need(
+      #     !add_density,
+      #     "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
+      #   or remove facetting."
+      #   ))
+      # }
 
       point_sizes <- if (length(size_by_var) > 0) {
         validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
