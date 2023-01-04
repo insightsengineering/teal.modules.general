@@ -79,6 +79,13 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
+  if (is.list(categorical_var)) {
+    lapply(categorical_var, function(x) {
+      if (length(x$filter) > 1L) {
+        stop("tm_outliers: categorical_var may only specify a single filter_spec", call. = FALSE)
+      }
+    })
+  }
   plot_choices <- c("Boxplot", "Density Plot", "Cumulative Distribution Plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
