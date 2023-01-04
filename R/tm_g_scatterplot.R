@@ -441,7 +441,7 @@ srv_g_scatterplot <- function(id,
     iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
                                            (length(selector_list()$row_facet()$select) > 0L ||
                                             length(selector_list()$col_facet()$select) > 0L))
-      "Uncheck or remove facetting.")
+      "Cannot add marginal density when Row or Column facetting has been selected")
     iv_facet$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
@@ -512,10 +512,7 @@ srv_g_scatterplot <- function(id,
     )
 
     output_q <- reactive({
-      teal::validate_inputs_segregated(list(
-        "Some inputs require attention" = iv_r(),
-        "Marginal density is not supported when faceting is used." = iv_facet
-      ))
+      teal::validate_inputs(iv_r(), iv_facet)
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
