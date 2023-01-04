@@ -82,7 +82,7 @@ tm_outliers <- function(label = "Outliers Module",
   if (is.list(categorical_var)) {
     lapply(categorical_var, function(x) {
       if (length(x$filter) > 1L) {
-        stop("tm_outliers: categorical_var may only specify a single filter_spec", call. = FALSE)
+        stop("tm_outliers: categorical_var may specify only one filter_spec", call. = FALSE)
       }
     })
   }
