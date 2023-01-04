@@ -385,23 +385,35 @@ srv_distribution <- function(id,
       teal.transform::compose_and_enable_validators(
         iv, selector_list, validator_names = c("strata_i", "group_i"))
     })
-    rule_dist_loc <- function(value) {
+    rule_dist_1 <- function(value) {
       if (!is.null(input$t_dist)) {
         switch(
           input$t_dist,
-          "normal" = NULL,
-          "lognormal" = NULL,
-          "gamma" = if (value <= 0) "rate must be positive",
+          "normal" = if (!shinyvalidate::input_provided(value)) "mean is required",
+          "lognormal" = if (!shinyvalidate::input_provided(value)) "meanlog is required",
+          "gamma" = {
+            if (!shinyvalidate::input_provided(value)) "shape is required" else
+              if (value <= 0) "shape must be positive"
+          },
           "unif" = NULL)
       }
     }
-    rule_dist_disp <- function(value) {
+    rule_dist_2 <- function(value) {
       if (!is.null(input$t_dist)) {
         switch(
           input$t_dist,
-          "normal" = if (value < 0) "mean must be non-negative",
-          "lognormal" = if (value < 0) "meanlog must be non-negative",
-          "gamma" = if (value <= 0) "shape must be positive",
+          "normal" = {
+            if (!shinyvalidate::input_provided(value)) "sd is required" else
+              if (value < 0) "sd must be non-negative"
+          },
+          "lognormal" = {
+            if (!shinyvalidate::input_provided(value)) "sdlog is required" else
+              if (value < 0) "sdlog must be non-negative"
+          },
+          "gamma" = {
+            if (!shinyvalidate::input_provided(value)) "rate is required" else
+              if (value <= 0) "rate must be positive"
+          },
           "unif" = NULL)
       }
     }
@@ -416,8 +428,8 @@ srv_distribution <- function(id,
     }
     iv_dist <- shinyvalidate::InputValidator$new()
     iv_dist$add_rule("t_dist", rule_dist)
-    iv_dist$add_rule("dist_param1", rule_dist_loc)
-    iv_dist$add_rule("dist_param2", rule_dist_disp)
+    iv_dist$add_rule("dist_param1", rule_dist_1)
+    iv_dist$add_rule("dist_param2", rule_dist_2)
     iv_dist$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
@@ -656,6 +668,8 @@ srv_distribution <- function(id,
         bins_var <- input$bins
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
+
+        teal::validate_inputs(iv_dist)
 
         qenv <- common_q()
 
@@ -1154,7 +1168,7 @@ srv_distribution <- function(id,
 
     tests_r <- reactive({
       req(iv_r()$is_valid())
-      teal::validate_inputs(iv_r_dist(), iv_dist)
+      teal::validate_inputs(iv_r_dist())
       test_q()[["test_stats"]]
     })
 
