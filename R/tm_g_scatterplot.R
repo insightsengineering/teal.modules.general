@@ -597,13 +597,6 @@ srv_g_scatterplot <- function(id,
         free_x_scales = isTRUE(input$free_scales),
         free_y_scales = isTRUE(input$free_scales)
       )
-      # if (!is.null(facet_cl)) {
-      #   validate(need(
-      #     !add_density,
-      #     "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
-      #   or remove facetting."
-      #   ))
-      # }
 
       point_sizes <- if (length(size_by_var) > 0) {
         validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
