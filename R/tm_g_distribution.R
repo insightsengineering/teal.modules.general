@@ -990,6 +990,8 @@ srv_distribution <- function(id,
 
         validate(need(dist_tests, "Please select a test"))
 
+        teal::validate_inputs(iv_dist)
+
         if (length(s_var) > 0 || length(g_var) > 0) {
           counts <- ANL %>%
             dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
