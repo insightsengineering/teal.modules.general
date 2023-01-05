@@ -286,14 +286,14 @@ ui_distribution <- function(id, ...) {
           "Tests:",
           choices = c(
             "Shapiro-Wilk",
-            "t-test (two-samples, not paired)",
-            "one-way ANOVA",
-            "Fligner-Killeen",
-            "F-test",
+            if (!is.null(args$strata_var)) "t-test (two-samples, not paired)",
+            if (!is.null(args$strata_var)) "one-way ANOVA",
+            if (!is.null(args$strata_var)) "Fligner-Killeen",
+            if (!is.null(args$strata_var)) "F-test",
             "Kolmogorov-Smirnov (one-sample)",
             "Anderson-Darling (one-sample)",
             "Cramer-von Mises (one-sample)",
-            "Kolmogorov-Smirnov (two-samples)"
+            if (!is.null(args$strata_var)) "Kolmogorov-Smirnov (two-samples)"
           ),
           selected = NULL
         )
