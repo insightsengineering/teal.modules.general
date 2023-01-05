@@ -1087,7 +1087,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       },
       options = list(
         searching = FALSE, language = list(
-          zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
+          zeroRecords = "The brushed area does not contain outlier observations for the currently defined threshold"
         ),
         pageLength = input$table_ui_rows
       )
