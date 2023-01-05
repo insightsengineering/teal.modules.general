@@ -1036,13 +1036,8 @@ srv_distribution <- function(id,
         )
         mfil_args <- list(
           test = quote(stats::fligner.test),
-          args = if (!is.null(s_var)) {
-            bquote(list(.[[.(dist_var)]], .[[.(s_var)]]))
-          } else {
-            bquote(list(.[[.(dist_var)]]))
-          },
-          groups = c(g_var)
-        )
+          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]]))
+        ),
         sad_args <- list(
           test = quote(goftest::ad.test),
           args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
