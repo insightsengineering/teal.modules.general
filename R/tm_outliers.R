@@ -116,7 +116,26 @@ ui_outliers <- function(id, ...) {
   is_single_dataset_value <- teal.transform::is_single_dataset(args$outlier_var, args$categorical_var)
 
   teal.widgets::standard_layout(
-    output = uiOutput(ns("output_whole")),
+    output = teal.widgets::white_small_well(
+      uiOutput(ns("total_outliers")),
+      DT::dataTableOutput(ns("summary_table")),
+      uiOutput(ns("total_missing")),
+      br(), hr(),
+      tabsetPanel(
+        id = ns("tabs"),
+        tabPanel(
+          "Boxplot",
+          teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
+        tabPanel(
+          "Density Plot",
+          teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
+        tabPanel(
+          "Cumulative Distribution Plot",
+          teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
+      ),
+      br(), hr(),
+      uiOutput(ns("bottom_table"))
+    ),
     encoding = div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
@@ -302,7 +321,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
-
       input_catvar <- input[[extract_input(
         "categorical_var",
         cat_dataname,
@@ -593,8 +611,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     output$summary_table <- DT::renderDataTable(
       expr = {
-        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-        if (length(categorical_var) > 0) {
+        if (iv_r()$is_valid()) {
+          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           DT::datatable(
             common_code_q()[["summary_table"]],
             options = list(
@@ -929,15 +947,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     boxplot_r <- reactive({
-      shiny::req(iv_r()$is_valid())
+      teal::validate_inputs(iv_r())
       boxplot_q()[["g"]]
     })
     density_plot_r <- reactive({
-      shiny::req(iv_r()$is_valid())
+      teal::validate_inputs(iv_r())
       density_plot_q()[["g"]]
     })
     cumulative_plot_r <- reactive({
-      shiny::req(iv_r()$is_valid())
+      teal::validate_inputs(iv_r())
       cumulative_plot_q()[["g"]]
     })
 
@@ -981,7 +999,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     output$table_ui <- DT::renderDataTable(
       expr = {
-        shiny::req(iv_r()$is_valid())
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
@@ -1094,7 +1111,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     output$total_missing <- renderUI({
-      shiny::req(iv_r()$is_valid())
       if (n_outlier_missing() > 0) {
         ANL <- merged$anl_q_r()[["ANL"]] # nolint
         helpText(
@@ -1109,26 +1125,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
-    output$output_whole <- renderUI({
-      teal::validate_inputs(iv_r())
-      teal.widgets::white_small_well(
-        uiOutput(session$ns("total_outliers")),
-        DT::dataTableOutput(session$ns("summary_table")),
-        uiOutput(session$ns("total_missing")),
-        br(), hr(),
-        tabsetPanel(
-          id = session$ns("tabs"),
-          tabPanel(
-            "Boxplot",
-            teal.widgets::plot_with_settings_ui(id = session$ns("box_plot"))),
-          tabPanel(
-            "Density Plot",
-            teal.widgets::plot_with_settings_ui(id = session$ns("density_plot"))),
-          tabPanel(
-            "Cumulative Distribution Plot",
-            teal.widgets::plot_with_settings_ui(id = session$ns("cum_density_plot")))
-        ),
-        br(), hr(),
+    output$table_ui_wrap <- renderUI({
+      shiny::req(iv_r()$is_valid())
+      tagList(
         teal.widgets::optionalSelectInput(
           inputId = session$ns("table_ui_columns"),
           label = "Choose additional columns",
