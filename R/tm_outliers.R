@@ -134,7 +134,7 @@ ui_outliers <- function(id, ...) {
           teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
-      uiOutput(ns("bottom_table"))
+      uiOutput(ns("table_ui_wrap"))
     ),
     encoding = div(
       ### Reporter
