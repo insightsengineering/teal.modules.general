@@ -165,13 +165,6 @@ ui_distribution <- function(id, ...) {
   ns <- NS(id)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
 
-  scales_condition_base <- paste0(
-    "input['",
-    extract_input(ns("group_i"), args$group_var[[1]]$dataname, filter = TRUE),
-    "']"
-  )
-  scales_condition <- paste0(scales_condition_base, " && ", paste0(scales_condition_base, ".length != 0"))
-
   teal.widgets::standard_layout(
     output = tagList(
       tabsetPanel(
@@ -204,17 +197,7 @@ ui_distribution <- function(id, ...) {
             data_extract_spec = args$group_var,
             is_single_dataset = is_single_dataset_value
           ),
-          conditionalPanel(
-            condition = scales_condition,
-            shinyWidgets::prettyRadioButtons(
-              ns("scales_type"),
-              label = "Scales:",
-              choices = c("Fixed", "Free"),
-              selected = "Fixed",
-              bigger = FALSE,
-              inline = TRUE
-            )
-          )
+          uiOutput(ns("scales_types_ui"))
         )
       },
       if (!is.null(args$strata_var)) {
@@ -449,11 +432,24 @@ srv_distribution <- function(id,
       anl_q_r = anl_merged_q
     )
 
+    output$scales_types_ui <- renderUI({
+      if ("group_i" %in% names(selector_list()) && length(selector_list()$group_i()$filters[[1]]$selected) > 0) {
+        shinyWidgets::prettyRadioButtons(
+          session$ns("scales_type"),
+          label = "Scales:",
+          choices = c("Fixed", "Free"),
+          selected = "Fixed",
+          bigger = FALSE,
+          inline = TRUE
+        )
+      }
+    })
+
     observeEvent(
       eventExpr = list(
         input$t_dist,
         input$params_reset,
-        input[[extract_input("dist_i", dist_var[[1]]$dataname)]]
+        selector_list()$dist_i()$select
       ),
       handlerExpr = {
         if (length(input$t_dist) != 0) {
@@ -660,6 +656,7 @@ srv_distribution <- function(id,
         dist_param2 <- input$dist_param2
 
         scales_type <- input$scales_type
+
         ndensity <- 512
         main_type_var <- input$main_type
         bins_var <- input$bins
@@ -695,6 +692,7 @@ srv_distribution <- function(id,
             )
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
+          req(scales_type)
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
               geom_histogram(
@@ -710,6 +708,7 @@ srv_distribution <- function(id,
             )
           )
         } else {
+          req(scales_type)
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
               geom_histogram(
