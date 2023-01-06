@@ -743,7 +743,8 @@ srv_distribution <- function(id,
               ),
             env = list(
               plot_call = plot_call,
-              const = if (main_type_var == "Density") 1 else diff(range(ANL[[dist_var]], na.rm = TRUE)) / bins_var,
+              const = if (main_type_var == "Density") 1 else
+                diff(range(qenv[["ANL"]][[dist_var]], na.rm = TRUE)) / bins_var,
               m_type2 = if (main_type_var == "Density") as.name("density") else as.name("count"),
               ndensity = ndensity
             )
