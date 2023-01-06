@@ -649,9 +649,6 @@ srv_distribution <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-        ANL <- common_q()[["ANL"]] # nolint
-        summary_table <- common_q()[["summary_table"]] # nolint
-
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
         g_var <- merge_vars()$g_var
@@ -832,9 +829,6 @@ srv_distribution <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-        ANL <- common_q()[["ANL"]] # nolint
-        summary_table <- common_q()[["summary_table"]]
-
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
         g_var <- merge_vars()$g_var
