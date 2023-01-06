@@ -266,7 +266,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       data_extract = list(dat = dat, response = response),
       datasets = data,
       select_validation_rule = list(
-        dat = ~if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
+        dat = ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
         response = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           ~ if (isTRUE(is.element(., selector_list()$dat()$select)))
