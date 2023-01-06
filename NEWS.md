@@ -21,6 +21,7 @@
 ### Miscellaneous
 
 * Examples now use `scda.2022` rather than `scda.2021`.
+* Replaced deprecated `ggplot2` functions `..count..` and `..density..`.
 
 # teal.modules.general 0.2.15
 

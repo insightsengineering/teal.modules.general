@@ -778,8 +778,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = ..density..))),
-        quote(geom_density(aes(y = ..density..))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
@@ -795,8 +795,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = ..density..))),
-        quote(geom_density(aes(y = ..density..))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
