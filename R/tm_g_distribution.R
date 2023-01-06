@@ -673,32 +673,27 @@ srv_distribution <- function(id,
 
         qenv <- common_q()
 
-        m_type <- if (main_type_var == "Density") "..density.." else "..count.."
-        m_type2 <- if (main_type_var == "Density") {
-          "..density.."
-        } else {
-          paste(diff(range(ANL[[dist_var]], na.rm = TRUE)) / bins_var, "* ..count..")
-        }
+        m_type <- if (main_type_var == "Density") "density" else "count"
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes(dist_var_name)) +
               geom_histogram(
-                position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3),
+                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3),
             env = list(
-              m_type = m_type, bins_var = bins_var, dist_var_name = as.name(dist_var)
+              m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
             )
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
               geom_histogram(
-                position = "identity", aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3),
+                position = "identity", aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3),
             env = list(
-              m_type = m_type,
+              m_type = as.name(m_type),
               bins_var = bins_var,
               dist_var_name = dist_var_name,
-              s_var = s_var,
+              s_var = as.name(s_var),
               s_var_name = s_var_name
             )
           )
@@ -706,10 +701,10 @@ srv_distribution <- function(id,
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
               geom_histogram(
-                position = "identity", aes_string(y = m_type), bins = bins_var, alpha = 0.3) +
+                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3) +
               facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
-              m_type = m_type,
+              m_type = as.name(m_type),
               bins_var = bins_var,
               dist_var_name = dist_var_name,
               g_var = g_var,
@@ -722,15 +717,15 @@ srv_distribution <- function(id,
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
               geom_histogram(
                 position = "identity",
-                aes_string(y = m_type, fill = s_var), bins = bins_var, alpha = 0.3
+                aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
               ) +
               facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
-              m_type = m_type,
+              m_type = as.name(m_type),
               bins_var = bins_var,
               dist_var_name = dist_var_name,
               g_var = g_var,
-              s_var = s_var,
+              s_var = as.name(s_var),
               g_var_name = g_var_name,
               s_var_name = s_var_name,
               scales_raw = tolower(scales_type)
@@ -742,7 +737,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call +
               stat_density(
-                aes_string(y = m_type2),
+                aes(y = after_stat(const * m_type2)),
                 geom = "line",
                 position = "identity",
                 alpha = 0.5,
@@ -751,13 +746,14 @@ srv_distribution <- function(id,
               ),
             env = list(
               plot_call = plot_call,
-              m_type2 = m_type2,
+              const = if (main_type_var == "Density") 1 else diff(range(ANL[[dist_var]], na.rm = TRUE)) / bins_var,
+              m_type2 = if (main_type_var == "Density") as.name("density") else as.name("count"),
               ndensity = ndensity
             )
           )
         }
 
-        if (length(t_dist) != 0 && m_type == "..density.." && length(g_var) == 0 && length(s_var) == 0) {
+        if (length(t_dist) != 0 && main_type_var == "Density" && length(g_var) == 0 && length(s_var) == 0) {
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -778,8 +774,8 @@ srv_distribution <- function(id,
           )
         }
 
-        if (length(s_var) == 0 && length(g_var) == 0 && m_type == "..density.." &&
-            length(t_dist) != 0 && m_type == "..density..") {
+        if (length(s_var) == 0 && length(g_var) == 0 && main_type_var == "Density" &&
+            length(t_dist) != 0 && main_type_var == "Density") {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")
