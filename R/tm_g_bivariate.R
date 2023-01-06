@@ -778,8 +778,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = ..density..))),
-        quote(geom_density(aes(y = ..density..))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
@@ -795,8 +795,8 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = ..density..))),
-        quote(geom_density(aes(y = ..density..))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
@@ -812,7 +812,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar(aes(y = ..prop.., group = 1))),
+        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
         quote(ylab("Fraction"))
       )
     }
@@ -828,7 +828,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar(aes(y = ..prop.., group = 1))),
+        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
         quote(ylab("Fraction"))
       )
     }
