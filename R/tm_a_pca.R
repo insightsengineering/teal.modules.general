@@ -304,7 +304,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     iv_extra$add_rule("variables", function(value) {
       if (identical(input$plot_type, "Circle plot")) {
         if (!shinyvalidate::input_provided(value))
-          "Need Variables"
+          "Need Original Coordinates"
       }
     })
     iv_extra$add_rule("pc", function(value) {
