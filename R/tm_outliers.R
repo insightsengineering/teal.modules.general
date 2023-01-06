@@ -267,15 +267,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
           rule_diff("categorical_var")
-        )
-      ),
-      filter_validation_rule = list(
-        categorical_var = shinyvalidate::compose_rules(
-          ~ if (length(selector_list()$categorical_var()$filters[[1]]$columns) > 0 && length(.) == 0) {
-            "Please select the filter levels"
-          },
-          rule_diff("outlier_var")
-        )
+        ),
+        categorical_var = rule_diff("outlier_var")
       )
     )
 
@@ -324,11 +317,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
-      input_catvar <- input[[extract_input(
-        "categorical_var",
-        cat_dataname,
-        filter = is_cat_filter_spec
-      )]]
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       qenv <- merged$anl_q_r()
@@ -371,32 +359,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             is.integer(ANL[[categorical_var]]),
           "`Categorical factor` must be `factor`, `character`, or `integer`"
         ))
-
-        input_catlevels <- if (is_cat_filter_spec) {
-          input_catvar
-        } else {
-          NULL
-        }
-
-        # If there are both string values "NA" and missing values NA, value_choices function should output a warning
-        if ("NA" %in% input_catlevels) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = {
-                ANL[[categorical_var]] <- dplyr::if_else( # nolint
-                  is.na(ANL[[categorical_var]]),
-                  "NA",
-                  as.character(ANL[[categorical_var]])
-                )
-              },
-              env = list(
-                categorical_var = categorical_var,
-                categorical_var_name = as.name(categorical_var)
-              )
-            )
-          )
-        }
 
         if (n_outlier_missing() > 0) {
           qenv <- teal.code::eval_code(
