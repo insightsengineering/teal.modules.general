@@ -398,19 +398,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         }
 
-        if (is_cat_filter_spec && !all(unique(ANL[[categorical_var]]) %in% input_catlevels)) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
-              env = list(
-                categorical_var_name = as.name(categorical_var),
-                categorical_var_levels = input_catlevels
-              )
-            )
-          )
-        }
-
         if (n_outlier_missing() > 0) {
           qenv <- teal.code::eval_code(
             qenv,
