@@ -75,7 +75,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_string(label)
-  checkmate::check_list(dat, types = "data_extract_spec")
+  checkmate::assert_list(dat, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_flag(rotate_xaxis_labels)
 
