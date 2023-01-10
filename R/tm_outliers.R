@@ -301,9 +301,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       anl_q_r = anl_merged_q
     )
 
-    is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
-    cat_dataname <- categorical_var[[1]]$dataname
-
     n_outlier_missing <- reactive({
       shiny::req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
@@ -322,8 +319,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
-      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
@@ -335,6 +330,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         complete = TRUE,
         allow_inf = FALSE
       )
+      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
+      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
 
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
