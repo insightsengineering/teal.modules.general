@@ -248,14 +248,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     rule_diff <- function(other) {
       function(value) {
-        if (other %in% names(selector_list())) {
-          othervalue <- selector_list()[[other]]()$select
-          if (!is.null(othervalue)) {
-            if (identical(othervalue, value)) {
-              "`Variable` and `Categorical factor` cannot be the same"
-
-            }
-          }
+        othervalue <- selector_list()[[other]]()[["select"]]
+        if (!is.null(othervalue)) {
+          if (identical(othervalue, value))
+            "`Variable` and `Categorical factor` cannot be the same"
         }
       }
     }
@@ -267,15 +263,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
           rule_diff("categorical_var")
-        )
-      ),
-      filter_validation_rule = list(
-        categorical_var = shinyvalidate::compose_rules(
-          ~ if (length(selector_list()$categorical_var()$filters[[1]]$columns) > 0 && length(.) == 0) {
-            "Please select the filter levels"
-          },
-          rule_diff("outlier_var")
-        )
+        ),
+        categorical_var = rule_diff("outlier_var")
       )
     )
 
@@ -312,9 +301,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       anl_q_r = anl_merged_q
     )
 
-    is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
-    cat_dataname <- categorical_var[[1]]$dataname
-
     n_outlier_missing <- reactive({
       shiny::req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
@@ -324,11 +310,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
-      input_catvar <- input[[extract_input(
-        "categorical_var",
-        cat_dataname,
-        filter = is_cat_filter_spec
-      )]]
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       qenv <- merged$anl_q_r()
@@ -338,8 +319,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
-      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
@@ -351,6 +330,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         complete = TRUE,
         allow_inf = FALSE
       )
+      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
+      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
 
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
@@ -371,45 +352,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             is.integer(ANL[[categorical_var]]),
           "`Categorical factor` must be `factor`, `character`, or `integer`"
         ))
-
-        input_catlevels <- if (is_cat_filter_spec) {
-          input_catvar
-        } else {
-          NULL
-        }
-
-        # If there are both string values "NA" and missing values NA, value_choices function should output a warning
-        if ("NA" %in% input_catlevels) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = {
-                ANL[[categorical_var]] <- dplyr::if_else( # nolint
-                  is.na(ANL[[categorical_var]]),
-                  "NA",
-                  as.character(ANL[[categorical_var]])
-                )
-              },
-              env = list(
-                categorical_var = categorical_var,
-                categorical_var_name = as.name(categorical_var)
-              )
-            )
-          )
-        }
-
-        if (is_cat_filter_spec && !all(unique(ANL[[categorical_var]]) %in% input_catlevels)) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
-              env = list(
-                categorical_var_name = as.name(categorical_var),
-                categorical_var_levels = input_catlevels
-              )
-            )
-          )
-        }
 
         if (n_outlier_missing() > 0) {
           qenv <- teal.code::eval_code(
