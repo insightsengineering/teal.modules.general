@@ -250,16 +250,20 @@ srv_data_table <- function(id,
                            dt_options,
                            server_rendering) {
   moduleServer(id, function(input, output, session) {
-    output$data_table <- DT::renderDataTable(server = server_rendering, {
-      variables <- input$variables
+    iv <- shinyvalidate::InputValidator$new()
+    iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
+    iv$add_rule("variables", shinyvalidate::sv_in_set(
+      set = names(data[[dataname]]()), message_fmt = "Not all selected variables exist in the data"
+    ))
+    iv$enable()
 
-      validate(need(variables, "need valid variable names"))
+    output$data_table <- DT::renderDataTable(server = server_rendering, {
+      teal::validate_inputs(iv)
 
       df <- data[[dataname]]()
+      variables <- input$variables
 
-      validate(need(df, paste("data", dataname, "is empty")))
-
-      validate(need(all(variables %in% names(df)), "not all selected variables exist"))
+      teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
       dataframe_selected <- if (if_distinct()) {
         dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))

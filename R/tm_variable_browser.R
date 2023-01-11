@@ -943,7 +943,7 @@ plot_var_summary <- function(var,
       }
       ## histogram
       binwidth <- get_bin_width(var)
-      p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
+      p <- ggplot(data = data.frame(var = var), aes(x = var, y = after_stat(count))) +
         geom_histogram(binwidth = binwidth) +
         scale_y_continuous(
           sec.axis = sec_axis(
@@ -954,7 +954,7 @@ plot_var_summary <- function(var,
         )
 
       if (display_density) {
-        p <- p + geom_density(aes_string(y = "..count.. * binwidth"))
+        p <- p + geom_density(aes(y = after_stat(count * binwidth)))
       }
 
       if (outlier_definition != 0) {
@@ -973,7 +973,7 @@ plot_var_summary <- function(var,
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
-    p <- ggplot(data = data.frame(var = var), aes_string(x = "var", y = "..count..")) +
+    p <- ggplot(data = data.frame(var = var), aes(x = var, y = after_stat(count))) +
       geom_histogram(binwidth = binwidth)
   } else {
     grid::textGrob(

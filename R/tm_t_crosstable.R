@@ -169,7 +169,25 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract = list(x = x, y = y), datasets = data)
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(x = x, y = y),
+      datasets = data,
+      select_validation_rule = list(
+        x = shinyvalidate::sv_required("Please define column for row variable."),
+        y = shinyvalidate::sv_required("Please define column for column variable.")
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("join_fun", function(value) {
+        if (!identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
+          if (!shinyvalidate::input_provided(value))
+            "Please select a joining function."
+        }
+      })
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     observeEvent(
       eventExpr = {
@@ -212,15 +230,12 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       # As this is a summary
-
       x_name <- as.vector(merged$anl_input_r()$columns_source$x)
       y_name <- as.vector(merged$anl_input_r()$columns_source$y)
-
-      validate(need(length(x_name) > 0, "Please define column for row variable that is not empty."))
-      validate(need(length(y_name) > 0, "Please define column for column variable that is not empty."))
 
       teal::validate_has_data(ANL, 3)
       teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
@@ -311,7 +326,10 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     output$title <- renderText(output_q()[["title"]])
 
-    table_r <- reactive(output_q()[["tbl"]])
+    table_r <- reactive({
+      shiny::req(iv_r()$is_valid())
+      output_q()[["tbl"]]
+    })
 
     teal.widgets::table_with_settings_srv(
       id = "table",

@@ -32,6 +32,7 @@ Imports:
     magrittr,
     scales,
     shinyjs,
+    shinyvalidate,
     shinyWidgets,
     stats,
     stringr,

@@ -222,10 +222,28 @@ srv_tm_g_association <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
+
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
-      datasets = data
+      datasets = data,
+      select_validation_rule = list(
+        ref = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("A reference variable needs to be selected."),
+          ~ if ((.) %in% selector_list()$vars()$select)
+            "Associated variables and reference variable cannot overlap"
+        ),
+        vars = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("An associated variable needs to be selected."),
+          ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
+            "Associated variables and reference variable cannot overlap"
+        )
+      )
     )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
@@ -245,12 +263,7 @@ srv_tm_g_association <- function(id,
     )
 
     output_q <- reactive({
-      validate({
-        need(
-          !is.null(selector_list()$ref()) && !is.null(selector_list()$vars()),
-          "Please select reference and associated variables"
-        )
-      })
+      teal::validate_inputs(iv_r())
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       teal::validate_has_data(ANL, 3)
@@ -266,8 +279,6 @@ srv_tm_g_association <- function(id,
       distribution_theme <- input$distribution_theme
       association_theme <- input$association_theme
 
-      validate(need(ref_name, "need at least one variable selected"))
-
       is_scatterplot <- is.numeric(ANL[[ref_name]]) && any(vapply(ANL[vars_names], is.numeric, logical(1)))
       if (is_scatterplot) {
         shinyjs::show("alpha")
@@ -280,9 +291,6 @@ srv_tm_g_association <- function(id,
         alpha <- 0.5
         size <- 2
       }
-
-      validate(need(!(ref_name %in% vars_names), "associated variables and reference variable cannot overlap"))
-      validate(need(!is.null(distribution_theme) && !is.null(association_theme), "Please select a theme."))
 
       teal::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
@@ -370,26 +378,26 @@ srv_tm_g_association <- function(id,
       new_title <-
         if (association) {
           switch(as.character(length(vars_names)),
-            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-            "1" = sprintf(
-              "Association between %s and %s",
-              ref_cl_lbl,
-              format_varnames(vars_names)
-            ),
-            sprintf(
-              "Associations between %s and: %s",
-              ref_cl_lbl,
-              paste(lapply(vars_names, format_varnames), collapse = ", ")
-            )
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 "1" = sprintf(
+                   "Association between %s and %s",
+                   ref_cl_lbl,
+                   format_varnames(vars_names)
+                 ),
+                 sprintf(
+                   "Associations between %s and: %s",
+                   ref_cl_lbl,
+                   paste(lapply(vars_names, format_varnames), collapse = ", ")
+                 )
           )
         } else {
           switch(as.character(length(vars_names)),
-            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-            sprintf(
-              "Value distributions for %s and %s",
-              ref_cl_lbl,
-              paste(lapply(vars_names, format_varnames), collapse = ", ")
-            )
+                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+                 sprintf(
+                   "Value distributions for %s and %s",
+                   ref_cl_lbl,
+                   paste(lapply(vars_names, format_varnames), collapse = ", ")
+                 )
           )
         }
 
@@ -410,14 +418,17 @@ srv_tm_g_association <- function(id,
             },
             env = list(
               plot_calls = do.call("call", c(list("list", ref_call), var_calls),
-                quote = TRUE
+                                   quote = TRUE
               )
             )
           )
         )
     })
 
-    plot_r <- shiny::reactive(output_q()[["p"]])
+    plot_r <- shiny::reactive({
+      shiny::req(iv_r()$is_valid())
+      output_q()[["p"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
