@@ -118,7 +118,7 @@ app <- init(
             label = "Select variables:",
             choices = variable_choices(ADSL),
             selected = NULL,
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE
           )
         ),
@@ -128,7 +128,7 @@ app <- init(
             label = "Select variables:",
             choices = variable_choices(ADSL),
             selected = NULL,
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE
           )
         )
@@ -169,7 +169,7 @@ app <- init(
             label = "Select variables:",
             choices = variable_choices(ADSL2),
             selected = NULL,
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE
           )
         )
@@ -231,7 +231,7 @@ app <- init(
             label = "Select variables:",
             choices = variable_choices(ADSL, c("SEX", "RACE")),
             selected = NULL,
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE
           )
         ),
@@ -459,7 +459,7 @@ app <- init(
           select = select_spec(
             choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
             selected = "PARAMCD",
-            multiple = TRUE,
+            multiple = FALSE,
             label = "Select variables:"
           )
         ),
@@ -468,7 +468,7 @@ app <- init(
           select = select_spec(
             choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
             selected = "AVISIT",
-            multiple = TRUE,
+            multiple = FALSE,
             label = "Select variables:"
           )
         )
@@ -547,7 +547,7 @@ app <- init(
           select = select_spec(
             choices = variable_choices(ADLB, c("RACE", "SEX", "ARMCD", "ACTARMCD")),
             selected = NULL,
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE,
             label = "Select variable:"
           )
@@ -573,7 +573,7 @@ app <- init(
           select = select_spec(
             choices = variable_choices(ADLB, c("RACE", "SEX", "ARMCD", "ACTARMCD")),
             selected = "ARMCD",
-            multiple = TRUE,
+            multiple = FALSE,
             fixed = FALSE,
             label = "Select variables:"
           )

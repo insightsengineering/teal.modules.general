@@ -234,7 +234,40 @@ srv_g_response <- function(id,
   moduleServer(id, function(input, output, session) {
     data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
 
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+    rule_diff <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()[["select"]]
+        if (!is.null(othervalue)) {
+          if (identical(value, othervalue))
+            "Row and column facetting variables must be different."
+        }
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        response = shinyvalidate::sv_required("Please define a column for the response variable"),
+        x = shinyvalidate::sv_required("Please define a column for X variable"),
+        row_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
+          rule_diff("col_facet")
+        ),
+        col_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
+          rule_diff("row_facet")
+        )
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -254,15 +287,13 @@ srv_g_response <- function(id,
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r())
+
       qenv <- merged$anl_q_r()
       ANL <- qenv[["ANL"]] # nolint
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
-      validate(need(!identical(resp_var, character(0)), "Please define a valid column for the response variable"))
-      validate(need(!identical(x, character(0)), "Please define a valid column for the X-variable"))
-      validate(need(length(resp_var) == 1, "Please define a column for Response variable"))
-      validate(need(length(x) == 1, "Please define a column for X variable"))
       validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
       validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
       teal::validate_has_data(ANL, 10)
@@ -284,8 +315,6 @@ srv_g_response <- function(id,
       counts <- input$count_labels
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       ggtheme <- input$ggtheme
-
-      validate(need(!is.null(ggtheme), "Please select a theme."))
 
       arg_position <- if (freq) "stack" else "fill" # nolint
 
@@ -336,7 +365,7 @@ srv_g_response <- function(id,
       plot_call <- substitute(
         expr =
           ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,

@@ -79,6 +79,13 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
+  if (is.list(categorical_var)) {
+    lapply(categorical_var, function(x) {
+      if (length(x$filter) > 1L) {
+        stop("tm_outliers: categorical_var data_extract_specs may only specify one filter_spec", call. = FALSE)
+      }
+    })
+  }
   plot_choices <- c("Boxplot", "Density Plot", "Cumulative Distribution Plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
@@ -116,21 +123,18 @@ ui_outliers <- function(id, ...) {
       br(), hr(),
       tabsetPanel(
         id = ns("tabs"),
-        tabPanel("Boxplot", teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
-        tabPanel("Density Plot", teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
-        tabPanel("Cumulative Distribution Plot", teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
+        tabPanel(
+          "Boxplot",
+          teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
+        tabPanel(
+          "Density Plot",
+          teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
+        tabPanel(
+          "Cumulative Distribution Plot",
+          teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
       ),
       br(), hr(),
-      teal.widgets::optionalSelectInput(
-        inputId = ns("table_ui_columns"),
-        label = "Choose additional columns",
-        choices = NULL,
-        selected = NULL,
-        multiple = TRUE
-      ),
-      h4("Outlier Table"),
-      teal.widgets::get_dt_rows(ns("table_ui"), ns("table_ui_rows")),
-      DT::dataTableOutput(ns("table_ui"))
+      uiOutput(ns("table_ui_wrap"))
     ),
     encoding = div(
       ### Reporter
@@ -241,7 +245,35 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
-    selector_list <- teal.transform::data_extract_multiple_srv(vars, data)
+
+    rule_diff <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()[["select"]]
+        if (!is.null(othervalue)) {
+          if (identical(othervalue, value))
+            "`Variable` and `Categorical factor` cannot be the same"
+        }
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = vars,
+      datasets = data,
+      select_validation_rule = list(
+        outlier_var = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("Please select a variable"),
+          rule_diff("categorical_var")
+        ),
+        categorical_var = rule_diff("outlier_var")
+      )
+    )
+
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule("method", shinyvalidate::sv_required("Please select a method"))
+      iv$add_rule("boxplot_alts", shinyvalidate::sv_required("Please select Plot Type"))
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
     reactive_select_input <- reactive({
       if (is.null(selector_list()$categorical_var) || length(selector_list()$categorical_var()$select) == 0) {
@@ -269,22 +301,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       anl_q_r = anl_merged_q
     )
 
-    is_cat_filter_spec <- inherits(categorical_var[[1]]$filter[[1]], "filter_spec")
-    cat_dataname <- categorical_var[[1]]$dataname
-
     n_outlier_missing <- reactive({
+      shiny::req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
-      validate(need(outlier_var, "Please select a variable"))
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       sum(is.na(ANL[[outlier_var]]))
     })
 
     common_code_q <- reactive({
-      input_catvar <- input[[extract_input(
-        "categorical_var",
-        cat_dataname,
-        filter = is_cat_filter_spec
-      )]]
+      shiny::req(iv_r()$is_valid())
 
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       qenv <- merged$anl_q_r()
@@ -294,10 +319,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       order_by_outlier <- input$order_by_outlier # nolint
       method <- input$method
       split_outliers <- input$split_outliers
-      validate(need(outlier_var, "Please select a variable"))
-      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
-      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
-      validate(need(input$method, "Please select a method"))
       teal::validate_has_data(
         # missing values in the categorical variable may be used to form a category of its own
         `if`(
@@ -309,6 +330,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         complete = TRUE,
         allow_inf = FALSE
       )
+      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
+      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
 
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
@@ -323,54 +346,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         }
       } else {
-        validate(need(input_catvar, "Please select categories to include"))
-
         validate(need(
           is.factor(ANL[[categorical_var]]) ||
             is.character(ANL[[categorical_var]]) ||
             is.integer(ANL[[categorical_var]]),
           "`Categorical factor` must be `factor`, `character`, or `integer`"
         ))
-        validate(need(outlier_var != categorical_var, "`Variable` and `Categorical factor` cannot be the same"))
-
-        input_catlevels <- if (is_cat_filter_spec) {
-          input_catvar
-        } else {
-          NULL
-        }
-
-        # If there are both string values "NA" and missing values NA, value_choices function should output a warning
-        if ("NA" %in% input_catlevels) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = {
-                ANL[[categorical_var]] <- dplyr::if_else( # nolint
-                  is.na(ANL[[categorical_var]]),
-                  "NA",
-                  as.character(ANL[[categorical_var]])
-                )
-              },
-              env = list(
-                categorical_var = categorical_var,
-                categorical_var_name = as.name(categorical_var)
-              )
-            )
-          )
-        }
-
-        if (is_cat_filter_spec && !all(unique(ANL[[categorical_var]]) %in% input_catlevels)) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              expr = ANL <- ANL %>% dplyr::filter(categorical_var_name %in% categorical_var_levels), # nolint
-              env = list(
-                categorical_var_name = as.name(categorical_var),
-                categorical_var_levels = input_catlevels
-              )
-            )
-          )
-        }
 
         if (n_outlier_missing() > 0) {
           qenv <- teal.code::eval_code(
@@ -428,7 +409,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                   q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
                   !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                    outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                      outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
                 }),
                 env = list(
                   outlier_var_name = as.name(outlier_var),
@@ -572,12 +553,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       qenv
     })
-    validate(need(outlier_var, "Please select a variable"))
 
     output$summary_table <- DT::renderDataTable(
       expr = {
-        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-        if (length(categorical_var) > 0) {
+        if (iv_r()$is_valid()) {
+          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           DT::datatable(
             common_code_q()[["summary_table"]],
             options = list(
@@ -594,6 +574,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # boxplot/violinplot #nolint
     boxplot_q <- reactive({
+      req(common_code_q())
       ANL <- common_code_q()[["ANL"]] # nolint
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
 
@@ -602,7 +583,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # validation
       teal::validate_has_data(ANL, 1)
-      validate(need(input$boxplot_alts, "Please select `Plot type`"))
 
       # boxplot
       plot_call <- quote(ANL %>% ggplot()) # nolint
@@ -865,7 +845,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # slider text
     output$ui_outlier_help <- renderUI({
-      validate(need(input$method, "Please select a method"))
+      req(input$method)
       if (input$method == "IQR") {
         req(input$iqr_slider)
         tags$small(
@@ -911,9 +891,18 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
-    boxplot_r <- reactive(boxplot_q()[["g"]])
-    density_plot_r <- reactive(density_plot_q()[["g"]])
-    cumulative_plot_r <- reactive(cumulative_plot_q()[["g"]])
+    boxplot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      boxplot_q()[["g"]]
+    })
+    density_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      density_plot_q()[["g"]]
+    })
+    cumulative_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      cumulative_plot_q()[["g"]]
+    })
 
     box_pws <- teal.widgets::plot_with_settings_srv(
       id = "box_plot",
@@ -957,7 +946,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = {
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
-        validate(need(!is.null(reactive_select_input()$outlier()), ""))
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
@@ -1044,13 +1032,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       },
       options = list(
         searching = FALSE, language = list(
-          zeroRecords = "The highlighted area does not contain outlier points under the actual defined threshold"
+          zeroRecords = "The brushed area does not contain outlier observations for the currently defined threshold"
         ),
         pageLength = input$table_ui_rows
       )
     )
 
     output$total_outliers <- renderUI({
+      shiny::req(iv_r()$is_valid())
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
       teal::validate_has_data(ANL, 1)
@@ -1079,6 +1068,22 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
       }
+    })
+
+    output$table_ui_wrap <- renderUI({
+      shiny::req(iv_r()$is_valid())
+      tagList(
+        teal.widgets::optionalSelectInput(
+          inputId = session$ns("table_ui_columns"),
+          label = "Choose additional columns",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE
+        ),
+        h4("Outlier Table"),
+        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows")),
+        DT::dataTableOutput(session$ns("table_ui"))
+      )
     })
 
     teal.widgets::verbatim_popup_srv(

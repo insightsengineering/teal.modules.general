@@ -93,7 +93,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+#'           choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -103,7 +103,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+#'           choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -141,15 +141,14 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
-  if (!requireNamespace("ggpmisc", quietly = TRUE)) {
-    stop("Cannot load ggpmisc - please install the package or restart your session.")
+
+  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
+  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
+  if (length(missing_packages) > 0L) {
+    stop(sprintf("Cannot load package(s): %s.\nInstall or restart your session.",
+                 paste(missing_packages, sep = ", ")))
   }
-  if (!requireNamespace("ggExtra", quietly = TRUE)) {
-    stop("Cannot load ggExtra - please install the package or restart your session.")
-  }
-  if (!requireNamespace("colourpicker", quietly = TRUE)) {
-    stop("Cannot load colourpicker - please install the package or restart your session.")
-  }
+
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -166,6 +165,13 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'row_facet' should not allow multiple selection")
+  }
+  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
+    stop("'col_facet' should not allow multiple selection")
+  }
   checkmate::assert_character(shape)
 
   checkmate::assert_int(max_deg, lower = 1L)
@@ -389,9 +395,54 @@ srv_g_scatterplot <- function(id,
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     data_extract <- list(
-      x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet
+      x = x,
+      y = y,
+      color_by = color_by,
+      size_by = size_by,
+      row_facet = row_facet,
+      col_facet = col_facet
     )
-    selector_list <- teal.transform::data_extract_multiple_srv(data_extract, data)
+
+    rule_diff <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()[["select"]]
+        if (!is.null(othervalue)) {
+          if (identical(value, othervalue))
+            "Row and column facetting variables must be different."
+        }
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        x = ~ if (length(.) != 1) "Please select exactly one x var.",
+        y = ~ if (length(.) != 1) "Please select exactly one y var.",
+        color_by = ~ if (length(.) > 1) "There cannot be more than 1 color variable.",
+        size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
+        row_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          rule_diff("col_facet")
+        ),
+        col_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          rule_diff("row_facet")
+        )
+      )
+    )
+
+    iv_r <- reactive({
+      iv_facet <- shinyvalidate::InputValidator$new()
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
+    iv_facet <- shinyvalidate::InputValidator$new()
+    iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
+                                           (length(selector_list()$row_facet()$select) > 0L ||
+                                            length(selector_list()$col_facet()$select) > 0L))
+      "Cannot add marginal density when Row or Column facetting has been selected")
+    iv_facet$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
@@ -448,12 +499,11 @@ srv_g_scatterplot <- function(id,
       }
     })
 
-
     observeEvent(
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
         if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
-          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+            length(merged$anl_input_r()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -462,6 +512,8 @@ srv_g_scatterplot <- function(id,
     )
 
     output_q <- reactive({
+      teal::validate_inputs(iv_r(), iv_facet)
+
       ANL <- merged$anl_q_r()[["ANL"]] # nolint
 
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -492,16 +544,6 @@ srv_g_scatterplot <- function(id,
       log_x <- input$log_x
       log_y <- input$log_y
 
-      validate(need(!is.null(ggtheme), "Please select a theme."))
-      validate(need(length(x_var) == 1, "There must be exactly one x var."))
-      validate(need(length(y_var) == 1, "There must be exactly one y var."))
-      validate(need(is.null(color_by_var) || length(color_by_var) <= 1, "There must be 1 or no color variable."))
-      validate(need(is.null(size_by_var) || length(size_by_var) <= 1, "There must be 1 or no size variable."))
-      validate(need(length(row_facet_name) <= 1, "There must be 1 or no row facetting variable."))
-      validate(need(length(col_facet_name) <= 1, "There must be 1 or no column facetting variable."))
-      if (length(row_facet_name) * length(col_facet_name) > 0) {
-        validate(need(row_facet_name != col_facet_name, "Row and column facetting variables must be different."))
-      }
       validate(need(
         length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
         "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
@@ -510,6 +552,7 @@ srv_g_scatterplot <- function(id,
         length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
         "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
       ))
+
       if (add_density && length(color_by_var) > 0) {
         validate(need(
           !is.numeric(ANL[[color_by_var]]),
@@ -518,8 +561,8 @@ srv_g_scatterplot <- function(id,
         ))
         validate(need(
           !(inherits(ANL[[color_by_var]], "Date") ||
-            inherits(ANL[[color_by_var]], "POSIXct") ||
-            inherits(ANL[[color_by_var]], "POSIXlt")),
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")),
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
@@ -554,13 +597,6 @@ srv_g_scatterplot <- function(id,
         free_x_scales = isTRUE(input$free_scales),
         free_y_scales = isTRUE(input$free_scales)
       )
-      if (!is.null(facet_cl)) {
-        validate(need(
-          !add_density,
-          "Marginal density is not supported when faceting is used. Please uncheck `Add marginal density`
-        or remove facetting."
-        ))
-      }
 
       point_sizes <- if (length(size_by_var) > 0) {
         validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
@@ -864,8 +900,8 @@ srv_g_scatterplot <- function(id,
       if (length(numeric_cols) > 0) {
         DT::formatRound(
           DT::datatable(brushed_df,
-            rownames = FALSE,
-            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+                        rownames = FALSE,
+                        options = list(scrollX = TRUE, pageLength = input$data_table_rows)
           ),
           numeric_cols,
           table_dec

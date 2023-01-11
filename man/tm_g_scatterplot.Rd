@@ -155,7 +155,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
@@ -165,7 +165,7 @@ app <- init(
         dataname = "ADSL",
         select = select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
