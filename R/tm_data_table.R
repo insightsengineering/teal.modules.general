@@ -68,7 +68,7 @@ tm_data_table <- function(label = "Data Table",
     })
   }
   checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
-  checkmate::check_list(dt_options, names = "named")
+  checkmate::assert_list(dt_options, names = "named")
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
