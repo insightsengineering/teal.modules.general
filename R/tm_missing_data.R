@@ -985,7 +985,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = {
               summary_data <- ANL %>%
-                dplyr::mutate(group_var_name := forcats::fct_explicit_na(as.factor(group_var_name), "NA")) %>%
+                dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
                 dplyr::group_by_at(group_var) %>%
                 dplyr::filter(group_var_name %in% group_vals)
 

@@ -534,7 +534,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[g_var]] <- forcats::fct_explicit_na(as.factor(ANL[[g_var]]), "NA"), # nolint
+            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"), # nolint
             env = list(g_var = g_var)
           )
         )
@@ -550,7 +550,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[s_var]] <- forcats::fct_explicit_na(as.factor(ANL[[s_var]]), "NA"), # nolint
+            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"), # nolint
             env = list(s_var = s_var)
           )
         )
