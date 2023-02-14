@@ -391,13 +391,25 @@ srv_distribution <- function(id,
       if (!is.null(input$t_dist)) {
         switch(input$t_dist,
           "normal" = {
-            if (!shinyvalidate::input_provided(value)) "sd is required" else if (value < 0) "sd must be non-negative"
+            if (!shinyvalidate::input_provided(value)) {
+              "sd is required"
+            } else if (value < 0) {
+              "sd must be non-negative"
+            }
           },
           "lognormal" = {
-            if (!shinyvalidate::input_provided(value)) "sdlog is required" else if (value < 0) "sdlog must be non-negative"
+            if (!shinyvalidate::input_provided(value)) {
+              "sdlog is required"
+            } else if (value < 0) {
+              "sdlog must be non-negative"
+            }
           },
           "gamma" = {
-            if (!shinyvalidate::input_provided(value)) "rate is required" else if (value <= 0) "rate must be positive"
+            if (!shinyvalidate::input_provided(value)) {
+              "rate is required"
+            } else if (value <= 0) {
+              "rate must be positive"
+            }
           },
           "unif" = NULL
         )
