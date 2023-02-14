@@ -26,7 +26,7 @@ Imports:
     checkmate,
     dplyr,
     DT,
-    forcats,
+    forcats (>= 1.0.0),
     grid,
     logger (>= 0.2.0),
     magrittr,
