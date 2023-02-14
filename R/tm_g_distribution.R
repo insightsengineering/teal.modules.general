@@ -113,8 +113,10 @@ tm_g_distribution <- function(label = "Distribution Module",
   extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
-    stop(sprintf("Cannot load package(s): %s.\nInstall or restart your session.",
-                 paste(missing_packages, sep = ", ")))
+    stop(sprintf(
+      "Cannot load package(s): %s.\nInstall or restart your session.",
+      paste(missing_packages, sep = ", ")
+    ))
   }
 
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
@@ -319,23 +321,26 @@ srv_distribution <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     rule_req <- function(value) {
-      if (isTRUE(input$dist_tests %in% c("Fligner-Killeen",
-                                         "t-test (two-samples, not paired)",
-                                         "F-test",
-                                         "Kolmogorov-Smirnov (two-samples)",
-                                         "one-way ANOVA"))) {
-        if (!shinyvalidate::input_provided(value))
+      if (isTRUE(input$dist_tests %in% c(
+        "Fligner-Killeen",
+        "t-test (two-samples, not paired)",
+        "F-test",
+        "Kolmogorov-Smirnov (two-samples)",
+        "one-way ANOVA"
+      ))) {
+        if (!shinyvalidate::input_provided(value)) {
           "Please select stratify variable."
+        }
       }
     }
     rule_dupl <- function(...) {
       if (identical(input$dist_tests, "Fligner-Killeen")) {
         strata <- selector_list()$strata_i()$select
         group <- selector_list()$group_i()$select
-        if (isTRUE(strata == group))
+        if (isTRUE(strata == group)) {
           "Please select different variables for strata and group."
+        }
       }
     }
 
@@ -366,47 +371,48 @@ srv_distribution <- function(id,
     iv_r_dist <- reactive({
       iv <- shinyvalidate::InputValidator$new()
       teal.transform::compose_and_enable_validators(
-        iv, selector_list, validator_names = c("strata_i", "group_i"))
+        iv, selector_list,
+        validator_names = c("strata_i", "group_i")
+      )
     })
     rule_dist_1 <- function(value) {
       if (!is.null(input$t_dist)) {
-        switch(
-          input$t_dist,
+        switch(input$t_dist,
           "normal" = if (!shinyvalidate::input_provided(value)) "mean is required",
           "lognormal" = if (!shinyvalidate::input_provided(value)) "meanlog is required",
           "gamma" = {
-            if (!shinyvalidate::input_provided(value)) "shape is required" else
-              if (value <= 0) "shape must be positive"
+            if (!shinyvalidate::input_provided(value)) "shape is required" else if (value <= 0) "shape must be positive"
           },
-          "unif" = NULL)
+          "unif" = NULL
+        )
       }
     }
     rule_dist_2 <- function(value) {
       if (!is.null(input$t_dist)) {
-        switch(
-          input$t_dist,
+        switch(input$t_dist,
           "normal" = {
-            if (!shinyvalidate::input_provided(value)) "sd is required" else
-              if (value < 0) "sd must be non-negative"
+            if (!shinyvalidate::input_provided(value)) "sd is required" else if (value < 0) "sd must be non-negative"
           },
           "lognormal" = {
-            if (!shinyvalidate::input_provided(value)) "sdlog is required" else
-              if (value < 0) "sdlog must be non-negative"
+            if (!shinyvalidate::input_provided(value)) "sdlog is required" else if (value < 0) "sdlog must be non-negative"
           },
           "gamma" = {
-            if (!shinyvalidate::input_provided(value)) "rate is required" else
-              if (value <= 0) "rate must be positive"
+            if (!shinyvalidate::input_provided(value)) "rate is required" else if (value <= 0) "rate must be positive"
           },
-          "unif" = NULL)
+          "unif" = NULL
+        )
       }
     }
     rule_dist <- function(value) {
       if (isTRUE(input$tabs == "QQplot" ||
-                 input$dist_tests %in% c("Kolmogorov-Smirnov (one-sample)",
-                                         "Anderson-Darling (one-sample)",
-                                         "Cramer-von Mises (one-sample)"))) {
-        if (!shinyvalidate::input_provided(value))
+        input$dist_tests %in% c(
+          "Kolmogorov-Smirnov (one-sample)",
+          "Anderson-Darling (one-sample)",
+          "Cramer-von Mises (one-sample)"
+        ))) {
+        if (!shinyvalidate::input_provided(value)) {
           "Please select the theoretical distribution."
+        }
       }
     }
     iv_dist <- shinyvalidate::InputValidator$new()
@@ -673,7 +679,8 @@ srv_distribution <- function(id,
           substitute(
             expr = ggplot(ANL, aes(dist_var_name)) +
               geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3),
+                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+              ),
             env = list(
               m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
             )
@@ -682,7 +689,8 @@ srv_distribution <- function(id,
           substitute(
             expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
               geom_histogram(
-                position = "identity", aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3),
+                position = "identity", aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+              ),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
@@ -696,7 +704,8 @@ srv_distribution <- function(id,
           substitute(
             expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
               geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3) +
+                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+              ) +
               facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = as.name(m_type),
@@ -742,8 +751,11 @@ srv_distribution <- function(id,
               ),
             env = list(
               plot_call = plot_call,
-              const = if (main_type_var == "Density") 1 else
-                diff(range(qenv[["ANL"]][[dist_var]], na.rm = TRUE)) / bins_var,
+              const = if (main_type_var == "Density") {
+                1
+              } else {
+                diff(range(qenv[["ANL"]][[dist_var]], na.rm = TRUE)) / bins_var
+              },
               m_type2 = if (main_type_var == "Density") as.name("density") else as.name("count"),
               ndensity = ndensity
             )
@@ -772,7 +784,7 @@ srv_distribution <- function(id,
         }
 
         if (length(s_var) == 0 && length(g_var) == 0 && main_type_var == "Density" &&
-            length(t_dist) != 0 && main_type_var == "Density") {
+          length(t_dist) != 0 && main_type_var == "Density") {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")
@@ -1005,8 +1017,8 @@ srv_distribution <- function(id,
           if (length(g_var) > 0 && length(s_var) > 0) {
             validate(need(
               all(stats::na.omit(as.vector(
-                tapply(ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2))
-              ),
+                tapply(ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2
+              ))),
               "Please select stratify variable with 2 levels, per each group."
             ))
           }
@@ -1063,15 +1075,15 @@ srv_distribution <- function(id,
         )
 
         tests_base <- switch(dist_tests,
-                             "Kolmogorov-Smirnov (one-sample)" = sks_args,
-                             "Shapiro-Wilk" = ssw_args,
-                             "Fligner-Killeen" = mfil_args,
-                             "one-way ANOVA" = manov_args,
-                             "t-test (two-samples, not paired)" = mt_args,
-                             "F-test" = mv_args,
-                             "Kolmogorov-Smirnov (two-samples)" = mks_args,
-                             "Anderson-Darling (one-sample)" = sad_args,
-                             "Cramer-von Mises (one-sample)" = scvm_args
+          "Kolmogorov-Smirnov (one-sample)" = sks_args,
+          "Shapiro-Wilk" = ssw_args,
+          "Fligner-Killeen" = mfil_args,
+          "one-way ANOVA" = manov_args,
+          "t-test (two-samples, not paired)" = mt_args,
+          "F-test" = mv_args,
+          "Kolmogorov-Smirnov (two-samples)" = mks_args,
+          "Anderson-Darling (one-sample)" = sad_args,
+          "Cramer-von Mises (one-sample)" = scvm_args
         )
 
         env <- list(

@@ -450,7 +450,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           env = list(
             new_col_name = new_col_name,
             column_labels_value = c(var_labels(data_r())[selected_vars()],
-                                    new_col_name = new_col_name
+              new_col_name = new_col_name
             )
           )
         )
@@ -540,8 +540,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
       } else if (!is.null(prev_choices) &&
-                 !any(prev_choices %in% choices) &&
-                 isolate(prev_group_by_var()) == input$group_by_var) {
+        !any(prev_choices %in% choices) &&
+        isolate(prev_group_by_var()) == input$group_by_var) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
@@ -1009,8 +1009,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
               tidyr::pivot_longer(tidyselect::everything(),
-                                  names_to = "Variable",
-                                  values_to = paste0("Missing (N=", nrow(ANL), ")")
+                names_to = "Variable",
+                values_to = paste0("Missing (N=", nrow(ANL), ")")
               ) %>%
               dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
             env = list(summ_fn = summ_fn)
