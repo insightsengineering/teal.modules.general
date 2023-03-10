@@ -31,6 +31,8 @@ These include modules for:
 
 These modules work with `CDISC` data, independent datasets and general relational data.
 
+Please see [`teal` gallery](https://github.com/insightsengineering/teal.gallery) and [TLG Catalog](https://github.com/insightsengineering/tlg-catalog) to see examples of `teal` apps with modules from this package.
+
 ## Installation
 
 For releases from August 2022 it is recommended that you [create and use a Github PAT](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) to install the latest version of this package. Once you have the PAT, run the following:
