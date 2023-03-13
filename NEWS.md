@@ -11,7 +11,7 @@
 * Improved UI labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
 * Forced ggplot theme to be always selected in all modules.
-* Updated encodings input checks to use `shinyvalidate::InputValidator` instead of `shiny::validate` for better UI experience.   
+* Updated encodings input checks to use `shinyvalidate::InputValidator` instead of `shiny::validate` for better UI experience.
 
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
@@ -22,6 +22,7 @@
 
 * Examples now use `scda.2022` rather than `scda.2021`.
 * Replaced deprecated `ggplot2` functions `..count..`, `..density..` and `..prop..`.
+* Version bump on `forcats` dependency.
 
 # teal.modules.general 0.2.15
 
