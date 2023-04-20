@@ -244,18 +244,22 @@ ui_outliers <- function(id, ...) {
 
 srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
+
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
+
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
     rule_diff <- function(other) {
       function(value) {
-        othervalue <- selector_list()[[other]]()[["select"]]
-        if (!is.null(othervalue)) {
-          if (identical(othervalue, value))
-            "`Variable` and `Categorical factor` cannot be the same"
+        if (other %in% names(selector_list())){
+          othervalue <- selector_list()[[other]]()[["select"]]
+          if (!is.null(othervalue)) {
+            if (identical(othervalue, value))
+              "`Variable` and `Categorical factor` cannot be the same"
+          }
         }
       }
     }
