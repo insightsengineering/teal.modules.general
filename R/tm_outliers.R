@@ -566,16 +566,16 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = {
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-          DT::datatable(
-            common_code_q()[["summary_table"]],
-            options = list(
-              dom = "t",
-              autoWidth = TRUE,
-              columnDefs = list(list(width = "200px", targets = "_all"))
+          if (!is.null(categorical_var)) {
+            DT::datatable(
+              common_code_q()[["summary_table"]],
+              options = list(
+                dom = "t",
+                autoWidth = TRUE,
+                columnDefs = list(list(width = "200px", targets = "_all"))
+              )
             )
-          )
-        } else {
-          NULL
+          }
         }
       }
     )
