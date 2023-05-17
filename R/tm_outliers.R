@@ -25,8 +25,8 @@
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'   cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-#'   check = TRUE
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     check = TRUE
 #'   ),
 #'   modules = modules(
 #'     tm_outliers(
@@ -44,12 +44,12 @@
 #'       ),
 #'       categorical_var = list(
 #'         data_extract_spec(
-#'         dataname = "ADSL",
-#'         filter = filter_spec(
-#'           vars = vars,
-#'           choices = value_choices(ADSL, vars$selected),
-#'           selected = value_choices(ADSL, vars$selected),
-#'           multiple = TRUE
+#'           dataname = "ADSL",
+#'           filter = filter_spec(
+#'             vars = vars,
+#'             choices = value_choices(ADSL, vars$selected),
+#'             selected = value_choices(ADSL, vars$selected),
+#'             multiple = TRUE
 #'           )
 #'         )
 #'       ),
@@ -129,13 +129,16 @@ ui_outliers <- function(id, ...) {
         id = ns("tabs"),
         tabPanel(
           "Boxplot",
-          teal.widgets::plot_with_settings_ui(id = ns("box_plot"))),
+          teal.widgets::plot_with_settings_ui(id = ns("box_plot"))
+        ),
         tabPanel(
           "Density Plot",
-          teal.widgets::plot_with_settings_ui(id = ns("density_plot"))),
+          teal.widgets::plot_with_settings_ui(id = ns("density_plot"))
+        ),
         tabPanel(
           "Cumulative Distribution Plot",
-          teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot")))
+          teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot"))
+        )
       ),
       br(), hr(),
       uiOutput(ns("table_ui_wrap"))
@@ -244,20 +247,19 @@ ui_outliers <- function(id, ...) {
 
 srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
-
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
     rule_diff <- function(other) {
       function(value) {
         othervalue <- tryCatch(selector_list()[["categorical_var"]]()[["select"]], error = function(e) NULL)
         if (!is.null(othervalue)) {
-          if (identical(othervalue, value))
+          if (identical(othervalue, value)) {
             "`Variable` and `Categorical factor` cannot be the same"
+          }
         }
       }
     }
@@ -415,7 +417,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                   q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
                   !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                      outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                    outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
                 }),
                 env = list(
                   outlier_var_name = as.name(outlier_var),
