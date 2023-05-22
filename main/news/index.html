@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.15.9018</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.15.9020</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,14 +41,6 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -70,28 +62,28 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.15.9018" id="tealmodulesgeneral-02159018">teal.modules.general 0.2.15.9018<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02159018"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.15.9020" id="tealmodulesgeneral-02159020">teal.modules.general 0.2.15.9020<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02159020"></a></h2>
 <div class="section level4">
-<h4 id="breaking-changes-0-2-15-9018">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-15-9018"></a></h4>
+<h4 id="breaking-changes-0-2-15-9020">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-15-9020"></a></h4>
 <ul><li>Replaced <code>chunks</code> with simpler <code>qenv</code> class.</li>
 <li>Replaced <code>datasets</code> argument containing <code>FilteredData</code> with the new arguments <code>data</code> (<code>tdata</code> object) and <code>filter_panel_api</code> (<code>FilterPanelAPI</code>).</li>
 </ul></div>
 <div class="section level4">
-<h4 id="enhancements-0-2-15-9018">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-15-9018"></a></h4>
+<h4 id="enhancements-0-2-15-9020">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-15-9020"></a></h4>
 <ul><li>Added <code>parent_dataname</code> argument to <code>tm_variable_browser</code> and <code>tm_missing_data</code> to allow specification of parent dataset for these modules.</li>
 <li>Improved UI labels and plot panel title in <code>tm_g_association</code>.</li>
 <li>Added inputs <code>tm_variable_browser</code> module for text size and plot theme.</li>
 <li>Forced ggplot theme to be always selected in all modules.</li>
-<li>Updated encodings input checks to use <code><a href="https://rstudio.github.io/shinyvalidate/reference/InputValidator.html" class="external-link">shinyvalidate::InputValidator</a></code> instead of <code><a href="https://shiny.rstudio.com/reference/shiny/latest/validate.html" class="external-link">shiny::validate</a></code> for better UI experience.</li>
+<li>Updated encodings input checks to use <code><a href="https://rstudio.github.io/shinyvalidate/reference/InputValidator.html" class="external-link">shinyvalidate::InputValidator</a></code> instead of <code><a href="https://rdrr.io/pkg/shiny/man/validate.html" class="external-link">shiny::validate</a></code> for better UI experience.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-0-2-15-9018">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-15-9018"></a></h4>
+<h4 id="bug-fixes-0-2-15-9020">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-15-9020"></a></h4>
 <ul><li>Fixed a bug in <code>tm_g_scatterplot</code> when selected x and y facets were the same.</li>
 <li>Fixed a bug in <code>tm_g_distribution</code> to plot the theoretical distribution with newer <code>ggplot2</code> version.</li>
 <li>Fixed a bug in <code>tm_g_bivariate</code> when adding lines checkbox was available if one of x or y was deselected.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="miscellaneous-0-2-15-9018">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-15-9018"></a></h4>
+<h4 id="miscellaneous-0-2-15-9020">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-15-9020"></a></h4>
 <ul><li>Examples now use <code>scda.2022</code> rather than <code>scda.2021</code>.</li>
 <li>Replaced deprecated <code>ggplot2</code> functions <code>..count..</code>, <code>..density..</code> and <code>..prop..</code>.</li>
 <li>Version bump on <code>forcats</code> dependency.</li>
