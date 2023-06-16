@@ -8,10 +8,10 @@
 ### Enhancements
 
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
-* Improved UI labels and plot panel title in `tm_g_association`.
+* Improved `UI` labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
-* Forced ggplot theme to be always selected in all modules.
-* Updated encodings input checks to use `shinyvalidate::InputValidator` instead of `shiny::validate` for better UI experience.
+* Forced `ggplot` theme to be always selected in all modules.
+* Updated encodings input checks to use `shinyvalidate::InputValidator` instead of `shiny::validate` for better `UI` experience.
 
 ### Bug fixes
 * Fixed a bug in `tm_g_scatterplot` when selected x and y facets were the same.
@@ -149,9 +149,9 @@
 * Refactored `tm_g_scatterplot` to compute trend line statistics using `ggpmisc::stat_poly_eq` to simplify code and to have labels for each group on the plot.
 * Refactored `tm_g_scatterplot` to enable filtering via the Encoding Panel using the new `filter_spec` functionality.
 * Added support for logical variables in `tm_variable_browser`.
-* Updated `tm_outliers` to handle non-CDISC datasets.
-* Updated UI of `tm_variable_browser` for factor and character variables with more than 30 levels.
-* Updated sparklines to remove NA values for numeric variables.
+* Updated `tm_outliers` to handle non-`CDISC` datasets.
+* Updated `UI` of `tm_variable_browser` for factor and character variables with more than 30 levels.
+* Updated `sparklines` to remove NA values for numeric variables.
 * Added checkbox to display number of observations on plot to `tm_g_scatterplot`.
 * Added validation statements to `tm_g_scatterplot` handling users choosing more than one facet variable.
 * Improved performance of `tm_variable_browser` by a more efficient `sparkline` generation.
@@ -169,13 +169,13 @@
 ### Bug fixes
 * Added persistence for the number of entries displayed in data tables.
 * Removed 'treat variable as factor' checkbox in `tm_variable_browser` if no graph shown.
-* Fixed DT length reset in `tm_variable_browser` on "Show parent dataset variables" checkbox tick.
+* Fixed `DT` length reset in `tm_variable_browser` on "Show parent dataset variables" checkbox tick.
 
 # teal.modules.general 0.2.8
 
 ### New Module
 #### `tm_outliers`
-* Added new module `tm_outliers` to analyse outliers in datasets.
+* Added new module `tm_outliers` to analyze outliers in datasets.
 
 ### Enhancements
 #### `tm_g_scatterplot`
@@ -189,11 +189,11 @@
 * Fixed typo in outlier definition in `tm_variable_browser`.
 
 ### Miscellaneous
-* Sparklines no longer shown for numeric variables with more than 100000 rows.
+* `Sparklines` no longer shown for numeric variables with more than 100000 rows.
 * Colors legend for each plot.
-* Replaced "Show variables other than in ADSL" checkbox to more general "Show parent dataset variables".
+* Replaced `"Show variables other than in ADSL"` checkbox to more general `"Show parent dataset variables"`.
 * Capitalize default module labels.
-* Some of the outputs of `tm_missing_data` are conditional to the data being a CDISC data.
+* Some of the outputs of `tm_missing_data` are conditional to the data being a `CDISC` data.
 * Added `pre_output` and `post_output` arguments to `tm_data_table`, `tm_missing_data`, `tm_variable_browser`.
 * Fixed issue in `tm_data_table` when selecting "show distinct rows" if variable names had non-alphanumeric characters.
 
@@ -231,7 +231,7 @@
 * Updated to include `Plot settings` and `Plot specific settings`.
 
 ### Miscellaneous
-* Integrated `is_single_dataset` argument for `data_extract_input` function calls to simplify encodings panel UI.
+* Integrated `is_single_dataset` argument for `data_extract_input` function calls to simplify encodings panel `UI`.
 * Moved `code` argument to `cdisc_dataset` (from `cdisc_data`) in examples and vignettes.
 * Require `ggmosaic` version >= 0.3.0.
 
@@ -254,7 +254,7 @@
 # teal.modules.general 0.2.5
 
 * Adds `ggplot` call inside chunks in modules.
-* Pass on dataname to `get_rcode_srv`.
+* Pass on `dataname` to `get_rcode_srv`.
 * Uses utils function to standardize plot label generation.
 * Improved handling of variable labels.
 * Removed "Add as filter variable" button from variable browser module.
@@ -265,7 +265,7 @@
 * New PCA module.
 * Documentation fix for cross table module.
 * Display variable labels in drop-down menu of data table (#393).
-* Optional subsetting and ordering datasets for tm_data_table.
+* Optional subsetting and ordering datasets for `tm_data_table`.
 * Use `teal.code::chunks_push_data_merge` to include merge code into reproducibility code.
 * More consistent coloring behavior between bivariate plots.
 * Updates to missing data module.
@@ -274,16 +274,16 @@
 
 # teal.modules.general 0.2.3
 
-* Fixed naming in tm_variable_browser.
+* Fixed naming in `tm_variable_browser`.
 * Correlation added to Scatter Plot Matrix.
-* Opacity slider added to tm_bivariate.
+* Opacity slider added to `tm_bivariate`.
 * Fixes due to bug in teal.devel#313.
 * Performance enhancements to missing data module.
 * Fix bug with reactivity in scatterplot matrix module.
 
 # teal.modules.general 0.2.2
 
-* New module to summarise missing data.
+* New module to summarize missing data.
 * Refactor of variable browser module.
 * Correct display of density / frequency option in bivariate plot.
 
@@ -295,9 +295,9 @@
 
 * Refactor functions with data extract and data merge.
 * Create sample_app.R demonstrating teal.modules.general modules.
-* Rename tm_table on tm_cross_table.
+* Rename `tm_table` on `tm_cross_table`.
 * Include show R code in all modules.
-* Merge tm_cross_table and tm_t_percentage_table into one module.
+* Merge `tm_cross_table` and `tm_t_percentage_table` into one module.
 
 # teal.modules.general 0.1.0
 

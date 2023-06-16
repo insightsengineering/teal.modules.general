@@ -14,11 +14,11 @@
 #'   Variables for row facetting.
 #' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables for col facetting.
-#' @param facet optional, (`logical`) to specify whether the facet encodings ui elements are toggled
+#' @param facet optional, (`logical`) to specify whether the facet encodings `ui` elements are toggled
 #'   on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #'   are supplied.
 #' @param color_settings (`logical`) Whether coloring, filling and size should be applied
-#' and UI tool offered to the user.
+#' and `UI` tool offered to the user.
 #' @param color optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   Variables selected for the outline color inside the coloring settings.
 #'   It will be applied when `color_settings` is set to `TRUE`.
