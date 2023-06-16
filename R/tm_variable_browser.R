@@ -9,10 +9,10 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this dataname exists in `datasets_selected`
+#' @param parent_dataname (`character(1)`) If this `dataname` exists in `datasets_selected`
 #'   then an extra checkbox will be shown to allow users to not show variables in other datasets
-#'   which exist in this dataname.
-#'   This is typically used to remove `ADSL` columns in CDISC data. In non CDISC data this
+#'   which exist in this `dataname`.
+#'   This is typically used to remove `ADSL` columns in `CDISC` data. In non `CDISC` data this
 #'   can be ignored. Defaults to `"ADSL"`.
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
@@ -778,7 +778,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
 #' number of levels.
 #' @param x vector of any type
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
-#' @param dt_rows \code{numeric} current/latest DT page length
+#' @param dt_rows \code{numeric} current/latest `DT` page length
 #' @param outlier_definition If 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @return text with simple statistics.
@@ -1081,7 +1081,7 @@ get_plotted_data <- function(input, plot_var, data) {
 #' Renders the left-hand side `tabset` panel of the module
 #'
 #' @param datanames (`character`) the name of the dataset
-#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
+#' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @param data (`tdata`) the object containing all datasets
 #' @param input (`session$input`) the shiny session input
 #' @param output (`session$output`) the shiny session output
@@ -1106,7 +1106,7 @@ render_tabset_panel_content <- function(datanames, parent_dataname, output, data
 #' information about one dataset out of many presented in the module.
 #'
 #' @param dataset_name (`character`) the name of the dataset contained in the rendered tab
-#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
+#' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
 render_single_tab <- function(dataset_name, parent_dataname, output, data, input, columns_names, plot_var) {
@@ -1149,10 +1149,10 @@ render_tab_header <- function(dataset_name, output, data) {
 #'
 #' @description
 #' The table contains column names, column labels,
-#' small summary about NA values and a sparkline (if appropriate).
+#' small summary about NA values and `sparkline` (if appropriate).
 #'
 #' @param dataset_name (`character`) the name of the dataset
-#' @param parent_dataname (`character`) the name of a parent dataname to filter out variables from
+#' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
 render_tab_table <- function(dataset_name, parent_dataname, output, data, input, columns_names) {

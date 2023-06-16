@@ -7,7 +7,7 @@
 add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL)
 }
 \arguments{
-\item{p}{ggplot2 object to add facet labels to}
+\item{p}{\code{ggplot2} object to add facet labels to}
 
 \item{xfacet_label}{label of facet along x axis (nothing created if NULL),
 if vector, will be concatenated with " & "}

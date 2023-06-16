@@ -45,7 +45,7 @@ Variables for row facetting.}
 \item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variables for col facetting.}
 
-\item{facet}{optional, (\code{logical}) to specify whether the facet encodings ui elements are toggled
+\item{facet}{optional, (\code{logical}) to specify whether the facet encodings \code{ui} elements are toggled
 on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
 are supplied.}
 
@@ -65,7 +65,7 @@ It will be applied when \code{color_settings} is set to \code{TRUE}.}
 frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).}
 
 \item{color_settings}{(\code{logical}) Whether coloring, filling and size should be applied
-and UI tool offered to the user.}
+and \code{UI} tool offered to the user.}
 
 \item{free_x_scales}{optional, (\code{logical}) Whether X scaling shall be changeable.
 Does not allow scaling to be changed by default (\code{FALSE}).}
