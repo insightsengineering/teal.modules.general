@@ -390,16 +390,18 @@ srv_g_bivariate <- function(id,
     rule_var <- function(other) {
       function(value) {
         othervalue <- selector_list()[[other]]()$select
-        if (length(value) == 0L && length(othervalue) == 0L)
+        if (length(value) == 0L && length(othervalue) == 0L) {
           "Please select at least one of x-variable or y-variable"
+        }
       }
     }
     rule_diff <- function(other) {
       function(value) {
         othervalue <- selector_list()[[other]]()[["select"]]
         if (!is.null(othervalue)) {
-          if (identical(value, othervalue))
+          if (identical(value, othervalue)) {
             "Row and column facetting variables must be different."
+          }
         }
       }
     }
@@ -424,7 +426,8 @@ srv_g_bivariate <- function(id,
     iv_r <- reactive({
       iv_facet <- shinyvalidate::InputValidator$new()
       iv_child <- teal.transform::compose_and_enable_validators(iv_facet, selector_list,
-                                                                validator_names = c("row_facet", "col_facet"))
+        validator_names = c("row_facet", "col_facet")
+      )
       iv_child$condition(~ isTRUE(input$facetting))
 
       iv <- shinyvalidate::InputValidator$new()
@@ -952,37 +955,37 @@ coloring_ggplot_call <- function(colour,
                                  size,
                                  is_point = FALSE) {
   if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
-      is_point && !identical(size, character(0))) {
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-             is_point && identical(size, character(0))) {
+    is_point && identical(size, character(0))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
-             (!is_point || identical(size, character(0)))) {
+    (!is_point || identical(size, character(0)))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
   } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
-             (!is_point || identical(size, character(0)))) {
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-             (!is_point || identical(size, character(0)))) {
+    (!is_point || identical(size, character(0)))) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (identical(colour, character(0)) && identical(fill, character(0)) &&
-             is_point && !identical(size, character(0))) {
+    is_point && !identical(size, character(0))) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
-             is_point && !identical(size, character(0))) {
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
   } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-             is_point && !identical(size, character(0))) {
+    is_point && !identical(size, character(0))) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
