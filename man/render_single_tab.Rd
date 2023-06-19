@@ -17,7 +17,7 @@ render_single_tab(
 \arguments{
 \item{dataset_name}{(\code{character}) the name of the dataset contained in the rendered tab}
 
-\item{parent_dataname}{(\code{character}) the name of a parent dataname to filter out variables from}
+\item{parent_dataname}{(\code{character}) the name of a parent \code{dataname} to filter out variables from}
 
 \item{output}{(\code{session$output}) the shiny session output}
 

@@ -35,7 +35,7 @@ NULL
 #'
 #' Add axis labels that show facetting variable
 #'
-#' @param p ggplot2 object to add facet labels to
+#' @param p `ggplot2` object to add facet labels to
 #' @param xfacet_label label of facet along x axis (nothing created if NULL),
 #'   if vector, will be concatenated with " & "
 #' @param yfacet_label label of facet along y axis (nothing created if NULL),
@@ -193,11 +193,11 @@ varname_w_label <- function(var_names,
   }
 }
 
-#' Extract html id for data_extract_ui
-#' @description The data_extract_ui is located under extended html id.
+#' Extract html id for `data_extract_ui`
+#' @description The `data_extract_ui` is located under extended html id.
 #'   We could not use \code{ns("original id")} for reference, as it is extended with specific suffixes.
 #' @param varname character original html id.
-#'   This will be mostly retrieved with \code{ns("original id")} in ui or
+#'   This will be mostly retrieved with \code{ns("original id")} in `ui` or
 #'   \code{session$ns("original id")} in server function.
 #' @param dataname character \code{dataname} from data_extract input.
 #'   This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.

@@ -4,8 +4,8 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this dataname exists in then "the by subject"graph is displayed.
-#'   For CDISC data. In non CDISC data this can be ignored. Defaults to `"ADSL"`.
+#' @param parent_dataname (`character(1)`) If this `dataname` exists in then "the by subject"graph is displayed.
+#'   For `CDISC` data. In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
 #' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
 #'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
 #'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.

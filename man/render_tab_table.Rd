@@ -16,7 +16,7 @@ render_tab_table(
 \arguments{
 \item{dataset_name}{(\code{character}) the name of the dataset}
 
-\item{parent_dataname}{(\code{character}) the name of a parent dataname to filter out variables from}
+\item{parent_dataname}{(\code{character}) the name of a parent \code{dataname} to filter out variables from}
 
 \item{output}{(\code{session$output}) the shiny session output}
 
@@ -28,6 +28,6 @@ render_tab_table(
 }
 \description{
 The table contains column names, column labels,
-small summary about NA values and a sparkline (if appropriate).
+small summary about NA values and \code{sparkline} (if appropriate).
 }
 \keyword{internal}
