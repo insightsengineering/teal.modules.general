@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.15.9020</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.15.9022</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,14 +41,13 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-reports">
+    <a class="dropdown-item" href="../coverage-report/">Coverage report</a>
+    <a class="dropdown-item" href="../unit-test-report/">Unit test report</a>
+  </div>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -70,28 +69,28 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.15.9020" id="tealmodulesgeneral-02159020">teal.modules.general 0.2.15.9020<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02159020"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.15.9022" id="tealmodulesgeneral-02159022">teal.modules.general 0.2.15.9022<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02159022"></a></h2>
 <div class="section level4">
-<h4 id="breaking-changes-0-2-15-9020">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-15-9020"></a></h4>
+<h4 id="breaking-changes-0-2-15-9022">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-15-9022"></a></h4>
 <ul><li>Replaced <code>chunks</code> with simpler <code>qenv</code> class.</li>
 <li>Replaced <code>datasets</code> argument containing <code>FilteredData</code> with the new arguments <code>data</code> (<code>tdata</code> object) and <code>filter_panel_api</code> (<code>FilterPanelAPI</code>).</li>
 </ul></div>
 <div class="section level4">
-<h4 id="enhancements-0-2-15-9020">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-15-9020"></a></h4>
+<h4 id="enhancements-0-2-15-9022">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-15-9022"></a></h4>
 <ul><li>Added <code>parent_dataname</code> argument to <code>tm_variable_browser</code> and <code>tm_missing_data</code> to allow specification of parent dataset for these modules.</li>
-<li>Improved UI labels and plot panel title in <code>tm_g_association</code>.</li>
+<li>Improved <code>UI</code> labels and plot panel title in <code>tm_g_association</code>.</li>
 <li>Added inputs <code>tm_variable_browser</code> module for text size and plot theme.</li>
-<li>Forced ggplot theme to be always selected in all modules.</li>
-<li>Updated encodings input checks to use <code><a href="https://rstudio.github.io/shinyvalidate/reference/InputValidator.html" class="external-link">shinyvalidate::InputValidator</a></code> instead of <code><a href="https://rdrr.io/pkg/shiny/man/validate.html" class="external-link">shiny::validate</a></code> for better UI experience.</li>
+<li>Forced <code>ggplot</code> theme to be always selected in all modules.</li>
+<li>Updated encodings input checks to use <code><a href="https://rstudio.github.io/shinyvalidate/reference/InputValidator.html" class="external-link">shinyvalidate::InputValidator</a></code> instead of <code><a href="https://rdrr.io/pkg/shiny/man/validate.html" class="external-link">shiny::validate</a></code> for better <code>UI</code> experience.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-0-2-15-9020">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-15-9020"></a></h4>
+<h4 id="bug-fixes-0-2-15-9022">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-15-9022"></a></h4>
 <ul><li>Fixed a bug in <code>tm_g_scatterplot</code> when selected x and y facets were the same.</li>
 <li>Fixed a bug in <code>tm_g_distribution</code> to plot the theoretical distribution with newer <code>ggplot2</code> version.</li>
 <li>Fixed a bug in <code>tm_g_bivariate</code> when adding lines checkbox was available if one of x or y was deselected.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="miscellaneous-0-2-15-9020">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-15-9020"></a></h4>
+<h4 id="miscellaneous-0-2-15-9022">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-15-9022"></a></h4>
 <ul><li>Examples now use <code>scda.2022</code> rather than <code>scda.2021</code>.</li>
 <li>Replaced deprecated <code>ggplot2</code> functions <code>..count..</code>, <code>..density..</code> and <code>..prop..</code>.</li>
 <li>Version bump on <code>forcats</code> dependency.</li>
@@ -249,9 +248,9 @@
 <li>Refactored <code>tm_g_scatterplot</code> to compute trend line statistics using <code><a href="https://docs.r4photobiology.info/ggpmisc/reference/stat_poly_eq.html" class="external-link">ggpmisc::stat_poly_eq</a></code> to simplify code and to have labels for each group on the plot.</li>
 <li>Refactored <code>tm_g_scatterplot</code> to enable filtering via the Encoding Panel using the new <code>filter_spec</code> functionality.</li>
 <li>Added support for logical variables in <code>tm_variable_browser</code>.</li>
-<li>Updated <code>tm_outliers</code> to handle non-CDISC datasets.</li>
-<li>Updated UI of <code>tm_variable_browser</code> for factor and character variables with more than 30 levels.</li>
-<li>Updated sparklines to remove NA values for numeric variables.</li>
+<li>Updated <code>tm_outliers</code> to handle non-<code>CDISC</code> datasets.</li>
+<li>Updated <code>UI</code> of <code>tm_variable_browser</code> for factor and character variables with more than 30 levels.</li>
+<li>Updated <code>sparklines</code> to remove NA values for numeric variables.</li>
 <li>Added checkbox to display number of observations on plot to <code>tm_g_scatterplot</code>.</li>
 <li>Added validation statements to <code>tm_g_scatterplot</code> handling users choosing more than one facet variable.</li>
 <li>Improved performance of <code>tm_variable_browser</code> by a more efficient <code>sparkline</code> generation.</li>
@@ -273,7 +272,7 @@
 <h4 id="bug-fixes-0-2-9">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-9"></a></h4>
 <ul><li>Added persistence for the number of entries displayed in data tables.</li>
 <li>Removed ‘treat variable as factor’ checkbox in <code>tm_variable_browser</code> if no graph shown.</li>
-<li>Fixed DT length reset in <code>tm_variable_browser</code> on “Show parent dataset variables” checkbox tick.</li>
+<li>Fixed <code>DT</code> length reset in <code>tm_variable_browser</code> on “Show parent dataset variables” checkbox tick.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -282,7 +281,7 @@
 <h4 id="new-module-0-2-8">New Module<a class="anchor" aria-label="anchor" href="#new-module-0-2-8"></a></h4>
 <div class="section level5">
 <h5 id="tm_outliers-0-2-8"><code>tm_outliers</code><a class="anchor" aria-label="anchor" href="#tm_outliers-0-2-8"></a></h5>
-<ul><li>Added new module <code>tm_outliers</code> to analyse outliers in datasets.</li>
+<ul><li>Added new module <code>tm_outliers</code> to analyze outliers in datasets.</li>
 </ul></div>
 </div>
 <div class="section level4">
@@ -302,11 +301,12 @@
 </ul></div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-8">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-8"></a></h4>
-<ul><li>Sparklines no longer shown for numeric variables with more than 100000 rows.</li>
+<ul><li>
+<code>Sparklines</code> no longer shown for numeric variables with more than 100000 rows.</li>
 <li>Colors legend for each plot.</li>
-<li>Replaced “Show variables other than in ADSL” checkbox to more general “Show parent dataset variables”.</li>
+<li>Replaced <code>"Show variables other than in ADSL"</code> checkbox to more general <code>"Show parent dataset variables"</code>.</li>
 <li>Capitalize default module labels.</li>
-<li>Some of the outputs of <code>tm_missing_data</code> are conditional to the data being a CDISC data.</li>
+<li>Some of the outputs of <code>tm_missing_data</code> are conditional to the data being a <code>CDISC</code> data.</li>
 <li>Added <code>pre_output</code> and <code>post_output</code> arguments to <code>tm_data_table</code>, <code>tm_missing_data</code>, <code>tm_variable_browser</code>.</li>
 <li>Fixed issue in <code>tm_data_table</code> when selecting “show distinct rows” if variable names had non-alphanumeric characters.</li>
 </ul></div>
@@ -355,7 +355,7 @@
 </div>
 <div class="section level4">
 <h4 id="miscellaneous-0-2-7">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-7"></a></h4>
-<ul><li>Integrated <code>is_single_dataset</code> argument for <code>data_extract_input</code> function calls to simplify encodings panel UI.</li>
+<ul><li>Integrated <code>is_single_dataset</code> argument for <code>data_extract_input</code> function calls to simplify encodings panel <code>UI</code>.</li>
 <li>Moved <code>code</code> argument to <code>cdisc_dataset</code> (from <code>cdisc_data</code>) in examples and vignettes.</li>
 <li>Require <code>ggmosaic</code> version &gt;= 0.3.0.</li>
 </ul></div>
@@ -382,7 +382,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="tealmodulesgeneral-025">teal.modules.general 0.2.5<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-025"></a></h2>
 <ul><li>Adds <code>ggplot</code> call inside chunks in modules.</li>
-<li>Pass on dataname to <code>get_rcode_srv</code>.</li>
+<li>Pass on <code>dataname</code> to <code>get_rcode_srv</code>.</li>
 <li>Uses utils function to standardize plot label generation.</li>
 <li>Improved handling of variable labels.</li>
 <li>Removed “Add as filter variable” button from variable browser module.</li>
@@ -393,7 +393,7 @@
 <ul><li>New PCA module.</li>
 <li>Documentation fix for cross table module.</li>
 <li>Display variable labels in drop-down menu of data table (#393).</li>
-<li>Optional subsetting and ordering datasets for tm_data_table.</li>
+<li>Optional subsetting and ordering datasets for <code>tm_data_table</code>.</li>
 <li>Use <code><a href="https://rdrr.io/pkg/teal.code/man/chunks_push_data_merge.html" class="external-link">teal.code::chunks_push_data_merge</a></code> to include merge code into reproducibility code.</li>
 <li>More consistent coloring behavior between bivariate plots.</li>
 <li>Updates to missing data module.</li>
@@ -402,16 +402,16 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="tealmodulesgeneral-023">teal.modules.general 0.2.3<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-023"></a></h2>
-<ul><li>Fixed naming in tm_variable_browser.</li>
+<ul><li>Fixed naming in <code>tm_variable_browser</code>.</li>
 <li>Correlation added to Scatter Plot Matrix.</li>
-<li>Opacity slider added to tm_bivariate.</li>
+<li>Opacity slider added to <code>tm_bivariate</code>.</li>
 <li>Fixes due to bug in teal.devel#313.</li>
 <li>Performance enhancements to missing data module.</li>
 <li>Fix bug with reactivity in scatterplot matrix module.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="tealmodulesgeneral-022">teal.modules.general 0.2.2<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-022"></a></h2>
-<ul><li>New module to summarise missing data.</li>
+<ul><li>New module to summarize missing data.</li>
 <li>Refactor of variable browser module.</li>
 <li>Correct display of density / frequency option in bivariate plot.</li>
 </ul></div>
@@ -423,9 +423,9 @@
 <h2 class="pkg-version" data-toc-text="0.2.0" id="tealmodulesgeneral-020">teal.modules.general 0.2.0<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-020"></a></h2>
 <ul><li>Refactor functions with data extract and data merge.</li>
 <li>Create sample_app.R demonstrating teal.modules.general modules.</li>
-<li>Rename tm_table on tm_cross_table.</li>
+<li>Rename <code>tm_table</code> on <code>tm_cross_table</code>.</li>
 <li>Include show R code in all modules.</li>
-<li>Merge tm_cross_table and tm_t_percentage_table into one module.</li>
+<li>Merge <code>tm_cross_table</code> and <code>tm_t_percentage_table</code> into one module.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="tealmodulesgeneral-010">teal.modules.general 0.1.0<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-010"></a></h2>
