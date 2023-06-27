@@ -145,8 +145,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
-    stop(sprintf("Cannot load package(s): %s.\nInstall or restart your session.",
-                 paste(missing_packages, sep = ", ")))
+    stop(sprintf(
+      "Cannot load package(s): %s.\nInstall or restart your session.",
+      toString(missing_packages)
+    ))
   }
 
   if (inherits(x, "data_extract_spec")) x <- list(x)

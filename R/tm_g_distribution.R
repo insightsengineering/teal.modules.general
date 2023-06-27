@@ -115,7 +115,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   if (length(missing_packages) > 0L) {
     stop(sprintf(
       "Cannot load package(s): %s.\nInstall or restart your session.",
-      paste(missing_packages, sep = ", ")
+      toString(missing_packages)
     ))
   }
 
