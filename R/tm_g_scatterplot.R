@@ -409,8 +409,9 @@ srv_g_scatterplot <- function(id,
       function(value) {
         othervalue <- selector_list()[[other]]()[["select"]]
         if (!is.null(othervalue)) {
-          if (identical(value, othervalue))
+          if (identical(value, othervalue)) {
             "Row and column facetting variables must be different."
+          }
         }
       }
     }
@@ -441,9 +442,10 @@ srv_g_scatterplot <- function(id,
     })
     iv_facet <- shinyvalidate::InputValidator$new()
     iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
-                                           (length(selector_list()$row_facet()$select) > 0L ||
-                                            length(selector_list()$col_facet()$select) > 0L))
-      "Cannot add marginal density when Row or Column facetting has been selected")
+      (length(selector_list()$row_facet()$select) > 0L ||
+        length(selector_list()$col_facet()$select) > 0L)) {
+      "Cannot add marginal density when Row or Column facetting has been selected"
+    })
     iv_facet$enable()
 
     anl_merged_input <- teal.transform::merge_expression_srv(
@@ -505,7 +507,7 @@ srv_g_scatterplot <- function(id,
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
         if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
-            length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -563,8 +565,8 @@ srv_g_scatterplot <- function(id,
         ))
         validate(need(
           !(inherits(ANL[[color_by_var]], "Date") ||
-              inherits(ANL[[color_by_var]], "POSIXct") ||
-              inherits(ANL[[color_by_var]], "POSIXlt")),
+            inherits(ANL[[color_by_var]], "POSIXct") ||
+            inherits(ANL[[color_by_var]], "POSIXlt")),
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
@@ -902,8 +904,8 @@ srv_g_scatterplot <- function(id,
       if (length(numeric_cols) > 0) {
         DT::formatRound(
           DT::datatable(brushed_df,
-                        rownames = FALSE,
-                        options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+            rownames = FALSE,
+            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
           ),
           numeric_cols,
           table_dec
