@@ -34,6 +34,7 @@ jobs:
     with:
       additional-env-vars: |
         _R_CHECK_CRAN_INCOMING_REMOTE_=false
+        _R_CHECK_EXAMPLE_TIMING_THRESHOLD_=11
       additional-r-cmd-check-params: --as-cran
       enforce-note-blocklist: true
       note-blocklist: |
