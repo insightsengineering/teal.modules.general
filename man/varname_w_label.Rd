@@ -34,8 +34,7 @@ Get variable name with label
 }
 \examples{
 \dontrun{
-library(scda)
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- rADSL
 
 varname_w_label("AGE", ADSL)
 }
