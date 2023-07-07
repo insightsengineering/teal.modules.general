@@ -158,8 +158,7 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @examples
 #' \dontrun{
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- rADSL
 #'
 #' varname_w_label("AGE", ADSL)
 #' }

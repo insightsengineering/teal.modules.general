@@ -26,7 +26,6 @@ various types of datasets inside an bivariate plot module:
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
-library(scda) # used to create data sets
 library(dplyr) # used to modify data sets
 ```
 
@@ -42,12 +41,12 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
-ADSL2 <- synthetic_cdisc_data("latest")$adsl %>% # nolint
+ADSL <- rADSL # nolint
+ADSL2 <- rADSL %>% # nolint
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- synthetic_cdisc_data("latest")$adrs # nolint
-ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
-ADLB <- synthetic_cdisc_data("latest")$adlb %>% # nolint
+ADRS <- rADRS # nolint
+ADTTE <- rADTTE # nolint
+ADLB <- rADLB %>% # nolint
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
@@ -65,20 +64,20 @@ combinations of data sets.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
     cdisc_dataset(
       "ADSL2",
       ADSL2,
       keys = get_cdisc_keys("ADSL"),
-      code = "ADSL2 <- synthetic_cdisc_data(\"latest\")$adsl %>%
+      code = "ADSL2 <- rADSL %>%
               mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
     ),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+    cdisc_dataset("ADRS", ADRS, code = "ADRS <- rADRS"),
+    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- rADTTE"),
     cdisc_dataset(
       "ADLB",
       ADLB,
-      code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb %>%
+      code = "ADLB <- rADLB %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',

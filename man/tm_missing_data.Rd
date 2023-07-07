@@ -53,15 +53,14 @@ Present analysis of missing observations and patients.
 }
 \examples{
 library(nestcolor)
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADRS <- synthetic_cdisc_data("latest")$adrs
+ADSL <- rADSL
+ADRS <- rADRS
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
+    cdisc_dataset("ADRS", ADRS, code = "ADRS <- rADRS"),
     check = TRUE
   ),
   modules = modules(

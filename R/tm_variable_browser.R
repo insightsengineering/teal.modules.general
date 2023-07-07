@@ -30,15 +30,14 @@
 #' @export
 #'
 #' @examples
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' ADTTE <- synthetic_cdisc_data("latest")$adtte
+#' ADSL <- rADSL
+#' ADTTE <- rADTTE
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
+#'     cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- rADTTE"),
 #'     check = TRUE
 #'   ),
 #'   modules(

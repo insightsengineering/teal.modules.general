@@ -99,13 +99,12 @@ For more examples, please see the vignette "Using scatterplot" via
 \examples{
 # Scatterplot of variables from ADSL dataset
 library(nestcolor)
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- rADSL
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
     check = TRUE
   ),
   modules = modules(

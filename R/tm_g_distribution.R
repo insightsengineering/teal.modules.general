@@ -48,15 +48,14 @@
 #' }
 #'
 #' # Example with clinical data
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- rADSL
 #'
 #' vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 #'
 #' app <- init(
 #'   data = cdisc_data(
 #'     cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl",
+#'     code = "ADSL <- rADSL",
 #'     check = FALSE
 #'   ),
 #'   modules = modules(
