@@ -27,13 +27,12 @@
 #' @examples
 #' # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 #' library(nestcolor)
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(
@@ -238,8 +237,9 @@ srv_g_response <- function(id,
       function(value) {
         othervalue <- selector_list()[[other]]()[["select"]]
         if (!is.null(othervalue)) {
-          if (identical(value, othervalue))
+          if (identical(value, othervalue)) {
             "Row and column facetting variables must be different."
+          }
         }
       }
     }
@@ -365,7 +365,7 @@ srv_g_response <- function(id,
       plot_call <- substitute(
         expr =
           ggplot(ANL2, aes(x = x_cl, y = ns)) +
-          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,

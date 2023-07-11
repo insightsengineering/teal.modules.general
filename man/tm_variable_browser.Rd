@@ -54,15 +54,14 @@ or numbers with a checkbox allowing users to switch how they are treated (if < 6
 then the default is categorical, otherwise it is numeric).
 }
 \examples{
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADTTE <- synthetic_cdisc_data("latest")$adtte
+ADSL <- teal.modules.general::rADSL
+ADTTE <- teal.modules.general::rADTTE
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
     check = TRUE
   ),
   modules(

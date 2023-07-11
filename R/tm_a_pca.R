@@ -25,14 +25,13 @@
 #' # ADSL example
 #'
 #' library(nestcolor)
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- teal::init(
 #'   data = cdisc_data(
-#'     cdisc_dataset(
+#'     teal.data::cdisc_dataset(
 #'       "ADSL", ADSL,
-#'       code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+#'       code = "ADSL <- teal.modules.general::rADSL"
 #'     ),
 #'     check = TRUE
 #'   ),
@@ -269,8 +268,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dat = ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
         response = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (isTRUE(is.element(., selector_list()$dat()$select)))
+          ~ if (isTRUE(is.element(., selector_list()$dat()$select))) {
             "Response must not have been used for PCA."
+          }
         )
       )
     )
@@ -283,34 +283,39 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     iv_extra <- shinyvalidate::InputValidator$new()
     iv_extra$add_rule("x_axis", function(value) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need X axis"
+        }
       }
     })
     iv_extra$add_rule("y_axis", function(value) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need Y axis"
+        }
       }
     })
     rule_dupl <- function(...) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (isTRUE(input$x_axis == input$y_axis))
+        if (isTRUE(input$x_axis == input$y_axis)) {
           "Please choose different X and Y axes."
+        }
       }
     }
     iv_extra$add_rule("x_axis", rule_dupl)
     iv_extra$add_rule("y_axis", rule_dupl)
     iv_extra$add_rule("variables", function(value) {
       if (identical(input$plot_type, "Circle plot")) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need Original Coordinates"
+        }
       }
     })
     iv_extra$add_rule("pc", function(value) {
       if (identical(input$plot_type, "Eigenvector plot")) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need PC"
+        }
       }
     })
     iv_extra$enable()
@@ -685,7 +690,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
         dev_labs <- list()
       } else {
-
         rp_keys <- setdiff(
           colnames(ANL),
           as.character(unlist(merged$anl_input_r()$columns_source))
