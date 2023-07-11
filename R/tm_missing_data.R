@@ -17,15 +17,14 @@
 #'
 #' @examples
 #' library(nestcolor)
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' ADRS <- synthetic_cdisc_data("latest")$adrs
+#' ADSL <- teal.modules.general::rADSL
+#' ADRS <- teal.modules.general::rADRS
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-#'     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+#'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(

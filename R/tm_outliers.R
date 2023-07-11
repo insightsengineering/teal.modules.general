@@ -16,16 +16,15 @@
 #' @export
 #'
 #' @examples
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
 #' vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(
