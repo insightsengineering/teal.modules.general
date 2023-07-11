@@ -18,4 +18,3 @@ Random patient listing
 }
 \keyword{datasets}
 \keyword{internal}
-\keyword{teal.modules.general::rADSL)}

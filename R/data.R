@@ -3,7 +3,7 @@
 #' @description Random adverse events
 #' @docType data
 #'
-#' teal.modules.general::rADAE)
+#' @usage rADAE
 #'
 #' @keywords datasets internal
 #'
@@ -16,7 +16,7 @@
 #' @description Random lab analysis
 #' @docType data
 #'
-#' teal.modules.general::rADLB)
+#' @usage rADLB
 #'
 #' @keywords datasets internal
 #'
@@ -29,7 +29,7 @@
 #' @description Random response
 #' @docType data
 #'
-#' teal.modules.general::rADRS)
+#' @usage rADRS
 #'
 #' @keywords datasets internal
 #'
@@ -42,9 +42,9 @@
 #' @description Random patient listing
 #' @docType data
 #'
-#' @keywords datasets internal
+#' @usage rADSL
 #'
-#' teal.modules.general::rADSL)
+#' @keywords datasets internal
 #'
 #' @source internal
 #' @name rADSL
@@ -55,9 +55,9 @@
 #' @description Random Time to Event Analysis Dataset
 #' @docType data
 #'
-#' @keywords datasets internal
+#' @usage rADTTE
 #'
-#' teal.modules.general::rADTTE)
+#' @keywords datasets internal
 #'
 #' @source internal
 #' @name rADTTE

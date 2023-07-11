@@ -18,4 +18,3 @@ Random Time to Event Analysis Dataset
 }
 \keyword{datasets}
 \keyword{internal}
-\keyword{teal.modules.general::rADTTE)}
