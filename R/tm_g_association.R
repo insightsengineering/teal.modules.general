@@ -377,7 +377,8 @@ srv_tm_g_association <- function(id,
       }
       new_title <-
         if (association) {
-          switch(as.character(length(vars_names)),
+          switch(
+            as.character(length(vars_names)),
             "0" = sprintf("Value distribution for %s", ref_cl_lbl),
             "1" = sprintf(
               "Association between %s and %s",
@@ -391,7 +392,8 @@ srv_tm_g_association <- function(id,
             )
           )
         } else {
-          switch(as.character(length(vars_names)),
+          switch(
+            as.character(length(vars_names)),
             "0" = sprintf("Value distribution for %s", ref_cl_lbl),
             sprintf(
               "Value distributions for %s and %s",
@@ -417,7 +419,9 @@ srv_tm_g_association <- function(id,
               grid::grid.draw(p)
             },
             env = list(
-              plot_calls = do.call("call", c(list("list", ref_call), var_calls),
+              plot_calls = do.call(
+                "call",
+                c(list("list", ref_call), var_calls),
                 quote = TRUE
               )
             )

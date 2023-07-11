@@ -709,7 +709,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
-        scales_biplot <- if (is.character(response) ||
+        scales_biplot <- if (
+          is.character(response) ||
           is.factor(response) ||
           (is.numeric(response) && length(unique(response)) <= 6)) {
           qenv <- teal.code::eval_code(
@@ -860,7 +861,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         list(
           quote(ggplot(pca_rot)),
           substitute(
-            geom_bar(aes_string(x = "Variable", y = pc),
+            geom_bar(
+              aes_string(x = "Variable", y = pc),
               stat = "identity",
               color = "black",
               fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
@@ -909,7 +911,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       teal::validate_inputs(iv_r())
       teal::validate_inputs(iv_extra, header = "Plot settings are required")
 
-      switch(input$plot_type,
+      switch(
+        input$plot_type,
         "Elbow plot" = plot_elbow(computation()),
         "Circle plot" = plot_circle(computation()),
         "Biplot" = plot_biplot(computation()),
