@@ -711,8 +711,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         scales_biplot <- if (
           is.character(response) ||
-            is.factor(response) ||
-            (is.numeric(response) && length(unique(response)) <= 6)) {
+          is.factor(response) ||
+          (is.numeric(response) && length(unique(response)) <= 6)) {
           qenv <- teal.code::eval_code(
             qenv,
             quote(pca_rot$response <- as.factor(response))
