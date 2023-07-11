@@ -34,7 +34,7 @@ Get variable name with label
 }
 \examples{
 \dontrun{
-ADSL <- rADSL
+ADSL <- teal.modules.general::rADSL
 
 varname_w_label("AGE", ADSL)
 }

@@ -91,14 +91,14 @@ if (interactive()) {
 }
 
 # Example with clinical data
-ADSL <- rADSL
+ADSL <- teal.modules.general::rADSL
 
 vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- rADSL",
+    teal.data::cdisc_dataset("ADSL", ADSL),
+    code = "ADSL <- teal.modules.general::rADSL",
     check = FALSE
   ),
   modules = modules(

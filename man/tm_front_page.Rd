@@ -49,11 +49,11 @@ table_input <- list(
   "Table 3" = table_3
 )
 
-ADSL <- rADSL
+ADSL <- teal.modules.general::rADSL
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL,
-      code = "ADSL <- rADSL",
+    teal.data::cdisc_dataset("ADSL", ADSL,
+      code = "ADSL <- teal.modules.general::rADSL",
       metadata = list("Author" = "NEST team", "data_source" = "synthetic data")
     ),
     check = TRUE

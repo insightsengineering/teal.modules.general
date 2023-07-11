@@ -11,10 +11,11 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 internal
 }
 \usage{
-data(rADSL)
+rADSL
 }
 \description{
 Random patient listing
 }
 \keyword{datasets}
 \keyword{internal}
+\keyword{teal.modules.general::rADSL)}

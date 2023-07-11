@@ -73,13 +73,13 @@ Principal component analysis module
 # ADSL example
 
 library(nestcolor)
-ADSL <- rADSL
+ADSL <- teal.modules.general::rADSL
 
 app <- teal::init(
   data = cdisc_data(
-    cdisc_dataset(
+    teal.data::cdisc_dataset(
       "ADSL", ADSL,
-      code = "ADSL <- rADSL"
+      code = "ADSL <- teal.modules.general::rADSL"
     ),
     check = TRUE
   ),

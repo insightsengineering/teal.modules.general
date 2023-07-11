@@ -39,12 +39,12 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- rADSL # nolint
-ADSL2 <- rADSL %>% # nolint
+ADSL <- teal.modules.general::rADSL # nolint
+ADSL2 <- teal.modules.general::rADSL %>% # nolint
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- rADRS # nolint
-ADTTE <- rADTTE # nolint
-ADLB <- rADLB %>% # nolint
+ADRS <- teal.modules.general::rADRS # nolint
+ADTTE <- teal.modules.general::rADTTE # nolint
+ADLB <- teal.modules.general::rADLB %>% # nolint
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
@@ -62,18 +62,18 @@ combinations of data sets.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
-    cdisc_dataset("ADSL2", ADSL2,
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADSL2", ADSL2,
       keys = get_cdisc_keys("ADSL"),
-      code = "ADSL2 <- rADSL %>%
+      code = "ADSL2 <- teal.modules.general::rADSL %>%
               mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
     ),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- rADRS"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- rADTTE"),
-    cdisc_dataset(
+    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
+    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
+    teal.data::cdisc_dataset(
       "ADLB",
       ADLB,
-      code = "ADLB <- rADLB %>%
+      code = "ADLB <- teal.modules.general::rADLB %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',

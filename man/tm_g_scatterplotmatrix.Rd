@@ -44,13 +44,13 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 \examples{
 # Scatterplot matrix of variables from ADSL dataset
 
-ADSL <- rADSL
-ADRS <- rADRS
+ADSL <- teal.modules.general::rADSL
+ADRS <- teal.modules.general::rADRS
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- rADRS"),
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
     check = TRUE
   ),
   modules = modules(

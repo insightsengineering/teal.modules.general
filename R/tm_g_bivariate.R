@@ -45,11 +45,11 @@
 #'
 #' @examples
 #' # Bivariate plot of selected variable (AGE) against selected (SEX)
-#' ADSL <- rADSL
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(

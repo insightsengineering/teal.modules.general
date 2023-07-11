@@ -26,11 +26,11 @@
 #' # Association plot of selected reference variable (SEX)
 #' # against other selected variables (BMRKR1)
 #' library(nestcolor)
-#' ADSL <- rADSL
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(

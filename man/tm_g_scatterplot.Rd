@@ -100,11 +100,11 @@ For more examples, please see the vignette "Using scatterplot" via
 # Scatterplot of variables from ADSL dataset
 library(nestcolor)
 
-ADSL <- rADSL
+ADSL <- teal.modules.general::rADSL
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- rADSL"),
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
   modules = modules(

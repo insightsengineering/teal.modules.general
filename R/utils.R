@@ -158,7 +158,7 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @examples
 #' \dontrun{
-#' ADSL <- rADSL
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' varname_w_label("AGE", ADSL)
 #' }
