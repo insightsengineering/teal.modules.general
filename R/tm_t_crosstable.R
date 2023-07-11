@@ -22,13 +22,12 @@
 #'
 #' @examples
 #' # Percentage cross table of variables from ADSL dataset
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(
@@ -182,8 +181,9 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule("join_fun", function(value) {
         if (!identical(selector_list()$x()$dataname, selector_list()$y()$dataname)) {
-          if (!shinyvalidate::input_provided(value))
+          if (!shinyvalidate::input_provided(value)) {
             "Please select a joining function."
+          }
         }
       })
       teal.transform::compose_and_enable_validators(iv, selector_list)
