@@ -16,7 +16,6 @@
 #' @return A `teal` module to be used in `teal` applications
 #' @export
 #' @examples
-#' library(scda)
 #'
 #' table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 #' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
@@ -28,11 +27,11 @@
 #'   "Table 3" = table_3
 #' )
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL,
-#'       code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl",
+#'     teal.data::cdisc_dataset("ADSL", ADSL,
+#'       code = "ADSL <- teal.modules.general::rADSL",
 #'       metadata = list("Author" = "NEST team", "data_source" = "synthetic data")
 #'     ),
 #'     check = TRUE

@@ -33,13 +33,12 @@
 #' @examples
 #' # Regression graphs from selected response variable (BMRKR1) and
 #' # selected regressors (AGE)
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- init(
 #'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = modules(
@@ -245,19 +244,20 @@ srv_a_regression <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     rule_rvr1 <- function(value) {
       if (isTRUE(input$plot_type == "Response vs Regressor")) {
-        if (length(value) > 1L)
+        if (length(value) > 1L) {
           "This plot can only have one regressor."
+        }
       }
     }
     rule_rvr2 <- function(other) {
       function(value) {
         if (isTRUE(input$plot_type == "Response vs Regressor")) {
           otherval <- selector_list()[[other]]()$select
-          if (isTRUE(value == otherval))
+          if (isTRUE(value == otherval)) {
             "Response and Regressor must be different."
+          }
         }
       }
     }
@@ -823,12 +823,12 @@ srv_a_regression <- function(id,
       } else {
         plot_base_q <- plot_base()
         switch(input_type,
-               "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
-               "Normal Q-Q" = plot_base_q %>% plot_type_2(),
-               "Scale-Location" = plot_base_q %>% plot_type_3(),
-               "Cook's distance" = plot_base_q %>% plot_type_4(),
-               "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
-               "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
+          "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
+          "Normal Q-Q" = plot_base_q %>% plot_type_2(),
+          "Scale-Location" = plot_base_q %>% plot_type_3(),
+          "Cook's distance" = plot_base_q %>% plot_type_4(),
+          "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
+          "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
         )
       }
       qenv

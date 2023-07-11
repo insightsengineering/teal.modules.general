@@ -41,16 +41,15 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 
 A simple application including a `tm_variable_browser` module could look like this:
 ```{r, message = FALSE, results = "hide"}
-library(scda)
 library(teal.modules.general)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
-ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
+ADSL <- teal.modules.general::rADSL # nolint
+ADTTE <- teal.modules.general::rADTTE # nolint
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+    teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
     check = TRUE
   ),
   modules = modules(
@@ -71,13 +70,11 @@ shinyApp(app$ui, app$server)
 Let's break the above app into pieces:
 ```r
 library(teal.modules.general)
-library(scda)
 ```
-The above lines load the libraries used in this example. `scda` is a package containing sample data which are loaded
-into two R objects:
+The line mentioned above imports the library required for this example and loads data from within that library.
 ```r
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADAE <- synthetic_cdisc_data("latest")$adae
+ADSL <- teal.modules.general::rADSL
+ADAE <- teal.modules.general::rADAE
 ```
 There is no need to load `teal` as `teal.modules.general` already depends on it.
 
@@ -88,8 +85,8 @@ argument indicates the modules included in the application. Here, we include onl
 ```{r, results = "hide"}
 app <- teal::init(
   data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
+    teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
     check = TRUE # to check if the code executes to the data provided, x, i.e. ADSL and ADTTE
   ),
   modules = modules(
