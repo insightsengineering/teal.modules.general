@@ -52,8 +52,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("AGE", "BMRKR1", "BMRKR2")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("AGE", "BMRKR1", "BMRKR2")
+#'           ),
 #'           selected = "AGE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -63,8 +65,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("AGE", "BMRKR1", "BMRKR2")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("AGE", "BMRKR1", "BMRKR2")
+#'           ),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -74,8 +78,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
+#'           ),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -85,8 +91,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
+#'           ),
 #'           selected = "AGE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -96,8 +104,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("BMRKR2", "RACE", "REGION1")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("BMRKR2", "RACE", "REGION1")
+#'           ),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -107,8 +117,10 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL,
-#'             c("BMRKR2", "RACE", "REGION1")),
+#'           choices = teal.transform::variable_choices(
+#'             ADSL,
+#'             c("BMRKR2", "RACE", "REGION1")
+#'           ),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
