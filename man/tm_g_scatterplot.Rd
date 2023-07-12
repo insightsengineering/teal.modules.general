@@ -99,73 +99,90 @@ For more examples, please see the vignette "Using scatterplot" via
 \examples{
 # Scatterplot of variables from ADSL dataset
 library(nestcolor)
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- teal.modules.general::rADSL
 
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_g_scatterplot(
+  modules = teal::modules(
+    teal.modules.general::tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = data_extract_spec(
+      x = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("AGE", "BMRKR1", "BMRKR2")
+          ),
           selected = "AGE",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      y = data_extract_spec(
+      y = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("AGE", "BMRKR1", "BMRKR2")
+          ),
           selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      color_by = data_extract_spec(
+      color_by = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
+          ),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      size_by = data_extract_spec(
+      size_by = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
+          ),
           selected = "AGE",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      row_facet = data_extract_spec(
+      row_facet = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("BMRKR2", "RACE", "REGION1")
+          ),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      col_facet = data_extract_spec(
+      col_facet = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("BMRKR2", "RACE", "REGION1")),
+          choices = teal.transform::variable_choices(
+            ADSL,
+            c("BMRKR2", "RACE", "REGION1")
+          ),
           selected = NULL,
           multiple = FALSE,
           fixed = FALSE

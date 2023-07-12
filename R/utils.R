@@ -158,8 +158,7 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @examples
 #' \dontrun{
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' varname_w_label("AGE", ADSL)
 #' }
@@ -200,7 +199,7 @@ varname_w_label <- function(var_names,
 #'   This will be mostly retrieved with \code{ns("original id")} in `ui` or
 #'   \code{session$ns("original id")} in server function.
 #' @param dataname character \code{dataname} from data_extract input.
-#'   This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.
+#'   This might be retrieved like \code{teal.transform::data_extract_spec(...)[[1]]$dataname}.
 #' @param filter logical if the connected \code{extract_data_spec} is used with \code{filter} option.
 #' @keywords internal
 extract_input <- function(varname, dataname, filter = FALSE) {

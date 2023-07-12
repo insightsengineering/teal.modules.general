@@ -20,7 +20,7 @@
 
 ### Miscellaneous
 
-* Examples now use `scda.2022` rather than `scda.2021`.
+* Removed `scda` package dependency from examples.
 * Replaced deprecated `ggplot2` functions `..count..`, `..density..` and `..prop..`.
 * Version bump on `forcats` dependency.
 
@@ -115,7 +115,6 @@
 * Fixed the bar plot order for factor variables in `tm_variable_browser`.
 
 ### Enhancements
-* Updated examples and tests using `scda` synthetic data to replace `random.cdisc.data`.
 #### `tm_variable_browser`
 * Added `sparkline` support for `Date`/`POSIXct`/`POSIXlt` variable types.
 * Fixed histograms to contain at least two bars.

@@ -85,33 +85,32 @@ For more examples, please see the vignette "Using response plot" via
 \examples{
 # Response plot with selected response (BMRKR1) and selected x variable (RACE)
 library(nestcolor)
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- teal.modules.general::rADSL
 
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_g_response(
+  modules = teal::modules(
+    teal.modules.general::tm_g_response(
       label = "Response Plots",
-      response = data_extract_spec(
+      response = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
+          choices = teal.transform::variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
           selected = "BMRKR2",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      x = data_extract_spec(
+      x = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("SEX", "RACE")),
+          choices = teal.transform::variable_choices(ADSL, c("SEX", "RACE")),
           selected = "RACE",
           multiple = FALSE,
           fixed = FALSE

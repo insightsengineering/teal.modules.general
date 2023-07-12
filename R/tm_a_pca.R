@@ -25,24 +25,23 @@
 #' # ADSL example
 #'
 #' library(nestcolor)
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
-#'     cdisc_dataset(
+#'   data = teal.data::cdisc_data(
+#'     teal.data::cdisc_dataset(
 #'       "ADSL", ADSL,
-#'       code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+#'       code = "ADSL <- teal.modules.general::rADSL"
 #'     ),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_a_pca(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_a_pca(
 #'       "PCA",
-#'       dat = data_extract_spec(
+#'       dat = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+#'         select = teal.transform::select_spec(
+#'           choices = teal.transform::variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
 #'           selected = c("BMRKR1", "AGE"),
 #'           multiple = TRUE
 #'         ),
@@ -269,8 +268,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dat = ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
         response = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
-          ~ if (isTRUE(is.element(., selector_list()$dat()$select)))
+          ~ if (isTRUE(is.element(., selector_list()$dat()$select))) {
             "Response must not have been used for PCA."
+          }
         )
       )
     )
@@ -283,34 +283,39 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     iv_extra <- shinyvalidate::InputValidator$new()
     iv_extra$add_rule("x_axis", function(value) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need X axis"
+        }
       }
     })
     iv_extra$add_rule("y_axis", function(value) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need Y axis"
+        }
       }
     })
     rule_dupl <- function(...) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
-        if (isTRUE(input$x_axis == input$y_axis))
+        if (isTRUE(input$x_axis == input$y_axis)) {
           "Please choose different X and Y axes."
+        }
       }
     }
     iv_extra$add_rule("x_axis", rule_dupl)
     iv_extra$add_rule("y_axis", rule_dupl)
     iv_extra$add_rule("variables", function(value) {
       if (identical(input$plot_type, "Circle plot")) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need Original Coordinates"
+        }
       }
     })
     iv_extra$add_rule("pc", function(value) {
       if (identical(input$plot_type, "Eigenvector plot")) {
-        if (!shinyvalidate::input_provided(value))
+        if (!shinyvalidate::input_provided(value)) {
           "Need PC"
+        }
       }
     })
     iv_extra$enable()
@@ -685,7 +690,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
         dev_labs <- list()
       } else {
-
         rp_keys <- setdiff(
           colnames(ANL),
           as.character(unlist(merged$anl_input_r()$columns_source))
@@ -705,37 +709,36 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
-        scales_biplot <- if (is.character(response) ||
-                             is.factor(response) ||
-                             (is.numeric(response) && length(unique(response)) <= 6)) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- as.factor(response))
-          )
-          quote(scale_color_brewer(palette = "Dark2"))
-        } else if (inherits(response, "Date")) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- numeric(response))
-          )
-
-          quote(
-            scale_color_gradient(
-              low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
-              high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
-              labels = function(x) as.Date(x, origin = "1970-01-01")
+        scales_biplot <-
+          if (is.character(response) || is.factor(response) || (is.numeric(response) && length(unique(response)) <= 6)) { # nolint
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- as.factor(response))
             )
-          )
-        } else {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- response)
-          )
-          quote(scale_color_gradient(
-            low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
-            high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
-          ))
-        }
+            quote(scale_color_brewer(palette = "Dark2"))
+          } else if (inherits(response, "Date")) {
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- numeric(response))
+            )
+
+            quote(
+              scale_color_gradient(
+                low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+                high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
+                labels = function(x) as.Date(x, origin = "1970-01-01")
+              )
+            )
+          } else {
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- response)
+            )
+            quote(scale_color_gradient(
+              low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+              high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+            ))
+          }
 
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
@@ -856,10 +859,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         list(
           quote(ggplot(pca_rot)),
           substitute(
-            geom_bar(aes_string(x = "Variable", y = pc),
-                     stat = "identity",
-                     color = "black",
-                     fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+            geom_bar(
+              aes_string(x = "Variable", y = pc),
+              stat = "identity",
+              color = "black",
+              fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
             ),
             env = list(pc = pc)
           ),
@@ -906,11 +910,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       teal::validate_inputs(iv_extra, header = "Plot settings are required")
 
       switch(input$plot_type,
-             "Elbow plot" = plot_elbow(computation()),
-             "Circle plot" = plot_circle(computation()),
-             "Biplot" = plot_biplot(computation()),
-             "Eigenvector plot" = plot_pc_var(computation()),
-             stop("Unknown plot"))
+        "Elbow plot" = plot_elbow(computation()),
+        "Circle plot" = plot_circle(computation()),
+        "Biplot" = plot_biplot(computation()),
+        "Eigenvector plot" = plot_pc_var(computation()),
+        stop("Unknown plot")
+      )
     })
 
     plot_r <- reactive({

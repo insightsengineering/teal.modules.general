@@ -43,22 +43,21 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 }
 \examples{
 # Scatterplot matrix of variables from ADSL dataset
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
-ADRS <- synthetic_cdisc_data("latest")$adrs
+ADSL <- teal.modules.general::rADSL
+ADRS <- teal.modules.general::rADRS
 
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
     check = TRUE
   ),
-  modules = modules(
-    tm_g_scatterplotmatrix(
+  modules = teal::modules(
+    teal.modules.general::tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        data_extract_spec(
+        teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -69,9 +68,9 @@ app <- init(
             fixed = FALSE
           )
         ),
-        data_extract_spec(
+        teal.transform::data_extract_spec(
           dataname = "ADRS",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),

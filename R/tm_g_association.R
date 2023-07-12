@@ -26,21 +26,20 @@
 #' # Association plot of selected reference variable (SEX)
 #' # against other selected variables (BMRKR1)
 #' library(nestcolor)
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#' app <- teal::init(
+#'   data = teal.data::cdisc_data(
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_g_association(
-#'       ref = data_extract_spec(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_g_association(
+#'       ref = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
+#'           choices = teal.transform::variable_choices(
 #'             ADSL,
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
@@ -48,11 +47,11 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
+#'       vars = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variables:",
-#'           choices = variable_choices(
+#'           choices = teal.transform::variable_choices(
 #'             ADSL,
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
@@ -222,20 +221,21 @@ srv_tm_g_association <- function(id,
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
-
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
       datasets = data,
       select_validation_rule = list(
         ref = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("A reference variable needs to be selected."),
-          ~ if ((.) %in% selector_list()$vars()$select)
+          ~ if ((.) %in% selector_list()$vars()$select) {
             "Associated variables and reference variable cannot overlap"
+          }
         ),
         vars = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("An associated variable needs to be selected."),
-          ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.))
+          ~ if (length(selector_list()$ref()$select) != 0 && selector_list()$ref()$select %in% (.)) {
             "Associated variables and reference variable cannot overlap"
+          }
         )
       )
     )
@@ -378,26 +378,26 @@ srv_tm_g_association <- function(id,
       new_title <-
         if (association) {
           switch(as.character(length(vars_names)),
-                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-                 "1" = sprintf(
-                   "Association between %s and %s",
-                   ref_cl_lbl,
-                   format_varnames(vars_names)
-                 ),
-                 sprintf(
-                   "Associations between %s and: %s",
-                   ref_cl_lbl,
-                   paste(lapply(vars_names, format_varnames), collapse = ", ")
-                 )
+            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+            "1" = sprintf(
+              "Association between %s and %s",
+              ref_cl_lbl,
+              format_varnames(vars_names)
+            ),
+            sprintf(
+              "Associations between %s and: %s",
+              ref_cl_lbl,
+              paste(lapply(vars_names, format_varnames), collapse = ", ")
+            )
           )
         } else {
           switch(as.character(length(vars_names)),
-                 "0" = sprintf("Value distribution for %s", ref_cl_lbl),
-                 sprintf(
-                   "Value distributions for %s and %s",
-                   ref_cl_lbl,
-                   paste(lapply(vars_names, format_varnames), collapse = ", ")
-                 )
+            "0" = sprintf("Value distribution for %s", ref_cl_lbl),
+            sprintf(
+              "Value distributions for %s and %s",
+              ref_cl_lbl,
+              paste(lapply(vars_names, format_varnames), collapse = ", ")
+            )
           )
         }
 
@@ -417,8 +417,10 @@ srv_tm_g_association <- function(id,
               grid::grid.draw(p)
             },
             env = list(
-              plot_calls = do.call("call", c(list("list", ref_call), var_calls),
-                                   quote = TRUE
+              plot_calls = do.call(
+                "call",
+                c(list("list", ref_call), var_calls),
+                quote = TRUE
               )
             )
           )

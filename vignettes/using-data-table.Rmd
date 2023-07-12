@@ -24,7 +24,6 @@ various types of datasets inside a data table module:
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
-library(scda) # used to create data sets
 ```
 
 ## Create data sets
@@ -36,9 +35,11 @@ Inside this app 3 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
-ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
-ADLB <- synthetic_cdisc_data("latest")$adlb # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -48,14 +49,14 @@ create an app. The data will be handed over using [`teal.data::cdisc_data`](http
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
-    cdisc_dataset("ADLB", ADLB, code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
+    teal.data::cdisc_dataset("ADLB", ADLB, code = "ADLB <- teal.modules.general::rADLB"),
     check = TRUE
   ),
-  modules = modules(
+  modules = teal::modules(
     # two-datasets example
     tm_data_table(
       label = "Two datasets",

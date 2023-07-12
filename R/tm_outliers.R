@@ -16,22 +16,21 @@
 #' @export
 #'
 #' @examples
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
 #' vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 #'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#' app <- teal::init(
+#'   data = teal.data::cdisc_data(
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_outliers(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_outliers(
 #'       outlier_var = list(
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variable:",
@@ -43,9 +42,9 @@
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADSL",
-#'           filter = filter_spec(
+#'           filter = teal.transform::filter_spec(
 #'             vars = vars,
 #'             choices = value_choices(ADSL, vars$selected),
 #'             selected = value_choices(ADSL, vars$selected),

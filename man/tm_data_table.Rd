@@ -52,17 +52,16 @@ you require then set \code{options(DT.TOJSON_ARGS =  list(na = "string"))} befor
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
 \examples{
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- teal.modules.general::rADSL
 
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_data_table(
+  modules = teal::modules(
+    teal.modules.general::tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
       dt_args = list(caption = "ADSL Table Caption")
     )
