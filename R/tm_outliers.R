@@ -22,12 +22,12 @@
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
 #' vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 #'
-#' app <- init(
+#' app <- teal::init(
 #'   data = cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
+#'   modules = teal::modules(
 #'     tm_outliers(
 #'       outlier_var = list(
 #'         data_extract_spec(

@@ -72,10 +72,10 @@ Module to analyze and explore univariate variable distribution
 }
 \examples{
 # Example with non-clinical data
-app <- init(
+app <- teal::init(
   data = teal_data(dataset("iris", iris)),
   modules = list(
-    tm_g_distribution(
+    teal.modules.general::tm_g_distribution(
       dist_var = data_extract_spec(
         dataname = "iris",
         select = select_spec(variable_choices("iris"), "Petal.Length")
@@ -95,14 +95,14 @@ ADSL <- teal.modules.general::rADSL
 
 vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL),
     code = "ADSL <- teal.modules.general::rADSL",
     check = FALSE
   ),
-  modules = modules(
-    tm_g_distribution(
+  modules = teal::modules(
+    teal.modules.general::tm_g_distribution(
       dist_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(

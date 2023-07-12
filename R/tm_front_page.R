@@ -28,7 +28,7 @@
 #' )
 #'
 #' ADSL <- teal.modules.general::rADSL
-#' app <- init(
+#' app <- teal::init(
 #'   data = cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL,
 #'       code = "ADSL <- teal.modules.general::rADSL",
@@ -36,7 +36,7 @@
 #'     ),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
+#'   modules = teal::modules(
 #'     tm_front_page(
 #'       header_text = c(
 #'         "Important information" = "It can go here.",

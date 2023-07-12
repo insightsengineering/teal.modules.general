@@ -35,8 +35,8 @@
 #'     ),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_a_pca(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_a_pca(
 #'       "PCA",
 #'       dat = data_extract_spec(
 #'         dataname = "ADSL",

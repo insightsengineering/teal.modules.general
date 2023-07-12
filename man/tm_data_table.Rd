@@ -55,12 +55,12 @@ Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be le
 
 ADSL <- teal.modules.general::rADSL
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
+  modules = teal::modules(
     tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
       dt_args = list(caption = "ADSL Table Caption")

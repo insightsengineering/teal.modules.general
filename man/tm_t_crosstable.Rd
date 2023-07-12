@@ -56,12 +56,12 @@ For more examples, please see the vignette "Using cross table" via
 
 ADSL <- teal.modules.general::rADSL
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
+  modules = teal::modules(
     tm_t_crosstable(
       label = "Cross Table",
       x = data_extract_spec(

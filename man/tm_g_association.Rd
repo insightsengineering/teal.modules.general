@@ -73,13 +73,13 @@ For more examples, please see the vignette "Using association plot" via
 library(nestcolor)
 ADSL <- teal.modules.general::rADSL
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_g_association(
+  modules = teal::modules(
+    teal.modules.general::tm_g_association(
       ref = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(

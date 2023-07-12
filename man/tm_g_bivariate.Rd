@@ -114,13 +114,13 @@ For more examples, please see the vignette "Using bivariate plot" via
 # Bivariate plot of selected variable (AGE) against selected (SEX)
 ADSL <- teal.modules.general::rADSL
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_g_bivariate(
+  modules = teal::modules(
+    teal.modules.general::tm_g_bivariate(
       x = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(

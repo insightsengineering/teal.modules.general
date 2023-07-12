@@ -14,11 +14,11 @@
 #'
 #' @examples
 #' data <- data.frame(1)
-#' app <- init(
+#' app <- teal::init(
 #'   data = teal_data(
 #'     dataset("data", data)
 #'   ),
-#'   modules = modules(
+#'   modules = teal::modules(
 #'     tm_file_viewer(
 #'       input_path = list(
 #'         folder = system.file("sample_files", package = "teal.modules.general"),

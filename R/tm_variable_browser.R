@@ -34,7 +34,7 @@
 #' ADSL <- teal.modules.general::rADSL
 #' ADTTE <- teal.modules.general::rADTTE
 #'
-#' app <- init(
+#' app <- teal::init(
 #'   data = cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),

@@ -40,13 +40,13 @@
 #'
 #' ADSL <- teal.modules.general::rADSL
 #'
-#' app <- init(
+#' app <- teal::init(
 #'   data = cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_g_scatterplot(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
 #'       x = data_extract_spec(
 #'         dataname = "ADSL",

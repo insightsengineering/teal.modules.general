@@ -23,14 +23,14 @@
 #' ADSL <- teal.modules.general::rADSL
 #' ADRS <- teal.modules.general::rADRS
 #'
-#' app <- init(
+#' app <- teal::init(
 #'   data = cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_g_scatterplotmatrix(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
 #'         data_extract_spec(

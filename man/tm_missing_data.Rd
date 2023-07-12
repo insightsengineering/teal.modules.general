@@ -57,13 +57,13 @@ library(nestcolor)
 ADSL <- teal.modules.general::rADSL
 ADRS <- teal.modules.general::rADRS
 
-app <- init(
+app <- teal::init(
   data = cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
     check = TRUE
   ),
-  modules = modules(
+  modules = teal::modules(
     tm_missing_data(
       ggplot2_args = list(
         "Combinations Hist" = teal.widgets::ggplot2_args(
