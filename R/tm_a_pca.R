@@ -709,36 +709,36 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
-        scales_biplot <- if (is.character(response) || is.factor(response) ||
-          (is.numeric(response) && length(unique(response)) <= 6)) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- as.factor(response))
-          )
-          quote(scale_color_brewer(palette = "Dark2"))
-        } else if (inherits(response, "Date")) {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- numeric(response))
-          )
-
-          quote(
-            scale_color_gradient(
-              low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
-              high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
-              labels = function(x) as.Date(x, origin = "1970-01-01")
+        scales_biplot <-
+          if (is.character(response) || is.factor(response) || (is.numeric(response) && length(unique(response)) <= 6)) { # nolint
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- as.factor(response))
             )
-          )
-        } else {
-          qenv <- teal.code::eval_code(
-            qenv,
-            quote(pca_rot$response <- response)
-          )
-          quote(scale_color_gradient(
-            low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
-            high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
-          ))
-        }
+            quote(scale_color_brewer(palette = "Dark2"))
+          } else if (inherits(response, "Date")) {
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- numeric(response))
+            )
+
+            quote(
+              scale_color_gradient(
+                low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+                high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
+                labels = function(x) as.Date(x, origin = "1970-01-01")
+              )
+            )
+          } else {
+            qenv <- teal.code::eval_code(
+              qenv,
+              quote(pca_rot$response <- response)
+            )
+            quote(scale_color_gradient(
+              low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
+              high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
+            ))
+          }
 
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,

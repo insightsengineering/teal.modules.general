@@ -37,18 +37,20 @@ Inside this app 5 datasets will be used
 4. `ADTTE` A long data set with time to event data
 5. `ADLB` A long data set with lab measurements for each subject
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADSL2 <- teal.modules.general::rADSL %>% # nolint
+```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADSL2 <- teal.modules.general::rADSL %>%
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
-ADLB <- teal.modules.general::rADLB %>% # nolint
+ADRS <- teal.modules.general::rADRS
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+# nolint end
 ```
 
 ## Create an `app` variable
