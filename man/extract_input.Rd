@@ -12,7 +12,7 @@ This will be mostly retrieved with \code{ns("original id")} in \code{ui} or
 \code{session$ns("original id")} in server function.}
 
 \item{dataname}{character \code{dataname} from data_extract input.
-This might be retrieved like \code{data_extract_spec(...)[[1]]$dataname}.}
+This might be retrieved like \code{teal.transform::data_extract_spec(...)[[1]]$dataname}.}
 
 \item{filter}{logical if the connected \code{extract_data_spec} is used with \code{filter} option.}
 }

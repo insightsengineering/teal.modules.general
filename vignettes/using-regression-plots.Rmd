@@ -25,7 +25,6 @@ various types of datasets inside an regression plot module:
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
-library(scda) # used to create data sets
 library(dplyr) # used to modify data sets
 ```
 
@@ -40,17 +39,19 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- synthetic_cdisc_data("latest")$adsl # nolint
-ADSL2 <- synthetic_cdisc_data("latest")$adsl %>% # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADSL2 <- teal.modules.general::rADSL %>%
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- synthetic_cdisc_data("latest")$adrs # nolint
-ADTTE <- synthetic_cdisc_data("latest")$adtte # nolint
-ADLB <- synthetic_cdisc_data("latest")$adlb %>% # nolint
+ADRS <- teal.modules.general::rADRS
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -61,20 +62,20 @@ itself will be constructed by multiple calls of `tm_a_regression` using differen
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-    cdisc_dataset("ADSL2", ADSL2,
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADSL2", ADSL2,
       keys = get_cdisc_keys("ADSL"),
-      code = "ADSL2 <- synthetic_cdisc_data(\"latest\")$adsl %>%
+      code = "ADSL2 <- teal.modules.general::rADSL %>%
               mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
     ),
-    cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
-    cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- synthetic_cdisc_data(\"latest\")$adtte"),
-    cdisc_dataset(
+    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
+    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
+    teal.data::cdisc_dataset(
       "ADLB",
       ADLB,
-      code = "ADLB <- synthetic_cdisc_data(\"latest\")$adlb %>%
+      code = "ADLB <- teal.modules.general::rADLB %>%
             mutate(CHGC = as.factor(case_when(
             CHG < 1 ~ 'N',
             CHG > 1 ~ 'P',
@@ -83,12 +84,12 @@ app <- init(
     ),
     check = TRUE
   ),
-  modules = modules(
+  modules = teal::modules(
     modules(
       label = "Regression plots",
       tm_a_regression(
         label = "Single wide dataset",
-        response = data_extract_spec(
+        response = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -98,7 +99,7 @@ app <- init(
             fixed = FALSE
           )
         ),
-        regressor = data_extract_spec(
+        regressor = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -112,7 +113,7 @@ app <- init(
       tm_a_regression(
         label = "Two wide datasets",
         default_plot_type = 2,
-        response = data_extract_spec(
+        response = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -122,7 +123,7 @@ app <- init(
             fixed = FALSE
           )
         ),
-        regressor = data_extract_spec(
+        regressor = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -136,7 +137,7 @@ app <- init(
       tm_a_regression(
         label = "Same long datasets (same subset)",
         default_plot_type = 2,
-        response = data_extract_spec(
+        response = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -145,7 +146,7 @@ app <- init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
             choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
@@ -153,7 +154,7 @@ app <- init(
             multiple = FALSE
           )
         ),
-        regressor = data_extract_spec(
+        regressor = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -161,7 +162,7 @@ app <- init(
             selected = c("AGE", "CNSR", "SEX"),
             multiple = TRUE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
             choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
@@ -172,7 +173,7 @@ app <- init(
       ),
       tm_a_regression(
         label = "Wide and long datasets",
-        response = data_extract_spec(
+        response = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -198,7 +199,7 @@ app <- init(
             fixed = TRUE
           )
         ),
-        regressor = data_extract_spec(
+        regressor = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -212,7 +213,7 @@ app <- init(
       tm_a_regression(
         label = "Same long datasets (different subsets)",
         default_plot_type = 2,
-        response = data_extract_spec(
+        response = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -237,7 +238,7 @@ app <- init(
             fixed = TRUE
           )
         ),
-        regressor = data_extract_spec(
+        regressor = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(

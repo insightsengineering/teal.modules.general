@@ -5,9 +5,6 @@ upstream_repos:
   insightsengineering/nestcolor:
     repo: insightsengineering/nestcolor
     host: https://github.com
-  insightsengineering/scda:
-    repo: insightsengineering/scda
-    host: https://github.com
   insightsengineering/teal.logger:
     repo: insightsengineering/teal.logger
     host: https://github.com
@@ -31,9 +28,6 @@ upstream_repos:
     host: https://github.com
   insightsengineering/teal:
     repo: insightsengineering/teal
-    host: https://github.com
-  insightsengineering/scda.2022:
-    repo: insightsengineering/scda.2022
     host: https://github.com
   insightsengineering/tern:
     repo: insightsengineering/tern

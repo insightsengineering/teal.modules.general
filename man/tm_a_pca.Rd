@@ -73,24 +73,23 @@ Principal component analysis module
 # ADSL example
 
 library(nestcolor)
-library(scda)
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- teal.modules.general::rADSL
 
 app <- teal::init(
-  data = cdisc_data(
-    cdisc_dataset(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset(
       "ADSL", ADSL,
-      code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"
+      code = "ADSL <- teal.modules.general::rADSL"
     ),
     check = TRUE
   ),
-  modules = modules(
-    tm_a_pca(
+  modules = teal::modules(
+    teal.modules.general::tm_a_pca(
       "PCA",
-      dat = data_extract_spec(
+      dat = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
-          choices = variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
           selected = c("BMRKR1", "AGE"),
           multiple = TRUE
         ),

@@ -85,21 +85,20 @@ For more examples, please see the vignette "Using regression plots" via
 \examples{
 # Regression graphs from selected response variable (BMRKR1) and
 # selected regressors (AGE)
-library(scda)
 
-ADSL <- synthetic_cdisc_data("latest")$adsl
+ADSL <- teal.modules.general::rADSL
 
-app <- init(
-  data = cdisc_data(
-    cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+app <- teal::init(
+  data = teal.data::cdisc_data(
+    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
-  modules = modules(
-    tm_a_regression(
+  modules = teal::modules(
+    teal.modules.general::tm_a_regression(
       label = "Regression",
-      response = data_extract_spec(
+      response = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
           choices = "BMRKR1",
           selected = "BMRKR1",
@@ -107,11 +106,11 @@ app <- init(
           fixed = TRUE
         )
       ),
-      regressor = data_extract_spec(
+      regressor = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variables:",
-          choices = variable_choices(ADSL, c("AGE", "SEX", "RACE")),
+          choices = teal.transform::variable_choices(ADSL, c("AGE", "SEX", "RACE")),
           selected = "AGE",
           multiple = TRUE,
           fixed = FALSE

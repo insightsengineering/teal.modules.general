@@ -17,19 +17,18 @@
 #'
 #' @examples
 #' library(nestcolor)
-#' library(scda)
 #'
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
-#' ADRS <- synthetic_cdisc_data("latest")$adrs
+#' ADSL <- teal.modules.general::rADSL
+#' ADRS <- teal.modules.general::rADRS
 #'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
-#'     cdisc_dataset("ADRS", ADRS, code = "ADRS <- synthetic_cdisc_data(\"latest\")$adrs"),
+#' app <- teal::init(
+#'   data = teal.data::cdisc_data(
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+#'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_missing_data(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_missing_data(
 #'       ggplot2_args = list(
 #'         "Combinations Hist" = teal.widgets::ggplot2_args(
 #'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)

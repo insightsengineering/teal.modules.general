@@ -45,49 +45,48 @@
 #'
 #' @examples
 #' # Bivariate plot of selected variable (AGE) against selected (SEX)
-#' library(scda)
-#' ADSL <- synthetic_cdisc_data("latest")$adsl
+#' ADSL <- teal.modules.general::rADSL
 #'
-#' app <- init(
-#'   data = cdisc_data(
-#'     cdisc_dataset("ADSL", ADSL, code = "ADSL <- synthetic_cdisc_data(\"latest\")$adsl"),
+#' app <- teal::init(
+#'   data = teal.data::cdisc_data(
+#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
-#'   modules = modules(
-#'     tm_g_bivariate(
-#'       x = data_extract_spec(
+#'   modules = teal::modules(
+#'     teal.modules.general::tm_g_bivariate(
+#'       x = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL),
+#'           choices = teal.transform::variable_choices(ADSL),
 #'           selected = "AGE",
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       y = data_extract_spec(
+#'       y = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL),
+#'           choices = teal.transform::variable_choices(ADSL),
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       row_facet = data_extract_spec(
+#'       row_facet = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL),
+#'           choices = teal.transform::variable_choices(ADSL),
 #'           selected = "ARM",
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       col_facet = data_extract_spec(
+#'       col_facet = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL),
+#'           choices = teal.transform::variable_choices(ADSL),
 #'           selected = "COUNTRY",
 #'           fixed = FALSE
 #'         )
