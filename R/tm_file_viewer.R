@@ -19,7 +19,7 @@
 #'     dataset("data", data)
 #'   ),
 #'   modules = teal::modules(
-#'     tm_file_viewer(
+#'     teal.modules.general::tm_file_viewer(
 #'       input_path = list(
 #'         folder = system.file("sample_files", package = "teal.modules.general"),
 #'         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),

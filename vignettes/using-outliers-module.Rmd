@@ -36,9 +36,11 @@ Inside this app 5 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADRS <- teal.modules.general::rADRS # nolint
-ADLB <- teal.modules.general::rADLB # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADRS <- teal.modules.general::rADRS
+ADLB <- teal.modules.general::rADLB
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -50,7 +52,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
     teal.data::cdisc_dataset("ADLB", ADLB, code = "ADLB <- teal.modules.general::rADLB"),
@@ -62,7 +64,7 @@ app <- teal::init(
       label = "Outliers module",
       tm_outliers(
         label = "Single wide dataset",
-        outlier_var = data_extract_spec(
+        outlier_var = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -71,7 +73,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        categorical_var = data_extract_spec(
+        categorical_var = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -85,7 +87,7 @@ app <- teal::init(
       tm_outliers(
         label = "Wide and long datasets",
         outlier_var = list(
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variable:",
@@ -94,7 +96,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
@@ -106,7 +108,7 @@ app <- teal::init(
           )
         ),
         categorical_var =
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variables:",
@@ -120,7 +122,7 @@ app <- teal::init(
       tm_outliers(
         label = "Multiple long datasets",
         outlier_var = list(
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variable:",
@@ -129,7 +131,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
@@ -141,7 +143,7 @@ app <- teal::init(
           )
         ),
         categorical_var = list(
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variables:",
@@ -151,7 +153,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          data_extract_spec(
+          teal.transform::data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variables:",

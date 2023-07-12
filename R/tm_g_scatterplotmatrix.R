@@ -24,7 +24,7 @@
 #' ADRS <- teal.modules.general::rADRS
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.data::cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
 #'     check = TRUE
@@ -33,7 +33,7 @@
 #'     teal.modules.general::tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variables:",
@@ -44,9 +44,9 @@
 #'             fixed = FALSE
 #'           )
 #'         ),
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADRS",
-#'           filter = filter_spec(
+#'           filter = teal.transform::filter_spec(
 #'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),

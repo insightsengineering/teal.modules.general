@@ -26,16 +26,16 @@
 #' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.data::cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = teal::modules(
-#'     tm_t_crosstable(
+#'     teal.modules.general::tm_t_crosstable(
 #'       label = "Cross Table",
-#'       x = data_extract_spec(
+#'       x = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = variable_choices(ADSL, subset = function(data) {
 #'             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
@@ -47,9 +47,9 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       y = data_extract_spec(
+#'       y = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = variable_choices(ADSL, subset = function(data) {
 #'             idx <- vapply(data, is.factor, logical(1))

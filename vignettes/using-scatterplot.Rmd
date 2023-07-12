@@ -39,17 +39,19 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADSL2 <- teal.modules.general::rADSL %>% # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADSL2 <- teal.modules.general::rADSL %>%
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
-ADLB <- teal.modules.general::rADLB %>% # nolint
+ADRS <- teal.modules.general::rADRS
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -67,7 +69,7 @@ ggextra_available <- requireNamespace("ggExtra", quietly = TRUE)
 ```
 ```{r, eval = ggextra_available, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset(
       "ADSL2",
@@ -93,7 +95,7 @@ app <- teal::init(
       label = "Scatterplot",
       tm_g_scatterplot(
         label = "Single wide dataset",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -103,7 +105,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -113,7 +115,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -127,7 +129,7 @@ app <- teal::init(
       # .. Two wide -----
       tm_g_scatterplot(
         label = "Two wide datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -137,7 +139,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
@@ -147,7 +149,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
@@ -160,7 +162,7 @@ app <- teal::init(
       ),
       tm_g_scatterplot(
         label = "Different long datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             label = "Select variable:",
@@ -169,7 +171,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoint:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -177,7 +179,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -186,7 +188,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select parameters:",
             vars = c("PARAMCD"),
             choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
@@ -194,7 +196,7 @@ app <- teal::init(
             multiple = TRUE
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -207,7 +209,7 @@ app <- teal::init(
       ),
       tm_g_scatterplot(
         label = "Wide and long datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -217,7 +219,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -243,7 +245,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -256,7 +258,7 @@ app <- teal::init(
       ),
       tm_g_scatterplot(
         label = "Same long datasets (same subsets)",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVAL", "BMRKR1", "BMRKR2")),
@@ -266,7 +268,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVAL", "BMRKR1", "BMRKR2")),
@@ -276,7 +278,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AGE", "SEX", "RACE")),
@@ -289,7 +291,7 @@ app <- teal::init(
       ),
       tm_g_scatterplot(
         label = "Same long datasets (different subsets)",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -314,7 +316,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -339,7 +341,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        color_by = data_extract_spec(
+        color_by = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(

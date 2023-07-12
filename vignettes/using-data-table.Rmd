@@ -35,9 +35,11 @@ Inside this app 3 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
-ADLB <- teal.modules.general::rADLB # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -48,7 +50,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
     teal.data::cdisc_dataset("ADLB", ADLB, code = "ADLB <- teal.modules.general::rADLB"),

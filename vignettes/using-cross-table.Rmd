@@ -62,7 +62,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset(
       "ADSL2",
@@ -88,7 +88,7 @@ app <- teal::init(
       label = "Cross table",
       tm_t_crosstable(
         label = "Single wide dataset",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -99,7 +99,7 @@ app <- teal::init(
             ordered = TRUE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -112,9 +112,9 @@ app <- teal::init(
       ),
       tm_t_crosstable(
         label = "Same long datasets (different subsets)",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADLB",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             vars = "PARAMCD",
             choices = value_choices(ADLB, "PARAMCD", "PARAM"),
             selected = levels(ADLB$PARAMCD)[1],
@@ -129,9 +129,9 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADLB",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             vars = "PARAMCD",
             choices = value_choices(ADLB, "PARAMCD", "PARAM"),
             selected = levels(ADLB$PARAMCD)[1],

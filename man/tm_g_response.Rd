@@ -89,28 +89,28 @@ library(nestcolor)
 ADSL <- teal.modules.general::rADSL
 
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
   modules = teal::modules(
     teal.modules.general::tm_g_response(
       label = "Response Plots",
-      response = data_extract_spec(
+      response = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
+          choices = teal.transform::variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
           selected = "BMRKR2",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      x = data_extract_spec(
+      x = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL, c("SEX", "RACE")),
+          choices = teal.transform::variable_choices(ADSL, c("SEX", "RACE")),
           selected = "RACE",
           multiple = FALSE,
           fixed = FALSE

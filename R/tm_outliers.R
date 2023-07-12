@@ -23,14 +23,14 @@
 #' vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.data::cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = teal::modules(
-#'     tm_outliers(
+#'     teal.modules.general::tm_outliers(
 #'       outlier_var = list(
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variable:",
@@ -42,9 +42,9 @@
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         data_extract_spec(
+#'         teal.transform::data_extract_spec(
 #'           dataname = "ADSL",
-#'           filter = filter_spec(
+#'           filter = teal.transform::filter_spec(
 #'             vars = vars,
 #'             choices = value_choices(ADSL, vars$selected),
 #'             selected = value_choices(ADSL, vars$selected),

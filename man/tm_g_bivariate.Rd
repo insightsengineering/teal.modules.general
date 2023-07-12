@@ -115,45 +115,45 @@ For more examples, please see the vignette "Using bivariate plot" via
 ADSL <- teal.modules.general::rADSL
 
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
   modules = teal::modules(
     teal.modules.general::tm_g_bivariate(
-      x = data_extract_spec(
+      x = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL),
+          choices = teal.transform::variable_choices(ADSL),
           selected = "AGE",
           fixed = FALSE
         )
       ),
-      y = data_extract_spec(
+      y = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL),
+          choices = teal.transform::variable_choices(ADSL),
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      row_facet = data_extract_spec(
+      row_facet = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL),
+          choices = teal.transform::variable_choices(ADSL),
           selected = "ARM",
           fixed = FALSE
         )
       ),
-      col_facet = data_extract_spec(
+      col_facet = teal.transform::data_extract_spec(
         dataname = "ADSL",
-        select = select_spec(
+        select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(ADSL),
+          choices = teal.transform::variable_choices(ADSL),
           selected = "COUNTRY",
           fixed = FALSE
         )

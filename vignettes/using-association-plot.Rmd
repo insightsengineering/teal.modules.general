@@ -38,17 +38,19 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADSL2 <- teal.modules.general::rADSL %>% # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADSL2 <- teal.modules.general::rADSL %>%
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
-ADLB <- teal.modules.general::rADLB %>% # nolint
+ADRS <- teal.modules.general::rADRS
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -60,7 +62,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset(
       "ADSL2",
@@ -89,7 +91,7 @@ app <- teal::init(
       label = "Association plot",
       tm_g_association(
         label = "Single wide dataset",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -98,7 +100,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -111,7 +113,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Two wide datasets",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -121,7 +123,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -134,7 +136,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Multiple different long datasets",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variables:",
@@ -143,7 +145,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoint:",
             vars = "PARAMCD",
             choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
@@ -151,7 +153,7 @@ app <- teal::init(
             multiple = TRUE
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADRS",
           reshape = TRUE,
           select = select_spec(
@@ -181,7 +183,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Wide and long datasets",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVAL", "AVALC")),
@@ -207,7 +209,7 @@ app <- teal::init(
             )
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
@@ -220,7 +222,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Same long datasets (same subsets)",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS),
@@ -230,7 +232,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS),
@@ -243,7 +245,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Same long datasets (different subsets)",
-        ref = data_extract_spec(
+        ref = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -267,7 +269,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        vars = data_extract_spec(
+        vars = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(

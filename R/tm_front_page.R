@@ -29,7 +29,7 @@
 #'
 #' ADSL <- teal.modules.general::rADSL
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.data::cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL,
 #'       code = "ADSL <- teal.modules.general::rADSL",
 #'       metadata = list("Author" = "NEST team", "data_source" = "synthetic data")
@@ -37,7 +37,7 @@
 #'     check = TRUE
 #'   ),
 #'   modules = teal::modules(
-#'     tm_front_page(
+#'     teal.modules.general::tm_front_page(
 #'       header_text = c(
 #'         "Important information" = "It can go here.",
 #'         "Other information" = "Can go here."

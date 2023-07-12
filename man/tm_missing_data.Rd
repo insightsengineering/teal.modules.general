@@ -58,13 +58,13 @@ ADSL <- teal.modules.general::rADSL
 ADRS <- teal.modules.general::rADRS
 
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
     check = TRUE
   ),
   modules = teal::modules(
-    tm_missing_data(
+    teal.modules.general::tm_missing_data(
       ggplot2_args = list(
         "Combinations Hist" = teal.widgets::ggplot2_args(
           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)

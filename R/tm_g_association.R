@@ -29,17 +29,17 @@
 #' ADSL <- teal.modules.general::rADSL
 #'
 #' app <- teal::init(
-#'   data = cdisc_data(
+#'   data = teal.data::cdisc_data(
 #'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_g_association(
-#'       ref = data_extract_spec(
+#'       ref = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
+#'           choices = teal.transform::variable_choices(
 #'             ADSL,
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
@@ -47,11 +47,11 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
+#'       vars = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = select_spec(
+#'         select = teal.transform::select_spec(
 #'           label = "Select variables:",
-#'           choices = variable_choices(
+#'           choices = teal.transform::variable_choices(
 #'             ADSL,
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),

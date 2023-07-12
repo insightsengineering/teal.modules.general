@@ -41,17 +41,19 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-ADSL <- teal.modules.general::rADSL # nolint
-ADSL2 <- teal.modules.general::rADSL %>% # nolint
+# nolint start
+ADSL <- teal.modules.general::rADSL
+ADSL2 <- teal.modules.general::rADSL %>%
   mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
-ADLB <- teal.modules.general::rADLB %>% # nolint
+ADRS <- teal.modules.general::rADRS
+ADTTE <- teal.modules.general::rADTTE
+ADLB <- teal.modules.general::rADLB %>%
   mutate(CHGC = as.factor(case_when(
     CHG < 1 ~ "N",
     CHG > 1 ~ "P",
     TRUE ~ "-"
   )))
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -63,7 +65,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset(
       "ADSL2",
@@ -92,7 +94,7 @@ app <- teal::init(
       label = "Bivariate plot",
       tm_g_bivariate(
         label = "Single wide dataset",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -101,7 +103,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -111,7 +113,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -121,7 +123,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -134,7 +136,7 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Two wide datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -143,7 +145,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -152,7 +154,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -162,7 +164,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -175,9 +177,9 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Multiple different long datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -190,7 +192,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -199,7 +201,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoint:",
             vars = c("PARAMCD"),
             choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
@@ -207,9 +209,9 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADRS",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -224,7 +226,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -235,7 +237,7 @@ app <- teal::init(
           )
         ),
         color_settings = TRUE,
-        color = data_extract_spec(
+        color = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -245,7 +247,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        fill = data_extract_spec(
+        fill = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -255,7 +257,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        size = data_extract_spec(
+        size = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
@@ -270,7 +272,7 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Wide and long datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
@@ -295,7 +297,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY")),
@@ -305,7 +307,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("SEX", "RACE", "ARMCD", "PARAMCD")),
@@ -314,7 +316,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("SEX", "RACE", "ARMCD", "PARAMCD", "AVISIT")),
@@ -327,7 +329,7 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Wide and multiple long datasets",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
@@ -352,7 +354,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("BMRKR1", "SEX", "AGE", "RACE", "COUNTRY")),
@@ -361,7 +363,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -387,7 +389,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "AGE", "RACE", "COUNTRY")),
@@ -398,7 +400,7 @@ app <- teal::init(
           )
         ),
         color_settings = TRUE,
-        color = data_extract_spec(
+        color = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -408,7 +410,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        fill = data_extract_spec(
+        fill = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -418,7 +420,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        size = data_extract_spec(
+        size = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
@@ -433,7 +435,7 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Same long datasets (same subset)",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVALC", "AVAL")),
@@ -443,7 +445,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("SEX", "RACE", "COUNTRY", "ARMCD", "BMRKR1", "BMRKR2")),
@@ -453,7 +455,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
@@ -462,7 +464,7 @@ app <- teal::init(
             label = "Select variables:"
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(ADRS, c("AVISIT", "PARAMCD")),
@@ -474,7 +476,7 @@ app <- teal::init(
       ),
       tm_g_bivariate(
         label = "Same datasets (different subsets)",
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -499,7 +501,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -525,7 +527,7 @@ app <- teal::init(
           )
         ),
         use_density = FALSE,
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -551,7 +553,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -578,7 +580,7 @@ app <- teal::init(
           )
         ),
         color_settings = TRUE,
-        color = data_extract_spec(
+        color = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -588,7 +590,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        fill = data_extract_spec(
+        fill = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("SEX", "RACE", "COUNTRY")),
@@ -598,7 +600,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        size = data_extract_spec(
+        size = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(ADSL, c("AGE", "BMRKR1")),

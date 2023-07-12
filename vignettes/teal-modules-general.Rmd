@@ -47,7 +47,7 @@ ADSL <- teal.modules.general::rADSL # nolint
 ADTTE <- teal.modules.general::rADTTE # nolint
 
 app <- teal::init(
-  data = cdisc_data(
+  data = teal.data::cdisc_data(
     teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- teal.modules.general::rADSL"),
     teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
     check = TRUE
