@@ -17,7 +17,8 @@ tm_data_table(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
 
 \item{variables_selected}{(\code{list}) A named list of character vectors of the variables (i.e. columns)
 which should be initially shown for each dataset. Names of list elements should correspond to the names

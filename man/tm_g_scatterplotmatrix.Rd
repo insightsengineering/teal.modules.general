@@ -14,7 +14,8 @@ tm_g_scatterplotmatrix(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting. In case of
