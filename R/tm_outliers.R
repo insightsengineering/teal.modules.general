@@ -1109,7 +1109,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal.reporter::TealReportCard$new()
+        card <- teal::TealReportCard$new()
         tab_type <- input$tabs
         card$set_name(paste0("Outliers - ", tab_type))
         card$append_text(tab_type, "header2")

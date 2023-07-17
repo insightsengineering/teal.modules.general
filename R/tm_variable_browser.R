@@ -498,7 +498,7 @@ srv_variable_browser <- function(id,
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal.reporter::TealReportCard$new()
+        card <- teal::TealReportCard$new()
         card$set_name("Variable Browser Plot")
         card$append_text("Variable Browser Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())

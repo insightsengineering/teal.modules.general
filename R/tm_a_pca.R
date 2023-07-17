@@ -1000,7 +1000,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal.reporter::TealReportCard$new()
+        card <- teal::TealReportCard$new()
         card$set_name("PCA Plot")
         card$append_text("PCA Plot", "header2")
         card$append_text("Principal Component Analysis Plot", "header3")
