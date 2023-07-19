@@ -459,7 +459,7 @@ srv_tm_g_association <- function(id,
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal.reporter::TealReportCard$new()
+        card <- teal::TealReportCard$new()
         card$set_name("Association Plot")
         card$append_text("Association Plot", "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())

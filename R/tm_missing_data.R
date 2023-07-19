@@ -1195,7 +1195,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal.reporter::TealReportCard$new()
+        card <- teal::TealReportCard$new()
         sum_type <- input$summary_type
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         title_dataname <- paste(title, dataname, sep = " - ")
