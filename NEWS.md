@@ -1,5 +1,9 @@
 # teal.modules.general 0.2.16.9007
 
+### Miscellaneous
+
+* Specify minimal version of dependent packages.
+
 # teal.modules.general 0.2.16
 
 ### Breaking changes
