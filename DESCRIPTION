@@ -7,11 +7,11 @@ Authors@R: c(
     person("Dawid", "Kaledkowski", email = "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
     person("Mahmoud", "Hallal", email = "mahmoud.hallal@roche.com", role = "aut"),
+    person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb"),
     person("Maciej", "Nasinski", role = "aut"),
     person("Konrad", "Pagacz", role = "aut"),
     person("Nikolas", "Burkoff", role = "aut"),
-    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
-    person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb")
+    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
   )
 Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
