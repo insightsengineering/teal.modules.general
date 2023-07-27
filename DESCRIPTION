@@ -1,12 +1,12 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules to Add to a `teal` Application
-Version: 0.2.15.9029
-Date: 2023-07-25
+Version: 0.2.15.9030
+Date: 2023-07-27
 Authors@R: c(
-    person("Dawid", "Kaledkowski", email = "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
+    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
-    person("Mahmoud", "Hallal", email = "mahmoud.hallal@roche.com", role = "aut"),
+    person("Mahmoud", "Hallal", , "mahmoud.hallal@roche.com", role = "aut"),
     person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb"),
     person("Maciej", "Nasinski", role = "aut"),
     person("Konrad", "Pagacz", role = "aut"),
