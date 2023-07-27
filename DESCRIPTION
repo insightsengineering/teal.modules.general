@@ -4,14 +4,14 @@ Title: General Modules to Add to a `teal` Application
 Version: 0.2.15.9029
 Date: 2023-07-25
 Authors@R: c(
-    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
-    person("Maciej", "Nasinski", , "maciej.nasinski@contractors.roche.com", role = "aut"),
-    person("Konrad", "Pagacz", , "konrad.pagacz@contractors.roche.com", role = "aut"),
-    person("Nikolas", "Burkoff", , "nikolas.burkoff@roche.com", role = "aut"),
+    person("Dawid", "Kaledkowski", email = "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
-    person("Mahmoud", "Hallal", , "mahmoud.hallal@roche.com", role = "aut"),
-    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
-    person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb")
+    person("Mahmoud", "Hallal", email = "mahmoud.hallal@roche.com", role = "aut"),
+    person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb"),
+    person("Maciej", "Nasinski", role = "aut"),
+    person("Konrad", "Pagacz", role = "aut"),
+    person("Nikolas", "Burkoff", role = "aut"),
+    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
   )
 Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
@@ -70,16 +70,6 @@ Suggests:
     testthat (>= 2.0)
 VignetteBuilder:
     knitr
-Remotes:
-    insightsengineering/teal.code@*release,
-    insightsengineering/teal.data@*release,
-    insightsengineering/teal.logger@*release,
-    insightsengineering/teal.reporter@*release,
-    insightsengineering/teal.slice@*release,
-    insightsengineering/teal.transform@*release,
-    insightsengineering/teal.widgets@*release,
-    insightsengineering/teal@*release,
-    insightsengineering/tern@*release
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
