@@ -919,7 +919,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     plot_r <- reactive({
-      output_q()[["g"]]
+      teal.code::get_var(output_q(), "g")
     })
 
     pws <- teal.widgets::plot_with_settings_srv(

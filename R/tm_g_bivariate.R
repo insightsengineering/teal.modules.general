@@ -594,7 +594,7 @@ srv_g_bivariate <- function(id,
     })
 
     plot_r <- shiny::reactive({
-      output_q()[["p"]]
+      teal.code::get_var(output_q(), "p")
     })
 
     pws <- teal.widgets::plot_with_settings_srv(

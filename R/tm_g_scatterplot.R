@@ -893,7 +893,7 @@ srv_g_scatterplot <- function(id,
         teal.code::eval_code(quote(print(p)))
     })
 
-    plot_r <- reactive(output_q()[["p"]])
+    plot_r <- reactive(teal.code::get_var(output_q(), "p"))
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -911,7 +911,7 @@ srv_g_scatterplot <- function(id,
         validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
       }
 
-      merged_data <- isolate(output_q()[["ANL"]])
+      merged_data <- isolate(teal.code::get_var(output_q(), "ANL"))
 
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
       numeric_cols <- names(brushed_df)[

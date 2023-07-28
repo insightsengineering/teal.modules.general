@@ -451,7 +451,7 @@ srv_g_response <- function(id,
       teal.code::eval_code(qenv, plot_call)
     })
 
-    plot_r <- reactive(output_q()[["p"]])
+    plot_r <- reactive(teal.code::get_var(output_q(), "p"))
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(

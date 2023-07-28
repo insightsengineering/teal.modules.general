@@ -835,8 +835,8 @@ srv_a_regression <- function(id,
     })
 
 
-    fitted <- reactive(output_q()[["fit"]])
-    plot_r <- reactive(output_q()[["g"]])
+    fitted <- reactive(teal.code::get_var(output_q(), "fit"))
+    plot_r <- reactive(teal.code::get_var(output_q(), "g"))
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(

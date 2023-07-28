@@ -1168,9 +1168,9 @@ srv_distribution <- function(id,
       qenv_final
     })
 
-    dist_r <- reactive(dist_q()[["g"]])
+    dist_r <- reactive(teal.code::get_var(dist_q(), "g"))
 
-    qq_r <- reactive(qq_q()[["g"]])
+    qq_r <- reactive(teal.code::get_var(qq_q(), "g"))
 
     output$summary_table <- DT::renderDataTable(
       expr = if (iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
