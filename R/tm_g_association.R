@@ -429,7 +429,7 @@ srv_tm_g_association <- function(id,
 
     plot_r <- shiny::reactive({
       shiny::req(iv_r()$is_valid())
-      output_q()[["p"]]
+      teal.code::get_var(output_q(), "p")
     })
 
     pws <- teal.widgets::plot_with_settings_srv(
@@ -440,7 +440,7 @@ srv_tm_g_association <- function(id,
     )
 
     output$title <- renderText({
-      output_q()[["title"]]
+      teal.code::get_var(output_q(), "title")
     })
 
     teal.widgets::verbatim_popup_srv(
