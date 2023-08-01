@@ -98,7 +98,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
     server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
-    filters = teal.transform::get_extract_datanames(variables)
+    datanames = teal.transform::get_extract_datanames(variables)
   )
 }
 

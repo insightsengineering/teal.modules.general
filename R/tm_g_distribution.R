@@ -157,7 +157,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     ),
     ui = ui_distribution,
     ui_args = args,
-    filters = teal.transform::get_extract_datanames(data_extract_list)
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
 }
 

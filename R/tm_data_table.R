@@ -79,7 +79,7 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    filters = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
     server_args = list(
       datasets_selected = datasets_selected,
       dt_args = dt_args,

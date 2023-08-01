@@ -110,7 +110,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     ui = ui_t_crosstable,
     ui_args = ui_args,
     server_args = server_args,
-    filters = teal.transform::get_extract_datanames(list(x = x, y = y))
+    datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
 }
 
