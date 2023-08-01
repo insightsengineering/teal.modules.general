@@ -109,7 +109,7 @@ tm_outliers <- function(label = "Outliers Module",
     ),
     ui = ui_outliers,
     ui_args = args,
-    filters = teal.transform::get_extract_datanames(data_extract_list)
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
 }
 

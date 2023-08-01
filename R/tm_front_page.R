@@ -76,7 +76,7 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables, show_metadata = show_metadata),
-    filters = if (show_metadata) "all" else NULL
+    datanames = if (show_metadata) "all" else NULL
   )
 }
 

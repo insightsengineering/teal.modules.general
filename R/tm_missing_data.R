@@ -86,7 +86,7 @@ tm_missing_data <- function(label = "Missing data",
       plot_width = plot_width, ggplot2_args = ggplot2_args
     ),
     ui = ui_page_missing_data,
-    filters = "all",
+    datanames = "all",
     ui_args = list(
       parent_dataname = parent_dataname, pre_output = pre_output,
       post_output = post_output, ggtheme = ggtheme
