@@ -1159,7 +1159,6 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
   output[[table_ui_id]] <- DT::renderDataTable({
-
     df <- data[[dataset_name]]()
 
     get_vars_df <- function(input, dataset_name, parent_name, data) {
@@ -1260,7 +1259,6 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       )
     )
   })
-
 }
 
 #' Creates observers updating the currently selected column
