@@ -1240,12 +1240,24 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
     # Select row 1 as default / fallback
     selected_ix <- 1
+    # Define starting page index (base-0 index of the first item on page
+    #  note: in many cases it's not the item itself
+    selected_page_ix <- 0
+
     # Retrieve current selected variable if any
     isolated_variable <- shiny::isolate(plot_var$variable[[dataset_name]])
 
     if (!is.null(isolated_variable)) {
       index <- which(columns_names[[dataset_name]] == isolated_variable)[1]
       if (!is.null(index) && !is.na(index) && length(index) > 0) selected_ix <- index
+    }
+
+    # Retrieve the index of the first item of the current page
+    #  it works with varying number of entries on the page (10, 25, ...)
+    table_id_sel <- paste0("variable_browser_", dataset_name, "_state")
+    dt_state <- shiny::isolate(input[[table_id_sel]])
+    if (!is.null(dt_state)) {
+      selected_page_ix <- floor(selected_ix / dt_state$length) * dt_state$length
     }
 
     DT::datatable(
@@ -1255,7 +1267,8 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       selection = list(mode = "single", target = "row", selected = selected_ix),
       options = list(
         fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-        pageLength = input[[paste0(table_ui_id, "_rows")]]
+        pageLength = input[[paste0(table_ui_id, "_rows")]],
+        displayStart = selected_page_ix
       )
     )
   })
