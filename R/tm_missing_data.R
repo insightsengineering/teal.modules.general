@@ -772,7 +772,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
-    summary_plot_r <- reactive(teal.code::get_var(summary_plot_q(), "g"))
+    summary_plot_r <- reactive(summary_plot_q()[["g"]])
 
     combination_cutoff_q <- reactive({
       req(common_code_q())
@@ -938,7 +938,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
-    combination_plot_r <- reactive(teal.code::get_var(combination_plot_q(), "g"))
+    combination_plot_r <- reactive(combination_plot_q()[["g"]])
 
     summary_table_q <- reactive({
       req(
@@ -1129,7 +1129,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
     })
 
-    by_subject_plot_r <- reactive(teal.code::get_var(by_subject_plot_q(), "g"))
+    by_subject_plot_r <- reactive(by_subject_plot_q()[["g"]])
 
     output$levels_table <- DT::renderDataTable(
       expr = {

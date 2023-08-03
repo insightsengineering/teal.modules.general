@@ -900,15 +900,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     boxplot_r <- reactive({
       teal::validate_inputs(iv_r())
-      teal.code::get_var(boxplot_q(), "g")
+      boxplot_q()[["g"]]
     })
     density_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      teal.code::get_var(density_plot_q(), "g")
+      density_plot_q()[["g"]]
     })
     cumulative_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      teal.code::get_var(cumulative_plot_q(), "g")
+      cumulative_plot_q()[["g"]]
     })
 
     box_pws <- teal.widgets::plot_with_settings_srv(
