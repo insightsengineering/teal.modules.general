@@ -440,7 +440,7 @@ srv_tm_g_association <- function(id,
     )
 
     output$title <- renderText({
-      output_q()[["title"]]
+      teal.code::dev_suppress(output_q()[["title"]])
     })
 
     teal.widgets::verbatim_popup_srv(
