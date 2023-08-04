@@ -850,7 +850,8 @@ srv_a_regression <- function(id,
       req(iv_r()$is_valid())
       req(iv_out$is_valid())
       paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
-            collapse = "\n")
+        collapse = "\n"
+      )
     })
 
     teal.widgets::verbatim_popup_srv(
