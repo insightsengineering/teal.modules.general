@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0228658536585366" branch-rate="0" lines-covered="195" lines-valid="8528" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-04 06:26:32.389029">
+<coverage line-rate="0.0228631727048892" branch-rate="0" lines-covered="195" lines-valid="8529" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-04 06:42:08.187573">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0228658536585366" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0228631727048892" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -2377,18 +2377,18 @@
                 <line number="852" hits="0" branch="false"/>
                 <line number="853" hits="0" branch="false"/>
                 <line number="854" hits="0" branch="false"/>
-                <line number="856" hits="0" branch="false"/>
+                <line number="855" hits="0" branch="false"/>
                 <line number="857" hits="0" branch="false"/>
                 <line number="858" hits="0" branch="false"/>
                 <line number="859" hits="0" branch="false"/>
                 <line number="860" hits="0" branch="false"/>
                 <line number="861" hits="0" branch="false"/>
-                <line number="863" hits="0" branch="false"/>
+                <line number="862" hits="0" branch="false"/>
                 <line number="864" hits="0" branch="false"/>
                 <line number="865" hits="0" branch="false"/>
                 <line number="866" hits="0" branch="false"/>
                 <line number="867" hits="0" branch="false"/>
-                <line number="870" hits="0" branch="false"/>
+                <line number="868" hits="0" branch="false"/>
                 <line number="871" hits="0" branch="false"/>
                 <line number="872" hits="0" branch="false"/>
                 <line number="873" hits="0" branch="false"/>
@@ -2405,7 +2405,8 @@
                 <line number="884" hits="0" branch="false"/>
                 <line number="885" hits="0" branch="false"/>
                 <line number="886" hits="0" branch="false"/>
-                <line number="888" hits="0" branch="false"/>
+                <line number="887" hits="0" branch="false"/>
+                <line number="889" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -3094,18 +3095,18 @@
             <line number="852" hits="0" branch="false"/>
             <line number="853" hits="0" branch="false"/>
             <line number="854" hits="0" branch="false"/>
-            <line number="856" hits="0" branch="false"/>
+            <line number="855" hits="0" branch="false"/>
             <line number="857" hits="0" branch="false"/>
             <line number="858" hits="0" branch="false"/>
             <line number="859" hits="0" branch="false"/>
             <line number="860" hits="0" branch="false"/>
             <line number="861" hits="0" branch="false"/>
-            <line number="863" hits="0" branch="false"/>
+            <line number="862" hits="0" branch="false"/>
             <line number="864" hits="0" branch="false"/>
             <line number="865" hits="0" branch="false"/>
             <line number="866" hits="0" branch="false"/>
             <line number="867" hits="0" branch="false"/>
-            <line number="870" hits="0" branch="false"/>
+            <line number="868" hits="0" branch="false"/>
             <line number="871" hits="0" branch="false"/>
             <line number="872" hits="0" branch="false"/>
             <line number="873" hits="0" branch="false"/>
@@ -3122,7 +3123,8 @@
             <line number="884" hits="0" branch="false"/>
             <line number="885" hits="0" branch="false"/>
             <line number="886" hits="0" branch="false"/>
-            <line number="888" hits="0" branch="false"/>
+            <line number="887" hits="0" branch="false"/>
+            <line number="889" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="tm_data_table.R" filename="R/tm_data_table.R" line-rate="0" branch-rate="0" complexity="0">
