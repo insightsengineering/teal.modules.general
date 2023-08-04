@@ -1256,7 +1256,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
     #  it works with varying number of entries on the page (10, 25, ...)
     table_id_sel <- paste0("variable_browser_", dataset_name, "_state")
     dt_state <- shiny::isolate(input[[table_id_sel]])
-    if (!is.null(dt_state)) {
+    if (selected_ix != 1 && !is.null(dt_state)) {
       selected_page_ix <- floor(selected_ix / dt_state$length) * dt_state$length
     }
 
