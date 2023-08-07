@@ -1189,17 +1189,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       )
     } else {
       # extract data variable labels
-      labels <- stats::setNames(
-        unlist(
-          lapply(
-            df,
-            function(x) {
-              `if`(is.null(attr(x, "label")), "", attr(x, "label"))
-            }
-          )
-        ),
-        names(df)
-      )
+      labels <- teal.data::col_labels(df)
 
       columns_names[[dataset_name]] <- names(labels)
 
