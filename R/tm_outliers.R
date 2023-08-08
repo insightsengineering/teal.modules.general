@@ -254,11 +254,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     rule_diff <- function(other) {
       function(value) {
-        othervalue <- tryCatch(selector_list()[["categorical_var"]]()[["select"]], error = function(e) NULL)
-        if (!is.null(othervalue)) {
-          if (identical(othervalue, value)) {
-            "`Variable` and `Categorical factor` cannot be the same"
-          }
+        othervalue <- tryCatch(selector_list()[[other]]()[["select"]], error = function(e) NULL)
+        if (!is.null(othervalue) && identical(othervalue, value)) {
+          "`Variable` and `Categorical factor` cannot be the same"
         }
       }
     }
