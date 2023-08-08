@@ -252,13 +252,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
-    rule_diff <- function(other, other_label, var_label) {
+    rule_diff <- function(other) {
       function(value) {
         othervalue <- tryCatch(selector_list()[[other]]()[["select"]], error = function(e) NULL)
-        if (!is.null(othervalue)) {
-          if (identical(othervalue, value)) {
-            paste0("`", var_label, "` and `", other_label, "` cannot be the same")
-          }
+        if (!is.null(othervalue) && identical(othervalue, value)) {
+          "`Variable` and `Categorical factor` cannot be the same"
         }
       }
     }
@@ -269,9 +267,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       select_validation_rule = list(
         outlier_var = shinyvalidate::compose_rules(
           shinyvalidate::sv_required("Please select a variable"),
-          rule_diff("categorical_var", "Categorical factor", "Variable")
+          rule_diff("categorical_var")
         ),
-        categorical_var = rule_diff("outlier_var", "Variable", "Categorical factor")
+        categorical_var = rule_diff("outlier_var")
       )
     )
 
