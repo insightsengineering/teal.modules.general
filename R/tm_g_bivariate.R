@@ -353,8 +353,8 @@ ui_g_bivariate <- function(id, ...) {
       )
     ),
     forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code"),
-      teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings")
+      teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings"),
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -583,6 +583,7 @@ srv_g_bivariate <- function(id,
             # Add facetting labels
             # optional: grid.newpage() #nolintr
             p <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+            grid::grid.newpage()
             grid::grid.draw(p)
           },
           env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)

@@ -10,7 +10,8 @@ render_tab_table(
   output,
   data,
   input,
-  columns_names
+  columns_names,
+  plot_var
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ render_tab_table(
 \item{input}{(\code{session$input}) the shiny session input}
 
 \item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
+
+\item{plot_var}{(\code{list}) the list containing the currently selected dataset (tab) and its column names}
 }
 \description{
 The table contains column names, column labels,

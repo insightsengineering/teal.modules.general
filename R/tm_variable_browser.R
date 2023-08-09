@@ -1119,7 +1119,8 @@ render_single_tab <- function(dataset_name, parent_dataname, output, data, input
     output = output,
     data = data,
     input = input,
-    columns_names = columns_names
+    columns_names = columns_names,
+    plot_var = plot_var
   )
 }
 
@@ -1156,98 +1157,113 @@ render_tab_header <- function(dataset_name, output, data) {
 #' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
-render_tab_table <- function(dataset_name, parent_dataname, output, data, input, columns_names) {
+render_tab_table <- function(dataset_name, parent_dataname, output, data, input, columns_names, plot_var) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
-  output[[table_ui_id]] <- DT::renderDataTable(
-    expr = {
-      df <- data[[dataset_name]]()
+  output[[table_ui_id]] <- DT::renderDataTable({
+    df <- data[[dataset_name]]()
 
-      get_vars_df <- function(input, dataset_name, parent_name, data) {
-        data_cols <- colnames(data[[dataset_name]]())
-        if (isTRUE(input$show_parent_vars)) {
-          data_cols
-        } else if (dataset_name != parent_name && parent_name %in% names(data)) {
-          setdiff(data_cols, colnames(data[[parent_name]]()))
-        } else {
-          data_cols
-        }
-      }
-
-      if (length(parent_dataname) > 0) {
-        df_vars <- get_vars_df(input, dataset_name, parent_dataname, data)
-        df <- df[df_vars]
-      }
-
-      if (is.null(df) || ncol(df) == 0) {
-        columns_names[[dataset_name]] <- character(0)
-        data.frame(
-          Type = character(0),
-          Variable = character(0),
-          Label = character(0),
-          Missings = character(0),
-          Sparklines = character(0),
-          stringsAsFactors = FALSE
-        )
+    get_vars_df <- function(input, dataset_name, parent_name, data) {
+      data_cols <- colnames(data[[dataset_name]]())
+      if (isTRUE(input$show_parent_vars)) {
+        data_cols
+      } else if (dataset_name != parent_name && parent_name %in% names(data)) {
+        setdiff(data_cols, colnames(data[[parent_name]]()))
       } else {
-        # extract data variable labels
-        labels <- stats::setNames(
-          unlist(
-            lapply(
-              df,
-              function(x) {
-                `if`(is.null(attr(x, "label")), "", attr(x, "label"))
-              }
-            )
-          ),
-          names(df)
-        )
-
-        columns_names[[dataset_name]] <- names(labels)
-
-        # calculate number of missing values
-        missings <- vapply(
-          df,
-          var_missings_info,
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE
-        )
-
-        # get icons proper for the data types
-        icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
-
-        join_keys <- get_join_keys(data)
-        if (!is.null(join_keys)) {
-          icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
-        }
-        icons <- variable_type_icons(icons)
-
-        # generate sparklines
-        sparklines_html <- vapply(
-          df,
-          create_sparklines,
-          FUN.VALUE = character(1),
-          USE.NAMES = FALSE
-        )
-
-        data.frame(
-          Type = icons,
-          Variable = names(labels),
-          Label = labels,
-          Missings = missings,
-          Sparklines = sparklines_html,
-          stringsAsFactors = FALSE
-        )
+        data_cols
       }
-    },
-    escape = FALSE,
-    rownames = FALSE,
-    selection = list(mode = "single", target = "row", selected = 1),
-    options = list(
-      fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
-      pageLength = input[[paste0(table_ui_id, "_rows")]]
+    }
+
+    if (length(parent_dataname) > 0) {
+      df_vars <- get_vars_df(input, dataset_name, parent_dataname, data)
+      df <- df[df_vars]
+    }
+
+    if (is.null(df) || ncol(df) == 0) {
+      columns_names[[dataset_name]] <- character(0)
+      df_output <- data.frame(
+        Type = character(0),
+        Variable = character(0),
+        Label = character(0),
+        Missings = character(0),
+        Sparklines = character(0),
+        stringsAsFactors = FALSE
+      )
+    } else {
+      # extract data variable labels
+      labels <- teal.data::col_labels(df)
+
+      columns_names[[dataset_name]] <- names(labels)
+
+      # calculate number of missing values
+      missings <- vapply(
+        df,
+        var_missings_info,
+        FUN.VALUE = character(1),
+        USE.NAMES = FALSE
+      )
+
+      # get icons proper for the data types
+      icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
+
+      join_keys <- get_join_keys(data)
+      if (!is.null(join_keys)) {
+        icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+      }
+      icons <- variable_type_icons(icons)
+
+      # generate sparklines
+      sparklines_html <- vapply(
+        df,
+        create_sparklines,
+        FUN.VALUE = character(1),
+        USE.NAMES = FALSE
+      )
+
+      df_output <- data.frame(
+        Type = icons,
+        Variable = names(labels),
+        Label = labels,
+        Missings = missings,
+        Sparklines = sparklines_html,
+        stringsAsFactors = FALSE
+      )
+    }
+
+    # Select row 1 as default / fallback
+    selected_ix <- 1
+    # Define starting page index (base-0 index of the first item on page
+    #  note: in many cases it's not the item itself
+    selected_page_ix <- 0
+
+    # Retrieve current selected variable if any
+    isolated_variable <- shiny::isolate(plot_var$variable[[dataset_name]])
+
+    if (!is.null(isolated_variable)) {
+      index <- which(columns_names[[dataset_name]] == isolated_variable)[1]
+      if (!is.null(index) && !is.na(index) && length(index) > 0) selected_ix <- index
+    }
+
+    # Retrieve the index of the first item of the current page
+    #  it works with varying number of entries on the page (10, 25, ...)
+    table_id_sel <- paste0("variable_browser_", dataset_name, "_state")
+    dt_state <- shiny::isolate(input[[table_id_sel]])
+    if (selected_ix != 1 && !is.null(dt_state)) {
+      selected_page_ix <- floor(selected_ix / dt_state$length) * dt_state$length
+    }
+
+    DT::datatable(
+      df_output,
+      escape = FALSE,
+      rownames = FALSE,
+      selection = list(mode = "single", target = "row", selected = selected_ix),
+      options = list(
+        fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+        pageLength = input[[paste0(table_ui_id, "_rows")]],
+        displayStart = selected_page_ix
+      )
     )
-  )
+  })
 }
 
 #' Creates observers updating the currently selected column
