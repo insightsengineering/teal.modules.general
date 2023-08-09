@@ -306,6 +306,7 @@ srv_variable_browser <- function(id,
         fluidRow(
           div(
             class = "col-md-4",
+            br(),
             shinyWidgets::switchInput(
               inputId = session$ns("display_density"),
               label = "Show density",
@@ -317,6 +318,7 @@ srv_variable_browser <- function(id,
           ),
           div(
             class = "col-md-4",
+            br(),
             shinyWidgets::switchInput(
               inputId = session$ns("remove_outliers"),
               label = "Remove outliers",
