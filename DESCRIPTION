@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules to Add to a `teal` Application
-Version: 0.2.15.9038
+Version: 0.2.16
 Date: 2023-08-11
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
@@ -21,7 +21,7 @@ Depends:
     R (>= 3.6),
     shiny,
     shinyTree,
-    teal (>= 0.12.0)
+    teal (>= 0.13.0.9027)
 Imports:
     checkmate,
     dplyr,
@@ -36,12 +36,12 @@ Imports:
     shinyWidgets,
     stats,
     stringr,
-    teal.code (>= 0.3.0),
+    teal.code (>= 0.3.0.9009),
     teal.logger (>= 0.1.1),
-    teal.reporter (>= 0.1.1),
-    teal.slice (>= 0.2.0),
-    teal.transform (>= 0.2.0),
-    teal.widgets (>= 0.2.0),
+    teal.reporter (>= 0.1.1.9020),
+    teal.slice (>= 0.3.0.9034),
+    teal.transform (>= 0.3.0.9009),
+    teal.widgets (>= 0.3.0.9010),
     tern (>= 0.7.10),
     tibble,
     tidyr,
@@ -66,7 +66,7 @@ Suggests:
     rmarkdown,
     rtables (>= 0.5.1),
     sparkline,
-    teal.data (>= 0.1.2),
+    teal.data (>= 0.2.0.9007),
     testthat (>= 2.0)
 VignetteBuilder:
     knitr
