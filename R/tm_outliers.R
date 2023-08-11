@@ -463,7 +463,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv,
         substitute(
           expr = {
-            ANL_OUTLIER_EXTENDED <- dplyr::left_join(
+            ANL_OUTLIER_EXTENDED <- dplyr::left_join(# nolint object_name_linter
               ANL_OUTLIER,
               dplyr::select(
                 dataname,
@@ -1050,11 +1050,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
 
         display_table$is_outlier_selected <- NULL
-        ANL_OUTLIER_EXTENDED$is_outlier_selected <- NULL
+
         # Extend the brushed ANL_OUTLIER with additional columns
         dplyr::left_join(
           display_table,
-          ANL_OUTLIER_EXTENDED,
+          dplyr::select(ANL_OUTLIER_EXTENDED, -"is_outlier_selected"),
           by = names(display_table)
         ) %>%
           dplyr::select(union(names(display_table), input$table_ui_columns))
