@@ -150,6 +150,15 @@ ui_page_missing_data <- function(id, data, parent_dataname, pre_output = NULL, p
           )
         )
       ),
+      forms = tagList(lapply(
+        datanames,
+        function(x) {
+          conditionalPanel(
+            is_tab_active_js(ns("dataname_tab"), x),
+          div(
+        teal.widgets::verbatim_popup_ui(NS(ns(x))("warning"), "Show Warnings"),
+        teal.widgets::verbatim_popup_ui(NS(ns(x))("rcode"), "Show R code")
+      ))})),
       pre_output = pre_output,
       post_output = post_output
     )
@@ -331,12 +340,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
         selected = ggtheme,
         multiple = FALSE
       )
-    ),
-    hr(),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
+    )
   )
 }
 
