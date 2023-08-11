@@ -648,7 +648,9 @@ srv_distribution <- function(id,
         )
       }
 
-      qenv
+      qenv %>%
+        # used to display table when running show-r-code code
+        teal.code::eval_code(quote(summary_table))
     })
 
     # distplot qenv ----
@@ -1141,7 +1143,9 @@ srv_distribution <- function(id,
             )
           )
         }
-        qenv
+        qenv %>%
+          # used to display table when running show-r-code code
+          teal.code::eval_code(quote(test_stats))
       }
     )
 
