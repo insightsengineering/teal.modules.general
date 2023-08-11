@@ -150,15 +150,17 @@ ui_page_missing_data <- function(id, data, parent_dataname, pre_output = NULL, p
           )
         )
       ),
-      forms = tagList(lapply(
-        datanames,
-        function(x) {
-          conditionalPanel(
-            is_tab_active_js(ns("dataname_tab"), x),
-          div(
-        teal.widgets::verbatim_popup_ui(NS(ns(x))("warning"), "Show Warnings"),
-        teal.widgets::verbatim_popup_ui(NS(ns(x))("rcode"), "Show R code")
-      ))})),
+      forms <- lapply(datanames, function(x) {
+        dataname_ns <- NS(ns(x))
+
+        conditionalPanel(
+          is_tab_active_js(ns("dataname_tab"), x),
+          tagList(
+            teal.widgets::verbatim_popup_ui(dataname_ns("warning"), "Show Warnings"),
+            teal.widgets::verbatim_popup_ui(dataname_ns("rcode"), "Show R code")
+          )
+        )
+      }),
       pre_output = pre_output,
       post_output = post_output
     )
