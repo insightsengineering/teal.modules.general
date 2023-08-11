@@ -313,6 +313,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       sum(is.na(ANL[[outlier_var]]))
     })
 
+    # Used to create outlier table and the dropdown with additional columns
+    dataname_first <- names(data)[[1]]
+
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
 
@@ -405,7 +408,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               ungroup_expr %>% # styler: off
               dplyr::filter(is_outlier | is_outlier_selected) %>%
               dplyr::select(-is_outlier)
-            ANL_OUTLIER # used to display table when running show-r-code code
           },
           env = list(
             calculate_outliers = if (method == "IQR") {
@@ -455,6 +457,29 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         ) %>%
           remove_pipe_null()
       )
+
+      # ANL_OUTLIER_EXTENDED is the base table
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = {
+            ANL_OUTLIER_EXTENDED <- dplyr::left_join(
+              ANL_OUTLIER,
+              dplyr::select(
+                dataname,
+                dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
+              ),
+              by = join_keys
+            )
+          },
+          env = list(
+            dataname = as.name(dataname_first),
+            join_keys = as.character(get_join_keys(data)$get(dataname_first)[[dataname_first]])
+          )
+        )
+      ) %>%
+        # used to display table when running show-r-code code
+        teal.code::eval_code(quote(ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, ]))
 
       if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(
@@ -933,9 +958,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    dataname <- names(data)[[1]]
-
-    choices <- teal.transform::variable_choices(data[[dataname]]())
+    choices <- teal.transform::variable_choices(data[[dataname_first]]())
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
@@ -955,6 +978,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
         ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+        ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint
         ANL <- common_code_q()[["ANL"]] # nolint
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
@@ -1026,12 +1050,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
 
         display_table$is_outlier_selected <- NULL
-        keys <- get_join_keys(data)$get(dataname)[[dataname]]
-        datas <- data[[dataname]]()
+        ANL_OUTLIER_EXTENDED$is_outlier_selected <- NULL
+        # Extend the brushed ANL_OUTLIER with additional columns
         dplyr::left_join(
           display_table,
-          dplyr::select(datas, dplyr::setdiff(names(datas), dplyr::setdiff(names(display_table), keys))),
-          by = keys
+          ANL_OUTLIER_EXTENDED,
+          by = names(display_table)
         ) %>%
           dplyr::select(union(names(display_table), input$table_ui_columns))
       },
