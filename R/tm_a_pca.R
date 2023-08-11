@@ -944,9 +944,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     output$tbl_importance_ui <- renderUI({
       req("importance" %in% input$tables_display)
       div(
+        align = "center",
         tags$h4("Principal components importance"),
         tableOutput(session$ns("tbl_importance")),
-        align = "center"
+        hr()
       )
     })
 
@@ -963,9 +964,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     output$tbl_eigenvector_ui <- renderUI({
       req("eigenvector" %in% input$tables_display)
       div(
+        align = "center",
         tags$h4("Eigenvectors"),
         tableOutput(session$ns("tbl_eigenvector")),
-        align = "center"
+        hr()
       )
     })
 
@@ -977,9 +979,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       tags$div(
         class = "overflow-scroll",
         uiOutput(session$ns("tbl_importance_ui")),
-        hr(),
         uiOutput(session$ns("tbl_eigenvector_ui")),
-        hr(),
         teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
       )
     })
