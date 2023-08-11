@@ -463,7 +463,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv,
         substitute(
           expr = {
-            ANL_OUTLIER_EXTENDED <- dplyr::left_join(# nolint object_name_linter
+            ANL_OUTLIER_EXTENDED <- dplyr::left_join( # nolint object_name_linter
               ANL_OUTLIER,
               dplyr::select(
                 dataname,
