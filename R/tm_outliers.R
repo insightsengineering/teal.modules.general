@@ -471,8 +471,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               ),
               by = join_keys
             )
-            # used to display table when running show-r-code code
-            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, ]
           },
           env = list(
             dataname = as.name(dataname_first),
@@ -864,13 +862,31 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     final_q <- reactive({
       req(input$tabs)
       tab_type <- input$tabs
-      if (tab_type == "Boxplot") {
+      result_q <- if (tab_type == "Boxplot") {
         boxplot_q()
       } else if (tab_type == "Density Plot") {
         density_plot_q()
       } else if (tab_type == "Cumulative Distribution Plot") {
         cumulative_plot_q()
       }
+      # used to display table when running show-r-code code
+      #  added after the plots so that a change in selected columns doesn't affect
+      #  brush selection.
+      teal.code::eval_code(
+        result_q,
+        substitute(
+          expr = {
+            columns_index <- union(
+              setdiff(names(ANL_OUTLIER), "is_outlier_selected"),
+              table_columns
+            )
+            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
+          },
+          env = list(
+            table_columns = input$table_ui_columns
+          )
+        )
+      )
     })
 
     # slider text
