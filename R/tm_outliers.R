@@ -471,15 +471,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               ),
               by = join_keys
             )
+            # used to display table when running show-r-code code
+            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, ]
           },
           env = list(
             dataname = as.name(dataname_first),
             join_keys = as.character(get_join_keys(data)$get(dataname_first)[[dataname_first]])
           )
         )
-      ) %>%
-        # used to display table when running show-r-code code
-        teal.code::eval_code(quote(ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, ]))
+      )
 
       if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(

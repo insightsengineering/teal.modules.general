@@ -638,6 +638,7 @@ srv_distribution <- function(id,
                   sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
                   count = dplyr::n()
                 )
+              summary_table # used to display table when running show-r-code code
             },
             env = list(
               dist_var_name = dist_var_name,
@@ -647,10 +648,6 @@ srv_distribution <- function(id,
           )
         )
       }
-
-      qenv %>%
-        # used to display table when running show-r-code code
-        teal.code::eval_code(quote(summary_table))
     })
 
     # distplot qenv ----
