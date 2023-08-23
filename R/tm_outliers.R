@@ -313,6 +313,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       sum(is.na(ANL[[outlier_var]]))
     })
 
+    # Used to create outlier table and the dropdown with additional columns
+    dataname_first <- names(data)[[1]]
+
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
 
@@ -405,7 +408,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               ungroup_expr %>% # styler: off
               dplyr::filter(is_outlier | is_outlier_selected) %>%
               dplyr::select(-is_outlier)
-            ANL_OUTLIER # used to display table when running show-r-code code
           },
           env = list(
             calculate_outliers = if (method == "IQR") {
@@ -454,6 +456,27 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         ) %>%
           remove_pipe_null()
+      )
+
+      # ANL_OUTLIER_EXTENDED is the base table
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = {
+            ANL_OUTLIER_EXTENDED <- dplyr::left_join( # nolint object_name_linter
+              ANL_OUTLIER,
+              dplyr::select(
+                dataname,
+                dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
+              ),
+              by = join_keys
+            )
+          },
+          env = list(
+            dataname = as.name(dataname_first),
+            join_keys = as.character(get_join_keys(data)$get(dataname_first)[[dataname_first]])
+          )
+        )
       )
 
       if (length(categorical_var) > 0) {
@@ -839,13 +862,31 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     final_q <- reactive({
       req(input$tabs)
       tab_type <- input$tabs
-      if (tab_type == "Boxplot") {
+      result_q <- if (tab_type == "Boxplot") {
         boxplot_q()
       } else if (tab_type == "Density Plot") {
         density_plot_q()
       } else if (tab_type == "Cumulative Distribution Plot") {
         cumulative_plot_q()
       }
+      # used to display table when running show-r-code code
+      #  added after the plots so that a change in selected columns doesn't affect
+      #  brush selection.
+      teal.code::eval_code(
+        result_q,
+        substitute(
+          expr = {
+            columns_index <- union(
+              setdiff(names(ANL_OUTLIER), "is_outlier_selected"),
+              table_columns
+            )
+            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
+          },
+          env = list(
+            table_columns = input$table_ui_columns
+          )
+        )
+      )
     })
 
     # slider text
@@ -933,9 +974,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    dataname <- names(data)[[1]]
-
-    choices <- teal.transform::variable_choices(data[[dataname]]())
+    choices <- teal.transform::variable_choices(data[[dataname_first]]())
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
@@ -955,6 +994,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
         ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+        ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint
         ANL <- common_code_q()[["ANL"]] # nolint
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
@@ -1026,12 +1066,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
 
         display_table$is_outlier_selected <- NULL
-        keys <- get_join_keys(data)$get(dataname)[[dataname]]
-        datas <- data[[dataname]]()
+
+        # Extend the brushed ANL_OUTLIER with additional columns
         dplyr::left_join(
           display_table,
-          dplyr::select(datas, dplyr::setdiff(names(datas), dplyr::setdiff(names(display_table), keys))),
-          by = keys
+          dplyr::select(ANL_OUTLIER_EXTENDED, -"is_outlier_selected"),
+          by = names(display_table)
         ) %>%
           dplyr::select(union(names(display_table), input$table_ui_columns))
       },

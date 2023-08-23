@@ -475,7 +475,8 @@ srv_g_scatterplot <- function(id,
     anl_merged_q <- reactive({
       req(anl_merged_input())
       teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+        teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
+        teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
     })
 
     merged <- list(
