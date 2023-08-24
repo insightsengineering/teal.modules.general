@@ -914,7 +914,7 @@ plot_var_summary <- function(var,
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
         scale_fill_manual(values = c("gray50", "tan")) +
-        scale_x_discrete(labels = function(x) str_wrap(x, width = 15))
+        scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 15))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
