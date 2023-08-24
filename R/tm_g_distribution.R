@@ -167,7 +167,7 @@ ui_distribution <- function(id, ...) {
   is_single_dataset_value <- teal.transform::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
 
   teal.widgets::standard_layout(
-    output = tagList(
+    output = teal.widgets::white_small_well(
       tabsetPanel(
         id = ns("tabs"),
         tabPanel("Histogram", teal.widgets::plot_with_settings_ui(id = ns("hist_plot"))),
