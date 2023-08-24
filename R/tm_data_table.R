@@ -115,7 +115,7 @@ ui_page_data_table <- function(id,
   shiny::tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
-      output = tagList(
+      output = teal.widgets::white_small_well(
         fluidRow(
           column(
             width = 12,
