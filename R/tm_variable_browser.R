@@ -878,6 +878,9 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values.
+#' @param wrap_width \code{numeric} Number of characters to wrap variable labels.
+#'   Defaults to 15.
+#'
 #' @return plot
 #' @keywords internal
 plot_var_summary <- function(var,
@@ -887,7 +890,8 @@ plot_var_summary <- function(var,
                              remove_NA_hist = FALSE, # nolint
                              outlier_definition,
                              records_for_factor,
-                             ggplot2_args) {
+                             ggplot2_args,
+                             wrap_width = 15) {
   checkmate::assert_flag(display_density)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
@@ -910,11 +914,11 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
+      var <- wrap_text(var, wrap_width = wrap_width)
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan")) +
-        scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 15))
+        scale_fill_manual(values = c("gray50", "tan"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
