@@ -142,18 +142,6 @@ call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
 
-#' Wrap string to specified width
-#'
-#' @param text (\code{character}) Text to be wrapped.
-#' @param wrap_width (\code{numeric}) Number of characters to wrap text to
-#'
-#' @return (\code{character}) Wrapped text.
-#'
-#' @keywords internal
-wrap_text <- function(text, wrap_width) {
-  return(stringr::str_wrap(text, width = wrap_width))
-}
-
 #' Get variable name with label
 #'
 #' @param var_names (\code{character}) Name of variable to extract labels from.
@@ -198,9 +186,9 @@ varname_w_label <- function(var_names,
   if (length(var_names) < 1) {
     NULL
   } else if (length(var_names) == 1) {
-    wrap_text(add_label(var_names), wrap_width = wrap_width)
+    stringr::str_wrap(add_label(var_names), width = wrap_width)
   } else if (length(var_names) > 1) {
-    wrap_text(vapply(var_names, add_label, character(1)), wrap_width = wrap_width)
+    stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
   }
 }
 

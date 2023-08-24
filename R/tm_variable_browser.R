@@ -914,7 +914,7 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      var <- wrap_text(var, wrap_width = wrap_width)
+      var <- stringr::str_wrap(var, width = wrap_width)
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
