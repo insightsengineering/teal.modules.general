@@ -468,6 +468,7 @@ srv_variable_browser <- function(id,
       plot_var_summary(
         var = plotted_data()$data,
         var_lab = plotted_data()$var_description,
+        wrap_character = 15, #Hardcoded value now, adjustable via user input later.
         numeric_as_factor = treat_numeric_as_factor(),
         remove_NA_hist = input$remove_NA_hist,
         display_density = display_density,
@@ -871,27 +872,33 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
-#' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
-#' @param display_density \code{logical} Should density estimation be displayed for numeric values?
-#' @param remove_NA_hist \code{logical} Should \code{NA} values be removed for histogram of factor like variables.
+#' @param wrap_character (`numeric`) Number of characters at which to wrap text values of `var`.
+#' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
+#' @param display_density (`logical`) Should density estimation be displayed for numeric values?
+#' @param remove_NA_hist (`logical`) Should (`NA`) values be removed for histogram of factor like variables.
 #' @param outlier_definition If 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
-#' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
+#' @param records_for_factor (`numeric`) if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values.
-#' @param wrap_width \code{numeric} Number of characters at which to wrap text values of `var`.
 #'
 #' @return plot
 #' @keywords internal
 plot_var_summary <- function(var,
                              var_lab,
+                             wrap_character = NULL,
                              numeric_as_factor,
                              display_density = is.numeric(var),
                              remove_NA_hist = FALSE, # nolint
                              outlier_definition,
                              records_for_factor,
-                             ggplot2_args,
-                             wrap_width = 15) {
+                             ggplot2_args) {
+  checkmate::assert_character(var_lab)
+  checkmate::assert_numeric(wrap_character, null.ok = TRUE)
+  checkmate::assert_logical(numeric_as_factor)
   checkmate::assert_flag(display_density)
+  checkmate::assert_logical(remove_NA_hist, null.ok = TRUE)
+  checkmate::assert_numeric(outlier_definition)
+  checkmate::assert_numeric(records_for_factor)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   grid::grid.newpage()
@@ -913,7 +920,8 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      var <- stringr::str_wrap(var, width = wrap_width)
+      if(!is.null(wrap_character)) {
+        var <- stringr::str_wrap(var, width = wrap_character)}
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
