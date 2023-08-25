@@ -22,19 +22,19 @@ density line, for factors it creates frequency plot}
 
 \item{var_lab}{text describing selected variable to be displayed on the plot}
 
-\item{wrap_character}{(\code{numeric}) Number of characters at which to wrap text values of \code{var}.}
+\item{wrap_character}{(\code{numeric}) number of characters at which to wrap text values of \code{var}}
 
 \item{numeric_as_factor}{(\code{logical}) should the numeric variable be treated as a factor}
 
-\item{display_density}{(\code{logical}) Should density estimation be displayed for numeric values?}
+\item{display_density}{(\code{logical}) should density estimation be displayed for numeric values}
 
-\item{remove_NA_hist}{(\code{logical}) Should (\code{NA}) values be removed for histogram of factor like variables.}
+\item{remove_NA_hist}{(\code{logical}) should (\code{NA}) values be removed for histogram of factor like variables}
 
-\item{outlier_definition}{If 0 no outliers are removed, otherwise
+\item{outlier_definition}{if 0 no outliers are removed, otherwise
 outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}
 
 \item{records_for_factor}{(\code{numeric}) if the number of factor levels is >= than this value then
-a graph of the factors isn't shown, only a list of values.}
+a graph of the factors isn't shown, only a list of values}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
