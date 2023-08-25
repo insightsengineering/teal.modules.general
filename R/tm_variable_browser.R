@@ -898,7 +898,7 @@ plot_var_summary <- function(var,
   checkmate::assert_flag(display_density)
   checkmate::assert_logical(remove_NA_hist, null.ok = TRUE)
   checkmate::assert_numeric(outlier_definition)
-  checkmate::assert_numeric(records_for_factor)
+  checkmate::assert_integerish(records_for_factor, lower = 0, len = 1, any.missing = FALSE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   grid::grid.newpage()
