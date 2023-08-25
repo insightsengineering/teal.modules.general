@@ -468,7 +468,7 @@ srv_variable_browser <- function(id,
       plot_var_summary(
         var = plotted_data()$data,
         var_lab = plotted_data()$var_description,
-        wrap_character = 15, #Hardcoded value now, adjustable via user input later.
+        wrap_character = 15, # Hardcoded value now, adjustable via user input later.
         numeric_as_factor = treat_numeric_as_factor(),
         remove_NA_hist = input$remove_NA_hist,
         display_density = display_density,
@@ -920,8 +920,9 @@ plot_var_summary <- function(var,
         just = c("left", "top")
       )
     } else {
-      if(!is.null(wrap_character)) {
-        var <- stringr::str_wrap(var, width = wrap_character)}
+      if (!is.null(wrap_character)) {
+        var <- stringr::str_wrap(var, width = wrap_character)
+      }
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
         geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
