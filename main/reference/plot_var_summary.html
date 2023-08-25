@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9005</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,15 +41,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -87,6 +78,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_var_summary</span><span class="op">(</span></span>
 <span>  <span class="va">var</span>,</span>
 <span>  <span class="va">var_lab</span>,</span>
+<span>  wrap_character <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">numeric_as_factor</span>,</span>
 <span>  display_density <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">var</span><span class="op">)</span>,</span>
 <span>  remove_NA_hist <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -107,26 +99,30 @@ density line, for factors it creates frequency plot</p></dd>
 <dd><p>text describing selected variable to be displayed on the plot</p></dd>
 
 
+<dt>wrap_character</dt>
+<dd><p>(<code>numeric</code>) number of characters at which to wrap text values of <code>var</code></p></dd>
+
+
 <dt>numeric_as_factor</dt>
-<dd><p><code>logical</code> should the numeric variable be treated as a factor</p></dd>
+<dd><p>(<code>logical</code>) should the numeric variable be treated as a factor</p></dd>
 
 
 <dt>display_density</dt>
-<dd><p><code>logical</code> Should density estimation be displayed for numeric values?</p></dd>
+<dd><p>(<code>logical</code>) should density estimation be displayed for numeric values</p></dd>
 
 
 <dt>remove_NA_hist</dt>
-<dd><p><code>logical</code> Should <code>NA</code> values be removed for histogram of factor like variables.</p></dd>
+<dd><p>(<code>logical</code>) should (<code>NA</code>) values be removed for histogram of factor like variables</p></dd>
 
 
 <dt>outlier_definition</dt>
-<dd><p>If 0 no outliers are removed, otherwise
+<dd><p>if 0 no outliers are removed, otherwise
 outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)</p></dd>
 
 
 <dt>records_for_factor</dt>
-<dd><p><code>numeric</code> if the number of factor levels is &gt;= than this value then
-a graph of the factors isn't shown, only a list of values.</p></dd>
+<dd><p>(<code>numeric</code>) if the number of factor levels is &gt;= than this value then
+a graph of the factors isn't shown, only a list of values</p></dd>
 
 
 <dt>ggplot2_args</dt>
