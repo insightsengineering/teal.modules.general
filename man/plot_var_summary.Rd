@@ -40,8 +40,7 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
-\item{wrap_width}{\code{numeric} Number of characters to wrap variable labels.
-Defaults to 15.}
+\item{wrap_width}{\code{numeric} Number of characters at which to wrap text values of \code{var}.}
 }
 \value{
 plot
