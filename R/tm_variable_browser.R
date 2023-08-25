@@ -894,7 +894,7 @@ plot_var_summary <- function(var,
                              ggplot2_args) {
   checkmate::assert_character(var_lab)
   checkmate::assert_numeric(wrap_character, null.ok = TRUE)
-  checkmate::assert_logical(numeric_as_factor)
+  checkmate::assert_flag(numeric_as_factor)
   checkmate::assert_flag(display_density)
   checkmate::assert_logical(remove_NA_hist, null.ok = TRUE)
   checkmate::assert_numeric(outlier_definition)
