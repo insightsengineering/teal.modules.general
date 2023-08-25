@@ -468,7 +468,7 @@ srv_variable_browser <- function(id,
       plot_var_summary(
         var = plotted_data()$data,
         var_lab = plotted_data()$var_description,
-        wrap_character = 15, # Hardcoded value now, adjustable via user input later.
+        wrap_character = 15,
         numeric_as_factor = treat_numeric_as_factor(),
         remove_NA_hist = input$remove_NA_hist,
         display_density = display_density,
@@ -872,14 +872,14 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
 #' @param var_lab text describing selected variable to be displayed on the plot
-#' @param wrap_character (`numeric`) Number of characters at which to wrap text values of `var`.
+#' @param wrap_character (`numeric`) number of characters at which to wrap text values of `var`
 #' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
-#' @param display_density (`logical`) Should density estimation be displayed for numeric values?
-#' @param remove_NA_hist (`logical`) Should (`NA`) values be removed for histogram of factor like variables.
-#' @param outlier_definition If 0 no outliers are removed, otherwise
+#' @param display_density (`logical`) should density estimation be displayed for numeric values
+#' @param remove_NA_hist (`logical`) should (`NA`) values be removed for histogram of factor like variables
+#' @param outlier_definition if 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor (`numeric`) if the number of factor levels is >= than this value then
-#'   a graph of the factors isn't shown, only a list of values.
+#'   a graph of the factors isn't shown, only a list of values
 #'
 #' @return plot
 #' @keywords internal
