@@ -878,8 +878,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor \code{numeric} if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values.
-#' @param wrap_width \code{numeric} Number of characters to wrap variable labels.
-#'   Defaults to 15.
+#' @param wrap_width \code{numeric} Number of characters at which to wrap text values of `var`.
 #'
 #' @return plot
 #' @keywords internal
