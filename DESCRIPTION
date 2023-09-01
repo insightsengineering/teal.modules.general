@@ -17,7 +17,7 @@ Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
 Depends:
     ggmosaic (>= 0.3.0),
-    ggplot2,
+    ggplot2 (>= 3.4.0),
     R (>= 3.6),
     shiny (>= 1.6.0),
     shinyTree,
@@ -33,7 +33,7 @@ Imports:
     scales,
     shinyjs,
     shinyvalidate,
-    shinyWidgets,
+    shinyWidgets (>= 0.5.1),
     stats,
     stringr (>= 1.4.1),
     teal.code (>= 0.4.0),
