@@ -111,8 +111,6 @@ Config/Needs/verdepcheck:
     insightsengineering/nestcolor,
     r-lib/rlang,
     insightsengineering/rtables,
-    insightsengineering/scda,
-    insightsengineering/scda.2022,
     sparkline,
     insightsengineering/teal.data,
     r-lib/testthat
