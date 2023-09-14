@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules to Add to a `teal` Application
-Version: 0.2.16.9007
-Date: 2023-09-12
+Version: 0.2.16.9008
+Date: 2023-09-14
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -69,50 +69,20 @@ Suggests:
     testthat (>= 3.0.4)
 VignetteBuilder:
     knitr
-Config/Needs/verdepcheck:
-    haleyjeppson/ggmosaic,
-    tidyverse/ggplot2,
-    rstudio/shiny,
-    shinyTree/shinyTree,
-    insightsengineering/teal,
-    mllg/checkmate,
-    tidyverse/dplyr,
-    rstudio/DT,
-    tidyverse/forcats,
-    daroczig/logger,
-    tidyverse/magrittr,
-    r-lib/scales,
-    daattali/shinyjs,
-    rstudio/shinyvalidate,
-    dreamRs/shinyWidgets,
-    tidyverse/stringr,
-    insightsengineering/teal.code,
-    insightsengineering/teal.logger,
-    insightsengineering/teal.reporter,
-    insightsengineering/teal.slice,
-    insightsengineering/teal.transform,
-    insightsengineering/teal.widgets,
-    insightsengineering/tern,
-    tidyverse/tibble,
-    tidyverse/tidyr,
-    r-lib/tidyselect,
-    tidymodels/broom,
-    daattali/colourpicker,
-    daattali/ggExtra,
-    aphalo/ggpmisc,
-    aphalo/ggpp,
-    baddstats/goftest,
-    gridExtra,
-    ramnathv/htmlwidgets,
-    jeroen/jsonlite,
-    yihui/knitr,
-    deepayan/lattice,
-    MASS,
-    insightsengineering/nestcolor,
-    r-lib/rlang,
-    insightsengineering/rtables,
-    sparkline,
-    insightsengineering/teal.data,
+Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
+    rstudio/shiny, shinyTree/shinyTree, insightsengineering/teal,
+    mllg/checkmate, tidyverse/dplyr, rstudio/DT, tidyverse/forcats,
+    daroczig/logger, tidyverse/magrittr, r-lib/scales, daattali/shinyjs,
+    rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
+    insightsengineering/teal.code, insightsengineering/teal.logger,
+    insightsengineering/teal.reporter, insightsengineering/teal.slice,
+    insightsengineering/teal.transform, insightsengineering/teal.widgets,
+    insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
+    r-lib/tidyselect, tidymodels/broom, daattali/colourpicker,
+    daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp, baddstats/goftest,
+    gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
+    deepayan/lattice, MASS, insightsengineering/nestcolor, r-lib/rlang,
+    insightsengineering/rtables, sparkline, insightsengineering/teal.data,
     r-lib/testthat
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
