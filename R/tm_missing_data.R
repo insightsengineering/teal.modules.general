@@ -1205,9 +1205,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         sum_type <- input$summary_type
         title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
         title_dataname <- paste(title, dataname, sep = " - ")
-        label <- if (label == "")  {
+        label <- if (label == "") {
           paste("Missing Data", sum_type, dataname, sep = " - ")
-        } else { label }
+        } else {
+          label
+        }
         card$set_name(label)
         card$append_text(title_dataname, "header2")
         if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
