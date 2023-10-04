@@ -362,7 +362,7 @@ is_tab_active_js <- function(id, name) {
 #' @return (`TealReportCard`) populated with a title, description and filter state
 #'
 #' @keywords internal
-card_template <- function(title, label, description = NULL, with_filter = FALSE, filter_panel_api = NULL) {
+card_template <- function(title, label, description = NULL, with_filter, filter_panel_api) {
   card <- teal::TealReportCard$new()
   title <- if (label == "") title else label
   card$set_name(title)
