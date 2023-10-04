@@ -352,10 +352,13 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment) {
-        card <- teal::TealReportCard$new()
-        card$set_name("Cross Table")
-        card$append_text("Cross Table", "header2")
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
+        card <- card_template(
+          title = "Cross Table",
+          label = label,
+          description = NULL,
+          with_filter = with_filter,
+          filter_panel_api = filter_panel_api
+        )
         card$append_text("Table", "header3")
         card$append_table(table_r())
         if (!comment == "") {
