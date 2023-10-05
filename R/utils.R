@@ -362,6 +362,11 @@ is_tab_active_js <- function(id, name) {
 #'
 #' @keywords internal
 card_template <- function(title, label, with_filter, filter_panel_api) {
+  checkmate::assert_string(title)
+  checkmate::assert_string(label)
+  checkmate::assert_flag(with_filter)
+  checkmate::assert_class(filter_panel_api, classes =  "FilterPanelAPI")
+
   card <- teal::TealReportCard$new()
   title <- if (label == "") title else label
   card$set_name(title)
