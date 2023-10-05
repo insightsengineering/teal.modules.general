@@ -462,11 +462,9 @@ srv_tm_g_association <- function(id,
         card <- card_template(
           title = "Association Plot",
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {

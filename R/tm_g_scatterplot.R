@@ -952,7 +952,6 @@ srv_g_scatterplot <- function(id,
         card <- card_template(
           title = "Scatter Plot",
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )

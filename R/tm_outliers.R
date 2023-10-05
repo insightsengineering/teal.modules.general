@@ -1151,7 +1151,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         card <- card_template(
           title = paste0("Outliers - ", tab_type),
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )

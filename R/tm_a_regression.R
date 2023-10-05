@@ -873,7 +873,6 @@ srv_a_regression <- function(id,
         card <- card_template(
           title = "Linear Regression Plot",
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )

@@ -480,7 +480,6 @@ srv_g_response <- function(id,
         card <- card_template(
           title = "Response Plot",
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )

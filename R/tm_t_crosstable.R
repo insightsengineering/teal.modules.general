@@ -355,7 +355,6 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         card <- card_template(
           title = "Cross Table",
           label = label,
-          description = NULL,
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )

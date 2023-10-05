@@ -1001,9 +1001,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     if (with_reporter) {
       card_fun <- function(comment, label) {
         card <- card_template(
-          title = "PCA Plot",
+          title = "Principal Component Analysis Plot",
           label = label,
-          description = "Principal Component Analysis Plot",
           with_filter = with_filter,
           filter_panel_api = filter_panel_api
         )
