@@ -500,7 +500,7 @@ srv_variable_browser <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_fun <- function(comment, label) {
         card <- card_template(
           title = "Variable Browser Plot",
           label = label,

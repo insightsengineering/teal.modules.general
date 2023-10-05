@@ -1146,7 +1146,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
+      card_fun <- function(comment, label) {
         tab_type <- input$tabs
         card <- card_template(
           title = paste0("Outliers - ", tab_type),
