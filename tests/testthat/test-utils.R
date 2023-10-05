@@ -1,5 +1,4 @@
 testthat::test_that("card_template function returns TealReportCard object with appropriate content and labels", {
-
   fd <- teal.slice::init_filtered_data(list(iris = list(dataset = iris)))
   filter_panel_api <- teal.slice::FilterPanelAPI$new(fd)
 
