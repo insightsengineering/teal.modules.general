@@ -1148,7 +1148,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     if (with_reporter) {
       card_fun <- function(comment, label) {
         tab_type <- input$tabs
-        card <- teal::card_template(
+        card <- teal::report_card_template(
           title = paste0("Outliers - ", tab_type),
           label = label,
           with_filter = with_filter,

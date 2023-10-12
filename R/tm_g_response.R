@@ -477,7 +477,7 @@ srv_g_response <- function(id,
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment, label) {
-        card <- teal::card_template(
+        card <- teal::report_card_template(
           title = "Response Plot",
           label = label,
           with_filter = with_filter,
