@@ -621,7 +621,7 @@ srv_g_bivariate <- function(id,
     ### REPORTER
     if (with_reporter) {
       card_fun <- function(comment, label) {
-        card <- teal.reporter::card_template(
+        card <- teal::card_template(
           title = "Bivariate Plot",
           label = label,
           with_filter = with_filter,
