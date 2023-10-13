@@ -1146,13 +1146,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
-        card <- teal::TealReportCard$new()
+      card_fun <- function(comment, label) {
         tab_type <- input$tabs
-        card$set_name(paste0("Outliers - ", tab_type))
-        card$append_text(tab_type, "header2")
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
-
+        card <- teal::report_card_template(
+          title = paste0("Outliers - ", tab_type),
+          label = label,
+          with_filter = with_filter,
+          filter_panel_api = filter_panel_api
+        )
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
           summary_table <- common_code_q()[["summary_table"]]

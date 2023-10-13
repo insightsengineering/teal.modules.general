@@ -353,11 +353,13 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment) {
-        card <- teal::TealReportCard$new()
-        card$set_name("Scatter Plot Matrix")
-        card$append_text("Scatter Plot Matrix", "header2")
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
+      card_fun <- function(comment, label) {
+        card <- teal::report_card_template(
+          title = "Scatter Plot Matrix",
+          label = label,
+          with_filter = with_filter,
+          filter_panel_api = filter_panel_api
+        )
         card$append_text("Plot", "header3")
         card$append_plot(plot_r(), dim = pws$dim())
         if (!comment == "") {
