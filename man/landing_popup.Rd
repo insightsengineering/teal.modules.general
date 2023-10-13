@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_landing_popup.R
 \name{landing_popup}
 \alias{landing_popup}
-\title{Landing Popup module}
+\title{Landing Popup}
 \usage{
 landing_popup(title = NULL, content = NULL, buttons = modalButton("Accept"))
 }

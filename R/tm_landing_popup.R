@@ -1,4 +1,4 @@
-#' Landing Popup module
+#' Landing Popup
 #'
 #' @description This function creates a simple landing welcome popup for `teal` applications and
 #' can be used in a `teal::init(extra_server = )` parameter.
