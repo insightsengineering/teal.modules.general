@@ -500,13 +500,11 @@ srv_variable_browser <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Variable Browser Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
+      card_fun <- function(comment) {
+        card <- teal::TealReportCard$new()
+        card$set_name("Variable Browser Plot")
+        card$append_text("Variable Browser Plot", "header2")
+        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
         card$append_text("Plot", "header3")
         card$append_plot(variable_plot_r(), dim = pws$dim())
         if (!comment == "") {
@@ -939,8 +937,9 @@ plot_var_summary <- function(var,
     validate(need(!any(is.infinite(var)), "Cannot display graph when data includes infinite values"))
 
     if (numeric_as_factor) {
-      var <- factor(var, levels = sort(unique(var)))
-      p <- qplot(var)
+      var <- factor(var)
+      ggplot(NULL, aes(x = var)) +
+        geom_histogram(stat = "count")
     } else {
       # remove outliers
       if (outlier_definition != 0) {
