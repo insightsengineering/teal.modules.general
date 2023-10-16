@@ -940,7 +940,8 @@ plot_var_summary <- function(var,
 
     if (numeric_as_factor) {
       var <- factor(var, levels = sort(unique(var)))
-      ggplot(NULL, aes(x = var)) + geom_histogram(stat = "count")
+      ggplot(NULL, aes(x = var)) +
+        geom_histogram(stat = "count")
     } else {
       # remove outliers
       if (outlier_definition != 0) {
