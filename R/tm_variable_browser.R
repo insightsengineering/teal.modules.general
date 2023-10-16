@@ -485,9 +485,10 @@ srv_variable_browser <- function(id,
     )
 
     output$variable_summary_table <- DT::renderDataTable({
+      browser()
       var_summary_table(
         plotted_data()$data,
-        treat_numeric_as_factor(),
+        TRUE,
         input$variable_summary_table_rows,
         if (!is.null(input$remove_outliers) && input$remove_outliers) {
           req(input$outlier_definition_slider)
@@ -938,7 +939,7 @@ plot_var_summary <- function(var,
 
     if (numeric_as_factor) {
       var <- factor(var, levels = sort(unique(var)))
-      p <- qplot(var)
+      ggplot(NULL, aes(x = var)) + geom_histogram(stat = "count")
     } else {
       # remove outliers
       if (outlier_definition != 0) {
