@@ -50,11 +50,10 @@
 #' @export
 tm_landing_popup <-
   function(
-    label = "Landing popup",
-    title = NULL,
-    content = NULL,
-    buttons = modalButton("Accept")
-  ) {
+      label = "Landing popup",
+      title = NULL,
+      content = NULL,
+      buttons = modalButton("Accept")) {
     checkmate::assert_string(label)
     checkmate::assert_string(title, null.ok = TRUE)
     checkmate::assert_multi_class(
@@ -63,17 +62,17 @@ tm_landing_popup <-
     )
     checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
 
-  logger::log_info("Initializing tm_landing_popup")
+    logger::log_info("Initializing tm_landing_popup")
 
-  module(
-    label = label,
-    server = srv_landing_popup,
-    ui = ui_landing_popup,
-    ui_args = NULL,
-    server_args = list(title = title, content = content, buttons = buttons),
-    datanames = NULL
-  )
-}
+    module(
+      label = label,
+      server = srv_landing_popup,
+      ui = ui_landing_popup,
+      ui_args = NULL,
+      server_args = list(title = title, content = content, buttons = buttons),
+      datanames = NULL
+    )
+  }
 
 srv_landing_popup <- function(id, title, content, buttons) {
   moduleServer(id, function(input, output, session) {
@@ -88,4 +87,6 @@ srv_landing_popup <- function(id, title, content, buttons) {
   })
 }
 
-ui_landing_popup <- function(id, ...) {NULL}
+ui_landing_popup <- function(id, ...) {
+  NULL
+}
