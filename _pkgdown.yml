@@ -27,6 +27,7 @@ reference:
   - title: General functionality modules
     contents:
       - matches('tm_[a-z][a-z]')
+      - landing_popup
 
   - title: Modules for tables
     contents:
