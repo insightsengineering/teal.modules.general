@@ -485,10 +485,9 @@ srv_variable_browser <- function(id,
     )
 
     output$variable_summary_table <- DT::renderDataTable({
-      browser()
       var_summary_table(
         plotted_data()$data,
-        TRUE,
+        treat_numeric_as_factor(),
         input$variable_summary_table_rows,
         if (!is.null(input$remove_outliers) && input$remove_outliers) {
           req(input$outlier_definition_slider)
