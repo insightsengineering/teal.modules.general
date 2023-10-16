@@ -22,7 +22,7 @@ can be used in a \code{teal::init(extra_server = )} parameter.
 app1 <- teal::init(
   data = teal.data::dataset("iris", iris),
   modules = teal::modules(
-    teal.modules.general::tm_front_page('A')
+    teal.modules.general::tm_front_page("A")
   ),
   extra_server = teal.modules.general::landing_popup(
     title = "Welcome",
@@ -37,18 +37,17 @@ if (interactive()) {
 app2 <- teal::init(
   data = teal.data::dataset("iris", iris),
   modules = teal::modules(
-    teal.modules.general::tm_front_page('A')
+    teal.modules.general::tm_front_page("A")
   ),
   extra_server = teal.modules.general::landing_popup(
     title = "Welcome",
     content = div(tags$b("A place for the welcome message or a disclaimer statement.", style = "color: red;")),
-    buttons = tagList(modalButton("Proceed"), actionButton('close', 'Read more', onclick  = "window.open('http://google.com', '_blank')"))
+    buttons = tagList(modalButton("Proceed"), actionButton("close", "Read more", onclick = "window.open('http://google.com', '_blank')"))
   )
 )
 
 if (interactive()) {
   shinyApp(app2$ui, app2$server)
 }
-
 
 }
