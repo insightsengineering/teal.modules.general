@@ -50,12 +50,10 @@
 #'
 #' @export
 tm_landing_popup <-
-  function(
-      label = "Landing Popup",
-      title = NULL,
-      content = NULL,
-      buttons = modalButton("Accept")
-    ) {
+  function(label = "Landing Popup",
+           title = NULL,
+           content = NULL,
+           buttons = modalButton("Accept")) {
     checkmate::assert_string(label)
     checkmate::assert_string(title, null.ok = TRUE)
     checkmate::assert_multi_class(
