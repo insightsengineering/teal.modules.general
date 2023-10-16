@@ -32,7 +32,10 @@
 #'   extra_server = teal.modules.general::landing_popup(
 #'     title = "Welcome",
 #'     content = div(tags$b("A place for the welcome message or a disclaimer statement.", style = "color: red;")),
-#'     buttons = tagList(modalButton("Proceed"), actionButton("close", "Read more", onclick = "window.open('http://google.com', '_blank')"))
+#'     buttons = tagList(
+#'       modalButton("Proceed"),
+#'       actionButton("close", "Read more", onclick = "window.open('http://google.com', '_blank')")
+#'     )
 #'   )
 #' )
 #'
@@ -43,7 +46,9 @@
 #' @export
 landing_popup <- function(title = NULL, content = NULL, buttons = modalButton("Accept")) {
   checkmate::assert_string(title, null.ok = TRUE)
-  checkmate::assert_multi_class(content, classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(
+    content, classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE
+  )
   checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
 
   showModal(
