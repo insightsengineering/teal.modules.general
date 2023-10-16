@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0226191857093145" branch-rate="0" lines-covered="195" lines-valid="8621" branches-covered="0" branches-valid="0" complexity="0" version="3.6.3" timestamp="2023-10-16 09:35:42.026527">
+<coverage line-rate="0.0226139394642236" branch-rate="0" lines-covered="195" lines-valid="8623" branches-covered="0" branches-valid="0" complexity="0" version="3.6.3" timestamp="2023-10-16 09:46:37.649339">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0226191857093145" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0226139394642236" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -11015,32 +11015,36 @@
           <methods>
             <method name="landing_popup" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
-                <line number="45" hits="0" branch="false"/>
-                <line number="46" hits="0" branch="false"/>
-                <line number="47" hits="0" branch="false"/>
+                <line number="48" hits="0" branch="false"/>
                 <line number="49" hits="0" branch="false"/>
                 <line number="50" hits="0" branch="false"/>
                 <line number="51" hits="0" branch="false"/>
                 <line number="52" hits="0" branch="false"/>
-                <line number="53" hits="0" branch="false"/>
                 <line number="54" hits="0" branch="false"/>
                 <line number="55" hits="0" branch="false"/>
                 <line number="56" hits="0" branch="false"/>
+                <line number="57" hits="0" branch="false"/>
+                <line number="58" hits="0" branch="false"/>
+                <line number="59" hits="0" branch="false"/>
+                <line number="60" hits="0" branch="false"/>
+                <line number="61" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="45" hits="0" branch="false"/>
-            <line number="46" hits="0" branch="false"/>
-            <line number="47" hits="0" branch="false"/>
+            <line number="48" hits="0" branch="false"/>
             <line number="49" hits="0" branch="false"/>
             <line number="50" hits="0" branch="false"/>
             <line number="51" hits="0" branch="false"/>
             <line number="52" hits="0" branch="false"/>
-            <line number="53" hits="0" branch="false"/>
             <line number="54" hits="0" branch="false"/>
             <line number="55" hits="0" branch="false"/>
             <line number="56" hits="0" branch="false"/>
+            <line number="57" hits="0" branch="false"/>
+            <line number="58" hits="0" branch="false"/>
+            <line number="59" hits="0" branch="false"/>
+            <line number="60" hits="0" branch="false"/>
+            <line number="61" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="tm_missing_data.R" filename="R/tm_missing_data.R" line-rate="0" branch-rate="0" complexity="0">
