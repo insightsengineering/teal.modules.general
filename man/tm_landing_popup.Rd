@@ -2,6 +2,7 @@
 % Please edit documentation in R/tm_landing_popup.R
 \name{tm_landing_popup}
 \alias{tm_landing_popup}
+\alias{landing_popup}
 \title{Landing Popup Module}
 \usage{
 tm_landing_popup(
@@ -10,6 +11,8 @@ tm_landing_popup(
   content = NULL,
   buttons = modalButton("Accept")
 )
+
+landing_popup(title = NULL, content = NULL, buttons = modalButton("Accept"))
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except

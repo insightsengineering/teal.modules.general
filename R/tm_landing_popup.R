@@ -92,3 +92,23 @@ srv_landing_popup <- function(id, title, content, buttons) {
 ui_landing_popup <- function(id, ...) {
   NULL
 }
+
+#' @rdname tm_landing_popup
+#' @export
+landing_popup <- function(title = NULL, content = NULL, buttons = modalButton("Accept")) {
+  checkmate::assert_string(title, null.ok = TRUE)
+  checkmate::assert_multi_class(
+    content,
+    classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE
+  )
+  checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
+
+  showModal(
+    modalDialog(
+      id = "landingpopup",
+      title = title,
+      content,
+      footer = buttons
+    )
+  )
+}
