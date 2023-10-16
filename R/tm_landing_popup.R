@@ -2,7 +2,8 @@
 #'
 #' @description This module creates a simple landing welcome popup for `teal` applications.
 #'
-#' @details It is recommended to pass this module as the first one in `teal::init(modules = )`.
+#' @details If you use this module with a default label `"Landing Popup"`, it will be used as a first module in
+#' a `teal` application and there will not be a tab provided for this module in the application.
 #'
 #' @inheritParams teal::module
 #' @param title `character(1)` the text to be displayed as a title of the popup.
@@ -50,7 +51,7 @@
 #' @export
 tm_landing_popup <-
   function(
-    label = "Landing popup",
+    label = "Landing Popup",
     title = NULL,
     content = NULL,
     buttons = modalButton("Accept")

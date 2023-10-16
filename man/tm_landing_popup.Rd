@@ -5,7 +5,7 @@
 \title{Landing Popup Module}
 \usage{
 tm_landing_popup(
-  label = "Landing popup",
+  label = "Landing Popup",
   title = NULL,
   content = NULL,
   buttons = modalButton("Accept")
@@ -29,7 +29,8 @@ A \code{teal} module to be used in \code{teal} applications.
 This module creates a simple landing welcome popup for \code{teal} applications.
 }
 \details{
-It is recommended to pass this module as the first one in \code{teal::init(modules = )}.
+If you use this module with a default label \code{"Landing Popup"}, it will be used as a first module in
+a \code{teal} application and there will not be a tab provided for this module in the application.
 }
 \examples{
 app1 <- teal::init(
