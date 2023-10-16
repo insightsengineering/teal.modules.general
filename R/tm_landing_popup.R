@@ -47,7 +47,8 @@
 landing_popup <- function(title = NULL, content = NULL, buttons = modalButton("Accept")) {
   checkmate::assert_string(title, null.ok = TRUE)
   checkmate::assert_multi_class(
-    content, classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE
+    content,
+    classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE
   )
   checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
 
