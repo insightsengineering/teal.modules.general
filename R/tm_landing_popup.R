@@ -59,5 +59,4 @@ landing_popup <- function(title = NULL, content = NULL, buttons = modalButton("A
       footer = buttons
     )
   )
-  # div(class="sweet-overlay", tabindex = "-1", style = "opacity: 1.17;display: block;backdrop-filter: blur(10px);")
 }
