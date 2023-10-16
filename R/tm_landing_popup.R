@@ -48,6 +48,7 @@ landing_popup <- function(title = NULL, content = NULL, buttons = modalButton("A
 
   showModal(
     modalDialog(
+      id = "landingpopup",
       title = title,
       content,
       footer = buttons
