@@ -85,3 +85,7 @@
   height:600px;
   width:100%
 }
+
+#shiny-modal:has(> .modal-dialog > .modal-content > #landingpopup) {
+  backdrop-filter: blur(10px);
+}
