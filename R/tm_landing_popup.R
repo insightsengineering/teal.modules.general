@@ -59,7 +59,7 @@ tm_landing_popup <-
       content,
       classes = c("character", "shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE
     )
-    checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
+    checkmate::assert_multi_class(buttons, classes = c("shiny.tag", "shiny.tag.list"))
 
     logger::log_info("Initializing tm_landing_popup")
 
