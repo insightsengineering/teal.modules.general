@@ -1,24 +1,23 @@
 #' Landing Popup Module
 #'
-#' @description This module creates a simple landing welcome popup for `teal` applications.
+#' @description This module creates a landing welcome popup for `teal` applications.
 #'
-#' @details If you use this module with a default label `"Landing Popup"`, it will be used as a first module in
-#' a `teal` application and there will not be a tab provided for this module in the application.
+#' @details If you use this module in `teal::init(modules = )`, it will not be wrapped in a tab in `teal` application.
+#' See `teal::module(type = 'teal_module_landing')`.
 #'
-#' @inheritParams teal::module
+#' @param label `character(1)` the label of the module.
 #' @param title `character(1)` the text to be displayed as a title of the popup.
 #' @param content `character(1)` the content of the popup. Passed to `...` of `shiny::modalDialog`. Can be a `character`
 #' or a text input control (like `textInput`) or a list of `shiny` tags. See examples.
 #' @param buttons `shiny` tag or a list of tags (`tagList`). Typically a `modalButton` or `actionButton`. See examples.
 #'
-#' @return A `teal` module to be used in `teal` applications.
+#' @return A `teal_module_landing` module to be used in `teal` applications.
 #'
 #' @examples
 #' app1 <- teal::init(
 #'   data = teal.data::dataset("iris", iris),
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_landing_popup(
-#'       title = "Welcome",
 #'       content = "A place for the welcome message or a disclaimer statement.",
 #'       buttons = modalButton("Proceed")
 #'     ),
@@ -66,27 +65,18 @@ tm_landing_popup <-
 
     module(
       label = label,
-      server = srv_landing_popup,
-      ui = ui_landing_popup,
-      ui_args = NULL,
-      server_args = list(title = title, content = content, buttons = buttons),
-      datanames = NULL
+      type = "teal_module_landing",
+      server = function(id) {
+        moduleServer(id, function(input, output, session) {
+          showModal(
+            modalDialog(
+              id = "landingpopup",
+              title = title,
+              content,
+              footer = buttons
+            )
+          )
+        })
+      }
     )
-  }
-
-srv_landing_popup <- function(id, title, content, buttons) {
-  moduleServer(id, function(input, output, session) {
-    showModal(
-      modalDialog(
-        id = "landingpopup",
-        title = title,
-        content,
-        footer = buttons
-      )
-    )
-  })
-}
-
-ui_landing_popup <- function(id, ...) {
-  NULL
 }

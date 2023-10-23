@@ -12,8 +12,7 @@ tm_landing_popup(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
+\item{label}{\code{character(1)} the label of the module.}
 
 \item{title}{\code{character(1)} the text to be displayed as a title of the popup.}
 
@@ -23,21 +22,20 @@ or a text input control (like \code{textInput}) or a list of \code{shiny} tags. 
 \item{buttons}{\code{shiny} tag or a list of tags (\code{tagList}). Typically a \code{modalButton} or \code{actionButton}. See examples.}
 }
 \value{
-A \code{teal} module to be used in \code{teal} applications.
+A \code{teal_module_landing} module to be used in \code{teal} applications.
 }
 \description{
-This module creates a simple landing welcome popup for \code{teal} applications.
+This module creates a landing welcome popup for \code{teal} applications.
 }
 \details{
-If you use this module with a default label \code{"Landing Popup"}, it will be used as a first module in
-a \code{teal} application and there will not be a tab provided for this module in the application.
+If you use this module in \code{teal::init(modules = )}, it will not be wrapped in a tab in \code{teal} application.
+See \code{teal::module(type = 'teal_module_landing')}.
 }
 \examples{
 app1 <- teal::init(
   data = teal.data::dataset("iris", iris),
   modules = teal::modules(
     teal.modules.general::tm_landing_popup(
-      title = "Welcome",
       content = "A place for the welcome message or a disclaimer statement.",
       buttons = modalButton("Proceed")
     ),
