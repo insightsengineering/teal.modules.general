@@ -79,4 +79,4 @@ tm_landing_popup <-
         })
       }
     )
-}
+  }
