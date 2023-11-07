@@ -89,7 +89,9 @@ app <- teal::init(
       dat = teal.transform::data_extract_spec(
         dataname = "ADSL",
         select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")),
+          choices = teal.transform::variable_choices(
+            data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
+          ),
           selected = c("BMRKR1", "AGE"),
           multiple = TRUE
         ),

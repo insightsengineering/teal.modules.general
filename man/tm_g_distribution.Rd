@@ -107,7 +107,10 @@ datanames <- c("ADSL")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
 
-vars1 <- choices_selected(variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")), selected = NULL)
+vars1 <- choices_selected(
+  variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
+  selected = NULL
+)
 
 app <- teal::init(
   data = data,
