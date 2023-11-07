@@ -43,6 +43,7 @@ A simple application including a `tm_variable_browser` module could look like th
 ```{r, message = FALSE, results = "hide"}
 library(teal.modules.general)
 
+# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -51,6 +52,7 @@ data <- within(data, {
 datanames <- c("ADSL", "ADTTE")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
+# nolint end
 
 app <- teal::init(
   data = data,
