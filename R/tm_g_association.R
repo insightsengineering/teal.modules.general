@@ -43,7 +43,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
 #'           selected = "RACE",
@@ -55,7 +55,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variables:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
 #'           selected = "BMRKR2",

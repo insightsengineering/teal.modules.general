@@ -38,7 +38,7 @@
 #'
 #' app <- teal::init(
 #'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", data@env$ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+#'     teal.data::cdisc_dataset("ADSL", data[["ADSL"]], code = "ADSL <- teal.modules.general::rADSL"),
 #'     check = TRUE
 #'   ),
 #'   modules = teal::modules(
@@ -48,7 +48,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL, c("BMRKR2", "COUNTRY")),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
 #'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -58,7 +58,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL, c("SEX", "RACE")),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("SEX", "RACE")),
 #'           selected = "RACE",
 #'           multiple = FALSE,
 #'           fixed = FALSE

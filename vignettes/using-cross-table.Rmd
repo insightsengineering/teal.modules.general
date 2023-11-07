@@ -35,6 +35,7 @@ Inside this app 2 datasets will be used
 2. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
+# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -48,6 +49,7 @@ data <- within(data, {
 datanames <- c("ADSL", "ADLB")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -69,8 +71,8 @@ app <- teal::init(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADSL),
-            selected = names(data@env$ADSL)[5],
+            choices = variable_choices(data[["ADSL"]]),
+            selected = names(data[["ADSL"]])[5],
             multiple = TRUE,
             fixed = FALSE,
             ordered = TRUE
@@ -80,8 +82,8 @@ app <- teal::init(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADSL),
-            selected = names(data@env$ADSL)[6],
+            choices = variable_choices(data[["ADSL"]]),
+            selected = names(data[["ADSL"]])[6],
             multiple = FALSE,
             fixed = FALSE
           )
@@ -93,12 +95,12 @@ app <- teal::init(
           dataname = "ADLB",
           filter = teal.transform::filter_spec(
             vars = "PARAMCD",
-            choices = value_choices(data@env$ADLB, "PARAMCD", "PARAM"),
-            selected = levels(data@env$ADLB$PARAMCD)[1],
+            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+            selected = levels(data[["ADLB"]]$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = variable_choices(data@env$ADLB),
+            choices = variable_choices(data[["ADLB"]]),
             selected = "AVISIT",
             multiple = TRUE,
             fixed = FALSE,
@@ -110,12 +112,12 @@ app <- teal::init(
           dataname = "ADLB",
           filter = teal.transform::filter_spec(
             vars = "PARAMCD",
-            choices = value_choices(data@env$ADLB, "PARAMCD", "PARAM"),
-            selected = levels(data@env$ADLB$PARAMCD)[1],
+            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+            selected = levels(data[["ADLB"]]$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = variable_choices(data@env$ADLB),
+            choices = variable_choices(data[["ADLB"]]),
             selected = "LOQFL",
             multiple = FALSE,
             fixed = FALSE,

@@ -83,6 +83,7 @@ so both the code and data are stored together.
 Following this, we set the `datanames` and `join_keys`.
 
 ```r
+# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -91,6 +92,7 @@ data <- within(data, {
 datanames <- c("ADSL", "ADTTE")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
+# nolint end
 ```
 
 There is no need to load `teal` as `teal.modules.general` already depends on it.

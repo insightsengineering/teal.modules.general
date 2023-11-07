@@ -64,8 +64,8 @@ datanames <- c("ADSL")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
 
-fact_vars_adsl <- names(Filter(isTRUE, sapply(data@env$ADSL, is.factor)))
-vars <- choices_selected(variable_choices(data@env$ADSL, fact_vars_adsl))
+fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
+vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 
 app <- teal::init(
   data = data,
@@ -76,7 +76,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADSL, c("AGE", "BMRKR1")),
+            choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
             selected = "AGE",
             multiple = FALSE,
             fixed = FALSE
@@ -88,8 +88,8 @@ app <- teal::init(
           dataname = "ADSL",
           filter = teal.transform::filter_spec(
             vars = vars,
-            choices = value_choices(data@env$ADSL, vars$selected),
-            selected = value_choices(data@env$ADSL, vars$selected),
+            choices = value_choices(data[["ADSL"]], vars$selected),
+            selected = value_choices(data[["ADSL"]], vars$selected),
             multiple = TRUE
           )
         )

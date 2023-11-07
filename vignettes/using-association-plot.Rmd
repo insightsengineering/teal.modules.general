@@ -61,6 +61,7 @@ itself will be constructed by multiple calls of `tm_g_association` using differe
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -81,6 +82,8 @@ data@join_keys <- cdisc_join_keys(!!!datanames)
 data@join_keys$mutate(
   "ADSL2", "ADSL", get_cdisc_keys("ADSL")
 )
+# nolint end
+
 app <- teal::init(
   data = data,
   modules = teal::modules(
@@ -93,7 +96,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADSL),
+            choices = variable_choices(data[["ADSL"]]),
             selected = "AGE",
             fixed = FALSE
           )
@@ -102,7 +105,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADSL),
+            choices = variable_choices(data[["ADSL"]]),
             selected = "BMRKR1",
             multiple = TRUE,
             fixed = FALSE
@@ -115,7 +118,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADSL, c("AGE", "SEX", "STRATA1", "RACE")),
+            choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "STRATA1", "RACE")),
             selected = "STRATA1",
             multiple = FALSE,
             fixed = FALSE
@@ -125,7 +128,7 @@ app <- teal::init(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADSL2, c("AGE", "SEX", "RACE", "COUNTRY")),
+            choices = variable_choices(data[["ADSL2"]], c("AGE", "SEX", "RACE", "COUNTRY")),
             selected = c("AGE", "COUNTRY", "RACE"),
             multiple = TRUE,
             fixed = FALSE
@@ -138,7 +141,7 @@ app <- teal::init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADTTE),
+            choices = variable_choices(data[["ADTTE"]]),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -146,7 +149,7 @@ app <- teal::init(
           filter = teal.transform::filter_spec(
             label = "Select endpoint:",
             vars = "PARAMCD",
-            choices = value_choices(data@env$ADTTE, "PARAMCD", "PARAM"),
+            choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
             selected = c("PFS", "EFS"),
             multiple = TRUE
           )
@@ -156,7 +159,7 @@ app <- teal::init(
           reshape = TRUE,
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(data@env$ADRS, c("AVALC", "BMRKR1", "BMRKR2", "ARM")),
+            choices = variable_choices(data[["ADRS"]], c("AVALC", "BMRKR1", "BMRKR2", "ARM")),
             selected = "AVALC",
             multiple = TRUE,
             fixed = FALSE
@@ -165,14 +168,14 @@ app <- teal::init(
             filter_spec(
               label = "Select endpoints:",
               vars = "PARAMCD",
-              choices = value_choices(data@env$ADRS, "PARAMCD", "PARAM"),
+              choices = value_choices(data[["ADRS"]], "PARAMCD", "PARAM"),
               selected = "BESRSPI",
               multiple = TRUE
             ),
             filter_spec(
               label = "Select endpoints:",
               vars = "AVISIT",
-              choices = levels(data@env$ADRS$AVISIT),
+              choices = levels(data[["ADRS"]]$AVISIT),
               selected = "SCREENING",
               multiple = TRUE
             )
@@ -184,7 +187,7 @@ app <- teal::init(
         ref = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = variable_choices(data@env$ADRS, c("AVAL", "AVALC")),
+            choices = variable_choices(data[["ADRS"]], c("AVAL", "AVALC")),
             selected = "AVALC",
             multiple = FALSE,
             fixed = FALSE,
@@ -193,15 +196,15 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(data@env$ADRS, "PARAMCD", "PARAM"),
-              selected = levels(data@env$ADRS$PARAMCD),
+              choices = value_choices(data[["ADRS"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADRS"]]$PARAMCD),
               multiple = TRUE,
               label = "Select response"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(data@env$ADRS$AVISIT),
-              selected = levels(data@env$ADRS$AVISIT),
+              choices = levels(data[["ADRS"]]$AVISIT),
+              selected = levels(data[["ADRS"]]$AVISIT),
               multiple = TRUE,
               label = "Select visit:"
             )
@@ -210,7 +213,7 @@ app <- teal::init(
         vars = teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
-            choices = variable_choices(data@env$ADSL, c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
+            choices = variable_choices(data[["ADSL"]], c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
             selected = "AGE",
             multiple = TRUE,
             fixed = FALSE,
@@ -223,7 +226,7 @@ app <- teal::init(
         ref = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = variable_choices(data@env$ADRS),
+            choices = variable_choices(data[["ADRS"]]),
             selected = "AVALC",
             multiple = FALSE,
             fixed = FALSE,
@@ -233,7 +236,7 @@ app <- teal::init(
         vars = teal.transform::data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
-            choices = variable_choices(data@env$ADRS),
+            choices = variable_choices(data[["ADRS"]]),
             selected = "PARAMCD",
             multiple = TRUE,
             fixed = FALSE,
@@ -248,21 +251,21 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(data@env$ADLB, "PARAMCD", "PARAM"),
-              selected = levels(data@env$ADLB$PARAMCD)[1],
+              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADLB"]]$PARAMCD)[1],
               multiple = FALSE,
               label = "Select lab:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(data@env$ADLB$AVISIT),
-              selected = levels(data@env$ADLB$AVISIT)[1],
+              choices = levels(data[["ADLB"]]$AVISIT),
+              selected = levels(data[["ADLB"]]$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
           ),
           select = select_spec(
-            choices = variable_choices(data@env$ADLB, c("AVAL", "CHG2", "PCHG2")),
+            choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2", "PCHG2")),
             selected = "AVAL",
             multiple = FALSE
           )
@@ -272,21 +275,21 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(data@env$ADLB, "PARAMCD", "PARAM"),
-              selected = levels(data@env$ADLB$PARAMCD)[1],
+              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADLB"]]$PARAMCD)[1],
               multiple = FALSE,
               label = "Select labs:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(data@env$ADLB$AVISIT),
-              selected = levels(data@env$ADLB$AVISIT)[1],
+              choices = levels(data[["ADLB"]]$AVISIT),
+              selected = levels(data[["ADLB"]]$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
           ),
           select = select_spec(
-            choices = variable_choices(data@env$ADLB),
+            choices = variable_choices(data[["ADLB"]]),
             selected = "STRATA1",
             multiple = TRUE
           )

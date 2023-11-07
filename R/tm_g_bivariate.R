@@ -62,7 +62,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
 #'           selected = "AGE",
 #'           fixed = FALSE
 #'         )
@@ -71,7 +71,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -81,7 +81,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
 #'           selected = "ARM",
 #'           fixed = FALSE
 #'         )
@@ -90,7 +90,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data@env$ADSL),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
 #'           selected = "COUNTRY",
 #'           fixed = FALSE
 #'         )

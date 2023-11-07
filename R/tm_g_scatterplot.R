@@ -56,7 +56,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2")
 #'           ),
 #'           selected = "AGE",
@@ -69,7 +69,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2")
 #'           ),
 #'           selected = "BMRKR1",
@@ -82,7 +82,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,
@@ -95,7 +95,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = "AGE",
@@ -108,7 +108,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,
@@ -121,7 +121,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             data@env$ADSL,
+#'             data[["ADSL"]],
 #'             c("BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,

@@ -64,7 +64,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADSL),
+            choices = variable_choices(data[["ADSL"]]),
             selected = c("AGE", "RACE", "SEX"),
             multiple = TRUE,
             ordered = TRUE,
@@ -76,13 +76,13 @@ app <- teal::init(
           filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = value_choices(data@env$ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+            choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
             selected = "INVET - END OF INDUCTION",
             multiple = TRUE
           ),
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADRS),
+            choices = variable_choices(data[["ADRS"]]),
             selected = c("AGE", "AVAL", "ADY"),
             multiple = TRUE,
             ordered = TRUE,

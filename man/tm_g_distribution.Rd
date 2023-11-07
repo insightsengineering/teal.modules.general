@@ -107,7 +107,7 @@ datanames <- c("ADSL")
 datanames(data) <- datanames
 data@join_keys <- cdisc_join_keys(!!!datanames)
 
-vars1 <- choices_selected(variable_choices(data@env$ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
+vars1 <- choices_selected(variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")), selected = NULL)
 
 app <- teal::init(
   data = data,
@@ -116,7 +116,7 @@ app <- teal::init(
       dist_var = teal.transform::data_extract_spec(
         dataname = "ADSL",
         select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(data@env$ADSL, c("AGE", "BMRKR1")),
+          choices = teal.transform::variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
           selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE

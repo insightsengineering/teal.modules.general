@@ -39,6 +39,7 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -59,6 +60,7 @@ data@join_keys <- cdisc_join_keys(!!!datanames)
 data@join_keys$mutate(
   "ADSL2", "ADSL", get_cdisc_keys("ADSL")
 )
+# nolint end
 ```
 
 ## Create an `app` variable
@@ -81,7 +83,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(data@env$ADSL),
+            choices = variable_choices(data[["ADSL"]]),
             selected = c("AGE", "RACE", "SEX", "BMRKR1", "BMRKR2"),
             multiple = TRUE,
             fixed = FALSE,
@@ -96,7 +98,7 @@ app <- teal::init(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(data@env$ADSL),
+              choices = variable_choices(data[["ADSL"]]),
               selected = c("AGE", "ACTARM", "SEX", "BMRKR1"),
               multiple = TRUE,
               fixed = FALSE,
@@ -107,7 +109,7 @@ app <- teal::init(
             dataname = "ADSL2",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(data@env$ADSL2),
+              choices = variable_choices(data[["ADSL2"]]),
               selected = c("COUNTRY", "ACTARM", "STRATA1"),
               multiple = TRUE,
               fixed = FALSE,
@@ -121,7 +123,7 @@ app <- teal::init(
         variables = teal.transform::data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
-            choices = variable_choices(data@env$ADTTE, c("AVAL", "BMRKR1", "BMRKR2")),
+            choices = variable_choices(data[["ADTTE"]], c("AVAL", "BMRKR1", "BMRKR2")),
             selected = c("AVAL", "BMRKR1", "BMRKR2"),
             multiple = TRUE,
             fixed = FALSE,
@@ -137,7 +139,7 @@ app <- teal::init(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(data@env$ADRS),
+              choices = variable_choices(data[["ADRS"]]),
               selected = c("AVAL", "AVALC"),
               multiple = TRUE,
               fixed = FALSE,
@@ -146,7 +148,7 @@ app <- teal::init(
             filter = teal.transform::filter_spec(
               label = "Select endpoints:",
               vars = c("PARAMCD", "AVISIT"),
-              choices = value_choices(data@env$ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+              choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
               selected = "OVRINV - SCREENING",
               multiple = FALSE
             )
@@ -155,7 +157,7 @@ app <- teal::init(
             dataname = "ADTTE",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(data@env$ADTTE),
+              choices = variable_choices(data[["ADTTE"]]),
               selected = c("AVAL", "CNSR"),
               multiple = TRUE,
               fixed = FALSE,
@@ -164,7 +166,7 @@ app <- teal::init(
             filter = teal.transform::filter_spec(
               label = "Select parameters:",
               vars = "PARAMCD",
-              choices = value_choices(data@env$ADTTE, "PARAMCD", "PARAM"),
+              choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
               selected = "OS",
               multiple = TRUE
             )

@@ -119,7 +119,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
           selected = "AGE",
@@ -132,7 +132,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
           selected = "BMRKR1",
@@ -145,7 +145,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
           selected = NULL,
@@ -158,7 +158,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
           selected = "AGE",
@@ -171,7 +171,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),
           selected = NULL,
@@ -184,7 +184,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            data@env$ADSL,
+            data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),
           selected = NULL,

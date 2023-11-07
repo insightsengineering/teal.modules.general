@@ -65,7 +65,7 @@ data@join_keys <- cdisc_join_keys(!!!datanames)
 
 app <- teal::init(
   data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", data@env$ADSL, code = "ADSL <- teal.modules.general::rADSL"),
+    teal.data::cdisc_dataset("ADSL", data[["ADSL"]], code = "ADSL <- teal.modules.general::rADSL"),
     check = TRUE
   ),
   modules = teal::modules(
@@ -75,7 +75,7 @@ app <- teal::init(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(data@env$ADSL, subset = function(data) {
+          choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
             return(names(data)[idx])
           }),
@@ -89,7 +89,7 @@ app <- teal::init(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = variable_choices(data@env$ADSL, subset = function(data) {
+          choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))
             return(names(data)[idx])
           }),
