@@ -53,17 +53,19 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 Present analysis of missing observations and patients.
 }
 \examples{
-library(nestcolor)
 
-ADSL <- teal.modules.general::rADSL
-ADRS <- teal.modules.general::rADRS
+data <- teal_data()
+data <- within(data, {
+  library(nestcolor)
+  ADSL <- teal.modules.general::rADSL
+  ADRS <- teal.modules.general::rADRS
+})
+datanames <- c("ADSL", "ADRS")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_missing_data(
       ggplot2_args = list(

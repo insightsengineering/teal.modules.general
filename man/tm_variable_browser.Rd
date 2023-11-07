@@ -56,15 +56,17 @@ then the default is categorical, otherwise it is numeric).
 }
 \examples{
 
-ADSL <- teal.modules.general::rADSL
-ADTTE <- teal.modules.general::rADTTE
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADTTE <- teal.modules.general::rADTTE
+})
+datanames <- c("ADSL", "ADTTE")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-    check = TRUE
-  ),
+  data = data,
   modules(
     teal.modules.general::tm_variable_browser(
       label = "Variable browser",

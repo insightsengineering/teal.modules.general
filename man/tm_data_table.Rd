@@ -54,13 +54,17 @@ Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be le
 }
 \examples{
 
-ADSL <- teal.modules.general::rADSL
+data <- teal_data()
+data <- within(data, {
+  library(nestcolor)
+  ADSL <- teal.modules.general::rADSL
+})
+datanames <- c("ADSL")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),

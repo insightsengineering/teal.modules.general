@@ -24,24 +24,23 @@
 #'
 #' # ADSL example
 #'
-#' library(nestcolor)
-#' ADSL <- teal.modules.general::rADSL
-#'
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' data@join_keys <- cdisc_join_keys(!!!datanames)
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset(
-#'       "ADSL", ADSL,
-#'       code = "ADSL <- teal.modules.general::rADSL"
-#'     ),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_a_pca(
 #'       "PCA",
 #'       dat = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
-#'           choices = teal.transform::variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+#'           choices = teal.transform::variable_choices(data = data@env$ADSL, c("BMRKR1", "AGE", "EOSDY")),
 #'           selected = c("BMRKR1", "AGE"),
 #'           multiple = TRUE
 #'         ),

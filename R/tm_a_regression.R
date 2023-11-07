@@ -34,13 +34,17 @@
 #' # Regression graphs from selected response variable (BMRKR1) and
 #' # selected regressors (AGE)
 #'
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' data@join_keys <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_a_regression(
 #'       label = "Regression",
@@ -58,7 +62,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variables:",
-#'           choices = teal.transform::variable_choices(ADSL, c("AGE", "SEX", "RACE")),
+#'           choices = teal.transform::variable_choices(data@env$ADSL, c("AGE", "SEX", "RACE")),
 #'           selected = "AGE",
 #'           multiple = TRUE,
 #'           fixed = FALSE

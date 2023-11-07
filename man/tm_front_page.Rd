@@ -40,6 +40,15 @@ This \code{teal} module creates a simple front page for \code{teal} applications
 }
 \examples{
 
+data <- teal_data()
+data <- within(data, {
+  library(nestcolor)
+  ADSL <- teal.modules.general::rADSL
+})
+datanames <- c("ADSL")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
+
 table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
 table_3 <- data.frame(Info = c("E", "F"), Text = c("G", "H"))
@@ -50,15 +59,8 @@ table_input <- list(
   "Table 3" = table_3
 )
 
-ADSL <- teal.modules.general::rADSL
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL,
-      code = "ADSL <- teal.modules.general::rADSL",
-      metadata = list("Author" = "NEST team", "data_source" = "synthetic data")
-    ),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_front_page(
       header_text = c(

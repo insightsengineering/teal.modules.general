@@ -71,14 +71,17 @@ For more examples, please see the vignette "Using association plot" via
 \examples{
 # Association plot of selected reference variable (SEX)
 # against other selected variables (BMRKR1)
-library(nestcolor)
-ADSL <- teal.modules.general::rADSL
+data <- teal_data()
+data <- within(data, {
+  library(nestcolor)
+  ADSL <- teal.modules.general::rADSL
+})
+datanames <- c("ADSL")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_g_association(
       ref = teal.transform::data_extract_spec(
@@ -86,7 +89,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variable:",
           choices = teal.transform::variable_choices(
-            ADSL,
+            data@env$ADSL,
             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
           ),
           selected = "RACE",
@@ -98,7 +101,7 @@ app <- teal::init(
         select = teal.transform::select_spec(
           label = "Select variables:",
           choices = teal.transform::variable_choices(
-            ADSL,
+            data@env$ADSL,
             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
           ),
           selected = "BMRKR2",

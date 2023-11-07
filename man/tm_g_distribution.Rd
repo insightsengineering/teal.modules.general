@@ -73,8 +73,15 @@ Module to analyze and explore univariate variable distribution
 }
 \examples{
 # Example with non-clinical data
+
+data <- teal_data()
+data <- within(data, {
+  iris <- iris
+})
+datanames(data) <- c("iris")
+
 app <- teal::init(
-  data = teal_data(dataset("iris", iris)),
+  data = data,
   modules = list(
     teal.modules.general::tm_g_distribution(
       dist_var = teal.transform::data_extract_spec(
@@ -92,22 +99,24 @@ if (interactive()) {
 }
 
 # Example with clinical data
-ADSL <- teal.modules.general::rADSL
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+})
+datanames <- c("ADSL")
+datanames(data) <- datanames
+data@join_keys <- cdisc_join_keys(!!!datanames)
 
-vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
+vars1 <- choices_selected(variable_choices(data@env$ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL),
-    code = "ADSL <- teal.modules.general::rADSL",
-    check = FALSE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_g_distribution(
       dist_var = teal.transform::data_extract_spec(
         dataname = "ADSL",
         select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(ADSL, c("AGE", "BMRKR1")),
+          choices = teal.transform::variable_choices(data@env$ADSL, c("AGE", "BMRKR1")),
           selected = "BMRKR1",
           multiple = FALSE,
           fixed = FALSE
