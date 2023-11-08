@@ -356,7 +356,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
     data_r <- data[[dataname]]
-    data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
+    data_keys <- reactive(teal.data::get_join_keys(data)$get(dataname)[[dataname]])
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
@@ -395,7 +395,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
     data_parent_keys <- reactive({
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
-        keys <- get_join_keys(data)$get(dataname)
+        keys <- teal.data::get_join_keys(data)$get(dataname)
         if (parent_dataname %in% names(keys)) {
           keys[[parent_dataname]]
         } else {

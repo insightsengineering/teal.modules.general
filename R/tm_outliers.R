@@ -294,7 +294,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
       datasets = data,
-      join_keys = get_join_keys(data),
+      join_keys = teal.data::get_join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
@@ -477,7 +477,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           },
           env = list(
             dataname = as.name(dataname_first),
-            join_keys = as.character(get_join_keys(data)$get(dataname_first)[[dataname_first]])
+            join_keys = as.character(teal.data::get_join_keys(data)$get(dataname_first)[[dataname_first]])
           )
         )
       )

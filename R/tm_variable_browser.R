@@ -1149,9 +1149,9 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data[[dataset_name]]()
-    join_keys <- get_join_keys(data)
+    join_keys <- teal.data::get_join_keys(data)
     if (!is.null(join_keys)) {
-      key <- get_join_keys(data)$get(dataset_name)[[dataset_name]]
+      key <- teal.data::get_join_keys(data)$get(dataset_name)[[dataset_name]]
     } else {
       key <- NULL
     }
@@ -1222,7 +1222,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       # get icons proper for the data types
       icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
 
-      join_keys <- get_join_keys(data)
+      join_keys <- teal.data::get_join_keys(data)
       if (!is.null(join_keys)) {
         icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
       }
