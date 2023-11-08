@@ -80,7 +80,7 @@ data <- within(data, {
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
-data@join_keys <- cdisc_join_keys(!!!datanames)
+join_keys(data) <- cdisc_join_keys(!!!datanames)
 app <- teal::init(
   data = data,
   modules = teal::modules(
@@ -106,5 +106,4 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
-
 }

@@ -34,7 +34,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
 #'   data = teal.data::cdisc_data(
@@ -278,7 +278,7 @@ srv_g_response <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = teal.data::get_join_keys(data)
+      join_keys = join_keys(data)
     )
 
     anl_merged_q <- reactive({

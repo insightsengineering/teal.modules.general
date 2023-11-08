@@ -24,7 +24,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 #' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))

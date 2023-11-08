@@ -25,7 +25,7 @@
 #' })
 #' datanames <- c("ADSL", "ADRS")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
 #'   data = data,
@@ -356,7 +356,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
     data_r <- data[[dataname]]
-    data_keys <- reactive(teal.data::get_join_keys(data)$get(dataname)[[dataname]])
+    data_keys <- reactive(unlist(join_keys(data)[[dataname]]))
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
@@ -395,7 +395,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
     data_parent_keys <- reactive({
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
-        keys <- teal.data::get_join_keys(data)$get(dataname)
+        keys <- teal.data::join_keys(data)[[dataname]]
         if (parent_dataname %in% names(keys)) {
           keys[[parent_dataname]]
         } else {

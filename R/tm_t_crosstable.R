@@ -29,7 +29,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
 #'   data = teal.data::cdisc_data(
@@ -75,7 +75,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_t_crosstable <- function(label = "Cross Table",
                             x,
                             y,
@@ -219,7 +218,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = teal.data::get_join_keys(data),
+      join_keys = join_keys(data),
       selector_list = selector_list,
       merge_function = merge_function
     )

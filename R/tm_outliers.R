@@ -23,7 +23,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
@@ -66,7 +66,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
@@ -294,7 +293,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
       datasets = data,
-      join_keys = teal.data::get_join_keys(data),
+      join_keys = join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
@@ -477,7 +476,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           },
           env = list(
             dataname = as.name(dataname_first),
-            join_keys = as.character(teal.data::get_join_keys(data)$get(dataname_first)[[dataname_first]])
+            join_keys = as.character(join_keys(data)[[dataname_first]][[dataname_first]])
           )
         )
       )

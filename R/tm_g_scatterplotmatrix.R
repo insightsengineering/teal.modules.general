@@ -27,7 +27,7 @@
 #' })
 #' datanames <- c("ADSL", "ADRS")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
 #'   data = data,
@@ -180,7 +180,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = teal.data::get_join_keys(data),
+      join_keys = join_keys(data),
       selector_list = selector_list
     )
 

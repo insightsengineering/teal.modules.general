@@ -31,7 +31,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' data@join_keys <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #' app <- teal::init(
 #'   data = data,
 #'   modules = teal::modules(
@@ -57,7 +57,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
@@ -258,7 +257,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$choices <- var_labels(data[[response[[i]]$dataname]]())
       response[[i]]$select$choices <- setdiff(
         response[[i]]$select$choices,
-        unlist(teal.data::get_join_keys(data)$get(response[[i]]$dataname))
+        unlist(join_keys(data)[[response[[i]]$dataname]])
       )
     }
 
@@ -324,7 +323,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = teal.data::get_join_keys(data)
+      join_keys = join_keys(data)
     )
 
     anl_merged_q <- reactive({
