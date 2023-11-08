@@ -32,10 +32,7 @@
 #' join_keys(data) <- cdisc_join_keys(!!!datanames)
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", data[["ADSL"]], code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_t_crosstable(
 #'       label = "Cross Table",
