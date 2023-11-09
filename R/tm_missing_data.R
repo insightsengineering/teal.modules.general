@@ -356,7 +356,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
     data_r <- data[[dataname]]
-    data_keys <- reactive(unlist(join_keys(data)[[dataname]]))
+    data_keys <- reactive(unlist(teal.data::join_keys(data)[[dataname]]))
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()

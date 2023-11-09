@@ -215,7 +215,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = join_keys(data),
+      join_keys = teal.data::join_keys(data),
       selector_list = selector_list,
       merge_function = merge_function
     )

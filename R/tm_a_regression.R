@@ -295,7 +295,7 @@ srv_a_regression <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = join_keys(data)
+      join_keys = teal.data::join_keys(data)
     )
 
     regression_var <- reactive({

@@ -257,7 +257,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$choices <- var_labels(data[[response[[i]]$dataname]]())
       response[[i]]$select$choices <- setdiff(
         response[[i]]$select$choices,
-        unlist(join_keys(data)[[response[[i]]$dataname]])
+        unlist(teal.data::join_keys(data)[[response[[i]]$dataname]])
       )
     }
 
@@ -323,7 +323,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = join_keys(data)
+      join_keys = teal.data::join_keys(data)
     )
 
     anl_merged_q <- reactive({
