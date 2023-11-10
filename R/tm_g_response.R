@@ -235,10 +235,12 @@ srv_g_response <- function(id,
 
     rule_diff <- function(other) {
       function(value) {
-        othervalue <- selector_list()[[other]]()[["select"]]
-        if (!is.null(othervalue)) {
-          if (identical(value, othervalue)) {
-            "Row and column facetting variables must be different."
+        if (other %in% names(selector_list())) {
+          othervalue <- selector_list()[[other]]()[["select"]]
+          if (!is.null(othervalue)) {
+            if (identical(value, othervalue)) {
+              "Row and column facetting variables must be different."
+            }
           }
         }
       }
