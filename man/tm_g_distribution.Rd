@@ -105,7 +105,7 @@ data <- within(data, {
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
-join_keys(data) <- cdisc_join_keys(!!!datanames)
+join_keys(data) <- default_cdisc_join_keys[datanames]
 
 vars1 <- choices_selected(
   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),

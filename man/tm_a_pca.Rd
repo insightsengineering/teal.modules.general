@@ -80,7 +80,7 @@ data <- within(data, {
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
-join_keys(data) <- cdisc_join_keys(!!!datanames)
+join_keys(data) <- default_cdisc_join_keys[datanames]
 app <- teal::init(
   data = data,
   modules = teal::modules(

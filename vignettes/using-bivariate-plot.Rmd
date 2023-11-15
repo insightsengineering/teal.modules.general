@@ -56,9 +56,8 @@ data <- within(data, {
       TRUE ~ "-"
     )))
 })
-datanames <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
-datanames(data) <- datanames
-join_keys(data) <- cdisc_join_keys(!!!datanames)
+datanames(data) <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
+join_keys(data) <- default_cdisc_join_keys[c("ADSL", "ADRS", "ADTTE", "ADLB")]
 join_keys(data)["ADSL2"] <- get_cdisc_keys("ADSL")
 # nolint end
 ```

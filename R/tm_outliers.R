@@ -23,7 +23,7 @@
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
-#' join_keys(data) <- cdisc_join_keys(!!!datanames)
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
