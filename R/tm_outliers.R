@@ -332,7 +332,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         `if`(
           length(categorical_var) == 0,
           ANL,
-          ANL[, names(ANL) != categorical_var]
+          ANL[, names(ANL) != categorical_var, drop = FALSE]
         ),
         min_nrow = 10,
         complete = TRUE,
