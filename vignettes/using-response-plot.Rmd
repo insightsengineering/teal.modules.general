@@ -55,8 +55,11 @@ data <- within(data, {
 })
 datanames <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
 datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
-join_keys(data)[["ADSL2"]][["ADSL2"]] <- c("STUDYID", "USUBJID")
+jk <- default_cdisc_join_keys[datanames]
+jk_adsl2 <- jk
+names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
+jk <- c(jk, jk_adsl2)
+jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
 # nolint end
 ```
 

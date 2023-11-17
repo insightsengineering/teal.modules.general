@@ -476,7 +476,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           },
           env = list(
             dataname = as.name(dataname_first),
-            join_keys = as.character(teal.data::join_keys(data)[[dataname_first]][[dataname_first]])
+            join_keys = as.character(teal.data::join_keys(data)[dataname_first, dataname_first])
           )
         )
       )

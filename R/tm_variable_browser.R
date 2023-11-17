@@ -1151,7 +1151,7 @@ render_tab_header <- function(dataset_name, output, data) {
     df <- data[[dataset_name]]()
     join_keys <- join_keys(data)
     if (!is.null(join_keys)) {
-      key <- join_keys(data)[[dataset_name]][[dataset_name]]
+      key <- join_keys(data)[dataset_name, dataset_name]
     } else {
       key <- NULL
     }
@@ -1224,7 +1224,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
       join_keys <- join_keys(data)
       if (!is.null(join_keys)) {
-        icons[intersect(join_keys[[dataset_name]][[dataset_name]], colnames(df))] <- "primary_key"
+        icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }
       icons <- variable_type_icons(icons)
 
