@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9010</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,15 +59,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -160,15 +151,19 @@ module could look like this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">teal.modules.general</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span> <span class="co"># nolint</span></span>
-<span><span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span> <span class="co"># nolint</span></span>
+<span><span class="co"># nolint start</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
+<span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
+<span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
+<span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
+<span><span class="co"># nolint end</span></span>
 <span></span>
 <span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span></span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, x <span class="op">=</span> <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- teal.modules.general::rADSL"</span><span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, x <span class="op">=</span> <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- teal.modules.general::rADTTE"</span><span class="op">)</span>,</span>
-<span>    check <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
 <span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
 <span>      label <span class="op">=</span> <span class="st">"Variable browser"</span>,</span>
@@ -185,9 +180,26 @@ module could look like this:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">teal.modules.general</span><span class="op">)</span></span></code></pre></div>
 <p>The line mentioned above imports the library required for this
 example and loads data from within that library.</p>
+<p>Now, we are building a <code>teal_data</code> object that will serve
+as the source of data for the teal app. <code>teal_data</code> not only
+encapsulates the data for the app, but it also houses the code required
+to create the data to maintain reproducibility. To do this, we create an
+empty <code>teal_data</code> object and evaluate code to produce the
+data within the <code>teal_data</code> object, so both the code and data
+are stored together.</p>
+<p>Following this, we set the <code>datanames</code> and
+<code>join_keys</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
-<span><span class="va">ADAE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADAE.html">rADAE</a></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
+<span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
+<span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
+<span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
+<span><span class="co"># nolint end</span></span></code></pre></div>
 <p>There is no need to load <code>teal</code> as
 <code>teal.modules.general</code> already depends on it.</p>
 <p>In the next step, we use <code>teal</code> to create
@@ -199,11 +211,7 @@ argument indicates the modules included in the application. Here, we
 include only one - <code>tm_variable_browser</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span></span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, x <span class="op">=</span> <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- teal.modules.general::rADSL"</span><span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, x <span class="op">=</span> <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- teal.modules.general::rADTTE"</span><span class="op">)</span>,</span>
-<span>    check <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># to check if the code executes to the data provided, x, i.e. ADSL and ADTTE</span></span>
-<span>  <span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
 <span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
 <span>      <span class="co"># module name to display in the GUI</span></span>

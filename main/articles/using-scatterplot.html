@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9010</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,15 +59,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -103,7 +94,7 @@
                         <h4 data-toc-skip class="author">Dawid
 Kałędkowski</h4>
             
-            <h4 data-toc-skip class="date">2023-09-14</h4>
+            <h4 data-toc-skip class="date">2023-11-20</h4>
       
       
       <div class="d-none name"><code>using-scatterplot.Rmd</code></div>
@@ -151,17 +142,27 @@ subject</li>
 </ol>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
-<span><span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>TRTDUR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">TRTEDTM</span> <span class="op">-</span> <span class="va">TRTSDTM</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADRS.html">rADRS</a></span></span>
-<span><span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
-<span><span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADLB.html">rADLB</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CHGC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>    <span class="va">CHG</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"N"</span>,</span>
-<span>    <span class="va">CHG</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"P"</span>,</span>
-<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"-"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
+<span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
+<span>  <span class="va">ADSL2</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>TRTDUR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">TRTEDTM</span> <span class="op">-</span> <span class="va">TRTSDTM</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADRS.html">rADRS</a></span></span>
+<span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
+<span>  <span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADLB.html">rADLB</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CHGC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="va">CHG</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"N"</span>,</span>
+<span>      <span class="va">CHG</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"P"</span>,</span>
+<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"-"</span></span>
+<span>    <span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADSL2"</span>, <span class="st">"ADRS"</span>, <span class="st">"ADTTE"</span>, <span class="st">"ADLB"</span><span class="op">)</span></span>
+<span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
+<span><span class="va">jk</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
+<span><span class="va">jk_adsl2</span> <span class="op">&lt;-</span> <span class="va">jk</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">jk_adsl2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">jk_adsl2</span><span class="op">)</span> <span class="op">==</span> <span class="st">"ADSL"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"ADSL2"</span></span>
+<span><span class="va">jk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">jk</span>, <span class="va">jk_adsl2</span><span class="op">)</span></span>
+<span><span class="va">jk</span><span class="op">[</span><span class="st">"ADSL2"</span>, <span class="st">"ADSL"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"USUBJID"</span>, <span class="st">"STUDYID"</span><span class="op">)</span></span>
 <span><span class="co"># nolint end</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -174,57 +175,37 @@ The app itself will be constructed by multiple calls of
 sets.</p>
 <div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_data.html" class="external-link">cdisc_data</a></span><span class="op">(</span></span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="va">ADSL</span>, code <span class="op">=</span> <span class="st">"ADSL &lt;- teal.modules.general::rADSL"</span><span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span></span>
-<span>      <span class="st">"ADSL2"</span>,</span>
-<span>      <span class="va">ADSL2</span>,</span>
-<span>      keys <span class="op">=</span> <span class="fu">get_cdisc_keys</span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>,</span>
-<span>      code <span class="op">=</span> <span class="st">"ADSL2 &lt;- teal.modules.general::rADSL %&gt;%</span></span>
-<span><span class="st">              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADRS"</span>, <span class="va">ADRS</span>, code <span class="op">=</span> <span class="st">"ADRS &lt;- teal.modules.general::rADRS"</span><span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="va">ADTTE</span>, code <span class="op">=</span> <span class="st">"ADTTE &lt;- teal.modules.general::rADTTE"</span><span class="op">)</span>,</span>
-<span>    <span class="fu">teal.data</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.data/man/cdisc_dataset.html" class="external-link">cdisc_dataset</a></span><span class="op">(</span><span class="st">"ADLB"</span>, <span class="va">ADLB</span>,</span>
-<span>      code <span class="op">=</span> <span class="st">"ADLB &lt;- teal.modules.general::rADLB %&gt;%</span></span>
-<span><span class="st">            mutate(CHGC = as.factor(case_when(</span></span>
-<span><span class="st">            CHG &lt; 1 ~ 'N',</span></span>
-<span><span class="st">            CHG &gt; 1 ~ 'P',</span></span>
-<span><span class="st">            TRUE ~ '-'</span></span>
-<span><span class="st">            )))"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    check <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
 <span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/reference/modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
 <span>    <span class="fu">modules</span><span class="op">(</span></span>
 <span>      label <span class="op">=</span> <span class="st">"Scatterplot"</span>,</span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Single wide dataset"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AGE"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"BMRKR1"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variables:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RACE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RACE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -234,31 +215,31 @@ sets.</p>
 <span>      <span class="co"># .. Two wide -----</span></span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Two wide datasets"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"BMRKR1"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL2"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL2</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL2"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AGE"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL2"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL2</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COUNTRY"</span>, <span class="st">"AGE"</span>, <span class="st">"RACE"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL2"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COUNTRY"</span>, <span class="st">"AGE"</span>, <span class="st">"RACE"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"COUNTRY"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -267,45 +248,45 @@ sets.</p>
 <span>      <span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Different long datasets"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADRS"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADRS</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADRS"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AVAL"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span>,</span>
-<span>          filter <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/filter_spec.html" class="external-link">filter_spec</a></span><span class="op">(</span></span>
+<span>          filter <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/filter_spec.html" class="external-link">filter_spec</a></span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select endpoint:"</span>,</span>
 <span>            vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAMCD"</span>, <span class="st">"AVISIT"</span><span class="op">)</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAMCD"</span>, <span class="st">"AVISIT"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAM"</span>, <span class="st">"AVISIT"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADRS"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAMCD"</span>, <span class="st">"AVISIT"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAM"</span>, <span class="st">"AVISIT"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"OVRINV - SCREENING"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADTTE"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADTTE</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADTTE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AVAL"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span>,</span>
-<span>          filter <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/filter_spec.html" class="external-link">filter_spec</a></span><span class="op">(</span></span>
+<span>          filter <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/filter_spec.html" class="external-link">filter_spec</a></span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select parameters:"</span>,</span>
 <span>            vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PARAMCD"</span><span class="op">)</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADTTE</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADTTE"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"OS"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AGE"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -314,30 +295,30 @@ sets.</p>
 <span>      <span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Wide and long datasets"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AGE"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADLB"</span>,</span>
 <span>          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select measurement:"</span></span>
 <span>            <span class="op">)</span>,</span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"AVISIT"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select visit:"</span></span>
 <span>            <span class="op">)</span></span>
@@ -350,11 +331,11 @@ sets.</p>
 <span>            fixed <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADSL</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"AGE"</span>, <span class="st">"RACE"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"AGE"</span>, <span class="st">"RACE"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -363,30 +344,30 @@ sets.</p>
 <span>      <span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Same long datasets (same subsets)"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADRS"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADRS"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"AVAL"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADRS"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADRS"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AVAL"</span>, <span class="st">"BMRKR1"</span>, <span class="st">"BMRKR2"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"BMRKR1"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            label <span class="op">=</span> <span class="st">"Select variable:"</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADRS"</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADRS</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span>, <span class="st">"RACE"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADRS"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"SEX"</span>, <span class="st">"RACE"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -396,20 +377,20 @@ sets.</p>
 <span>      <span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="../reference/tm_g_scatterplot.html">tm_g_scatterplot</a></span><span class="op">(</span></span>
 <span>        label <span class="op">=</span> <span class="st">"Same long datasets (different subsets)"</span>,</span>
-<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADLB"</span>,</span>
 <span>          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select lab:"</span></span>
 <span>            <span class="op">)</span>,</span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"AVISIT"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select visit:"</span></span>
 <span>            <span class="op">)</span></span>
@@ -421,20 +402,20 @@ sets.</p>
 <span>            fixed <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        y <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADLB"</span>,</span>
 <span>          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select lab:"</span></span>
 <span>            <span class="op">)</span>,</span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"AVISIT"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select visit:"</span></span>
 <span>            <span class="op">)</span></span>
@@ -446,26 +427,26 @@ sets.</p>
 <span>            fixed <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>          <span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.transform/man/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
+<span>        color_by <span class="op">=</span> <span class="fu">teal.transform</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_spec.html" class="external-link">data_extract_spec</a></span><span class="op">(</span></span>
 <span>          dataname <span class="op">=</span> <span class="st">"ADLB"</span>,</span>
 <span>          filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"PARAMCD"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"PARAMCD"</span>, <span class="st">"PARAM"</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PARAMCD</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select lab:"</span></span>
 <span>            <span class="op">)</span>,</span>
 <span>            <span class="fu">filter_spec</span><span class="op">(</span></span>
 <span>              vars <span class="op">=</span> <span class="st">"AVISIT"</span>,</span>
-<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
-<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ADLB</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>              choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span>,</span>
+<span>              selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AVISIT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>              multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>              label <span class="op">=</span> <span class="st">"Select visit:"</span></span>
 <span>            <span class="op">)</span></span>
 <span>          <span class="op">)</span>,</span>
 <span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span>
-<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">ADLB</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RACE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADLB"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RACE"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            selected <span class="op">=</span> <span class="st">"SEX"</span>,</span>
 <span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -485,7 +466,7 @@ Note that app is only displayed when running this code inside an R
 session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<iframe data-deferred-src="appd4953f63412fb133c51b2531f51aa4b3/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe>
+<iframe data-deferred-src="app49a5511188074c037989321948b7b69f/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
