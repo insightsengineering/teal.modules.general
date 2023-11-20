@@ -37,9 +37,15 @@ Inside this app 5 datasets will be used
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # nolint start
-ADSL <- teal.modules.general::rADSL
-ADRS <- teal.modules.general::rADRS
-ADLB <- teal.modules.general::rADLB
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADRS <- teal.modules.general::rADRS
+  ADLB <- teal.modules.general::rADLB
+})
+datanames <- c("ADSL", "ADRS", "ADLB")
+datanames(data) <- datanames
+join_keys(data) <- default_cdisc_join_keys[datanames]
 # nolint end
 ```
 
@@ -52,12 +58,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-    teal.data::cdisc_dataset("ADLB", ADLB, code = "ADLB <- teal.modules.general::rADLB"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     # tm_outliers ----
     modules(
@@ -68,7 +69,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+            choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
             selected = "AGE",
             fixed = FALSE
           )
@@ -77,7 +78,10 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(ADSL, subset = names(Filter(isTRUE, sapply(ADSL, is.factor)))),
+            choices = variable_choices(
+              data[["ADSL"]],
+              subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
+            ),
             selected = "RACE",
             multiple = FALSE,
             fixed = FALSE
@@ -91,7 +95,7 @@ app <- teal::init(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variable:",
-              choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+              choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
               selected = "AGE",
               fixed = FALSE
             )
@@ -100,7 +104,7 @@ app <- teal::init(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
-              choices = variable_choices(ADLB, c("AVAL", "CHG2")),
+              choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
               selected = "AVAL",
               multiple = FALSE,
               fixed = FALSE
@@ -112,7 +116,10 @@ app <- teal::init(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(ADSL, subset = names(Filter(isTRUE, sapply(ADSL, is.factor)))),
+              choices = variable_choices(
+                data[["ADSL"]],
+                subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
+              ),
               selected = "RACE",
               multiple = FALSE,
               fixed = FALSE
@@ -126,7 +133,7 @@ app <- teal::init(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variable:",
-              choices = variable_choices(ADRS, c("ADY", "EOSDY")),
+              choices = variable_choices(data[["ADRS"]], c("ADY", "EOSDY")),
               selected = "ADY",
               fixed = FALSE
             )
@@ -135,7 +142,7 @@ app <- teal::init(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
-              choices = variable_choices(ADLB, c("AVAL", "CHG2")),
+              choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
               selected = "AVAL",
               multiple = FALSE,
               fixed = FALSE
@@ -147,7 +154,7 @@ app <- teal::init(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(ADRS, c("ARM", "ACTARM")),
+              choices = variable_choices(data[["ADRS"]], c("ARM", "ACTARM")),
               selected = "ARM",
               multiple = FALSE,
               fixed = FALSE
@@ -157,7 +164,10 @@ app <- teal::init(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variables:",
-              choices = variable_choices(ADLB, subset = names(Filter(isTRUE, sapply(ADLB, is.factor)))),
+              choices = variable_choices(
+                data[["ADLB"]],
+                subset = names(Filter(isTRUE, sapply(data[["ADLB"]], is.factor)))
+              ),
               selected = "RACE",
               multiple = FALSE,
               fixed = FALSE

@@ -31,15 +31,17 @@
 #'
 #' @examples
 #'
-#' ADSL <- teal.modules.general::rADSL
-#' ADTTE <- teal.modules.general::rADTTE
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- teal.modules.general::rADSL
+#'   ADTTE <- teal.modules.general::rADTTE
+#' })
+#' datanames <- c("ADSL", "ADTTE")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules(
 #'     teal.modules.general::tm_variable_browser(
 #'       label = "Variable browser",
@@ -1147,9 +1149,9 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data[[dataset_name]]()
-    join_keys <- get_join_keys(data)
+    join_keys <- join_keys(data)
     if (!is.null(join_keys)) {
-      key <- get_join_keys(data)$get(dataset_name)[[dataset_name]]
+      key <- join_keys(data)[dataset_name, dataset_name]
     } else {
       key <- NULL
     }
@@ -1220,9 +1222,9 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       # get icons proper for the data types
       icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
 
-      join_keys <- get_join_keys(data)
+      join_keys <- join_keys(data)
       if (!is.null(join_keys)) {
-        icons[intersect(join_keys$get(dataset_name)[[dataset_name]], colnames(df))] <- "primary_key"
+        icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }
       icons <- variable_type_icons(icons)
 

@@ -23,13 +23,16 @@
 #' @examples
 #' # Percentage cross table of variables from ADSL dataset
 #'
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_t_crosstable(
 #'       label = "Cross Table",
@@ -37,7 +40,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, subset = function(data) {
+#'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
 #'             return(names(data)[idx])
 #'           }),
@@ -51,7 +54,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(ADSL, subset = function(data) {
+#'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- vapply(data, is.factor, logical(1))
 #'             return(names(data)[idx])
 #'           }),
@@ -69,7 +72,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_t_crosstable <- function(label = "Cross Table",
                             x,
                             y,
@@ -213,7 +215,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = get_join_keys(data),
+      join_keys = teal.data::join_keys(data),
       selector_list = selector_list,
       merge_function = merge_function
     )

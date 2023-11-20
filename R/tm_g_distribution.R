@@ -29,8 +29,15 @@
 #'
 #' @examples
 #' # Example with non-clinical data
+#'
+#' data <- teal_data()
+#' data <- within(data, {
+#'   iris <- iris
+#' })
+#' datanames(data) <- c("iris")
+#'
 #' app <- teal::init(
-#'   data = teal_data(dataset("iris", iris)),
+#'   data = data,
 #'   modules = list(
 #'     teal.modules.general::tm_g_distribution(
 #'       dist_var = teal.transform::data_extract_spec(
@@ -48,22 +55,27 @@
 #' }
 #'
 #' # Example with clinical data
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' vars1 <- choices_selected(variable_choices(ADSL, c("ARM", "COUNTRY", "SEX")), selected = NULL)
+#' vars1 <- choices_selected(
+#'   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
+#'   selected = NULL
+#' )
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL),
-#'     code = "ADSL <- teal.modules.general::rADSL",
-#'     check = FALSE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_g_distribution(
 #'       dist_var = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
-#'           choices = teal.transform::variable_choices(ADSL, c("AGE", "BMRKR1")),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -435,7 +447,7 @@ srv_distribution <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = get_join_keys(data)
+      join_keys = teal.data::join_keys(data)
     )
 
     anl_merged_q <- reactive({

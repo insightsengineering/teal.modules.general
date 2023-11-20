@@ -113,20 +113,24 @@ For more examples, please see the vignette "Using bivariate plot" via
 }
 \examples{
 # Bivariate plot of selected variable (AGE) against selected (SEX)
-ADSL <- teal.modules.general::rADSL
+data <- teal_data()
+data <- within(data, {
+  library(nestcolor)
+  ADSL <- teal.modules.general::rADSL
+})
+datanames <- c("ADSL")
+datanames(data) <- datanames
+join_keys(data) <- default_cdisc_join_keys[datanames]
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_g_bivariate(
       x = teal.transform::data_extract_spec(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(ADSL),
+          choices = teal.transform::variable_choices(data[["ADSL"]]),
           selected = "AGE",
           fixed = FALSE
         )
@@ -135,7 +139,7 @@ app <- teal::init(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(ADSL),
+          choices = teal.transform::variable_choices(data[["ADSL"]]),
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
@@ -145,7 +149,7 @@ app <- teal::init(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(ADSL),
+          choices = teal.transform::variable_choices(data[["ADSL"]]),
           selected = "ARM",
           fixed = FALSE
         )
@@ -154,7 +158,7 @@ app <- teal::init(
         dataname = "ADSL",
         select = teal.transform::select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(ADSL),
+          choices = teal.transform::variable_choices(data[["ADSL"]]),
           selected = "COUNTRY",
           fixed = FALSE
         )

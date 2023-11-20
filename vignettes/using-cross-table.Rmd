@@ -29,27 +29,26 @@ library(dplyr) # used to modify data sets
 
 ## Create data sets
 
-Inside this app 5 datasets will be used
+Inside this app 2 datasets will be used
 
 1. `ADSL` A wide data set with subject data
-2. `ADSL2` A wide data set with subject data
-3. `ADRS` A long data set with response data for subjects at different time points of the study
-4. `ADTTE` A long data set with time to event data
-5. `ADLB` A long data set with lab measurements for each subject
+2. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
 # nolint start
-ADSL <- teal.modules.general::rADSL
-ADSL2 <- teal.modules.general::rADSL %>%
-  mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS
-ADTTE <- teal.modules.general::rADTTE
-ADLB <- teal.modules.general::rADLB %>%
-  mutate(CHGC = as.factor(case_when(
-    CHG < 1 ~ "N",
-    CHG > 1 ~ "P",
-    TRUE ~ "-"
-  )))
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADLB <- teal.modules.general::rADLB %>%
+    mutate(CHGC = as.factor(case_when(
+      CHG < 1 ~ "N",
+      CHG > 1 ~ "P",
+      TRUE ~ "-"
+    )))
+})
+datanames <- c("ADSL", "ADLB")
+datanames(data) <- datanames
+join_keys(data) <- default_cdisc_join_keys[datanames]
 # nolint end
 ```
 
@@ -62,27 +61,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset(
-      "ADSL2",
-      ADSL2,
-      keys = get_cdisc_keys("ADSL"),
-      code = "ADSL2 <- teal.modules.general::rADSL %>%
-              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
-    ),
-    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-    teal.data::cdisc_dataset("ADLB", ADLB,
-      code = "ADLB <- teal.modules.general::rADLB %>%
-            mutate(CHGC = as.factor(case_when(
-            CHG < 1 ~ 'N',
-            CHG > 1 ~ 'P',
-            TRUE ~ '-'
-            )))"
-    ),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     modules(
       label = "Cross table",
@@ -92,8 +71,8 @@ app <- teal::init(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL),
-            selected = names(ADSL)[5],
+            choices = variable_choices(data[["ADSL"]]),
+            selected = names(data[["ADSL"]])[5],
             multiple = TRUE,
             fixed = FALSE,
             ordered = TRUE
@@ -103,8 +82,8 @@ app <- teal::init(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL),
-            selected = names(ADSL)[6],
+            choices = variable_choices(data[["ADSL"]]),
+            selected = names(data[["ADSL"]])[6],
             multiple = FALSE,
             fixed = FALSE
           )
@@ -116,12 +95,12 @@ app <- teal::init(
           dataname = "ADLB",
           filter = teal.transform::filter_spec(
             vars = "PARAMCD",
-            choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-            selected = levels(ADLB$PARAMCD)[1],
+            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+            selected = levels(data[["ADLB"]]$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = variable_choices(ADLB),
+            choices = variable_choices(data[["ADLB"]]),
             selected = "AVISIT",
             multiple = TRUE,
             fixed = FALSE,
@@ -133,12 +112,12 @@ app <- teal::init(
           dataname = "ADLB",
           filter = teal.transform::filter_spec(
             vars = "PARAMCD",
-            choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-            selected = levels(ADLB$PARAMCD)[1],
+            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+            selected = levels(data[["ADLB"]]$PARAMCD)[1],
             multiple = FALSE
           ),
           select = select_spec(
-            choices = variable_choices(ADLB),
+            choices = variable_choices(data[["ADLB"]]),
             selected = "LOQFL",
             multiple = FALSE,
             fixed = FALSE,

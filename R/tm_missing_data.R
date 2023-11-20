@@ -16,17 +16,19 @@
 #' @export
 #'
 #' @examples
-#' library(nestcolor)
 #'
-#' ADSL <- teal.modules.general::rADSL
-#' ADRS <- teal.modules.general::rADRS
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#'   ADRS <- teal.modules.general::rADRS
+#' })
+#' datanames <- c("ADSL", "ADRS")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_missing_data(
 #'       ggplot2_args = list(
@@ -354,7 +356,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   moduleServer(id, function(input, output, session) {
     prev_group_by_var <- reactiveVal("")
     data_r <- data[[dataname]]
-    data_keys <- reactive(get_join_keys(data)$get(dataname)[[dataname]])
+    data_keys <- reactive(unlist(teal.data::join_keys(data)[[dataname]]))
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
@@ -393,7 +395,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
     data_parent_keys <- reactive({
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
-        keys <- get_join_keys(data)$get(dataname)
+        keys <- teal.data::join_keys(data)[[dataname]]
         if (parent_dataname %in% names(keys)) {
           keys[[parent_dataname]]
         } else {

@@ -40,17 +40,27 @@ Inside this app 5 datasets will be used
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # nolint start
-ADSL <- teal.modules.general::rADSL
-ADSL2 <- teal.modules.general::rADSL %>%
-  mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-ADRS <- teal.modules.general::rADRS
-ADTTE <- teal.modules.general::rADTTE
-ADLB <- teal.modules.general::rADLB %>%
-  mutate(CHGC = as.factor(case_when(
-    CHG < 1 ~ "N",
-    CHG > 1 ~ "P",
-    TRUE ~ "-"
-  )))
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADSL2 <- teal.modules.general::rADSL %>%
+    mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
+  ADRS <- teal.modules.general::rADRS
+  ADTTE <- teal.modules.general::rADTTE
+  ADLB <- teal.modules.general::rADLB %>%
+    mutate(CHGC = as.factor(case_when(
+      CHG < 1 ~ "N",
+      CHG > 1 ~ "P",
+      TRUE ~ "-"
+    )))
+})
+datanames <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
+datanames(data) <- datanames
+jk <- default_cdisc_join_keys[datanames]
+jk_adsl2 <- jk
+names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
+jk <- c(jk, jk_adsl2)
+jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
 # nolint end
 ```
 
@@ -63,27 +73,7 @@ combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADSL2", ADSL2,
-      keys = get_cdisc_keys("ADSL"),
-      code = "ADSL2 <- teal.modules.general::rADSL %>%
-              mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))"
-    ),
-    teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-    teal.data::cdisc_dataset("ADTTE", ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-    teal.data::cdisc_dataset(
-      "ADLB",
-      ADLB,
-      code = "ADLB <- teal.modules.general::rADLB %>%
-            mutate(CHGC = as.factor(case_when(
-            CHG < 1 ~ 'N',
-            CHG > 1 ~ 'P',
-            TRUE ~ '-'
-            )))"
-    ),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     modules(
       label = "Regression plots",
@@ -93,7 +83,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL, c("BMRKR1", "BMRKR2")),
+            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE
@@ -103,7 +93,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(ADSL, c("AGE", "SEX", "RACE")),
+            choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
             selected = "AGE",
             multiple = TRUE,
             fixed = FALSE
@@ -117,7 +107,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADSL, c("BMRKR1", "BMRKR2")),
+            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
             selected = "BMRKR1",
             multiple = FALSE,
             fixed = FALSE
@@ -127,7 +117,7 @@ app <- teal::init(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(ADSL2, c("AGE", "SEX", "RACE")),
+            choices = variable_choices(data[["ADSL2"]], c("AGE", "SEX", "RACE")),
             selected = c("AGE", "RACE"),
             multiple = TRUE,
             fixed = FALSE
@@ -141,7 +131,7 @@ app <- teal::init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADTTE, c("AVAL", "CNSR")),
+            choices = variable_choices(data[["ADTTE"]], c("AVAL", "CNSR")),
             selected = "AVAL",
             multiple = FALSE,
             fixed = FALSE
@@ -149,7 +139,7 @@ app <- teal::init(
           filter = teal.transform::filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
-            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
+            choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
             selected = "PFS",
             multiple = FALSE
           )
@@ -158,14 +148,14 @@ app <- teal::init(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
-            choices = variable_choices(ADTTE, c("AGE", "CNSR", "SEX")),
+            choices = variable_choices(data[["ADTTE"]], c("AGE", "CNSR", "SEX")),
             selected = c("AGE", "CNSR", "SEX"),
             multiple = TRUE
           ),
           filter = teal.transform::filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
-            choices = value_choices(ADTTE, "PARAMCD", "PARAM"),
+            choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
             selected = "PFS",
             multiple = FALSE
           )
@@ -178,15 +168,15 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-              selected = levels(ADLB$PARAMCD)[2],
+              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADLB"]]$PARAMCD)[2],
               multiple = TRUE,
               label = "Select measurement:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[2],
+              choices = levels(data[["ADLB"]]$AVISIT),
+              selected = levels(data[["ADLB"]]$AVISIT)[2],
               multiple = TRUE,
               label = "Select visit:"
             )
@@ -203,7 +193,7 @@ app <- teal::init(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
-            choices = variable_choices(ADSL, c("BMRKR1", "BMRKR2", "AGE")),
+            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2", "AGE")),
             selected = "AGE",
             multiple = TRUE,
             fixed = FALSE
@@ -218,15 +208,15 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-              selected = levels(ADLB$PARAMCD)[1],
+              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADLB"]]$PARAMCD)[1],
               multiple = TRUE,
               label = "Select lab:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[1],
+              choices = levels(data[["ADLB"]]$AVISIT),
+              selected = levels(data[["ADLB"]]$AVISIT)[1],
               multiple = TRUE,
               label = "Select visit:"
             )
@@ -243,21 +233,21 @@ app <- teal::init(
           filter = list(
             filter_spec(
               vars = "PARAMCD",
-              choices = value_choices(ADLB, "PARAMCD", "PARAM"),
-              selected = levels(ADLB$PARAMCD)[1],
+              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+              selected = levels(data[["ADLB"]]$PARAMCD)[1],
               multiple = FALSE,
               label = "Select labs:"
             ),
             filter_spec(
               vars = "AVISIT",
-              choices = levels(ADLB$AVISIT),
-              selected = levels(ADLB$AVISIT)[1],
+              choices = levels(data[["ADLB"]]$AVISIT),
+              selected = levels(data[["ADLB"]]$AVISIT)[1],
               multiple = FALSE,
               label = "Select visit:"
             )
           ),
           select = select_spec(
-            choices = variable_choices(ADLB, c("AVAL", "AGE", "BMRKR1", "BMRKR2", "SEX", "ARM")),
+            choices = variable_choices(data[["ADLB"]], c("AVAL", "AGE", "BMRKR1", "BMRKR2", "SEX", "ARM")),
             selected = c("AVAL", "BMRKR1"),
             multiple = TRUE
           )
