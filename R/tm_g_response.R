@@ -26,15 +26,18 @@
 #' @export
 #' @examples
 #' # Response plot with selected response (BMRKR1) and selected x variable (RACE)
-#' library(nestcolor)
 #'
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_g_response(
 #'       label = "Response Plots",
@@ -42,7 +45,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL, c("BMRKR2", "COUNTRY")),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
 #'           selected = "BMRKR2",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -52,7 +55,7 @@
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(ADSL, c("SEX", "RACE")),
+#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("SEX", "RACE")),
 #'           selected = "RACE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -272,7 +275,7 @@ srv_g_response <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = get_join_keys(data)
+      join_keys = teal.data::join_keys(data)
     )
 
     anl_merged_q <- reactive({
