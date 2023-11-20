@@ -216,7 +216,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       }
 
       teal::validate_has_data(ANL, 10)
-      teal::validate_has_data(ANL[, cols_names], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
       varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
