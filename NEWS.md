@@ -1,5 +1,9 @@
 # teal.modules.general 0.2.16.9010
 
+### Enhancements
+
+* Updated the package docs and vignettes with the new way of specifying data for `teal::init()`. The `data` argument will accept a `teal_data` object
+
 ### Miscellaneous
 
 * Specified minimal version of package dependencies.

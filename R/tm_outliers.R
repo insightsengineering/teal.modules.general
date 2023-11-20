@@ -17,16 +17,19 @@
 #'
 #' @examples
 #'
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' fact_vars_adsl <- names(Filter(isTRUE, sapply(ADSL, is.factor)))
-#' vars <- choices_selected(variable_choices(ADSL, fact_vars_adsl))
+#' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
+#' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_outliers(
 #'       outlier_var = list(
@@ -34,7 +37,7 @@
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variable:",
-#'             choices = variable_choices(ADSL, c("AGE", "BMRKR1")),
+#'             choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
 #'             selected = "AGE",
 #'             multiple = FALSE,
 #'             fixed = FALSE
@@ -46,8 +49,8 @@
 #'           dataname = "ADSL",
 #'           filter = teal.transform::filter_spec(
 #'             vars = vars,
-#'             choices = value_choices(ADSL, vars$selected),
-#'             selected = value_choices(ADSL, vars$selected),
+#'             choices = value_choices(data[["ADSL"]], vars$selected),
+#'             selected = value_choices(data[["ADSL"]], vars$selected),
 #'             multiple = TRUE
 #'           )
 #'         )
@@ -63,7 +66,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
@@ -291,7 +293,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
       datasets = data,
-      join_keys = get_join_keys(data),
+      join_keys = teal.data::join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
@@ -474,7 +476,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           },
           env = list(
             dataname = as.name(dataname_first),
-            join_keys = as.character(get_join_keys(data)$get(dataname_first)[[dataname_first]])
+            join_keys = as.character(teal.data::join_keys(data)[dataname_first, dataname_first])
           )
         )
       )

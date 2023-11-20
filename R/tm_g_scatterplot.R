@@ -36,15 +36,18 @@
 #' @export
 #' @examples
 #' # Scatterplot of variables from ADSL dataset
-#' library(nestcolor)
 #'
-#' ADSL <- teal.modules.general::rADSL
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
@@ -53,7 +56,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2")
 #'           ),
 #'           selected = "AGE",
@@ -66,7 +69,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2")
 #'           ),
 #'           selected = "BMRKR1",
@@ -79,7 +82,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,
@@ -92,7 +95,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = "AGE",
@@ -105,7 +108,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,
@@ -118,7 +121,7 @@
 #'         select = teal.transform::select_spec(
 #'           label = "Select variable:",
 #'           choices = teal.transform::variable_choices(
-#'             ADSL,
+#'             data[["ADSL"]],
 #'             c("BMRKR2", "RACE", "REGION1")
 #'           ),
 #'           selected = NULL,
@@ -468,7 +471,7 @@ srv_g_scatterplot <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = get_join_keys(data),
+      join_keys = teal.data::join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 

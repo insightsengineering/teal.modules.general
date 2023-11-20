@@ -23,11 +23,14 @@ Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
 \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-data <- data.frame(1)
+data <- teal_data()
+data <- within(data, {
+  data <- data.frame(1)
+})
+datanames(data) <- c("data")
+
 app <- teal::init(
-  data = teal_data(
-    dataset("data", data)
-  ),
+  data = data,
   modules = teal::modules(
     teal.modules.general::tm_file_viewer(
       input_path = list(

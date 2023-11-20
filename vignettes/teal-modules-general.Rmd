@@ -43,15 +43,19 @@ A simple application including a `tm_variable_browser` module could look like th
 ```{r, message = FALSE, results = "hide"}
 library(teal.modules.general)
 
-ADSL <- teal.modules.general::rADSL # nolint
-ADTTE <- teal.modules.general::rADTTE # nolint
+# nolint start
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADTTE <- teal.modules.general::rADTTE
+})
+datanames <- c("ADSL", "ADTTE")
+datanames(data) <- datanames
+join_keys(data) <- default_cdisc_join_keys[datanames]
+# nolint end
 
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-    check = TRUE
-  ),
+  data = data,
   modules = teal::modules(
     tm_variable_browser(
       label = "Variable browser",
@@ -72,10 +76,27 @@ Let's break the above app into pieces:
 library(teal.modules.general)
 ```
 The line mentioned above imports the library required for this example and loads data from within that library.
+
+Now, we are building a `teal_data` object that will serve as the source of data for the teal app.
+`teal_data` not only encapsulates the data for the app, but it also houses the code required to create the data to maintain reproducibility.
+To do this, we create an empty `teal_data` object and evaluate code to produce the data within the `teal_data` object,
+so both the code and data are stored together.
+
+Following this, we set the `datanames` and `join_keys`.
+
 ```r
-ADSL <- teal.modules.general::rADSL
-ADAE <- teal.modules.general::rADAE
+# nolint start
+data <- teal_data()
+data <- within(data, {
+  ADSL <- teal.modules.general::rADSL
+  ADTTE <- teal.modules.general::rADTTE
+})
+datanames <- c("ADSL", "ADTTE")
+datanames(data) <- datanames
+join_keys(data) <- default_cdisc_join_keys[datanames]
+# nolint end
 ```
+
 There is no need to load `teal` as `teal.modules.general` already depends on it.
 
 In the next step, we use `teal` to create `shiny` `ui` and `server` functions so we can launch using `shiny`. The `data`
@@ -84,11 +105,7 @@ argument indicates the modules included in the application. Here, we include onl
 
 ```{r, results = "hide"}
 app <- teal::init(
-  data = teal.data::cdisc_data(
-    teal.data::cdisc_dataset("ADSL", x = ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-    teal.data::cdisc_dataset("ADTTE", x = ADTTE, code = "ADTTE <- teal.modules.general::rADTTE"),
-    check = TRUE # to check if the code executes to the data provided, x, i.e. ADSL and ADTTE
-  ),
+  data = data,
   modules = teal::modules(
     tm_variable_browser(
       # module name to display in the GUI

@@ -24,24 +24,25 @@
 #'
 #' # ADSL example
 #'
-#' library(nestcolor)
-#' ADSL <- teal.modules.general::rADSL
-#'
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- teal.modules.general::rADSL
+#' })
+#' datanames <- c("ADSL")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset(
-#'       "ADSL", ADSL,
-#'       code = "ADSL <- teal.modules.general::rADSL"
-#'     ),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_a_pca(
 #'       "PCA",
 #'       dat = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
-#'           choices = teal.transform::variable_choices(data = ADSL, c("BMRKR1", "AGE", "EOSDY")),
+#'           choices = teal.transform::variable_choices(
+#'             data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
+#'           ),
 #'           selected = c("BMRKR1", "AGE"),
 #'           multiple = TRUE
 #'         ),
@@ -56,7 +57,6 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
 tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
@@ -257,7 +257,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$choices <- var_labels(data[[response[[i]]$dataname]]())
       response[[i]]$select$choices <- setdiff(
         response[[i]]$select$choices,
-        unlist(get_join_keys(data)$get(response[[i]]$dataname))
+        unlist(teal.data::join_keys(data)[[response[[i]]$dataname]])
       )
     }
 
@@ -323,7 +323,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
       datasets = data,
-      join_keys = get_join_keys(data)
+      join_keys = teal.data::join_keys(data)
     )
 
     anl_merged_q <- reactive({

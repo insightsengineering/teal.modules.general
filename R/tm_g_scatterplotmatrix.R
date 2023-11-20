@@ -20,15 +20,17 @@
 #' @examples
 #' # Scatterplot matrix of variables from ADSL dataset
 #'
-#' ADSL <- teal.modules.general::rADSL
-#' ADRS <- teal.modules.general::rADRS
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- teal.modules.general::rADSL
+#'   ADRS <- teal.modules.general::rADRS
+#' })
+#' datanames <- c("ADSL", "ADRS")
+#' datanames(data) <- datanames
+#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
 #' app <- teal::init(
-#'   data = teal.data::cdisc_data(
-#'     teal.data::cdisc_dataset("ADSL", ADSL, code = "ADSL <- teal.modules.general::rADSL"),
-#'     teal.data::cdisc_dataset("ADRS", ADRS, code = "ADRS <- teal.modules.general::rADRS"),
-#'     check = TRUE
-#'   ),
+#'   data = data,
 #'   modules = teal::modules(
 #'     teal.modules.general::tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
@@ -37,7 +39,7 @@
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variables:",
-#'             choices = variable_choices(ADSL),
+#'             choices = variable_choices(data[["ADSL"]]),
 #'             selected = c("AGE", "RACE", "SEX"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
@@ -49,13 +51,13 @@
 #'           filter = teal.transform::filter_spec(
 #'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = value_choices(ADRS, c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+#'             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
 #'             selected = "INVET - END OF INDUCTION",
 #'             multiple = TRUE
 #'           ),
 #'           select = select_spec(
 #'             label = "Select variables:",
-#'             choices = variable_choices(ADRS),
+#'             choices = variable_choices(data[["ADRS"]]),
 #'             selected = c("AGE", "AVAL", "ADY"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
@@ -178,7 +180,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = get_join_keys(data),
+      join_keys = teal.data::join_keys(data),
       selector_list = selector_list
     )
 
