@@ -107,11 +107,9 @@ ui_page_data_table <- function(id,
                                datasets_selected,
                                pre_output = NULL,
                                post_output = NULL) {
-  data <- as_tdata(data)
-
   ns <- NS(id)
 
-  datanames <- names(data)
+  datanames <- teal.data::datanames(data)
 
   if (!identical(datasets_selected, character(0))) {
     stopifnot(all(datasets_selected %in% datanames))
@@ -141,7 +139,7 @@ ui_page_data_table <- function(id,
               lapply(
                 datanames,
                 function(x) {
-                  dataset <- isolate(data[[x]]())
+                  dataset <- data[[x]]
                   choices <- names(dataset)
                   labels <- vapply(
                     dataset,
@@ -192,14 +190,13 @@ srv_page_data_table <- function(id,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
-  data <- as_tdata(data)
-
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- names(data)
+    datanames <- teal.data::datanames(isolate(data()))
 
     lapply(
       datanames,
@@ -260,14 +257,14 @@ srv_data_table <- function(id,
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
     iv$add_rule("variables", shinyvalidate::sv_in_set(
-      set = names(data[[dataname]]()), message_fmt = "Not all selected variables exist in the data"
+      set = names(data()[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
       teal::validate_inputs(iv)
 
-      df <- data[[dataname]]()
+      df <- data()[[dataname]]
       variables <- input$variables
 
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
