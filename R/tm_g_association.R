@@ -222,7 +222,7 @@ srv_tm_g_association <- function(id,
                                  ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
@@ -250,14 +250,12 @@ srv_tm_g_association <- function(id,
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      selector_list = selector_list,
-      join_keys = teal.data::join_keys(data)
+      selector_list = selector_list
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      data() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
