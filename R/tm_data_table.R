@@ -107,6 +107,8 @@ ui_page_data_table <- function(id,
                                datasets_selected,
                                pre_output = NULL,
                                post_output = NULL) {
+  data <- as_tdata(data)
+
   ns <- NS(id)
 
   datanames <- names(data)
@@ -190,6 +192,8 @@ srv_page_data_table <- function(id,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
+  data <- as_tdata(data)
+
   checkmate::assert_class(data, "tdata")
   moduleServer(id, function(input, output, session) {
     if_filtered <- reactive(as.logical(input$if_filtered))
