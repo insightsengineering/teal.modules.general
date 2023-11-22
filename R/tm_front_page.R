@@ -21,6 +21,7 @@
 #' data <- within(data, {
 #'   library(nestcolor)
 #'   ADSL <- teal.modules.general::rADSL
+#'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
@@ -196,7 +197,7 @@ srv_front_page <- function(id, data, tables, show_metadata) {
       metadata_data_frame <- reactive({
         datanames <- teal.data::datanames(data())
         convert_metadata_to_dataframe(
-          lapply(datanames, function(dataname) dataname), #TODO,
+          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
           datanames
         )
       })
