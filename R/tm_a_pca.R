@@ -246,7 +246,8 @@ ui_a_pca <- function(id, ...) {
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     response <- dat
 
@@ -254,10 +255,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- var_labels(data[[response[[i]]$dataname]]())
+      response[[i]]$select$choices <- var_labels(data()[[response[[i]]$dataname]])
       response[[i]]$select$choices <- setdiff(
         response[[i]]$select$choices,
-        unlist(teal.data::join_keys(data)[[response[[i]]$dataname]])
+        unlist(teal.data::join_keys(data())[[response[[i]]$dataname]])
       )
     }
 
@@ -322,13 +323,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
-      datasets = data,
-      join_keys = teal.data::join_keys(data)
+      datasets = data
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+      data() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
