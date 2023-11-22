@@ -330,7 +330,8 @@ srv_distribution <- function(id,
                              ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     rule_req <- function(value) {
       if (isTRUE(input$dist_tests %in% c(
@@ -446,13 +447,12 @@ srv_distribution <- function(id,
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = selector_list,
-      datasets = data,
-      join_keys = teal.data::join_keys(data)
+      datasets = data
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+      data() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
