@@ -85,14 +85,13 @@ tm_data_table <- function(label = "Data Table",
     ui = ui_page_data_table,
     datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
     server_args = list(
+      variables_selected = variables_selected,
       datasets_selected = datasets_selected,
       dt_args = dt_args,
       dt_options = dt_options,
       server_rendering = server_rendering
     ),
     ui_args = list(
-      selected = variables_selected,
-      datasets_selected = datasets_selected,
       pre_output = pre_output,
       post_output = post_output
     )
@@ -102,19 +101,9 @@ tm_data_table <- function(label = "Data Table",
 
 # ui page module
 ui_page_data_table <- function(id,
-                               data,
-                               selected,
-                               datasets_selected,
                                pre_output = NULL,
                                post_output = NULL) {
   ns <- NS(id)
-
-  datanames <- teal.data::datanames(data)
-
-  if (!identical(datasets_selected, character(0))) {
-    stopifnot(all(datasets_selected %in% datanames))
-    datanames <- datasets_selected
-  }
 
   shiny::tagList(
     include_css_files("custom"),
@@ -134,45 +123,7 @@ ui_page_data_table <- function(id,
           class = "mb-8",
           column(
             width = 12,
-            do.call(
-              tabsetPanel,
-              lapply(
-                datanames,
-                function(x) {
-                  dataset <- data[[x]]
-                  choices <- names(dataset)
-                  labels <- vapply(
-                    dataset,
-                    function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
-                    character(1)
-                  )
-                  names(choices) <- ifelse(
-                    is.na(labels) | labels == "",
-                    choices,
-                    paste(choices, labels, sep = ": ")
-                  )
-                  selected <- if (!is.null(selected[[x]])) {
-                    selected[[x]]
-                  } else {
-                    utils::head(choices)
-                  }
-                  tabPanel(
-                    title = x,
-                    column(
-                      width = 12,
-                      div(
-                        class = "mt-4",
-                        ui_data_table(
-                          id = ns(x),
-                          choices = choices,
-                          selected = selected
-                        )
-                      )
-                    )
-                  )
-                }
-              )
-            )
+            uiOutput(ns("dataset_table"))
           )
         )
       ),
@@ -187,6 +138,7 @@ ui_page_data_table <- function(id,
 srv_page_data_table <- function(id,
                                 data,
                                 datasets_selected,
+                                variables_selected,
                                 dt_args,
                                 dt_options,
                                 server_rendering) {
@@ -197,6 +149,52 @@ srv_page_data_table <- function(id,
     if_distinct <- reactive(as.logical(input$if_distinct))
 
     datanames <- teal.data::datanames(isolate(data()))
+    if (!identical(datasets_selected, character(0))) {
+      checkmate::assert_subset(datasets_selected, datanames)
+      datanames <- datasets_selected
+    }
+
+    output$dataset_table <- renderUI({
+      do.call(
+        tabsetPanel,
+        lapply(
+          datanames,
+          function(x) {
+            dataset <- isolate(data()[[x]])
+            choices <- names(dataset)
+            labels <- vapply(
+              dataset,
+              function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+              character(1)
+            )
+            names(choices) <- ifelse(
+              is.na(labels) | labels == "",
+              choices,
+              paste(choices, labels, sep = ": ")
+            )
+            variables_selected <- if (!is.null(variables_selected[[x]])) {
+              variables_selected[[x]]
+            } else {
+              utils::head(choices)
+            }
+            tabPanel(
+              title = x,
+              column(
+                width = 12,
+                div(
+                  class = "mt-4",
+                  ui_data_table(
+                    id = session$ns(x),
+                    choices = choices,
+                    selected = variables_selected
+                  )
+                )
+              )
+            )
+          }
+        )
+      )
+    })
 
     lapply(
       datanames,
