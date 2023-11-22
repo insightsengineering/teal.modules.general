@@ -250,7 +250,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
@@ -293,13 +294,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
       datasets = data,
-      join_keys = teal.data::join_keys(data),
       merge_function = "dplyr::inner_join"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+      data() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -316,7 +316,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     # Used to create outlier table and the dropdown with additional columns
-    dataname_first <- names(data)[[1]]
+    dataname_first <- isolate(teal.data::datanames(data())[[1]])
 
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
@@ -476,7 +476,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           },
           env = list(
             dataname = as.name(dataname_first),
-            join_keys = as.character(teal.data::join_keys(data)[dataname_first, dataname_first])
+            join_keys = as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
           )
         )
       )
@@ -976,7 +976,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    choices <- teal.transform::variable_choices(data[[dataname_first]]())
+    choices <- teal.transform::variable_choices(data()[[dataname_first]])
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
