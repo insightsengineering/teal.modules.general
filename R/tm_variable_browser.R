@@ -286,10 +286,9 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_numeric_display <- renderUI({
+      validation_checks()
       dataname <- input$tabset_panel
-      varname <- plot_var$variable[[input$tabset_panel]]
-      req(data(), varname)
-
+      varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
       numeric_ui <- tagList(
@@ -354,10 +353,9 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_histogram_display <- renderUI({
+      validation_checks()
       dataname <- input$tabset_panel
-      varname <- plot_var$variable[[input$tabset_panel]]
-      req(data, varname)
-
+      varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
       numeric_ui <- tagList(fluidRow(
@@ -1038,8 +1036,8 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 #' @keywords internal
 validate_input <- function(input, plot_var, data) {
   reactive({
-    dataset_name <- input$tabset_panel
-    varname <- plot_var$variable[[input$tabset_panel]]
+    dataset_name <- req(input$tabset_panel)
+    varname <- plot_var$variable[[dataset_name]]
 
     validate(need(dataset_name, "No data selected"))
     validate(need(varname, "No variable selected"))
@@ -1053,7 +1051,7 @@ validate_input <- function(input, plot_var, data) {
 
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
-  varname <- plot_var$variable[[input$tabset_panel]]
+  varname <- plot_var$variable[[dataset_name]]
   df <- data()[[dataset_name]]
 
   var_description <- var_labels(df)[[varname]]
