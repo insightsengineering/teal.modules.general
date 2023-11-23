@@ -21,6 +21,7 @@
 #' data <- within(data, {
 #'   library(nestcolor)
 #'   ADSL <- teal.modules.general::rADSL
+#'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
@@ -167,7 +168,8 @@ get_footer_tags <- function(footnotes) {
 }
 
 srv_front_page <- function(id, data, tables, show_metadata) {
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -193,9 +195,10 @@ srv_front_page <- function(id, data, tables, show_metadata) {
       )
 
       metadata_data_frame <- reactive({
+        datanames <- teal.data::datanames(data())
         convert_metadata_to_dataframe(
-          lapply(names(data), function(dataname) get_metadata(data, dataname)),
-          names(data)
+          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
+          datanames
         )
       })
 

@@ -44,6 +44,7 @@ data <- teal_data()
 data <- within(data, {
   library(nestcolor)
   ADSL <- teal.modules.general::rADSL
+  attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
