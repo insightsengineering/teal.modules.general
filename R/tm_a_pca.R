@@ -255,7 +255,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- var_labels(data()[[response[[i]]$dataname]])
+      response[[i]]$select$choices <- var_labels(isolate(data())[[response[[i]]$dataname]])
       response[[i]]$select$choices <- setdiff(
         response[[i]]$select$choices,
         unlist(teal.data::join_keys(data())[[response[[i]]$dataname]])
