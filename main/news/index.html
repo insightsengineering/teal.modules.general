@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9013</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,15 +41,6 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -78,13 +69,13 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.16.9012" id="tealmodulesgeneral-02169012">teal.modules.general 0.2.16.9012<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02169012"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.16.9013" id="tealmodulesgeneral-02169013">teal.modules.general 0.2.16.9013<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-02169013"></a></h2>
 <div class="section level4">
-<h4 id="enhancements-0-2-16-9012">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-16-9012"></a></h4>
+<h4 id="enhancements-0-2-16-9013">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-2-16-9013"></a></h4>
 <ul><li>Updated the package docs and vignettes with the new way of specifying data for <code><a href="https://insightsengineering.github.io/teal/reference/init.html" class="external-link">teal::init()</a></code>. The <code>data</code> argument will accept a <code>teal_data</code> object</li>
 </ul></div>
 <div class="section level4">
-<h4 id="miscellaneous-0-2-16-9012">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-16-9012"></a></h4>
+<h4 id="miscellaneous-0-2-16-9013">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-16-9013"></a></h4>
 <ul><li>Specified minimal version of package dependencies.</li>
 </ul></div>
 </div>
@@ -186,7 +177,7 @@
 <ul><li>Added support for logging with the <code>logger</code> package and added info level logs upon initialization of a module.</li>
 <li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
 <li>Added support for custom arguments for <code><a href="https://rdrr.io/pkg/rtables/man/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
-<li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> and <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_multiple_srv.html" class="external-link">teal.transform::data_extract_multiple_srv</a></code> modules.</li>
+<li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code>teal.transform::data_merge_srv</code> and <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_multiple_srv.html" class="external-link">teal.transform::data_extract_multiple_srv</a></code> modules.</li>
 <li>Distinguished bars representing <code>NA</code> in plot depicting counts of <code>tm_variable_browser</code> with a different color fill.</li>
 <li>Modified the summary statistics table for numeric columns in <code>tm_variable_browser</code> to reflect the plot after <code>outliers</code> are removed.</li>
 <li>Added an option to remove missing values in a <code>tm_variable_browser</code> histogram for factor like variables.</li>
@@ -205,9 +196,9 @@
 <div class="section level4">
 <h4 id="miscellaneous-0-2-12">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-2-12"></a></h4>
 <ul><li>Added R version requirement <code>R &gt;= 3.6</code>.</li>
-<li>Removed <code>input_id</code> argument from <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_merge_module.html" class="external-link">teal.transform::data_merge_module</a></code> calls in all modules.</li>
+<li>Removed <code>input_id</code> argument from <code>teal.transform::data_merge_module</code> calls in all modules.</li>
 <li>Refactored the defunct <code>teal.devel::data_extract_input</code> into its replacement <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_extract_ui.html" class="external-link">teal.transform::data_extract_ui</a></code>.</li>
-<li>Updated <code><a href="https://insightsengineering.github.io/teal.transform/reference/data_merge_srv.html" class="external-link">teal.transform::data_merge_srv</a></code> to use <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> instead of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join</a></code> in <code>tm_outliers</code> module.</li>
+<li>Updated <code>teal.transform::data_merge_srv</code> to use <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> instead of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join</a></code> in <code>tm_outliers</code> module.</li>
 <li>Removed the overlay statistics table in <code>tm_g_distribution</code> module.</li>
 <li>Removed dependency on <code>test.nest</code> package.</li>
 <li>Removed dependency on <code>utils.nest</code> package and replaced its functions with equivalents from the <code>checkmate</code> package.</li>
