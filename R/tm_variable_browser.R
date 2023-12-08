@@ -87,8 +87,6 @@ tm_variable_browser <- function(label = "Variable Browser",
       ggplot2_args = ggplot2_args
     ),
     ui_args = list(
-      datasets_selected = datasets_selected,
-      parent_dataname = parent_dataname,
       pre_output = pre_output,
       post_output = post_output
     )
@@ -97,19 +95,9 @@ tm_variable_browser <- function(label = "Variable Browser",
 
 # ui function
 ui_variable_browser <- function(id,
-                                data,
-                                datasets_selected,
-                                parent_dataname,
                                 pre_output = NULL,
                                 post_output = NULL) {
   ns <- NS(id)
-
-  datanames <- names(data)
-
-  if (!identical(datasets_selected, character(0))) {
-    stopifnot(all(datasets_selected %in% datanames))
-    datanames <- datasets_selected
-  }
 
   shiny::tagList(
     include_css_files("custom"),
@@ -121,38 +109,7 @@ ui_variable_browser <- function(id,
           6,
           # variable browser
           teal.widgets::white_small_well(
-            do.call(
-              tabsetPanel,
-              c(
-                id = ns("tabset_panel"),
-                do.call(
-                  tagList,
-                  lapply(datanames, function(dataname) {
-                    tabPanel(
-                      dataname,
-                      div(
-                        class = "mt-4",
-                        textOutput(ns(paste0("dataset_summary_", dataname)))
-                      ),
-                      div(
-                        class = "mt-4",
-                        teal.widgets::get_dt_rows(
-                          ns(paste0(
-                            "variable_browser_", dataname
-                          )),
-                          ns(
-                            paste0("variable_browser_", dataname, "_rows")
-                          )
-                        ),
-                        DT::dataTableOutput(ns(paste0(
-                          "variable_browser_", dataname
-                        )), width = "100%")
-                      )
-                    )
-                  })
-                )
-              )
-            ),
+            uiOutput(ns("ui_variable_browser")),
             shinyjs::hidden({
               checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
             })
@@ -216,7 +173,8 @@ srv_variable_browser <- function(id,
                                  datasets_selected, parent_dataname, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     # if there are < this number of unique records then a numeric
     # variable can be treated as a factor and all factors with < this groups
@@ -226,13 +184,43 @@ srv_variable_browser <- function(id,
     # variable is by default treated as a factor
     .unique_records_default_as_factor <- 6 # nolint
 
-    datanames <- names(data)
+    datanames <- isolate(teal.data::datanames(data()))
 
     checkmate::assert_character(datasets_selected)
     checkmate::assert_subset(datasets_selected, datanames)
     if (length(datasets_selected) != 0L) {
       datanames <- datasets_selected
     }
+
+    output$ui_variable_browser <- renderUI({
+      ns <- session$ns
+      do.call(
+        tabsetPanel,
+        c(
+          id = ns("tabset_panel"),
+          do.call(
+            tagList,
+            lapply(datanames, function(dataname) {
+              tabPanel(
+                dataname,
+                div(
+                  class = "mt-4",
+                  textOutput(ns(paste0("dataset_summary_", dataname)))
+                ),
+                div(
+                  class = "mt-4",
+                  teal.widgets::get_dt_rows(
+                    ns(paste0("variable_browser_", dataname)),
+                    ns(paste0("variable_browser_", dataname, "_rows"))
+                  ),
+                  DT::dataTableOutput(ns(paste0("variable_browser_", dataname)), width = "100%")
+                )
+              )
+            })
+          )
+        )
+      )
+    })
 
     # conditionally display checkbox
     shinyjs::toggle(
@@ -298,11 +286,10 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_numeric_display <- renderUI({
+      validation_checks()
       dataname <- input$tabset_panel
-      varname <- plot_var$variable[[input$tabset_panel]]
-      req(data, varname)
-
-      df <- data[[dataname]]()
+      varname <- plot_var$variable[[dataname]]
+      df <- data()[[dataname]]
 
       numeric_ui <- tagList(
         fluidRow(
@@ -366,11 +353,10 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_histogram_display <- renderUI({
+      validation_checks()
       dataname <- input$tabset_panel
-      varname <- plot_var$variable[[input$tabset_panel]]
-      req(data, varname)
-
-      df <- data[[dataname]]()
+      varname <- plot_var$variable[[dataname]]
+      df <- data()[[dataname]]
 
       numeric_ui <- tagList(fluidRow(
         div(
@@ -1036,28 +1022,6 @@ plot_var_summary <- function(var,
   plot_main
 }
 
-#' Returns a short variable description.
-#'
-#' @description
-#' The format of the variable description is:
-#' `"<Long variable label> [<dataset name>.<variable name>]"`
-#'
-#' Example: `"Study Identifier [ADSL.STUDYID]"`
-#'
-#' @param data (`tdata`) the object containing the dataset
-#' @param dataset_name (`character`) the name of the dataset containing the variable
-#' @param var_name (`character`) the name of the variable
-#' @keywords internal
-get_var_description <- function(data, dataset_name, var_name) {
-  varlabel <- var_labels(data[[dataset_name]]())[[var_name]]
-  sprintf(
-    "%s [%s.%s]",
-    if (is.na(varlabel)) var_name else varlabel,
-    dataset_name,
-    var_name
-  )
-}
-
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }
@@ -1072,13 +1036,12 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 #' @keywords internal
 validate_input <- function(input, plot_var, data) {
   reactive({
-    dataset_name <- input$tabset_panel
-    varname <- plot_var$variable[[input$tabset_panel]]
+    dataset_name <- req(input$tabset_panel)
+    varname <- plot_var$variable[[dataset_name]]
 
     validate(need(dataset_name, "No data selected"))
     validate(need(varname, "No variable selected"))
-
-    df <- data[[dataset_name]]()
+    df <- data()[[dataset_name]]
     teal::validate_has_data(df, 1)
     teal::validate_has_variable(varname = varname, data = df, "Variable not available")
 
@@ -1088,8 +1051,8 @@ validate_input <- function(input, plot_var, data) {
 
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
-  varname <- plot_var$variable[[input$tabset_panel]]
-  df <- data[[dataset_name]]()
+  varname <- plot_var$variable[[dataset_name]]
+  df <- data()[[dataset_name]]
 
   var_description <- var_labels(df)[[varname]]
   list(data = df[[varname]], var_description = var_description)
@@ -1148,10 +1111,10 @@ render_single_tab <- function(dataset_name, parent_dataname, output, data, input
 render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
-    df <- data[[dataset_name]]()
-    join_keys <- join_keys(data)
+    df <- data()[[dataset_name]]
+    join_keys <- join_keys(data())
     if (!is.null(join_keys)) {
-      key <- join_keys(data)[dataset_name, dataset_name]
+      key <- join_keys(data())[dataset_name, dataset_name]
     } else {
       key <- NULL
     }
@@ -1177,14 +1140,14 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
   output[[table_ui_id]] <- DT::renderDataTable({
-    df <- data[[dataset_name]]()
+    df <- data()[[dataset_name]]
 
     get_vars_df <- function(input, dataset_name, parent_name, data) {
-      data_cols <- colnames(data[[dataset_name]]())
+      data_cols <- colnames(df)
       if (isTRUE(input$show_parent_vars)) {
         data_cols
       } else if (dataset_name != parent_name && parent_name %in% names(data)) {
-        setdiff(data_cols, colnames(data[[parent_name]]()))
+        setdiff(data_cols, colnames(data()[[parent_name]]))
       } else {
         data_cols
       }
@@ -1222,7 +1185,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       # get icons proper for the data types
       icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
 
-      join_keys <- join_keys(data)
+      join_keys <- join_keys(data())
       if (!is.null(join_keys)) {
         icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }

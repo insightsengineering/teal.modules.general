@@ -163,7 +163,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
-  checkmate::assert_class(data, "tdata")
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
@@ -180,13 +181,12 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
-      join_keys = teal.data::join_keys(data),
       selector_list = selector_list
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::new_qenv(tdata2env(data), code = get_code_tdata(data)) %>%
+      data() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -368,7 +368,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(paste(teal.code::get_code(output_q()), collapse = "\n"))
+        card$append_src(teal.code::get_code(output_q()))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
