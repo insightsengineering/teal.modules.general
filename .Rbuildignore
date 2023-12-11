@@ -44,3 +44,4 @@ coverage.*
 ^sample_files$
 ^\.pre-commit-config\.yaml
 data-raw/data.R
+^pkgdown$
