@@ -8,6 +8,7 @@
 #' @import shiny
 #' @import shinyTree
 #' @import teal
+#' @import teal.transform
 #' @importFrom magrittr %>%
 #'
 #'
