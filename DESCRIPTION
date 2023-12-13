@@ -21,7 +21,8 @@ Depends:
     R (>= 3.6),
     shiny (>= 1.6.0),
     shinyTree,
-    teal (>= 0.14.0.9027)
+    teal (>= 0.14.0.9027),
+    teal.transform (>= 0.4.0.9011)
 Imports:
     checkmate (>= 2.1.0),
     dplyr (>= 1.0.5),
@@ -40,7 +41,6 @@ Imports:
     teal.logger (>= 0.1.1),
     teal.reporter (>= 0.2.0),
     teal.slice (>= 0.4.0.9028),
-    teal.transform (>= 0.4.0.9011),
     teal.widgets (>= 0.4.0),
     tern (>= 0.7.10),
     tibble (>= 2.0.0),
