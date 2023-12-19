@@ -185,6 +185,9 @@ srv_variable_browser <- function(id,
     .unique_records_default_as_factor <- 6 # nolint
 
     datanames <- isolate(teal.data::datanames(data()))
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, datanames)
 
     checkmate::assert_character(datasets_selected)
     checkmate::assert_subset(datasets_selected, datanames)

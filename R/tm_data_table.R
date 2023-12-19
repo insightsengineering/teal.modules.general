@@ -148,7 +148,11 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- teal.data::datanames(isolate(data()))
+    datanames <- isolate(teal.data::datanames(data()))
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, datanames)
+
     if (!identical(datasets_selected, character(0))) {
       checkmate::assert_subset(datasets_selected, datanames)
       datanames <- datasets_selected

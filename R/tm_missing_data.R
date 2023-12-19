@@ -121,6 +121,9 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
   moduleServer(id, function(input, output, session) {
     datanames <- isolate(teal.data::datanames(data()))
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, datanames)
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
     ns <- session$ns
 
