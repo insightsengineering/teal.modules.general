@@ -1,6 +1,7 @@
 #' Data Table Viewer Teal Module
 #'
 #' A data table viewer shows the data using a paginated table.
+#' specifically designed for use with `data.frames`.
 #' @md
 #'
 #' @inheritParams teal::module
@@ -12,6 +13,8 @@
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
+#'   Note: Only datasets of the `data.frame` class are compatible;
+#'   using other types will cause an error.
 #' @param dt_args (named `list`) Additional arguments to be passed to `DT::datatable`
 #'   (must not include `data` or `options`).
 #' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
