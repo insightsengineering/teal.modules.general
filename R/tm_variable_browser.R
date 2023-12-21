@@ -2,6 +2,7 @@
 #'
 #' The variable browser provides a table with variable names and labels and a
 #' plot that visualizes the content of a particular variable.
+#' specifically designed for use with `data.frames`.
 #'
 #' @details Numeric columns with fewer than 30 distinct values can be treated as either factors
 #' or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
@@ -17,6 +18,7 @@
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #'   shown and in what order. Names in the vector have to correspond with datasets names.
 #'   If vector of length zero (default) then all datasets are shown.
+#'   Note: Only datasets of the `data.frame` class are compatible; using other types will cause an error.
 #'
 #' @aliases
 #'   tm_variable_browser_ui,
@@ -185,10 +187,14 @@ srv_variable_browser <- function(id,
     .unique_records_default_as_factor <- 6 # nolint
 
     datanames <- isolate(teal.data::datanames(data()))
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, datanames)
 
     checkmate::assert_character(datasets_selected)
     checkmate::assert_subset(datasets_selected, datanames)
-    if (length(datasets_selected) != 0L) {
+    if (!identical(datasets_selected, character(0))) {
+      checkmate::assert_subset(datasets_selected, datanames)
       datanames <- datasets_selected
     }
 

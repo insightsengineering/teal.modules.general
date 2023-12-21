@@ -27,7 +27,9 @@ dataset will initially be shown.}
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of length zero (default) then all datasets are shown.}
+If vector of length zero (default) then all datasets are shown.
+Note: Only datasets of the \code{data.frame} class are compatible;
+using other types will cause an error.}
 
 \item{dt_args}{(named \code{list}) Additional arguments to be passed to \code{DT::datatable}
 (must not include \code{data} or \code{options}).}
@@ -46,6 +48,7 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 }
 \description{
 A data table viewer shows the data using a paginated table.
+specifically designed for use with \code{data.frames}.
 }
 \details{
 The \code{DT} package has an option \code{DT.TOJSON_ARGS} to show \code{Inf} and \code{NA} in data tables. If this is something

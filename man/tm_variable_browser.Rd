@@ -25,7 +25,8 @@ tm_variable_browser(
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of length zero (default) then all datasets are shown.}
+If vector of length zero (default) then all datasets are shown.
+Note: Only datasets of the \code{data.frame} class are compatible; using other types will cause an error.}
 
 \item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in \code{datasets_selected}
 then an extra checkbox will be shown to allow users to not show variables in other datasets
@@ -48,6 +49,7 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 \description{
 The variable browser provides a table with variable names and labels and a
 plot that visualizes the content of a particular variable.
+specifically designed for use with \code{data.frames}.
 }
 \details{
 Numeric columns with fewer than 30 distinct values can be treated as either factors
