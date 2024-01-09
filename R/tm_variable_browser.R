@@ -1189,7 +1189,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       )
 
       # get icons proper for the data types
-      icons <- stats::setNames(teal.slice:::variable_types(df), colnames(df))
+      icons <- teal.slice:::variable_types(df)
 
       join_keys <- join_keys(data())
       if (!is.null(join_keys)) {
