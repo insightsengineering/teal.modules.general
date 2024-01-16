@@ -6,6 +6,7 @@
 
 ### Miscellaneous
 
+* Removed `teal.slice` dependencies.
 * Specified minimal version of package dependencies.
 
 # teal.modules.general 0.2.16

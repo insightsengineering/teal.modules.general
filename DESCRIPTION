@@ -40,7 +40,6 @@ Imports:
     teal.code (>= 0.4.1.9009),
     teal.logger (>= 0.1.1),
     teal.reporter (>= 0.2.0),
-    teal.slice (>= 0.4.0.9028),
     teal.widgets (>= 0.4.0),
     tern (>= 0.7.10),
     tibble (>= 2.0.0),
@@ -75,15 +74,14 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     daroczig/logger, tidyverse/magrittr, r-lib/scales, daattali/shinyjs,
     rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
     insightsengineering/teal.code, insightsengineering/teal.logger,
-    insightsengineering/teal.reporter, insightsengineering/teal.slice,
-    insightsengineering/teal.transform, insightsengineering/teal.widgets,
-    insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
-    r-lib/tidyselect, tidymodels/broom, daattali/colourpicker,
-    daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp, baddstats/goftest,
-    gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
-    deepayan/lattice, MASS, insightsengineering/nestcolor, r-lib/rlang,
-    insightsengineering/rtables, sparkline, insightsengineering/teal.data,
-    r-lib/testthat
+    insightsengineering/teal.reporter, insightsengineering/teal.transform,
+    insightsengineering/teal.widgets, insightsengineering/tern,
+    tidyverse/tibble, tidyverse/tidyr, r-lib/tidyselect, tidymodels/broom,
+    daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
+    baddstats/goftest, gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite,
+    yihui/knitr, deepayan/lattice, MASS, insightsengineering/nestcolor,
+    r-lib/rlang, insightsengineering/rtables, sparkline,
+    insightsengineering/teal.data, r-lib/testthat
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
