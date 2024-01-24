@@ -19,10 +19,10 @@
 #' })
 #' datanames(data) <- c("data")
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_file_viewer(
+#'   modules = modules(
+#'     tm_file_viewer(
 #'       input_path = list(
 #'         folder = system.file("sample_files", package = "teal.modules.general"),
 #'         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),

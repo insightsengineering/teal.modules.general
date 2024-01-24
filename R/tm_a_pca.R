@@ -21,26 +21,26 @@
 #' @export
 #'
 #' @examples
-#'
 #' # ADSL example
 #'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
-#' app <- teal::init(
+#'
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_a_pca(
+#'   modules = modules(
+#'     tm_a_pca(
 #'       "PCA",
-#'       dat = teal.transform::data_extract_spec(
+#'       dat = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = teal.transform::variable_choices(
+#'         select = select_spec(
+#'           choices = variable_choices(
 #'             data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
 #'           ),
 #'           selected = c("BMRKR1", "AGE"),

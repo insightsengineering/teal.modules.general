@@ -12,10 +12,8 @@
 #' @importFrom magrittr %>%
 #'
 #'
-#' @docType package
-#' @name teal.modules.general
 #' @keywords internal
-NULL
+"_PACKAGE"
 
 # nolint start
 # Note ggmosaic (version <= 0.3.3) needs to be in DEPENDS as the following does not work if it is imported

@@ -18,9 +18,6 @@ tm_outliers(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 variable to consider for the outliers analysis.}
 
@@ -55,10 +52,9 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 Module to analyze and identify outliers using different methods
 }
 \examples{
-
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
@@ -67,12 +63,12 @@ join_keys(data) <- default_cdisc_join_keys[datanames]
 fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_outliers(
+  modules = modules(
+    tm_outliers(
       outlier_var = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -84,9 +80,9 @@ app <- teal::init(
         )
       ),
       categorical_var = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = vars,
             choices = value_choices(data[["ADSL"]], vars$selected),
             selected = value_choices(data[["ADSL"]], vars$selected),

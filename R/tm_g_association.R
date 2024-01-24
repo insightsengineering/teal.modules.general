@@ -28,21 +28,21 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_g_association(
-#'       ref = teal.transform::data_extract_spec(
+#'   modules = modules(
+#'     tm_g_association(
+#'       ref = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(
+#'           choices = variable_choices(
 #'             data[["ADSL"]],
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),
@@ -50,11 +50,11 @@
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       vars = teal.transform::data_extract_spec(
+#'       vars = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variables:",
-#'           choices = teal.transform::variable_choices(
+#'           choices = variable_choices(
 #'             data[["ADSL"]],
 #'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
 #'           ),

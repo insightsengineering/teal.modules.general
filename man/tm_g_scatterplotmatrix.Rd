@@ -14,9 +14,6 @@ tm_g_scatterplotmatrix(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
@@ -47,20 +44,20 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADRS <- teal.modules.general::rADRS
+  ADSL <- rADSL
+  ADRS <- rADRS
 })
 datanames <- c("ADSL", "ADRS")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplotmatrix(
+  modules = modules(
+    tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -71,9 +68,9 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADRS",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),

@@ -10,9 +10,6 @@ tm_file_viewer(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{input_path}{optional, (\code{list}) of the input paths to either: specific files of accepted formats,
 a directory or a URL. The paths can be specified as absolute paths or relative to the running
 directory of the application. Will default to current working directory if not supplied.}
@@ -29,10 +26,10 @@ data <- within(data, {
 })
 datanames(data) <- c("data")
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_file_viewer(
+  modules = modules(
+    tm_file_viewer(
       input_path = list(
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),

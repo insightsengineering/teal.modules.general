@@ -30,9 +30,6 @@ tm_g_bivariate(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 No empty selections are allowed!}
@@ -116,49 +113,49 @@ For more examples, please see the vignette "Using bivariate plot" via
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_bivariate(
-      x = teal.transform::data_extract_spec(
+  modules = modules(
+    tm_g_bivariate(
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]]),
+          choices = variable_choices(data[["ADSL"]]),
           selected = "AGE",
           fixed = FALSE
         )
       ),
-      y = teal.transform::data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]]),
+          choices = variable_choices(data[["ADSL"]]),
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      row_facet = teal.transform::data_extract_spec(
+      row_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]]),
+          choices = variable_choices(data[["ADSL"]]),
           selected = "ARM",
           fixed = FALSE
         )
       ),
-      col_facet = teal.transform::data_extract_spec(
+      col_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]]),
+          choices = variable_choices(data[["ADSL"]]),
           selected = "COUNTRY",
           fixed = FALSE
         )

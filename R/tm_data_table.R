@@ -27,20 +27,19 @@
 #'   Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
 #' @export
 #' @examples
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_data_table(
+#'   modules = modules(
+#'     tm_data_table(
 #'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
 #'       dt_args = list(caption = "ADSL Table Caption")
 #'     )

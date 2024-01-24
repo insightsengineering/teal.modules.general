@@ -16,11 +16,10 @@
 #' @return A `teal` module to be used in `teal` applications
 #' @export
 #' @examples
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
 #' datanames <- c("ADSL")
@@ -37,10 +36,10 @@
 #'   "Table 3" = table_3
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_front_page(
+#'   modules = modules(
+#'     tm_front_page(
 #'       header_text = c(
 #'         "Important information" = "It can go here.",
 #'         "Other information" = "Can go here."

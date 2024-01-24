@@ -65,26 +65,27 @@ Suggests:
     rtables (>= 0.5.1),
     sparkline,
     teal.data (>= 0.3.0.9018),
-    testthat (>= 3.0.4)
+    testthat (>= 3.0.4),
+    withr (>= 2.0.0)
 VignetteBuilder:
     knitr
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, shinyTree/shinyTree, insightsengineering/teal,
+    rstudio/shiny, shinyTree/shinyTree, insightsengineering/teal, insightsengineering/teal.transform,
     mllg/checkmate, tidyverse/dplyr, rstudio/DT, tidyverse/forcats,
     daroczig/logger, tidyverse/magrittr, r-lib/scales, daattali/shinyjs,
     rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
     insightsengineering/teal.code, insightsengineering/teal.logger,
-    insightsengineering/teal.reporter, insightsengineering/teal.transform,
+    insightsengineering/teal.reporter,
     insightsengineering/teal.widgets, insightsengineering/tern,
     tidyverse/tibble, tidyverse/tidyr, r-lib/tidyselect, tidymodels/broom,
     daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
     baddstats/goftest, gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite,
     yihui/knitr, deepayan/lattice, MASS, insightsengineering/nestcolor,
     r-lib/rlang, insightsengineering/rtables, sparkline,
-    insightsengineering/teal.data, r-lib/testthat
+    insightsengineering/teal.data, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0

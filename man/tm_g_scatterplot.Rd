@@ -28,9 +28,6 @@ tm_g_scatterplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
 names selected to plot along the x-axis by default.}
 
@@ -103,22 +100,22 @@ For more examples, please see the vignette "Using scatterplot" via
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplot(
+  modules = modules(
+    tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = teal.transform::data_extract_spec(
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
@@ -127,11 +124,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      y = teal.transform::data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
@@ -140,11 +137,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      color_by = teal.transform::data_extract_spec(
+      color_by = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
@@ -153,11 +150,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      size_by = teal.transform::data_extract_spec(
+      size_by = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
@@ -166,11 +163,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      row_facet = teal.transform::data_extract_spec(
+      row_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),
@@ -179,11 +176,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      col_facet = teal.transform::data_extract_spec(
+      col_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),

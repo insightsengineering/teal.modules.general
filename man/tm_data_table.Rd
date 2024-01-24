@@ -17,9 +17,6 @@ tm_data_table(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{variables_selected}{(\code{list}) A named list of character vectors of the variables (i.e. columns)
 which should be initially shown for each dataset. Names of list elements should correspond to the names
 of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
@@ -56,20 +53,19 @@ you require then set \code{options(DT.TOJSON_ARGS =  list(na = "string"))} befor
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
 \examples{
-
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_data_table(
+  modules = modules(
+    tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
       dt_args = list(caption = "ADSL Table Caption")
     )

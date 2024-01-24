@@ -17,21 +17,20 @@
 #' @export
 #'
 #' @examples
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
 #' })
 #' datanames <- c("ADSL", "ADRS")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_missing_data(
+#'   modules = modules(
+#'     tm_missing_data(
 #'       ggplot2_args = list(
 #'         "Combinations Hist" = teal.widgets::ggplot2_args(
 #'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)

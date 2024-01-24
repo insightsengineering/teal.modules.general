@@ -48,49 +48,49 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_g_bivariate(
-#'       x = teal.transform::data_extract_spec(
+#'   modules = modules(
+#'     tm_g_bivariate(
+#'       x = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
+#'           choices = variable_choices(data[["ADSL"]]),
 #'           selected = "AGE",
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       y = teal.transform::data_extract_spec(
+#'       y = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
+#'           choices = variable_choices(data[["ADSL"]]),
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       row_facet = teal.transform::data_extract_spec(
+#'       row_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
+#'           choices = variable_choices(data[["ADSL"]]),
 #'           selected = "ARM",
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       col_facet = teal.transform::data_extract_spec(
+#'       col_facet = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = teal.transform::variable_choices(data[["ADSL"]]),
+#'           choices = variable_choices(data[["ADSL"]]),
 #'           selected = "COUNTRY",
 #'           fixed = FALSE
 #'         )
@@ -652,7 +652,6 @@ srv_g_bivariate <- function(id,
 #' @noRd
 #'
 #' @examples
-#'
 #' bivariate_plot_call("ANL", "BAGE", "RACE", "numeric", "factor")
 #' bivariate_plot_call("ANL", "BAGE", character(0), "numeric", "NULL")
 bivariate_plot_call <- function(data_name,
@@ -922,7 +921,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
 #' @noRd
 #'
 #' @examples
-#'
 #' facet_ggplot_call(LETTERS[1:3])
 #' facet_ggplot_call(NULL, LETTERS[23:26])
 #' facet_ggplot_call(LETTERS[1:3], LETTERS[23:26])

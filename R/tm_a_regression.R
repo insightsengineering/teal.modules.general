@@ -37,20 +37,20 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_a_regression(
+#'   modules = modules(
+#'     tm_a_regression(
 #'       label = "Regression",
-#'       response = teal.transform::data_extract_spec(
+#'       response = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variable:",
 #'           choices = "BMRKR1",
 #'           selected = "BMRKR1",
@@ -58,11 +58,11 @@
 #'           fixed = TRUE
 #'         )
 #'       ),
-#'       regressor = teal.transform::data_extract_spec(
+#'       regressor = data_extract_spec(
 #'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
+#'         select = select_spec(
 #'           label = "Select variables:",
-#'           choices = teal.transform::variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
+#'           choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
 #'           selected = "AGE",
 #'           multiple = TRUE,
 #'           fixed = FALSE

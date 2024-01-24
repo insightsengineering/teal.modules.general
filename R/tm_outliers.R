@@ -16,10 +16,9 @@
 #' @export
 #'
 #' @examples
-#'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #' })
 #' datanames <- c("ADSL")
 #' datanames(data) <- datanames
@@ -28,12 +27,12 @@
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_outliers(
+#'   modules = modules(
+#'     tm_outliers(
 #'       outlier_var = list(
-#'         teal.transform::data_extract_spec(
+#'         data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variable:",
@@ -45,9 +44,9 @@
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         teal.transform::data_extract_spec(
+#'         data_extract_spec(
 #'           dataname = "ADSL",
-#'           filter = teal.transform::filter_spec(
+#'           filter = filter_spec(
 #'             vars = vars,
 #'             choices = value_choices(data[["ADSL"]], vars$selected),
 #'             selected = value_choices(data[["ADSL"]], vars$selected),

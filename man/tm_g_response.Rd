@@ -24,9 +24,6 @@ tm_g_response(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use as the response. You can define one fixed column by using the
 setting \code{fixed = TRUE} inside the \code{select_spec}.
@@ -89,32 +86,32 @@ For more examples, please see the vignette "Using response plot" via
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_response(
+  modules = modules(
+    tm_g_response(
       label = "Response Plots",
-      response = teal.transform::data_extract_spec(
+      response = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
+          choices = variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
           selected = "BMRKR2",
           multiple = FALSE,
           fixed = FALSE
         )
       ),
-      x = teal.transform::data_extract_spec(
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(data[["ADSL"]], c("SEX", "RACE")),
+          choices = variable_choices(data[["ADSL"]], c("SEX", "RACE")),
           selected = "RACE",
           multiple = FALSE,
           fixed = FALSE

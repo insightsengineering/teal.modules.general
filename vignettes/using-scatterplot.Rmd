@@ -26,6 +26,7 @@ various types of datasets inside an scatter plot module:
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
+# nolint object_name_linter
 ```
 
 ## Create data sets
@@ -39,15 +40,14 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADSL2 <- teal.modules.general::rADSL %>%
+  ADSL <- rADSL
+  ADSL2 <- rADSL %>%
     mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-  ADRS <- teal.modules.general::rADRS
-  ADTTE <- teal.modules.general::rADTTE
-  ADLB <- teal.modules.general::rADLB %>%
+  ADRS <- rADRS
+  ADTTE <- rADTTE
+  ADLB <- rADLB %>%
     mutate(CHGC = as.factor(case_when(
       CHG < 1 ~ "N",
       CHG > 1 ~ "P",
@@ -61,7 +61,6 @@ jk_adsl2 <- jk
 names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
 jk <- c(jk, jk_adsl2)
 jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
-# nolint end
 ```
 
 ## Create an `app` variable
@@ -78,9 +77,9 @@ ggextra_available <- requireNamespace("ggExtra", quietly = TRUE)
 # NOTE: The code will not be run as package ggExtra is not installed.
 ```
 ```{r, eval = ggextra_available, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Scatterplot",
       tm_g_scatterplot(

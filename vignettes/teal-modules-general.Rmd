@@ -20,7 +20,7 @@ clinical data. The modules of `teal.modules.general` can be combined with module
 other `shiny` modules to build a large `teal` / `shiny` app.
 
 The concepts presented here require knowledge about the core features of `teal`, specifically on how to launch a `teal`
-application and how to pass data into it. Therefore, it is highly recommended to refer to the [`README`](https://insightsengineering.github.io/teal/index.html) file and 
+application and how to pass data into it. Therefore, it is highly recommended to refer to the [`README`](https://insightsengineering.github.io/teal/index.html) file and
 the introductory [vignette](https://insightsengineering.github.io/teal/articles/teal.html) of the `teal` package.
 
 See also `teal.modules.clinical's` [`README`](https://insightsengineering.github.io/teal.modules.clinical/index.html).
@@ -43,20 +43,18 @@ A simple application including a `tm_variable_browser` module could look like th
 ```{r, message = FALSE, results = "hide"}
 library(teal.modules.general)
 
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADTTE <- teal.modules.general::rADTTE
+  ADSL <- rADSL
+  ADTTE <- rADTTE
 })
 datanames <- c("ADSL", "ADTTE")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     tm_variable_browser(
       label = "Variable browser",
       ggplot2_args = teal.widgets::ggplot2_args(
@@ -85,16 +83,14 @@ so both the code and data are stored together.
 Following this, we set the `datanames` and `join_keys`.
 
 ```r
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADTTE <- teal.modules.general::rADTTE
+  ADSL <- rADSL
+  ADTTE <- rADTTE
 })
 datanames <- c("ADSL", "ADTTE")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
 There is no need to load `teal` as `teal.modules.general` already depends on it.
@@ -104,9 +100,9 @@ argument tells `teal` about the input data - the two datasets `ADSL` and `ADTTE`
 argument indicates the modules included in the application. Here, we include only one - `tm_variable_browser`.
 
 ```{r, results = "hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     tm_variable_browser(
       # module name to display in the GUI
       label = "Variable browser",
@@ -123,7 +119,7 @@ app <- teal::init(
 The `shiny` function `shinyApp` used the `ui` and `server` objects to initialize the `teal` app.
 
 ```{r, eval = FALSE}
-shiny::shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 ```
 
 In a `teal` app, data and modules are decoupled. In the app above:

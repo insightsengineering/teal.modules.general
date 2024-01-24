@@ -35,17 +35,15 @@ Inside this app 3 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADTTE <- teal.modules.general::rADTTE
-  ADLB <- teal.modules.general::rADLB
+  ADSL <- rADSL
+  ADTTE <- rADTTE
+  ADLB <- rADLB
 })
 datanames <- c("ADSL", "ADTTE", "ADLB")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
 ## Create an `app` variable
@@ -55,9 +53,9 @@ create an app. The data will be handed over using [`teal.data::cdisc_data`](http
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     # two-datasets example
     tm_data_table(
       label = "Two datasets",
@@ -102,8 +100,8 @@ app <- teal::init(
 
 ## Run the app
 
-A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an R session.  
+A simple `shiny::shinyApp` call will let you run the app.
+Note that app is only displayed when running this code inside an R session.
 
 ```{r echo=TRUE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))

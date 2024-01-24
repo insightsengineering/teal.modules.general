@@ -16,9 +16,6 @@ tm_t_crosstable(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Object with all available choices with pre-selected option for variable X - row values. In case
 of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if table elements should be
@@ -57,20 +54,20 @@ For more examples, please see the vignette "Using cross table" via
 
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
 datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_t_crosstable(
+  modules = modules(
+    tm_t_crosstable(
       label = "Cross Table",
-      x = teal.transform::data_extract_spec(
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
@@ -82,9 +79,9 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      y = teal.transform::data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))

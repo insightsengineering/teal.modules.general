@@ -14,9 +14,6 @@ tm_front_page(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
 element, if named the name is shown first in bold as a header followed by the value. The first
 element's header is displayed larger than the others}
@@ -39,11 +36,10 @@ A \code{teal} module to be used in \code{teal} applications
 This \code{teal} module creates a simple front page for \code{teal} applications
 }
 \examples{
-
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
 datanames <- c("ADSL")
@@ -60,10 +56,10 @@ table_input <- list(
   "Table 3" = table_3
 )
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_front_page(
+  modules = modules(
+    tm_front_page(
       header_text = c(
         "Important information" = "It can go here.",
         "Other information" = "Can go here."

@@ -132,12 +132,10 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #' @keywords internal
 #'
 #' @examples
-#' \dontrun{
 #' a <- 1
 #' b <- 2
 #' call_fun_dots("sum", c("a", "b"))
 #' eval(call_fun_dots("sum", c("a", "b")))
-#' }
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
@@ -157,11 +155,8 @@ call_fun_dots <- function(fun, str_args) {
 #' @keywords internal
 #'
 #' @examples
-#' \dontrun{
-#' ADSL <- teal.modules.general::rADSL
-#'
+#' ADSL <- ADSL
 #' varname_w_label("AGE", ADSL)
-#' }
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,

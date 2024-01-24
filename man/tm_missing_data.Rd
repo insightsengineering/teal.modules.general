@@ -19,9 +19,6 @@ tm_missing_data(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
-
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
 
@@ -54,21 +51,20 @@ Present analysis of missing observations and patients.
 specifically designed for use with \code{data.frames}.
 }
 \examples{
-
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
-  ADRS <- teal.modules.general::rADRS
+  ADSL <- rADSL
+  ADRS <- rADRS
 })
 datanames <- c("ADSL", "ADRS")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_missing_data(
+  modules = modules(
+    tm_missing_data(
       ggplot2_args = list(
         "Combinations Hist" = teal.widgets::ggplot2_args(
           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
