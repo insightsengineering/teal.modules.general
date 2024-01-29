@@ -18,7 +18,9 @@ vector of HTML icons corresponding to data type in each column.
 Get icons to represent variable types in dataset
 }
 \examples{
-teal.modules.general:::variable_type_icons(c(
+variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
+
+variable_type_icons(c(
   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
   "factor", "character", "unknown", ""
 ))

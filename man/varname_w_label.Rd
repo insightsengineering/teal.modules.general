@@ -33,6 +33,8 @@ name with label.}
 Get variable name with label
 }
 \examples{
+varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
+
 ADSL <- rADSL
 varname_w_label("AGE", ADSL)
 }

@@ -157,6 +157,8 @@ call_fun_dots <- function(fun, str_args) {
 #' @keywords internal
 #'
 #' @examples
+#' varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
+#'
 #' ADSL <- rADSL
 #' varname_w_label("AGE", ADSL)
 varname_w_label <- function(var_names,
@@ -227,7 +229,9 @@ shape_names <- c(
 #' @keywords internal
 #'
 #' @examples
-#' teal.modules.general:::variable_type_icons(c(
+#' variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
+#'
+#' variable_type_icons(c(
 #'   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
 #'   "factor", "character", "unknown", ""
 #' ))
