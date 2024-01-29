@@ -30,6 +30,9 @@ tm_g_bivariate(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
 No empty selections are allowed!}

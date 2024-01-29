@@ -10,6 +10,9 @@ tm_file_viewer(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+
 \item{input_path}{optional, (\code{list}) of the input paths to either: specific files of accepted formats,
 a directory or a URL. The paths can be specified as absolute paths or relative to the running
 directory of the application. Will default to current working directory if not supplied.}
