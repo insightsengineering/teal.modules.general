@@ -33,7 +33,7 @@ name with label.}
 Get variable name with label
 }
 \examples{
-ADSL <- ADSL
+ADSL <- rADSL
 varname_w_label("AGE", ADSL)
 }
 \keyword{internal}

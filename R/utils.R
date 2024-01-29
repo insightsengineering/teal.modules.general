@@ -157,7 +157,7 @@ call_fun_dots <- function(fun, str_args) {
 #' @keywords internal
 #'
 #' @examples
-#' ADSL <- ADSL
+#' ADSL <- rADSL
 #' varname_w_label("AGE", ADSL)
 varname_w_label <- function(var_names,
                             dataset,
