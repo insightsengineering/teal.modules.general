@@ -21,6 +21,8 @@ with arguments provided by \code{str_args}.
 Call a function with a character vector for the \code{...} argument
 }
 \examples{
+call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
+
 a <- 1
 b <- 2
 call_fun_dots("sum", c("a", "b"))

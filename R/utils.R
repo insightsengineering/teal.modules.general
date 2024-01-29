@@ -132,6 +132,8 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #' @keywords internal
 #'
 #' @examples
+#' call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
+#'
 #' a <- 1
 #' b <- 2
 #' call_fun_dots("sum", c("a", "b"))
