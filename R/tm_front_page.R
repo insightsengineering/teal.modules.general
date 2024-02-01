@@ -70,7 +70,7 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   checkmate::assert_flag(show_metadata)
 
-  logger::log_info("Initializing tm_front_page")
+  message("Initializing tm_front_page")
   args <- as.list(environment())
 
   module(

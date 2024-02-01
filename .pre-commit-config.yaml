@@ -25,7 +25,6 @@ repos:
           - DT
           - forcats
           - grid
-          - logger
           - magrittr
           - scales
           - shinyjs

@@ -80,7 +80,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args()) {
-  logger::log_info("Initializing tm_t_crosstable")
+  message("Initializing tm_t_crosstable")
   if (!requireNamespace("rtables", quietly = TRUE)) {
     stop("Cannot load rtables - please install the package or restart your session.")
   }

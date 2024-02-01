@@ -89,7 +89,7 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_g_association")
+  message("Initializing tm_g_association")
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)
   if (inherits(vars, "data_extract_spec")) vars <- list(vars)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)

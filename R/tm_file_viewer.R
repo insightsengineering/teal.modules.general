@@ -39,7 +39,7 @@
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
-  logger::log_info("Initializing tm_file_viewer")
+  message("Initializing tm_file_viewer")
   if (length(label) == 0 || identical(label, "")) {
     label <- " "
   }

@@ -119,7 +119,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_width = NULL,
                               pre_output = NULL,
                               post_output = NULL) {
-  logger::log_info("Initializing tm_g_distribution")
+  message("Initializing tm_g_distribution")
 
   extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)

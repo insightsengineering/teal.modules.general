@@ -85,7 +85,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL) {
-  logger::log_info("Initializing tm_g_response")
+  message("Initializing tm_g_response")
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)

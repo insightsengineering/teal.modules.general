@@ -75,7 +75,7 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_width = NULL,
                         pre_output = NULL,
                         post_output = NULL) {
-  logger::log_info("Initializing tm_outliers")
+  message("Initializing tm_outliers")
   if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
   if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)

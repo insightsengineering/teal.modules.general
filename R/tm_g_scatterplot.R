@@ -160,7 +160,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_g_scatterplot")
+  message("Initializing tm_g_scatterplot")
 
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)

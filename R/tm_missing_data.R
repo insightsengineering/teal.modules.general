@@ -64,7 +64,7 @@ tm_missing_data <- function(label = "Missing data",
   if (!requireNamespace("rlang", quietly = TRUE)) {
     stop("Cannot load rlang - please install the package or restart your session.")
   }
-  logger::log_info("Initializing tm_missing_data")
+  message("Initializing tm_missing_data")
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   checkmate::assert_string(label)
