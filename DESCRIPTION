@@ -15,6 +15,9 @@ Authors@R: c(
   )
 Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
+URL: https://insightsengineering.github.io/teal.modules.general/,
+    https://github.com/insightsengineering/teal.modules.general/
+BugReports: https://github.com/insightsengineering/teal.modules.general/issues
 Depends:
     ggmosaic (>= 0.3.0),
     ggplot2 (>= 3.4.0),
