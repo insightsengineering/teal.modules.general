@@ -21,8 +21,8 @@ tm_g_distribution(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{dist_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable to consider for the distribution analysis.}
