@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules to Add to a `teal` Application
-Version: 0.2.16.9018
-Date: 2024-01-16
+Version: 0.2.16.9019
+Date: 2024-02-09
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -17,7 +17,8 @@ Description: General Purpose Teal Modules.
 License: Apache License 2.0 | file LICENSE
 URL: https://insightsengineering.github.io/teal.modules.general/,
     https://github.com/insightsengineering/teal.modules.general/
-BugReports: https://github.com/insightsengineering/teal.modules.general/issues
+BugReports: 
+    https://github.com/insightsengineering/teal.modules.general/issues
 Depends:
     ggmosaic (>= 0.3.0),
     ggplot2 (>= 3.4.0),
