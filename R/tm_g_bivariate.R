@@ -585,7 +585,7 @@ srv_g_bivariate <- function(id,
         substitute(
           expr = {
             # Add facetting labels
-            # optional: grid.newpage() #nolintr
+            # optional: grid.newpage() # nolint
             p <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
             grid::grid.newpage()
             grid::grid.draw(p)
