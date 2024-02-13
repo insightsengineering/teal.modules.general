@@ -602,7 +602,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     )
 
-    # boxplot/violinplot #nolint
+    # boxplot/violinplot # nolint
     boxplot_q <- reactive({
       req(common_code_q())
       ANL <- common_code_q()[["ANL"]] # nolint
