@@ -61,7 +61,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
-                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                      ggplot2_args = teal.widgets::ggplot2_args(),
                      rotate_xaxis_labels = FALSE,
                      font_size = c(12, 8, 20),
@@ -225,7 +225,7 @@ ui_a_pca <- function(id, ...) {
             selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
-              choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+              choices = ggplot_themes,
               selected = args$ggtheme,
               multiple = FALSE
             ),

@@ -139,10 +139,7 @@ ui_variable_browser <- function(id,
               collapsed = TRUE,
               selectInput(
                 inputId = ns("ggplot_theme"), label = "ggplot2 theme",
-                choices = c(
-                  "gray", "bw", "linedraw", "light",
-                  "dark", "minimal", "classic", "void", "test"
-                ),
+                choices = ggplot_themes,
                 selected = "grey"
               ),
               fluidRow(

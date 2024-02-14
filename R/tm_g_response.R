@@ -81,7 +81,7 @@ tm_g_response <- function(label = "Response Plot",
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
-                          ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+                          ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL) {
@@ -203,7 +203,7 @@ ui_g_response <- function(id, ...) {
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )

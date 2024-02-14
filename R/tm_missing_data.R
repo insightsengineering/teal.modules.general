@@ -7,9 +7,7 @@
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) If this `dataname` exists in then "the by subject"graph is displayed.
 #'   For `CDISC` data. In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
-#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
-#'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default. Defaults to `"classic"`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -48,10 +46,7 @@ tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
                             parent_dataname = "ADSL",
-                            ggtheme = c(
-                              "classic", "gray", "bw", "linedraw",
-                              "light", "dark", "minimal", "void", "test"
-                            ),
+                            ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
                               "Combinations Hist" = teal.widgets::ggplot2_args(labs = list(caption = NULL)),
                               "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
@@ -353,7 +348,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       selectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+        choices = ggplot_themes,
         selected = ggtheme,
         multiple = FALSE
       )
