@@ -12,8 +12,7 @@ tm_a_regression(
   plot_width = NULL,
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL,
@@ -22,8 +21,8 @@ tm_a_regression(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
 
 \item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Regressor variables from an incoming dataset with filtering and selecting.}
@@ -45,9 +44,7 @@ length three with \code{c(value, min, max)}.}
 If a slider should be presented to adjust the plot point sizes dynamically then it can be a
 vector of length three with \code{c(value, min, max)}.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.

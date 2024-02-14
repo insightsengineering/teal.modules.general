@@ -9,8 +9,7 @@ tm_a_pca(
   dat,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   rotate_xaxis_labels = FALSE,
   font_size = c(12, 8, 20),
@@ -21,8 +20,8 @@ tm_a_pca(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
 
 \item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Columns used to compute PCA.}
@@ -33,9 +32,7 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.

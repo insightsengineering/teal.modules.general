@@ -19,8 +19,7 @@ tm_g_scatterplot(
   size = c(5, 1, 15),
   max_deg = 5L,
   rotate_xaxis_labels = FALSE,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   pre_output = NULL,
   post_output = NULL,
   table_dec = 4,
@@ -28,8 +27,8 @@ tm_g_scatterplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
+\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
 names selected to plot along the x-axis by default.}
@@ -72,9 +71,7 @@ vector of length three with \code{c(value, min, max)}.}
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
