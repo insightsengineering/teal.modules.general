@@ -14,8 +14,8 @@ tm_front_page(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
 element, if named the name is shown first in bold as a header followed by the value. The first
