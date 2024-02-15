@@ -343,9 +343,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
-      center <- standardization %in% c("center", "center_scale") # nolint
+      center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
 
       teal::validate_has_data(ANL, 10)
       validate(need(
@@ -374,9 +374,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
-      center <- standardization %in% c("center", "center_scale") # nolint
+      center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -389,7 +389,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       if (na_action == "drop") {
         qenv <- teal.code::eval_code(
           qenv,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint object_name_linter
         )
       }
 
@@ -461,8 +461,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     # plot elbow ----
     plot_elbow <- function(base_q) {
       ggtheme <- input$ggtheme
-      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-      font_size <- input$font_size # nolint
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      font_size <- input$font_size
 
       angle_value <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
       hjust_value <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
@@ -536,13 +536,13 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot circle ----
     plot_circle <- function(base_q) {
-      x_axis <- input$x_axis # nolint
-      y_axis <- input$y_axis # nolint
-      variables <- input$variables # nolint
+      x_axis <- input$x_axis
+      y_axis <- input$y_axis
+      variables <- input$variables
       ggtheme <- input$ggtheme
 
-      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-      font_size <- input$font_size # nolint
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      font_size <- input$font_size
 
       angle <- ifelse(isTRUE(rotate_xaxis_labels), 45, 0)
       hjust <- ifelse(isTRUE(rotate_xaxis_labels), 1, 0.5)
@@ -611,21 +611,21 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     plot_biplot <- function(base_q) {
       qenv <- base_q
 
-      ANL <- qenv[["ANL"]] # nolint
+      ANL <- qenv[["ANL"]] # nolint object_name_linter
 
       resp_col <- as.character(merged$anl_input_r()$columns_source$response)
       dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
-      x_axis <- input$x_axis # nolint
-      y_axis <- input$y_axis # nolint
-      variables <- input$variables # nolint
+      x_axis <- input$x_axis
+      y_axis <- input$y_axis
+      variables <- input$variables
       pca <- qenv[["pca"]]
 
       ggtheme <- input$ggtheme
 
-      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-      alpha <- input$alpha # nolint
-      size <- input$size # nolint
-      font_size <- input$font_size # nolint
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      alpha <- input$alpha
+      size <- input$size
+      font_size <- input$font_size
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -690,10 +690,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
         dev_labs <- list()
       } else {
-        rp_keys <- setdiff(
-          colnames(ANL),
-          as.character(unlist(merged$anl_input_r()$columns_source))
-        ) # nolint
+        rp_keys <- setdiff(colnames(ANL), as.character(unlist(merged$anl_input_r()$columns_source)))
 
         response <- ANL[[resp_col]]
 
@@ -825,11 +822,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot pc_var ----
     plot_pc_var <- function(base_q) {
-      pc <- input$pc # nolint
+      pc <- input$pc
       ggtheme <- input$ggtheme
 
-      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
-      font_size <- input$font_size # nolint
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
+      font_size <- input$font_size
 
       angle <- ifelse(rotate_xaxis_labels, 45, 0)
       hjust <- ifelse(rotate_xaxis_labels, 1, 0.5)

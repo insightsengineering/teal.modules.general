@@ -181,7 +181,7 @@ srv_variable_browser <- function(id,
     .unique_records_for_factor <- 30
     # if there are < this number of unique records then a numeric
     # variable is by default treated as a factor
-    .unique_records_default_as_factor <- 6 # nolint
+    .unique_records_default_as_factor <- 6 # nolint object_length_linter
 
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
@@ -231,7 +231,7 @@ srv_variable_browser <- function(id,
       condition = length(parent_dataname) > 0 && parent_dataname %in% datanames
     )
 
-    columns_names <- new.env() # nolint
+    columns_names <- new.env()
 
     # plot_var$data holds the name of the currently selected dataset
     # plot_var$variable[[<dataset_name>]] holds the name of the currently selected
@@ -547,7 +547,7 @@ create_sparklines <- function(arr, width = 150, ...) {
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.default <- function(arr, width = 150, ...) { # nolint
+create_sparklines.default <- function(arr, width = 150, ...) {
   return(as.character(tags$code("unsupported variable type", class = "text-blue")))
 }
 
@@ -561,7 +561,7 @@ create_sparklines.default <- function(arr, width = 150, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
+create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -601,7 +601,7 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
+create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -641,7 +641,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
+create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
   arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
   binwidth <- get_bin_width(arr_num, 1)
@@ -681,7 +681,7 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.character <- function(arr, ...) { # nolint
+create_sparklines.character <- function(arr, ...) {
   return(create_sparklines(as.factor(arr)))
 }
 
@@ -696,7 +696,7 @@ create_sparklines.character <- function(arr, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.logical <- function(arr, ...) { # nolint
+create_sparklines.logical <- function(arr, ...) {
   return(create_sparklines(as.factor(arr)))
 }
 
@@ -711,7 +711,7 @@ create_sparklines.logical <- function(arr, ...) { # nolint
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) { # nolint
+create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   decreasing_order <- TRUE
 
   counts <- table(arr)
@@ -751,7 +751,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
 #' @export
 #' @keywords internal
 #' @rdname create_sparklines
-create_sparklines.numeric <- function(arr, width = 150, ...) { # nolint
+create_sparklines.numeric <- function(arr, width = 150, ...) {
   if (any(is.infinite(arr))) {
     return(as.character(tags$code("infinite values", class = "text-blue")))
   }
@@ -879,7 +879,7 @@ plot_var_summary <- function(var,
                              wrap_character = NULL,
                              numeric_as_factor,
                              display_density = is.numeric(var),
-                             remove_NA_hist = FALSE, # nolint
+                             remove_NA_hist = FALSE, # nolint object_name_linter
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {

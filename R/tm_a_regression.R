@@ -312,7 +312,7 @@ srv_a_regression <- function(id,
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      ANL <- anl_merged_q()[["ANL"]] # nolint
+      ANL <- anl_merged_q()[["ANL"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 10)
 
       validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
@@ -399,9 +399,9 @@ srv_a_regression <- function(id,
     })
 
     output_q <- reactive({
-      alpha <- input$alpha # nolint
-      size <- input$size # nolint
-      ggtheme <- input$ggtheme # nolint
+      alpha <- input$alpha
+      size <- input$size
+      ggtheme <- input$ggtheme
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
@@ -409,7 +409,7 @@ srv_a_regression <- function(id,
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
-        ANL <- anl_merged_q()[["ANL"]] # nolint
+        ANL <- anl_merged_q()[["ANL"]] # nolint object_name_linter
 
         stopifnot(ncol(fit$model) == 2)
 

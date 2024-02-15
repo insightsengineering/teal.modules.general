@@ -258,7 +258,7 @@ srv_tm_g_association <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 3)
 
       vars_names <- merged$anl_input_r()$columns_source$vars
@@ -276,7 +276,7 @@ srv_tm_g_association <- function(id,
       if (is_scatterplot) {
         shinyjs::show("alpha")
         shinyjs::show("size")
-        alpha <- input$alpha # nolint
+        alpha <- input$alpha
         size <- input$size
       } else {
         shinyjs::hide("alpha")

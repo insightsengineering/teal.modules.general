@@ -200,14 +200,14 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]] # nolint
+      ANL <- qenv[["ANL"]] # nolint object_name_linter
 
       cols_names <- merged$anl_input_r()$columns_source$variables
-      alpha <- input$alpha # nolint
-      cex <- input$cex # nolint
-      add_cor <- input$cor # nolint
-      cor_method <- input$cor_method # nolint
-      cor_na_omit <- input$cor_na_omit # nolint
+      alpha <- input$alpha
+      cex <- input$cex
+      add_cor <- input$cor
+      cor_method <- input$cor_method
+      cor_na_omit <- input$cor_na_omit
 
       cor_na_action <- if (isTruthy(cor_na_omit)) {
         "na.omit"
@@ -219,7 +219,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
-      varnames <- varname_w_label(cols_names, ANL, wrap_width = 20) # nolint
+      varnames <- varname_w_label(cols_names, ANL, wrap_width = 20)
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
@@ -227,7 +227,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>% # nolint
+            expr = ANL <- ANL[, cols_names] %>% # nolint object_name_linter
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
             env = list(cols_names = cols_names)
@@ -237,7 +237,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>% # nolint
+            expr = ANL <- ANL[, cols_names] %>% # nolint object_name_linter
               droplevels(),
             env = list(cols_names = cols_names)
           )
@@ -322,7 +322,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
     output$message <- renderText({
       shiny::req(iv_r()$is_valid())
       req(selector_list()$variables())
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {

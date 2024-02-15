@@ -282,7 +282,7 @@ srv_data_table <- function(id,
 
       dt_args$options <- dt_options
       if (!is.null(input$dt_rows)) {
-        dt_args$options$pageLength <- input$dt_rows # nolint
+        dt_args$options$pageLength <- input$dt_rows
       }
       dt_args$data <- dataframe_selected
 
