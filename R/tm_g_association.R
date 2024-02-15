@@ -185,7 +185,7 @@ ui_tm_g_association <- function(id, ...) {
           selectInput(
             inputId = ns("association_theme"),
             label = "Association theme (by ggplot):",
-            choices = ggplot_themess,
+            choices = ggplot_themes,
             selected = args$association_theme,
             multiple = FALSE
           )
