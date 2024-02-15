@@ -9,8 +9,7 @@ tm_missing_data(
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
   parent_dataname = "ADSL",
-  ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void",
-    "test"),
+  ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
     list(caption = NULL)), `Combinations Main` = teal.widgets::ggplot2_args(labs =
     list(title = NULL))),
@@ -31,9 +30,7 @@ for a slider encoding the plot width.}
 \item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in then "the by subject"graph is displayed.
 For \code{CDISC} data. In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"classic"}.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"classic"}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.

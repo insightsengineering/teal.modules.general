@@ -81,7 +81,7 @@ tm_g_response <- function(label = "Response Plot",
                           freq = FALSE,
                           plot_height = c(600, 400, 5000),
                           plot_width = NULL,
-                          ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+                          ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL) {
@@ -203,7 +203,7 @@ ui_g_response <- function(id, ...) {
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )
@@ -295,7 +295,7 @@ srv_g_response <- function(id,
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]] # nolint
+      ANL <- qenv[["ANL"]] # nolint object_name_linter
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
@@ -321,18 +321,18 @@ srv_g_response <- function(id,
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       ggtheme <- input$ggtheme
 
-      arg_position <- if (freq) "stack" else "fill" # nolint
+      arg_position <- if (freq) "stack" else "fill"
 
-      rowf <- if (length(row_facet_name) == 0) NULL else as.name(row_facet_name) # nolint
-      colf <- if (length(col_facet_name) == 0) NULL else as.name(col_facet_name) # nolint
-      resp_cl <- as.name(resp_var) # nolint
-      x_cl <- as.name(x) # nolint
+      rowf <- if (length(row_facet_name) != 0) as.name(row_facet_name)
+      colf <- if (length(col_facet_name) != 0) as.name(col_facet_name)
+      resp_cl <- as.name(resp_var)
+      x_cl <- as.name(x)
 
       if (swap_axes) {
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint
+            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint object_name_linter
             env = list(x = x, x_cl = x_cl)
           )
         )
@@ -341,7 +341,7 @@ srv_g_response <- function(id,
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
-          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint
+          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint object_name_linter
           env = list(resp_var = resp_var)
         )
       ) %>%
@@ -430,7 +430,7 @@ srv_g_response <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(

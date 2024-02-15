@@ -69,7 +69,7 @@
 tm_outliers <- function(label = "Outliers Module",
                         outlier_var,
                         categorical_var = NULL,
-                        ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+                        ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                         ggplot2_args = teal.widgets::ggplot2_args(),
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
@@ -231,7 +231,7 @@ ui_outliers <- function(id, ...) {
         selectInput(
           inputId = ns("ggtheme"),
           label = "Theme (by ggplot):",
-          choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+          choices = ggplot_themes,
           selected = args$ggtheme,
           multiple = FALSE
         )
@@ -311,7 +311,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     n_outlier_missing <- reactive({
       shiny::req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       sum(is.na(ANL[[outlier_var]]))
     })
 
@@ -321,12 +321,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     common_code_q <- reactive({
       shiny::req(iv_r()$is_valid())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       qenv <- merged$anl_q_r()
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-      order_by_outlier <- input$order_by_outlier # nolint
+      order_by_outlier <- input$order_by_outlier
       method <- input$method
       split_outliers <- input$split_outliers
       teal::validate_has_data(
@@ -350,7 +350,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
-              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint object_name_linter
               env = list(outlier_var_name = as.name(outlier_var))
             )
           )
@@ -367,7 +367,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
-              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint
+              expr = ANL <- ANL %>% dplyr::filter(!is.na(outlier_var_name)), # nolint object_name_linter
               env = list(outlier_var_name = as.name(outlier_var))
             )
           )
@@ -376,7 +376,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
 
       # slider
-      outlier_definition_param <- if (method == "IQR") { # nolint
+      outlier_definition_param <- if (method == "IQR") {
         input$iqr_slider
       } else if (method == "Z-score") {
         input$zscore_slider
@@ -399,7 +399,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv,
         substitute(
           expr = {
-            ANL_OUTLIER <- ANL %>% # nolint
+            ANL_OUTLIER <- ANL %>% # nolint object_name_linter
               group_expr %>% # styler: off
               dplyr::mutate(is_outlier = {
                 q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
@@ -544,13 +544,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               # In order for geom_rug to work properly when reordering takes place inside facet_grid,
               # all tables must have the column used for reording.
               # In this case, the column used for reordering is `order`.
-              ANL_OUTLIER <- dplyr::left_join( # nolint
+              ANL_OUTLIER <- dplyr::left_join( # nolint object_name_linter
                 ANL_OUTLIER,
                 summary_table_pre[, c("order", categorical_var)],
                 by = categorical_var
               )
               # so that x axis of plot aligns with columns of summary table, from most outliers to least by percentage
-              ANL <- ANL %>% # nolint
+              ANL <- ANL %>% # nolint object_name_linter
                 dplyr::left_join(
                   dplyr::select(summary_table_pre, categorical_var_name, order),
                   by = categorical_var
@@ -602,11 +602,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     )
 
-    # boxplot/violinplot #nolint
+    # boxplot/violinplot # nolint commented_code_linter
     boxplot_q <- reactive({
       req(common_code_q())
-      ANL <- common_code_q()[["ANL"]] # nolint
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+      ANL <- common_code_q()[["ANL"]] # nolint object_name_linter
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -615,7 +615,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal::validate_has_data(ANL, 1)
 
       # boxplot
-      plot_call <- quote(ANL %>% ggplot()) # nolint
+      plot_call <- quote(ANL %>% ggplot())
 
       plot_call <- if (input$boxplot_alts == "Box plot") {
         substitute(expr = plot_call + geom_boxplot(outlier.shape = NA), env = list(plot_call = plot_call))
@@ -697,8 +697,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # density plot
     density_plot_q <- reactive({
-      ANL <- common_code_q()[["ANL"]] # nolint
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+      ANL <- common_code_q()[["ANL"]] # nolint object_name_linter
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -757,8 +757,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # Cumulative distribution plot
     cumulative_plot_q <- reactive({
-      ANL <- common_code_q()[["ANL"]] # nolint
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+      ANL <- common_code_q()[["ANL"]] # nolint object_name_linter
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
 
       qenv <- common_code_q()
 
@@ -802,7 +802,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               all_categories <- lapply(
                 unique(ANL[[categorical_var]]),
                 function(x) {
-                  ANL <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint
+                  ANL <- ANL %>% dplyr::filter(get(categorical_var) == x) # nolint object_name_linter
                   anl_outlier2 <- ANL_OUTLIER %>% dplyr::filter(get(categorical_var) == x)
                   ecdf_df <- ANL %>%
                     dplyr::mutate(y = stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]))
@@ -979,7 +979,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     choices <- teal.transform::variable_choices(data()[[dataname_first]])
 
     observeEvent(common_code_q(), {
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
       teal.widgets::updateOptionalSelectInput(
         session,
         inputId = "table_ui_columns",
@@ -995,9 +995,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
-        ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
-        ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint
-        ANL <- common_code_q()[["ANL"]] # nolint
+        ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
+        ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint object_name_linter
+        ANL <- common_code_q()[["ANL"]] # nolint object_name_linter
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
           box_pws$brush()
@@ -1010,7 +1010,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
 
         # removing unused column ASAP
-        ANL_OUTLIER$order <- ANL$order <- NULL # nolint
+        ANL_OUTLIER$order <- ANL$order <- NULL # nolint object_name_linter
 
         display_table <- if (!is.null(plot_brush)) {
           if (length(categorical_var) > 0) {
@@ -1026,7 +1026,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             if (tab == "Boxplot") {
               # in boxplot with no categorical variable, there is no column in ANL that would correspond to x-axis
               # so a column needs to be inserted with the value "Entire dataset" because that's the label used in plot
-              ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint
+              ANL[[plot_brush$mapping$x]] <- "Entire dataset" # nolint object_name_linter
             }
           }
 
@@ -1038,11 +1038,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           } else if (tab == "Cumulative Distribution Plot") {
             plot_brush$mapping$y <- "cdf"
             if (length(categorical_var) > 0) {
-              ANL <- ANL %>% # nolint
+              ANL <- ANL %>% # nolint object_name_linter
                 dplyr::group_by(!!as.name(plot_brush$mapping$panelvar1)) %>%
                 dplyr::mutate(cdf = stats::ecdf(!!as.name(outlier_var))(!!as.name(outlier_var)))
             } else {
-              ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint
+              ANL$cdf <- stats::ecdf(ANL[[outlier_var]])(ANL[[outlier_var]]) # nolint object_name_linter
             }
           }
 
@@ -1087,10 +1087,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     output$total_outliers <- renderUI({
       shiny::req(iv_r()$is_valid())
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 1)
-      ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint
+      ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ] # nolint object_name_linter
       h5(
         sprintf(
           "%s %d / %d [%.02f%%]",
@@ -1104,7 +1104,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     output$total_missing <- renderUI({
       if (n_outlier_missing() > 0) {
-        ANL <- merged$anl_q_r()[["ANL"]] # nolint
+        ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
         helpText(
           sprintf(
             "%s %d / %d [%.02f%%]",

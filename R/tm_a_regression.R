@@ -84,10 +84,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             plot_width = NULL,
                             alpha = c(1, 0, 1),
                             size = c(2, 1, 8),
-                            ggtheme = c(
-                              "gray", "bw", "linedraw", "light", "dark",
-                              "minimal", "classic", "void", "test"
-                            ),
+                            ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                             ggplot2_args = teal.widgets::ggplot2_args(),
                             pre_output = NULL,
                             post_output = NULL,
@@ -217,7 +214,7 @@ ui_a_regression <- function(id, ...) {
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$ggtheme,
             multiple = FALSE
           )
@@ -315,7 +312,7 @@ srv_a_regression <- function(id,
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      ANL <- anl_merged_q()[["ANL"]] # nolint
+      ANL <- anl_merged_q()[["ANL"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 10)
 
       validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
@@ -402,9 +399,9 @@ srv_a_regression <- function(id,
     })
 
     output_q <- reactive({
-      alpha <- input$alpha # nolint
-      size <- input$size # nolint
-      ggtheme <- input$ggtheme # nolint
+      alpha <- input$alpha
+      size <- input$size
+      ggtheme <- input$ggtheme
       input_type <- input$plot_type
       show_outlier <- input$show_outlier
 
@@ -412,7 +409,7 @@ srv_a_regression <- function(id,
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
-        ANL <- anl_merged_q()[["ANL"]] # nolint
+        ANL <- anl_merged_q()[["ANL"]] # nolint object_name_linter
 
         stopifnot(ncol(fit$model) == 2)
 

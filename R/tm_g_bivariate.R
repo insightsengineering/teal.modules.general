@@ -121,7 +121,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            plot_width = NULL,
                            rotate_xaxis_labels = FALSE,
                            swap_axes = FALSE,
-                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL) {
@@ -338,7 +338,7 @@ ui_g_bivariate <- function(id, ...) {
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$ggtheme,
             multiple = FALSE
           ),
@@ -458,7 +458,7 @@ srv_g_bivariate <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 3)
 
       x_col_vec <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -496,7 +496,7 @@ srv_g_bivariate <- function(id,
 
       if (is_scatterplot) {
         shinyjs::show("alpha")
-        alpha <- input$alpha # nolint
+        alpha <- input$alpha
         shinyjs::show("add_lines")
 
         if (color_settings && input$coloring) {
@@ -585,7 +585,7 @@ srv_g_bivariate <- function(id,
         substitute(
           expr = {
             # Add facetting labels
-            # optional: grid.newpage() #nolintr
+            # optional: grid.newpage() # nolint commented_code_linter
             p <- add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
             grid::grid.newpage()
             grid::grid.draw(p)

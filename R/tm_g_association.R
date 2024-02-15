@@ -9,12 +9,8 @@
 #'   associated variables.
 #' @param show_association optional, (`logical`) Whether show association of `vars`
 #'   with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme optional, (`character`) `ggplot2` theme to be used by default.
-#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
-#'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
-#' @param association_theme optional, (`character`) `ggplot2` theme to be used by default.
-#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
-#'   Each theme can be chosen by the user during the session. Defaults to `"gray"`.
+#' @param distribution_theme,association_theme optional, (`character`) `ggplot2` themes to be used by default.
+#'   Default to `"gray"`.
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
@@ -78,14 +74,8 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c(
-                               "gray", "bw", "linedraw", "light", "dark",
-                               "minimal", "classic", "void", "test"
-                             ),
-                             association_theme = c(
-                               "gray", "bw", "linedraw", "light", "dark",
-                               "minimal", "classic", "void", "test"
-                             ),
+                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter
+                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
@@ -188,14 +178,14 @@ ui_tm_g_association <- function(id, ...) {
           selectInput(
             inputId = ns("distribution_theme"),
             label = "Distribution theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$distribution_theme,
             multiple = FALSE
           ),
           selectInput(
             inputId = ns("association_theme"),
             label = "Association theme (by ggplot):",
-            choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+            choices = ggplot_themes,
             selected = args$association_theme,
             multiple = FALSE
           )
@@ -268,7 +258,7 @@ srv_tm_g_association <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
       teal::validate_has_data(ANL, 3)
 
       vars_names <- merged$anl_input_r()$columns_source$vars
@@ -286,7 +276,7 @@ srv_tm_g_association <- function(id,
       if (is_scatterplot) {
         shinyjs::show("alpha")
         shinyjs::show("size")
-        alpha <- input$alpha # nolint
+        alpha <- input$alpha
         size <- input$size
       } else {
         shinyjs::hide("alpha")

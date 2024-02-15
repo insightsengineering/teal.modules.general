@@ -7,9 +7,7 @@
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) If this `dataname` exists in then "the by subject"graph is displayed.
 #'   For `CDISC` data. In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
-#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
-#'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
+#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default. Defaults to `"classic"`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -48,10 +46,7 @@ tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
                             parent_dataname = "ADSL",
-                            ggtheme = c(
-                              "classic", "gray", "bw", "linedraw",
-                              "light", "dark", "minimal", "void", "test"
-                            ),
+                            ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
                               "Combinations Hist" = teal.widgets::ggplot2_args(labs = list(caption = NULL)),
                               "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
@@ -353,7 +348,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       selectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+        choices = ggplot_themes,
         selected = ggtheme,
         multiple = FALSE
       )
@@ -430,14 +425,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         teal.code::eval_code(
           data(),
           substitute(
-            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint
+            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint object_name_linter
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
       } else {
         teal.code::eval_code(
           data(),
-          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint object_name_linter
         )
       }
 
@@ -445,13 +440,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
+            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint object_name_linter
             env = list(group_var = group_var, anl_name = as.name(dataname))
           )
         )
       }
 
-      new_col_name <- "**anyna**" # nolint variable assigned and used
+      new_col_name <- "**anyna**"
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -591,11 +586,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       qenv <- common_code_q()
 
       if (input$any_na) {
-        new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
+        new_col_name <- "**anyna**"
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint object_name_linter
             env = list(new_col_name = new_col_name)
           )
         )
@@ -980,13 +975,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
       )
 
-      group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
+      group_vals <- input$group_by_vals
       variables_select <- input$variables_select
       vars <- unique(variables_select, group_var)
-      count_type <- input$count_type # nolint (local variable is assigned and used)
+      count_type <- input$count_type
 
       if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
-        variables <- selected_vars() # nolint (local variable is assigned and used)
+        variables <- selected_vars()
       } else {
         variables <- colnames(anl)
       }

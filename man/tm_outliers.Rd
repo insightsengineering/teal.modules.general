@@ -8,8 +8,7 @@ tm_outliers(
   label = "Outliers Module",
   outlier_var,
   categorical_var = NULL,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -27,9 +26,7 @@ variable to consider for the outliers analysis.}
 \item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 categorical factor to split the selected outlier variables on.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
