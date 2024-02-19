@@ -74,8 +74,8 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter
-                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter
+                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
@@ -258,7 +258,7 @@ srv_tm_g_association <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
       teal::validate_has_data(ANL, 3)
 
       vars_names <- merged$anl_input_r()$columns_source$vars

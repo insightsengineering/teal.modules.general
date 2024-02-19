@@ -345,7 +345,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
 
       teal::validate_has_data(ANL, 10)
       validate(need(
@@ -376,7 +376,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -389,7 +389,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       if (na_action == "drop") {
         qenv <- teal.code::eval_code(
           qenv,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint object_name_linter
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint: object_name.
         )
       }
 
@@ -611,7 +611,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     plot_biplot <- function(base_q) {
       qenv <- base_q
 
-      ANL <- qenv[["ANL"]] # nolint object_name_linter
+      ANL <- qenv[["ANL"]] # nolint: object_name.
 
       resp_col <- as.character(merged$anl_input_r()$columns_source$response)
       dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
@@ -707,7 +707,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
         scales_biplot <-
-          if (is.character(response) || is.factor(response) || (is.numeric(response) && length(unique(response)) <= 6)) { # nolint line_length_linter
+          if (is.character(response) || is.factor(response) || (is.numeric(response) && length(unique(response)) <= 6)) { # nolint: line_length.
             qenv <- teal.code::eval_code(
               qenv,
               quote(pca_rot$response <- as.factor(response))

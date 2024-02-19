@@ -295,7 +295,7 @@ srv_g_response <- function(id,
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]] # nolint object_name_linter
+      ANL <- qenv[["ANL"]] # nolint: object_name.
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
@@ -332,7 +332,7 @@ srv_g_response <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint object_name_linter
+            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint: object_name.
             env = list(x = x, x_cl = x_cl)
           )
         )
@@ -341,7 +341,7 @@ srv_g_response <- function(id,
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
-          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint object_name_linter
+          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint: object_name.
           env = list(resp_var = resp_var)
         )
       ) %>%
