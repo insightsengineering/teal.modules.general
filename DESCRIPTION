@@ -1,6 +1,6 @@
 Type: Package
 Package: teal.modules.general
-Title: General Modules to Add to a `teal` Application
+Title: General Modules to Add to a 'teal' Application
 Version: 0.2.16.9021
 Date: 2024-02-15
 Authors@R: c(
@@ -13,8 +13,8 @@ Authors@R: c(
     person("Nikolas", "Burkoff", role = "aut"),
     person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
   )
-Description: General Purpose Teal Modules.
-License: Apache License 2.0 | file LICENSE
+Description: General Purpose 'teal' Modules.
+License: Apache License 2.0
 URL: https://insightsengineering.github.io/teal.modules.general/,
     https://github.com/insightsengineering/teal.modules.general/
 BugReports: 
