@@ -11,7 +11,7 @@ vignette: >
 ---
 
 
-# Teal application to use scatter plot matrix with various datasets types
+# `teal` application to use scatter plot matrix with various datasets types
 
 This vignette will guide you through 4 parts to create a teal application using
 various types of datasets inside an scatter plot matrix module:

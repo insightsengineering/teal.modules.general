@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_file_viewer.R
 \name{tm_file_viewer}
 \alias{tm_file_viewer}
-\title{File Viewer Teal Module}
+\title{File Viewer \code{teal} Module}
 \usage{
 tm_file_viewer(
   label = "File Viewer Module",
