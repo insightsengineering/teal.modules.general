@@ -181,7 +181,7 @@ srv_variable_browser <- function(id,
     .unique_records_for_factor <- 30
     # if there are < this number of unique records then a numeric
     # variable is by default treated as a factor
-    .unique_records_default_as_factor <- 6 # nolint object_length_linter
+    .unique_records_default_as_factor <- 6 # nolint: object_length.
 
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
@@ -879,7 +879,7 @@ plot_var_summary <- function(var,
                              wrap_character = NULL,
                              numeric_as_factor,
                              display_density = is.numeric(var),
-                             remove_NA_hist = FALSE, # nolint object_name_linter
+                             remove_NA_hist = FALSE, # nolint: object_name.
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
