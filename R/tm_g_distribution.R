@@ -493,7 +493,7 @@ srv_distribution <- function(id,
             )
           }
 
-          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]] # nolint: object_name_linter.
+          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]] # nolint: object_name.
           params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
           params_vec <- round(unname(unlist(params)), 2)
           params_names <- names(params)
@@ -533,7 +533,7 @@ srv_distribution <- function(id,
     common_q <- reactive({
       # Create a private stack for this function only.
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name_linter.
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
       dist_var <- merge_vars()$dist_var
       s_var <- merge_vars()$s_var
       g_var <- merge_vars()$g_var
@@ -560,7 +560,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"), # nolint: object_name_linter, line_length_linter.
+            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"), # nolint: object_name, line_length.
             env = list(g_var = g_var)
           )
         )
@@ -576,7 +576,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"), # nolint: object_name_linter, line_length_linter.
+            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"), # nolint: object_name, line_length.
             env = list(s_var = s_var)
           )
         )
@@ -994,7 +994,7 @@ srv_distribution <- function(id,
       },
       valueExpr = {
         # Create a private stack for this function only.
-        ANL <- common_q()[["ANL"]] # nolint: object_name_linter.
+        ANL <- common_q()[["ANL"]] # nolint: object_name.
 
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
