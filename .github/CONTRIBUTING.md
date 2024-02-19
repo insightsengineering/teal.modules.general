@@ -131,6 +131,6 @@ If you have further questions regarding the contribution guidelines, please cont
 
 <!-- urls -->
 [docs]: https://insightsengineering.github.io/teal.modules.general/index.html
-[articles]: https://insightsengineering.github.io/teal.modules.general/main/articles/index.html
-[license]: https://insightsengineering.github.io/teal.modules.general/main/LICENSE-text.html
+[articles]: https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/index.html
+[license]: https://insightsengineering.github.io/teal.modules.general/latest-tag/LICENSE-text.html
 [insights]: https://github.com/insightsengineering/teal.modules.general/pulse
