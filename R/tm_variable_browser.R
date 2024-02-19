@@ -879,7 +879,7 @@ plot_var_summary <- function(var,
                              wrap_character = NULL,
                              numeric_as_factor,
                              display_density = is.numeric(var),
-                             remove_NA_hist = FALSE, # nolint object_name_linter
+                             remove_NA_hist = FALSE, # nolint: object_name_linter.
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {

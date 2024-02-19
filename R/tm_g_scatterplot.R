@@ -485,7 +485,7 @@ srv_g_scatterplot <- function(id,
     )
 
     trend_line_is_applicable <- reactive({
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name_linter.
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
       y_var <- as.vector(merged$anl_input_r()$columns_source$y)
       length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
@@ -512,7 +512,7 @@ srv_g_scatterplot <- function(id,
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
-        ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+        ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name_linter.
         x_var <- as.vector(merged$anl_input_r()$columns_source$x)
         y_var <- as.vector(merged$anl_input_r()$columns_source$y)
         if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
@@ -536,7 +536,7 @@ srv_g_scatterplot <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r(), iv_facet)
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name_linter.
 
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
       y_var <- as.vector(merged$anl_input_r()$columns_source$y)
@@ -637,7 +637,7 @@ srv_g_scatterplot <- function(id,
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint object_name_linter
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint: object_name_linter.
             env = list(
               x_var = x_var,
               log_x_fn = as.name(log_x_fn),
@@ -652,7 +652,7 @@ srv_g_scatterplot <- function(id,
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint object_name_linter
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint: object_name_linter.
             env = list(
               y_var = y_var,
               log_y_fn = as.name(log_y_fn),
@@ -785,7 +785,7 @@ srv_g_scatterplot <- function(id,
             plot_q <- teal.code::eval_code(
               plot_q,
               substitute(
-                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint object_name_linter
+                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint: object_name_linter.
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
               )
             )

@@ -425,14 +425,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         teal.code::eval_code(
           data(),
           substitute(
-            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint object_name_linter
+            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint: object_name_linter.
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
       } else {
         teal.code::eval_code(
           data(),
-          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint object_name_linter
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint: object_name_linter.
         )
       }
 
@@ -440,7 +440,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint object_name_linter
+            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint: object_name_linter.
             env = list(group_var = group_var, anl_name = as.name(dataname))
           )
         )
@@ -590,7 +590,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint object_name_linter
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint: object_name_linter.
             env = list(new_col_name = new_col_name)
           )
         )

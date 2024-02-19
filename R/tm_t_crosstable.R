@@ -233,7 +233,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     output_q <- reactive({
       teal::validate_inputs(iv_r())
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint object_name_linter
+      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name_linter.
 
       # As this is a summary
       x_name <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -317,7 +317,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         teal.code::eval_code(
           substitute(
             expr = {
-              ANL <- tern::df_explicit_na(ANL) # nolint object_name_linter
+              ANL <- tern::df_explicit_na(ANL) # nolint: object_name_linter.
               tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
               tbl
             },
