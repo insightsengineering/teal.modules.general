@@ -40,7 +40,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   CO2 <- CO2 %>% data.frame()
+#'   CO2 <- CO2
 #' })
 #' datanames(data) <- "CO2"
 #'
