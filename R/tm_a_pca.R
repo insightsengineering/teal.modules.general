@@ -22,7 +22,7 @@
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
-#' @export
+#' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @examples
 #'
@@ -64,6 +64,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_a_pca <- function(label = "Principal Component Analysis",
                      dat,
                      plot_height = c(600, 200, 2000),
@@ -139,7 +142,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   )
 }
 
-
+# UI function for the PCA module
+# This function defines the UI elements for the PCA analysis, including plot settings and data selection.
 ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -250,6 +254,8 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
+# Server function for the PCA module
+# This function handles the server-side logic for PCA analysis, including data processing and plot generation.
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
