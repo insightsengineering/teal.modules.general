@@ -40,7 +40,9 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_data_table(
-#'       variables_selected = list(iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")),
+#'       variables_selected = list(
+#'         iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+#'       ),
 #'       dt_args = list(caption = "ADSL Table Caption")
 #'     )
 #'   )

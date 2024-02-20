@@ -73,7 +73,10 @@
 #'         dataname = "CO2",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment", "conc", "uptake")),
+#'           choices = variable_choices(
+#'             data[["CO2"]],
+#'             c("Plant", "Type", "Treatment", "conc", "uptake")
+#'           ),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -160,7 +163,10 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")),
+#'           choices = variable_choices(
+#'             data[["ADSL"]],
+#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
+#'           ),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
