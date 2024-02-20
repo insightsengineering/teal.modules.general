@@ -42,7 +42,6 @@
 #'   mtcars[] <- lapply(mtcars, add_nas)
 #'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
 #'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
-#'
 #' })
 #' datanames(data) <- c("iris", "mtcars")
 #'
