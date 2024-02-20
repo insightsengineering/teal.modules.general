@@ -43,24 +43,73 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
 \examples{
-# Scatterplot matrix of variables from ADSL dataset
-
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADRS <- teal.modules.general::rADRS
+  CO2_plants <- unique(data.frame(CO2[c("Plant", "Type", "Treatment")]))
+  CO2_results <- unique(data.frame(CO2[c("Plant", "conc", "uptake")]))
 })
-datanames <- c("ADSL", "ADRS")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("CO2_plants", "CO2_results")
+join_keys(data) <- join_keys(join_key("CO2_plants", "CO2_results", "Plant"))
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplotmatrix(
+  modules = modules(
+    tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
+          dataname = "CO2_plants",
+          select = select_spec(
+            label = "Select plant:",
+            choices = variable_choices(data[["CO2_plants"]]),
+            selected = c("Plant", "Type", "Treatment"),
+            multiple = TRUE,
+            ordered = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "CO2_results",
+          filter = filter_spec(
+            label = "Select endpoints:",
+            vars = "Plant",
+            choices = value_choices(data[["CO2_results"]], "Plant"),
+            selected = c("Qn1", "Qc1", "Mn1", "Mc1"),
+            multiple = TRUE
+          ),
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(data[["CO2_results"]], c("conc", "uptake")),
+            selected = c("conc", "uptake"),
+            multiple = TRUE,
+            ordered = TRUE,
+            fixed = FALSE
+          )
+        )
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  ADSL <- rADSL
+  ADRS <- rADRS
+})
+datanames(data) <- c("ADSL", "ADRS")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix",
+      variables = list(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -71,9 +120,9 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADRS",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -96,4 +145,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }
