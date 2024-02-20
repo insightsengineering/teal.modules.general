@@ -10,8 +10,8 @@
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   specifying columns used to compute PCA.
 #' @param alpha (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
-#' - If provided as a scalar, it sets a fixed opacity for plot points.
-#' - If provided as a vector, it allows dynamic adjustment of plot point opacity via a slider in the UI.
+#' - If provided as a vector of `length==1`, it sets a fixed opacity for plot points.
+#' - If provided as a vector of `length>1`, it allows dynamic adjustment of plot point opacity via a slider in the UI.
 #' @param size (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
 #' - If provided as a scalar, it sets a fixed size for plot points.
 #' - If provided as a vector, it allows dynamic adjustment of plot point sizes via a slider in the UI.
@@ -26,7 +26,7 @@
 #'
 #' @examples
 #'
-# ADSL example
+#' # ADSL example
 #' library(teal.widgets)
 #'
 #' data <- teal_data()

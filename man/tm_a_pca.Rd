@@ -54,8 +54,8 @@ It controls the font size for plot titles, axis labels, and legends.
 
 \item{alpha}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
 \itemize{
-\item If provided as a scalar, it sets a fixed opacity for plot points.
-\item If provided as a vector, it allows dynamic adjustment of plot point opacity via a slider in the UI.
+\item If provided as a vector of \code{length==1}, it sets a fixed opacity for plot points.
+\item If provided as a vector of \code{length>1}, it allows dynamic adjustment of plot point opacity via a slider in the UI.
 }}
 
 \item{size}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
@@ -78,6 +78,7 @@ font size, through UI inputs.
 }
 \examples{
 
+# ADSL example
 library(teal.widgets)
 
 data <- teal_data()
