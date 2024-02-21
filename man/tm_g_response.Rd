@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_response.R
 \name{tm_g_response}
 \alias{tm_g_response}
-\title{Response Plots}
+\title{Response plot module}
 \usage{
 tm_g_response(
   label = "Response Plot",
@@ -27,30 +27,37 @@ tm_g_response(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use as the response. You can define one fixed column by using the
-setting \code{fixed = TRUE} inside the \code{select_spec}.
-\code{data_extract_spec} must not allow multiple selection in this case.}
+Which variable to use as the response.
+You can define one fixed column by using the setting \code{fixed = TRUE} inside the \code{select_spec}.
+
+The \code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-columns from the \code{data} allowed in teal.
-\code{data_extract_spec} must not allow multiple selection in this case.}
+Specifies which variable to use on the X-axis of the response plot.
+Allow the user to select multiple columns from the \code{data} allowed in teal.
 
-\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data columns to use for faceting rows.}
+The \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data to use for faceting columns.}
+\item{row_facet}{(optional \code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Specifies the data variable(s) to use for faceting rows.}
 
-\item{coord_flip}{optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.}
+\item{col_facet}{(optional \code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Specifies the data variable(s) to use for faceting columns.}
 
-\item{count_labels}{optional, (\code{logical}) Whether to show count labels.
+\item{coord_flip}{(optional \code{logical})
+Indicates whether to flip coordinates between \code{x} and \code{response}.
+The default value is \code{FALSE} and it will show the \code{x} variable on the x-axis
+and the \code{response} variable on the y-axis.}
+
+\item{count_labels}{(optional \code{logical})
+Indicates whether to show count labels.
 Defaults to \code{TRUE}.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+\item{freq}{(optional \code{logical})
+Indicates whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
@@ -73,8 +80,16 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
-Response Plots
+Generates a response plot for a given \code{response} and \code{x} variables.
+This module allows users customize and add annotations to the plot depending
+via the module's arguments.
+It supports showing the counts grouped by other variable facets (by row / column),
+swapping the coordinates, show count annotations and displaying the response plot
+as frequency or density.
 }
 \note{
 For more examples, please see the vignette "Using response plot" via
