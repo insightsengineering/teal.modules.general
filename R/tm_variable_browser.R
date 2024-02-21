@@ -533,8 +533,6 @@ var_missings_info <- function(x) {
 #'
 #' @return character variable containing the HTML code of the \code{sparkline} HTML widget
 #' @keywords internal
-#'
-#' @export
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
