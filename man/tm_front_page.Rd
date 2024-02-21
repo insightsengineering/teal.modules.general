@@ -17,26 +17,27 @@ tm_front_page(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
+\item{header_text}{(\code{character} vector) text to be shown at the top of the module, for each
 element, if named the name is shown first in bold as a header followed by the value. The first
-element's header is displayed larger than the others}
+element's header is displayed larger than the others.}
 
-\item{tables}{\verb{named list of dataframes} tables to be shown in the module}
+\item{tables}{(\verb{named list} of \code{data.frame}s) tables to be shown in the module.}
 
-\item{additional_tags}{\code{shiny.tag.list} or \code{html} additional shiny tags or \code{html} to be included after the table,
+\item{additional_tags}{(\code{shiny.tag.list} or \code{html}) additional shiny tags or \code{html} to be included after the table,
 for example to include an image, \code{tagList(tags$img(src = "image.png"))} or to include further \code{html},
-\code{HTML("html text here")}}
+\code{HTML("html text here")}.}
 
-\item{footnotes}{\verb{character vector} text to be shown at the bottom of the module, for each
-element, if named the name is shown first in bold, followed by the value}
+\item{footnotes}{(\code{character} vector) of text to be shown at the bottom of the module, for each
+element, if named the name is shown first in bold, followed by the value.}
 
-\item{show_metadata}{\code{logical} should the metadata of the datasets be available on the module?}
+\item{show_metadata}{(\code{logical}) indicating whether the metadata of the datasets be available on the module.}
 }
 \value{
-A \code{teal} module to be used in \code{teal} applications
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-This \code{teal} module creates a simple front page for \code{teal} applications
+Creates a simple front page for \code{teal} applications, displaying
+introductory text, tables, additional \code{html} or \code{shiny} tags, and footnotes.
 }
 \examples{
 
@@ -60,9 +61,9 @@ table_input <- list(
   "Table 3" = table_3
 )
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     teal.modules.general::tm_front_page(
       header_text = c(
         "Important information" = "It can go here.",
@@ -77,7 +78,9 @@ app <- teal::init(
   header = tags$h1("Sample Application"),
   footer = tags$p("Application footer"),
 )
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

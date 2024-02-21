@@ -1,20 +1,21 @@
 #' Front page module
 #'
-#' @description This `teal` module creates a simple front page for `teal` applications
+#' Creates a simple front page for `teal` applications, displaying
+#' introductory text, tables, additional `html` or `shiny` tags, and footnotes.
 #'
 #' @inheritParams teal::module
-#' @param header_text `character vector` text to be shown at the top of the module, for each
-#'   element, if named the name is shown first in bold as a header followed by the value. The first
-#'   element's header is displayed larger than the others
-#' @param tables `named list of dataframes` tables to be shown in the module
-#' @param additional_tags `shiny.tag.list` or `html` additional shiny tags or `html` to be included after the table,
-#'   for example to include an image, `tagList(tags$img(src = "image.png"))` or to include further `html`,
-#'   `HTML("html text here")`
-#' @param footnotes `character vector` text to be shown at the bottom of the module, for each
-#'   element, if named the name is shown first in bold, followed by the value
-#' @param show_metadata `logical` should the metadata of the datasets be available on the module?
-#' @return A `teal` module to be used in `teal` applications
-#' @export
+#' @param header_text (`character` vector) text to be shown at the top of the module, for each
+#' element, if named the name is shown first in bold as a header followed by the value. The first
+#' element's header is displayed larger than the others.
+#' @param tables (`named list` of `data.frame`s) tables to be shown in the module.
+#' @param additional_tags (`shiny.tag.list` or `html`) additional shiny tags or `html` to be included after the table,
+#' for example to include an image, `tagList(tags$img(src = "image.png"))` or to include further `html`,
+#' `HTML("html text here")`.
+#' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
+#' element, if named the name is shown first in bold, followed by the value.
+#' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
+#' @return Object of class `teal_module` to be used in `teal` applications.
+#'
 #' @examples
 #'
 #' data <- teal_data()
@@ -37,9 +38,9 @@
 #'   "Table 3" = table_3
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
+#'   modules = modules(
 #'     teal.modules.general::tm_front_page(
 #'       header_text = c(
 #'         "Important information" = "It can go here.",
@@ -54,9 +55,13 @@
 #'   header = tags$h1("Sample Application"),
 #'   footer = tags$p("Application footer"),
 #' )
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_front_page <- function(label = "Front page",
                           header_text = character(0),
                           tables = list(),
@@ -83,6 +88,7 @@ tm_front_page <- function(label = "Front page",
   )
 }
 
+# UI function for the front page module.
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -121,52 +127,7 @@ ui_front_page <- function(id, ...) {
   )
 }
 
-get_header_tags <- function(header_text) {
-  if (length(header_text) == 0) {
-    return(list())
-  }
-
-  get_single_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
-    tagList(
-      tags$div(
-        if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
-        tags$p(p_text)
-      )
-    )
-  }
-
-  header_tags <- get_single_header_tags(names(header_text[1]), header_text[1], header_tag = tags$h3)
-  c(header_tags, mapply(get_single_header_tags, utils::tail(names(header_text), -1), utils::tail(header_text, -1)))
-}
-
-get_table_tags <- function(tables, ns) {
-  if (length(tables) == 0) {
-    return(list())
-  }
-  table_tags <- c(lapply(seq_along(tables), function(idx) {
-    list(
-      tableOutput(ns(paste0("table_", idx)))
-    )
-  }))
-  return(table_tags)
-}
-
-get_footer_tags <- function(footnotes) {
-  if (length(footnotes) == 0) {
-    return(list())
-  }
-  bold_texts <- if (is.null(names(footnotes))) rep("", length(footnotes)) else names(footnotes)
-  footnote_tags <- mapply(function(bold_text, value) {
-    list(
-      tags$div(
-        tags$b(bold_text),
-        value,
-        tags$br()
-      )
-    )
-  }, bold_text = bold_texts, value = footnotes)
-}
-
+# Server function for the front page module.
 srv_front_page <- function(id, data, tables, show_metadata) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -210,9 +171,64 @@ srv_front_page <- function(id, data, tables, show_metadata) {
   })
 }
 
+# utils functions
+#' @noRd
+#' @keywords internal
+get_header_tags <- function(header_text) {
+  if (length(header_text) == 0) {
+    return(list())
+  }
+
+  get_single_header_tags <- function(header_text, p_text, header_tag = tags$h4) {
+    tagList(
+      tags$div(
+        if (!is.null(header_text) && nchar(header_text) > 0) header_tag(header_text),
+        tags$p(p_text)
+      )
+    )
+  }
+
+  header_tags <- get_single_header_tags(names(header_text[1]), header_text[1], header_tag = tags$h3)
+  c(header_tags, mapply(get_single_header_tags, utils::tail(names(header_text), -1), utils::tail(header_text, -1)))
+}
+
+#' @noRd
+#' @keywords internal
+get_table_tags <- function(tables, ns) {
+  if (length(tables) == 0) {
+    return(list())
+  }
+  table_tags <- c(lapply(seq_along(tables), function(idx) {
+    list(
+      tableOutput(ns(paste0("table_", idx)))
+    )
+  }))
+  return(table_tags)
+}
+
+#' @noRd
+#' @keywords internal
+get_footer_tags <- function(footnotes) {
+  if (length(footnotes) == 0) {
+    return(list())
+  }
+  bold_texts <- if (is.null(names(footnotes))) rep("", length(footnotes)) else names(footnotes)
+  footnote_tags <- mapply(function(bold_text, value) {
+    list(
+      tags$div(
+        tags$b(bold_text),
+        value,
+        tags$br()
+      )
+    )
+  }, bold_text = bold_texts, value = footnotes)
+}
+
 # take a list of metadata, one item per dataset (raw_metadata each element from datasets$get_metadata())
 # and the corresponding datanames and output a data.frame with columns {Dataset, Name, Value}.
 # which are, the Dataset the metadata came from, the metadata's name and value
+#' @noRd
+#' @keywords internal
 convert_metadata_to_dataframe <- function(raw_metadata, datanames) {
   output <- mapply(function(metadata, dataname) {
     if (is.null(metadata)) {
