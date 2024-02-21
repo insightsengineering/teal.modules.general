@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{Create a scatterplot matrix}
+\title{Scatterplot matrix module}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
@@ -18,7 +18,7 @@ tm_g_scatterplotmatrix(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Plotting variables from an incoming dataset with filtering and selecting. In case of
+Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
 
@@ -34,9 +34,14 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications to
+generate scatterplot matrix
+}
 \description{
-The available datasets to choose from for each dataset selector is the same and
-determined by the argument \code{variables}.
+Generates a scatterplot matrix from selected \code{variables} from datasets.
+Each plot within the matrix represents the relationship between two variables,
+providing the overview of correlations and distributions across selected data.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
@@ -54,13 +59,13 @@ datanames <- c("ADSL", "ADRS")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplotmatrix(
+  modules = modules(
+    tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -71,9 +76,9 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADRS",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -96,4 +101,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

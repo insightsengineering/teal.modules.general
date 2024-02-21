@@ -1,21 +1,23 @@
-#' Create a scatterplot matrix
+#' Scatterplot matrix module
 #'
-#' The available datasets to choose from for each dataset selector is the same and
-#' determined by the argument `variables`.
-#' @md
+#' Generates a scatterplot matrix from selected `variables` from datasets.
+#' Each plot within the matrix represents the relationship between two variables,
+#' providing the overview of correlations and distributions across selected data.
+#'
+#' @note For more examples, please see the vignette "Using scatterplot matrix" via
+#' `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'
 #' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Plotting variables from an incoming dataset with filtering and selecting. In case of
-#'  `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
-#'  rendered according to selection order.
+#' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
+#' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#' rendered according to selection order.
 #'
-#' @note For more examples, please see the vignette "Using scatterplot matrix" via
-#'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
-#' @export
+#' @return Object of class `teal_module` to be used in `teal` applications to
+#' generate scatterplot matrix
 #'
 #' @examples
 #' # Scatterplot matrix of variables from ADSL dataset
@@ -29,13 +31,13 @@
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_g_scatterplotmatrix(
+#'   modules = modules(
+#'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         teal.transform::data_extract_spec(
+#'         data_extract_spec(
 #'           dataname = "ADSL",
 #'           select = select_spec(
 #'             label = "Select variables:",
@@ -46,9 +48,9 @@
 #'             fixed = FALSE
 #'           )
 #'         ),
-#'         teal.transform::data_extract_spec(
+#'         data_extract_spec(
 #'           dataname = "ADRS",
-#'           filter = teal.transform::filter_spec(
+#'           filter = filter_spec(
 #'             label = "Select endpoints:",
 #'             vars = c("PARAMCD", "AVISIT"),
 #'             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -71,6 +73,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
                                    plot_height = c(600, 200, 2000),
@@ -104,6 +109,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   )
 }
 
+# UI function for the scatterplot matrix module.
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
@@ -160,6 +166,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
+# Server function for the scatterplot matrix module.
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -378,25 +385,29 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 }
 
 #' Get stats for x-y pairs in scatterplot matrix
-#' @description uses stats::cor.test per default for all numerical input variables and converts results
-#'  to character vector. Could be extended if different stats for different variable
-#'  types are needed. Meant to be called from \code{lattice::panel.text}.
-#' @param x \code{numeric}
-#' @param y \code{numeric}
-#' @param .f \code{function}, function that accepts x and y as formula input \code{~ x + y}.
-#' Default \code{stats::cor.test}
-#' @param .f_args \code{list} of arguments to be passed to \code{.f}
-#' @param round_stat \code{integer}
-#' @param round_pval \code{integer}
-#' @details presently we need to use a formula input for \code{stats::cor.test} because
-#' \code{na.fail} only gets evaluated when a formula is passed (see below).
-#' \preformatted{
+#'
+#' Uses `stats::cor.test` per default for all numerical input variables and converts results
+#' to character vector.
+#' Could be extended if different stats for different variable types are needed.
+#' Meant to be called from `lattice::panel.text`.
+#'
+#' Presently we need to use a formula input for `stats::cor.test` because
+#' `na.fail` only gets evaluated when a formula is passed (see below).
+#' ```
 #' x = c(1,3,5,7,NA)
 #' y = c(3,6,7,8,1)
 #' stats::cor.test(x, y, na.action = "na.fail")
 #' stats::cor.test(~ x + y,  na.action = "na.fail")
-#' }
-#' @return \code{character} with stats. For \code{stats::cor.test} correlation coefficient and p-value.
+#' ```
+#' @param x (`numeric`)
+#' @param y (`numeric`)
+#' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
+#' Default `stats::cor.test`.
+#' @param .f_args (`list`) of arguments to be passed to `.f`.
+#' @param round_stat (`integer`)
+#' @param round_pval (`integer`)
+#'
+#' @return Character with stats. For `stats::cor.test` correlation coefficient and p-value.
 #' @export
 #' @examples
 #' set.seed(1)
@@ -441,7 +452,8 @@ get_scatterplotmatrix_stats <- function(x, y,
       if (.f_args$method == "spearman") {
         return("rho:-")
       }
+    } else {
+      return("-")
     }
-    return("-")
   }
 }
