@@ -24,11 +24,14 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   CO2 <- CO2
-#'   CO2[["primary_key"]] <- seq_len(nrow(CO2))
+#'   mtcars <- mtcars
+#'   for (v in c("cyl", "vs", "am", "gear")) {
+#'     mtcars[[v]] <- as.factor(mtcars[[v]])
+#'   }
+#'   mtcars[["primary_key"]] <- seq_len(nrow(mtcars))
 #' })
-#' datanames(data) <- "CO2"
-#' join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
+#' datanames(data) <- "mtcars"
+#' join_keys(data) <- join_keys(join_key("mtcars", "mtcars", "primary_key"))
 #'
 #' app <- init(
 #'   data = data,
@@ -36,22 +39,22 @@
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
 #'       x = data_extract_spec(
-#'         dataname = "CO2",
+#'         dataname = "mtcars",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Plant",
+#'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
+#'           selected = c("cyl", "gear"),
 #'           multiple = TRUE,
 #'           ordered = TRUE,
 #'           fixed = FALSE
 #'         )
 #'       ),
 #'       y = data_extract_spec(
-#'         dataname = "CO2",
+#'         dataname = "mtcars",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Treatment",
+#'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
+#'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
