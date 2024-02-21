@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplot.R
 \name{tm_g_scatterplot}
 \alias{tm_g_scatterplot}
-\title{Create a simple scatterplot}
+\title{Scatterplot module}
 \usage{
 tm_g_scatterplot(
   label = "Scatterplot",
@@ -30,23 +30,23 @@ tm_g_scatterplot(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
-names selected to plot along the x-axis by default.}
+\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
+variable names selected to plot along the x-axis by default.}
 
-\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Variable
-names selected to plot along the y-axis by default.}
+\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
+variable names selected to plot along the y-axis by default.}
 
-\item{color_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{color_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}, optional)
 Defines the color encoding. If \code{NULL} then no color encoding option will be displayed.}
 
-\item{size_by}{optional (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{size_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}, optional)
 Defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
 
-\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data columns to use for faceting rows.}
+\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}, optional)
+Specifies the variable(s) for faceting rows.}
 
-\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data to use for faceting columns.}
+\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}, optional)
+Specifies the variable(s) for faceting columns.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -54,19 +54,23 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
-slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-length three with \code{c(value, min, max)}.}
+\item{alpha}{(\code{numeric}, optional) Specifies point opacity.
+\itemize{
+\item If vector of \code{length==1} then the plot points will have a fixed opacity.
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+}}
 
-\item{shape}{optional, (\code{character}) A character vector with the English names of the
+\item{shape}{(\code{character}, optional) A character vector with the names of the
 shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape_names}. This is a complete list from
 \code{vignette("ggplot2-specs", package="ggplot2")}.}
 
-\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
-If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-vector of length three with \code{c(value, min, max)}.}
+\item{size}{(\code{numeric}, optional) Specifies point size.
+\itemize{
+\item If vector of \code{length==1} then the plot point sizes will have a fixed size
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+}}
 
-\item{max_deg}{optional, (\code{integer}) The maximum degree for the polynomial trend line. Must not be less than 1.}
+\item{max_deg}{(\code{integer}, optional) The maximum degree for the polynomial trend line. Must not be less than 1.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
@@ -79,7 +83,7 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
-\item{table_dec}{optional, (\code{integer}) Number of decimal places used to round numeric values in the table.}
+\item{table_dec}{(\code{integer}, optional) Number of decimal places used to round numeric values in the table.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
@@ -87,8 +91,15 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications
+to generate scatterplot.
+}
 \description{
-Create a plot with the \code{\link{ggplot2}[geom_point]} function
+Generates a customizable scatterplot using \code{ggplot2}.
+This module allows users to select variables for the x and y axes,
+color and size encodings, faceting options, and more. It supports log transformations,
+trend line additions, and dynamic adjustments of point opacity and size through UI controls.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot" via
@@ -96,6 +107,7 @@ For more examples, please see the vignette "Using scatterplot" via
 }
 \examples{
 # Scatterplot of variables from ADSL dataset
+library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
@@ -106,16 +118,16 @@ datanames <- c("ADSL")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplot(
+  modules = modules(
+    tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = teal.transform::data_extract_spec(
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
@@ -124,11 +136,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      y = teal.transform::data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2")
           ),
@@ -137,11 +149,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      color_by = teal.transform::data_extract_spec(
+      color_by = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
@@ -150,11 +162,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      size_by = teal.transform::data_extract_spec(
+      size_by = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
           ),
@@ -163,11 +175,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      row_facet = teal.transform::data_extract_spec(
+      row_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),
@@ -176,11 +188,11 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      col_facet = teal.transform::data_extract_spec(
+      col_facet = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
-          choices = teal.transform::variable_choices(
+          choices = variable_choices(
             data[["ADSL"]],
             c("BMRKR2", "RACE", "REGION1")
           ),
@@ -189,7 +201,7 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      ggplot2_args = teal.widgets::ggplot2_args(
+      ggplot2_args = ggplot2_args(
         labs = list(subtitle = "Plot generated by Scatterplot Module")
       )
     )
@@ -198,4 +210,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }
