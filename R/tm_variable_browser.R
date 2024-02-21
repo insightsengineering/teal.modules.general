@@ -533,7 +533,6 @@ var_missings_info <- function(x) {
 #'
 #' @return character variable containing the HTML code of the \code{sparkline} HTML widget
 #' @keywords internal
-#'
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
@@ -1025,6 +1024,7 @@ plot_var_summary <- function(var,
   plot_main
 }
 
+#' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }

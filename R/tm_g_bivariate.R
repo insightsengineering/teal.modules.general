@@ -703,12 +703,6 @@ bivariate_plot_call <- function(data_name,
   )
 }
 
-substitute_q <- function(x, env) {
-  stopifnot(is.language(x))
-  call <- substitute(substitute(x, env), list(x = x))
-  eval(call)
-}
-
 
 #' Create ggplot part of plot call
 #'
