@@ -1,22 +1,29 @@
-#' Create a simple cross-table
-#' @md
+#' Cross-table module
+#'
+#' Generates a simple cross-table of two variables from a dataset with custom
+#' options for showing percentages and sub-totals.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Object with all available choices with pre-selected option for variable X - row values. In case
-#'  of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
-#'  rendered according to selection order.
+#' Object with all available choices with pre-selected option for variable X - row values.
+#' In case of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
+#' rendered according to selection order.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Object with all available choices with pre-selected option for variable Y - column values
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
+#' Object with all available choices with pre-selected option for variable Y - column values.
 #'
-#' @param show_percentage optional, (`logical`) Whether to show percentages
-#'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
-#' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.
+#' `data_extract_spec` must not allow multiple selection in this case.
+#' @param show_percentage (optional `logical`)
+#' Indicates whether to show percentages (relevant only when `x` is a `factor`).
+#' Defaults to `TRUE`.
+#' @param show_total (optional `logical`)
+#' Indicates whether to show total column.
+#' Defaults to `TRUE`.
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
-#'   `vignette("using-cross-table", package = "teal.modules.general")`.
+#' `vignette("using-cross-table", package = "teal.modules.general")`.
+#'
+#' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @examples
 #' # general data example
@@ -167,6 +174,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   )
 }
 
+# UI function for the cross-table module
 ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
@@ -216,6 +224,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
   )
 }
 
+# Server function for the cross-table module
 srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_t_crosstable.R
 \name{tm_t_crosstable}
 \alias{tm_t_crosstable}
-\title{Create a simple cross-table}
+\title{Cross-table module}
 \usage{
 tm_t_crosstable(
   label = "Cross Table",
@@ -20,18 +20,22 @@ tm_t_crosstable(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable X - row values. In case
-of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if table elements should be
+Object with all available choices with pre-selected option for variable X - row values.
+In case of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if table elements should be
 rendered according to selection order.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable Y - column values
+Object with all available choices with pre-selected option for variable Y - column values.
+
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{show_percentage}{optional, (\code{logical}) Whether to show percentages
-(relevant only when \code{x} is a \code{factor}). Defaults to \code{TRUE}.}
+\item{show_percentage}{(optional \code{logical})
+Indicates whether to show percentages (relevant only when \code{x} is a \code{factor}).
+Defaults to \code{TRUE}.}
 
-\item{show_total}{optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.}
+\item{show_total}{(optional \code{logical})
+Indicates whether to show total column.
+Defaults to \code{TRUE}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
@@ -45,8 +49,12 @@ The argument is merged with options variable \code{teal.basic_table_args} and de
 
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
-Create a simple cross-table
+Generates a simple cross-table of two variables from a dataset with custom
+options for showing percentages and sub-totals.
 }
 \note{
 For more examples, please see the vignette "Using cross table" via
