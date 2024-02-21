@@ -607,7 +607,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
               dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-              tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
               dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
               tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
               dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
@@ -700,7 +700,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
                 dplyr::group_by_at(parent_keys) %>%
                 dplyr::summarise_all(anyNA) %>%
-                tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+                tidyr::pivot_longer(cols = !dplyr::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
                 dplyr::group_by_at(c("col")) %>%
                 dplyr::summarise(count_na = sum(anyna)) %>%
                 dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
@@ -1008,7 +1008,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
               summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
                 dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
-                tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
                 tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
                 dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
             },
@@ -1023,7 +1023,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
-              tidyr::pivot_longer(tidyselect::everything(),
+              tidyr::pivot_longer(dplyr::everything(),
                 names_to = "Variable",
                 values_to = paste0("Missing (N=", nrow(ANL), ")")
               ) %>%
@@ -1086,7 +1086,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             # order subjects by decreasing number of missing and then by
             # missingness pattern (defined using sha1)
             order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::transmute(
                 id = dplyr::row_number(),
                 number_NA = apply(., 1, sum),
@@ -1097,7 +1097,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
             # order columns by decreasing percent of missing values
             ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::summarise(
                 column = create_cols_labels(colnames(.)),
                 na_count = apply(., MARGIN = 2, FUN = sum),
@@ -1106,7 +1106,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::arrange(na_percent, dplyr::desc(column))
 
             summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::mutate(col = create_cols_labels(col))
           })
         ) %>%

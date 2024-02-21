@@ -43,7 +43,6 @@ repos:
           - tern
           - tibble
           - tidyr
-          - tidyselect
           - utils
 
       - id: spell-check
