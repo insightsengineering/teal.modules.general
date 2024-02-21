@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_file_viewer.R
 \name{tm_file_viewer}
 \alias{tm_file_viewer}
-\title{File Viewer \code{teal} Module}
+\title{File viewer module}
 \usage{
 tm_file_viewer(
   label = "File Viewer Module",
@@ -13,32 +13,34 @@ tm_file_viewer(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{input_path}{optional, (\code{list}) of the input paths to either: specific files of accepted formats,
-a directory or a URL. The paths can be specified as absolute paths or relative to the running
-directory of the application. Will default to current working directory if not supplied.}
+\item{input_path}{(optional \code{list}) of the input paths to either:
+\enumerate{
+\item Specific files of accepted formats
+\item A directory or a URL
+}
+
+The paths can be specified as absolute paths or relative to the running
+directory of the application.
+Default to the current working directory if not supplied.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 The file viewer module provides a tool to view static files.
-Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
-\code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
+Supported formats include text formats, \code{PDF}, \code{PNG} \code{APNG},
+\code{JPEG} \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-data <- teal_data()
-data <- within(data, {
-  data <- data.frame(1)
-})
-datanames(data) <- c("data")
-
-app <- teal::init(
-  data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_file_viewer(
+app <- init(
+  data = teal_data(data = 1), # Mock dataset to initialize the app without error
+  modules = modules(
+    tm_file_viewer(
       input_path = list(
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-        url =
-          "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+        url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
       )
     )
   )
@@ -46,5 +48,4 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
-
 }
