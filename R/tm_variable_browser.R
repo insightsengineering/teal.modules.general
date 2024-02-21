@@ -1026,6 +1026,7 @@ plot_var_summary <- function(var,
   plot_main
 }
 
+#' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }
