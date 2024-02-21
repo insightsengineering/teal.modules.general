@@ -43,6 +43,7 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
 \examples{
+# general data example
 data <- teal_data()
 data <- within(data, {
   CO2_plants <- unique(data.frame(CO2[c("Plant", "Type", "Treatment")]))

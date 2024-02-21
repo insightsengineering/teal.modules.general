@@ -17,7 +17,7 @@
 #'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 #'
 #' @examples
-# general data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   CO2_plants <- unique(data.frame(CO2[c("Plant", "Type", "Treatment")]))
