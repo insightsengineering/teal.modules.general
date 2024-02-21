@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Teal application to use association plot with various datasets types
+# `teal` application to use association plot with various datasets types
 
 This vignette will guide you through 4 parts to create a teal application using
 various types of datasets inside a data table module:
@@ -50,8 +50,8 @@ join_keys(data) <- default_cdisc_join_keys[datanames]
 
 ## Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/reference/cdisc_data). The app itself will be constructed by multiple calls of `tm_data_table` using different
+This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
+create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app itself will be constructed by multiple calls of `tm_data_table` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}

@@ -1,6 +1,6 @@
 Type: Package
 Package: teal.modules.general
-Title: General Modules to Add to a `teal` Application
+Title: General Modules for 'teal' Applications
 Version: 0.2.16.9022
 Date: 2024-02-19
 Authors@R: c(
@@ -13,8 +13,10 @@ Authors@R: c(
     person("Nikolas", "Burkoff", role = "aut"),
     person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
   )
-Description: General Purpose Teal Modules.
-License: Apache License 2.0 | file LICENSE
+Description: Prebuilt 'shiny' modules containing tools for viewing data, visualizing data,
+    understanding missing and outlier values within your data and performing simple data analysis. 
+    This extends 'teal' framework that supports reproducible research and analysis.
+License: Apache License 2.0
 URL: https://insightsengineering.github.io/teal.modules.general/,
     https://github.com/insightsengineering/teal.modules.general/
 BugReports: 

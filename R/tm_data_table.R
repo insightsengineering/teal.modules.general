@@ -1,4 +1,4 @@
-#' Data Table Viewer Teal Module
+#' Data Table Viewer `teal` Module
 #'
 #' A data table viewer shows the data using a paginated table.
 #' specifically designed for use with `data.frames`.

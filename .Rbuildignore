@@ -40,6 +40,7 @@ SECURITY.md
 ^staged_dependencies\.yaml$
 ^\.gitlab-ci\.yml$
 ^LICENSE\.md$
+LICENSE
 coverage.*
 ^sample_files$
 ^\.pre-commit-config\.yaml
