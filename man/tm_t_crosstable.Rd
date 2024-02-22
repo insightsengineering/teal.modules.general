@@ -29,11 +29,11 @@ Object with all available choices with pre-selected option for variable Y - colu
 
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{show_percentage}{(optional \code{logical})
+\item{show_percentage}{(\code{logical(1)})
 Indicates whether to show percentages (relevant only when \code{x} is a \code{factor}).
 Defaults to \code{TRUE}.}
 
-\item{show_total}{(optional \code{logical})
+\item{show_total}{(\code{logical(1)})
 Indicates whether to show total column.
 Defaults to \code{TRUE}.}
 

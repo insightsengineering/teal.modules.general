@@ -13,10 +13,10 @@
 #' Object with all available choices with pre-selected option for variable Y - column values.
 #'
 #' `data_extract_spec` must not allow multiple selection in this case.
-#' @param show_percentage (optional `logical`)
+#' @param show_percentage (`logical(1)`)
 #' Indicates whether to show percentages (relevant only when `x` is a `factor`).
 #' Defaults to `TRUE`.
-#' @param show_total (optional `logical`)
+#' @param show_total (`logical(1)`)
 #' Indicates whether to show total column.
 #' Defaults to `TRUE`.
 #'
