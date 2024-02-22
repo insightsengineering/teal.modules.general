@@ -24,7 +24,7 @@ directory of the application.
 Default to the current working directory if not supplied.}
 }
 \value{
-Object of class \code{teal_module} to be used in \code{teal} applications
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 The file viewer module provides a tool to view static files.
