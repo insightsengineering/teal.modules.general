@@ -12,36 +12,67 @@
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
 #'
-#' @export
-#'
 #' @examples
+#' library(teal.widgets)
 #'
+#' # module specification used in apps below
+#' tm_missing_data_module <- tm_missing_data(
+#'   ggplot2_args = list(
+#'     "Combinations Hist" = ggplot2_args(
+#'       labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'     ),
+#'     "Combinations Main" = ggplot2_args(labs = list(title = NULL))
+#'   )
+#' )
+#'
+#' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
-#' })
-#' datanames <- c("ADSL", "ADRS")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#'   add_nas <- function(x) {
+#'     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
+#'     x
+#'   }
+#'
+#'   iris <- iris
+#'   mtcars <- mtcars
+#'
+#'   iris[] <- lapply(iris, add_nas)
+#'   mtcars[] <- lapply(mtcars, add_nas)
+#'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
+#'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
+#' })
+#' datanames(data) <- c("iris", "mtcars")
+#'
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_missing_data(
-#'       ggplot2_args = list(
-#'         "Combinations Hist" = teal.widgets::ggplot2_args(
-#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-#'         ),
-#'         "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
-#'       )
-#'     )
-#'   )
+#'   modules = modules(tm_missing_data_module)
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' # CDISC example data
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
+#' })
+#' datanames(data) <- c("ADSL", "ADRS")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(tm_missing_data_module)
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @export
+#'
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
@@ -425,14 +456,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         teal.code::eval_code(
           data(),
           substitute(
-            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint object_name_linter
+            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint: object_name.
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
       } else {
         teal.code::eval_code(
           data(),
-          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint object_name_linter
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint: object_name.
         )
       }
 
@@ -440,7 +471,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint object_name_linter
+            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint: object_name.
             env = list(group_var = group_var, anl_name = as.name(dataname))
           )
         )
@@ -554,9 +585,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # display those previously selected values that are still available
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-      } else if (!is.null(prev_choices) &&
-        !any(prev_choices %in% choices) &&
-        isolate(prev_group_by_var()) == input$group_by_var) {
+      } else if (
+        !is.null(prev_choices) &&
+          !any(prev_choices %in% choices) &&
+          isolate(prev_group_by_var()) == input$group_by_var
+      ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
@@ -590,7 +623,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint object_name_linter
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint: object_name.
             env = list(new_col_name = new_col_name)
           )
         )
