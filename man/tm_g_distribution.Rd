@@ -70,14 +70,14 @@ It offers several tools, such as histograms, Q-Q plots, and various statistical 
 visually and statistically analyze the variable's distribution.
 }
 \examples{
-# Example with non-clinical data
 library(teal.widgets)
 
+# General data example
 data <- teal_data()
 data <- within(data, {
   iris <- iris
 })
-datanames(data) <- c("iris")
+datanames(data) <- "iris"
 
 app <- init(
   data = data,
@@ -97,14 +97,13 @@ if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 
-# Example with clinical data
+# CDISC data example
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("ADSL")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 vars1 <- choices_selected(
   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
@@ -114,7 +113,7 @@ vars1 <- choices_selected(
 app <- init(
   data = data,
   modules = modules(
-    teal.modules.general::tm_g_distribution(
+    tm_g_distribution(
       dist_var = data_extract_spec(
         dataname = "ADSL",
         select = select_spec(
