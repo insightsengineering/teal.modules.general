@@ -34,7 +34,7 @@
 #' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications.
+#' @inherit shared_params return
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #' `vignette("using-response-plot", package = "teal.modules.general")`.

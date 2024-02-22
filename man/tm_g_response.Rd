@@ -81,7 +81,7 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
 \value{
-Object of class \code{teal_module} to be used in \code{teal} applications.
+Object of class \code{teal_module} to be used in \code{teal} applications
 }
 \description{
 Generates a response plot for a given \code{response} and \code{x} variables.
