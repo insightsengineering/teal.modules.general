@@ -25,7 +25,7 @@
 #' @param post_output (`shiny.tag`, optional) with text placed after the output to put the output
 #' into context. For example the [shiny::helpText()] elements are useful.
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications
+#' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @name shared_params
 #' @keywords internal
