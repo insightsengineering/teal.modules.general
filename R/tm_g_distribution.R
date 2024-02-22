@@ -802,8 +802,13 @@ srv_distribution <- function(id,
           )
         }
 
-        if (length(s_var) == 0 && length(g_var) == 0 && main_type_var == "Density" &&
-          length(t_dist) != 0 && main_type_var == "Density") {
+        if (
+          length(s_var) == 0 &&
+            length(g_var) == 0 &&
+            main_type_var == "Density" &&
+            length(t_dist) != 0 &&
+            main_type_var == "Density"
+        ) {
           map_dist <- stats::setNames(
             c("dnorm", "dlnorm", "dgamma", "dunif"),
             c("normal", "lognormal", "gamma", "unif")

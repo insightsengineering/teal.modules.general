@@ -954,38 +954,67 @@ coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
                                  is_point = FALSE) {
-  if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
-    is_point && !identical(size, character(0))) {
+  if (
+    !identical(colour, character(0)) &&
+      !identical(fill, character(0)) &&
+      is_point &&
+      !identical(size, character(0))
+  ) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
-  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-    is_point && identical(size, character(0))) {
+  } else if (
+    identical(colour, character(0)) &&
+      !identical(fill, character(0)) &&
+      is_point &&
+      identical(size, character(0))
+  ) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (!identical(colour, character(0)) && !identical(fill, character(0)) &&
-    (!is_point || identical(size, character(0)))) {
+  } else if (
+    !identical(colour, character(0)) &&
+      !identical(fill, character(0)) &&
+      (!is_point || identical(size, character(0)))
+  ) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
-  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
-    (!is_point || identical(size, character(0)))) {
+  } else if (
+    !identical(colour, character(0)) &&
+      identical(fill, character(0)) &&
+      (!is_point || identical(size, character(0)))
+  ) {
     substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
-  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-    (!is_point || identical(size, character(0)))) {
+  } else if (
+    identical(colour, character(0)) &&
+      !identical(fill, character(0)) &&
+      (!is_point || identical(size, character(0)))
+  ) {
     substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
-  } else if (identical(colour, character(0)) && identical(fill, character(0)) &&
-    is_point && !identical(size, character(0))) {
+  } else if (
+    identical(colour, character(0)) &&
+      identical(fill, character(0)) &&
+      is_point &&
+      !identical(size, character(0))
+  ) {
     substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
-  } else if (!identical(colour, character(0)) && identical(fill, character(0)) &&
-    is_point && !identical(size, character(0))) {
+  } else if (
+    !identical(colour, character(0)) &&
+      identical(fill, character(0)) &&
+      is_point &&
+      !identical(size, character(0))
+  ) {
     substitute(
       expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
-  } else if (identical(colour, character(0)) && !identical(fill, character(0)) &&
-    is_point && !identical(size, character(0))) {
+  } else if (
+    identical(colour, character(0)) &&
+      !identical(fill, character(0)) &&
+      is_point &&
+      !identical(size, character(0))
+  ) {
     substitute(
       expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))

@@ -368,9 +368,8 @@ srv_g_response <- function(id,
       # nolint end
 
       plot_call <- substitute(
-        expr =
-          ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,
