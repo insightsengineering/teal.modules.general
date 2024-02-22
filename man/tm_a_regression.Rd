@@ -86,7 +86,7 @@ library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   CO2 <- CO2
 })
 datanames(data) <- c("CO2")
@@ -131,7 +131,7 @@ library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
 })
 datanames(data) <- "ADSL"

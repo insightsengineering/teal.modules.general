@@ -30,7 +30,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   mtcars <- mtcars
 #'   for (v in c("cyl", "vs", "am", "gear")) {
 #'     mtcars[[v]] <- as.factor(mtcars[[v]])
@@ -78,7 +78,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- c("ADSL")
