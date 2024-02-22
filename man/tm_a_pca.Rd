@@ -48,8 +48,8 @@ rotate by default (\code{FALSE}).}
 \item{font_size}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
 It controls the font size for plot titles, axis labels, and legends.
 \itemize{
-\item If scalar then the font size will have a fixed size.
-\item If provided as a vector, it enables dynamic adjustment of font size via a slider in the UI.
+\item If vector of \code{length==1} then the font size will have a fixed size.
+\item If vector of \code{length>1}, it enables dynamic adjustment of font size via a slider in the UI.
 }}
 
 \item{alpha}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.

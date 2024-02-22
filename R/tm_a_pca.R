@@ -17,8 +17,8 @@
 #' - If provided as a vector, it allows dynamic adjustment of plot point sizes via a slider in the UI.
 #' @param font_size (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
 #' It controls the font size for plot titles, axis labels, and legends.
-#' - If scalar then the font size will have a fixed size.
-#' - If provided as a vector, it enables dynamic adjustment of font size via a slider in the UI.
+#' - If vector of `length==1` then the font size will have a fixed size.
+#' - If vector of `length>1`, it enables dynamic adjustment of font size via a slider in the UI.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
