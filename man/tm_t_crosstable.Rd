@@ -50,7 +50,7 @@ The argument is merged with options variable \code{teal.basic_table_args} and de
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
 }
 \value{
-Object of class \code{teal_module} to be used in \code{teal} applications
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Generates a simple cross-table of two variables from a dataset with custom
