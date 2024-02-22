@@ -28,15 +28,38 @@
 #' (see `server` argument of `DT::renderDataTable()`)
 #'
 #' @examples
+#' # General data example
 #'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   iris <- iris
 #' })
-#' datanames <- c("ADSL")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#' datanames(data) <- c("iris")
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_data_table(
+#'       variables_selected = list(
+#'         iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+#'       ),
+#'       dt_args = list(caption = "ADSL Table Caption")
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' # CDISC data example
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- rADSL
+#' })
+#' datanames(data) <- "ADSL"
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 #'
 #' app <- init(
 #'   data = data,
