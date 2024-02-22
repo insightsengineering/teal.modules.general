@@ -25,7 +25,7 @@
 #' @examples
 #' library(teal.widgets)
 #'
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
