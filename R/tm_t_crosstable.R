@@ -23,7 +23,7 @@
 #' @note For more examples, please see the vignette "Using cross table" via
 #' `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications.
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
