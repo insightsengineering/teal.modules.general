@@ -15,7 +15,7 @@
 #' directory of the application.
 #' Default to the current working directory if not supplied.
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications.
+#' @inherit shared_params return
 #'
 #' @examples
 #' app <- init(
