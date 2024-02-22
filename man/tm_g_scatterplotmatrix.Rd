@@ -106,7 +106,7 @@ app <- init(
             label = "Select variable:",
             vars = "country_id",
             choices = value_choices(data[["sales"]], "country_id"),
-            selected = c("DE", "FR"),
+            selected = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
             multiple = TRUE
           ),
           select = select_spec(
