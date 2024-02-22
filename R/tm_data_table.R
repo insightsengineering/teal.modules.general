@@ -1,31 +1,32 @@
-#' Data Table Viewer `teal` Module
+#' Data table viewer module
 #'
-#' A data table viewer shows the data using a paginated table.
-#' specifically designed for use with `data.frames`.
-#' @md
+#' Module provides a dynamic and interactive way to view `data.frame`s in a `teal` application.
+#' It uses the `DT` package to display data tables in a paginated, searchable, and sortable format,
+#' which helps to enhance data exploration and analysis.
+#'
+#' The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables.
+#' configure the `DT.TOJSON_ARGS` option via
+#' `options(DT.TOJSON_ARGS = list(na = "string"))` before running the module.
+#' Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param variables_selected (`list`) A named list of character vectors of the variables (i.e. columns)
-#'   which should be initially shown for each dataset. Names of list elements should correspond to the names
-#'   of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
-#'   dataset will initially be shown.
+#' @param variables_selected (`named list`) Character vectors of the variables (i.e. columns)
+#' which should be initially shown for each dataset.
+#' Names of list elements should correspond to the names of the datasets available in the app.
+#' If no entry is specified for a dataset, the first six variables from that
+#' dataset will initially be shown.
 #' @param datasets_selected (`character`) A vector of datasets which should be
-#'   shown and in what order. Names in the vector have to correspond with datasets names.
-#'   If vector of length zero (default) then all datasets are shown.
-#'   Note: Only datasets of the `data.frame` class are compatible;
-#'   using other types will cause an error.
-#' @param dt_args (named `list`) Additional arguments to be passed to `DT::datatable`
-#'   (must not include `data` or `options`).
-#' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
-#'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
+#' shown and in what order. Names in the vector have to correspond with datasets names.
+#' If vector of `length==0` (default) then all datasets are shown.
+#' Note: Only datasets of the `data.frame` class are compatible.
+#' @param dt_args (`named list`) Additional arguments to be passed to `DT::datatable`
+#' (must not include `data` or `options`).
+#' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
+#' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
-#'   (see `server` argument of `DT::renderDataTable()`)
-#' @details
-#'   The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables. If this is something
-#'   you require then set `options(DT.TOJSON_ARGS =  list(na = "string"))` before running the module.
-#'   Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
-#' @export
+#' (see `server` argument of `DT::renderDataTable()`)
+#'
 #' @examples
 #'
 #' data <- teal_data()
@@ -37,10 +38,10 @@
 #' datanames(data) <- datanames
 #' join_keys(data) <- default_cdisc_join_keys[datanames]
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_data_table(
+#'   modules = modules(
+#'     tm_data_table(
 #'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
 #'       dt_args = list(caption = "ADSL Table Caption")
 #'     )
@@ -49,6 +50,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
                           datasets_selected = character(0),
@@ -102,7 +106,7 @@ tm_data_table <- function(label = "Data Table",
 }
 
 
-# ui page module
+# UI page module.
 ui_page_data_table <- function(id,
                                pre_output = NULL,
                                post_output = NULL) {
@@ -137,7 +141,7 @@ ui_page_data_table <- function(id,
 }
 
 
-# server page module
+# server page module.
 srv_page_data_table <- function(id,
                                 data,
                                 datasets_selected,
@@ -221,6 +225,7 @@ srv_page_data_table <- function(id,
   })
 }
 
+# UI function for the data_table module.
 ui_data_table <- function(id,
                           choices,
                           selected) {
@@ -250,6 +255,7 @@ ui_data_table <- function(id,
   )
 }
 
+# Server function for the data_table module.
 srv_data_table <- function(id,
                            data,
                            dataname,
