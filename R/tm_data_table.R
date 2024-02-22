@@ -31,7 +31,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   iris <- iris
 #' })
 #' datanames(data) <- c("iris")
@@ -54,7 +54,7 @@
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
@@ -301,7 +301,7 @@ srv_data_table <- function(id,
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
       dataframe_selected <- if (if_distinct()) {
-        dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
+        dplyr::count(df, dplyr::across(dplyr::all_of(variables)))
       } else {
         df[variables]
       }

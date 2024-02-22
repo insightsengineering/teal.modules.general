@@ -60,7 +60,7 @@ Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be le
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   iris <- iris
 })
 datanames(data) <- c("iris")
@@ -83,7 +83,7 @@ if (interactive()) {
 # CDISC data example
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
 })
 datanames(data) <- "ADSL"

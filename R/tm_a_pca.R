@@ -24,7 +24,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   USArrests <- USArrests
 #' })
 #' datanames(data) <- "USArrests"
@@ -61,7 +61,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
