@@ -6,9 +6,9 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param input_path (optional `list`) of the input paths to either:
+#' @param input_path (`list`) of the input paths, optional. Each element can be:
 #'
-#' 1. Specific files of accepted formats
+#' 1. Specific path to files of accepted formats
 #' 2. A directory or a URL
 #'
 #' The paths can be specified as absolute paths or relative to the running

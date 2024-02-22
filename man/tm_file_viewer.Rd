@@ -13,9 +13,9 @@ tm_file_viewer(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{input_path}{(optional \code{list}) of the input paths to either:
+\item{input_path}{(\code{list}) of the input paths, optional. Each element can be:
 \enumerate{
-\item Specific files of accepted formats
+\item Specific path to files of accepted formats
 \item A directory or a URL
 }
 
