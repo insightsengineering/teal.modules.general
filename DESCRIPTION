@@ -51,6 +51,7 @@ Imports:
     tern (>= 0.7.10),
     tibble (>= 2.0.0),
     tidyr (>= 0.8.3),
+    tools,
     utils
 Suggests:
     broom (>= 0.7.10),
