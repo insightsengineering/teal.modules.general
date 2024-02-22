@@ -16,28 +16,58 @@
 #'
 #' @examples
 #' library(teal.widgets)
+#'
+#' # Module specification used in apps below
+#' tm_missing_data_module <- tm_missing_data(
+#'   ggplot2_args = list(
+#'     "Combinations Hist" = ggplot2_args(
+#'       labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'     ),
+#'     "Combinations Main" = ggplot2_args(labs = list(title = NULL))
+#'   )
+#' )
+#'
+#' # General example data
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
+#'
+#'   add_nas <- function(x) {
+#'     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
+#'     x
+#'   }
+#'
+#'   iris <- iris
+#'   mtcars <- mtcars
+#'
+#'   iris[] <- lapply(iris, add_nas)
+#'   mtcars[] <- lapply(mtcars, add_nas)
+#'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
+#'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
 #' })
-#' datanames <- c("ADSL", "ADRS")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#' datanames(data) <- c("iris", "mtcars")
 #'
 #' app <- init(
 #'   data = data,
-#'   modules = modules(
-#'     tm_missing_data(
-#'       ggplot2_args = list(
-#'         "Combinations Hist" = ggplot2_args(
-#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-#'         ),
-#'         "Combinations Main" = ggplot2_args(labs = list(title = NULL))
-#'       )
-#'     )
-#'   )
+#'   modules = modules(tm_missing_data_module)
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' # CDISC example data
+#' data <- teal_data()
+#' data <- within(data, {
+#'   library(nestcolor)
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
+#' })
+#' datanames(data) <- c("ADSL", "ADRS")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(tm_missing_data_module)
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
@@ -563,9 +593,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # display those previously selected values that are still available
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-      } else if (!is.null(prev_choices) &&
-        !any(prev_choices %in% choices) &&
-        isolate(prev_group_by_var()) == input$group_by_var) {
+      } else if (
+        !is.null(prev_choices) &&
+          !any(prev_choices %in% choices) &&
+          isolate(prev_group_by_var()) == input$group_by_var
+      ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
