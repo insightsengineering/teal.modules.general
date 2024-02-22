@@ -31,7 +31,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   iris <- iris
 #' })
 #' datanames(data) <- c("iris")
@@ -54,7 +54,7 @@
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"

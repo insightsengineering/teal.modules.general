@@ -66,7 +66,7 @@ tm_missing_data_module <- tm_missing_data(
 # general example data
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
 
   add_nas <- function(x) {
     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
@@ -94,7 +94,7 @@ if (interactive()) {
 # CDISC example data
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
   ADRS <- rADRS
 })
