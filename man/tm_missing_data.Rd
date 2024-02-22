@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_missing_data.R
 \name{tm_missing_data}
 \alias{tm_missing_data}
-\title{Missing data module}
+\title{Missing data analysis module}
 \usage{
 tm_missing_data(
   label = "Missing data",
@@ -27,10 +27,10 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in then "the by subject"graph is displayed.
-For \code{CDISC} data. In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
+\item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for CDISC data.
+If provided and exists, enables additional analysis "by subject". For non-CDISC data, this parameter can be ignored.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"classic"}.}
+\item{ggtheme}{(\code{character}, optional) Specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
@@ -47,11 +47,13 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
 \description{
-Present analysis of missing observations and patients.
-specifically designed for use with \code{data.frames}.
+Module analyzes missing data in \code{data.frame}s to help users explore missing observations and
+gain insights into the completeness of their data.
+It is useful for clinical data analysis within the context of CDISC standards and
+adaptable for general data analysis purposes.
 }
 \examples{
-
+library(teal.widgets)
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
@@ -62,15 +64,15 @@ datanames <- c("ADSL", "ADRS")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_missing_data(
+  modules = modules(
+    tm_missing_data(
       ggplot2_args = list(
-        "Combinations Hist" = teal.widgets::ggplot2_args(
+        "Combinations Hist" = ggplot2_args(
           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
         ),
-        "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
+        "Combinations Main" = ggplot2_args(labs = list(title = NULL))
       )
     )
   )
@@ -78,4 +80,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }
