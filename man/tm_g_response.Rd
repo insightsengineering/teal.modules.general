@@ -38,25 +38,25 @@ Allow the user to select multiple columns from the \code{data} allowed in teal.
 
 The \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{row_facet}{(optional \code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Specifies the data variable(s) to use for faceting rows.}
+\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+optional specification of the data variable(s) to use for faceting rows.}
 
-\item{col_facet}{(optional \code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Specifies the data variable(s) to use for faceting columns.}
+\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+optional specification of the data variable(s) to use for faceting columns.}
 
-\item{coord_flip}{(optional \code{logical})
+\item{coord_flip}{(\code{logical(1)})
 Indicates whether to flip coordinates between \code{x} and \code{response}.
 The default value is \code{FALSE} and it will show the \code{x} variable on the x-axis
 and the \code{response} variable on the y-axis.}
 
-\item{count_labels}{(optional \code{logical})
+\item{count_labels}{(\code{logical(1)})
 Indicates whether to show count labels.
 Defaults to \code{TRUE}.}
 
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{freq}{(optional \code{logical})
+\item{freq}{(\code{logical(1)})
 Indicates whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 

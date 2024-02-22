@@ -19,18 +19,18 @@
 #' Allow the user to select multiple columns from the `data` allowed in teal.
 #'
 #' The `data_extract_spec` must not allow multiple selection in this case.
-#' @param row_facet (optional `data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Specifies the data variable(s) to use for faceting rows.
-#' @param col_facet (optional `data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Specifies the data variable(s) to use for faceting columns.
-#' @param coord_flip (optional `logical`)
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting columns.
+#' @param coord_flip (`logical(1)`)
 #' Indicates whether to flip coordinates between `x` and `response`.
 #' The default value is `FALSE` and it will show the `x` variable on the x-axis
 #' and the `response` variable on the y-axis.
-#' @param count_labels (optional `logical`)
+#' @param count_labels (`logical(1)`)
 #' Indicates whether to show count labels.
 #' Defaults to `TRUE`.
-#' @param freq (optional `logical`)
+#' @param freq (`logical(1)`)
 #' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
 #'
