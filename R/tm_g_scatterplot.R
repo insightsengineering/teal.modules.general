@@ -459,9 +459,13 @@ srv_g_scatterplot <- function(id,
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
     iv_facet <- shinyvalidate::InputValidator$new()
-    iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
-      (length(selector_list()$row_facet()$select) > 0L ||
-        length(selector_list()$col_facet()$select) > 0L)) {
+    iv_facet$add_rule("add_density", ~ if (
+      isTRUE(.) &&
+        (
+          length(selector_list()$row_facet()$select) > 0L ||
+            length(selector_list()$col_facet()$select) > 0L
+        )
+    ) {
       "Cannot add marginal density when Row or Column facetting has been selected"
     })
     iv_facet$enable()
@@ -524,8 +528,10 @@ srv_g_scatterplot <- function(id,
     observeEvent(
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
-        if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
-          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+        if (
+          length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
+            length(merged$anl_input_r()$columns_source$row_facet) == 0
+        ) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -582,9 +588,11 @@ srv_g_scatterplot <- function(id,
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
         validate(need(
-          !(inherits(ANL[[color_by_var]], "Date") ||
-            inherits(ANL[[color_by_var]], "POSIXct") ||
-            inherits(ANL[[color_by_var]], "POSIXlt")),
+          !(
+            inherits(ANL[[color_by_var]], "Date") ||
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")
+          ),
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))

@@ -417,8 +417,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 expr = dplyr::mutate(is_outlier_selected = {
                   q1_q3 <- stats::quantile(outlier_var_name, probs = c(0.25, 0.75))
                   iqr <- q1_q3[2] - q1_q3[1]
-                  !(outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
-                    outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr)
+                  !(
+                    outlier_var_name >= q1_q3[1] - outlier_definition_param * iqr &
+                      outlier_var_name <= q1_q3[2] + outlier_definition_param * iqr
+                  )
                 }),
                 env = list(
                   outlier_var_name = as.name(outlier_var),

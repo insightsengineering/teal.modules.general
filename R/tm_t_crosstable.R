@@ -283,7 +283,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           substitute(
             expr = {
               lyt <- basic_tables %>%
-              split_call %>% # styler: off
+                split_call %>% # styler: off
                 rtables::add_colcounts() %>%
                 tern::analyze_vars(
                   vars = x_name,

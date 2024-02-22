@@ -554,9 +554,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # display those previously selected values that are still available
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-      } else if (!is.null(prev_choices) &&
-        !any(prev_choices %in% choices) &&
-        isolate(prev_group_by_var()) == input$group_by_var) {
+      } else if (
+        !is.null(prev_choices) &&
+          !any(prev_choices %in% choices) &&
+          isolate(prev_group_by_var()) == input$group_by_var
+      ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
