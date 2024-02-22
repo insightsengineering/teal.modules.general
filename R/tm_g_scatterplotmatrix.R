@@ -16,20 +16,98 @@
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications to
-#' generate scatterplot matrix
-#'
 #' @examples
-#' # Scatterplot matrix of variables from ADSL dataset
-#'
+#' # General data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
+#'   countries <- data.frame(
+#'     id = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+#'     government = factor(
+#'       c(2, 2, 2, 1, 2, 2, 1, 1, 1, 2),
+#'       labels = c("Monarchy", "Republic")
+#'     ),
+#'     language_family = factor(
+#'       c(1, 3, 3, 3, 3, 2, 1, 1, 3, 1),
+#'       labels = c("Germanic", "Hellenic", "Romance")
+#'     ),
+#'     population = c(83, 67, 60, 47, 10, 11, 17, 11, 0.6, 9),
+#'     area = c(357, 551, 301, 505, 92, 132, 41, 30, 2.6, 83),
+#'     gdp = c(3.4, 2.7, 2.1, 1.4, 0.3, 0.2, 0.7, 0.5, 0.1, 0.4),
+#'     debt = c(2.1, 2.3, 2.4, 2.6, 2.3, 2.4, 2.3, 2.4, 2.3, 2.4)
+#'   )
+#'   sales <- data.frame(
+#'     id = 1:50,
+#'     country_id = sample(
+#'       c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+#'       size = 50,
+#'       replace = TRUE
+#'     ),
+#'     year = sort(sample(2010:2020, 50, replace = TRUE)),
+#'     venue = sample(c("small", "medium", "large", "online"), 50, replace = TRUE),
+#'     cancelled = sample(c(TRUE, FALSE), 50, replace = TRUE),
+#'     quantity = rnorm(50, 100, 20),
+#'     costs = rnorm(50, 80, 20),
+#'     profit = rnorm(50, 20, 10)
+#'   )
 #' })
-#' datanames <- c("ADSL", "ADRS")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#' datanames(data) <- c("countries", "sales")
+#' join_keys(data) <- join_keys(
+#'   join_key("countries", "countries", "id"),
+#'   join_key("sales", "sales", "id"),
+#'   join_key("countries", "sales", c("id" = "country_id"))
+#' )
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_g_scatterplotmatrix(
+#'       label = "Scatterplot matrix",
+#'       variables = list(
+#'         data_extract_spec(
+#'           dataname = "countries",
+#'           select = select_spec(
+#'             label = "Select variables:",
+#'             choices = variable_choices(data[["countries"]]),
+#'             selected = c("area", "gdp", "debt"),
+#'             multiple = TRUE,
+#'             ordered = TRUE,
+#'             fixed = FALSE
+#'           )
+#'         ),
+#'         data_extract_spec(
+#'           dataname = "sales",
+#'           filter = filter_spec(
+#'             label = "Select variable:",
+#'             vars = "country_id",
+#'             choices = value_choices(data[["sales"]], "country_id"),
+#'             selected = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+#'             multiple = TRUE
+#'           ),
+#'           select = select_spec(
+#'             label = "Select variables:",
+#'             choices = variable_choices(data[["sales"]], c("quantity", "costs", "profit")),
+#'             selected = c("quantity", "costs", "profit"),
+#'             multiple = TRUE,
+#'             ordered = TRUE,
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' # CDISC data example
+#' data <- teal_data()
+#' data <- within(data, {
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
+#' })
+#' datanames(data) <- c("ADSL", "ADRS")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 #'
 #' app <- init(
 #'   data = data,
