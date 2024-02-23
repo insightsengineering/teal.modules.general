@@ -28,8 +28,7 @@
 #' (see `server` argument of `DT::renderDataTable()`)
 #'
 #' @examples
-#' # General data example
-#'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
@@ -128,8 +127,9 @@ tm_data_table <- function(label = "Data Table",
   )
 }
 
-
 # UI page module.
+#' @noRd
+#' @keywords internal
 ui_page_data_table <- function(id,
                                pre_output = NULL,
                                post_output = NULL) {
@@ -163,8 +163,9 @@ ui_page_data_table <- function(id,
   )
 }
 
-
 # server page module.
+#' @noRd
+#' @keywords internal
 srv_page_data_table <- function(id,
                                 data,
                                 datasets_selected,
@@ -249,6 +250,8 @@ srv_page_data_table <- function(id,
 }
 
 # UI function for the data_table module.
+#' @noRd
+#' @keywords internal
 ui_data_table <- function(id,
                           choices,
                           selected) {
@@ -279,6 +282,8 @@ ui_data_table <- function(id,
 }
 
 # Server function for the data_table module.
+#' @noRd
+#' @keywords internal
 srv_data_table <- function(id,
                            data,
                            dataname,
