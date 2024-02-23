@@ -44,8 +44,6 @@
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes (`logical`, optional) Whether to swap X and Y axes. Defaults to `FALSE`.
 #'
-#' @return Object of class `teal_module` to be used in `teal` applications.
-#'
 #' @examples
 #' library(teal.widgets)
 #'
