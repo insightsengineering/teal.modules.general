@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{shared_params}
 \alias{shared_params}
-\title{Shared parameters  documentation}
+\title{Shared parameters documentation}
 \arguments{
 \item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
