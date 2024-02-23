@@ -38,7 +38,7 @@
 #'   )
 #' )
 #'
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   iris <- iris
@@ -116,7 +116,8 @@ tm_variable_browser <- function(label = "Variable Browser",
 }
 
 # UI function for the variable browser module.
-# It includes dynamic visualization and analysis options for dataset variables.
+#' @noRd
+#' @keywords internal
 ui_variable_browser <- function(id,
                                 pre_output = NULL,
                                 post_output = NULL) {
@@ -187,7 +188,8 @@ ui_variable_browser <- function(id,
 }
 
 # Server function for the variable browser module.
-# Generates interactive plots and variable summaries based on selected datasets and processing user inputs and data.
+#' @noRd
+#' @keywords internal
 srv_variable_browser <- function(id,
                                  data,
                                  reporter,

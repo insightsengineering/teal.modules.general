@@ -66,7 +66,7 @@ tm_variable_browser_module <- tm_variable_browser(
   )
 )
 
-# General data example
+# general data example
 data <- teal_data()
 data <- within(data, {
   iris <- iris
