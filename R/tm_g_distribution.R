@@ -27,7 +27,7 @@
 #' @examples
 #' library(teal.widgets)
 #'
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   iris <- iris
@@ -171,6 +171,8 @@ tm_g_distribution <- function(label = "Distribution Module",
 }
 
 # UI function for the distribution module.
+#' @noRd
+#' @keywords internal
 ui_distribution <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -317,6 +319,8 @@ ui_distribution <- function(id, ...) {
 }
 
 # Server function for the distribution module.
+#' @noRd
+#' @keywords internal
 srv_distribution <- function(id,
                              data,
                              reporter,

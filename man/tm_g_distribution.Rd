@@ -72,7 +72,7 @@ visually and statistically analyze the variable's distribution.
 \examples{
 library(teal.widgets)
 
-# General data example
+# general data example
 data <- teal_data()
 data <- within(data, {
   iris <- iris
