@@ -22,6 +22,10 @@
 #' 5. Cook's distance
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
+#' @param outlier_label_threshold (`numeric`) If scalar then the minimum distance
+#' between outlier and label that will generate a line is fixed.
+#' If a slider should be presented to adjust dynamically, then it can be a vector
+#' of length 3 with `c(value, min, max)`.
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
@@ -135,7 +139,8 @@ tm_a_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID") {
+                            default_outlier_label = "USUBJID",
+                            label_segment_threshold = c(0.5, 0, 10)) {
   logger::log_info("Initializing tm_a_regression")
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
@@ -257,6 +262,28 @@ ui_a_regression <- function(id, ...) {
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
+          teal.widgets::optionalSliderInputValMinMax(
+            ns("label_min_segment"),
+            div(
+              class = "teal-tooltip",
+              tagList(
+                "Label min. segment:",
+                icon("circle-info"),
+                span(
+                  class = "tooltiptext",
+                  paste(
+                    "Use the slider to choose the cut-off value to define minimum distance between label and point",
+                    "that generates a line segment.",
+                    "It's only valid when 'Display outlier labels' is checked."
+                  )
+                )
+              )
+            ),
+            args$label_segment_threshold,
+            ticks = FALSE,
+            step = .1,
+            round = FALSE
+          ),
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -437,10 +464,20 @@ srv_a_regression <- function(id,
       )
     })
 
+    label_min_segment <- reactive({
+      input$label_min_segment
+    })
+
     outlier_label <- reactive({
       substitute(
-        expr = geom_text(label = label_col, hjust = 0, vjust = 1, color = "red"),
-        env = list(label_col = label_col())
+        expr = ggrepel::geom_text_repel(
+          label = label_col,
+          color = "red",
+          max.overlaps = Inf,
+          min.segment.length = label_min_segment,
+          seed = 123
+        ),
+        env = list(label_col = label_col(), label_min_segment = label_min_segment())
       )
     })
 
@@ -608,16 +645,17 @@ srv_a_regression <- function(id,
           plot <- substitute(
             expr = plot +
               stat_qq(
-                geom = "text",
+                geom = ggrepel::GeomTextRepel,
                 label = label_col %>%
                   data.frame(label = .) %>%
                   dplyr::filter(label != "cooksd == NaN") %>%
                   unlist(),
-                hjust = 0,
-                vjust = 1,
-                color = "red"
+                color = "red",
+                max.overlaps = Inf,
+                min.segment.length = label_min_segment,
+                seed = 123
               ),
-            env = list(plot = plot, label_col = label_col())
+            env = list(plot = plot, label_col = label_col(), label_min_segment = label_min_segment())
           )
         }
 
