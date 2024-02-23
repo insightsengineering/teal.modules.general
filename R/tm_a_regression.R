@@ -473,8 +473,11 @@ srv_a_regression <- function(id,
         expr = ggrepel::geom_text_repel(
           label = label_col,
           color = "red",
+          hjust = 0,
+          vjust = 1,
           max.overlaps = Inf,
           min.segment.length = label_min_segment,
+          segment.alphs = 0.5,
           seed = 123
         ),
         env = list(label_col = label_col(), label_min_segment = label_min_segment())
@@ -652,7 +655,10 @@ srv_a_regression <- function(id,
                   unlist(),
                 color = "red",
                 max.overlaps = Inf,
+                hjust = 0,
+                vjust = 1,
                 min.segment.length = label_min_segment,
+                segment.alpha = .5,
                 seed = 123
               ),
             env = list(plot = plot, label_col = label_col(), label_min_segment = label_min_segment())
