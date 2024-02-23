@@ -14,7 +14,6 @@
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
 #' element, if named the name is shown first in bold, followed by the value.
 #' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
-#' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @examples
 #'
@@ -89,6 +88,8 @@ tm_front_page <- function(label = "Front page",
 }
 
 # UI function for the front page module.
+#' @noRd
+#' @keywords internal
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -128,6 +129,8 @@ ui_front_page <- function(id, ...) {
 }
 
 # Server function for the front page module.
+#' @noRd
+#' @keywords internal
 srv_front_page <- function(id, data, tables, show_metadata) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -171,7 +174,8 @@ srv_front_page <- function(id, data, tables, show_metadata) {
   })
 }
 
-# utils functions
+## utils functions
+
 #' @noRd
 #' @keywords internal
 get_header_tags <- function(header_text) {
