@@ -292,6 +292,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 # UI function for the bivariate module.
+#' @noRd
+#' @keywords internal
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(
@@ -433,6 +435,8 @@ ui_g_bivariate <- function(id, ...) {
 }
 
 # Server function for the bivariate module.
+#' @noRd
+#' @keywords internal
 srv_g_bivariate <- function(id,
                             data,
                             reporter,
@@ -765,7 +769,6 @@ bivariate_plot_call <- function(data_name,
   )
 }
 
-
 #' Create ggplot part of plot call
 #' Due to the type of the x and y variable the plot type is chosen
 #'
@@ -954,7 +957,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   plot_call
 }
 
-
 #' Create facet call
 #'
 #' @noRd
@@ -988,6 +990,7 @@ facet_ggplot_call <- function(row_facet = character(0),
     call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
+
 #' @noRd
 #' @keywords internal
 coloring_ggplot_call <- function(colour,
