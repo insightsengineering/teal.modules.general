@@ -17,7 +17,7 @@
 #' rendered according to selection order.
 #'
 #' @examples
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   countries <- data.frame(
@@ -188,6 +188,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 }
 
 # UI function for the scatterplot matrix module.
+#' @noRd
+#' @keywords internal
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
@@ -245,6 +247,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 }
 
 # Server function for the scatterplot matrix module.
+#' @noRd
+#' @keywords internal
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -486,7 +490,6 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' @param round_pval (`integer`)
 #'
 #' @return Character with stats. For `stats::cor.test` correlation coefficient and p-value.
-#' @export
 #' @examples
 #' set.seed(1)
 #' x <- runif(25, 0, 1)
@@ -498,6 +501,8 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #'   method = "pearson",
 #'   na.action = na.fail
 #' ))
+#' @export
+#'
 get_scatterplotmatrix_stats <- function(x, y,
                                         .f = stats::cor.test,
                                         .f_args = list(),

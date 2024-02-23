@@ -44,7 +44,7 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
 \examples{
-# General data example
+# general data example
 data <- teal_data()
 data <- within(data, {
   countries <- data.frame(
