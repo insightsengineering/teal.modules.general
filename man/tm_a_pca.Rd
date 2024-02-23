@@ -45,23 +45,23 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{font_size}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
+\item{font_size}{(\code{numeric}, optional) Specifies font size.
 It controls the font size for plot titles, axis labels, and legends.
 \itemize{
-\item If vector of \code{length==1} then the font size will have a fixed size.
-\item If vector of \code{length>1}, it enables dynamic adjustment of font size via a slider in the UI.
+\item If vector of \code{length==1} then the font sizes will have a fixed size.
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
-\item{alpha}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
+\item{alpha}{(\code{numeric}, optional) Specifies point opacity.
 \itemize{
-\item If provided as a vector of \code{length==1}, it sets a fixed opacity for plot points.
-\item If provided as a vector of \code{length>1}, it allows dynamic adjustment of plot point opacity via a slider in the UI.
+\item If vector of \code{length==1} then the plot points will have a fixed opacity.
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
-\item{size}{(\code{numeric}, optional) value or a vector of length three in the form \code{c(value, min, max)}.
+\item{size}{(\code{numeric}, optional) Specifies point size.
 \itemize{
-\item If provided as a scalar, it sets a fixed size for plot points.
-\item If provided as a vector, it allows dynamic adjustment of plot point sizes via a slider in the UI.
+\item If vector of \code{length==1} then the plot point sizes will have a fixed size
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
@@ -79,7 +79,7 @@ font size, through UI inputs.
 \examples{
 library(teal.widgets)
 
-# General data example
+# general data example
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
@@ -110,7 +110,6 @@ app <- init(
     )
   )
 )
-
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -146,7 +145,6 @@ app <- init(
     )
   )
 )
-
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

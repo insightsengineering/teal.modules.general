@@ -9,23 +9,23 @@
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   specifying columns used to compute PCA.
-#' @param alpha (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
-#' - If provided as a vector of `length==1`, it sets a fixed opacity for plot points.
-#' - If provided as a vector of `length>1`, it allows dynamic adjustment of plot point opacity via a slider in the UI.
-#' @param size (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
-#' - If provided as a scalar, it sets a fixed size for plot points.
-#' - If provided as a vector, it allows dynamic adjustment of plot point sizes via a slider in the UI.
-#' @param font_size (`numeric`, optional) value or a vector of length three in the form `c(value, min, max)`.
+#' @param alpha (`numeric`, optional) Specifies point opacity.
+#' - If vector of `length==1` then the plot points will have a fixed opacity.
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
+#' @param size (`numeric`, optional) Specifies point size.
+#' - If vector of `length==1` then the plot point sizes will have a fixed size
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
+#' @param font_size (`numeric`, optional) Specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
-#' - If vector of `length==1` then the font size will have a fixed size.
-#' - If vector of `length>1`, it enables dynamic adjustment of font size via a slider in the UI.
+#' - If vector of `length==1` then the font sizes will have a fixed size.
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
 #' @examples
 #' library(teal.widgets)
 #'
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
@@ -56,7 +56,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -92,7 +91,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -175,7 +173,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 }
 
 # UI function for the PCA module
-# This function defines the UI elements for the PCA analysis, including plot settings and data selection.
+#' @noRd
+#' @keywords internal
 ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -287,7 +286,8 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-# This function handles the server-side logic for PCA analysis, including data processing and plot generation.
+#' @noRd
+#' @keywords internal
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
