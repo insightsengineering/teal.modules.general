@@ -319,6 +319,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 }
 
 # UI function for the scatterplot module
+#' @noRd
+#' @keywords internal
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -471,6 +473,8 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 # Server function for the scatterplot module
+#' @noRd
+#' @keywords internal
 srv_g_scatterplot <- function(id,
                               data,
                               reporter,
