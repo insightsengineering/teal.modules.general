@@ -2,28 +2,27 @@
 % Please edit documentation in R/utils.R
 \name{add_facet_labels}
 \alias{add_facet_labels}
-\title{Add axis labels that show facetting variable}
+\title{Add labels for facets to a ggplot2 object}
 \usage{
 add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL)
 }
 \arguments{
-\item{p}{\code{ggplot2} object to add facet labels to}
+\item{p}{(\code{ggplot2}) object to which facet labels will be added.}
 
-\item{xfacet_label}{label of facet along x axis (nothing created if NULL),
-if vector, will be concatenated with " & "}
+\item{xfacet_label}{(\code{character}) Label for the facet along the x-axis.
+If NULL, no label is added. If a vector, labels are joined with " & ".}
 
-\item{yfacet_label}{label of facet along y axis (nothing created if NULL),
-if vector, will be concatenated with " & "}
+\item{yfacet_label}{(\code{character}) Label for the facet along the y-axis.
+Similar behavior to \code{xfacet_label}.}
 }
 \value{
-grid grob object (to be drawn with \code{grid.draw})
+Returns \code{grid} or \code{grob} object (to be drawn with \code{grid.draw})
 }
 \description{
-Add axis labels that show facetting variable
+Enhances a ggplot2 plot by adding labels that describe
+the faceting variables along the x and y axes.
 }
 \examples{
-# we put donttest to avoid strictr error with seq along.with argument
-\donttest{
 library(ggplot2)
 library(grid)
 
@@ -31,7 +30,7 @@ p <- ggplot(mtcars) +
   aes(x = mpg, y = disp) +
   geom_point() +
   facet_grid(gear ~ cyl)
-p
+
 xfacet_label <- "cylinders"
 yfacet_label <- "gear"
 res <- add_facet_labels(p, xfacet_label, yfacet_label)
@@ -44,6 +43,5 @@ grid.newpage()
 grid.draw(add_facet_labels(p, xfacet_label, yfacet_label = NULL))
 grid.newpage()
 grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL))
-}
 
 }

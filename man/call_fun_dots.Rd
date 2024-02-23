@@ -14,18 +14,19 @@ shall be replaced by values from \code{str_args}.}
 be executed with}
 }
 \value{
-: call (i.e. expression) of the function provided by \code{fun}
+: Call (i.e. expression) of the function provided by \code{fun}
 with arguments provided by \code{str_args}.
 }
 \description{
 Call a function with a character vector for the \code{...} argument
 }
 \examples{
-\dontrun{
+call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
+
 a <- 1
 b <- 2
 call_fun_dots("sum", c("a", "b"))
 eval(call_fun_dots("sum", c("a", "b")))
-}
+
 }
 \keyword{internal}
