@@ -477,7 +477,7 @@ srv_a_regression <- function(id,
           vjust = 1,
           max.overlaps = Inf,
           min.segment.length = label_min_segment,
-          segment.alphs = 0.5,
+          segment.alpha = 0.5,
           seed = 123
         ),
         env = list(label_col = label_col(), label_min_segment = label_min_segment())
