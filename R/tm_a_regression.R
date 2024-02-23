@@ -656,7 +656,7 @@ srv_a_regression <- function(id,
                 color = "red",
                 max.overlaps = Inf,
                 hjust = 0,
-                vjust = 1,
+                vjust = 0,
                 min.segment.length = label_min_segment,
                 segment.alpha = .5,
                 seed = 123
