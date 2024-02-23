@@ -654,9 +654,9 @@ srv_a_regression <- function(id,
                   dplyr::filter(label != "cooksd == NaN") %>%
                   unlist(),
                 color = "red",
-                max.overlaps = Inf,
                 hjust = 0,
                 vjust = 0,
+                max.overlaps = Inf,
                 min.segment.length = label_min_segment,
                 segment.alpha = .5,
                 seed = 123
