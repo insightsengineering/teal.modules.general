@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0240880138969311" branch-rate="0" lines-covered="208" lines-valid="8635" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-22 14:52:40.05143">
+<coverage line-rate="0.0241495413909207" branch-rate="0" lines-covered="208" lines-valid="8613" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-23 10:01:50.60636">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0240880138969311" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0241495413909207" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -17570,38 +17570,12 @@
                 <line number="271" hits="0" branch="false"/>
               </lines>
             </method>
-            <method name="var_labels" signature="" line-rate="0" branch-rate="0" complexity="0">
-              <lines>
-                <line number="292" hits="0" branch="false"/>
-                <line number="293" hits="0" branch="false"/>
-                <line number="294" hits="0" branch="false"/>
-                <line number="297" hits="0" branch="false"/>
-                <line number="298" hits="0" branch="false"/>
-                <line number="300" hits="0" branch="false"/>
-                <line number="301" hits="0" branch="false"/>
-                <line number="302" hits="0" branch="false"/>
-                <line number="303" hits="0" branch="false"/>
-                <line number="304" hits="0" branch="false"/>
-                <line number="305" hits="0" branch="false"/>
-                <line number="306" hits="0" branch="false"/>
-                <line number="307" hits="0" branch="false"/>
-                <line number="308" hits="0" branch="false"/>
-                <line number="309" hits="0" branch="false"/>
-                <line number="310" hits="0" branch="false"/>
-                <line number="311" hits="0" branch="false"/>
-                <line number="312" hits="0" branch="false"/>
-                <line number="314" hits="0" branch="false"/>
-                <line number="316" hits="0" branch="false"/>
-                <line number="317" hits="0" branch="false"/>
-                <line number="320" hits="0" branch="false"/>
-              </lines>
-            </method>
             <method name="is_tab_active_js" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
-                <line number="330" hits="0" branch="false"/>
-                <line number="331" hits="0" branch="false"/>
-                <line number="332" hits="0" branch="false"/>
-                <line number="333" hits="0" branch="false"/>
+                <line number="282" hits="0" branch="false"/>
+                <line number="283" hits="0" branch="false"/>
+                <line number="284" hits="0" branch="false"/>
+                <line number="285" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -17699,32 +17673,10 @@
             <line number="268" hits="0" branch="false"/>
             <line number="269" hits="0" branch="false"/>
             <line number="271" hits="0" branch="false"/>
-            <line number="292" hits="0" branch="false"/>
-            <line number="293" hits="0" branch="false"/>
-            <line number="294" hits="0" branch="false"/>
-            <line number="297" hits="0" branch="false"/>
-            <line number="298" hits="0" branch="false"/>
-            <line number="300" hits="0" branch="false"/>
-            <line number="301" hits="0" branch="false"/>
-            <line number="302" hits="0" branch="false"/>
-            <line number="303" hits="0" branch="false"/>
-            <line number="304" hits="0" branch="false"/>
-            <line number="305" hits="0" branch="false"/>
-            <line number="306" hits="0" branch="false"/>
-            <line number="307" hits="0" branch="false"/>
-            <line number="308" hits="0" branch="false"/>
-            <line number="309" hits="0" branch="false"/>
-            <line number="310" hits="0" branch="false"/>
-            <line number="311" hits="0" branch="false"/>
-            <line number="312" hits="0" branch="false"/>
-            <line number="314" hits="0" branch="false"/>
-            <line number="316" hits="0" branch="false"/>
-            <line number="317" hits="0" branch="false"/>
-            <line number="320" hits="0" branch="false"/>
-            <line number="330" hits="0" branch="false"/>
-            <line number="331" hits="0" branch="false"/>
-            <line number="332" hits="0" branch="false"/>
-            <line number="333" hits="0" branch="false"/>
+            <line number="282" hits="0" branch="false"/>
+            <line number="283" hits="0" branch="false"/>
+            <line number="284" hits="0" branch="false"/>
+            <line number="285" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="zzz.R" filename="R/zzz.R" line-rate="0" branch-rate="0" complexity="0">
