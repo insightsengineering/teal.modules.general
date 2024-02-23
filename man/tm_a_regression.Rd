@@ -74,7 +74,7 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{outlier_label_threshold}{(\code{numeric}) If scalar then the minimum distance
+\item{label_segment_threshold}{(\code{numeric}) If scalar then the minimum distance
 between outlier and label that will generate a line is fixed.
 If a slider should be presented to adjust dynamically, then it can be a vector
 of length 3 with \code{c(value, min, max)}.}

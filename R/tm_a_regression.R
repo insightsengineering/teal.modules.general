@@ -22,7 +22,7 @@
 #' 5. Cook's distance
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
-#' @param outlier_label_threshold (`numeric`) If scalar then the minimum distance
+#' @param label_segment_threshold (`numeric`) If scalar then the minimum distance
 #' between outlier and label that will generate a line is fixed.
 #' If a slider should be presented to adjust dynamically, then it can be a vector
 #' of length 3 with `c(value, min, max)`.
