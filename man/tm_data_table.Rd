@@ -56,20 +56,43 @@ you require then set \code{options(DT.TOJSON_ARGS =  list(na = "string"))} befor
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
 \examples{
+# general data example
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  require(nestcolor)
+  iris <- iris
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("iris")
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_data_table(
+  modules = modules(
+    tm_data_table(
+      variables_selected = list(
+        iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+      ),
+      dt_args = list(caption = "ADSL Table Caption")
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
+  ADSL <- rADSL
+})
+datanames(data) <- "ADSL"
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
       dt_args = list(caption = "ADSL Table Caption")
     )
@@ -78,4 +101,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

@@ -12,36 +12,67 @@
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
 #'
-#' @export
-#'
 #' @examples
+#' library(teal.widgets)
 #'
+#' # module specification used in apps below
+#' tm_missing_data_module <- tm_missing_data(
+#'   ggplot2_args = list(
+#'     "Combinations Hist" = ggplot2_args(
+#'       labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'     ),
+#'     "Combinations Main" = ggplot2_args(labs = list(title = NULL))
+#'   )
+#' )
+#'
+#' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
-#' })
-#' datanames <- c("ADSL", "ADRS")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#'   require(nestcolor)
 #'
-#' app <- teal::init(
+#'   add_nas <- function(x) {
+#'     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
+#'     x
+#'   }
+#'
+#'   iris <- iris
+#'   mtcars <- mtcars
+#'
+#'   iris[] <- lapply(iris, add_nas)
+#'   mtcars[] <- lapply(mtcars, add_nas)
+#'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
+#'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
+#' })
+#' datanames(data) <- c("iris", "mtcars")
+#'
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_missing_data(
-#'       ggplot2_args = list(
-#'         "Combinations Hist" = teal.widgets::ggplot2_args(
-#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-#'         ),
-#'         "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
-#'       )
-#'     )
-#'   )
+#'   modules = modules(tm_missing_data_module)
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' # CDISC example data
+#' data <- teal_data()
+#' data <- within(data, {
+#'   require(nestcolor)
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
+#' })
+#' datanames(data) <- c("ADSL", "ADRS")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(tm_missing_data_module)
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @export
+#'
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
@@ -554,9 +585,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # display those previously selected values that are still available
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-      } else if (!is.null(prev_choices) &&
-        !any(prev_choices %in% choices) &&
-        isolate(prev_group_by_var()) == input$group_by_var) {
+      } else if (
+        !is.null(prev_choices) &&
+          !any(prev_choices %in% choices) &&
+          isolate(prev_group_by_var()) == input$group_by_var
+      ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
@@ -607,7 +640,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
               dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-              tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
               dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
               tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
               dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
@@ -700,7 +733,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
                 dplyr::group_by_at(parent_keys) %>%
                 dplyr::summarise_all(anyNA) %>%
-                tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+                tidyr::pivot_longer(cols = !dplyr::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
                 dplyr::group_by_at(c("col")) %>%
                 dplyr::summarise(count_na = sum(anyna)) %>%
                 dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
@@ -1008,7 +1041,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
               summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
                 dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
-                tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
                 tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
                 dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
             },
@@ -1023,7 +1056,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
-              tidyr::pivot_longer(tidyselect::everything(),
+              tidyr::pivot_longer(dplyr::everything(),
                 names_to = "Variable",
                 values_to = paste0("Missing (N=", nrow(ANL), ")")
               ) %>%
@@ -1086,7 +1119,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             # order subjects by decreasing number of missing and then by
             # missingness pattern (defined using sha1)
             order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::transmute(
                 id = dplyr::row_number(),
                 number_NA = apply(., 1, sum),
@@ -1097,7 +1130,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
             # order columns by decreasing percent of missing values
             ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::summarise(
                 column = create_cols_labels(colnames(.)),
                 na_count = apply(., MARGIN = 2, FUN = sum),
@@ -1106,7 +1139,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::arrange(na_percent, dplyr::desc(column))
 
             summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::mutate(col = create_cols_labels(col))
           })
         ) %>%
