@@ -717,8 +717,7 @@ srv_g_bivariate <- function(id,
   })
 }
 
-#' Get Substituted ggplot call
-#'
+# Get Substituted ggplot call
 #' @noRd
 #' @keywords internal
 bivariate_plot_call <- function(data_name,
@@ -769,9 +768,8 @@ bivariate_plot_call <- function(data_name,
   )
 }
 
-#' Create ggplot part of plot call
-#' Due to the type of the x and y variable the plot type is chosen
-#'
+# Create ggplot part of plot call
+# Due to the type of the x and y variable the plot type is chosen
 #' @noRd
 #' @keywords internal
 bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
@@ -958,7 +956,6 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
 }
 
 #' Create facet call
-#'
 #' @noRd
 #' @keywords internal
 facet_ggplot_call <- function(row_facet = character(0),
