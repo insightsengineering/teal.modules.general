@@ -25,6 +25,8 @@
 #' @param post_output (`shiny.tag`, optional) with text placed after the output to put the output
 #' into context. For example the [shiny::helpText()] elements are useful.
 #'
+#' @return Object of class `teal_module` to be used in `teal` applications
+#'
 #' @name shared_params
 #' @keywords internal
 NULL
@@ -187,24 +189,6 @@ varname_w_label <- function(var_names,
     stringr::str_wrap(add_label(var_names), width = wrap_width)
   } else if (length(var_names) > 1) {
     stringr::str_wrap(vapply(var_names, add_label, character(1)), width = wrap_width)
-  }
-}
-
-#' Extract html id for `data_extract_ui`
-#' @description The `data_extract_ui` is located under extended html id.
-#'   We could not use \code{ns("original id")} for reference, as it is extended with specific suffixes.
-#' @param varname character original html id.
-#'   This will be mostly retrieved with \code{ns("original id")} in `ui` or
-#'   \code{session$ns("original id")} in server function.
-#' @param dataname character \code{dataname} from data_extract input.
-#'   This might be retrieved like \code{teal.transform::data_extract_spec(...)[[1]]$dataname}.
-#' @param filter logical if the connected \code{extract_data_spec} is used with \code{filter} option.
-#' @keywords internal
-extract_input <- function(varname, dataname, filter = FALSE) {
-  if (filter) {
-    paste0(varname, "-dataset_", dataname, "_singleextract-filter1-vals")
-  } else {
-    paste0(varname, "-dataset_", dataname, "_singleextract-select")
   }
 }
 
