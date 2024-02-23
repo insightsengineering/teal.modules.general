@@ -17,7 +17,7 @@
 #' @examples
 #' library(teal.widgets)
 #'
-#' # Module specification used in apps below
+#' # module specification used in apps below
 #' tm_missing_data_module <- tm_missing_data(
 #'   ggplot2_args = list(
 #'     "Combinations Hist" = ggplot2_args(
@@ -27,7 +27,7 @@
 #'   )
 #' )
 #'
-#' # General example data
+#' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
 #'   library(nestcolor)
@@ -123,6 +123,8 @@ tm_missing_data <- function(label = "Missing data",
 }
 
 # UI function for the missing data module.
+#' @noRd
+#' @keywords internal
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   shiny::tagList(
@@ -148,6 +150,8 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server function for the missing data module.
+#' @noRd
+#' @keywords internal
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
   moduleServer(id, function(input, output, session) {
@@ -235,6 +239,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
 }
 
 # UI function for the missing data module.
+#' @noRd
+#' @keywords internal
 ui_missing_data <- function(id, by_subject_plot = FALSE) {
   ns <- NS(id)
 
@@ -395,6 +401,8 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 }
 
 # Server function for the missing data module.
+#' @noRd
+#' @keywords internal
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
                              plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
