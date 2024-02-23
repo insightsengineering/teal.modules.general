@@ -18,7 +18,7 @@
 #' @examples
 #' library(teal.widgets)
 #'
-#' # General data example
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   CO2 <- CO2
@@ -169,6 +169,9 @@ tm_outliers <- function(label = "Outliers Module",
   )
 }
 
+# UI function for the outliers module
+#' @noRd
+#' @keywords internal
 ui_outliers <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -300,6 +303,9 @@ ui_outliers <- function(id, ...) {
   )
 }
 
+# Server function for the outliers module
+#' @noRd
+#' @keywords internal
 srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
