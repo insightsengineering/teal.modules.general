@@ -42,7 +42,7 @@ This \code{teal} module creates a simple front page for \code{teal} applications
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- teal.modules.general::rADSL
   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
