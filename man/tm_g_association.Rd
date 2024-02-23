@@ -69,7 +69,7 @@ library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   CO2 <- CO2
   factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
   CO2[factors] <- lapply(CO2[factors], as.character)
@@ -114,7 +114,7 @@ library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
 })
 datanames(data) <- "ADSL"
