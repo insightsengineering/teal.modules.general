@@ -72,14 +72,14 @@ itself will be constructed by multiple calls of `tm_a_regression` using differen
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Regression plots",
       tm_a_regression(
         label = "Single wide dataset",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -89,7 +89,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        regressor = teal.transform::data_extract_spec(
+        regressor = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -103,7 +103,7 @@ app <- teal::init(
       tm_a_regression(
         label = "Two wide datasets",
         default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -113,7 +113,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        regressor = teal.transform::data_extract_spec(
+        regressor = data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -127,7 +127,7 @@ app <- teal::init(
       tm_a_regression(
         label = "Same long datasets (same subset)",
         default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -136,7 +136,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
             choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
@@ -144,7 +144,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        regressor = teal.transform::data_extract_spec(
+        regressor = data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variable:",
@@ -152,7 +152,7 @@ app <- teal::init(
             selected = c("AGE", "CNSR", "SEX"),
             multiple = TRUE
           ),
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select parameter:",
             vars = "PARAMCD",
             choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
@@ -163,7 +163,7 @@ app <- teal::init(
       ),
       tm_a_regression(
         label = "Wide and long datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -189,7 +189,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        regressor = teal.transform::data_extract_spec(
+        regressor = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -203,7 +203,7 @@ app <- teal::init(
       tm_a_regression(
         label = "Same long datasets (different subsets)",
         default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -228,7 +228,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        regressor = teal.transform::data_extract_spec(
+        regressor = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(

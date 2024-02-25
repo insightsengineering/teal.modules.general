@@ -60,14 +60,14 @@ itself will be constructed by multiple calls of `tm_t_crosstable` using differen
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Cross table",
       tm_t_crosstable(
         label = "Single wide dataset",
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -78,7 +78,7 @@ app <- teal::init(
             ordered = TRUE
           )
         ),
-        y = teal.transform::data_extract_spec(
+        y = data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -91,9 +91,9 @@ app <- teal::init(
       ),
       tm_t_crosstable(
         label = "Same long datasets (different subsets)",
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],
@@ -108,9 +108,9 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = teal.transform::data_extract_spec(
+        y = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],

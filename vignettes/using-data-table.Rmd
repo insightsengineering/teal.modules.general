@@ -55,9 +55,9 @@ create an app. The data will be handed over using [`teal.data::cdisc_data`](http
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     # two-datasets example
     tm_data_table(
       label = "Two datasets",

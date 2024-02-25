@@ -86,15 +86,15 @@ jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
 
 # nolint end
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     # tm_g_association ----
     modules(
       label = "Association plot",
       tm_g_association(
         label = "Single wide dataset",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -103,7 +103,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -116,7 +116,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Two wide datasets",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -126,7 +126,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variables:",
@@ -139,7 +139,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Multiple different long datasets",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             label = "Select variables:",
@@ -148,7 +148,7 @@ app <- teal::init(
             multiple = FALSE,
             fixed = FALSE
           ),
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select endpoint:",
             vars = "PARAMCD",
             choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
@@ -156,7 +156,7 @@ app <- teal::init(
             multiple = TRUE
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADRS",
           reshape = TRUE,
           select = select_spec(
@@ -186,7 +186,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Wide and long datasets",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]], c("AVAL", "AVALC")),
@@ -212,7 +212,7 @@ app <- teal::init(
             )
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(data[["ADSL"]], c("SEX", "AGE", "RACE", "COUNTRY", "BMRKR1", "STRATA1", "ARM")),
@@ -225,7 +225,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Same long datasets (same subsets)",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]]),
@@ -235,7 +235,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]]),
@@ -248,7 +248,7 @@ app <- teal::init(
       ),
       tm_g_association(
         label = "Same long datasets (different subsets)",
-        ref = teal.transform::data_extract_spec(
+        ref = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -272,7 +272,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        vars = teal.transform::data_extract_spec(
+        vars = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(

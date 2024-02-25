@@ -72,15 +72,15 @@ itself will be constructed by multiple calls of `tm_g_scatterplotmatrix` using d
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Scatterplot matrix",
       # .. single wide ----
       tm_g_scatterplotmatrix(
         label = "Single wide dataset",
-        variables = teal.transform::data_extract_spec(
+        variables = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -95,7 +95,7 @@ app <- teal::init(
       tm_g_scatterplotmatrix(
         label = "Multiple wide datasets",
         variables = list(
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variables:",
@@ -106,7 +106,7 @@ app <- teal::init(
               ordered = TRUE
             )
           ),
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADSL2",
             select = select_spec(
               label = "Select variables:",
@@ -121,7 +121,7 @@ app <- teal::init(
       ),
       tm_g_scatterplotmatrix(
         "One long dataset",
-        variables = teal.transform::data_extract_spec(
+        variables = data_extract_spec(
           dataname = "ADTTE",
           select = select_spec(
             choices = variable_choices(data[["ADTTE"]], c("AVAL", "BMRKR1", "BMRKR2")),
@@ -136,7 +136,7 @@ app <- teal::init(
       tm_g_scatterplotmatrix(
         label = "Two long datasets",
         variables = list(
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variables:",
@@ -146,7 +146,7 @@ app <- teal::init(
               fixed = FALSE,
               ordered = TRUE,
             ),
-            filter = teal.transform::filter_spec(
+            filter = filter_spec(
               label = "Select endpoints:",
               vars = c("PARAMCD", "AVISIT"),
               choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -154,7 +154,7 @@ app <- teal::init(
               multiple = FALSE
             )
           ),
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADTTE",
             select = select_spec(
               label = "Select variables:",
@@ -164,7 +164,7 @@ app <- teal::init(
               fixed = FALSE,
               ordered = TRUE
             ),
-            filter = teal.transform::filter_spec(
+            filter = filter_spec(
               label = "Select parameters:",
               vars = "PARAMCD",
               choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),

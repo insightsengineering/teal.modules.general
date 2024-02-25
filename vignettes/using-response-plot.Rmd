@@ -71,14 +71,14 @@ itself will be constructed by multiple calls of `tm_g_response` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Response plot",
       tm_g_response(
         label = "Single wide dataset",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -88,7 +88,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -101,7 +101,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Two wide datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -110,7 +110,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
@@ -122,7 +122,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Multiple long datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -147,7 +147,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
@@ -172,7 +172,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -181,7 +181,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -193,7 +193,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Wide and long dataset",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -219,7 +219,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(data[["ADSL"]], c("ARMCD", "BMRKR1", "BMRKR2", "BEP01FL")),
@@ -231,7 +231,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Same long datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]], c("BMRKR2", "AVALC", "BEP01FL")),
@@ -241,7 +241,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]], c("AVALC", "AGE", "SEX", "ARMCD", "STRATA1")),
@@ -251,7 +251,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = "PARAMCD",
@@ -261,7 +261,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = "AVISIT",
@@ -274,9 +274,9 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Same long datasets  (different subsets)",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(data[["ADLB"]]$PARAMCD),
             selected = levels(data[["ADLB"]]$PARAMCD)[2],
@@ -290,9 +290,9 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(data[["ADLB"]]$PARAMCD),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],
@@ -306,7 +306,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -332,7 +332,7 @@ app <- teal::init(
             label = "Select Variable"
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
