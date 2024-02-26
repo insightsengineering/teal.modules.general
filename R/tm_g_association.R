@@ -174,9 +174,7 @@ tm_g_association <- function(label = "Association",
   )
 }
 
-# UI function for the association module.
-#' @noRd
-#' @keywords internal
+# UI function for the association module
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -254,9 +252,7 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
-# Server function for the association module.
-#' @noRd
-#' @keywords internal
+# Server function for the association module
 srv_tm_g_association <- function(id,
                                  data,
                                  reporter,
