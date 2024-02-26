@@ -148,18 +148,45 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10)) {
   logger::log_info("Initializing tm_a_regression")
+
+  # Normalize the parameters
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
+  checkmate::assert_list(regressor, types = "data_extract_spec")
+
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
     stop("'response' should not allow multiple selection")
   }
-  checkmate::assert_list(regressor, types = "data_extract_spec")
+
+  checkmate::assert(
+    .var.name = "plot_height",
+    check_slider(plot_height, lower = 1)
+  )
+
+  checkmate::assert(
+    .var.name = "plot_width",
+    check_slider(plot_width, lower = 1),
+    checkmate::check_null(plot_width)
+  )
+
+  checkmate::assert(
+    .var.name = "alpha",
+    check_slider(alpha, lower = 0, upper = 1),
+    checkmate::check_number(alpha, lower = 0, upper = 1)
+  )
+
+  checkmate::assert(
+    .var.name = "size",
+    check_slider(size, lower = 0),
+    checkmate::check_number(size, lower = 0)
+  )
+
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_string(default_outlier_label)
 
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
@@ -168,36 +195,17 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-
-  checkmate::assert(
-    .var.name = "size",
-    checkmate::check_number(size, lower = 0),
-    checkmate::check_numeric(size, len = 3, lower = 0)
-  )
-
-  checkmate::assert(
-    .var.name = "alpha",
-    checkmate::check_number(size, lower = 0, upper = 1),
-    checkmate::check_numeric(size, len = 3, lower = 0)
-  )
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
+  checkmate::assert_string(default_outlier_label)
 
   checkmate::assert(
     .var.name = "label_segment_threshold",
-    checkmate::check_number(label_segment_threshold, lower = 0),
-    checkmate::check_numeric(label_segment_threshold, len = 3, lower = 0)
+    check_slider(label_segment_threshold, lower = 0),
+    checkmate::check_number(label_segment_threshold, lower = 0)
   )
-
-  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-
-  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
+  # End of assertions
 
   # Send ui args
   args <- as.list(environment())
