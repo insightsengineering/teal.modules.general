@@ -20,12 +20,12 @@
 #' shown and in what order. Names in the vector have to correspond with datasets names.
 #' If vector of `length == 0` (default) then all datasets are shown.
 #' Note: Only datasets of the `data.frame` class are compatible.
-#' @param dt_args (`named list`) Additional arguments to be passed to `DT::datatable`
+#' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
 #' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
-#' (see `server` argument of `DT::renderDataTable()`)
+#' (see `server` argument of [DT::renderDataTable()])
 #'
 #' @examples
 #' # general data example
@@ -128,8 +128,6 @@ tm_data_table <- function(label = "Data Table",
 }
 
 # UI page module
-#' @noRd
-#' @keywords internal
 ui_page_data_table <- function(id,
                                pre_output = NULL,
                                post_output = NULL) {
@@ -163,9 +161,7 @@ ui_page_data_table <- function(id,
   )
 }
 
-# server page module
-#' @noRd
-#' @keywords internal
+# Server page module
 srv_page_data_table <- function(id,
                                 data,
                                 datasets_selected,
@@ -250,8 +246,6 @@ srv_page_data_table <- function(id,
 }
 
 # UI function for the data_table module
-#' @noRd
-#' @keywords internal
 ui_data_table <- function(id,
                           choices,
                           selected) {
@@ -282,8 +276,6 @@ ui_data_table <- function(id,
 }
 
 # Server function for the data_table module
-#' @noRd
-#' @keywords internal
 srv_data_table <- function(id,
                            data,
                            dataname,
