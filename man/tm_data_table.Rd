@@ -40,11 +40,12 @@ Note: Only datasets of the \code{data.frame} class are compatible.}
 \item{server_rendering}{(\code{logical}) should the data table be rendered server side
 (see \code{server} argument of \code{\link[DT:dataTableOutput]{DT::renderDataTable()}})}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \description{
 Module provides a dynamic and interactive way to view \code{data.frame}s in a \code{teal} application.

@@ -8,19 +8,21 @@ variable_type_icons(var_type)
 }
 \arguments{
 \item{var_type}{(\code{character})\cr
-of R internal types (classes).}
+of \code{R} internal types (classes).}
 }
 \value{
-(\code{character})\cr
-vector of HTML icons corresponding to data type in each column.
+Vector of HTML icons corresponding to data type in each column.
 }
 \description{
 Get icons to represent variable types in dataset
 }
 \examples{
-teal.modules.general:::variable_type_icons(c(
+variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
+
+variable_type_icons(c(
   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
   "factor", "character", "unknown", ""
 ))
+
 }
 \keyword{internal}
