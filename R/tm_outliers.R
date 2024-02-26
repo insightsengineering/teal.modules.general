@@ -1,22 +1,24 @@
-#' Outliers Module
+#' Outliers module
 #'
 #' Module to analyze and identify outliers using different methods
+#' such as IQR, Z-score, and Percentiles, and offers visualizations including
+#' box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #'
 #' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  variable to consider for the outliers analysis.
-#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   categorical factor to split the selected outlier variables on.
+#' Specifies variable(s) to be analyzed for outliers.
+#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Specifies the categorical variable(s) to split the selected outlier variables on.
 #'
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
 #' @template ggplot2_args_multi
 #'
 #' @examples
-#' # general data example
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   CO2 <- CO2
@@ -67,8 +69,6 @@
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   ADSL <- rADSL
@@ -169,6 +169,7 @@ tm_outliers <- function(label = "Outliers Module",
   )
 }
 
+# UI function for the outliers module
 ui_outliers <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -300,6 +301,7 @@ ui_outliers <- function(id, ...) {
   )
 }
 
+# Server function for the outliers module
 srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")

@@ -1,52 +1,53 @@
-#' Univariate and bivariate visualizations
-#' @md
+#' Univariate and bivariate visualizations module
 #'
-#' @inheritParams teal::module
-#' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
-#'   No empty selections are allowed!
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variable names selected to plot along the y-axis by default. Variable can be numeric, factor or character.
-#' @param use_density optional, (`logical`) value for whether density (`TRUE`) is plotted or
-#'   frequency (`FALSE`). Defaults to frequency (`FALSE`).
-#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variables for row facetting.
-#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variables for col facetting.
-#' @param facet optional, (`logical`) to specify whether the facet encodings `ui` elements are toggled
-#'   on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
-#'   are supplied.
-#' @param color_settings (`logical`) Whether coloring, filling and size should be applied
-#' and `UI` tool offered to the user.
-#' @param color optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variables selected for the outline color inside the coloring settings.
-#'   It will be applied when `color_settings` is set to `TRUE`.
-#' @param fill optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variables selected for the fill color inside the coloring settings.
-#'   It will be applied when `color_settings` is set to `TRUE`.
-#' @param size optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Variables selected for the size of `geom_point` plots inside the coloring settings.
-#'   It will be applied when `color_settings` is set to `TRUE`.
-#' @param free_x_scales optional, (`logical`) Whether X scaling shall be changeable.
-#'   Does not allow scaling to be changed by default (`FALSE`).
-#' @param free_y_scales optional, (`logical`) Whether Y scaling shall be changeable.
-#'   Does not allow scaling to be changed by default (`FALSE`).
-#' @param swap_axes optional, (`logical`) Whether to swap X and Y axes. Defaults to `FALSE`.
+#' Module enables the creation of univariate and bivariate plots,
+#' facilitating the exploration of data distributions and relationships between two variables.
 #'
-#' @details
 #' This is a general module to visualize 1 & 2 dimensional data.
 #'
 #' @note
 #' For more examples, please see the vignette "Using bivariate plot" via
-#'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
+#' `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
-#' @export
+#' @inheritParams teal::module
+#' @inheritParams shared_params
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Variable names selected to plot along the x-axis by default.
+#' Can be numeric, factor or character.
+#' No empty selections are allowed.
+#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Variable names selected to plot along the y-axis by default.
+#' Can be numeric, factor or character.
+#' @param use_density (`logical`, optional) Indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
+#' Defaults to frequency (`FALSE`).
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Variables for row facetting.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Variables for column facetting.
+#' @param facet (`logical`, optional) to specify whether the facet encodings `ui` elements are toggled
+#' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
+#' are supplied.
+#' @param color_settings (`logical`) Whether coloring, filling and size should be applied
+#' and `UI` tool offered to the user.
+#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Variables selected for the outline color inside the coloring settings.
+#' It will be applied when `color_settings` is set to `TRUE`.
+#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Variables selected for the fill color inside the coloring settings.
+#' It will be applied when `color_settings` is set to `TRUE`.
+#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
+#' Variables selected for the size of `geom_point` plots inside the coloring settings.
+#' It will be applied when `color_settings` is set to `TRUE`.
+#' @param free_x_scales (`logical`, optional) Whether X scaling shall be changeable.
+#' Does not allow scaling to be changed by default (`FALSE`).
+#' @param free_y_scales (`logical`, optional) Whether Y scaling shall be changeable.
+#' Does not allow scaling to be changed by default (`FALSE`).
+#' @param swap_axes (`logical`, optional) Whether to swap X and Y axes. Defaults to `FALSE`.
 #'
 #' @examples
-#' # general data exapmle
 #' library(teal.widgets)
 #'
+#' # general data exapmle
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -108,8 +109,6 @@
 #'
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -168,6 +167,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            x,
                            y,
@@ -289,6 +291,9 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   )
 }
 
+# UI function for the bivariate module.
+#' @noRd
+#' @keywords internal
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(
@@ -429,7 +434,9 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-
+# Server function for the bivariate module.
+#' @noRd
+#' @keywords internal
 srv_g_bivariate <- function(id,
                             data,
                             reporter,
@@ -710,15 +717,9 @@ srv_g_bivariate <- function(id,
   })
 }
 
-
-#' Get Substituted ggplot call
-#'
+# Get Substituted ggplot call
 #' @noRd
-#'
-#' @examples
-#'
-#' bivariate_plot_call("ANL", "BAGE", "RACE", "numeric", "factor")
-#' bivariate_plot_call("ANL", "BAGE", character(0), "numeric", "NULL")
+#' @keywords internal
 bivariate_plot_call <- function(data_name,
                                 x = character(0),
                                 y = character(0),
@@ -767,30 +768,10 @@ bivariate_plot_call <- function(data_name,
   )
 }
 
-
-#' Create ggplot part of plot call
-#'
-#' Due to the type of the x and y variable the plot type is chosen
-#'
+# Create ggplot part of plot call
+# Due to the type of the x and y variable the plot type is chosen
 #' @noRd
-#'
-#' @examples
-#' bivariate_ggplot_call("numeric", "NULL")
-#' bivariate_ggplot_call("numeric", "NULL", freq = FALSE)
-#'
-#' bivariate_ggplot_call("NULL", "numeric")
-#' bivariate_ggplot_call("NULL", "numeric", freq = FALSE)
-#'
-#' bivariate_ggplot_call("NULL", "factor")
-#' bivariate_ggplot_call("NULL", "factor", freq = FALSE)
-#'
-#' bivariate_ggplot_call("factor", "NULL")
-#' bivariate_ggplot_call("factor", "NULL", freq = FALSE)
-#'
-#' bivariate_ggplot_call("numeric", "numeric")
-#' bivariate_ggplot_call("numeric", "factor")
-#' bivariate_ggplot_call("factor", "numeric")
-#' bivariate_ggplot_call("factor", "factor")
+#' @keywords internal
 bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE,
@@ -971,19 +952,12 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
     plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
   }
 
-  return(plot_call)
+  plot_call
 }
 
-
 #' Create facet call
-#'
 #' @noRd
-#'
-#' @examples
-#'
-#' facet_ggplot_call(LETTERS[1:3])
-#' facet_ggplot_call(NULL, LETTERS[23:26])
-#' facet_ggplot_call(LETTERS[1:3], LETTERS[23:26])
+#' @keywords internal
 facet_ggplot_call <- function(row_facet = character(0),
                               col_facet = character(0),
                               free_x_scales = FALSE,
@@ -1014,6 +988,8 @@ facet_ggplot_call <- function(row_facet = character(0),
   }
 }
 
+#' @noRd
+#' @keywords internal
 coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
