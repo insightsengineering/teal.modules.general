@@ -17,7 +17,7 @@
 #' @param freq (`logical`, optional) Whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
 #' @param bins (`integer(1)` or `integer(3)`, optional)  Determines the number of bins for the histogram.
-#' - If vector of `length==1` then the histogram bins will have a fixed size.
+#' - If vector of `length == 1` then the histogram bins will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows histogram bins dynamic adjustment.
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
@@ -170,9 +170,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   )
 }
 
-# UI function for the distribution module.
-#' @noRd
-#' @keywords internal
+# UI function for the distribution module
 ui_distribution <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -318,9 +316,7 @@ ui_distribution <- function(id, ...) {
   )
 }
 
-# Server function for the distribution module.
-#' @noRd
-#' @keywords internal
+# Server function for the distribution module
 srv_distribution <- function(id,
                              data,
                              reporter,
