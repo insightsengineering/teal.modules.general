@@ -18,10 +18,12 @@ test_that("check_range_slider returns logical with valid arguments looking for i
   expect_true(check_range_slider(c(2L, 0L, 2), test_fun = checkmate::test_integerish))
 })
 
-test_that("check_range_slider fails when there is a double", {
+test_that("check_range_slider fails when it is looking for integerish and there is a double", {
   regex <- "Must be a numeric vector of length 3 with `c\\(value, min, max\\)`"
 
   expect_match(check_range_slider(c(0, 0, 2.2), test_fun = checkmate::test_integerish), regex)
+  expect_match(check_range_slider(c(1, 0.1, 2.2), test_fun = checkmate::test_integerish), regex)
+  expect_match(check_range_slider(c(1.1, 0, 2), test_fun = checkmate::test_integerish), regex)
 })
 
 test_that("check_range_slider fails when looking for strict integers", {

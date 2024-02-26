@@ -350,8 +350,11 @@ is_tab_active_js <- function(id, name) {
 }
 
 #' Check if an argument is a bounded numeric vector of length 3
-#' Must follow form `c(value, min, max)`
+#'
+#' Must follow form `c(value, min, max)` and `test_fun` must be a function that
+#' supports checks on vectorized input
 #' @noRd
+#'
 check_range_slider <- function(value,
                                lower = -Inf,
                                upper = Inf,
