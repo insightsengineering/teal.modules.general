@@ -5,7 +5,7 @@
 #' which helps to enhance data exploration and analysis.
 #'
 #' The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables.
-#' configure the `DT.TOJSON_ARGS` option via
+#' Configure the `DT.TOJSON_ARGS` option via
 #' `options(DT.TOJSON_ARGS = list(na = "string"))` before running the module.
 #' Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
 #'
