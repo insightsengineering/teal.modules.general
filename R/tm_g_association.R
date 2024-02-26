@@ -11,7 +11,8 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Reference variable, must set `multiple = FALSE`.
+#' Reference variable, must accepts a `data_extract_spec` with `select_spec(multiple = FALSE)`
+#' to ensure single selection option.
 #' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Variables to be associated with the reference variable.
 #' @param show_association (`logical`) optional whether show association of `vars`

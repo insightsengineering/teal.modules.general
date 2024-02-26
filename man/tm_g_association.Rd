@@ -25,7 +25,8 @@ tm_g_association(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{ref}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Reference variable, must set \code{multiple = FALSE}.}
+Reference variable, must accepts a \code{data_extract_spec} with \code{select_spec(multiple = FALSE)}
+to ensure single selection option.}
 
 \item{vars}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variables to be associated with the reference variable.}
