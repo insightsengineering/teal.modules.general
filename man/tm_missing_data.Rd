@@ -55,7 +55,7 @@ adaptable for general data analysis purposes.
 \examples{
 library(teal.widgets)
 
-# Module specification used in apps below
+# module specification used in apps below
 tm_missing_data_module <- tm_missing_data(
   ggplot2_args = list(
     "Combinations Hist" = ggplot2_args(
@@ -65,7 +65,7 @@ tm_missing_data_module <- tm_missing_data(
   )
 )
 
-# General example data
+# general example data
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
