@@ -1,7 +1,6 @@
 ---
 title: "Using cross table"
-author: "Dawid Kałędkowski"
-date: "`r Sys.Date()`"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >

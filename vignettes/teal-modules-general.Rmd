@@ -1,7 +1,6 @@
 ---
 title: "Getting started with teal.modules.general"
-author: "NEST CoreDev Team"
-date: "01.04.2022"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting started with teal.modules.general}

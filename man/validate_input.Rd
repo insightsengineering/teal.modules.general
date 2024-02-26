@@ -14,7 +14,7 @@ validate_input(input, plot_var, data)
 \item{data}{(\code{tdata}) the datasets passed to the module}
 }
 \value{
-\code{logical} TRUE if validations pass; a Shiny validation error otherwise
+\code{logical} TRUE if validations pass; a \code{shiny} validation error otherwise
 }
 \description{
 Validates the variable browser inputs
