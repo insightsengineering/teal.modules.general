@@ -74,19 +74,20 @@ Suggests:
 VignetteBuilder:
     knitr
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, shinyTree/shinyTree, insightsengineering/teal,
+    rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
     mllg/checkmate, tidyverse/dplyr, rstudio/DT, tidyverse/forcats,
-    daroczig/logger, tidyverse/magrittr, r-lib/scales, daattali/shinyjs,
+    daroczig/logger, r-lib/scales, daattali/shinyjs,
+    shinyTree/shinyTree,
     rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
-    insightsengineering/teal.code, insightsengineering/teal.logger,
-    insightsengineering/teal.reporter, insightsengineering/teal.transform,
+    insightsengineering/teal.code, insightsengineering/teal.data,
+    insightsengineering/teal.logger, insightsengineering/teal.reporter,
     insightsengineering/teal.widgets, insightsengineering/tern,
     tidyverse/tibble, tidyverse/tidyr, tidymodels/broom,
     daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
     baddstats/goftest, gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite,
     yihui/knitr, deepayan/lattice, MASS, insightsengineering/nestcolor,
-    r-lib/rlang, insightsengineering/rtables, sparkline,
-    insightsengineering/teal.data, r-lib/testthat
+    r-lib/rlang, insightsengineering/rtables, htmlwidgets/sparkline,
+    r-lib/testthat
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US

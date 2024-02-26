@@ -18,17 +18,17 @@ repos:
           - ggmosaic
           - ggplot2
           - shiny
-          - shinyTree
           - insightsengineering/teal
+          - insightsengineering/teal.transform
           - checkmate
           - dplyr
           - DT
           - forcats
           - grid
           - logger
-          - magrittr
           - scales
           - shinyjs
+          - shinyTree
           - shinyvalidate
           - shinyWidgets
           - stats
@@ -38,7 +38,6 @@ repos:
           - insightsengineering/teal.logger
           - insightsengineering/teal.reporter
           - insightsengineering/teal.slice
-          - insightsengineering/teal.transform
           - insightsengineering/teal.widgets
           - tern
           - tibble
