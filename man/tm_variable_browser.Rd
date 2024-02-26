@@ -2,12 +2,6 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{tm_variable_browser}
 \alias{tm_variable_browser}
-\alias{tm_variable_browser_ui,}
-\alias{tm_variable_browser_srv,}
-\alias{tm_variable_browser,}
-\alias{variable_browser_ui,}
-\alias{variable_browser_srv,}
-\alias{variable_browser}
 \title{Variable browser \code{teal} module}
 \usage{
 tm_variable_browser(

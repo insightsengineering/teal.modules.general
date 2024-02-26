@@ -19,14 +19,6 @@
 #' If vector of length zero (default) then all datasets are shown.
 #' Note: Only `data.frame` objects are compatible; using other types will cause an error.
 #'
-#' @aliases
-#' tm_variable_browser_ui,
-#' tm_variable_browser_srv,
-#' tm_variable_browser,
-#' variable_browser_ui,
-#' variable_browser_srv,
-#' variable_browser
-#'
 #' @examples
 #' library(teal.widgets)
 #'
