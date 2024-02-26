@@ -39,6 +39,6 @@ Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Defines common arguments shared across multiple functions in the package
-to avoid repetition using \code{inheritParams}.
+to avoid repetition by using \code{inheritParams}.
 }
 \keyword{internal}

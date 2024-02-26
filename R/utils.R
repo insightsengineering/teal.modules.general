@@ -274,7 +274,7 @@ include_css_files <- function(pattern = "*") {
 #'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.
-#' @return `string` with a valid `JS` code to be used in `shiny::conditionalPanel()` to determine
+#' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
 #' if the specified tab is active.
 #' @keywords internal
 #'

@@ -12,7 +12,7 @@ is_tab_active_js(id, name)
 \item{name}{(\code{character(1)}) the name of the tab.}
 }
 \value{
-\code{string} with a valid \code{JS} code to be used in \code{shiny::conditionalPanel()} to determine
+JavaScript expression to be used in \code{shiny::conditionalPanel()} to determine
 if the specified tab is active.
 }
 \description{
