@@ -173,7 +173,6 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 }
 
 # UI function for the PCA module
-#' @noRd
 ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -285,7 +284,6 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-#' @noRd
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
