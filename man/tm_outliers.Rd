@@ -49,7 +49,7 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
 \description{
-Module to analyze and identify outliers using different methods
+Module to analyze and identify outliers using different methods.
 }
 \examples{
 # general data example

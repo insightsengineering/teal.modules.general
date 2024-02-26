@@ -17,14 +17,11 @@ varname_w_label(
 
 \item{dataset}{(\code{dataset}) Name of analysis dataset.}
 
-\item{wrap_width}{(\code{numeric}) Number of characters to wrap original
-label to. Defaults to 80.}
+\item{wrap_width}{(\code{numeric}) Number of characters to wrap original label to. Defaults to 80.}
 
-\item{prefix}{(\code{character}) String to paste to the beginning of the
-variable name with label.}
+\item{prefix}{(\code{character}) String to paste to the beginning of the variable name with label.}
 
-\item{suffix}{(\code{character}) String to paste to the end of the variable
-name with label.}
+\item{suffix}{(\code{character}) String to paste to the end of the variable name with label.}
 }
 \value{
 (\code{character}) String with variable name and label.
@@ -33,10 +30,7 @@ name with label.}
 Get variable name with label
 }
 \examples{
-\dontrun{
-ADSL <- teal.modules.general::rADSL
-
+varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
 varname_w_label("AGE", ADSL)
-}
 }
 \keyword{internal}

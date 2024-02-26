@@ -2,7 +2,6 @@
 #'
 #' The available datasets to choose from for each dataset selector is the same and
 #' determined by the argument `variables`.
-#' @md
 #'
 #' @inheritParams teal::module
 #' @inheritParams tm_g_scatterplot
@@ -14,7 +13,7 @@
 #'  rendered according to selection order.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
-#'   \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
+#'   `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
 #'
 #' @examples
 #' # general data example
@@ -461,26 +460,31 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 }
 
 #' Get stats for x-y pairs in scatterplot matrix
-#' @description uses stats::cor.test per default for all numerical input variables and converts results
+#'
+#' @description uses `stats::cor.test` per default for all numerical input variables and converts results
 #'  to character vector. Could be extended if different stats for different variable
-#'  types are needed. Meant to be called from \code{lattice::panel.text}.
-#' @param x \code{numeric}
-#' @param y \code{numeric}
-#' @param .f \code{function}, function that accepts x and y as formula input \code{~ x + y}.
-#' Default \code{stats::cor.test}
-#' @param .f_args \code{list} of arguments to be passed to \code{.f}
-#' @param round_stat \code{integer}
-#' @param round_pval \code{integer}
-#' @details presently we need to use a formula input for \code{stats::cor.test} because
-#' \code{na.fail} only gets evaluated when a formula is passed (see below).
-#' \preformatted{
+#'  types are needed. Meant to be called from `lattice::panel.text`.
+#'
+#' @param x `numeric`
+#' @param y `numeric`
+#' @param .f `function` that accepts x and y as formula input `~ x + y`.
+#'                      Defaults to `stats::cor.test`.
+#' @param .f_args `list` of arguments to be passed to `.f`
+#' @param round_stat `integer
+#' @param round_pval `integer`
+#'
+#' @details
+#' Presently we need to use a formula input for `stats::cor.test` because
+#' `na.fail` only gets evaluated when a formula is passed (see below).
+#' ```
 #' x = c(1,3,5,7,NA)
 #' y = c(3,6,7,8,1)
 #' stats::cor.test(x, y, na.action = "na.fail")
 #' stats::cor.test(~ x + y,  na.action = "na.fail")
-#' }
-#' @return \code{character} with stats. For \code{stats::cor.test} correlation coefficient and p-value.
-#' @export
+#' ```
+#'
+#' @return `character` with stats. For `stats::cor.test` correlation coefficient and p-value.
+#'
 #' @examples
 #' set.seed(1)
 #' x <- runif(25, 0, 1)
@@ -492,6 +496,9 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #'   method = "pearson",
 #'   na.action = na.fail
 #' ))
+#'
+#' @export
+#'
 get_scatterplotmatrix_stats <- function(x, y,
                                         .f = stats::cor.test,
                                         .f_args = list(),

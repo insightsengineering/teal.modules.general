@@ -10,8 +10,6 @@
 #'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
 #'   directory of the application. Will default to current working directory if not supplied.
 #'
-#' @export
-#'
 #' @examples
 #' data <- teal_data()
 #' data <- within(data, {
@@ -36,6 +34,8 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {

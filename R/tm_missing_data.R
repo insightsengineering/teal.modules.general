@@ -1,7 +1,7 @@
 #' Missing data module
 #'
 #' Present analysis of missing observations and patients.
-#' specifically designed for use with `data.frames`.
+#' Specifically designed for use with `data.frames`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params

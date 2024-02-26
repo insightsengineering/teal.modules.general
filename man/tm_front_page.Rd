@@ -39,7 +39,6 @@ A \code{teal} module to be used in \code{teal} applications
 This \code{teal} module creates a simple front page for \code{teal} applications
 }
 \examples{
-
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
@@ -80,4 +79,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

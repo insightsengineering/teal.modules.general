@@ -10,7 +10,7 @@ var_missings_info(x)
 \item{x}{vector of any type and length}
 }
 \value{
-text describing \code{NA} occurrence.
+Character string describing \code{NA} occurrence.
 }
 \description{
 Summarizes missings occurrence in vector

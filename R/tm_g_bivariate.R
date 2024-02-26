@@ -41,8 +41,6 @@
 #' For more examples, please see the vignette "Using bivariate plot" via
 #'   `vignette("using-bivariate-plot", package = "teal.modules.general")`.
 #'
-#' @export
-#'
 #' @examples
 #' # general data exapmle
 #' library(teal.widgets)
@@ -168,6 +166,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_g_bivariate <- function(label = "Bivariate Plots",
                            x,
                            y,

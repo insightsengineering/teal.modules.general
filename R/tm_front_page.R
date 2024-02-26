@@ -14,9 +14,8 @@
 #'   element, if named the name is shown first in bold, followed by the value
 #' @param show_metadata `logical` should the metadata of the datasets be available on the module?
 #' @return A `teal` module to be used in `teal` applications
-#' @export
-#' @examples
 #'
+#' @examples
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -57,6 +56,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_front_page <- function(label = "Front page",
                           header_text = character(0),
                           tables = list(),

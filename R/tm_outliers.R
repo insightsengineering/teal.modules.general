@@ -1,6 +1,6 @@
 #' Outliers Module
 #'
-#' Module to analyze and identify outliers using different methods
+#' Module to analyze and identify outliers using different methods.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params

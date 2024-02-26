@@ -41,9 +41,7 @@ NULL
 #' @param yfacet_label label of facet along y axis (nothing created if NULL),
 #'   if vector, will be concatenated with " & "
 #'
-#' @return grid grob object (to be drawn with \code{grid.draw})
-#'
-#' @export
+#' @return grid grob object (to be drawn with `grid.draw`)
 #'
 #' @examples
 #' # we put donttest to avoid strictr error with seq along.with argument
@@ -69,6 +67,8 @@ NULL
 #' grid.newpage()
 #' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL))
 #' }
+#'
+#' @export
 #'
 add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   checkmate::assert_class(p, classes = "ggplot")
@@ -120,48 +120,41 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   })
 }
 
-#' Call a function with a character vector for the \code{...} argument
+#' Call a function with a character vector for the `...` argument
 #'
-#' @param fun (\code{character}) Name of a function where the \code{...} argument
-#'   shall be replaced by values from \code{str_args}.
-#' @param str_args (\code{character}) A character vector that the function shall
-#'  be executed with
+#' @param fun (`character`) Name of a function where the `...` argument shall be replaced by values from `str_args`.
+#' @param str_args (`character`) A character vector that the function shall be executed with
 #'
-#' @return: call (i.e. expression) of the function provided by \code{fun}
-#'  with arguments provided by \code{str_args}.
+#' @return
+#' Value of call to `fun` with arguments specified in `str_args`.
+#'
 #' @keywords internal
 #'
 #' @examples
-#' \dontrun{
+#' call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
 #' a <- 1
 #' b <- 2
 #' call_fun_dots("sum", c("a", "b"))
 #' eval(call_fun_dots("sum", c("a", "b")))
-#' }
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
 
 #' Get variable name with label
 #'
-#' @param var_names (\code{character}) Name of variable to extract labels from.
-#' @param dataset (\code{dataset}) Name of analysis dataset.
-#' @param prefix (\code{character}) String to paste to the beginning of the
-#'   variable name with label.
-#' @param suffix (\code{character}) String to paste to the end of the variable
-#'   name with label.
-#' @param wrap_width (\code{numeric}) Number of characters to wrap original
-#'   label to. Defaults to 80.
+#' @param var_names (`character`) Name of variable to extract labels from.
+#' @param dataset (`dataset`) Name of analysis dataset.
+#' @param prefix (`character`) String to paste to the beginning of the variable name with label.
+#' @param suffix (`character`) String to paste to the end of the variable name with label.
+#' @param wrap_width (`numeric`) Number of characters to wrap original label to. Defaults to 80.
 #'
-#' @return (\code{character}) String with variable name and label.
+#' @return (`character`) String with variable name and label.
+#'
 #' @keywords internal
 #'
 #' @examples
-#' \dontrun{
-#' ADSL <- teal.modules.general::rADSL
-#'
+#' varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
 #' varname_w_label("AGE", ADSL)
-#' }
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -204,15 +197,14 @@ shape_names <- c(
 
 #' Get icons to represent variable types in dataset
 #'
-#' @param var_type (`character`)\cr
-#'  of R internal types (classes).
+#' @param var_type (`character`) of R internal types (classes).
 #'
-#' @return (`character`)\cr
-#'  vector of HTML icons corresponding to data type in each column.
+#' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
 #'
 #' @examples
-#' teal.modules.general:::variable_type_icons(c(
+#' variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
+#' variable_type_icons(c(
 #'   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
 #'   "factor", "character", "unknown", ""
 #' ))
@@ -233,7 +225,7 @@ variable_type_icons <- function(var_type) {
   )
   class_to_icon <- lapply(class_to_icon, function(icon_name) toString(icon(icon_name, lib = "font-awesome")))
 
-  res <- unname(vapply(
+  unname(vapply(
     var_type,
     FUN.VALUE = character(1),
     FUN = function(class) {
@@ -246,8 +238,6 @@ variable_type_icons <- function(var_type) {
       }
     }
   ))
-
-  return(res)
 }
 
 #' Include `CSS` files from `/inst/css/` package directory to application header
@@ -268,7 +258,7 @@ include_css_files <- function(pattern = "*") {
   if (length(css_files) == 0) {
     return(NULL)
   }
-  return(shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS))))
+  shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS)))
 }
 
 

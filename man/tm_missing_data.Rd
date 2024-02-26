@@ -48,7 +48,7 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 }
 \description{
 Present analysis of missing observations and patients.
-specifically designed for use with \code{data.frames}.
+Specifically designed for use with \code{data.frames}.
 }
 \examples{
 library(teal.widgets)
