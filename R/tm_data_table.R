@@ -18,7 +18,7 @@
 #' dataset will initially be shown.
 #' @param datasets_selected (`character`) A vector of datasets which should be
 #' shown and in what order. Names in the vector have to correspond with datasets names.
-#' If vector of `length==0` (default) then all datasets are shown.
+#' If vector of `length == 0` (default) then all datasets are shown.
 #' Note: Only datasets of the `data.frame` class are compatible.
 #' @param dt_args (`named list`) Additional arguments to be passed to `DT::datatable`
 #' (must not include `data` or `options`).
@@ -127,7 +127,7 @@ tm_data_table <- function(label = "Data Table",
   )
 }
 
-# UI page module.
+# UI page module
 #' @noRd
 #' @keywords internal
 ui_page_data_table <- function(id,
@@ -163,7 +163,7 @@ ui_page_data_table <- function(id,
   )
 }
 
-# server page module.
+# server page module
 #' @noRd
 #' @keywords internal
 srv_page_data_table <- function(id,
@@ -249,7 +249,7 @@ srv_page_data_table <- function(id,
   })
 }
 
-# UI function for the data_table module.
+# UI function for the data_table module
 #' @noRd
 #' @keywords internal
 ui_data_table <- function(id,
@@ -281,7 +281,7 @@ ui_data_table <- function(id,
   )
 }
 
-# Server function for the data_table module.
+# Server function for the data_table module
 #' @noRd
 #' @keywords internal
 srv_data_table <- function(id,

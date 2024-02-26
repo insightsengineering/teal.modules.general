@@ -28,7 +28,7 @@ dataset will initially be shown.}
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of \code{length==0} (default) then all datasets are shown.
+If vector of \code{length == 0} (default) then all datasets are shown.
 Note: Only datasets of the \code{data.frame} class are compatible.}
 
 \item{dt_args}{(\verb{named list}) Additional arguments to be passed to \code{DT::datatable}
@@ -58,8 +58,7 @@ configure the \code{DT.TOJSON_ARGS} option via
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
 \examples{
-# General data example
-
+# general data example
 data <- teal_data()
 data <- within(data, {
   library(nestcolor)
