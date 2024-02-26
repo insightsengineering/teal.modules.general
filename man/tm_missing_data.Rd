@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_missing_data.R
 \name{tm_missing_data}
 \alias{tm_missing_data}
-\title{Missing data module}
+\title{Missing data analysis module}
 \usage{
 tm_missing_data(
   label = "Missing data",
@@ -27,10 +27,10 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in then "the by subject"graph is displayed.
-For \code{CDISC} data. In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
+\item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for CDISC data.
+If provided and exists, enables additional analysis "by subject". For non-CDISC data, this parameter can be ignored.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"classic"}.}
+\item{ggtheme}{(\code{character}, optional) Specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
@@ -48,8 +48,10 @@ with text placed before the output to put the output into context. For example a
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \description{
-Present analysis of missing observations and patients.
-specifically designed for use with \code{data.frames}.
+Module analyzes missing data in \code{data.frame}s to help users explore missing observations and
+gain insights into the completeness of their data.
+It is useful for clinical data analysis within the context of CDISC standards and
+adaptable for general data analysis purposes.
 }
 \examples{
 library(teal.widgets)
