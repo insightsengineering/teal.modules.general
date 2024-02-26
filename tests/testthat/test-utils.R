@@ -1,7 +1,41 @@
-test_that("check_range_slider returns logical valid arguments", {
+test_that("check_range_slider returns logical with valid default arguments", {
   expect_true(check_range_slider(c(0, 0, 2)))
   expect_true(check_range_slider(c(1, 0, 2)))
   expect_true(check_range_slider(c(2, 0, 2)))
+})
+
+test_that("check_range_slider returns logical with valid arguments looking for integers", {
+  expect_true(check_range_slider(c(0L, 0L, 2L), test_fun = checkmate::test_integer))
+  expect_true(check_range_slider(c(1L, 0L, 2L), test_fun = checkmate::test_integer))
+  expect_true(check_range_slider(c(2L, 0L, 2L), test_fun = checkmate::test_integer))
+})
+
+test_that("check_range_slider returns logical with valid arguments looking for integerish", {
+  expect_true(check_range_slider(c(0, 0, 2), test_fun = checkmate::test_integerish))
+  expect_true(check_range_slider(c(1L, 0L, 2L), test_fun = checkmate::test_integerish))
+  expect_true(check_range_slider(c(2, 0L, 2L), test_fun = checkmate::test_integerish))
+  expect_true(check_range_slider(c(2, 0, 2L), test_fun = checkmate::test_integerish))
+  expect_true(check_range_slider(c(2L, 0L, 2), test_fun = checkmate::test_integerish))
+})
+
+test_that("check_range_slider fails when there is a double", {
+  regex <- "Must be a numeric vector of length 3 with `c\\(value, min, max\\)`"
+
+  expect_match(check_range_slider(c(0, 0, 2.2), test_fun = checkmate::test_integerish), regex)
+})
+
+test_that("check_range_slider fails when looking for strict integers", {
+  regex <- "Must be a numeric vector of length 3 with `c\\(value, min, max\\)`"
+
+  expect_match(check_range_slider(c(0, 0, 2), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0L, 0L, 2), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0L, 0, 2L), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0, 0L, 2L), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0L, 0, 2), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0, 0L, 2), test_fun = checkmate::test_integer), regex)
+  expect_match(check_range_slider(c(0, 0L, 2L), test_fun = checkmate::test_integer), regex)
+
+  expect_match(check_range_slider(c(0.1, 0L, 2L), test_fun = checkmate::test_integer), regex)
 })
 
 test_that("check_range_slider returns character on vector with wrong size", {
