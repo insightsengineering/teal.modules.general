@@ -1,7 +1,7 @@
 #' Shared parameters documentation
 #'
 #' Defines common arguments shared across multiple functions in the package
-#' to avoid repetition using `inheritParams`.
+#' to avoid repetition by using `inheritParams`.
 #'
 #' @param plot_height optional, (`numeric`) Specifies the plot height as a three-element vector of
 #' `value`, `min`, and `max` intended for use with a slider UI element.
@@ -254,7 +254,7 @@ variable_type_icons <- function(var_type) {
 #' not work with `devtools`. Therefore, we redefine this method in each package
 #' as needed. Thus, we do not export this method
 #'
-#' @param pattern (`character`) pattern of files to be included.
+#' @param pattern (`character`) optional regular expression to match the file names to be included.
 #'
 #' @return HTML code that includes `CSS` files.
 #' @keywords internal
