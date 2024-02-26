@@ -1,37 +1,28 @@
-#' Variable Browser Teal Module
+#' Variable browser `teal` module
 #'
-#' The variable browser provides a table with variable names and labels and a
-#' plot that visualizes the content of a particular variable.
-#' specifically designed for use with `data.frames`.
+#' Module provides provides a detailed summary and visualization of variable distributions
+#' for `data.frame` objects, with interactive features to customize analysis.
 #'
-#' @details Numeric columns with fewer than 30 distinct values can be treated as either factors
-#' or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
-#' then the default is categorical, otherwise it is numeric).
+#' Numeric columns with fewer than 30 distinct values can be treated as either discrete
+#' or continuous with a checkbox allowing users to switch how they are treated(if < 6 unique values
+#' then the default is discrete, otherwise it is continuous).
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this `dataname` exists in `datasets_selected`
-#'   then an extra checkbox will be shown to allow users to not show variables in other datasets
-#'   which exist in this `dataname`.
-#'   This is typically used to remove `ADSL` columns in `CDISC` data. In non `CDISC` data this
-#'   can be ignored. Defaults to `"ADSL"`.
-#' @param datasets_selected (`character`) A vector of datasets which should be
-#'   shown and in what order. Names in the vector have to correspond with datasets names.
-#'   If vector of length zero (default) then all datasets are shown.
-#'   Note: Only datasets of the `data.frame` class are compatible; using other types will cause an error.
-#'
-#' @aliases
-#'   tm_variable_browser_ui,
-#'   tm_variable_browser_srv,
-#'   tm_variable_browser,
-#'   variable_browser_ui,
-#'   variable_browser_srv,
-#'   variable_browser
+#' @param parent_dataname (`character(1)`) string specifying a parent dataset.
+#' If it exists in `datasets_selected`then an extra checkbox will be shown to
+#' allow users to not show variables in other datasets which exist in this `dataname`.
+#' This is typically used to remove `ADSL` columns in `CDISC` data.
+#' In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
+#' @param datasets_selected (`character`) vector of datasets which should be
+#' shown, in order. Names must correspond with datasets names.
+#' If vector of length zero (default) then all datasets are shown.
+#' Note: Only `data.frame` objects are compatible; using other types will cause an error.
 #'
 #' @examples
 #' library(teal.widgets)
 #'
-#' # module specification used in apps below
+#' # Module specification used in apps below
 #' tm_variable_browser_module <- tm_variable_browser(
 #'   label = "Variable browser",
 #'   ggplot2_args = ggplot2_args(
@@ -116,7 +107,9 @@ tm_variable_browser <- function(label = "Variable Browser",
   )
 }
 
-# ui function
+# UI function for the variable browser module.
+#' @noRd
+#' @keywords internal
 ui_variable_browser <- function(id,
                                 pre_output = NULL,
                                 post_output = NULL) {
@@ -186,6 +179,9 @@ ui_variable_browser <- function(id,
   )
 }
 
+# Server function for the variable browser module.
+#' @noRd
+#' @keywords internal
 srv_variable_browser <- function(id,
                                  data,
                                  reporter,
@@ -533,12 +529,12 @@ srv_variable_browser <- function(id,
 
 #' Summarizes missings occurrence
 #'
-#' Summarizes missings occurrence in vector
+#' Summarizes missings occurrence in vector.
 #' @param x vector of any type and length
-#' @return text describing \code{NA} occurrence.
+#' @return Text describing \code{NA} occurrence.
 #' @keywords internal
 var_missings_info <- function(x) {
-  return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
+  sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2))
 }
 
 #' S3 generic for \code{sparkline} widget HTML
@@ -551,6 +547,8 @@ var_missings_info <- function(x) {
 #' @param width \code{numeric} the width of the \code{sparkline} widget (pixels)
 #' @param ... \code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 #' \href{https://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}
+#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
+#' @param bar_width \code{numeric} the width of the bars (in pixels)
 #'
 #' @return character variable containing the HTML code of the \code{sparkline} HTML widget
 #' @keywords internal
@@ -561,25 +559,13 @@ create_sparklines <- function(arr, width = 150, ...) {
   UseMethod("create_sparklines")
 }
 
-#' Default method for \code{\link{create_sparklines}}
-#'
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.default <- function(arr, width = 150, ...) {
-  return(as.character(tags$code("unsupported variable type", class = "text-blue")))
+  as.character(tags$code("unsupported variable type", class = "text-blue"))
 }
 
-#' Generates the HTML code for the \code{sparkline} widget
-#'
-#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
-#' @param bar_width \code{numeric} the width of the bars (in pixels)
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
@@ -610,16 +596,7 @@ create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width 
   )
 }
 
-#' Generates the HTML code for the \code{sparkline} widget
-#'
-#'
-#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
-#' @param bar_width \code{numeric} the width of the bars (in pixels)
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
@@ -650,16 +627,7 @@ create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_wid
   )
 }
 
-#' Generates the HTML code for the \code{sparkline} widget
-#'
-#'
-#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
-#' @param bar_width \code{numeric} the width of the bars (in pixels)
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   arr_num <- as.numeric(arr)
@@ -690,46 +658,19 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
   )
 }
 
-
-#' Generates the HTML code for the \code{sparkline} widget
-#'
-#' Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
-#'
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.character <- function(arr, ...) {
-  return(create_sparklines(as.factor(arr)))
+  create_sparklines(as.factor(arr))
 }
 
-
-#' Generates the HTML code for the \code{sparkline} widget
-#'
-#' Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
-#'
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.logical <- function(arr, ...) {
-  return(create_sparklines(as.factor(arr)))
+  create_sparklines(as.factor(arr))
 }
 
-
-#' Generates the \code{sparkline} HTML code
-#'
-#' @param bar_spacing \code{numeric} spacing between the bars (in pixels)
-#' @param bar_width \code{numeric} width of the bars (in pixels)
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
   decreasing_order <- TRUE
@@ -763,13 +704,7 @@ create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_widt
   )
 }
 
-#' Generates the \code{sparkline} HTML code
-#'
-#'
-#' @return \code{character} with HTML code for the \code{sparkline} widget
-#'
 #' @export
-#' @keywords internal
 #' @rdname create_sparklines
 create_sparklines.numeric <- function(arr, width = 150, ...) {
   if (any(is.infinite(arr))) {
@@ -780,8 +715,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) {
   }
 
   arr <- arr[!is.na(arr)]
-  res <- sparkline::spk_chr(unname(arr), type = "box", width = width, ...)
-  return(res)
+  sparkline::spk_chr(unname(arr), type = "box", width = width, ...)
 }
 
 #' Summarizes variable
@@ -789,6 +723,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) {
 #' Creates html summary with statistics relevant to data type. For numeric values it returns central
 #' tendency measures, for factor returns level counts, for Date  date range, for other just
 #' number of levels.
+#'
 #' @param x vector of any type
 #' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
 #' @param dt_rows \code{numeric} current/latest `DT` page length
@@ -875,10 +810,10 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
   }
 }
 
-
 #' Plot variable
 #'
 #' Creates summary plot with statistics relevant to data type.
+#'
 #' @inheritParams shared_params
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
@@ -1045,6 +980,7 @@ plot_var_summary <- function(var,
   plot_main
 }
 
+#' @noRd
 #' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
@@ -1056,7 +992,7 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 #' @param plot_var (`list`) list of a data frame and an array of variable names
 #' @param data (`tdata`) the datasets passed to the module
 #'
-#' @returns `logical` TRUE if validations pass; a Shiny validation error otherwise
+#' @returns `logical` TRUE if validations pass; a `shiny` validation error otherwise
 #' @keywords internal
 validate_input <- function(input, plot_var, data) {
   reactive({
@@ -1073,12 +1009,14 @@ validate_input <- function(input, plot_var, data) {
   })
 }
 
+#' @noRd
+#' @keywords internal
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[dataset_name]]
   df <- data()[[dataset_name]]
 
-  var_description <- var_labels(df)[[varname]]
+  var_description <- teal.data::col_labels(df)[[varname]]
   list(data = df[[varname]], var_description = var_description)
 }
 
@@ -1105,7 +1043,6 @@ render_tabset_panel_content <- function(datanames, parent_dataname, output, data
 
 #' Renders a single tab in the left-hand side tabset panel
 #'
-#' @description
 #' Renders a single tab in the left-hand side tabset panel. The rendered tab contains
 #' information about one dataset out of many presented in the module.
 #'
@@ -1152,7 +1089,6 @@ render_tab_header <- function(dataset_name, output, data) {
 
 #' Renders the table for a single dataset in the left-hand side tabset panel
 #'
-#' @description
 #' The table contains column names, column labels,
 #' small summary about NA values and `sparkline` (if appropriate).
 #'
@@ -1271,7 +1207,6 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
 #' Creates observers updating the currently selected column
 #'
-#' @description
 #' The created observers update the column currently selected in the left-hand side
 #' tabset panel.
 #'
@@ -1291,6 +1226,8 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
   })
 }
 
+#' @noRd
+#' @keywords internal
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
@@ -1302,6 +1239,8 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   if (isTRUE(x_span / binwidth >= 2)) binwidth else x_span / 2
 }
 
+#' @noRd
+#' @keywords internal
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(
     sprintf(
