@@ -51,9 +51,9 @@ Module provides provides a detailed summary and visualization of variable distri
 for \code{data.frame} objects, with interactive features to customize analysis.
 }
 \details{
-Numeric columns with fewer than 30 distinct values can be treated as either categorical
-or numeric with a checkbox allowing users to switch how they are treated (if < 6 unique values
-then the default is categorical, otherwise it is numeric).
+Numeric columns with fewer than 30 distinct values can be treated as either discrete
+or continuous with a checkbox allowing users to switch how they are treated(if < 6 unique values
+then the default is discrete, otherwise it is continuous).
 }
 \examples{
 library(teal.widgets)
