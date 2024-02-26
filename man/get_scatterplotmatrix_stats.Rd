@@ -14,27 +14,25 @@ get_scatterplotmatrix_stats(
 )
 }
 \arguments{
-\item{x}{(\code{numeric})}
-
-\item{y}{(\code{numeric})}
+\item{x, y}{(\code{numeric}) vectors of data values. \code{x} and \code{y} must have the same length.}
 
 \item{.f}{(\code{function}) function that accepts x and y as formula input \code{~ x + y}.
 Default \code{stats::cor.test}.}
 
 \item{.f_args}{(\code{list}) of arguments to be passed to \code{.f}.}
 
-\item{round_stat}{(\code{integer})}
+\item{round_stat}{(\code{integer(1)}) optional. Number of decimal places to use when rounding the estimate.}
 
-\item{round_pval}{(\code{integer})}
+\item{round_pval}{(\code{integer(1)}) optional. Number of decimal places to use when rounding the p-value.}
 }
 \value{
-Character with stats. For \code{stats::cor.test} correlation coefficient and p-value.
+Character with stats. For \code{\link[stats:cor.test]{stats::cor.test()}} correlation coefficient and p-value.
 }
 \description{
-Uses \code{stats::cor.test} per default for all numerical input variables and converts results
+Uses \code{\link[stats:cor.test]{stats::cor.test()}} per default for all numerical input variables and converts results
 to character vector.
 Could be extended if different stats for different variable types are needed.
-Meant to be called from \code{lattice::panel.text}.
+Meant to be called from \code{\link[lattice:llines]{lattice::panel.text()}}.
 }
 \details{
 Presently we need to use a formula input for \code{stats::cor.test} because
@@ -57,4 +55,5 @@ get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
   method = "pearson",
   na.action = na.fail
 ))
+
 }
