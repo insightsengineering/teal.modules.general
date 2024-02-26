@@ -165,28 +165,31 @@ tm_a_regression <- function(label = "Regression Analysis",
     stop("'response' should not allow multiple selection")
   }
 
-  checkmate::assert(
-    .var.name = "plot_height",
-    check_range_slider(plot_height, lower = 1)
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2],
+    upper = plot_width[3],
+    null.ok = TRUE,
+    .var.name = "plot_width"
   )
 
-  checkmate::assert(
-    .var.name = "plot_width",
-    check_range_slider(plot_width, lower = 1),
-    checkmate::check_null(plot_width)
-  )
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
 
-  checkmate::assert(
-    .var.name = "alpha",
-    check_range_slider(alpha, lower = 0, upper = 1),
-    checkmate::check_number(alpha, lower = 0, upper = 1)
-  )
-
-  checkmate::assert(
-    .var.name = "size",
-    check_range_slider(size, lower = 0),
-    checkmate::check_number(size, lower = 0)
-  )
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
 
   ggtheme <- match.arg(ggtheme)
 
@@ -202,11 +205,17 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
   checkmate::assert_string(default_outlier_label)
 
-  checkmate::assert(
-    .var.name = "label_segment_threshold",
-    check_range_slider(label_segment_threshold, lower = 0),
-    checkmate::check_number(label_segment_threshold, lower = 0)
-  )
+  if (length(label_segment_threshold) == 1) {
+    checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(label_segment_threshold, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(
+      label_segment_threshold[1],
+      lower = label_segment_threshold[2],
+      upper = label_segment_threshold[3],
+      .var.name = "label_segment_threshold"
+    )
+  }
   # End of assertions
 
   # Send ui args
