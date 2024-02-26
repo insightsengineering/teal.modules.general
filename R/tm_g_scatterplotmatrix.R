@@ -531,8 +531,7 @@ get_scatterplotmatrix_stats <- function(x, y,
       if (.f_args$method == "spearman") {
         return("rho:-")
       }
-    } else {
-      return("-")
     }
+    return("-")
   }
 }
