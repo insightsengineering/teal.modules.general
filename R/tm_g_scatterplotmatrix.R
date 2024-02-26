@@ -485,7 +485,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' @param round_stat (`integer`)
 #' @param round_pval (`integer`)
 #'
-#' @return Character with stats. For `stats::cor.test` correlation coefficient and p-value.
+#' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
 #' @examples
 #' set.seed(1)
 #' x <- runif(25, 0, 1)
