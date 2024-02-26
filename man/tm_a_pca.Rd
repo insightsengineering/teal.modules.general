@@ -24,7 +24,7 @@ tm_a_pca(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Columns used to compute PCA.}
+specifying columns used to compute PCA.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot height.}
@@ -45,17 +45,24 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{font_size}{optional, (\code{numeric}) font size control for title, x-axis label, y-axis label and legend.
-If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
-point sizes dynamically then it can be a vector of length three with \code{c(value, min, max)}.}
+\item{font_size}{(\code{numeric}, optional) Specifies font size.
+It controls the font size for plot titles, axis labels, and legends.
+\itemize{
+\item If vector of \code{length == 1} then the font sizes will have a fixed size.
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+}}
 
-\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
-slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-length three with \code{c(value, min, max)}.}
+\item{alpha}{(\code{numeric}, optional) Specifies point opacity.
+\itemize{
+\item If vector of \code{length == 1} then the plot points will have a fixed opacity.
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+}}
 
-\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size.
-If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-vector of length three with \code{c(value, min, max)}.}
+\item{size}{(\code{numeric}, optional) Specifies point size.
+\itemize{
+\item If vector of \code{length == 1} then the plot point sizes will have a fixed size
+\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+}}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
@@ -64,17 +71,21 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
 \description{
-Principal component analysis module
+Module conducts principal component analysis (PCA) on a given dataset and offers different
+ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
+Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
+font size, through UI inputs.
 }
 \examples{
-# general data example
 library(teal.widgets)
 
+# general data example
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
   USArrests <- USArrests
 })
+
 datanames(data) <- "USArrests"
 
 app <- init(
@@ -99,14 +110,11 @@ app <- init(
     )
   )
 )
-
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 
 # CDISC data example
-library(teal.widgets)
-
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
@@ -118,7 +126,7 @@ join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 app <- init(
   data = data,
   modules = modules(
-    teal.modules.general::tm_a_pca(
+    tm_a_pca(
       "PCA",
       dat = data_extract_spec(
         dataname = "ADSL",
@@ -137,7 +145,6 @@ app <- init(
     )
   )
 )
-
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
