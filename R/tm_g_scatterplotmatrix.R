@@ -464,7 +464,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
 #' Get stats for x-y pairs in scatterplot matrix
 #'
-#' Uses `stats::cor.test` per default for all numerical input variables and converts results
+#' Uses [stats::cor.test()] per default for all numerical input variables and converts results
 #' to character vector.
 #' Could be extended if different stats for different variable types are needed.
 #' Meant to be called from `lattice::panel.text`.
