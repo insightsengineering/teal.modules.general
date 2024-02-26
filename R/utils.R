@@ -352,7 +352,7 @@ is_tab_active_js <- function(id, name) {
 #' Check if an argument is a bounded numeric vector of length 3
 #' Must follow form `c(value, min, max)`
 #' @noRd
-check_slider <- function(value, lower = -Inf, upper = Inf, finite = TRUE, null.ok = FALSE) {
+check_range_slider <- function(value, lower = -Inf, upper = Inf, finite = TRUE, null.ok = FALSE) {
   is_numeric <- checkmate::test_numeric(
     value,
     len = 3, any.missing = FALSE, finite = finite, null.ok = null.ok

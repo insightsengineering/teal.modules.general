@@ -165,24 +165,24 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert(
     .var.name = "plot_height",
-    check_slider(plot_height, lower = 1)
+    check_range_slider(plot_height, lower = 1)
   )
 
   checkmate::assert(
     .var.name = "plot_width",
-    check_slider(plot_width, lower = 1),
+    check_range_slider(plot_width, lower = 1),
     checkmate::check_null(plot_width)
   )
 
   checkmate::assert(
     .var.name = "alpha",
-    check_slider(alpha, lower = 0, upper = 1),
+    check_range_slider(alpha, lower = 0, upper = 1),
     checkmate::check_number(alpha, lower = 0, upper = 1)
   )
 
   checkmate::assert(
     .var.name = "size",
-    check_slider(size, lower = 0),
+    check_range_slider(size, lower = 0),
     checkmate::check_number(size, lower = 0)
   )
 
@@ -202,7 +202,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert(
     .var.name = "label_segment_threshold",
-    check_slider(label_segment_threshold, lower = 0),
+    check_range_slider(label_segment_threshold, lower = 0),
     checkmate::check_number(label_segment_threshold, lower = 0)
   )
   # End of assertions
