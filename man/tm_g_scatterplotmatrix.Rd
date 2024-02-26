@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{Create a scatterplot matrix}
+\title{Scatterplot matrix module}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
@@ -18,7 +18,7 @@ tm_g_scatterplotmatrix(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Plotting variables from an incoming dataset with filtering and selecting. In case of
+Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
 
@@ -36,8 +36,9 @@ with text placed before the output to put the output into context. For example a
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \description{
-The available datasets to choose from for each dataset selector is the same and
-determined by the argument \code{variables}.
+Generates a scatterplot matrix from selected \code{variables} from datasets.
+Each plot within the matrix represents the relationship between two variables,
+providing the overview of correlations and distributions across selected data.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
