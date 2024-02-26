@@ -74,10 +74,18 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
-\item{label_segment_threshold}{(\code{numeric}) If scalar then the minimum distance
-between outlier and label that will generate a line is fixed.
-If a slider should be presented to adjust dynamically, then it can be a vector
-of length 3 with \code{c(value, min, max)}.}
+\item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
+Minimum value to create a line segment between the point and the label when the label is moved
+in the layout to avoid other points or labels.
+The value is used as the \code{min.segment.length} parameter to the \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}} function.
+
+It can take the following forms:
+\itemize{
+\item \code{numeric(1)}: It is a fixed valued used for the minimum distance and a slider is not presented in the UI.
+\item \code{numeric(3)}: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+
+It takes the form of \code{c(value, min, max)}.
+}}
 }
 \description{
 Scatterplot and Regression Model

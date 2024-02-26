@@ -22,10 +22,16 @@
 #' 5. Cook's distance
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
-#' @param label_segment_threshold (`numeric`) If scalar then the minimum distance
-#' between outlier and label that will generate a line is fixed.
-#' If a slider should be presented to adjust dynamically, then it can be a vector
-#' of length 3 with `c(value, min, max)`.
+#' @param label_segment_threshold (`numeric(1)` or `numeric(3)`)
+#' Minimum value to create a line segment between the point and the label when the label is moved
+#' in the layout to avoid other points or labels.
+#' The value is used as the `min.segment.length` parameter to the [ggrepel::geom_text_repel()] function.
+#'
+#' It can take the following forms:
+#' - `numeric(1)`: It is a fixed valued used for the minimum distance and a slider is not presented in the UI.
+#' - `numeric(3)`: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+#'
+#'     It takes the form of `c(value, min, max)`.
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
@@ -168,6 +174,12 @@ tm_a_regression <- function(label = "Regression Analysis",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  checkmate::assert(
+    .var.name = "label_segment_threshold",
+    checkmate::check_number(label_segment_threshold, lower = 0),
+    checkmate::check_numeric(label_segment_threshold, len = 3, lower = 0)
+  )
+
   # Send ui args
   args <- as.list(environment())
   args[["plot_choices"]] <- plot_choices
@@ -263,8 +275,8 @@ ui_a_regression <- function(id, ...) {
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
-            ns("label_min_segment"),
-            div(
+            inputId = ns("label_min_segment"),
+            label = div(
               class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
@@ -280,6 +292,7 @@ ui_a_regression <- function(id, ...) {
               )
             ),
             value_min_max = args$label_segment_threshold,
+            # Extra parameters to sliderInput
             ticks = FALSE,
             step = .1,
             round = FALSE
