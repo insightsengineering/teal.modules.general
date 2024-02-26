@@ -17,11 +17,4 @@ Value of call to \code{fun} with arguments specified in \code{str_args}.
 \description{
 Call a function with a character vector for the \code{...} argument
 }
-\examples{
-call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
-a <- 1
-b <- 2
-call_fun_dots("sum", c("a", "b"))
-eval(call_fun_dots("sum", c("a", "b")))
-}
 \keyword{internal}

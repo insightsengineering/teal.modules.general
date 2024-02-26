@@ -129,13 +129,6 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #' Value of call to `fun` with arguments specified in `str_args`.
 #'
 #' @keywords internal
-#'
-#' @examples
-#' call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
-#' a <- 1
-#' b <- 2
-#' call_fun_dots("sum", c("a", "b"))
-#' eval(call_fun_dots("sum", c("a", "b")))
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
@@ -151,10 +144,6 @@ call_fun_dots <- function(fun, str_args) {
 #' @return (`character`) String with variable name and label.
 #'
 #' @keywords internal
-#'
-#' @examples
-#' varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
-#' varname_w_label("AGE", rADSL)
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -196,18 +185,9 @@ shape_names <- c(
 )
 
 #' Get icons to represent variable types in dataset
-#'
 #' @param var_type (`character`) of R internal types (classes).
-#'
 #' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
-#'
-#' @examples
-#' variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
-#' variable_type_icons(c(
-#'   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
-#'   "factor", "character", "unknown", ""
-#' ))
 variable_type_icons <- function(var_type) {
   checkmate::assert_character(var_type, any.missing = FALSE)
 

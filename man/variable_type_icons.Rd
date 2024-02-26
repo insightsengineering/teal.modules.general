@@ -15,11 +15,4 @@ variable_type_icons(var_type)
 \description{
 Get icons to represent variable types in dataset
 }
-\examples{
-variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
-variable_type_icons(c(
-  "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
-  "factor", "character", "unknown", ""
-))
-}
 \keyword{internal}
