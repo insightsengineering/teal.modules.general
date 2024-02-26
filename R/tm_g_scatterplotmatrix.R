@@ -477,8 +477,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' stats::cor.test(x, y, na.action = "na.fail")
 #' stats::cor.test(~ x + y,  na.action = "na.fail")
 #' ```
-#' @param x (`numeric`)
-#' @param y (`numeric`)
+#' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
 #' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
 #' Default `stats::cor.test`.
 #' @param .f_args (`list`) of arguments to be passed to `.f`.
