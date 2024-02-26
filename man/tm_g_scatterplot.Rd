@@ -56,7 +56,7 @@ for a slider encoding the plot width.}
 
 \item{alpha}{(\code{numeric}, optional) Specifies point opacity.
 \itemize{
-\item If vector of \code{length==1} then the plot points will have a fixed opacity.
+\item If vector of \code{length == 1} then the plot points will have a fixed opacity.
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
@@ -66,7 +66,7 @@ shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape
 
 \item{size}{(\code{numeric}, optional) Specifies point size.
 \itemize{
-\item If vector of \code{length==1} then the plot point sizes will have a fixed size
+\item If vector of \code{length == 1} then the plot point sizes will have a fixed size
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 

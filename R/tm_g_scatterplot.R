@@ -23,10 +23,10 @@
 #' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
 #' Specifies the variable(s) for faceting columns.
 #' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length==1` then the plot points will have a fixed opacity.
+#' - If vector of `length == 1` then the plot points will have a fixed opacity.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length==1` then the plot point sizes will have a fixed size
+#' - If vector of `length == 1` then the plot point sizes will have a fixed size
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param shape (`character`, optional) A character vector with the names of the
 #' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
@@ -319,8 +319,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 }
 
 # UI function for the scatterplot module
-#' @noRd
-#' @keywords internal
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -473,8 +471,6 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 # Server function for the scatterplot module
-#' @noRd
-#' @keywords internal
 srv_g_scatterplot <- function(id,
                               data,
                               reporter,
