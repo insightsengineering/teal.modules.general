@@ -87,9 +87,7 @@ tm_front_page <- function(label = "Front page",
   )
 }
 
-# UI function for the front page module.
-#' @noRd
-#' @keywords internal
+# UI function for the front page module
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -128,9 +126,7 @@ ui_front_page <- function(id, ...) {
   )
 }
 
-# Server function for the front page module.
-#' @noRd
-#' @keywords internal
+# Server function for the front page module
 srv_front_page <- function(id, data, tables, show_metadata) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -176,8 +172,6 @@ srv_front_page <- function(id, data, tables, show_metadata) {
 
 ## utils functions
 
-#' @noRd
-#' @keywords internal
 get_header_tags <- function(header_text) {
   if (length(header_text) == 0) {
     return(list())
@@ -196,8 +190,6 @@ get_header_tags <- function(header_text) {
   c(header_tags, mapply(get_single_header_tags, utils::tail(names(header_text), -1), utils::tail(header_text, -1)))
 }
 
-#' @noRd
-#' @keywords internal
 get_table_tags <- function(tables, ns) {
   if (length(tables) == 0) {
     return(list())
@@ -210,8 +202,6 @@ get_table_tags <- function(tables, ns) {
   return(table_tags)
 }
 
-#' @noRd
-#' @keywords internal
 get_footer_tags <- function(footnotes) {
   if (length(footnotes) == 0) {
     return(list())
@@ -231,8 +221,6 @@ get_footer_tags <- function(footnotes) {
 # take a list of metadata, one item per dataset (raw_metadata each element from datasets$get_metadata())
 # and the corresponding datanames and output a data.frame with columns {Dataset, Name, Value}.
 # which are, the Dataset the metadata came from, the metadata's name and value
-#' @noRd
-#' @keywords internal
 convert_metadata_to_dataframe <- function(raw_metadata, datanames) {
   output <- mapply(function(metadata, dataname) {
     if (is.null(metadata)) {
