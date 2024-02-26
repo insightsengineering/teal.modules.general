@@ -48,19 +48,19 @@ rotate by default (\code{FALSE}).}
 \item{font_size}{(\code{numeric}, optional) Specifies font size.
 It controls the font size for plot titles, axis labels, and legends.
 \itemize{
-\item If vector of \code{length==1} then the font sizes will have a fixed size.
+\item If vector of \code{length == 1} then the font sizes will have a fixed size.
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
 \item{alpha}{(\code{numeric}, optional) Specifies point opacity.
 \itemize{
-\item If vector of \code{length==1} then the plot points will have a fixed opacity.
+\item If vector of \code{length == 1} then the plot points will have a fixed opacity.
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
 \item{size}{(\code{numeric}, optional) Specifies point size.
 \itemize{
-\item If vector of \code{length==1} then the plot point sizes will have a fixed size
+\item If vector of \code{length == 1} then the plot point sizes will have a fixed size
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
