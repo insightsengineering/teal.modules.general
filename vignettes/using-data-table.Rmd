@@ -1,7 +1,6 @@
 ---
 title: "Using data table"
-author: "coreDev team"
-date: "`r Sys.Date()`"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
