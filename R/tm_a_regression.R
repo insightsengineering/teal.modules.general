@@ -160,12 +160,14 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_list(regressor, types = "data_extract_spec")
   ggtheme <- match.arg(ggtheme)
   checkmate::assert_string(default_outlier_label)
+
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
     "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
   )
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -175,10 +177,27 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 
   checkmate::assert(
+    .var.name = "size",
+    checkmate::check_number(size, lower = 0),
+    checkmate::check_numeric(size, len = 3, lower = 0)
+  )
+
+  checkmate::assert(
+    .var.name = "alpha",
+    checkmate::check_number(size, lower = 0, upper = 1),
+    checkmate::check_numeric(size, len = 3, lower = 0)
+  )
+
+  checkmate::assert(
     .var.name = "label_segment_threshold",
     checkmate::check_number(label_segment_threshold, lower = 0),
     checkmate::check_numeric(label_segment_threshold, len = 3, lower = 0)
   )
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
 
   # Send ui args
   args <- as.list(environment())
