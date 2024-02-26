@@ -279,7 +279,7 @@ ui_a_regression <- function(id, ...) {
                 )
               )
             ),
-            args$label_segment_threshold,
+            value_min_max = args$label_segment_threshold,
             ticks = FALSE,
             step = .1,
             round = FALSE
