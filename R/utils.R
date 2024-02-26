@@ -362,7 +362,7 @@ check_range_slider <- function(
     value[[1]],
     lower = max(lower, value[[2]]),
     upper = min(upper, value[[3]]),
-    null.ok = TRUE,
+    null.ok = null.ok,
     finite = finite
   )
   if (isFALSE(is_numeric) || isFALSE(is_bounded)) {
