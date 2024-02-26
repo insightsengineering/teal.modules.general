@@ -467,7 +467,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' Uses [stats::cor.test()] per default for all numerical input variables and converts results
 #' to character vector.
 #' Could be extended if different stats for different variable types are needed.
-#' Meant to be called from `lattice::panel.text`.
+#' Meant to be called from [lattice::panel.text()].
 #'
 #' Presently we need to use a formula input for `stats::cor.test` because
 #' `na.fail` only gets evaluated when a formula is passed (see below).
