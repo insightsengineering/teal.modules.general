@@ -23,8 +23,10 @@
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
 #' @param label_segment_threshold (`numeric(1)` or `numeric(3)`)
-#' Minimum value to create a line segment between the point and the label when the label is moved
-#' in the layout to avoid other points or labels.
+#' Minimum distance between label and point on the plot that triggers the creation of
+#' a line segment between the two.
+#' This may happen when the label cannot be placed next to the point as it overlaps another
+#' label or point.
 #' The value is used as the `min.segment.length` parameter to the [ggrepel::geom_text_repel()] function.
 #'
 #' It can take the following forms:
