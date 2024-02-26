@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_outliers.R
 \name{tm_outliers}
 \alias{tm_outliers}
-\title{Outliers Module}
+\title{Outliers module}
 \usage{
 tm_outliers(
   label = "Outliers Module",
@@ -21,10 +21,10 @@ tm_outliers(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-variable to consider for the outliers analysis.}
+Specifies variable(s) to be analyzed for outliers.}
 
-\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-categorical factor to split the selected outlier variables on.}
+\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}, optional)
+Specifies the categorical variable(s) to split the selected outlier variables on.}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
@@ -50,11 +50,13 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 }
 \description{
 Module to analyze and identify outliers using different methods
+such as IQR, Z-score, and Percentiles, and offers visualizations including
+box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
 \examples{
-# general data example
 library(teal.widgets)
 
+# general data example
 data <- teal_data()
 data <- within(data, {
   CO2 <- CO2
@@ -105,8 +107,6 @@ if (interactive()) {
 }
 
 # CDISC data example
-library(teal.widgets)
-
 data <- teal_data()
 data <- within(data, {
   ADSL <- rADSL
