@@ -2,13 +2,7 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{tm_variable_browser}
 \alias{tm_variable_browser}
-\alias{tm_variable_browser_ui,}
-\alias{tm_variable_browser_srv,}
-\alias{tm_variable_browser,}
-\alias{variable_browser_ui,}
-\alias{variable_browser_srv,}
-\alias{variable_browser}
-\title{Variable Browser Teal Module}
+\title{Variable browser \code{teal} module}
 \usage{
 tm_variable_browser(
   label = "Variable Browser",
@@ -23,16 +17,16 @@ tm_variable_browser(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{datasets_selected}{(\code{character}) A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.
+\item{datasets_selected}{(\code{character}) vector of datasets which should be
+shown, in order. Names must correspond with datasets names.
 If vector of length zero (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible; using other types will cause an error.}
+Note: Only \code{data.frame} objects are compatible; using other types will cause an error.}
 
-\item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in \code{datasets_selected}
-then an extra checkbox will be shown to allow users to not show variables in other datasets
-which exist in this \code{dataname}.
-This is typically used to remove \code{ADSL} columns in \code{CDISC} data. In non \code{CDISC} data this
-can be ignored. Defaults to \code{"ADSL"}.}
+\item{parent_dataname}{(\code{character(1)}) string specifying a parent dataset.
+If it exists in \code{datasets_selected}then an extra checkbox will be shown to
+allow users to not show variables in other datasets which exist in this \code{dataname}.
+This is typically used to remove \code{ADSL} columns in \code{CDISC} data.
+In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
@@ -47,19 +41,18 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 }
 \description{
-The variable browser provides a table with variable names and labels and a
-plot that visualizes the content of a particular variable.
-specifically designed for use with \code{data.frames}.
+Module provides provides a detailed summary and visualization of variable distributions
+for \code{data.frame} objects, with interactive features to customize analysis.
 }
 \details{
-Numeric columns with fewer than 30 distinct values can be treated as either factors
-or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
-then the default is categorical, otherwise it is numeric).
+Numeric columns with fewer than 30 distinct values can be treated as either discrete
+or continuous with a checkbox allowing users to switch how they are treated(if < 6 unique values
+then the default is discrete, otherwise it is continuous).
 }
 \examples{
 library(teal.widgets)
 
-# module specification used in apps below
+# Module specification used in apps below
 tm_variable_browser_module <- tm_variable_browser(
   label = "Variable browser",
   ggplot2_args = ggplot2_args(

@@ -38,34 +38,16 @@ create_sparklines(arr, width = 150, ...)
 \item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
 \href{https://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
 
-\item{bar_spacing}{\code{numeric} spacing between the bars (in pixels)}
+\item{bar_spacing}{\code{numeric} the spacing between the bars (in pixels)}
 
-\item{bar_width}{\code{numeric} width of the bars (in pixels)}
+\item{bar_width}{\code{numeric} the width of the bars (in pixels)}
 }
 \value{
 character variable containing the HTML code of the \code{sparkline} HTML widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
 }
 \description{
 Generates the \code{sparkline} HTML code corresponding to the input array.
 For numeric variables creates a box plot, for character and factors - bar plot.
 Produces an empty string for variables of other types.
-
-Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
-
-Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
 }
 \keyword{internal}
