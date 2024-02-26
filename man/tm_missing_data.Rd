@@ -28,7 +28,8 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
 \item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
-If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be ignored.}
+If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be
+ignored.}
 
 \item{ggtheme}{(\code{character}, optional) Specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 

@@ -8,7 +8,8 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
-#' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be ignored.
+#' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
+#' ignored.
 #' @param ggtheme (`character`, optional) Specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
