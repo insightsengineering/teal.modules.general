@@ -28,7 +28,7 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Which variable to use as the response.
-You can define one fixed column by using the setting \code{fixed = TRUE} inside the \code{select_spec}.
+You can define one fixed column by setting \code{fixed = TRUE} inside the \code{select_spec}.
 
 The \code{data_extract_spec} must not allow multiple selection in this case.}
 
@@ -86,7 +86,7 @@ Object of class \code{teal_module} to be used in \code{teal} applications.
 \description{
 Generates a response plot for a given \code{response} and \code{x} variables.
 This module allows users customize and add annotations to the plot depending
-via the module's arguments.
+on the module's arguments.
 It supports showing the counts grouped by other variable facets (by row / column),
 swapping the coordinates, show count annotations and displaying the response plot
 as frequency or density.
