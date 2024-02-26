@@ -15,10 +15,10 @@
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Response variables from an incoming dataset with filtering and selecting.
 #' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length==1` then the plot points will have a fixed opacity.
+#' - If vector of `length == 1` then the plot points will have a fixed opacity.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length==1` then the plot point sizes will have a fixed size
+#' - If vector of `length == 1` then the plot point sizes will have a fixed size
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
 #' @param default_plot_type (`numeric`, optional) Defaults to Response vs Regressor.
@@ -193,9 +193,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 }
 
-# UI function for the regression module.
-#' @noRd
-#' @keywords internal
+# UI function for the regression module
 ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -283,9 +281,7 @@ ui_a_regression <- function(id, ...) {
   )
 }
 
-# Server function for the regression module.
-#' @noRd
-#' @keywords internal
+# Server function for the regression module
 srv_a_regression <- function(id,
                              data,
                              reporter,
