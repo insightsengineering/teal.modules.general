@@ -30,7 +30,7 @@ Reference variable, must set \code{multiple = FALSE}.}
 \item{vars}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variables to be associated with the reference variable.}
 
-\item{show_association}{(\code{logical}, optional) Whether show association of \code{vars}
+\item{show_association}{(\code{logical}) optional whether show association of \code{vars}
 with reference variable. Defaults to \code{TRUE}.}
 
 \item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
@@ -39,7 +39,7 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{distribution_theme, association_theme}{(\code{character}, optional) \code{ggplot2} themes to be used by default.
+\item{distribution_theme, association_theme}{(\code{character}) optional \code{ggplot2} themes to be used by default.
 Default to \code{"gray"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr

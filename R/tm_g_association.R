@@ -14,9 +14,9 @@
 #' Reference variable, must set `multiple = FALSE`.
 #' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Variables to be associated with the reference variable.
-#' @param show_association (`logical`, optional) Whether show association of `vars`
+#' @param show_association (`logical`) optional whether show association of `vars`
 #' with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme,association_theme (`character`, optional) `ggplot2` themes to be used by default.
+#' @param distribution_theme,association_theme (`character`) optional `ggplot2` themes to be used by default.
 #' Default to `"gray"`.
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
