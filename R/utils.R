@@ -359,10 +359,8 @@ check_range_slider <- function(value,
                                lower = -Inf,
                                upper = Inf,
                                finite = TRUE,
-                               null.ok = FALSE, # nolint: object_name.
                                test_fun = checkmate::test_numeric) {
   checkmate::assert_flag(finite)
-  checkmate::assert_flag(null.ok)
   checkmate::assert_function(test_fun)
   checkmate::assert_number(lower)
   checkmate::assert_number(upper)
@@ -370,8 +368,7 @@ check_range_slider <- function(value,
   is_numeric <- test_fun(
     value,
     len = 3,
-    any.missing = FALSE,
-    null.ok = null.ok
+    any.missing = FALSE
   )
 
   # Finite is not available in integer tests
@@ -383,8 +380,7 @@ check_range_slider <- function(value,
     value[[1]],
     len = 1,
     lower = max(lower, value[[2]]),
-    upper = min(upper, value[[3]]),
-    null.ok = null.ok
+    upper = min(upper, value[[3]])
   )
   if (isFALSE(is_numeric) || isFALSE(is_bounded)) {
     return(
