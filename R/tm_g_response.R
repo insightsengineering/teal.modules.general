@@ -2,7 +2,7 @@
 #'
 #' Generates a response plot for a given `response` and `x` variables.
 #' This module allows users customize and add annotations to the plot depending
-#' via the module's arguments.
+#' on the module's arguments.
 #' It supports showing the counts grouped by other variable facets (by row / column),
 #' swapping the coordinates, show count annotations and displaying the response plot
 #' as frequency or density.
@@ -11,7 +11,7 @@
 #' @inheritParams shared_params
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Which variable to use as the response.
-#' You can define one fixed column by using the setting `fixed = TRUE` inside the `select_spec`.
+#' You can define one fixed column by setting `fixed = TRUE` inside the `select_spec`.
 #'
 #' The `data_extract_spec` must not allow multiple selection in this case.
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
