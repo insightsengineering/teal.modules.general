@@ -154,7 +154,7 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @examples
 #' varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
-#' varname_w_label("AGE", ADSL)
+#' varname_w_label("AGE", rADSL)
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
