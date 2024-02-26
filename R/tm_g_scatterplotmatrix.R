@@ -187,9 +187,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   )
 }
 
-# UI function for the scatterplot matrix module.
-#' @noRd
-#' @keywords internal
+# UI function for the scatterplot matrix module
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
@@ -246,9 +244,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
-# Server function for the scatterplot matrix module.
-#' @noRd
-#' @keywords internal
+# Server function for the scatterplot matrix module
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -501,6 +497,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #'   method = "pearson",
 #'   na.action = na.fail
 #' ))
+#'
 #' @export
 #'
 get_scatterplotmatrix_stats <- function(x, y,
