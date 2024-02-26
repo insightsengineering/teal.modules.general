@@ -1,28 +1,43 @@
-#' Response Plots
-#' @md
+#' Response plot module
+#'
+#' Generates a response plot for a given `response` and `x` variables.
+#' This module allows users customize and add annotations to the plot depending
+#' on the module's arguments.
+#' It supports showing the counts grouped by other variable facets (by row / column),
+#' swapping the coordinates, show count annotations and displaying the response plot
+#' as frequency or density.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which variable to use as the response. You can define one fixed column by using the
-#'   setting `fixed = TRUE` inside the `select_spec`.
-#'  `data_extract_spec` must not allow multiple selection in this case.
+#' Which variable to use as the response.
+#' You can define one fixed column by setting `fixed = TRUE` inside the `select_spec`.
+#'
+#' The `data_extract_spec` must not allow multiple selection in this case.
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-#'   columns from the `data` allowed in teal.
-#'  `data_extract_spec` must not allow multiple selection in this case.
-#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data columns to use for faceting rows.
-#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data to use for faceting columns.
-#' @param coord_flip optional, (`logical`) Whether to flip coordinates between `x` and `response`.
-#' @param count_labels optional, (`logical`) Whether to show count labels.
-#'   Defaults to `TRUE`.
-#' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
-#'   Defaults to density (`FALSE`).
+#' Specifies which variable to use on the X-axis of the response plot.
+#' Allow the user to select multiple columns from the `data` allowed in teal.
+#'
+#' The `data_extract_spec` must not allow multiple selection in this case.
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting columns.
+#' @param coord_flip (`logical(1)`)
+#' Indicates whether to flip coordinates between `x` and `response`.
+#' The default value is `FALSE` and it will show the `x` variable on the x-axis
+#' and the `response` variable on the y-axis.
+#' @param count_labels (`logical(1)`)
+#' Indicates whether to show count labels.
+#' Defaults to `TRUE`.
+#' @param freq (`logical(1)`)
+#' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
+#' Defaults to density (`FALSE`).
+#'
+#' @inherit shared_params return
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
-#'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
+#' `vignette("using-response-plot", package = "teal.modules.general")`.
 #'
 #' @examples
 #' # general data example
@@ -195,6 +210,7 @@ tm_g_response <- function(label = "Response Plot",
   )
 }
 
+# UI function for the response module
 ui_g_response <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -270,6 +286,7 @@ ui_g_response <- function(id, ...) {
   )
 }
 
+# Server function for the response module
 srv_g_response <- function(id,
                            data,
                            reporter,
