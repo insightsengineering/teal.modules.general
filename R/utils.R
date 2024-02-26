@@ -32,9 +32,9 @@
 #' @keywords internal
 NULL
 
-#' Add labels for facets to a ggplot2 object
+#' Add labels for facets to a `ggplot2` object
 #'
-#' Enhances a ggplot2 plot by adding labels that describe
+#' Enhances a `ggplot2` plot by adding labels that describe
 #' the faceting variables along the x and y axes.
 #'
 #' @param p (`ggplot2`) object to which facet labels will be added.

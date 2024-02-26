@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{add_facet_labels}
 \alias{add_facet_labels}
-\title{Add labels for facets to a ggplot2 object}
+\title{Add labels for facets to a \code{ggplot2} object}
 \usage{
 add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL)
 }
@@ -19,7 +19,7 @@ Similar behavior to \code{xfacet_label}.}
 Returns \code{grid} or \code{grob} object (to be drawn with \code{grid.draw})
 }
 \description{
-Enhances a ggplot2 plot by adding labels that describe
+Enhances a \code{ggplot2} plot by adding labels that describe
 the faceting variables along the x and y axes.
 }
 \examples{

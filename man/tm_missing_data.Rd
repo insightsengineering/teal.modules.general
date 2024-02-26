@@ -27,8 +27,8 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for CDISC data.
-If provided and exists, enables additional analysis "by subject". For non-CDISC data, this parameter can be ignored.}
+\item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
+If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be ignored.}
 
 \item{ggtheme}{(\code{character}, optional) Specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
@@ -50,7 +50,7 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \description{
 Module analyzes missing data in \code{data.frame}s to help users explore missing observations and
 gain insights into the completeness of their data.
-It is useful for clinical data analysis within the context of CDISC standards and
+It is useful for clinical data analysis within the context of \code{CDISC} standards and
 adaptable for general data analysis purposes.
 }
 \examples{
