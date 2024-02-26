@@ -254,7 +254,7 @@ variable_type_icons <- function(var_type) {
 #' not work with `devtools`. Therefore, we redefine this method in each package
 #' as needed. Thus, we do not export this method
 #'
-#' @param pattern (`character`) pattern of files to be included.
+#' @param pattern (`character`) optional regular expression to match the file names to be included.
 #'
 #' @return HTML code that includes `CSS` files.
 #' @keywords internal
