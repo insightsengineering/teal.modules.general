@@ -10,7 +10,7 @@ add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL)
 \item{p}{(\code{ggplot2}) object to which facet labels will be added.}
 
 \item{xfacet_label}{(\code{character}) Label for the facet along the x-axis.
-If NULL, no label is added. If a vector, labels are joined with " & ".}
+If \code{NULL}, no label is added. If a vector, labels are joined with " & ".}
 
 \item{yfacet_label}{(\code{character}) Label for the facet along the y-axis.
 Similar behavior to \code{xfacet_label}.}

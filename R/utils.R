@@ -39,7 +39,7 @@ NULL
 #'
 #' @param p (`ggplot2`) object to which facet labels will be added.
 #' @param xfacet_label (`character`) Label for the facet along the x-axis.
-#' If NULL, no label is added. If a vector, labels are joined with " & ".
+#' If `NULL`, no label is added. If a vector, labels are joined with " & ".
 #' @param yfacet_label (`character`) Label for the facet along the y-axis.
 #' Similar behavior to `xfacet_label`.
 #'
@@ -121,12 +121,12 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 
 #' Call a function with a character vector for the \code{...} argument
 #'
-#' @param fun (\code{character}) Name of a function where the \code{...} argument
+#' @param fun (`character`) Name of a function where the \code{...} argument
 #'   shall be replaced by values from \code{str_args}.
-#' @param str_args (\code{character}) A character vector that the function shall
+#' @param str_args (`character`) A character vector that the function shall
 #'  be executed with
 #'
-#' @return: Call (i.e. expression) of the function provided by \code{fun}
+#' @return Call (i.e. expression) of the function provided by \code{fun}
 #'  with arguments provided by \code{str_args}.
 #'
 #' @examples
@@ -145,16 +145,16 @@ call_fun_dots <- function(fun, str_args) {
 
 #' Generate a string for a variable including its label
 #'
-#' @param var_names (\code{character}) Name of variable to extract labels from.
-#' @param dataset (\code{dataset}) Name of analysis dataset.
-#' @param prefix (\code{character}) String to paste to the beginning of the
+#' @param var_names (`character`) Name of variable to extract labels from.
+#' @param dataset (`dataset`) Name of analysis dataset.
+#' @param prefix (`character`) String to paste to the beginning of the
 #'   variable name with label.
-#' @param suffix (\code{character}) String to paste to the end of the variable
+#' @param suffix (`character`) String to paste to the end of the variable
 #'   name with label.
-#' @param wrap_width (\code{numeric}) Number of characters to wrap original
+#' @param wrap_width (`numeric`) Number of characters to wrap original
 #'   label to. Defaults to 80.
 #'
-#' @return (\code{character}) String with variable name and label.
+#' @return (`character`) String with variable name and label.
 #' @keywords internal
 #'
 varname_w_label <- function(var_names,
@@ -272,9 +272,9 @@ include_css_files <- function(pattern = "*") {
 
 #' JavaScript condition to check if a specific tab is active
 #'
-#' @param id `character(1)` the id of the tab panel with tabs.
-#' @param name `character(1)` the name of the tab.
-#' @return JavaScript string for use in `shiny::conditionalPanel()` to determine
+#' @param id (`character(1)`) the id of the tab panel with tabs.
+#' @param name (`character(1)`) the name of the tab.
+#' @return `string` with a valid `JS` code to be used in `shiny::conditionalPanel()` to determine
 #' if the specified tab is active.
 #' @keywords internal
 #'

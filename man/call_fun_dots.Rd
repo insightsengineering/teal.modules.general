@@ -14,7 +14,7 @@ shall be replaced by values from \code{str_args}.}
 be executed with}
 }
 \value{
-: Call (i.e. expression) of the function provided by \code{fun}
+Call (i.e. expression) of the function provided by \code{fun}
 with arguments provided by \code{str_args}.
 }
 \description{
