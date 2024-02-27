@@ -69,6 +69,7 @@ ggextra_available <- requireNamespace("ggExtra", quietly = TRUE)
 # NOTE: The code will not be run as package ggExtra is not installed.
 ```
 ```{r, eval = ggextra_available, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+# configuration for the single wide datasets
 mod1 <- tm_g_scatterplot(
   label = "Single wide dataset",
   x = data_extract_spec(
@@ -103,7 +104,7 @@ mod1 <- tm_g_scatterplot(
   )
 )
 
-# .. Two wide -----
+# configuration for the two wide datasets
 mod2 <- tm_g_scatterplot(
   label = "Two wide datasets",
   x = data_extract_spec(
@@ -138,6 +139,7 @@ mod2 <- tm_g_scatterplot(
   )
 )
 
+# configuration for the different long datasets
 mod3 <- tm_g_scatterplot(
   label = "Different long datasets",
   x = data_extract_spec(
@@ -186,6 +188,7 @@ mod3 <- tm_g_scatterplot(
   )
 )
 
+# configuration for the wide and long datasets
 mod4 <- tm_g_scatterplot(
   label = "Wide and long datasets",
   x = data_extract_spec(
@@ -236,6 +239,7 @@ mod4 <- tm_g_scatterplot(
   )
 )
 
+# configuration for the same long datasets (same subsets)
 mod5 <- tm_g_scatterplot(
   label = "Same long datasets (same subsets)",
   x = data_extract_spec(
@@ -270,6 +274,7 @@ mod5 <- tm_g_scatterplot(
   )
 )
 
+# configuration for the same long datasets (different subsets)
 mod6 <- tm_g_scatterplot(
   label = "Same long datasets (different subsets)",
   x = data_extract_spec(
@@ -350,6 +355,7 @@ mod6 <- tm_g_scatterplot(
   )
 )
 
+# initialize the app
 app <- init(
   data = data,
   modules = modules(
