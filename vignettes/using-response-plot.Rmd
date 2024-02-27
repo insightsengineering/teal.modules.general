@@ -11,22 +11,22 @@ vignette: >
 
 # `teal` application to use response plot with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside an response plot module:
+This vignette will guide you through the four parts to create a teal application using
+various types of datasets using the response plot module `tm_g_response()`:
 
 1. Load Libraries
 2. Create data sets
 3. Create an `app` variable
 4. Run the App
 
-## Loading libraries
+## 1 - Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
 Inside this app 5 datasets will be used
 
@@ -37,7 +37,6 @@ Inside this app 5 datasets will be used
 5. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -59,25 +58,25 @@ jk_adsl2 <- jk
 names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
 jk <- c(jk, jk_adsl2)
 jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
-# nolint end
+join_keys(data) <- jk
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_g_response` using different
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal.data::teal_data`. The app
+itself will be constructed by multiple calls of `tm_g_response()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Response plot",
       tm_g_response(
         label = "Single wide dataset",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -87,7 +86,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -100,7 +99,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Two wide datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -109,7 +108,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL2",
           select = select_spec(
             label = "Select variable:",
@@ -121,7 +120,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Multiple long datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -146,7 +145,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADRS",
           filter = list(
             filter_spec(
@@ -171,7 +170,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -180,7 +179,7 @@ app <- teal::init(
             multiple = FALSE
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -192,7 +191,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Wide and long dataset",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -218,7 +217,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             choices = variable_choices(data[["ADSL"]], c("ARMCD", "BMRKR1", "BMRKR2", "BEP01FL")),
@@ -230,7 +229,7 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Same long datasets",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]], c("BMRKR2", "AVALC", "BEP01FL")),
@@ -240,7 +239,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = variable_choices(data[["ADRS"]], c("AVALC", "AGE", "SEX", "ARMCD", "STRATA1")),
@@ -250,7 +249,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = "PARAMCD",
@@ -260,7 +259,7 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADRS",
           select = select_spec(
             choices = "AVISIT",
@@ -273,9 +272,9 @@ app <- teal::init(
       ),
       tm_g_response(
         label = "Same long datasets  (different subsets)",
-        response = teal.transform::data_extract_spec(
+        response = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(data[["ADLB"]]$PARAMCD),
             selected = levels(data[["ADLB"]]$PARAMCD)[2],
@@ -289,9 +288,9 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = levels(data[["ADLB"]]$PARAMCD),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],
@@ -305,7 +304,7 @@ app <- teal::init(
             fixed = TRUE
           )
         ),
-        row_facet = teal.transform::data_extract_spec(
+        row_facet = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -331,7 +330,7 @@ app <- teal::init(
             label = "Select Variable"
           )
         ),
-        col_facet = teal.transform::data_extract_spec(
+        col_facet = data_extract_spec(
           dataname = "ADLB",
           filter = list(
             filter_spec(
@@ -363,7 +362,7 @@ app <- teal::init(
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
 A simple `shiny::shinyApp` call will let you run the app.
 Note that app is only displayed when running this code inside an R session.

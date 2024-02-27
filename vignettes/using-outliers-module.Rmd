@@ -11,22 +11,22 @@ vignette: >
 
 # `teal` application to analyze and report outliers with various datasets types.
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside the outliers module:
+This vignette will guide you through the four parts to create a teal application using
+various types of datasets using the outliers module `tm_outliers()`:
 
 1. Load Libraries
 2. Create data sets
 3. Create an `app` variable
 4. Run the App
 
-## Loading libraries
+## 1 - Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
 Inside this app 5 datasets will be used
 
@@ -35,7 +35,6 @@ Inside this app 5 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -45,26 +44,25 @@ data <- within(data, {
 datanames <- c("ADSL", "ADRS", "ADLB")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_outliers` using different
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal.data::teal_data`. The app
+itself will be constructed by multiple calls of `tm_outliers()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     # tm_outliers ----
     modules(
       label = "Outliers module",
       tm_outliers(
         label = "Single wide dataset",
-        outlier_var = teal.transform::data_extract_spec(
+        outlier_var = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -73,7 +71,7 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        categorical_var = teal.transform::data_extract_spec(
+        categorical_var = data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -90,7 +88,7 @@ app <- teal::init(
       tm_outliers(
         label = "Wide and long datasets",
         outlier_var = list(
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variable:",
@@ -99,7 +97,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
@@ -111,7 +109,7 @@ app <- teal::init(
           )
         ),
         categorical_var =
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADSL",
             select = select_spec(
               label = "Select variables:",
@@ -128,7 +126,7 @@ app <- teal::init(
       tm_outliers(
         label = "Multiple long datasets",
         outlier_var = list(
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variable:",
@@ -137,7 +135,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variable:",
@@ -149,7 +147,7 @@ app <- teal::init(
           )
         ),
         categorical_var = list(
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADRS",
             select = select_spec(
               label = "Select variables:",
@@ -159,7 +157,7 @@ app <- teal::init(
               fixed = FALSE
             )
           ),
-          teal.transform::data_extract_spec(
+          data_extract_spec(
             dataname = "ADLB",
             select = select_spec(
               label = "Select variables:",
@@ -178,7 +176,7 @@ app <- teal::init(
   )
 )
 ```
-## Run the app
+## 4 - Run the app
 
 A simple `shiny::shinyApp` call will let you run the app. 
 Note that app is only displayed when running this code inside an R session.  

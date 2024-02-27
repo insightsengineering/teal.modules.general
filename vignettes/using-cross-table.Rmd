@@ -11,22 +11,22 @@ vignette: >
 
 # `teal` application to use cross table with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside an cross table module:
+This vignette will guide you through the four parts to create a teal application using
+various types of datasets using the cross table module `tm_t_crosstable()`:
 
 1. Load Libraries
 2. Create data sets
 3. Create an `app` variable
 4. Run the App
 
-## Loading libraries
+## 1 - Loading libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
 Inside this app 2 datasets will be used
 
@@ -34,7 +34,6 @@ Inside this app 2 datasets will be used
 2. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
-# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -48,25 +47,24 @@ data <- within(data, {
 datanames <- c("ADSL", "ADLB")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_t_crosstable` using different
+This is the most important section. We will use the `teal::init` function to
+create an app. The data will be handed over using `teal.data::teal_data`. The app
+itself will be constructed by multiple calls of `tm_t_crosstable()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Cross table",
       tm_t_crosstable(
         label = "Single wide dataset",
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -77,7 +75,7 @@ app <- teal::init(
             ordered = TRUE
           )
         ),
-        y = teal.transform::data_extract_spec(
+        y = data_extract_spec(
           "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -90,9 +88,9 @@ app <- teal::init(
       ),
       tm_t_crosstable(
         label = "Same long datasets (different subsets)",
-        x = teal.transform::data_extract_spec(
+        x = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],
@@ -107,9 +105,9 @@ app <- teal::init(
             label = "Select variable:"
           )
         ),
-        y = teal.transform::data_extract_spec(
+        y = data_extract_spec(
           dataname = "ADLB",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = "PARAMCD",
             choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
             selected = levels(data[["ADLB"]]$PARAMCD)[1],
@@ -129,7 +127,7 @@ app <- teal::init(
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
 A simple `shiny::shinyApp` call will let you run the app.
 Note that app is only displayed when running this code inside an R session.
