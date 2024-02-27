@@ -32,6 +32,9 @@ element, if named the name is shown first in bold, followed by the value.}
 
 \item{show_metadata}{(\code{logical}) indicating whether the metadata of the datasets be available on the module.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Creates a simple front page for \code{teal} applications, displaying
 introductory text, tables, additional \code{html} or \code{shiny} tags, and footnotes.
@@ -40,12 +43,11 @@ introductory text, tables, additional \code{html} or \code{shiny} tags, and foot
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- teal.modules.general::rADSL
+  ADSL <- rADSL
   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- "ADSL"
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
@@ -60,7 +62,7 @@ table_input <- list(
 app <- init(
   data = data,
   modules = modules(
-    teal.modules.general::tm_front_page(
+    tm_front_page(
       header_text = c(
         "Important information" = "It can go here.",
         "Other information" = "Can go here."
