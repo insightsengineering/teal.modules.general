@@ -31,9 +31,10 @@
 #'
 #' It can take the following forms:
 #' - `numeric(1)`: Fixed value used for the minimum distance and the slider is not presented in the UI.
-#' - `numeric(3)`: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically. `label_segment_threshold` is passed to the `value_min_max` argument in `teal.widgets::optionalSliderInputValMinMax`.
+#' - `numeric(3)`: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
 #'
-#'     It takes the form of `c(value, min, max)`.
+#'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
+#'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
