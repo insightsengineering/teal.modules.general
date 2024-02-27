@@ -83,8 +83,8 @@ The value is used as the \code{min.segment.length} parameter to the \code{\link[
 
 It can take the following forms:
 \itemize{
-\item \code{numeric(1)}: Fixed valued used for the minimum distance and the slider is not presented in the UI.
-\item \code{numeric(3)}: The slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+\item \code{numeric(1)}: Fixed value used for the minimum distance and the slider is not presented in the UI.
+\item \code{numeric(3)}: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically. \code{label_segment_threshold} is passed to the \code{value_min_max} argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 
 It takes the form of \code{c(value, min, max)}.
 }}
