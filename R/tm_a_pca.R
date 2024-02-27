@@ -1,32 +1,37 @@
 #' Principal component analysis module
-#' @md
+#'
+#' Module conducts principal component analysis (PCA) on a given dataset and offers different
+#' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
+#' Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
+#' font size, through UI inputs.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Columns used to compute PCA.
-#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size.
-#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#' @param font_size optional, (`numeric`) font size control for title, x-axis label, y-axis label and legend.
-#'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
-#'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
-#'
+#'   specifying columns used to compute PCA.
+#' @param alpha (`numeric`, optional) Specifies point opacity.
+#' - If vector of `length == 1` then the plot points will have a fixed opacity.
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
+#' @param size (`numeric`, optional) Specifies point size.
+#' - If vector of `length == 1` then the plot point sizes will have a fixed size
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
+#' @param font_size (`numeric`, optional) Specifies font size.
+#' It controls the font size for plot titles, axis labels, and legends.
+#' - If vector of `length == 1` then the font sizes will have a fixed size.
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
 #' @examples
-#' # general data example
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
 #'   USArrests <- USArrests
 #' })
+#'
 #' datanames(data) <- "USArrests"
 #'
 #' app <- init(
@@ -51,14 +56,11 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -70,7 +72,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     teal.modules.general::tm_a_pca(
+#'     tm_a_pca(
 #'       "PCA",
 #'       dat = data_extract_spec(
 #'         dataname = "ADSL",
@@ -89,7 +91,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -171,7 +172,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   )
 }
 
-
+# UI function for the PCA module
 ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -282,6 +283,7 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
+# Server function for the PCA module
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")

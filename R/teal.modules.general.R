@@ -1,4 +1,4 @@
-#' teal.modules.general: General modules to add to a teal application
+#' `teal.modules.general`: General modules to add to a teal application
 #'
 #' The modules in this package are generic modules that should work with any data set
 #' (not necessarily for clinical trials data).

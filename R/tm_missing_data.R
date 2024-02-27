@@ -1,13 +1,16 @@
-#' Missing data module
+#' Missing data analysis module
 #'
-#' Present analysis of missing observations and patients.
-#' specifically designed for use with `data.frames`.
+#' Module analyzes missing data in `data.frame`s to help users explore missing observations and
+#' gain insights into the completeness of their data.
+#' It is useful for clinical data analysis within the context of `CDISC` standards and
+#' adaptable for general data analysis purposes.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this `dataname` exists in then "the by subject"graph is displayed.
-#'   For `CDISC` data. In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default. Defaults to `"classic"`.
+#' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
+#' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
+#' ignored.
+#' @param ggtheme (`character`, optional) Specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
@@ -120,6 +123,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 }
 
+# UI function for the missing data module (all datasets)
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   shiny::tagList(
@@ -144,6 +148,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   )
 }
 
+# Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
   moduleServer(id, function(input, output, session) {
@@ -230,6 +235,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
   })
 }
 
+# UI function for the missing data module (single dataset)
 ui_missing_data <- function(id, by_subject_plot = FALSE) {
   ns <- NS(id)
 
@@ -299,6 +305,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
+# UI encoding for the missing data module (all datasets)
 encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames) {
   ns <- NS(id)
 
@@ -387,6 +394,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
+# Server function for the missing data (single dataset)
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
                              plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
@@ -491,7 +499,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               } else {
                 labels <- ifelse(cols == new_col_name | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
               }
-              return(labels)
+              labels
             },
           env = list(
             new_col_name = new_col_name,

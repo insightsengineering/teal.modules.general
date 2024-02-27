@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{varname_w_label}
 \alias{varname_w_label}
-\title{Get variable name with label}
+\title{Generate a string for a variable including its label}
 \usage{
 varname_w_label(
   var_names,
@@ -30,13 +30,6 @@ name with label.}
 (\code{character}) String with variable name and label.
 }
 \description{
-Get variable name with label
-}
-\examples{
-\dontrun{
-ADSL <- teal.modules.general::rADSL
-
-varname_w_label("AGE", ADSL)
-}
+Generate a string for a variable including its label
 }
 \keyword{internal}

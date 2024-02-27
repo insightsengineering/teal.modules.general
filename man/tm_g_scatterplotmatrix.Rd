@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{Create a scatterplot matrix}
+\title{Scatterplot matrix module}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
@@ -18,25 +18,27 @@ tm_g_scatterplotmatrix(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Plotting variables from an incoming dataset with filtering and selecting. In case of
+Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \description{
-The available datasets to choose from for each dataset selector is the same and
-determined by the argument \code{variables}.
+Generates a scatterplot matrix from selected \code{variables} from datasets.
+Each plot within the matrix represents the relationship between two variables,
+providing the overview of correlations and distributions across selected data.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
