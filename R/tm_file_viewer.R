@@ -10,10 +10,10 @@
 #'
 #' @inherit shared_params return
 #'
-#' @examples
 #' Paths can be specified as absolute paths or relative to the running directory of the application.
 #' Default to the current working directory if not supplied.
 #'
+#' @examples
 #' data <- teal_data()
 #' data <- within(data, {
 #'   data <- data.frame(1)

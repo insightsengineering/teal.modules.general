@@ -24,9 +24,6 @@ Supported formats include text formats, \code{PDF}, \code{PNG} \code{APNG},
 \code{JPEG} \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
 }
 \examples{
-Paths can be specified as absolute paths or relative to the running directory of the application.
-Default to the current working directory if not supplied.
-
 data <- teal_data()
 data <- within(data, {
   data <- data.frame(1)
