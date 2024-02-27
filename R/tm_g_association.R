@@ -1,4 +1,4 @@
-#' Stack plots of variables and show association with reference variable
+#' `teal` module: Stack plots of variables and show association with reference variable
 #'
 #' Module provides functionality for visualizing the distribution of variables and
 #' their association with a reference variable.

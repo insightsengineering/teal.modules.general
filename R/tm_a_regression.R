@@ -1,4 +1,4 @@
-#' Scatterplot and regression model
+#' `teal` module: Scatterplot and regression analysis
 #'
 #' Module for visualizing regression analysis, including scatterplots and
 #' various regression diagnostics plots.
@@ -14,14 +14,6 @@
 #' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Response variables from an incoming dataset with filtering and selecting.
-#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
-#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
-#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
-#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
-#' - When the length of `size` is one: the plot point sizes will have a fixed size.
-#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
 #' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
 #' @param default_plot_type (`numeric`, optional) Defaults to Response vs Regressor.
 #' 1. Response vs Regressor
@@ -31,6 +23,19 @@
 #' 5. Cook's distance
 #' 6. Residuals vs Leverage
 #' 7. Cook's dist vs Leverage
+#' @param label_segment_threshold (`numeric(1)` or `numeric(3)`)
+#' Minimum distance between label and point on the plot that triggers the creation of
+#' a line segment between the two.
+#' This may happen when the label cannot be placed next to the point as it overlaps another
+#' label or point.
+#' The value is used as the `min.segment.length` parameter to the [ggrepel::geom_text_repel()] function.
+#'
+#' It can take the following forms:
+#' - `numeric(1)`: Fixed value used for the minimum distance and the slider is not presented in the UI.
+#' - `numeric(3)`: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+#'
+#'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
+#'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
@@ -141,33 +146,76 @@ tm_a_regression <- function(label = "Regression Analysis",
                             pre_output = NULL,
                             post_output = NULL,
                             default_plot_type = 1,
-                            default_outlier_label = "USUBJID") {
+                            default_outlier_label = "USUBJID",
+                            label_segment_threshold = c(0.5, 0, 10)) {
   logger::log_info("Initializing tm_a_regression")
+
+  # Normalize the parameters
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
+  checkmate::assert_list(regressor, types = "data_extract_spec")
+
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
     stop("'response' should not allow multiple selection")
   }
-  checkmate::assert_list(regressor, types = "data_extract_spec")
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2],
+    upper = plot_width[3],
+    null.ok = TRUE,
+    .var.name = "plot_width"
+  )
+
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
   ggtheme <- match.arg(ggtheme)
-  checkmate::assert_string(default_outlier_label)
+
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
     "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
   )
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
+  checkmate::assert_string(default_outlier_label)
+
+  if (length(label_segment_threshold) == 1) {
+    checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(label_segment_threshold, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(
+      label_segment_threshold[1],
+      lower = label_segment_threshold[2],
+      upper = label_segment_threshold[3],
+      .var.name = "label_segment_threshold"
+    )
+  }
+  # End of assertions
 
   # Send ui args
   args <- as.list(environment())
@@ -264,6 +312,29 @@ ui_a_regression <- function(id, ...) {
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
+          teal.widgets::optionalSliderInputValMinMax(
+            inputId = ns("label_min_segment"),
+            label = div(
+              class = "teal-tooltip",
+              tagList(
+                "Label min. segment:",
+                icon("circle-info"),
+                span(
+                  class = "tooltiptext",
+                  paste(
+                    "Use the slider to choose the cut-off value to define minimum distance between label and point",
+                    "that generates a line segment.",
+                    "It's only valid when 'Display outlier labels' is checked."
+                  )
+                )
+              )
+            ),
+            value_min_max = args$label_segment_threshold,
+            # Extra parameters to sliderInput
+            ticks = FALSE,
+            step = .1,
+            round = FALSE
+          ),
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
@@ -444,10 +515,23 @@ srv_a_regression <- function(id,
       )
     })
 
+    label_min_segment <- reactive({
+      input$label_min_segment
+    })
+
     outlier_label <- reactive({
       substitute(
-        expr = geom_text(label = label_col, hjust = 0, vjust = 1, color = "red"),
-        env = list(label_col = label_col())
+        expr = ggrepel::geom_text_repel(
+          label = label_col,
+          color = "red",
+          hjust = 0,
+          vjust = 1,
+          max.overlaps = Inf,
+          min.segment.length = label_min_segment,
+          segment.alpha = 0.5,
+          seed = 123
+        ),
+        env = list(label_col = label_col(), label_min_segment = label_min_segment())
       )
     })
 
@@ -615,16 +699,20 @@ srv_a_regression <- function(id,
           plot <- substitute(
             expr = plot +
               stat_qq(
-                geom = "text",
+                geom = ggrepel::GeomTextRepel,
                 label = label_col %>%
                   data.frame(label = .) %>%
                   dplyr::filter(label != "cooksd == NaN") %>%
                   unlist(),
+                color = "red",
                 hjust = 0,
-                vjust = 1,
-                color = "red"
+                vjust = 0,
+                max.overlaps = Inf,
+                min.segment.length = label_min_segment,
+                segment.alpha = .5,
+                seed = 123
               ),
-            env = list(plot = plot, label_col = label_col())
+            env = list(plot = plot, label_col = label_col(), label_min_segment = label_min_segment())
           )
         }
 

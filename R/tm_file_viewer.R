@@ -1,4 +1,4 @@
-#' File viewer module
+#' `teal` module: File viewer
 #'
 #' The file viewer module provides a tool to view static files.
 #' Supported formats include text formats, `PDF`, `PNG` `APNG`,

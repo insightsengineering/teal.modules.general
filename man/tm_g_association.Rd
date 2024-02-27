@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_association.R
 \name{tm_g_association}
 \alias{tm_g_association}
-\title{Stack plots of variables and show association with reference variable}
+\title{\code{teal} module: Stack plots of variables and show association with reference variable}
 \usage{
 tm_g_association(
   label = "Association",

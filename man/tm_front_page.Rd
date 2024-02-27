@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_front_page.R
 \name{tm_front_page}
 \alias{tm_front_page}
-\title{Front page module}
+\title{\code{teal} module: Front page}
 \usage{
 tm_front_page(
   label = "Front page",
