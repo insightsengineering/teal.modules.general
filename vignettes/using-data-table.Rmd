@@ -11,13 +11,13 @@ vignette: >
 
 # `teal` application to display data table with various datasets types
 
-This vignette will guide you through the four parts to create a teal application using
+This vignette will guide you through the four parts to create a `teal` application using
 various types of datasets using the data table module `tm_data_table()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
 ## 1 - Loading libraries
 
@@ -101,7 +101,7 @@ app <- init(
 ## 4 - Run the app
 
 A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an R session.  
+Note that app is only displayed when running this code inside an `R` session.  
 
 ```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))

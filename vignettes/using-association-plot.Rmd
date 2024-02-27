@@ -31,9 +31,9 @@ library(dplyr) # used to modify data sets
 Inside this app 4 datasets will be used
 
 1. `ADSL` A wide data set with subject data
-3. `ADRS` A long data set with response data for subjects at different time points of the study
-4. `ADTTE` A long data set with time to event data
-5. `ADLB` A long data set with lab measurements for each subject
+2. `ADRS` A long data set with response data for subjects at different time points of the study
+3. `ADTTE` A long data set with time to event data
+4. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 data <- teal_data()
@@ -62,7 +62,7 @@ itself will be constructed by multiple calls of `tm_g_association()` using diffe
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# Configuration for a single wide dataset
+# configuration for a single wide dataset
 mod1 <- tm_g_association(
   label = "Single wide dataset",
   ref = data_extract_spec(
@@ -86,7 +86,7 @@ mod1 <- tm_g_association(
   )
 )
 
-# Configuration for two wide datasets
+# configuration for two wide datasets
 mod2 <- tm_g_association(
   label = "Two wide datasets",
   ref = data_extract_spec(
@@ -111,7 +111,7 @@ mod2 <- tm_g_association(
   )
 )
 
-# Configuration for multiple long datasets
+# configuration for multiple long datasets
 mod3 <- tm_g_association(
   label = "Multiple different long datasets",
   ref = data_extract_spec(
@@ -160,7 +160,7 @@ mod3 <- tm_g_association(
   )
 )
 
-# Configuration for wide and long datasets
+# configuration for wide and long datasets
 mod4 <- tm_g_association(
   label = "Wide and long datasets",
   ref = data_extract_spec(
@@ -201,7 +201,7 @@ mod4 <- tm_g_association(
   )
 )
 
-# Configuration for the same long dataset (same subsets)
+# configuration for the same long dataset (same subsets)
 mod5 <- tm_g_association(
   label = "Same long datasets (same subsets)",
   ref = data_extract_spec(
@@ -226,7 +226,7 @@ mod5 <- tm_g_association(
   )
 )
 
-# Configuration for the same long dataset (different subsets)
+# configuration for the same long dataset (different subsets)
 mod6 <- tm_g_association(
   label = "Same long datasets (different subsets)",
   ref = data_extract_spec(
@@ -299,7 +299,7 @@ app <- init(
 
 ## 4 - Run the app
 
-A simple `shiny::shinyApp()` call will let you run the app. 
+A simple `shiny::shinyApp` call will let you run the app. 
 Note that app is only displayed when running this code inside an `R` session.
 
 ```{r, echo=TRUE, results="hide"}

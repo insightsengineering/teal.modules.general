@@ -11,13 +11,13 @@ vignette: >
 
 # `teal` application to analyze and report outliers with various datasets types.
 
-This vignette will guide you through the four parts to create a teal application using
+This vignette will guide you through the four parts to create a `teal` application using
 various types of datasets using the outliers module `tm_outliers()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
 ## 1 - Loading libraries
 
@@ -28,7 +28,7 @@ library(dplyr) # used to modify data sets
 
 ## 2 - Create data sets
 
-Inside this app 5 datasets will be used
+Inside this app 3 datasets will be used
 
 1. `ADSL` A wide data set with subject data
 2. `ADRS` A long data set with response data for subjects at different time points of the study
@@ -179,7 +179,7 @@ app <- init(
 ## 4 - Run the app
 
 A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an R session.  
+Note that app is only displayed when running this code inside an `R` session.  
 
 ```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
