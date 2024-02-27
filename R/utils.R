@@ -136,8 +136,7 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @param var_names (`character`) Name of variable to extract labels from.
 #' @param dataset (`dataset`) Name of analysis dataset.
-#' @param prefix (`character`) String to paste to the beginning of the variable name with label.
-#' @param suffix (`character`) String to paste to the end of the variable name with label.
+#' @param prefix,suffix (`character`) String to paste to the beginning/end of the variable name with label.
 #' @param wrap_width (`numeric`) Number of characters to wrap original label to. Defaults to 80.
 #'
 #' @return (`character`) String with variable name and label.
