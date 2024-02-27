@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.2.16.9023
-Date: 2024-02-22
+Version: 0.2.16.9026
+Date: 2024-02-27
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -59,6 +59,7 @@ Suggests:
     ggExtra,
     ggpmisc (>= 0.4.3),
     ggpp,
+    ggrepel,
     goftest,
     gridExtra,
     htmlwidgets,
@@ -84,9 +85,10 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     insightsengineering/teal.widgets, insightsengineering/tern,
     tidyverse/tibble, tidyverse/tidyr, tidymodels/broom,
     daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
-    baddstats/goftest, gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite,
-    yihui/knitr, deepayan/lattice, MASS, insightsengineering/nestcolor,
-    r-lib/rlang, insightsengineering/rtables, htmlwidgets/sparkline,
+    slowkow/ggrepel, baddstats/goftest, gridExtra, ramnathv/htmlwidgets,
+    jeroen/jsonlite, yihui/knitr, deepayan/lattice, MASS,
+    insightsengineering/nestcolor, r-lib/rlang,
+    insightsengineering/rtables, sparkline, insightsengineering/teal.data,
     r-lib/testthat
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
