@@ -19,9 +19,7 @@ varname_w_label(
 
 \item{wrap_width}{(\code{numeric}) Number of characters to wrap original label to. Defaults to 80.}
 
-\item{prefix}{(\code{character}) String to paste to the beginning of the variable name with label.}
-
-\item{suffix}{(\code{character}) String to paste to the end of the variable name with label.}
+\item{prefix, suffix}{(\code{character}) String to paste to the beginning/end of the variable name with label.}
 }
 \value{
 (\code{character}) String with variable name and label.
