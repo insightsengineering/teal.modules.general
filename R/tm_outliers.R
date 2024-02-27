@@ -196,7 +196,8 @@ ui_outliers <- function(id, ...) {
         )
       ),
       br(), hr(),
-      uiOutput(ns("table_ui_wrap"))
+      uiOutput(ns("table_ui_wrap")),
+      DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
       ### Reporter
@@ -1046,12 +1047,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = {
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
+        shiny::req(iv_r()$is_valid()) # Same validation as output$table_ui_wrap
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
         ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint: object_name.
         ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint: object_name.
         ANL <- common_code_q()[["ANL"]] # nolint: object_name.
+
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
           box_pws$brush()
@@ -1183,8 +1186,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           multiple = TRUE
         ),
         h4("Outlier Table"),
-        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows")),
-        DT::dataTableOutput(session$ns("table_ui"))
+        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
       )
     })
 
