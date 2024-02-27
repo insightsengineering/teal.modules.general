@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{var_missings_info}
 \alias{var_missings_info}
-\title{Summarizes missings occurrence}
+\title{Summarize NAs.}
 \usage{
 var_missings_info(x)
 }
@@ -13,6 +13,6 @@ var_missings_info(x)
 Character string describing \code{NA} occurrence.
 }
 \description{
-Summarizes missings occurrence in vector
+Summarizes occurrence of missing values in vector.
 }
 \keyword{internal}

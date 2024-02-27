@@ -1,27 +1,32 @@
-#' Stack Plots of variables and show association with reference variable
-#' @md
+#' Stack plots of variables and show association with reference variable
+#'
+#' Module provides functionality for visualizing the distribution of variables and
+#' their association with a reference variable.
+#' It supports configuring the appearance of the plots, including themes and whether to show associations.
+#'
+#'
+#' @note For more examples, please see the vignette "Using association plot" via
+#' `vignette("using-association-plot", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   reference variable, must set `multiple = FALSE`.
+#' Reference variable, must accepts a `data_extract_spec` with `select_spec(multiple = FALSE)`
+#' to ensure single selection option.
 #' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   associated variables.
-#' @param show_association optional, (`logical`) Whether show association of `vars`
-#'   with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme,association_theme optional, (`character`) `ggplot2` themes to be used by default.
-#'   Default to `"gray"`.
+#' Variables to be associated with the reference variable.
+#' @param show_association (`logical`) optional whether show association of `vars`
+#' with reference variable. Defaults to `TRUE`.
+#' @param distribution_theme,association_theme (`character`) optional `ggplot2` themes to be used by default.
+#' Default to `"gray"`.
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
 #'
-#' @note For more examples, please see the vignette "Using association plot" via
-#'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
-#'
 #' @examples
-#' # general data exapmle
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -65,8 +70,6 @@
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -172,6 +175,7 @@ tm_g_association <- function(label = "Association",
   )
 }
 
+# UI function for the association module
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -249,6 +253,7 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
+# Server function for the association module
 srv_tm_g_association <- function(id,
                                  data,
                                  reporter,

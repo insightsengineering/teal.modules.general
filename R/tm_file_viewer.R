@@ -1,14 +1,14 @@
-#' File Viewer `teal` Module
+#' File viewer module
 #'
 #' The file viewer module provides a tool to view static files.
-#' Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
-#' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
+#' Supported formats include text formats, `PDF`, `PNG` `APNG`,
+#' `JPEG` `SVG`, `WEBP`, `GIF` and `BMP`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param input_path optional, (`list`) of the input paths to either: specific files of accepted formats,
-#'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
-#'   directory of the application. Will default to current working directory if not supplied.
+#' @param input_path (`list`) of the input paths, optional. Each element can be:
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data()
@@ -17,16 +17,19 @@
 #' })
 #' datanames(data) <- c("data")
 #'
-#' app <- teal::init(
-#'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_file_viewer(
+#' Paths can be specified as absolute paths or relative to the running directory of the application.
+#' Default to the current working directory if not supplied.
+#'
+#' @examples
+#' app <- init(
+#'   data = data
+#'   modules = modules(
+#'     tm_file_viewer(
 #'       input_path = list(
 #'         folder = system.file("sample_files", package = "teal.modules.general"),
 #'         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
 #'         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-#'         url =
-#'           "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+#'         url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
 #'       )
 #'     )
 #'   )
@@ -90,6 +93,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   )
 }
 
+# UI function for the file viewer module
 ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -116,6 +120,7 @@ ui_viewer <- function(id, ...) {
   )
 }
 
+# Server function for the file viewer module
 srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
     temp_dir <- tempfile()

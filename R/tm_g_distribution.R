@@ -1,33 +1,34 @@
-#' Distribution Module
-#' @md
+#' Distribution analysis module
 #'
-#' @details
-#' Module to analyze and explore univariate variable distribution
+#' Module is designed to explore the distribution of a single variable within a given dataset.
+#' It offers several tools, such as histograms, Q-Q plots, and various statistical tests to
+#' visually and statistically analyze the variable's distribution.
 #'
 #' @inheritParams teal::module
 #' @inheritParams teal.widgets::standard_layout
 #' @inheritParams shared_params
 #'
 #' @param dist_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Variable to consider for the distribution analysis.
+#' Variable(s) for which the distribution will be analyzed.
 #' @param strata_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Categorical variable to split the selected distribution variable on.
-#' @param group_var  optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data columns to use for faceting rows.
-#' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
-#'   Defaults to density (`FALSE`).
-#' @param bins optional, (`integer(1)` or `integer(3)`) If scalar then the histogram bins will have a fixed size.
-#'   If a slider should be presented to adjust the number of histogram bins dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#'   Defaults to `c(30L, 1L, 100L)`.
+#' Categorical variable used to split the distribution analysis.
+#' @param group_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Variable used for faceting plot into multiple panels.
+#' @param freq (`logical`, optional) Whether to display frequency (`TRUE`) or density (`FALSE`).
+#' Defaults to density (`FALSE`).
+#' @param bins (`integer(1)` or `integer(3)`, optional)  Determines the number of bins for the histogram.
+#' - When the length of `bins` is one: The histogram bins will have a fixed size based on the `bins` provided.
+#' - When the length of `bins` is three: The histogram bins are dynamically adjusted based on vector of `value`, `min`,
+#' and `max`.
+#' Defaults to `c(30L, 1L, 100L)`.
 #'
 #' @templateVar ggnames "Histogram", "QQplot"
 #' @template ggplot2_args_multi
 #'
 #' @examples
-#' # general data example
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   iris <- iris
@@ -53,8 +54,6 @@
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
 #'   ADSL <- rADSL
@@ -172,6 +171,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   )
 }
 
+# UI function for the distribution module
 ui_distribution <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -317,6 +317,7 @@ ui_distribution <- function(id, ...) {
   )
 }
 
+# Server function for the distribution module
 srv_distribution <- function(id,
                              data,
                              reporter,

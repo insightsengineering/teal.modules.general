@@ -1,37 +1,28 @@
-#' Variable Browser Teal Module
+#' Variable browser `teal` module
 #'
-#' The variable browser provides a table with variable names and labels and a
-#' plot that visualizes the content of a particular variable.
-#' specifically designed for use with `data.frames`.
+#' Module provides provides a detailed summary and visualization of variable distributions
+#' for `data.frame` objects, with interactive features to customize analysis.
 #'
-#' @details Numeric columns with fewer than 30 distinct values can be treated as either factors
-#' or numbers with a checkbox allowing users to switch how they are treated (if < 6 unique values
-#' then the default is categorical, otherwise it is numeric).
+#' Numeric columns with fewer than 30 distinct values can be treated as either discrete
+#' or continuous with a checkbox allowing users to switch how they are treated(if < 6 unique values
+#' then the default is discrete, otherwise it is continuous).
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this `dataname` exists in `datasets_selected`
-#'   then an extra checkbox will be shown to allow users to not show variables in other datasets
-#'   which exist in this `dataname`.
-#'   This is typically used to remove `ADSL` columns in `CDISC` data. In non `CDISC` data this
-#'   can be ignored. Defaults to `"ADSL"`.
-#' @param datasets_selected (`character`) A vector of datasets which should be
-#'   shown and in what order. Names in the vector have to correspond with datasets names.
-#'   If vector of length zero (default) then all datasets are shown.
-#'   Note: Only datasets of the `data.frame` class are compatible; using other types will cause an error.
-#'
-#' @aliases
-#'   tm_variable_browser_ui,
-#'   tm_variable_browser_srv,
-#'   tm_variable_browser,
-#'   variable_browser_ui,
-#'   variable_browser_srv,
-#'   variable_browser
+#' @param parent_dataname (`character(1)`) string specifying a parent dataset.
+#' If it exists in `datasets_selected`then an extra checkbox will be shown to
+#' allow users to not show variables in other datasets which exist in this `dataname`.
+#' This is typically used to remove `ADSL` columns in `CDISC` data.
+#' In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
+#' @param datasets_selected (`character`) vector of datasets which should be
+#' shown, in order. Names must correspond with datasets names.
+#' If vector of length zero (default) then all datasets are shown.
+#' Note: Only `data.frame` objects are compatible; using other types will cause an error.
 #'
 #' @examples
 #' library(teal.widgets)
 #'
-#' # module specification used in apps below
+#' # Module specification used in apps below
 #' tm_variable_browser_module <- tm_variable_browser(
 #'   label = "Variable browser",
 #'   ggplot2_args = ggplot2_args(
@@ -116,7 +107,9 @@ tm_variable_browser <- function(label = "Variable Browser",
   )
 }
 
-# ui function
+# UI function for the variable browser module.
+#' @noRd
+#' @keywords internal
 ui_variable_browser <- function(id,
                                 pre_output = NULL,
                                 post_output = NULL) {
@@ -186,6 +179,9 @@ ui_variable_browser <- function(id,
   )
 }
 
+# Server function for the variable browser module.
+#' @noRd
+#' @keywords internal
 srv_variable_browser <- function(id,
                                  data,
                                  reporter,
@@ -531,9 +527,9 @@ srv_variable_browser <- function(id,
   })
 }
 
-#' Summarizes missings occurrence
+#' Summarize NAs.
 #'
-#' Summarizes missings occurrence in vector
+#' Summarizes occurrence of missing values in vector.
 #' @param x vector of any type and length
 #' @return Character string describing `NA` occurrence.
 #' @keywords internal
@@ -546,11 +542,12 @@ var_missings_info <- function(x) {
 #' Creates html summary with statistics relevant to data type. For numeric values it returns central
 #' tendency measures, for factor returns level counts, for Date  date range, for other just
 #' number of levels.
+#'
 #' @param x vector of any type
 #' @param numeric_as_factor `logical` should the numeric variable be treated as a factor
 #' @param dt_rows `numeric` current/latest `DT` page length
 #' @param outlier_definition If 0 no outliers are removed, otherwise
-#'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
+#'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3` be removed)
 #' @return text with simple statistics.
 #' @keywords internal
 var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition) {
@@ -632,10 +629,10 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
   }
 }
 
-
 #' Plot variable
 #'
 #' Creates summary plot with statistics relevant to data type.
+#'
 #' @inheritParams shared_params
 #' @param var vector of any type to be plotted. For numeric variables it produces histogram with
 #' density line, for factors it creates frequency plot
@@ -802,6 +799,7 @@ plot_var_summary <- function(var,
   plot_main
 }
 
+#' @noRd
 #' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
@@ -830,6 +828,8 @@ validate_input <- function(input, plot_var, data) {
   })
 }
 
+#' @noRd
+#' @keywords internal
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[dataset_name]]
@@ -862,7 +862,6 @@ render_tabset_panel_content <- function(datanames, parent_dataname, output, data
 
 #' Renders a single tab in the left-hand side tabset panel
 #'
-#' @description
 #' Renders a single tab in the left-hand side tabset panel. The rendered tab contains
 #' information about one dataset out of many presented in the module.
 #'
@@ -909,7 +908,6 @@ render_tab_header <- function(dataset_name, output, data) {
 
 #' Renders the table for a single dataset in the left-hand side tabset panel
 #'
-#' @description
 #' The table contains column names, column labels,
 #' small summary about NA values and `sparkline` (if appropriate).
 #'
@@ -1028,7 +1026,6 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
 #' Creates observers updating the currently selected column
 #'
-#' @description
 #' The created observers update the column currently selected in the left-hand side
 #' tabset panel.
 #'
@@ -1048,6 +1045,8 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
   })
 }
 
+#' @noRd
+#' @keywords internal
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)

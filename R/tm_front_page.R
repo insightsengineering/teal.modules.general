@@ -1,30 +1,31 @@
 #' Front page module
 #'
-#' @description This `teal` module creates a simple front page for `teal` applications
+#' Creates a simple front page for `teal` applications, displaying
+#' introductory text, tables, additional `html` or `shiny` tags, and footnotes.
 #'
 #' @inheritParams teal::module
-#' @param header_text `character vector` text to be shown at the top of the module, for each
-#'   element, if named the name is shown first in bold as a header followed by the value. The first
-#'   element's header is displayed larger than the others
-#' @param tables `named list of dataframes` tables to be shown in the module
-#' @param additional_tags `shiny.tag.list` or `html` additional shiny tags or `html` to be included after the table,
-#'   for example to include an image, `tagList(tags$img(src = "image.png"))` or to include further `html`,
-#'   `HTML("html text here")`
-#' @param footnotes `character vector` text to be shown at the bottom of the module, for each
-#'   element, if named the name is shown first in bold, followed by the value
-#' @param show_metadata `logical` should the metadata of the datasets be available on the module?
-#' @return A `teal` module to be used in `teal` applications
+#' @param header_text (`character` vector) text to be shown at the top of the module, for each
+#' element, if named the name is shown first in bold as a header followed by the value. The first
+#' element's header is displayed larger than the others.
+#' @param tables (`named list` of `data.frame`s) tables to be shown in the module.
+#' @param additional_tags (`shiny.tag.list` or `html`) additional shiny tags or `html` to be included after the table,
+#' for example to include an image, `tagList(tags$img(src = "image.png"))` or to include further `html`,
+#' `HTML("html text here")`.
+#' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
+#' element, if named the name is shown first in bold, followed by the value.
+#' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
+#'
+#' @return A `teal` module to be used in `teal` applications.
 #'
 #' @examples
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
+#'   ADSL <- rADSL
 #'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
-#' datanames <- c("ADSL")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#' datanames(data) <- "ADSL"
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 #'
 #' table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 #' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
@@ -36,10 +37,10 @@
 #'   "Table 3" = table_3
 #' )
 #'
-#' app <- teal::init(
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_front_page(
+#'   modules = modules(
+#'     tm_front_page(
 #'       header_text = c(
 #'         "Important information" = "It can go here.",
 #'         "Other information" = "Can go here."
@@ -53,6 +54,7 @@
 #'   header = tags$h1("Sample Application"),
 #'   footer = tags$p("Application footer"),
 #' )
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -85,6 +87,7 @@ tm_front_page <- function(label = "Front page",
   )
 }
 
+# UI function for the front page module
 ui_front_page <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -122,6 +125,52 @@ ui_front_page <- function(id, ...) {
     )
   )
 }
+
+# Server function for the front page module
+srv_front_page <- function(id, data, tables, show_metadata) {
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
+    lapply(seq_along(tables), function(idx) {
+      output[[paste0("table_", idx)]] <- renderTable(
+        tables[[idx]],
+        bordered = TRUE,
+        caption = names(tables)[idx],
+        caption.placement = "top"
+      )
+    })
+
+    if (show_metadata) {
+      observeEvent(
+        input$metadata_button, showModal(
+          modalDialog(
+            title = "Metadata",
+            dataTableOutput(ns("metadata_table")),
+            size = "l",
+            easyClose = TRUE
+          )
+        )
+      )
+
+      metadata_data_frame <- reactive({
+        datanames <- teal.data::datanames(data())
+        convert_metadata_to_dataframe(
+          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
+          datanames
+        )
+      })
+
+      output$metadata_table <- renderDataTable({
+        validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
+        metadata_data_frame()
+      })
+    }
+  })
+}
+
+## utils functions
 
 get_header_tags <- function(header_text) {
   if (length(header_text) == 0) {
@@ -167,49 +216,6 @@ get_footer_tags <- function(footnotes) {
       )
     )
   }, bold_text = bold_texts, value = footnotes)
-}
-
-srv_front_page <- function(id, data, tables, show_metadata) {
-  checkmate::assert_class(data, "reactive")
-  checkmate::assert_class(isolate(data()), "teal_data")
-  moduleServer(id, function(input, output, session) {
-    ns <- session$ns
-
-    lapply(seq_along(tables), function(idx) {
-      output[[paste0("table_", idx)]] <- renderTable(
-        tables[[idx]],
-        bordered = TRUE,
-        caption = names(tables)[idx],
-        caption.placement = "top"
-      )
-    })
-
-    if (show_metadata) {
-      observeEvent(
-        input$metadata_button, showModal(
-          modalDialog(
-            title = "Metadata",
-            dataTableOutput(ns("metadata_table")),
-            size = "l",
-            easyClose = TRUE
-          )
-        )
-      )
-
-      metadata_data_frame <- reactive({
-        datanames <- teal.data::datanames(data())
-        convert_metadata_to_dataframe(
-          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
-          datanames
-        )
-      })
-
-      output$metadata_table <- renderDataTable({
-        validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
-        metadata_data_frame()
-      })
-    }
-  })
 }
 
 # take a list of metadata, one item per dataset (raw_metadata each element from datasets$get_metadata())

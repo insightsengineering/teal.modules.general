@@ -1,29 +1,30 @@
-#' Shared Parameters
+#' Shared parameters documentation
 #'
-#' @description Contains arguments that are shared between multiple functions
-#'   in the package to avoid repetition using `inheritParams`.
+#' Defines common arguments shared across multiple functions in the package
+#' to avoid repetition by using `inheritParams`.
 #'
-#' @param plot_height optional, (`numeric`) A vector of length three with `c(value, min and max)`
-#'   for a slider encoding the plot height.
-#' @param plot_width optional, (`numeric`) A vector of length three with `c(value, min and max)`
-#'   for a slider encoding the plot width.
+#' @param plot_height optional, (`numeric`) Specifies the plot height as a three-element vector of
+#' `value`, `min`, and `max` intended for use with a slider UI element.
+#' @param plot_width optional, (`numeric`) Specifies the plot width as a three-element vector of
+#' `value`, `min`, and `max` for a slider encoding the plot width.
 #' @param rotate_xaxis_labels optional, (`logical`) Whether to rotate plot X axis labels. Does not
-#'   rotate by default (`FALSE`).
+#' rotate by default (`FALSE`).
 #' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default. Defaults to `"gray"`.
 #' @param ggplot2_args (`ggplot2_args`) object created by [teal.widgets::ggplot2_args()]
-#'  with settings for the module plot.
-#'  The argument is merged with options variable `teal.ggplot2_args` and default module setup.
+#' with settings for the module plot.
+#' The argument is merged with options variable `teal.ggplot2_args` and default module setup.
 #'
-#'  For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.widgets")`
+#' For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.widgets")`
 #' @param basic_table_args (`basic_table_args`) object created by [teal.widgets::basic_table_args()]
-#'  with settings for the module table.
-#'  The argument is merged with options variable `teal.basic_table_args` and default module setup.
+#' with settings for the module table.
+#' The argument is merged with options variable `teal.basic_table_args` and default module setup.
 #'
-#'  For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.widgets")`
-#' @param pre_output (`shiny.tag`, optional)\cr
+#' For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.widgets")`
+#' @param pre_output (`shiny.tag`, optional) Text or UI element to be displayed before the module's output,
+#' providing context or a title.
 #'  with text placed before the output to put the output into context. For example a title.
-#' @param post_output (`shiny.tag`, optional) with text placed after the output to put the output
-#' into context. For example the [shiny::helpText()] elements are useful.
+#' @param post_output (`shiny.tag`, optional) Text or UI element to be displayed after the module's output,
+#' adding context or further instructions. Elements like `shiny::helpText()` are useful.
 #'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
@@ -31,21 +32,20 @@
 #' @keywords internal
 NULL
 
-#' Add axis labels that show facetting variable
+#' Add labels for facets to a `ggplot2` object
 #'
-#' Add axis labels that show facetting variable
+#' Enhances a `ggplot2` plot by adding labels that describe
+#' the faceting variables along the x and y axes.
 #'
-#' @param p `ggplot2` object to add facet labels to
-#' @param xfacet_label label of facet along x axis (nothing created if NULL),
-#'   if vector, will be concatenated with " & "
-#' @param yfacet_label label of facet along y axis (nothing created if NULL),
-#'   if vector, will be concatenated with " & "
+#' @param p (`ggplot2`) object to which facet labels will be added.
+#' @param xfacet_label (`character`) Label for the facet along the x-axis.
+#' If `NULL`, no label is added. If a vector, labels are joined with " & ".
+#' @param yfacet_label (`character`) Label for the facet along the y-axis.
+#' Similar behavior to `xfacet_label`.
 #'
-#' @return grid grob object (to be drawn with `grid.draw`)
+#' @return Returns `grid` or `grob` object (to be drawn with `grid.draw`)
 #'
 #' @examples
-#' # we put donttest to avoid strictr error with seq along.with argument
-#' \donttest{
 #' library(ggplot2)
 #' library(grid)
 #'
@@ -53,7 +53,7 @@ NULL
 #'   aes(x = mpg, y = disp) +
 #'   geom_point() +
 #'   facet_grid(gear ~ cyl)
-#' p
+#'
 #' xfacet_label <- "cylinders"
 #' yfacet_label <- "gear"
 #' res <- add_facet_labels(p, xfacet_label, yfacet_label)
@@ -66,7 +66,6 @@ NULL
 #' grid.draw(add_facet_labels(p, xfacet_label, yfacet_label = NULL))
 #' grid.newpage()
 #' grid.draw(add_facet_labels(p, xfacet_label = NULL, yfacet_label = NULL))
-#' }
 #'
 #' @export
 #'
@@ -133,7 +132,7 @@ call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
 
-#' Get variable name with label
+#' Generate a string for a variable including its label
 #'
 #' @param var_names (`character`) Name of variable to extract labels from.
 #' @param dataset (`dataset`) Name of analysis dataset.
@@ -143,7 +142,6 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @return (`character`) String with variable name and label.
 #'
-#' @keywords internal
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -185,6 +183,7 @@ shape_names <- c(
 )
 
 #' Get icons to represent variable types in dataset
+#'
 #' @param var_type (`character`) of R internal types (classes).
 #' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
@@ -226,10 +225,11 @@ variable_type_icons <- function(var_type) {
 #' not work with `devtools`. Therefore, we redefine this method in each package
 #' as needed. Thus, we do not export this method
 #'
-#' @param pattern (`character`) pattern of files to be included
+#' @param pattern (`character`) optional regular expression to match the file names to be included.
 #'
-#' @return HTML code that includes `CSS` files
+#' @return HTML code that includes `CSS` files.
 #' @keywords internal
+#'
 include_css_files <- function(pattern = "*") {
   css_files <- list.files(
     system.file("css", package = "teal.modules.general", mustWork = TRUE),
@@ -241,12 +241,14 @@ include_css_files <- function(pattern = "*") {
   shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS)))
 }
 
-
-#' Get a string with java-script code checking if the specific tab is clicked
-#' @description will be the input for `shiny::conditionalPanel()`
-#' @param id `character(1)` the id of the tab panel with tabs.
-#' @param name `character(1)` the name of the tab.
+#' JavaScript condition to check if a specific tab is active
+#'
+#' @param id (`character(1)`) the id of the tab panel with tabs.
+#' @param name (`character(1)`) the name of the tab.
+#' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
+#' if the specified tab is active.
 #' @keywords internal
+#'
 is_tab_active_js <- function(id, name) {
   # supporting the bs3 and higher version at the same time
   sprintf(

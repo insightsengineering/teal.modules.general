@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_a_regression.R
 \name{tm_a_regression}
 \alias{tm_a_regression}
-\title{Scatterplot and Regression Model}
+\title{Scatterplot and regression model}
 \usage{
 tm_a_regression(
   label = "Regression Analysis",
@@ -30,19 +30,25 @@ Regressor variables from an incoming dataset with filtering and selecting.}
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Response variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
-slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-length three with \code{c(value, min, max)}.}
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\itemize{
+\item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
+\item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
 
-\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
-If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-vector of length three with \code{c(value, min, max)}.}
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\itemize{
+\item When the length of \code{size} is one: the plot point sizes will have a fixed size.
+\item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
@@ -54,13 +60,14 @@ List names should match the following: \verb{c("default", "Response vs Regressor
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
+\item{default_plot_type}{(\code{numeric}, optional) Defaults to Response vs Regressor.
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
@@ -71,10 +78,13 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 \item Cook's dist vs Leverage
 }}
 
-\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+\item{default_outlier_label}{(\code{character}, optional) The default column selected to label outliers.}
 }
 \description{
-Scatterplot and Regression Model
+Module for visualizing regression analysis, including scatterplots and
+various regression diagnostics plots.
+It allows users to explore the relationship between a set of regressors and a response variable,
+visualize residuals, and identify outliers.
 }
 \note{
 For more examples, please see the vignette "Using regression plots" via

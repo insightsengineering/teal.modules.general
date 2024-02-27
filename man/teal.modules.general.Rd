@@ -4,7 +4,7 @@
 \name{teal.modules.general}
 \alias{teal.modules.general-package}
 \alias{teal.modules.general}
-\title{teal.modules.general: General modules to add to a teal application}
+\title{\code{teal.modules.general}: General modules to add to a teal application}
 \description{
 The modules in this package are generic modules that should work with any data set
 (not necessarily for clinical trials data).

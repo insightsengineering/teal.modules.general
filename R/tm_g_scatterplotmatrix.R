@@ -1,19 +1,20 @@
-#' Create a scatterplot matrix
+#' Scatterplot matrix module
 #'
-#' The available datasets to choose from for each dataset selector is the same and
-#' determined by the argument `variables`.
+#' Generates a scatterplot matrix from selected `variables` from datasets.
+#' Each plot within the matrix represents the relationship between two variables,
+#' providing the overview of correlations and distributions across selected data.
+#'
+#' @note For more examples, please see the vignette "Using scatterplot matrix" via
+#' `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'
 #' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Plotting variables from an incoming dataset with filtering and selecting. In case of
-#'  `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
-#'  rendered according to selection order.
-#'
-#' @note For more examples, please see the vignette "Using scatterplot matrix" via
-#'   `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
+#' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
+#' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#' rendered according to selection order.
 #'
 #' @examples
 #' # general data example
@@ -186,6 +187,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   )
 }
 
+# UI function for the scatterplot matrix module
 ui_g_scatterplotmatrix <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
@@ -242,6 +244,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   )
 }
 
+# Server function for the scatterplot matrix module
 srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -461,19 +464,11 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
 #' Get stats for x-y pairs in scatterplot matrix
 #'
-#' @description uses `stats::cor.test` per default for all numerical input variables and converts results
-#'  to character vector. Could be extended if different stats for different variable
-#'  types are needed. Meant to be called from `lattice::panel.text`.
+#' Uses [stats::cor.test()] per default for all numerical input variables and converts results
+#' to character vector.
+#' Could be extended if different stats for different variable types are needed.
+#' Meant to be called from [lattice::panel.text()].
 #'
-#' @param x `numeric`
-#' @param y `numeric`
-#' @param .f `function` that accepts x and y as formula input `~ x + y`.
-#'                      Defaults to `stats::cor.test`.
-#' @param .f_args `list` of arguments to be passed to `.f`
-#' @param round_stat `integer
-#' @param round_pval `integer`
-#'
-#' @details
 #' Presently we need to use a formula input for `stats::cor.test` because
 #' `na.fail` only gets evaluated when a formula is passed (see below).
 #' ```
@@ -483,7 +478,14 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' stats::cor.test(~ x + y,  na.action = "na.fail")
 #' ```
 #'
-#' @return `character` with stats. For `stats::cor.test` correlation coefficient and p-value.
+#' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
+#' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
+#' Default `stats::cor.test`.
+#' @param .f_args (`list`) of arguments to be passed to `.f`.
+#' @param round_stat (`integer(1)`) optional. Number of decimal places to use when rounding the estimate.
+#' @param round_pval (`integer(1)`) optional. Number of decimal places to use when rounding the p-value.
+#'
+#' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
 #'
 #' @examples
 #' set.seed(1)
