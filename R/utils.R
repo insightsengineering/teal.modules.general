@@ -26,6 +26,15 @@
 #' @param post_output (`shiny.tag`, optional) Text or UI element to be displayed after the module's output,
 #' adding context or further instructions. Elements like `shiny::helpText()` are useful.
 #'
+#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
+#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
+#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
+#' - When the length of `size` is one: the plot point sizes will have a fixed size.
+#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @name shared_params

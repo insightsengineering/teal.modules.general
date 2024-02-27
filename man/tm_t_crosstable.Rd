@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_t_crosstable.R
 \name{tm_t_crosstable}
 \alias{tm_t_crosstable}
-\title{Cross-table module}
+\title{\code{teal} module: Cross-table}
 \usage{
 tm_t_crosstable(
   label = "Cross Table",
