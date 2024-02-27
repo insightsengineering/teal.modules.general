@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_association.R
 \name{tm_g_association}
 \alias{tm_g_association}
-\title{Stack Plots of variables and show association with reference variable}
+\title{Stack plots of variables and show association with reference variable}
 \usage{
 tm_g_association(
   label = "Association",
@@ -25,12 +25,13 @@ tm_g_association(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{ref}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-reference variable, must set \code{multiple = FALSE}.}
+Reference variable, must accepts a \code{data_extract_spec} with \code{select_spec(multiple = FALSE)}
+to ensure single selection option.}
 
 \item{vars}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-associated variables.}
+Variables to be associated with the reference variable.}
 
-\item{show_association}{optional, (\code{logical}) Whether show association of \code{vars}
+\item{show_association}{(\code{logical}) optional whether show association of \code{vars}
 with reference variable. Defaults to \code{TRUE}.}
 
 \item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
@@ -39,7 +40,7 @@ with reference variable. Defaults to \code{TRUE}.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{distribution_theme, association_theme}{optional, (\code{character}) \code{ggplot2} themes to be used by default.
+\item{distribution_theme, association_theme}{(\code{character}) optional \code{ggplot2} themes to be used by default.
 Default to \code{"gray"}.}
 
 \item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
@@ -58,16 +59,18 @@ List names should match the following: \code{c("default", "Bivariate1", "Bivaria
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 }
 \description{
-Stack Plots of variables and show association with reference variable
+Module provides functionality for visualizing the distribution of variables and
+their association with a reference variable.
+It supports configuring the appearance of the plots, including themes and whether to show associations.
 }
 \note{
 For more examples, please see the vignette "Using association plot" via
 \code{vignette("using-association-plot", package = "teal.modules.general")}.
 }
 \examples{
-# general data exapmle
 library(teal.widgets)
 
+# general data example
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
@@ -111,8 +114,6 @@ if (interactive()) {
 }
 
 # CDISC data example
-library(teal.widgets)
-
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)

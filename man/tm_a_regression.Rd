@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_a_regression.R
 \name{tm_a_regression}
 \alias{tm_a_regression}
-\title{Scatterplot and Regression Model}
+\title{Scatterplot and regression model}
 \usage{
 tm_a_regression(
   label = "Regression Analysis",
@@ -36,13 +36,19 @@ Response variables from an incoming dataset with filtering and selecting.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{optional, (\code{numeric}) If scalar then the plot points will have a fixed opacity. If a
-slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-length three with \code{c(value, min, max)}.}
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\itemize{
+\item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
+\item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
 
-\item{size}{optional, (\code{numeric}) If scalar then the plot point sizes will have a fixed size
-If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-vector of length three with \code{c(value, min, max)}.}
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\itemize{
+\item When the length of \code{size} is one: the plot point sizes will have a fixed size.
+\item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
@@ -61,7 +67,7 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{default_plot_type}{optional, (\code{numeric}) Defaults to Response vs Regressor.
+\item{default_plot_type}{(\code{numeric}, optional) Defaults to Response vs Regressor.
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
@@ -72,10 +78,13 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
-\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+\item{default_outlier_label}{(\code{character}, optional) The default column selected to label outliers.}
 }
 \description{
-Scatterplot and Regression Model
+Module for visualizing regression analysis, including scatterplots and
+various regression diagnostics plots.
+It allows users to explore the relationship between a set of regressors and a response variable,
+visualize residuals, and identify outliers.
 }
 \note{
 For more examples, please see the vignette "Using regression plots" via
