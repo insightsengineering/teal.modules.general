@@ -1,20 +1,29 @@
-#' Scatterplot and Regression Model
-#' @md
+#' Scatterplot and regression model
+#'
+#' Module for visualizing regression analysis, including scatterplots and
+#' various regression diagnostics plots.
+#' It allows users to explore the relationship between a set of regressors and a response variable,
+#' visualize residuals, and identify outliers.
+#'
+#' @note For more examples, please see the vignette "Using regression plots" via
+#' `vignette("using-regression-plots", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Regressor variables from an incoming dataset with filtering and selecting.
+#' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Response variables from an incoming dataset with filtering and selecting.
-#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
-#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#' @param default_outlier_label optional, (`character`) The default column selected to label outliers.
-#' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
+#' Response variables from an incoming dataset with filtering and selecting.
+#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
+#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
+#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
+#' - When the length of `size` is one: the plot point sizes will have a fixed size.
+#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
+#' @param default_plot_type (`numeric`, optional) Defaults to Response vs Regressor.
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
 #' 3. Normal Q-Q
@@ -25,9 +34,6 @@
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
-#'
-#' @note For more examples, please see the vignette "Using regression plots" via
-#'   `vignette("using-regression-plots", package = "teal.modules.general")`.
 #'
 #' @examples
 #' # general data example
@@ -189,6 +195,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 }
 
+# UI function for the regression module
 ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -276,7 +283,7 @@ ui_a_regression <- function(id, ...) {
   )
 }
 
-
+# Server function for the regression module
 srv_a_regression <- function(id,
                              data,
                              reporter,
