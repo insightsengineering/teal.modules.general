@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_bivariate.R
 \name{tm_g_bivariate}
 \alias{tm_g_bivariate}
-\title{Univariate and bivariate visualizations module}
+\title{\code{teal} module: Univariate and bivariate visualizations}
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",

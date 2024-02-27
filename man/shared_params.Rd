@@ -33,6 +33,20 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\itemize{
+\item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
+\item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
+
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\itemize{
+\item When the length of \code{size} is one: the plot point sizes will have a fixed size.
+\item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

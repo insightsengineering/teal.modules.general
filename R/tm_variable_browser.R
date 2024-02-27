@@ -1,4 +1,4 @@
-#' Variable browser `teal` module
+#' `teal` module: Variable browser
 #'
 #' Module provides provides a detailed summary and visualization of variable distributions
 #' for `data.frame` objects, with interactive features to customize analysis.
