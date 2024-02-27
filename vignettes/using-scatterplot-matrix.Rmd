@@ -79,37 +79,8 @@ mod1 <- tm_g_scatterplotmatrix(
   )
 )
 
-# configuration for the multiple wide datasets
-mod2 <- tm_g_scatterplotmatrix(
-  label = "Multiple wide datasets",
-  variables = list(
-    data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = c("AGE", "ACTARM", "SEX", "BMRKR1"),
-        multiple = TRUE,
-        fixed = FALSE,
-        ordered = TRUE
-      )
-    ),
-    data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = c("COUNTRY", "ACTARM", "STRATA1"),
-        multiple = TRUE,
-        fixed = FALSE,
-        ordered = TRUE
-      )
-    )
-  )
-)
-
 # configuration for the one long datasets
-mod3 <- tm_g_scatterplotmatrix(
+mod2 <- tm_g_scatterplotmatrix(
   "One long dataset",
   variables = data_extract_spec(
     dataname = "ADTTE",
@@ -125,7 +96,7 @@ mod3 <- tm_g_scatterplotmatrix(
 )
 
 # configuration for the two long datasets
-mod4 <- tm_g_scatterplotmatrix(
+mod3 <- tm_g_scatterplotmatrix(
   label = "Two long datasets",
   variables = list(
     data_extract_spec(
@@ -175,8 +146,7 @@ app <- init(
       label = "Scatterplot matrix",
       mod1,
       mod2,
-      mod3,
-      mod4
+      mod3
     )
   )
 )
