@@ -36,13 +36,13 @@ for a slider encoding the plot height.}
 \item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
 for a slider encoding the plot width.}
 
-\item{alpha}{(\code{numeric}, optional) Specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
 \itemize{
 \item If vector of \code{length == 1} then the plot points will have a fixed opacity.
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
-\item{size}{(\code{numeric}, optional) Specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
 \itemize{
 \item If vector of \code{length == 1} then the plot point sizes will have a fixed size
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.

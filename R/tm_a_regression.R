@@ -14,10 +14,10 @@
 #' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Response variables from an incoming dataset with filtering and selecting.
-#' @param alpha (`numeric`, optional) Specifies point opacity.
+#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
 #' - If vector of `length == 1` then the plot points will have a fixed opacity.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param size (`numeric`, optional) Specifies point size.
+#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
 #' - If vector of `length == 1` then the plot point sizes will have a fixed size
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
