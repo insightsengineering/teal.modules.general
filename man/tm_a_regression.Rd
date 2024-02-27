@@ -79,10 +79,7 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
-<<<<<<< HEAD
 \item{default_outlier_label}{(\code{character}, optional) The default column selected to label outliers.}
-=======
-\item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
 
 \item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
 Minimum distance between label and point on the plot that triggers the creation of
@@ -99,7 +96,6 @@ It can take the following forms:
 It takes the form of \code{c(value, min, max)} and it is passed to the \code{value_min_max}
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
->>>>>>> main
 }
 \description{
 Module for visualizing regression analysis, including scatterplots and
