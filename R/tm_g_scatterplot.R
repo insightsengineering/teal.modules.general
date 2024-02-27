@@ -233,6 +233,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
 
+  # Requires Suggested packages
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
@@ -242,6 +243,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ))
   }
 
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -250,39 +252,18 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
   if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
+
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
+
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'row_facet' should not allow multiple selection")
-  }
-  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'col_facet' should not allow multiple selection")
-  }
-  checkmate::assert_character(shape)
-
-  checkmate::assert_int(max_deg, lower = 1L)
-  checkmate::assert_scalar(table_dec)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  if (length(alpha) == 1) {
-    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
-  }
-
-  if (length(size) == 1) {
-    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
-  }
+  assert_single_selection(col_facet)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -292,8 +273,34 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
 
+  checkmate::assert_character(shape)
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
+  checkmate::assert_int(max_deg, lower = 1L)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  ggtheme <- match.arg(ggtheme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_scalar(table_dec)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  # End of assertions
+
+  # Send ui args
   args <- as.list(environment())
 
   data_extract_list <- list(

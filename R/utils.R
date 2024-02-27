@@ -285,3 +285,15 @@ is_tab_active_js <- function(id, name) {
     id, name
   )
 }
+
+#' Assert single selection on `data_extract_spec` object
+#' Helper to reduce code in assertions
+#' @noRd
+#'
+assert_single_selection <- function(x,
+                                    .var.name = checkmate::vname(x)) { # nolint: object_name.
+  if (any(vapply(x, function(.x) .x$select$multiple, logical(1)))) {
+    stop("'", .var.name, "' should not allow multiple selection")
+  }
+  invisible(TRUE)
+}

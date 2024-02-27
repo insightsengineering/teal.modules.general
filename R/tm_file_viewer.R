@@ -39,25 +39,24 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (length(label) == 0 || identical(label, "")) {
-    label <- " "
-  }
-  if (length(input_path) == 0 || identical(input_path, "")) {
-    input_path <- list()
-  }
 
+  # Normalize the parameters
+  if (length(label) == 0 || identical(label, "")) label <- " "
+  if (length(input_path) == 0 || identical(input_path, "")) input_path <- list()
+
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert(
     checkmate::check_list(input_path, types = "character", min.len = 0),
     checkmate::check_character(input_path, min.len = 1)
   )
-
   if (length(input_path) > 0) {
     valid_url <- function(url_input, timeout = 2) {
       con <- try(url(url_input), silent = TRUE)
       check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
       try(close.connection(con), silent = TRUE)
-      ifelse(is.null(check), TRUE, FALSE)
+      is.null(check)
     }
     idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
 
@@ -75,8 +74,9 @@ tm_file_viewer <- function(label = "File Viewer Module",
       "No file or url paths were provided."
     )
   }
+  # End of assertions
 
-
+  # Send ui args
   args <- as.list(environment())
 
   module(

@@ -130,13 +130,16 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
+
+  # Normalize the parameters
   if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
   if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
+
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
   if (is.list(categorical_var)) {
     lapply(categorical_var, function(x) {
@@ -145,10 +148,26 @@ tm_outliers <- function(label = "Outliers Module",
       }
     })
   }
+
+  ggtheme <- match.arg(ggtheme)
+
   plot_choices <- c("Boxplot", "Density Plot", "Cumulative Distribution Plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Send ui args
   args <- as.list(environment())
 
   data_extract_list <- list(

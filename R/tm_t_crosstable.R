@@ -139,22 +139,31 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
+
+  # Requires Suggested packages
   if (!requireNamespace("rtables", quietly = TRUE)) {
     stop("Cannot load rtables - please install the package or restart your session.")
   }
+
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
+
   checkmate::assert_list(y, types = "data_extract_spec")
-  if (any(vapply(y, function(x) x$select$multiple, logical(1)))) {
-    stop("'y' should not allow multiple selection")
-  }
+  assert_single_selection(y)
+
   checkmate::assert_flag(show_percentage)
   checkmate::assert_flag(show_total)
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
+  # End of assertions
 
+  # Send ui args
   ui_args <- as.list(environment())
 
   server_args <- list(

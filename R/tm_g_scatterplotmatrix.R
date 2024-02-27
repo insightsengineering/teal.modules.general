@@ -161,13 +161,19 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    pre_output = NULL,
                                    post_output = NULL) {
   logger::log_info("Initializing tm_g_scatterplotmatrix")
+
+  # Requires Suggested packages
   if (!requireNamespace("lattice", quietly = TRUE)) {
     stop("Cannot load lattice - please install the package or restart your session.")
   }
+
+  # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(variables, types = "data_extract_spec")
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -176,7 +182,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Send ui args
   args <- as.list(environment())
+
   module(
     label = label,
     server = srv_g_scatterplotmatrix,
