@@ -24,7 +24,7 @@ tm_g_distribution(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{dist_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable(s) for which the distribution  to be analyzed.}
+Variable(s) for which the distribution will be analyzed.}
 
 \item{strata_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Categorical variable used to split the distribution analysis.}
@@ -47,8 +47,8 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 
 \item{bins}{(\code{integer(1)} or \code{integer(3)}, optional)  Determines the number of bins for the histogram.
 \itemize{
-\item If vector of \code{length == 1} then the histogram bins will have a fixed size.
-\item while vector of \code{value}, \code{min}, and \code{max} allows histogram bins dynamic adjustment.
+\item When the length of \code{bins} is one: The histogram bins will have a fixed size based on the \code{bins} provided.
+\item When the length of \code{bins} is three: The histogram bins are dynamically adjusted based on vector of \code{value}, \code{min}, and \code{max}.
 Defaults to \code{c(30L, 1L, 100L)}.
 }}
 

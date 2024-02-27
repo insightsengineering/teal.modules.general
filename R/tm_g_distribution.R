@@ -17,8 +17,8 @@
 #' @param freq (`logical`, optional) Whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
 #' @param bins (`integer(1)` or `integer(3)`, optional)  Determines the number of bins for the histogram.
-#' - If vector of `length == 1` then the histogram bins will have a fixed size.
-#' - while vector of `value`, `min`, and `max` allows histogram bins dynamic adjustment.
+#' - When the length of `bins` is one: The histogram bins will have a fixed size based on the `bins` provided.
+#' - When the length of `bins` is three: The histogram bins are dynamically adjusted based on vector of `value`, `min`, and `max`.
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
 #' @templateVar ggnames "Histogram", "QQplot"
