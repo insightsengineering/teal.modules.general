@@ -9,7 +9,7 @@
 #' @inheritParams shared_params
 #'
 #' @param dist_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variable(s) for which the distribution  to be analyzed.
+#' Variable(s) for which the distribution will be analyzed.
 #' @param strata_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Categorical variable used to split the distribution analysis.
 #' @param group_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
