@@ -48,7 +48,8 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 \item{bins}{(\code{integer(1)} or \code{integer(3)}, optional)  Determines the number of bins for the histogram.
 \itemize{
 \item When the length of \code{bins} is one: The histogram bins will have a fixed size based on the \code{bins} provided.
-\item When the length of \code{bins} is three: The histogram bins are dynamically adjusted based on vector of \code{value}, \code{min}, and \code{max}.
+\item When the length of \code{bins} is three: The histogram bins are dynamically adjusted based on vector of \code{value}, \code{min},
+and \code{max}.
 Defaults to \code{c(30L, 1L, 100L)}.
 }}
 
