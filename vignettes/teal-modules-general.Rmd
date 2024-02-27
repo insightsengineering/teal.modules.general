@@ -120,7 +120,7 @@ app <- init(
 The `shiny` function `shinyApp` used the `ui` and `server` objects to initialize the `teal` app.
 
 ```{r, eval = FALSE}
-shiny::shinyApp(app$ui, app$server)
+shinyApp(app$ui, app$server)
 ```
 
 In a `teal` app, data and modules are decoupled. In the app above:
