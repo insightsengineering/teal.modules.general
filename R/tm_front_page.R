@@ -15,7 +15,7 @@
 #' element, if named the name is shown first in bold, followed by the value.
 #' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
 #'
-#' @return A `teal` module to be used in `teal` applications.
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data()
