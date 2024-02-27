@@ -150,6 +150,8 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @return (`character`) String with variable name and label.
 #'
+#' @keywords internal
+#'
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,

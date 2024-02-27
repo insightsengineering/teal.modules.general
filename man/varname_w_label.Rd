@@ -27,3 +27,4 @@ varname_w_label(
 \description{
 Generate a string for a variable including its label
 }
+\keyword{internal}
