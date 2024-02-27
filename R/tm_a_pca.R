@@ -1,4 +1,4 @@
-#' Principal component analysis module
+#' teal Module: Principal Component Analysis
 #'
 #' Module conducts principal component analysis (PCA) on a given dataset and offers different
 #' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
@@ -9,12 +9,6 @@
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   specifying columns used to compute PCA.
-#' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length == 1` then the plot points will have a fixed opacity.
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length == 1` then the plot point sizes will have a fixed size
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param font_size (`numeric`, optional) Specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.

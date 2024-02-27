@@ -1,4 +1,4 @@
-#' Missing data analysis module
+#' teal Module: Missing Data Analysis
 #'
 #' Module analyzes missing data in `data.frame`s to help users explore missing observations and
 #' gain insights into the completeness of their data.

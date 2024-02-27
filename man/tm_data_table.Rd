@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_data_table.R
 \name{tm_data_table}
 \alias{tm_data_table}
-\title{Data table viewer module}
+\title{teal Module: Data Table Viewer}
 \usage{
 tm_data_table(
   label = "Data Table",

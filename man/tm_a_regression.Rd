@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_a_regression.R
 \name{tm_a_regression}
 \alias{tm_a_regression}
-\title{Scatterplot and regression model}
+\title{teal Module: Scatterplot and Regression Plot}
 \usage{
 tm_a_regression(
   label = "Regression Analysis",

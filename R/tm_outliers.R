@@ -1,4 +1,4 @@
-#' Outliers module
+#' teal Module: Outliers Analysis
 #'
 #' Module to analyze and identify outliers using different methods
 #' such as IQR, Z-score, and Percentiles, and offers visualizations including

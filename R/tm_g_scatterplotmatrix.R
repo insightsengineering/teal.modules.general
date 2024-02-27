@@ -1,4 +1,4 @@
-#' Scatterplot matrix module
+#' teal Module: Scatterplot Matrix
 #'
 #' Generates a scatterplot matrix from selected `variables` from datasets.
 #' Each plot within the matrix represents the relationship between two variables,

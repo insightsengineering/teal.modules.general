@@ -1,4 +1,4 @@
-#' Cross-table module
+#' teal Module: Cross-Table
 #'
 #' Generates a simple cross-table of two variables from a dataset with custom
 #' options for showing percentages and sub-totals.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplot.R
 \name{tm_g_scatterplot}
 \alias{tm_g_scatterplot}
-\title{Scatterplot module}
+\title{teal Module: Scatterplot}
 \usage{
 tm_g_scatterplot(
   label = "Scatterplot",
@@ -54,20 +54,22 @@ Specifies the variable(s) for faceting columns.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{(\code{numeric}, optional) Specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
 \itemize{
-\item If vector of \code{length == 1} then the plot points will have a fixed opacity.
-\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+\item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
+\item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
 }}
 
 \item{shape}{(\code{character}, optional) A character vector with the names of the
 shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape_names}. This is a complete list from
 \code{vignette("ggplot2-specs", package="ggplot2")}.}
 
-\item{size}{(\code{numeric}, optional) Specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
 \itemize{
-\item If vector of \code{length == 1} then the plot point sizes will have a fixed size
-\item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
+\item When the length of \code{size} is one: the plot point sizes will have a fixed size.
+\item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
 }}
 
 \item{max_deg}{(\code{integer}, optional) The maximum degree for the polynomial trend line. Must not be less than 1.}

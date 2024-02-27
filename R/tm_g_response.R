@@ -1,4 +1,4 @@
-#' Response plot module
+#' teal Module: Response Plot
 #'
 #' Generates a response plot for a given `response` and `x` variables.
 #' This module allows users customize and add annotations to the plot depending

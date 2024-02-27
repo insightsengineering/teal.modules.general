@@ -1,4 +1,4 @@
-#' Scatterplot and regression model
+#' teal Module: Scatterplot and Regression Plot
 #'
 #' Module for visualizing regression analysis, including scatterplots and
 #' various regression diagnostics plots.
@@ -14,14 +14,6 @@
 #' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Response variables from an incoming dataset with filtering and selecting.
-#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
-#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
-#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
-#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
-#' - When the length of `size` is one: the plot point sizes will have a fixed size.
-#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
 #' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
 #' @param default_plot_type (`numeric`, optional) Defaults to Response vs Regressor.
 #' 1. Response vs Regressor

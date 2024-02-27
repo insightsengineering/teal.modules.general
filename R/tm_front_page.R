@@ -1,4 +1,4 @@
-#' Front page module
+#' teal Module: Front Page
 #'
 #' Creates a simple front page for `teal` applications, displaying
 #' introductory text, tables, additional `html` or `shiny` tags, and footnotes.
