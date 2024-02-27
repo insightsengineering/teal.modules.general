@@ -337,6 +337,7 @@ srv_tm_g_association <- function(id,
 
       # reference
       ref_class <- class(ANL[[ref_name]])
+      ref_class <- ref_class[length(ref_class)]
       if (is.numeric(ANL[[ref_name]]) && log_transformation) {
         # works for both integers and doubles
         ref_cl_name <- call("log", as.name(ref_name))
@@ -374,6 +375,7 @@ srv_tm_g_association <- function(id,
 
       var_calls <- lapply(vars_names, function(var_i) {
         var_class <- class(ANL[[var_i]])
+        var_class <- var_class[length(var_class)]
         if (is.numeric(ANL[[var_i]]) && log_transformation) {
           # works for both integers and doubles
           var_cl_name <- call("log", as.name(var_i))
