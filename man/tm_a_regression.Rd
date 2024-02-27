@@ -17,7 +17,8 @@ tm_a_regression(
   pre_output = NULL,
   post_output = NULL,
   default_plot_type = 1,
-  default_outlier_label = "USUBJID"
+  default_outlier_label = "USUBJID",
+  label_segment_threshold = c(0.5, 0, 10)
 )
 }
 \arguments{
@@ -72,6 +73,22 @@ into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} el
 }}
 
 \item{default_outlier_label}{optional, (\code{character}) The default column selected to label outliers.}
+
+\item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
+Minimum distance between label and point on the plot that triggers the creation of
+a line segment between the two.
+This may happen when the label cannot be placed next to the point as it overlaps another
+label or point.
+The value is used as the \code{min.segment.length} parameter to the \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}} function.
+
+It can take the following forms:
+\itemize{
+\item \code{numeric(1)}: Fixed value used for the minimum distance and the slider is not presented in the UI.
+\item \code{numeric(3)}: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+
+It takes the form of \code{c(value, min, max)} and it is passed to the \code{value_min_max}
+argument in \code{teal.widgets::optionalSliderInputValMinMax}.
+}}
 }
 \description{
 Scatterplot and Regression Model

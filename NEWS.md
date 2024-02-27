@@ -4,6 +4,10 @@
 
 * Updated the package docs and vignettes with the new way of specifying data for `teal::init()`. The `data` argument will accept a `teal_data` object
 
+### Bug fixes
+
+* Outlier labels no longer appear out of bounds in `tm_a_regression`.
+
 ### Miscellaneous
 
 * Removed `teal.slice` dependencies.
