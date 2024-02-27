@@ -19,7 +19,7 @@ various types of datasets using the response plot module `tm_g_response()`:
 3. Create an `app` variable
 4. Run the app
 
-## 1 - Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
