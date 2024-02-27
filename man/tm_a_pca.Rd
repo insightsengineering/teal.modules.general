@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_a_pca.R
 \name{tm_a_pca}
 \alias{tm_a_pca}
-\title{teal Module: Principal Component Analysis}
+\title{\code{teal} module: Principal component analysis}
 \usage{
 tm_a_pca(
   label = "Principal Component Analysis",

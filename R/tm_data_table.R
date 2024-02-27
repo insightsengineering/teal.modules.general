@@ -1,4 +1,4 @@
-#' teal Module: Data Table Viewer
+#' `teal` module: Data table viewer
 #'
 #' Module provides a dynamic and interactive way to view `data.frame`s in a `teal` application.
 #' It uses the `DT` package to display data tables in a paginated, searchable, and sortable format,

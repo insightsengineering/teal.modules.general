@@ -1,4 +1,4 @@
-#' teal Module: Scatterplot and Regression Plot
+#' `teal` module: Scatterplot and regression analysis
 #'
 #' Module for visualizing regression analysis, including scatterplots and
 #' various regression diagnostics plots.

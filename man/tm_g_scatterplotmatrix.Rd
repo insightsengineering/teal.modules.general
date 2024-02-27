@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{teal Module: Scatterplot Matrix}
+\title{\code{teal} module: Scatterplot matrix}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",

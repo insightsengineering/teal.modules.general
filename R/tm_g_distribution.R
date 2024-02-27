@@ -1,4 +1,4 @@
-#' teal Module: Distribution Analysis
+#' `teal` module: Distribution analysis
 #'
 #' Module is designed to explore the distribution of a single variable within a given dataset.
 #' It offers several tools, such as histograms, Q-Q plots, and various statistical tests to

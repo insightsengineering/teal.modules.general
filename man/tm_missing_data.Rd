@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_missing_data.R
 \name{tm_missing_data}
 \alias{tm_missing_data}
-\title{teal Module: Missing Data Analysis}
+\title{\code{teal} module: Missing data analysis}
 \usage{
 tm_missing_data(
   label = "Missing data",

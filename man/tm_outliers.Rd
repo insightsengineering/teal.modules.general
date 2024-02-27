@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_outliers.R
 \name{tm_outliers}
 \alias{tm_outliers}
-\title{teal Module: Outliers Analysis}
+\title{\code{teal} module: Outliers analysis}
 \usage{
 tm_outliers(
   label = "Outliers Module",

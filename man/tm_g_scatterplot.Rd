@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplot.R
 \name{tm_g_scatterplot}
 \alias{tm_g_scatterplot}
-\title{teal Module: Scatterplot}
+\title{\code{teal} module: Scatterplot}
 \usage{
 tm_g_scatterplot(
   label = "Scatterplot",

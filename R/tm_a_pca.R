@@ -1,4 +1,4 @@
-#' teal Module: Principal Component Analysis
+#' `teal` module: Principal component analysis
 #'
 #' Module conducts principal component analysis (PCA) on a given dataset and offers different
 #' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.

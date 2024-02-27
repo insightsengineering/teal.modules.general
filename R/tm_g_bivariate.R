@@ -1,4 +1,4 @@
-#' teal Module: Univariate and Bivariate Visualizations
+#' `teal` module: Univariate and bivariate visualizations
 #'
 #' Module enables the creation of univariate and bivariate plots,
 #' facilitating the exploration of data distributions and relationships between two variables.

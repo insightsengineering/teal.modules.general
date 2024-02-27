@@ -1,4 +1,4 @@
-#' teal Module: Scatterplot
+#' `teal` module: Scatterplot
 #'
 #' Generates a customizable scatterplot using `ggplot2`.
 #' This module allows users to select variables for the x and y axes,

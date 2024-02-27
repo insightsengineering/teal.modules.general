@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{tm_variable_browser}
 \alias{tm_variable_browser}
-\title{teal Module: Variable Browser}
+\title{\code{teal} module: Variable browser}
 \usage{
 tm_variable_browser(
   label = "Variable Browser",
