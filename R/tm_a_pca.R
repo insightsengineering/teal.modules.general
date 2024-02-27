@@ -294,11 +294,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- var_labels(isolate(data())[[response[[i]]$dataname]])
-      response[[i]]$select$choices <- setdiff(
-        response[[i]]$select$choices,
-        unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
-      )
+      all_cols <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
+      ignore_cols <- unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
+      color_cols <- all_cols[!names(all_cols) %in% ignore_cols]
+      response[[i]]$select$choices <- choices_labeled(names(color_cols), color_cols)
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(
