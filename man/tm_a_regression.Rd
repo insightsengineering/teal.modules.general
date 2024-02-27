@@ -52,8 +52,9 @@ vector of \code{value}, \code{min}, and \code{max}.
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+\item{ggplot2_args}{(\code{ggplot2_args} or \verb{named list} of \code{ggplot2_args}s) optional.
+Object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} and contains settings for all the plots,
+or is a named \code{list} of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \verb{c("default", "Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage"", "Cook's dist vs Leverage")}.

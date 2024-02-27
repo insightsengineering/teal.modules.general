@@ -50,8 +50,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+\item{ggplot2_args}{(\code{ggplot2_args} or \verb{named list} of \code{ggplot2_args}s) optional.
+Object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} and contains settings for all the plots,
+or is a named \code{list} of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Bivariate1", "Bivariate2")}.

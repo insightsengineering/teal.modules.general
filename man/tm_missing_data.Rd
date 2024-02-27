@@ -33,8 +33,9 @@ ignored.}
 
 \item{ggtheme}{(\code{character}, optional) Specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
+\item{ggplot2_args}{(\code{ggplot2_args} or \verb{named list} of \code{ggplot2_args}s) optional.
+Object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} and contains settings for all the plots,
+or is a named \code{list} of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")}.
