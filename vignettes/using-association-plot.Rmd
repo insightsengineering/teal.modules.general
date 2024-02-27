@@ -11,13 +11,12 @@ vignette: >
 
 # `teal` application to use association plot with various datasets types
 
-This vignette will guide you through the four parts to create a `teal` application using
-various types of datasets using the association plot module `tm_g_association()`:
+This vignette will guide you through the four parts to create a `teal` application using various types of datasets using the association plot module `tm_g_association()`:
 
-1. Load libraries
-2. Create data sets
-3. Create an `app` variable
-4. Run the app
+1.  Load libraries
+2.  Create data sets
+3.  Create an `app` variable
+4.  Run the app
 
 ## 1 - Loading libraries
 
@@ -30,10 +29,10 @@ library(dplyr) # used to modify data sets
 
 Inside this app 4 datasets will be used
 
-1. `ADSL` A wide data set with subject data
-2. `ADRS` A long data set with response data for subjects at different time points of the study
-3. `ADTTE` A long data set with time to event data
-4. `ADLB` A long data set with lab measurements for each subject
+1.  `ADSL` A wide data set with subject data
+2.  `ADRS` A long data set with response data for subjects at different time points of the study
+3.  `ADTTE` A long data set with time to event data
+4.  `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 data <- teal_data()
@@ -56,10 +55,7 @@ join_keys(data) <- default_cdisc_join_keys[datanames]
 
 ## 3 - Create an `app` variable
 
-This is the most important section. We will use the `teal::init` function to
-create an app. The data will be handed over using `teal.data::teal_data`. The app
-itself will be constructed by multiple calls of `tm_g_association()` using different
-combinations of data sets.
+This is the most important section. We will use the `teal::init()` function to create an app. The data will be handed over using `teal.data::teal_data()`. The app itself will be constructed by multiple calls of `tm_g_association()` using different combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # configuration for a single wide dataset
@@ -299,11 +295,10 @@ app <- init(
 
 ## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an `R` session.
+A simple `shiny::shinyApp()` call will let you run the app. Note that app is only displayed when running this code inside an `R` session.
 
 ```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
-<img src="images/app-teal-modules-general.png" style = "display: block; margin: 0px; width: 100%"/>
+<img src="images/app-teal-modules-general.png" style="display: block; margin: 0px; width: 100%"/>

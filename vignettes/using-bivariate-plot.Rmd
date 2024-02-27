@@ -57,8 +57,8 @@ join_keys(data) <- default_cdisc_join_keys[datanames]
 
 ## 3 - Create an `app` variable
 
-This is the most important section. We will use the `teal::init` function to
-create an app. The data will be handed over using `teal.data::teal_data`. The app
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`. The app
 itself will be constructed by multiple calls of `tm_g_bivariate()` using different
 combinations of data sets.
 
@@ -620,7 +620,7 @@ app <- init(
 
 ## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app.
+A simple `shiny::shinyApp()` call will let you run the app.
 Note that app is only displayed when running this code inside an `R` session.
 
 ```{r, echo=TRUE, results="hide"}
