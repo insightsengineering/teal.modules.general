@@ -366,6 +366,8 @@ app <- init(
 A simple `shiny::shinyApp` call will let you run the app.
 Note that app is only displayed when running this code inside an R session.
 
-```{r, eval = ggextra_available, echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
+
+<img src="images/app-using-scatterplot.png" style = "display: block; margin: 0px; width: 100%"/>

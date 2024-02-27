@@ -69,6 +69,8 @@ app <- init(
 shinyApp(app$ui, app$server)
 ```
 
+<img src="images/app-teal-modules-general.png" style = "display: block; margin: 0px; width: 100%"/>
+
 Let's break the above app into pieces:
 ```r
 library(teal.modules.general)

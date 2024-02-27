@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# `teal` application to use association plot with various datasets types
+# `teal` application to display data table with various datasets types
 
 This vignette will guide you through the four parts to create a teal application using
 various types of datasets using the data table module `tm_data_table()`:
@@ -103,7 +103,8 @@ app <- init(
 A simple `shiny::shinyApp` call will let you run the app. 
 Note that app is only displayed when running this code inside an R session.  
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
+<img src="images/app-using-data-table.png" style = "display: block; margin: 0px; width: 100%"/>
