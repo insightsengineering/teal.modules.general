@@ -28,7 +28,7 @@ density line, for factors it creates frequency plot}
 
 \item{display_density}{(\code{logical}) should density estimation be displayed for numeric values}
 
-\item{remove_NA_hist}{(\code{logical}) should (\code{NA}) values be removed for histogram of factor like variables}
+\item{remove_NA_hist}{(\code{logical}) should \code{NA} values be removed for histogram of factor like variables}
 
 \item{outlier_definition}{if 0 no outliers are removed, otherwise
 outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}

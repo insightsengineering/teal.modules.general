@@ -8,18 +8,20 @@
 #' @inheritParams shared_params
 #' @param input_path (`list`) of the input paths, optional. Each element can be:
 #'
-#' 1. Specific path to files of accepted formats
-#' 2. A directory or a URL
-#'
-#' The paths can be specified as absolute paths or relative to the running
-#' directory of the application.
-#' Default to the current working directory if not supplied.
-#'
 #' @inherit shared_params return
 #'
+#' Paths can be specified as absolute paths or relative to the running directory of the application.
+#' Default to the current working directory if not supplied.
+#'
 #' @examples
+#' data <- teal_data()
+#' data <- within(data, {
+#'   data <- data.frame(1)
+#' })
+#' datanames(data) <- c("data")
+#'
 #' app <- init(
-#'   data = teal_data(data = 1), # Mock dataset to initialize the app without error
+#'   data = data
 #'   modules = modules(
 #'     tm_file_viewer(
 #'       input_path = list(
@@ -34,6 +36,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
 #' @export
 #'
 tm_file_viewer <- function(label = "File Viewer Module",

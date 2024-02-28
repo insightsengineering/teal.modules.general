@@ -115,7 +115,7 @@ For more examples, please see the vignette "Using bivariate plot" via
 \examples{
 library(teal.widgets)
 
-# general data exapmle
+# general data example
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)

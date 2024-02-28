@@ -49,7 +49,7 @@ with text placed before the output to put the output into context. For example a
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \description{
-Module analyzes missing data in \code{data.frame}s to help users explore missing observations and
+This module analyzes missing data in \code{data.frame}s to help users explore missing observations and
 gain insights into the completeness of their data.
 It is useful for clinical data analysis within the context of \code{CDISC} standards and
 adaptable for general data analysis purposes.
