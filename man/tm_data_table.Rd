@@ -47,6 +47,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module provides a dynamic and interactive way to view \code{data.frame}s in a \code{teal} application.
 It uses the \code{DT} package to display data tables in a paginated, searchable, and sortable format,

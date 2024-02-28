@@ -48,6 +48,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 This module analyzes missing data in \code{data.frame}s to help users explore missing observations and
 gain insights into the completeness of their data.

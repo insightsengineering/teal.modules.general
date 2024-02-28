@@ -25,6 +25,8 @@
 #' @templateVar ggnames "Histogram", "QQplot"
 #' @template ggplot2_args_multi
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'

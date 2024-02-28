@@ -27,6 +27,8 @@
 #' @param server_rendering (`logical`) should the data table be rendered server side
 #' (see `server` argument of [DT::renderDataTable()])
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' # general data example
 #' data <- teal_data()

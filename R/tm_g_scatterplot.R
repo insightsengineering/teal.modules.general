@@ -28,6 +28,8 @@
 #' @param max_deg (`integer`, optional) The maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec (`integer`, optional) Number of decimal places used to round numeric values in the table.
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'

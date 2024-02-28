@@ -97,6 +97,9 @@ It takes the form of \code{c(value, min, max)} and it is passed to the \code{val
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module for visualizing regression analysis, including scatterplots and
 various regression diagnostics plots.

@@ -49,6 +49,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module to analyze and identify outliers using different methods
 such as IQR, Z-score, and Percentiles, and offers visualizations including

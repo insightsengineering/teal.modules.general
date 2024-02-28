@@ -58,6 +58,9 @@ List names should match the following: \code{c("default", "Bivariate1", "Bivaria
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module provides functionality for visualizing the distribution of variables and
 their association with a reference variable.

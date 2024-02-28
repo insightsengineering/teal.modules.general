@@ -16,6 +16,8 @@
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' # general data example
 #' data <- teal_data()

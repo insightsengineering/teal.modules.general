@@ -40,6 +40,8 @@
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' # general data example
 #' library(teal.widgets)

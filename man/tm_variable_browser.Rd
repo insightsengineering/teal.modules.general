@@ -41,6 +41,9 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module provides provides a detailed summary and visualization of variable distributions
 for \code{data.frame} objects, with interactive features to customize analysis.

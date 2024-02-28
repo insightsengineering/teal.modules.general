@@ -19,6 +19,8 @@
 #' If vector of length zero (default) then all datasets are shown.
 #' Note: Only `data.frame` objects are compatible; using other types will cause an error.
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'
@@ -107,9 +109,7 @@ tm_variable_browser <- function(label = "Variable Browser",
   )
 }
 
-# UI function for the variable browser module.
-#' @noRd
-#' @keywords internal
+# UI function for the variable browser module
 ui_variable_browser <- function(id,
                                 pre_output = NULL,
                                 post_output = NULL) {
@@ -179,9 +179,7 @@ ui_variable_browser <- function(id,
   )
 }
 
-# Server function for the variable browser module.
-#' @noRd
-#' @keywords internal
+# Server function for the variable browser module
 srv_variable_browser <- function(id,
                                  data,
                                  reporter,
@@ -799,8 +797,6 @@ plot_var_summary <- function(var,
   plot_main
 }
 
-#' @noRd
-#' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }
@@ -828,8 +824,6 @@ validate_input <- function(input, plot_var, data) {
   })
 }
 
-#' @noRd
-#' @keywords internal
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[dataset_name]]
@@ -1045,8 +1039,6 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
   })
 }
 
-#' @noRd
-#' @keywords internal
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)

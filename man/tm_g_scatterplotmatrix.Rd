@@ -35,6 +35,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Generates a scatterplot matrix from selected \code{variables} from datasets.
 Each plot within the matrix represents the relationship between two variables,

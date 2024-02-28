@@ -65,6 +65,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module is designed to explore the distribution of a single variable within a given dataset.
 It offers several tools, such as histograms, Q-Q plots, and various statistical tests to

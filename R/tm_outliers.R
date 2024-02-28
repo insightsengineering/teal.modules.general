@@ -15,6 +15,8 @@
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
 #' @template ggplot2_args_multi
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'

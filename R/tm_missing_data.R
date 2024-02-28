@@ -15,6 +15,8 @@
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'
