@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_distribution.R
 \name{tm_g_distribution}
 \alias{tm_g_distribution}
-\title{Distribution analysis module}
+\title{\code{teal} module: Distribution analysis}
 \usage{
 tm_g_distribution(
   label = "Distribution Module",
@@ -65,6 +65,9 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module is designed to explore the distribution of a single variable within a given dataset.

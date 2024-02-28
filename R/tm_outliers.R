@@ -1,4 +1,4 @@
-#' Outliers module
+#' `teal` module: Outliers analysis
 #'
 #' Module to analyze and identify outliers using different methods
 #' such as IQR, Z-score, and Percentiles, and offers visualizations including
@@ -14,6 +14,8 @@
 #'
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)

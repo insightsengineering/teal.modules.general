@@ -1,4 +1,4 @@
-#' Scatterplot matrix module
+#' `teal` module: Scatterplot matrix
 #'
 #' Generates a scatterplot matrix from selected `variables` from datasets.
 #' Each plot within the matrix represents the relationship between two variables,
@@ -15,6 +15,8 @@
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
@@ -477,6 +479,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' stats::cor.test(x, y, na.action = "na.fail")
 #' stats::cor.test(~ x + y,  na.action = "na.fail")
 #' ```
+#'
 #' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
 #' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
 #' Default `stats::cor.test`.
@@ -485,6 +488,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' @param round_pval (`integer(1)`) optional. Number of decimal places to use when rounding the p-value.
 #'
 #' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
+#'
 #' @examples
 #' set.seed(1)
 #' x <- runif(25, 0, 1)

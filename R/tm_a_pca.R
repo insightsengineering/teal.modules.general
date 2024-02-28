@@ -1,4 +1,4 @@
-#' Principal component analysis module
+#' `teal` module: Principal component analysis
 #'
 #' Module conducts principal component analysis (PCA) on a given dataset and offers different
 #' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
@@ -9,18 +9,14 @@
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #'   specifying columns used to compute PCA.
-#' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length == 1` then the plot points will have a fixed opacity.
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length == 1` then the plot point sizes will have a fixed size
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param font_size (`numeric`, optional) Specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -296,11 +292,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
-      response[[i]]$select$choices <- setdiff(
-        response[[i]]$select$choices,
-        unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
-      )
+      all_cols <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
+      ignore_cols <- unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
+      color_cols <- all_cols[!names(all_cols) %in% ignore_cols]
+      response[[i]]$select$choices <- choices_labeled(names(color_cols), color_cols)
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(

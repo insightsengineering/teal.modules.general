@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{Scatterplot matrix module}
+\title{\code{teal} module: Scatterplot matrix}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
@@ -34,6 +34,9 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Generates a scatterplot matrix from selected \code{variables} from datasets.

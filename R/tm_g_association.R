@@ -1,4 +1,4 @@
-#' Stack plots of variables and show association with reference variable
+#' `teal` module: Stack plots of variables and show association with reference variable
 #'
 #' Module provides functionality for visualizing the distribution of variables and
 #' their association with a reference variable.
@@ -22,6 +22,8 @@
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)

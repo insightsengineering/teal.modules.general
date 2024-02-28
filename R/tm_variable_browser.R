@@ -1,4 +1,4 @@
-#' Variable browser `teal` module
+#' `teal` module: Variable browser
 #'
 #' Module provides provides a detailed summary and visualization of variable distributions
 #' for `data.frame` objects, with interactive features to customize analysis.
@@ -18,6 +18,8 @@
 #' shown, in order. Names must correspond with datasets names.
 #' If vector of length zero (default) then all datasets are shown.
 #' Note: Only `data.frame` objects are compatible; using other types will cause an error.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -107,9 +109,7 @@ tm_variable_browser <- function(label = "Variable Browser",
   )
 }
 
-# UI function for the variable browser module.
-#' @noRd
-#' @keywords internal
+# UI function for the variable browser module
 ui_variable_browser <- function(id,
                                 pre_output = NULL,
                                 post_output = NULL) {
@@ -179,9 +179,7 @@ ui_variable_browser <- function(id,
   )
 }
 
-# Server function for the variable browser module.
-#' @noRd
-#' @keywords internal
+# Server function for the variable browser module
 srv_variable_browser <- function(id,
                                  data,
                                  reporter,
@@ -527,195 +525,14 @@ srv_variable_browser <- function(id,
   })
 }
 
-#' Summarizes missings occurrence
+#' Summarize NAs.
 #'
-#' Summarizes missings occurrence in vector.
+#' Summarizes occurrence of missing values in vector.
 #' @param x vector of any type and length
-#' @return Text describing \code{NA} occurrence.
+#' @return Character string describing `NA` occurrence.
 #' @keywords internal
 var_missings_info <- function(x) {
   sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2))
-}
-
-#' S3 generic for \code{sparkline} widget HTML
-#'
-#' Generates the \code{sparkline} HTML code corresponding to the input array.
-#' For numeric variables creates a box plot, for character and factors - bar plot.
-#' Produces an empty string for variables of other types.
-#'
-#' @param arr vector of any type and length
-#' @param width \code{numeric} the width of the \code{sparkline} widget (pixels)
-#' @param ... \code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
-#' \href{https://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}
-#' @param bar_spacing \code{numeric} the spacing between the bars (in pixels)
-#' @param bar_width \code{numeric} the width of the bars (in pixels)
-#'
-#' @return character variable containing the HTML code of the \code{sparkline} HTML widget
-#' @keywords internal
-create_sparklines <- function(arr, width = 150, ...) {
-  if (all(is.null(arr))) {
-    return("")
-  }
-  UseMethod("create_sparklines")
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.default <- function(arr, width = 150, ...) {
-  as.character(tags$code("unsupported variable type", class = "text-blue"))
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
-  arr_num <- as.numeric(arr)
-  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
-  binwidth <- get_bin_width(arr_num, 1)
-  bins <- floor(diff(range(arr_num)) / binwidth) + 1
-  if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", class = "text-blue")))
-  } else if (bins == 1) {
-    return(as.character(tags$code("one date", class = "text-blue")))
-  }
-  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
-  max_value <- max(counts)
-
-  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
-  labels_start <- as.character(as.Date(arr_num[start_bins], origin = as.Date("1970-01-01")))
-  labels <- paste("Start:", labels_start)
-
-  sparkline::spk_chr(
-    unname(counts),
-    type = "bar",
-    chartRangeMin = 0,
-    chartRangeMax = max_value,
-    width = width,
-    barWidth = bar_width,
-    barSpacing = bar_spacing,
-    tooltipFormatter = custom_sparkline_formatter(labels, counts)
-  )
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
-  arr_num <- as.numeric(arr)
-  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
-  binwidth <- get_bin_width(arr_num, 1)
-  bins <- floor(diff(range(arr_num)) / binwidth) + 1
-  if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", class = "text-blue")))
-  } else if (bins == 1) {
-    return(as.character(tags$code("one date-time", class = "text-blue")))
-  }
-  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
-  max_value <- max(counts)
-
-  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
-  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
-  labels <- paste("Start:", labels_start)
-
-  sparkline::spk_chr(
-    unname(counts),
-    type = "bar",
-    chartRangeMin = 0,
-    chartRangeMax = max_value,
-    width = width,
-    barWidth = bar_width,
-    barSpacing = bar_spacing,
-    tooltipFormatter = custom_sparkline_formatter(labels, counts)
-  )
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
-  arr_num <- as.numeric(arr)
-  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
-  binwidth <- get_bin_width(arr_num, 1)
-  bins <- floor(diff(range(arr_num)) / binwidth) + 1
-  if (all(is.na(bins))) {
-    return(as.character(tags$code("only NA", class = "text-blue")))
-  } else if (bins == 1) {
-    return(as.character(tags$code("one date-time", class = "text-blue")))
-  }
-  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
-  max_value <- max(counts)
-
-  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
-  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
-  labels <- paste("Start:", labels_start)
-
-  sparkline::spk_chr(
-    unname(counts),
-    type = "bar",
-    chartRangeMin = 0,
-    chartRangeMax = max_value,
-    width = width,
-    barWidth = bar_width,
-    barSpacing = bar_spacing,
-    tooltipFormatter = custom_sparkline_formatter(labels, counts)
-  )
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.character <- function(arr, ...) {
-  create_sparklines(as.factor(arr))
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.logical <- function(arr, ...) {
-  create_sparklines(as.factor(arr))
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
-  decreasing_order <- TRUE
-
-  counts <- table(arr)
-  if (length(counts) >= 100) {
-    return(as.character(tags$code("> 99 levels", class = "text-blue")))
-  } else if (length(counts) == 0) {
-    return(as.character(tags$code("no levels", class = "text-blue")))
-  } else if (length(counts) == 1) {
-    return(as.character(tags$code("one level", class = "text-blue")))
-  }
-
-  # Summarize the occurences of different levels
-  # and get the maximum and minimum number of occurences
-  # This is needed for the sparkline to correctly display the bar plots
-  # Otherwise they are cropped
-  counts <- sort(counts, decreasing = decreasing_order, method = "radix")
-  max_value <- if (decreasing_order) counts[1] else counts[length[counts]]
-  max_value <- unname(max_value)
-
-  sparkline::spk_chr(
-    unname(counts),
-    type = "bar",
-    chartRangeMin = 0,
-    chartRangeMax = max_value,
-    width = width,
-    barWidth = bar_width,
-    barSpacing = bar_spacing,
-    tooltipFormatter = custom_sparkline_formatter(names(counts), as.vector(counts))
-  )
-}
-
-#' @export
-#' @rdname create_sparklines
-create_sparklines.numeric <- function(arr, width = 150, ...) {
-  if (any(is.infinite(arr))) {
-    return(as.character(tags$code("infinite values", class = "text-blue")))
-  }
-  if (length(arr) > 100000) {
-    return(as.character(tags$code("Too many rows (>100000)", class = "text-blue")))
-  }
-
-  arr <- arr[!is.na(arr)]
-  sparkline::spk_chr(unname(arr), type = "box", width = width, ...)
 }
 
 #' Summarizes variable
@@ -725,10 +542,10 @@ create_sparklines.numeric <- function(arr, width = 150, ...) {
 #' number of levels.
 #'
 #' @param x vector of any type
-#' @param numeric_as_factor \code{logical} should the numeric variable be treated as a factor
-#' @param dt_rows \code{numeric} current/latest `DT` page length
+#' @param numeric_as_factor `logical` should the numeric variable be treated as a factor
+#' @param dt_rows `numeric` current/latest `DT` page length
 #' @param outlier_definition If 0 no outliers are removed, otherwise
-#'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
+#'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3` be removed)
 #' @return text with simple statistics.
 #' @keywords internal
 var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition) {
@@ -821,7 +638,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' @param wrap_character (`numeric`) number of characters at which to wrap text values of `var`
 #' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
 #' @param display_density (`logical`) should density estimation be displayed for numeric values
-#' @param remove_NA_hist (`logical`) should (`NA`) values be removed for histogram of factor like variables
+#' @param remove_NA_hist (`logical`) should `NA` values be removed for histogram of factor like variables
 #' @param outlier_definition if 0 no outliers are removed, otherwise
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor (`numeric`) if the number of factor levels is >= than this value then
@@ -980,8 +797,6 @@ plot_var_summary <- function(var,
   plot_main
 }
 
-#' @noRd
-#' @keywords internal
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }
@@ -1009,8 +824,6 @@ validate_input <- function(input, plot_var, data) {
   })
 }
 
-#' @noRd
-#' @keywords internal
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[dataset_name]]
@@ -1226,8 +1039,6 @@ establish_updating_selection <- function(datanames, input, plot_var, columns_nam
   })
 }
 
-#' @noRd
-#' @keywords internal
 get_bin_width <- function(x_vec, scaling_factor = 2) {
   x_vec <- x_vec[!is.na(x_vec)]
   qntls <- stats::quantile(x_vec, probs = c(0.1, 0.25, 0.75, 0.9), type = 2)
@@ -1237,20 +1048,6 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
   # to ensure at least two bins when variable span is very small
   x_span <- diff(range(x_vec))
   if (isTRUE(x_span / binwidth >= 2)) binwidth else x_span / 2
-}
-
-#' @noRd
-#' @keywords internal
-custom_sparkline_formatter <- function(labels, counts) {
-  htmlwidgets::JS(
-    sprintf(
-      "function(sparkline, options, field) {
-        return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
-        }",
-      jsonlite::toJSON(labels),
-      jsonlite::toJSON(counts)
-    )
-  )
 }
 
 #' Removes the outlier observation from an array
@@ -1267,4 +1064,210 @@ remove_outliers_from <- function(var, outlier_definition) {
   q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2, na.rm = TRUE)
   iqr <- q1_q3[2] - q1_q3[1]
   var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+}
+
+
+# sparklines ----
+
+#' S3 generic for `sparkline` widget HTML
+#'
+#' Generates the `sparkline` HTML code corresponding to the input array.
+#' For numeric variables creates a box plot, for character and factors - bar plot.
+#' Produces an empty string for variables of other types.
+#'
+#' @param arr vector of any type and length
+#' @param width `numeric` the width of the `sparkline` widget (pixels)
+#' @param bar_spacing `numeric` the spacing between the bars (in pixels)
+#' @param bar_width `numeric` the width of the bars (in pixels)
+#' @param ... `list` additional options passed to bar plots of `jquery.sparkline`;
+#'                   see [`jquery.sparkline docs`](https://omnipotent.net/jquery.sparkline/#common)
+#'
+#' @return Character string containing HTML code of the `sparkline` HTML widget.
+#' @keywords internal
+create_sparklines <- function(arr, width = 150, ...) {
+  if (all(is.null(arr))) {
+    return("")
+  }
+  UseMethod("create_sparklines")
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.logical <- function(arr, ...) {
+  create_sparklines(as.factor(arr))
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.numeric <- function(arr, width = 150, ...) {
+  if (any(is.infinite(arr))) {
+    return(as.character(tags$code("infinite values", class = "text-blue")))
+  }
+  if (length(arr) > 100000) {
+    return(as.character(tags$code("Too many rows (>100000)", class = "text-blue")))
+  }
+
+  arr <- arr[!is.na(arr)]
+  sparkline::spk_chr(unname(arr), type = "box", width = width, ...)
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.character <- function(arr, ...) {
+  return(create_sparklines(as.factor(arr)))
+}
+
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.factor <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
+  decreasing_order <- TRUE
+
+  counts <- table(arr)
+  if (length(counts) >= 100) {
+    return(as.character(tags$code("> 99 levels", class = "text-blue")))
+  } else if (length(counts) == 0) {
+    return(as.character(tags$code("no levels", class = "text-blue")))
+  } else if (length(counts) == 1) {
+    return(as.character(tags$code("one level", class = "text-blue")))
+  }
+
+  # Summarize the occurences of different levels
+  # and get the maximum and minimum number of occurences
+  # This is needed for the sparkline to correctly display the bar plots
+  # Otherwise they are cropped
+  counts <- sort(counts, decreasing = decreasing_order, method = "radix")
+  max_value <- if (decreasing_order) counts[1] else counts[length[counts]]
+  max_value <- unname(max_value)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(names(counts), as.vector(counts))
+  )
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.Date <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", class = "text-blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date", class = "text-blue")))
+  }
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(as.Date(arr_num[start_bins], origin = as.Date("1970-01-01")))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+  )
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.POSIXct <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", class = "text-blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", class = "text-blue")))
+  }
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+  )
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_width = 20, ...) {
+  arr_num <- as.numeric(arr)
+  arr_num <- sort(arr_num, decreasing = FALSE, method = "radix")
+  binwidth <- get_bin_width(arr_num, 1)
+  bins <- floor(diff(range(arr_num)) / binwidth) + 1
+  if (all(is.na(bins))) {
+    return(as.character(tags$code("only NA", class = "text-blue")))
+  } else if (bins == 1) {
+    return(as.character(tags$code("one date-time", class = "text-blue")))
+  }
+  counts <- as.vector(unname(base::table(cut(arr_num, breaks = bins))))
+  max_value <- max(counts)
+
+  start_bins <- as.integer(seq(1, length(arr_num), length.out = bins))
+  labels_start <- as.character(format(as.POSIXct(arr_num[start_bins], origin = as.Date("1970-01-01")), "%Y-%m-%d"))
+  labels <- paste("Start:", labels_start)
+
+  sparkline::spk_chr(
+    unname(counts),
+    type = "bar",
+    chartRangeMin = 0,
+    chartRangeMax = max_value,
+    width = width,
+    barWidth = bar_width,
+    barSpacing = bar_spacing,
+    tooltipFormatter = custom_sparkline_formatter(labels, counts)
+  )
+}
+
+#' @rdname create_sparklines
+#' @keywords internal
+#' @export
+create_sparklines.default <- function(arr, width = 150, ...) {
+  as.character(tags$code("unsupported variable type", class = "text-blue"))
+}
+
+
+custom_sparkline_formatter <- function(labels, counts) {
+  htmlwidgets::JS(
+    sprintf(
+      "function(sparkline, options, field) {
+        return 'ID: ' + %s[field[0].offset] + '<br>' + 'Count: ' + %s[field[0].offset];
+        }",
+      jsonlite::toJSON(labels),
+      jsonlite::toJSON(counts)
+    )
+  )
 }

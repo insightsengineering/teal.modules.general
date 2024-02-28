@@ -1,4 +1,4 @@
-#' Distribution analysis module
+#' `teal` module: Distribution analysis
 #'
 #' Module is designed to explore the distribution of a single variable within a given dataset.
 #' It offers several tools, such as histograms, Q-Q plots, and various statistical tests to
@@ -24,6 +24,8 @@
 #'
 #' @templateVar ggnames "Histogram", "QQplot"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)

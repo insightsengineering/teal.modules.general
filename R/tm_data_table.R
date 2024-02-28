@@ -1,4 +1,4 @@
-#' Data table viewer module
+#' `teal` module: Data table viewer
 #'
 #' Module provides a dynamic and interactive way to view `data.frame`s in a `teal` application.
 #' It uses the `DT` package to display data tables in a paginated, searchable, and sortable format,
@@ -26,6 +26,8 @@
 #' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
 #' (see `server` argument of [DT::renderDataTable()])
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
