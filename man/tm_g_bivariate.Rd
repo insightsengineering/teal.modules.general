@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_bivariate.R
 \name{tm_g_bivariate}
 \alias{tm_g_bivariate}
-\title{Univariate and bivariate visualizations module}
+\title{\code{teal} module: Univariate and bivariate visualizations}
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",
@@ -101,6 +101,9 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
 Module enables the creation of univariate and bivariate plots,
 facilitating the exploration of data distributions and relationships between two variables.
@@ -115,7 +118,7 @@ For more examples, please see the vignette "Using bivariate plot" via
 \examples{
 library(teal.widgets)
 
-# general data exapmle
+# general data example
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)

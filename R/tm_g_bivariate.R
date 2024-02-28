@@ -1,4 +1,4 @@
-#' Univariate and bivariate visualizations module
+#' `teal` module: Univariate and bivariate visualizations
 #'
 #' Module enables the creation of univariate and bivariate plots,
 #' facilitating the exploration of data distributions and relationships between two variables.
@@ -44,10 +44,12 @@
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes (`logical`, optional) Whether to swap X and Y axes. Defaults to `FALSE`.
 #'
+#' @inherit shared_params return
+#'
 #' @examples
 #' library(teal.widgets)
 #'
-#' # general data exapmle
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -299,9 +301,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   )
 }
 
-# UI function for the bivariate module.
-#' @noRd
-#' @keywords internal
+# UI function for the bivariate module
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(
@@ -442,9 +442,7 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-# Server function for the bivariate module.
-#' @noRd
-#' @keywords internal
+# Server function for the bivariate module
 srv_g_bivariate <- function(id,
                             data,
                             reporter,
@@ -726,8 +724,6 @@ srv_g_bivariate <- function(id,
 }
 
 # Get Substituted ggplot call
-#' @noRd
-#' @keywords internal
 bivariate_plot_call <- function(data_name,
                                 x = character(0),
                                 y = character(0),
@@ -778,8 +774,6 @@ bivariate_plot_call <- function(data_name,
 
 # Create ggplot part of plot call
 # Due to the type of the x and y variable the plot type is chosen
-#' @noRd
-#' @keywords internal
 bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
                                   freq = TRUE,
@@ -963,9 +957,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   plot_call
 }
 
-#' Create facet call
-#' @noRd
-#' @keywords internal
+# Create facet call
 facet_ggplot_call <- function(row_facet = character(0),
                               col_facet = character(0),
                               free_x_scales = FALSE,
@@ -996,8 +988,6 @@ facet_ggplot_call <- function(row_facet = character(0),
   }
 }
 
-#' @noRd
-#' @keywords internal
 coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,

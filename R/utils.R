@@ -26,6 +26,15 @@
 #' @param post_output (`shiny.tag`, optional) Text or UI element to be displayed after the module's output,
 #' adding context or further instructions. Elements like `shiny::helpText()` are useful.
 #'
+#' @param alpha (`integer(1)` or `integer(3)`, optional) Specifies point opacity.
+#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
+#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#' @param size (`integer(1)` or `integer(3)`, optional) Specifies point size.
+#' - When the length of `size` is one: the plot point sizes will have a fixed size.
+#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
+#' vector of `value`, `min`, and `max`.
+#'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @name shared_params
@@ -119,26 +128,15 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   })
 }
 
-#' Call a function with a character vector for the \code{...} argument
+#' Call a function with a character vector for the `...` argument
 #'
-#' @param fun (`character`) Name of a function where the \code{...} argument
-#'   shall be replaced by values from \code{str_args}.
-#' @param str_args (`character`) A character vector that the function shall
-#'  be executed with
+#' @param fun (`character`) Name of a function where the `...` argument shall be replaced by values from `str_args`.
+#' @param str_args (`character`) A character vector that the function shall be executed with
 #'
-#' @return Call (i.e. expression) of the function provided by \code{fun}
-#'  with arguments provided by \code{str_args}.
-#'
-#' @examples
-#' call_fun_dots <- getFromNamespace("call_fun_dots", "teal.modules.general")
-#'
-#' a <- 1
-#' b <- 2
-#' call_fun_dots("sum", c("a", "b"))
-#' eval(call_fun_dots("sum", c("a", "b")))
+#' @return
+#' Value of call to `fun` with arguments specified in `str_args`.
 #'
 #' @keywords internal
-#'
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
@@ -147,14 +145,11 @@ call_fun_dots <- function(fun, str_args) {
 #'
 #' @param var_names (`character`) Name of variable to extract labels from.
 #' @param dataset (`dataset`) Name of analysis dataset.
-#' @param prefix (`character`) String to paste to the beginning of the
-#'   variable name with label.
-#' @param suffix (`character`) String to paste to the end of the variable
-#'   name with label.
-#' @param wrap_width (`numeric`) Number of characters to wrap original
-#'   label to. Defaults to 80.
+#' @param prefix,suffix (`character`) String to paste to the beginning/end of the variable name with label.
+#' @param wrap_width (`numeric`) Number of characters to wrap original label to. Defaults to 80.
 #'
 #' @return (`character`) String with variable name and label.
+#'
 #' @keywords internal
 #'
 varname_w_label <- function(var_names,
@@ -199,21 +194,9 @@ shape_names <- c(
 
 #' Get icons to represent variable types in dataset
 #'
-#' @param var_type (`character`)\cr
-#'  of `R` internal types (classes).
-#'
-#' @return Vector of HTML icons corresponding to data type in each column.
-#'
-#' @examples
-#' variable_type_icons <- getFromNamespace("variable_type_icons", "teal.modules.general")
-#'
-#' variable_type_icons(c(
-#'   "integer", "numeric", "logical", "Date", "POSIXct", "POSIXlt",
-#'   "factor", "character", "unknown", ""
-#' ))
-#'
+#' @param var_type (`character`) of R internal types (classes).
+#' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
-#'
 variable_type_icons <- function(var_type) {
   checkmate::assert_character(var_type, any.missing = FALSE)
 
@@ -231,7 +214,7 @@ variable_type_icons <- function(var_type) {
   )
   class_to_icon <- lapply(class_to_icon, function(icon_name) toString(icon(icon_name, lib = "font-awesome")))
 
-  res <- unname(vapply(
+  unname(vapply(
     var_type,
     FUN.VALUE = character(1),
     FUN = function(class) {
@@ -244,8 +227,6 @@ variable_type_icons <- function(var_type) {
       }
     }
   ))
-
-  return(res)
 }
 
 #' Include `CSS` files from `/inst/css/` package directory to application header
@@ -267,7 +248,7 @@ include_css_files <- function(pattern = "*") {
   if (length(css_files) == 0) {
     return(NULL)
   }
-  return(shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS))))
+  shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS)))
 }
 
 #' JavaScript condition to check if a specific tab is active

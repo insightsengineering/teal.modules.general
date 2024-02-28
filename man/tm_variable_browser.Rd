@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{tm_variable_browser}
 \alias{tm_variable_browser}
-\title{Variable browser \code{teal} module}
+\title{\code{teal} module: Variable browser}
 \usage{
 tm_variable_browser(
   label = "Variable Browser",
@@ -40,6 +40,9 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module provides provides a detailed summary and visualization of variable distributions

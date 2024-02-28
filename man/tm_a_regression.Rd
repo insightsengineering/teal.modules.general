@@ -37,6 +37,20 @@ Response variables from an incoming dataset with filtering and selecting.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\itemize{
+\item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
+\item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
+
+\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\itemize{
+\item When the length of \code{size} is one: the plot point sizes will have a fixed size.
+\item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
+vector of \code{value}, \code{min}, and \code{max}.
+}}
+
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}

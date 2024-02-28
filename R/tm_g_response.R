@@ -1,4 +1,4 @@
-#' Response plot module
+#' `teal` module: Response plot
 #'
 #' Generates a response plot for a given `response` and `x` variables.
 #' This module allows users customize and add annotations to the plot depending
@@ -422,7 +422,6 @@ srv_g_response <- function(id,
           env = list(resp_var = resp_var)
         )
       ) %>%
-        # nolint start
         # rowf and colf will be a NULL if not set by a user
         teal.code::eval_code(
           substitute(
@@ -442,7 +441,6 @@ srv_g_response <- function(id,
             env = list(x_cl = x_cl, rowf = rowf, colf = colf)
           )
         )
-      # nolint end
 
       plot_call <- substitute(
         expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +

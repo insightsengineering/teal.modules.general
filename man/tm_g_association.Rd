@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_association.R
 \name{tm_g_association}
 \alias{tm_g_association}
-\title{Stack plots of variables and show association with reference variable}
+\title{\code{teal} module: Stack plots of variables and show association with reference variable}
 \usage{
 tm_g_association(
   label = "Association",
@@ -57,6 +57,9 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 List names should match the following: \code{c("default", "Bivariate1", "Bivariate2")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module provides functionality for visualizing the distribution of variables and

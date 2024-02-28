@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_response.R
 \name{tm_g_response}
 \alias{tm_g_response}
-\title{Response plot module}
+\title{\code{teal} module: Response plot}
 \usage{
 tm_g_response(
   label = "Response Plot",
