@@ -28,7 +28,7 @@ SECURITY.md
 ^Jenkinsfile$
 ^logs$
 ^Makefile$
-^man-roxygen$
+^man/roxygen$
 ^Meta$
 ^outputdir$
 ^scratch$
