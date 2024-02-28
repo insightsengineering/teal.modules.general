@@ -217,6 +217,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   assert_single_selection(col_facet)
 
+  checkmate::assert_flag(facet)
+
   checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
   assert_single_selection(color)
 
@@ -226,9 +228,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
   assert_single_selection(size)
 
-  checkmate::assert_flag(facet)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  checkmate::assert_flag(swap_axes)
   checkmate::assert_flag(use_density)
 
   # Determines color, fill & size if they are not explicitly set
