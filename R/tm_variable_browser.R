@@ -544,6 +544,7 @@ srv_variable_browser <- function(id,
 #' @return text describing \code{NA} occurrence.
 #' @keywords internal
 var_missings_info <- function(x) {
+  x <- impute_blanks_as_na(x)
   return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
 }
 
@@ -817,7 +818,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 
     summary <-
       data.frame(
-        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd", "n"),
+        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd", "n", "<Missing>"),
         Value = c(
           round(min(x, na.rm = TRUE), 2),
           qvals[1],
@@ -826,7 +827,8 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
           qvals[3],
           round(max(x, na.rm = TRUE), 2),
           round(stats::sd(x, na.rm = TRUE), 2),
-          length(x[!is.na(x)])
+          length(x[!is.na(x)]),
+          length(x[is.na(x)])
         )
       )
 
@@ -837,7 +839,8 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
       x <- factor(x, levels = sort(unique(x)))
     }
 
-    level_counts <- table(x)
+    level_counts <- table(x, useNA = "always")
+    names(level_counts)[is.na(names(level_counts))] <- "<Missing>"
     max_levels_signif <- nchar(level_counts)
 
     if (!all(is.na(x))) {
@@ -942,9 +945,10 @@ plot_var_summary <- function(var,
         var <- stringr::str_wrap(var, width = wrap_character)
       }
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
+      var[is.na(var)] <- "<Missing>"
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
-        geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan"))
+        geom_bar(stat = "count", aes(fill = ifelse(var == "<Missing>", "missing", "all")), show.legend = FALSE) +
+        scale_fill_manual(values = c("missing" = "tan", "all" = "gray50"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
@@ -1085,7 +1089,7 @@ get_plotted_data <- function(input, plot_var, data) {
   df <- data()[[dataset_name]]
 
   var_description <- teal.data::col_labels(df)[[varname]]
-  list(data = df[[varname]], var_description = var_description)
+  list(data = impute_blanks_as_na(df[[varname]]), var_description = var_description)
 }
 
 #' Renders the left-hand side `tabset` panel of the module
@@ -1334,4 +1338,18 @@ remove_outliers_from <- function(var, outlier_definition) {
   q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2, na.rm = TRUE)
   iqr <- q1_q3[2] - q1_q3[1]
   var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+}
+
+#' Imputes empty strings as `NA`
+#'
+#' @param var (`vector`) a vector of any type and length
+#' @returns (`vector`) a vector with empty strings imputed as `NA`, if provided.
+#' @keywords internal
+impute_blanks_as_na <- function(var) {
+  var <- as.vector(var)
+  if (is.character(var)) {
+    var <- gsub(" +", "", var)
+    var[var == ""] <- NA
+  }
+  var
 }
