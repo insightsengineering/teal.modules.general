@@ -204,6 +204,8 @@ srv_variable_browser <- function(id,
     # variable is by default treated as a factor
     .unique_records_default_as_factor <- 6 # nolint: object_length.
 
+    varname_numeric_as_factor <- reactiveValues()
+
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
@@ -353,6 +355,10 @@ srv_variable_browser <- function(id,
         )
       )
 
+      observeEvent(input$numeric_as_factor, ignoreInit = TRUE, {
+        varname_numeric_as_factor[[plot_var$variable[[dataname]]]] <- input$numeric_as_factor
+      })
+
       if (is.numeric(df[[varname]])) {
         unique_entries <- length(unique(df[[varname]]))
         if (unique_entries < .unique_records_for_factor && unique_entries > 0) {
@@ -361,9 +367,9 @@ srv_variable_browser <- function(id,
               session$ns("numeric_as_factor"),
               "Treat variable as factor",
               value = `if`(
-                is.null(isolate(input$numeric_as_factor)),
+                is.null(varname_numeric_as_factor[[varname]]),
                 unique_entries < .unique_records_default_as_factor,
-                isolate(input$numeric_as_factor)
+                varname_numeric_as_factor[[varname]]
               )
             ),
             conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
