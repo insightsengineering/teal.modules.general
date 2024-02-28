@@ -544,6 +544,7 @@ srv_variable_browser <- function(id,
 #' @return text describing \code{NA} occurrence.
 #' @keywords internal
 var_missings_info <- function(x) {
+  x <- impute_blanks_as_na(x)
   return(sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2)))
 }
 
@@ -837,7 +838,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
       x <- factor(x, levels = sort(unique(x)))
     }
 
-    level_counts <- table(x)
+    level_counts <- table(x, useNA = "always")
     max_levels_signif <- nchar(level_counts)
 
     if (!all(is.na(x))) {
@@ -1085,7 +1086,7 @@ get_plotted_data <- function(input, plot_var, data) {
   df <- data()[[dataset_name]]
 
   var_description <- teal.data::col_labels(df)[[varname]]
-  list(data = df[[varname]], var_description = var_description)
+  list(data = impute_blanks_as_na(df[[varname]]), var_description = var_description)
 }
 
 #' Renders the left-hand side `tabset` panel of the module
@@ -1334,4 +1335,18 @@ remove_outliers_from <- function(var, outlier_definition) {
   q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2, na.rm = TRUE)
   iqr <- q1_q3[2] - q1_q3[1]
   var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+}
+
+#' Imputes empty strings as `NA`
+#'
+#' @param var (`vector`) a vector of any type and length
+#' @returns (`vector`) a vector with empty strings imputed as `NA`, if provided.
+#' @keywords internal
+impute_blanks_as_na <- function(var) {
+  var <- as.vector(var)
+  if (is.character(var)) {
+    var <- gsub(" +", "", var)
+    var[var == ""] <- NA
+  }
+  var
 }
