@@ -4,16 +4,16 @@
 \alias{shared_params}
 \title{Shared parameters documentation}
 \arguments{
-\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\item{plot_height}{(\code{numeric}) optional specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\item{plot_width}{(\code{numeric}) optional specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+\item{rotate_xaxis_labels}{(\code{logical}) optional whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.

@@ -48,10 +48,10 @@ specifies the variable(s) for faceting rows.}
 \item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional
 specifies the variable(s) for faceting columns.}
 
-\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\item{plot_height}{(\code{numeric}) optional specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\item{plot_width}{(\code{numeric}) optional specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
 \item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional specifies point opacity.
@@ -74,10 +74,10 @@ vector of \code{value}, \code{min}, and \code{max}.
 
 \item{max_deg}{(\code{integer}) optional maximum degree for the polynomial trend line. Must not be less than 1.}
 
-\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+\item{rotate_xaxis_labels}{(\code{logical}) optional whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
 providing context or a title.
