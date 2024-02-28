@@ -818,7 +818,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 
     summary <-
       data.frame(
-        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd", "n"),
+        Statistic = c("min", "Q1", "median", "mean", "Q3", "max", "sd", "n", "<Missing>"),
         Value = c(
           round(min(x, na.rm = TRUE), 2),
           qvals[1],
@@ -827,7 +827,8 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
           qvals[3],
           round(max(x, na.rm = TRUE), 2),
           round(stats::sd(x, na.rm = TRUE), 2),
-          length(x[!is.na(x)])
+          length(x[!is.na(x)]),
+          length(x[is.na(x)])
         )
       )
 
@@ -839,6 +840,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
     }
 
     level_counts <- table(x, useNA = "always")
+    names(level_counts)[is.na(names(level_counts))] <- "<Missing>"
     max_levels_signif <- nchar(level_counts)
 
     if (!all(is.na(x))) {
