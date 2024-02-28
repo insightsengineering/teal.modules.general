@@ -733,7 +733,7 @@ bivariate_plot_call <- function(data_name,
                                 alpha = double(0),
                                 size = 2,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
   validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
@@ -797,8 +797,8 @@ substitute_q <- function(x, env) {
 #' bivariate_ggplot_call("numeric", "factor")
 #' bivariate_ggplot_call("factor", "numeric")
 #' bivariate_ggplot_call("factor", "factor")
-bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
-                                  y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
+bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "ordered", "character", "logical"), # nolint: line_length
+                                  y_class = c("NULL", "numeric", "integer", "factor", "ordered", "character", "logical"), # nolint: line_length
                                   freq = TRUE,
                                   theme = "gray",
                                   rotate_xaxis_labels = FALSE,
@@ -814,7 +814,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   x_class <- match.arg(x_class)
   y_class <- match.arg(y_class)
 
-  if (x_class %in% c("character", "logical")) {
+  if (x_class %in% c("character", "logical", "ordered")) {
     x_class <- "factor"
   }
   if (x_class %in% c("integer")) {
