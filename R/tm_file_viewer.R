@@ -21,7 +21,7 @@
 #' datanames(data) <- c("data")
 #'
 #' app <- init(
-#'   data = data
+#'   data = data,
 #'   modules = modules(
 #'     tm_file_viewer(
 #'       input_path = list(
