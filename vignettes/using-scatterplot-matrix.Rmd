@@ -12,37 +12,34 @@ vignette: >
 
 # `teal` application to use scatter plot matrix with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside an scatter plot matrix module:
+This vignette will guide you through the four parts to create a `teal` application using
+various types of datasets using the scatter plot matrix module `tm_g_scatterplotmatrix()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
-## Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
-Inside this app 5 datasets will be used
+Inside this app 4 datasets will be used
 
 1. `ADSL` A wide data set with subject data
-2. `ADSL2` A wide data set with subject data
-3. `ADRS` A long data set with response data for subjects at different time points of the study
-4. `ADTTE` A long data set with time to event data
-5. `ADLB` A long data set with lab measurements for each subject
+2. `ADRS` A long data set with response data for subjects at different time points of the study
+3. `ADTTE` A long data set with time to event data
+4. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADSL2 <- teal.modules.general::rADSL %>%
+  ADSL <- teal.modules.general::rADSL %>%
     mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
   ADRS <- teal.modules.general::rADRS
   ADTTE <- teal.modules.general::rADTTE
@@ -53,137 +50,115 @@ data <- within(data, {
       TRUE ~ "-"
     )))
 })
-datanames <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
+datanames <- c("ADSL", "ADRS", "ADTTE", "ADLB")
 datanames(data) <- datanames
-jk <- default_cdisc_join_keys[datanames]
-jk_adsl2 <- jk
-names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
-jk <- c(jk, jk_adsl2)
-jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
-# nolint end
+join_keys(data) <- default_cdisc_join_keys[datanames]
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_g_scatterplotmatrix` using different
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`. The app
+itself will be constructed by multiple calls of `tm_g_scatterplotmatrix()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+# configuration for the single wide dataset
+mod1 <- tm_g_scatterplotmatrix(
+  label = "Single wide dataset",
+  variables = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["ADSL"]]),
+      selected = c("AGE", "RACE", "SEX", "BMRKR1", "BMRKR2"),
+      multiple = TRUE,
+      fixed = FALSE,
+      ordered = TRUE
+    )
+  )
+)
+
+# configuration for the one long datasets
+mod2 <- tm_g_scatterplotmatrix(
+  "One long dataset",
+  variables = data_extract_spec(
+    dataname = "ADTTE",
+    select = select_spec(
+      choices = variable_choices(data[["ADTTE"]], c("AVAL", "BMRKR1", "BMRKR2")),
+      selected = c("AVAL", "BMRKR1", "BMRKR2"),
+      multiple = TRUE,
+      fixed = FALSE,
+      ordered = TRUE,
+      label = "Select variables:"
+    )
+  )
+)
+
+# configuration for the two long datasets
+mod3 <- tm_g_scatterplotmatrix(
+  label = "Two long datasets",
+  variables = list(
+    data_extract_spec(
+      dataname = "ADRS",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(data[["ADRS"]]),
+        selected = c("AVAL", "AVALC"),
+        multiple = TRUE,
+        fixed = FALSE,
+        ordered = TRUE,
+      ),
+      filter = filter_spec(
+        label = "Select endpoints:",
+        vars = c("PARAMCD", "AVISIT"),
+        choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+        selected = "OVRINV - SCREENING",
+        multiple = FALSE
+      )
+    ),
+    data_extract_spec(
+      dataname = "ADTTE",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(data[["ADTTE"]]),
+        selected = c("AVAL", "CNSR"),
+        multiple = TRUE,
+        fixed = FALSE,
+        ordered = TRUE
+      ),
+      filter = filter_spec(
+        label = "Select parameters:",
+        vars = "PARAMCD",
+        choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
+        selected = "OS",
+        multiple = TRUE
+      )
+    )
+  )
+)
+
+# initialize the app
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Scatterplot matrix",
-      # .. single wide ----
-      tm_g_scatterplotmatrix(
-        label = "Single wide dataset",
-        variables = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADSL"]]),
-            selected = c("AGE", "RACE", "SEX", "BMRKR1", "BMRKR2"),
-            multiple = TRUE,
-            fixed = FALSE,
-            ordered = TRUE
-          )
-        )
-      ),
-      tm_g_scatterplotmatrix(
-        label = "Multiple wide datasets",
-        variables = list(
-          teal.transform::data_extract_spec(
-            dataname = "ADSL",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(data[["ADSL"]]),
-              selected = c("AGE", "ACTARM", "SEX", "BMRKR1"),
-              multiple = TRUE,
-              fixed = FALSE,
-              ordered = TRUE
-            )
-          ),
-          teal.transform::data_extract_spec(
-            dataname = "ADSL2",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(data[["ADSL2"]]),
-              selected = c("COUNTRY", "ACTARM", "STRATA1"),
-              multiple = TRUE,
-              fixed = FALSE,
-              ordered = TRUE
-            )
-          )
-        )
-      ),
-      tm_g_scatterplotmatrix(
-        "One long dataset",
-        variables = teal.transform::data_extract_spec(
-          dataname = "ADTTE",
-          select = select_spec(
-            choices = variable_choices(data[["ADTTE"]], c("AVAL", "BMRKR1", "BMRKR2")),
-            selected = c("AVAL", "BMRKR1", "BMRKR2"),
-            multiple = TRUE,
-            fixed = FALSE,
-            ordered = TRUE,
-            label = "Select variables:"
-          )
-        )
-      ),
-      tm_g_scatterplotmatrix(
-        label = "Two long datasets",
-        variables = list(
-          teal.transform::data_extract_spec(
-            dataname = "ADRS",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(data[["ADRS"]]),
-              selected = c("AVAL", "AVALC"),
-              multiple = TRUE,
-              fixed = FALSE,
-              ordered = TRUE,
-            ),
-            filter = teal.transform::filter_spec(
-              label = "Select endpoints:",
-              vars = c("PARAMCD", "AVISIT"),
-              choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-              selected = "OVRINV - SCREENING",
-              multiple = FALSE
-            )
-          ),
-          teal.transform::data_extract_spec(
-            dataname = "ADTTE",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(data[["ADTTE"]]),
-              selected = c("AVAL", "CNSR"),
-              multiple = TRUE,
-              fixed = FALSE,
-              ordered = TRUE
-            ),
-            filter = teal.transform::filter_spec(
-              label = "Select parameters:",
-              vars = "PARAMCD",
-              choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-              selected = "OS",
-              multiple = TRUE
-            )
-          )
-        )
-      )
+      mod1,
+      mod2,
+      mod3
     )
   )
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app.
-Note that app is only displayed when running this code inside an R session.
+A simple `shiny::shinyApp()` call will let you run the app.
+Note that app is only displayed when running this code inside an `R` session.
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
+<img src="images/app-using-scatterplot-matrix.png" style = "display: block; margin: 0px; width: 100%"/>
