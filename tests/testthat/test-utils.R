@@ -54,7 +54,7 @@ testthat::test_that("assert_single_selection fails when multiple selection is se
     tm_g_bivariate(
       "a label",
       x,
-      x
+      mock_spec2
     ),
     "'x' should not allow multiple selection"
   )
@@ -62,8 +62,25 @@ testthat::test_that("assert_single_selection fails when multiple selection is se
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
-      list(mock_spec2, mock_spec, data_extract_spec("EMPTY")),
-      x
+      list(mock_spec2, mock_spec),
+      mock_spec2
+    ),
+    "'x' should not allow multiple selection"
+  )
+})
+
+testthat::test_that("assert_single_selection fails when with default spec", {
+  # Suppress logger messages
+  local_logger_threshold(logger::FATAL)
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      data_extract_spec("DEFAULT"),
+      data_extract_spec(
+        "VALID",
+        teal.transform::select_spec(choices = c("A", "B"), multiple = FALSE)
+      )
     ),
     "'x' should not allow multiple selection"
   )
