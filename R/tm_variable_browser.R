@@ -355,15 +355,6 @@ srv_variable_browser <- function(id,
         )
       )
 
-      get_default_choice <- function() {
-        selected_variable <- plot_var$variable[[dataname]]
-        if (is.null(varname_numeric_as_factor[[selected_variable]])) {
-          length(unique(df[[selected_variable]])) < .unique_records_default_as_factor
-        } else {
-          varname_numeric_as_factor[[selected_variable]]
-        }
-      }
-
       observeEvent(input$numeric_as_factor, ignoreInit = TRUE, {
         varname_numeric_as_factor[[plot_var$variable[[dataname]]]] <- input$numeric_as_factor
       })
@@ -375,7 +366,11 @@ srv_variable_browser <- function(id,
             checkboxInput(
               session$ns("numeric_as_factor"),
               "Treat variable as factor",
-              value = get_default_choice()
+              value = `if`(
+                is.null(varname_numeric_as_factor[[varname]]),
+                unique_entries < .unique_records_default_as_factor,
+                varname_numeric_as_factor[[varname]]
+              )
             ),
             conditionalPanel("!input.numeric_as_factor", ns = session$ns, numeric_ui)
           )
