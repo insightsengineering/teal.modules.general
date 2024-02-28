@@ -8,8 +8,8 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   specifying columns used to compute PCA.
-#' @param font_size (`numeric`, optional) Specifies font size.
+#' specifying columns used to compute PCA.
+#' @param font_size (`numeric`) optional specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.

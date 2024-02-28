@@ -14,8 +14,8 @@
 #' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Response variables from an incoming dataset with filtering and selecting.
-#' @param default_outlier_label (`character`, optional) The default column selected to label outliers.
-#' @param default_plot_type (`numeric`, optional) Defaults to Response vs Regressor.
+#' @param default_outlier_label (`character`) optional default column selected to label outliers.
+#' @param default_plot_type (`numeric`) optional defaults to "Response vs Regressor".
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
 #' 3. Normal Q-Q

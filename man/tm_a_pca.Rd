@@ -45,32 +45,32 @@ For more details see the vignette: \code{vignette("custom-ggplot2-arguments", pa
 \item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{font_size}{(\code{numeric}, optional) Specifies font size.
+\item{font_size}{(\code{numeric}) optional specifies font size.
 It controls the font size for plot titles, axis labels, and legends.
 \itemize{
 \item If vector of \code{length == 1} then the font sizes will have a fixed size.
 \item while vector of \code{value}, \code{min}, and \code{max} allows dynamic adjustment.
 }}
 
-\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional specifies point opacity.
 \itemize{
 \item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
 \item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}) optional specifies point size.
 \itemize{
 \item When the length of \code{size} is one: the plot point sizes will have a fixed size.
 \item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \value{

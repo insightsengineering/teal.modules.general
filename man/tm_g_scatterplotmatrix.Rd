@@ -28,11 +28,11 @@ rendered according to selection order.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \value{

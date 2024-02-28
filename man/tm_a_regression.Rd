@@ -37,14 +37,14 @@ Response variables from an incoming dataset with filtering and selecting.}
 \item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional specifies point opacity.
 \itemize{
 \item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
 \item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}) optional specifies point size.
 \itemize{
 \item When the length of \code{size} is one: the plot point sizes will have a fixed size.
 \item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
@@ -61,14 +61,14 @@ List names should match the following: \verb{c("default", "Response vs Regressor
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{default_plot_type}{(\code{numeric}, optional) Defaults to Response vs Regressor.
+\item{default_plot_type}{(\code{numeric}) optional defaults to "Response vs Regressor".
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
@@ -79,7 +79,7 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
-\item{default_outlier_label}{(\code{character}, optional) The default column selected to label outliers.}
+\item{default_outlier_label}{(\code{character}) optional default column selected to label outliers.}
 
 \item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
 Minimum distance between label and point on the plot that triggers the creation of

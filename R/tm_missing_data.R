@@ -10,7 +10,7 @@
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
 #' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
 #' ignored.
-#' @param ggtheme (`character`, optional) Specifies the default `ggplot2` theme for plots. Defaults to `classic`.
+#' @param ggtheme (`character`) optional specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi

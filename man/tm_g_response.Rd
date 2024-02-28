@@ -74,11 +74,11 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 }
 \value{

@@ -32,7 +32,7 @@ Categorical variable used to split the distribution analysis.}
 \item{group_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable used for faceting plot into multiple panels.}
 
-\item{freq}{(\code{logical}, optional) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+\item{freq}{(\code{logical}) optional whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 
 \item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
@@ -45,7 +45,7 @@ List names should match the following: \code{c("default", "Histogram", "QQplot")
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{bins}{(\code{integer(1)} or \code{integer(3)}, optional)  Determines the number of bins for the histogram.
+\item{bins}{(\code{integer(1)} or \code{integer(3)}) optional  specifies the number of bins for the histogram.
 \itemize{
 \item When the length of \code{bins} is one: The histogram bins will have a fixed size based on the \code{bins} provided.
 \item When the length of \code{bins} is three: The histogram bins are dynamically adjusted based on vector of \code{value}, \code{min},
