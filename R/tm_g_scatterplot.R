@@ -300,7 +300,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

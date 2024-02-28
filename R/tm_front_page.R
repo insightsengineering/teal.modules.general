@@ -78,7 +78,7 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_flag(show_metadata)
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
 
   module(

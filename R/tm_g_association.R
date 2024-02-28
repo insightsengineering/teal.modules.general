@@ -167,7 +167,7 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

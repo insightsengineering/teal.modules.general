@@ -273,7 +273,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

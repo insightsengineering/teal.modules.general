@@ -76,7 +76,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   }
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
 
   module(

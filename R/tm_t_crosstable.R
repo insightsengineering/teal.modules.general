@@ -163,7 +163,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   ui_args <- as.list(environment())
 
   server_args <- list(
