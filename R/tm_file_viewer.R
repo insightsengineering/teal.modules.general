@@ -8,10 +8,10 @@
 #' @inheritParams shared_params
 #' @param input_path (`list`) of the input paths, optional. Each element can be:
 #'
-#' @inherit shared_params return
-#'
 #' Paths can be specified as absolute paths or relative to the running directory of the application.
 #' Default to the current working directory if not supplied.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data()
