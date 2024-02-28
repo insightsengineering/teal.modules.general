@@ -111,7 +111,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
 
-  # Normalizing data types
+  # Normalize the parameters
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
