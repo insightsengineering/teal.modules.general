@@ -945,9 +945,10 @@ plot_var_summary <- function(var,
         var <- stringr::str_wrap(var, width = wrap_character)
       }
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
+      var[is.na(var)] <- "<Missing>"
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
-        geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan"))
+        geom_bar(stat = "count", aes(fill = ifelse(var == "<Missing>", "missing", "all")), show.legend = FALSE) +
+        scale_fill_manual(values = c("missing" = "tan", "all" = "gray50"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
