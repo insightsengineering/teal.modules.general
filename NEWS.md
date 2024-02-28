@@ -7,6 +7,7 @@
 ### Bug fixes
 
 * Outlier labels no longer appear out of bounds in `tm_a_regression`.
+* Fixed a bug in `tm_outliers` when changing the selected variable would cause a popup.
 
 ### Miscellaneous
 
