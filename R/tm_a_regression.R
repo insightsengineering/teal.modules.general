@@ -143,24 +143,18 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID") {
   logger::log_info("Initializing tm_a_regression")
+
+  # Normalizing data types
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_list(response, types = "data_extract_spec")
-  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
-    stop("'response' should not allow multiple selection")
-  }
   checkmate::assert_list(regressor, types = "data_extract_spec")
-  ggtheme <- match.arg(ggtheme)
-  checkmate::assert_string(default_outlier_label)
-  plot_choices <- c(
-    "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
-    "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
-  )
-  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
-  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+  checkmate::assert_list(response, types = "data_extract_spec")
+  assert_single_selection(response)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -169,7 +163,36 @@ tm_a_regression <- function(label = "Regression Analysis",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  # Send ui args
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
+  ggtheme <- match.arg(ggtheme)
+
+  plot_choices <- c(
+    "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
+    "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
+  )
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_choice(default_plot_type, seq.int(1, length(plot_choices)))
+  checkmate::assert_string(default_outlier_label)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
   args[["plot_choices"]] <- plot_choices
   data_extract_list <- list(
