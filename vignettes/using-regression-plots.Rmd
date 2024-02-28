@@ -12,37 +12,34 @@ vignette: >
 
 # `teal` application to use regression plot with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside an regression plot module:
+This vignette will guide you through the four parts to create a `teal` application using
+various types of datasets using the regression plot module `tm_a_regression()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
-## Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
-Inside this app 5 datasets will be used
+Inside this app 4 datasets will be used
 
 1. `ADSL` A wide data set with subject data
-2. `ADSL2` A wide data set with subject data
-3. `ADRS` A long data set with response data for subjects at different time points of the study
-4. `ADTTE` A long data set with time to event data
-5. `ADLB` A long data set with lab measurements for each subject
+2. `ADRS` A long data set with response data for subjects at different time points of the study
+3. `ADTTE` A long data set with time to event data
+4. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADSL2 <- teal.modules.general::rADSL %>%
+  ADSL <- teal.modules.general::rADSL %>%
     mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
   ADRS <- teal.modules.general::rADRS
   ADTTE <- teal.modules.general::rADTTE
@@ -53,216 +50,228 @@ data <- within(data, {
       TRUE ~ "-"
     )))
 })
-datanames <- c("ADSL", "ADSL2", "ADRS", "ADTTE", "ADLB")
+datanames <- c("ADSL", "ADRS", "ADTTE", "ADLB")
 datanames(data) <- datanames
-jk <- default_cdisc_join_keys[datanames]
-jk_adsl2 <- jk
-names(jk_adsl2)[names(jk_adsl2) == "ADSL"] <- "ADSL2"
-jk <- c(jk, jk_adsl2)
-jk["ADSL2", "ADSL"] <- c("USUBJID", "STUDYID")
-# nolint end
+join_keys(data) <- default_cdisc_join_keys[datanames]
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/latest-tag/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/latest-tag/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_a_regression` using different
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`. The app
+itself will be constructed by multiple calls of `tm_a_regression()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
+# configuration for the single wide dataset
+mod1 <- tm_a_regression(
+  label = "Single wide dataset",
+  response = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
+      selected = "BMRKR1",
+      multiple = FALSE,
+      fixed = FALSE
+    )
+  ),
+  regressor = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
+      selected = "AGE",
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
+)
+
+# configuration for the two wide datasets
+mod2 <- tm_a_regression(
+  label = "Two wide datasets",
+  default_plot_type = 2,
+  response = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
+      selected = "BMRKR1",
+      multiple = FALSE,
+      fixed = FALSE
+    )
+  ),
+  regressor = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
+      selected = c("AGE", "RACE"),
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
+)
+
+# configuration for the same long datasets (same subset)
+mod3 <- tm_a_regression(
+  label = "Same long datasets (same subset)",
+  default_plot_type = 2,
+  response = data_extract_spec(
+    dataname = "ADTTE",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADTTE"]], c("AVAL", "CNSR")),
+      selected = "AVAL",
+      multiple = FALSE,
+      fixed = FALSE
+    ),
+    filter = filter_spec(
+      label = "Select parameter:",
+      vars = "PARAMCD",
+      choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
+      selected = "PFS",
+      multiple = FALSE
+    )
+  ),
+  regressor = data_extract_spec(
+    dataname = "ADTTE",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADTTE"]], c("AGE", "CNSR", "SEX")),
+      selected = c("AGE", "CNSR", "SEX"),
+      multiple = TRUE
+    ),
+    filter = filter_spec(
+      label = "Select parameter:",
+      vars = "PARAMCD",
+      choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
+      selected = "PFS",
+      multiple = FALSE
+    )
+  )
+)
+
+# configuration for the wide and long datasets
+mod4 <- tm_a_regression(
+  label = "Wide and long datasets",
+  response = data_extract_spec(
+    dataname = "ADLB",
+    filter = list(
+      filter_spec(
+        vars = "PARAMCD",
+        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+        selected = levels(data[["ADLB"]]$PARAMCD)[2],
+        multiple = TRUE,
+        label = "Select measurement:"
+      ),
+      filter_spec(
+        vars = "AVISIT",
+        choices = levels(data[["ADLB"]]$AVISIT),
+        selected = levels(data[["ADLB"]]$AVISIT)[2],
+        multiple = TRUE,
+        label = "Select visit:"
+      )
+    ),
+    select = select_spec(
+      label = "Select variable:",
+      choices = "AVAL",
+      selected = "AVAL",
+      multiple = FALSE,
+      fixed = TRUE
+    )
+  ),
+  regressor = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2", "AGE")),
+      selected = "AGE",
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
+)
+
+# configuration for the same long datasets (different subsets)
+mod5 <- tm_a_regression(
+  label = "Same long datasets (different subsets)",
+  default_plot_type = 2,
+  response = data_extract_spec(
+    dataname = "ADLB",
+    filter = list(
+      filter_spec(
+        vars = "PARAMCD",
+        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+        selected = levels(data[["ADLB"]]$PARAMCD)[1],
+        multiple = TRUE,
+        label = "Select lab:"
+      ),
+      filter_spec(
+        vars = "AVISIT",
+        choices = levels(data[["ADLB"]]$AVISIT),
+        selected = levels(data[["ADLB"]]$AVISIT)[1],
+        multiple = TRUE,
+        label = "Select visit:"
+      )
+    ),
+    select = select_spec(
+      choices = "AVAL",
+      selected = "AVAL",
+      multiple = FALSE,
+      fixed = TRUE
+    )
+  ),
+  regressor = data_extract_spec(
+    dataname = "ADLB",
+    filter = list(
+      filter_spec(
+        vars = "PARAMCD",
+        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+        selected = levels(data[["ADLB"]]$PARAMCD)[1],
+        multiple = FALSE,
+        label = "Select labs:"
+      ),
+      filter_spec(
+        vars = "AVISIT",
+        choices = levels(data[["ADLB"]]$AVISIT),
+        selected = levels(data[["ADLB"]]$AVISIT)[1],
+        multiple = FALSE,
+        label = "Select visit:"
+      )
+    ),
+    select = select_spec(
+      choices = variable_choices(data[["ADLB"]], c("AVAL", "AGE", "BMRKR1", "BMRKR2", "SEX", "ARM")),
+      selected = c("AVAL", "BMRKR1"),
+      multiple = TRUE
+    )
+  )
+)
+
+# initialize the app
+app <- init(
   data = data,
-  modules = teal::modules(
+  modules = modules(
     modules(
       label = "Regression plots",
-      tm_a_regression(
-        label = "Single wide dataset",
-        response = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
-            selected = "BMRKR1",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        ),
-        regressor = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-            selected = "AGE",
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        )
-      ),
-      tm_a_regression(
-        label = "Two wide datasets",
-        default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
-            selected = "BMRKR1",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        ),
-        regressor = teal.transform::data_extract_spec(
-          dataname = "ADSL2",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADSL2"]], c("AGE", "SEX", "RACE")),
-            selected = c("AGE", "RACE"),
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        )
-      ),
-      tm_a_regression(
-        label = "Same long datasets (same subset)",
-        default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
-          dataname = "ADTTE",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADTTE"]], c("AVAL", "CNSR")),
-            selected = "AVAL",
-            multiple = FALSE,
-            fixed = FALSE
-          ),
-          filter = teal.transform::filter_spec(
-            label = "Select parameter:",
-            vars = "PARAMCD",
-            choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-            selected = "PFS",
-            multiple = FALSE
-          )
-        ),
-        regressor = teal.transform::data_extract_spec(
-          dataname = "ADTTE",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADTTE"]], c("AGE", "CNSR", "SEX")),
-            selected = c("AGE", "CNSR", "SEX"),
-            multiple = TRUE
-          ),
-          filter = teal.transform::filter_spec(
-            label = "Select parameter:",
-            vars = "PARAMCD",
-            choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-            selected = "PFS",
-            multiple = FALSE
-          )
-        )
-      ),
-      tm_a_regression(
-        label = "Wide and long datasets",
-        response = teal.transform::data_extract_spec(
-          dataname = "ADLB",
-          filter = list(
-            filter_spec(
-              vars = "PARAMCD",
-              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-              selected = levels(data[["ADLB"]]$PARAMCD)[2],
-              multiple = TRUE,
-              label = "Select measurement:"
-            ),
-            filter_spec(
-              vars = "AVISIT",
-              choices = levels(data[["ADLB"]]$AVISIT),
-              selected = levels(data[["ADLB"]]$AVISIT)[2],
-              multiple = TRUE,
-              label = "Select visit:"
-            )
-          ),
-          select = select_spec(
-            label = "Select variable:",
-            choices = "AVAL",
-            selected = "AVAL",
-            multiple = FALSE,
-            fixed = TRUE
-          )
-        ),
-        regressor = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2", "AGE")),
-            selected = "AGE",
-            multiple = TRUE,
-            fixed = FALSE
-          )
-        )
-      ),
-      tm_a_regression(
-        label = "Same long datasets (different subsets)",
-        default_plot_type = 2,
-        response = teal.transform::data_extract_spec(
-          dataname = "ADLB",
-          filter = list(
-            filter_spec(
-              vars = "PARAMCD",
-              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-              selected = levels(data[["ADLB"]]$PARAMCD)[1],
-              multiple = TRUE,
-              label = "Select lab:"
-            ),
-            filter_spec(
-              vars = "AVISIT",
-              choices = levels(data[["ADLB"]]$AVISIT),
-              selected = levels(data[["ADLB"]]$AVISIT)[1],
-              multiple = TRUE,
-              label = "Select visit:"
-            )
-          ),
-          select = select_spec(
-            choices = "AVAL",
-            selected = "AVAL",
-            multiple = FALSE,
-            fixed = TRUE
-          )
-        ),
-        regressor = teal.transform::data_extract_spec(
-          dataname = "ADLB",
-          filter = list(
-            filter_spec(
-              vars = "PARAMCD",
-              choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-              selected = levels(data[["ADLB"]]$PARAMCD)[1],
-              multiple = FALSE,
-              label = "Select labs:"
-            ),
-            filter_spec(
-              vars = "AVISIT",
-              choices = levels(data[["ADLB"]]$AVISIT),
-              selected = levels(data[["ADLB"]]$AVISIT)[1],
-              multiple = FALSE,
-              label = "Select visit:"
-            )
-          ),
-          select = select_spec(
-            choices = variable_choices(data[["ADLB"]], c("AVAL", "AGE", "BMRKR1", "BMRKR2", "SEX", "ARM")),
-            selected = c("AVAL", "BMRKR1"),
-            multiple = TRUE
-          )
-        )
-      )
+      mod1,
+      mod2,
+      mod3,
+      mod4,
+      mod5
     )
   )
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app.
-Note that app is only displayed when running this code inside an R session.
+A simple `shiny::shinyApp()` call will let you run the app.
+Note that app is only displayed when running this code inside an `R` session.
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
+<img src="images/app-using-regression-plots.png" style = "display: block; margin: 0px; width: 100%"/>
