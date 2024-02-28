@@ -797,8 +797,8 @@ substitute_q <- function(x, env) {
 #' bivariate_ggplot_call("numeric", "factor")
 #' bivariate_ggplot_call("factor", "numeric")
 #' bivariate_ggplot_call("factor", "factor")
-bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "ordered", "character", "logical"), # nolint: line_length
-                                  y_class = c("NULL", "numeric", "integer", "factor", "ordered", "character", "logical"), # nolint: line_length
+bivariate_ggplot_call <- function(x_class,
+                                  y_class,
                                   freq = TRUE,
                                   theme = "gray",
                                   rotate_xaxis_labels = FALSE,
@@ -811,21 +811,26 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
                                   ylab = "-",
                                   data_name = "ANL",
                                   ggplot2_args = teal.widgets::ggplot2_args()) {
-  x_class <- match.arg(x_class)
-  y_class <- match.arg(y_class)
-
-  if (x_class %in% c("character", "logical", "ordered")) {
-    x_class <- "factor"
-  }
-  if (x_class %in% c("integer")) {
-    x_class <- "numeric"
-  }
-  if (y_class %in% c("character", "logical")) {
-    y_class <- "factor"
-  }
-  if (y_class %in% c("integer")) {
-    y_class <- "numeric"
-  }
+  x_class <- switch(x_class,
+    "character" = "factor",
+    "ordered" = "factor",
+    "logical" = "factor",
+    "factor" = "factor",
+    "integer" = "numeric",
+    "numeric" = "numeric",
+    "NULL" = "NULL",
+    stop("unsupported x_class: ", x_class)
+  )
+  y_class <- switch(y_class,
+    "character" = "factor",
+    "ordered" = "factor",
+    "logical" = "factor",
+    "factor" = "factor",
+    "integer" = "numeric",
+    "numeric" = "numeric",
+    "NULL" = "NULL",
+    stop("unsupported y_class: ", y_class)
+  )
 
   if (all(c(x_class, y_class) == "NULL")) {
     stop("either x or y is required")
