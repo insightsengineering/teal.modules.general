@@ -21,9 +21,9 @@ Default \code{stats::cor.test}.}
 
 \item{.f_args}{(\code{list}) of arguments to be passed to \code{.f}.}
 
-\item{round_stat}{(\code{integer(1)}) optional number of decimal places to use when rounding the estimate.}
+\item{round_stat}{(\code{integer(1)}) optional, number of decimal places to use when rounding the estimate.}
 
-\item{round_pval}{(\code{integer(1)}) optional number of decimal places to use when rounding the p-value.}
+\item{round_pval}{(\code{integer(1)}) optional, number of decimal places to use when rounding the p-value.}
 }
 \value{
 Character with stats. For \code{\link[stats:cor.test]{stats::cor.test()}} correlation coefficient and p-value.

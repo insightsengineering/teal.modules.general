@@ -484,8 +484,8 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 #' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
 #' Default `stats::cor.test`.
 #' @param .f_args (`list`) of arguments to be passed to `.f`.
-#' @param round_stat (`integer(1)`) optional number of decimal places to use when rounding the estimate.
-#' @param round_pval (`integer(1)`) optional number of decimal places to use when rounding the p-value.
+#' @param round_stat (`integer(1)`) optional, number of decimal places to use when rounding the estimate.
+#' @param round_pval (`integer(1)`) optional, number of decimal places to use when rounding the p-value.
 #'
 #' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
 #'

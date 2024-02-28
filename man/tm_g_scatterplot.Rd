@@ -36,57 +36,57 @@ variable names selected to plot along the x-axis by default.}
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
 variable names selected to plot along the y-axis by default.}
 
-\item{color_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional
+\item{color_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
 defines the color encoding. If \code{NULL} then no color encoding option will be displayed.}
 
-\item{size_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional
+\item{size_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
 defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
 
-\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional
+\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
 specifies the variable(s) for faceting rows.}
 
-\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional
+\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
 specifies the variable(s) for faceting columns.}
 
-\item{plot_height}{(\code{numeric}) optional specifies the plot height as a three-element vector of
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{(\code{numeric}) optional specifies the plot width as a three-element vector of
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional, specifies point opacity.
 \itemize{
 \item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
 \item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{shape}{(\code{character}) optional character vector with the names of the
+\item{shape}{(\code{character}) optional, character vector with the names of the
 shape, e.g. \code{c("triangle", "square", "circle")}. It defaults to \code{shape_names}. This is a complete list from
 \code{vignette("ggplot2-specs", package="ggplot2")}.}
 
-\item{size}{(\code{integer(1)} or \code{integer(3)}) optional specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}) optional, specifies point size.
 \itemize{
 \item When the length of \code{size} is one: the plot point sizes will have a fixed size.
 \item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{max_deg}{(\code{integer}) optional maximum degree for the polynomial trend line. Must not be less than 1.}
+\item{max_deg}{(\code{integer}) optional, maximum degree for the polynomial trend line. Must not be less than 1.}
 
-\item{rotate_xaxis_labels}{(\code{logical}) optional whether to rotate plot X axis labels. Does not
+\item{rotate_xaxis_labels}{(\code{logical}) optional, whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{ggtheme}{(\code{character}) optional \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{pre_output}{(\code{shiny.tag}) optional text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}) optional text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{table_dec}{(\code{integer}) optional number of decimal places used to round numeric values in the table.}
+\item{table_dec}{(\code{integer}) optional, number of decimal places used to round numeric values in the table.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.

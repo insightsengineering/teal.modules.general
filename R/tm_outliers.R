@@ -9,7 +9,7 @@
 #'
 #' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Specifies variable(s) to be analyzed for outliers.
-#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional
+#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
 #'
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"

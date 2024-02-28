@@ -14,19 +14,19 @@
 #' variable names selected to plot along the x-axis by default.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
 #' variable names selected to plot along the y-axis by default.
-#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional
+#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional
+#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' defines the point size encoding. If `NULL` then no size encoding option will be displayed.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the variable(s) for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the variable(s) for faceting columns.
-#' @param shape (`character`) optional character vector with the names of the
+#' @param shape (`character`) optional, character vector with the names of the
 #' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
 #' `vignette("ggplot2-specs", package="ggplot2")`.
-#' @param max_deg (`integer`) optional maximum degree for the polynomial trend line. Must not be less than 1.
-#' @param table_dec (`integer`) optional number of decimal places used to round numeric values in the table.
+#' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
+#' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
 #'
 #' @inherit shared_params return
 #'
