@@ -224,3 +224,70 @@ testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
     "Assertion on 'plot_width' failed: Must have length 3, but has length 1"
   )
 })
+
+# Test `color_settings` argument
+
+testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `color` is supplied", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      color_setting = FALSE,
+      color = mock_data_extract_spec()
+    ),
+    "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `size` is supplied", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      color_setting = FALSE,
+      size = mock_data_extract_spec()
+    ),
+    "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `fill` is supplied", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      color_setting = FALSE,
+      fill = mock_data_extract_spec()
+    ),
+    "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
+  )
+})
+
+testthat::test_that("tm_g_bivariate determines `color`, `size` and `fill` when `color_setting` is TRUE", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  mod <- tm_g_bivariate(
+    "a label",
+    mock_data_extract_spec(select_multiple = FALSE),
+    mock_data_extract_spec(select_multiple = FALSE),
+    color_setting = TRUE
+  )
+
+  expect_contains(
+    vapply(
+      unlist(mod$ui_args[c("color", "size", "fill")], recursive = FALSE),
+      class,
+      character(1)
+    ),
+    "data_extract_spec"
+  )
+})
