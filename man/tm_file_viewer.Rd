@@ -13,7 +13,10 @@ tm_file_viewer(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{input_path}{(\code{list}) of the input paths, optional. Each element can be:}
+\item{input_path}{(\code{list}) of the input paths, optional. Each element can be:
+
+Paths can be specified as absolute paths or relative to the running directory of the application.
+Default to the current working directory if not supplied.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
