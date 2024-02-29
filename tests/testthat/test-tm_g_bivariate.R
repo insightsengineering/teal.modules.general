@@ -50,7 +50,7 @@ testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have al
     mock_data_extract_spec(select_multiple = FALSE)
   )
 
-  expect_contains(
+  testthat::expect_contains(
     names(mod$ui_args),
     names(formals(tm_g_bivariate))
   )
