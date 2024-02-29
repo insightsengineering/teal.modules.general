@@ -29,6 +29,7 @@ SECURITY.md
 ^logs$
 ^Makefile$
 ^man/roxygen$
+^man-roxygen$
 ^Meta$
 ^outputdir$
 ^scratch$
