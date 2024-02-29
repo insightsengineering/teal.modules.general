@@ -282,7 +282,7 @@ testthat::test_that("tm_g_bivariate determines `color`, `size` and `fill` when `
     color_setting = TRUE
   )
 
-  expect_contains(
+  testthat::expect_contains(
     vapply(
       unlist(mod$ui_args[c("color", "size", "fill")], recursive = FALSE),
       class,
