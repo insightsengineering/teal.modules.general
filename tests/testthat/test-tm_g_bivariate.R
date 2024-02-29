@@ -6,8 +6,17 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object", {
       "a label",
       mock_data_extract_spec(select_multiple = FALSE),
       mock_data_extract_spec(select_multiple = FALSE),
+      row_facet = mock_data_extract_spec(select_multiple = FALSE),
+      col_facet = mock_data_extract_spec(select_multiple = FALSE),
+      facet = TRUE,
+      color_setting = TRUE,
+      use_density = TRUE,
+      free_x_scales = TRUE,
+      free_y_scales = TRUE,
       plot_height = c(400, 100, 600),
-      plot_width = c(600, 100, 600)
+      plot_width = c(600, 100, 600),
+      rotate_xaxis_labels = TRUE,
+      swap_axes = TRUE
     ),
     "teal_module"
   )
