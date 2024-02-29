@@ -1,87 +1,226 @@
-testthat::test_that("assert_single_selection succeeds if all elements have multiple choices disabled", {
-  # Suppress logger messages
-  local_logger_threshold(logger::FATAL)
-
-  mock_spec <- data_extract_spec(
-    dataname = "MOCK_DATASET",
-    select = teal.transform::select_spec(choices = c("A", "B"), multiple = FALSE)
-  )
+testthat::test_that("tm_g_bivariate creates a `teal_module` object", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
 
   testthat::expect_s3_class(
     tm_g_bivariate(
       "a label",
-      mock_spec,
-      mock_spec
-    ),
-    "teal_module"
-  )
-
-  testthat::expect_s3_class(
-    tm_g_bivariate(
-      "a label",
-      list(mock_spec),
-      mock_spec
-    ),
-    "teal_module"
-  )
-
-  testthat::expect_s3_class(
-    tm_g_bivariate(
-      "a label",
-      list(mock_spec, mock_spec),
-      mock_spec
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_height = c(400, 100, 600),
+      plot_width = c(600, 100, 600)
     ),
     "teal_module"
   )
 })
 
-testthat::test_that("assert_single_selection fails when multiple selection is selected in any of the specs", {
-  # Suppress logger messages
-  local_logger_threshold(logger::FATAL)
+testthat::test_that("tm_g_bivariate creates a `teal_module` object with default options", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
 
-  mock_spec <- data_extract_spec(
-    dataname = "MOCK_DATASET",
-    select = teal.transform::select_spec(choices = c("A", "B"), multiple = TRUE)
-  )
-  mock_spec2 <- data_extract_spec(
-    dataname = "MOCK_DATASET",
-    select = teal.transform::select_spec(choices = c("A", "B"), multiple = FALSE)
-  )
-
-  x <- list(mock_spec)
-
-  testthat::expect_error(
+  testthat::expect_s3_class(
     tm_g_bivariate(
       "a label",
-      x,
-      mock_spec2
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE)
     ),
-    "'x' should not allow multiple selection"
+    "teal_module"
   )
+})
+
+testthat::test_that("tm_g_bivariate creates a `teal_module` object with multiple data extract specs", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_s3_class(
+    tm_g_bivariate(
+      "a label",
+      list(mock_data_extract_spec(select_multiple = FALSE), mock_data_extract_spec(select_multiple = FALSE)),
+      list(mock_data_extract_spec(select_multiple = FALSE), mock_data_extract_spec(select_multiple = FALSE)),
+      plot_height = c(400, 100, 600),
+      plot_width = c(600, 100, 600)
+    ),
+    "teal_module"
+  )
+})
+
+testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have all arguments of function", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  mod <- tm_g_bivariate(
+    "a label",
+    mock_data_extract_spec(select_multiple = FALSE),
+    mock_data_extract_spec(select_multiple = FALSE)
+  )
+
+  expect_contains(
+    names(mod$ui_args),
+    names(formals(tm_g_bivariate))
+  )
+})
+
+testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have all arguments of function", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  mod <- tm_g_bivariate(
+    "a label",
+    list(
+      mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
+      mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+    ),
+    mock_data_extract_spec(dataname = "C", select_multiple = FALSE)
+  )
+
+  expect_setequal(
+    mod$datanames,
+    c("A", "B", "C")
+  )
+})
+
+# Test `x` and `y` arguments with invalid data_extract_spec
+
+testthat::test_that("tm_g_bivariate fails when `x` contains a spec with multiple selection", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
 
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
-      list(mock_spec2, mock_spec),
-      mock_spec2
+      list(
+        mock_data_extract_spec(select_multiple = TRUE)
+      ),
+      list()
     ),
     "'x' should not allow multiple selection"
   )
 })
 
-testthat::test_that("assert_single_selection fails when with default spec", {
-  # Suppress logger messages
-  local_logger_threshold(logger::FATAL)
+testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (at least one ) multiple selection", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
 
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
-      data_extract_spec("DEFAULT"),
-      data_extract_spec(
-        "VALID",
-        teal.transform::select_spec(choices = c("A", "B"), multiple = FALSE)
+      list(
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = TRUE)
+      ),
+      list(mock_data_extract_spec(select_multiple = FALSE))
+    ),
+    "'x' should not allow multiple selection"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (at least one ) multiple selection", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      list(
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = TRUE)
       )
     ),
-    "'x' should not allow multiple selection"
+    "'y' should not allow multiple selection"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `y` contains multiple spec with (at least one ) multiple selection", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      list(
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = TRUE)
+      )
+    ),
+    "'y' should not allow multiple selection"
+  )
+})
+
+# Test `plot_height` and `plot_width` arguments
+
+testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_height = c(100, 10, 20)
+    ),
+    "Assertion on 'plot_height' failed: Element 1 is not <= 20"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_height = c(1, 10, 20)
+    ),
+    "Assertion on 'plot_height' failed: Element 1 is not >= 10"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_height = 100
+    ),
+    "Assertion on 'plot_height' failed: Must have length 3, but has length 1"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_width = c(100, 10, 20)
+    ),
+    "Assertion on 'plot_width' failed: Element 1 is not <= 20"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_width = c(1, 10, 20)
+    ),
+    "Assertion on 'plot_width' failed: Element 1 is not >= 10"
+  )
+})
+
+testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
+  local_logger_threshold(logger::FATAL) # Suppress logger messages
+
+  testthat::expect_error(
+    tm_g_bivariate(
+      "a label",
+      mock_data_extract_spec(select_multiple = FALSE),
+      mock_data_extract_spec(select_multiple = FALSE),
+      plot_width = 100
+    ),
+    "Assertion on 'plot_width' failed: Must have length 3, but has length 1"
   )
 })
