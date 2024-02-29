@@ -92,7 +92,7 @@ testthat::test_that("tm_g_bivariate module UI function creates a shiny tag", {
     mock_data_extract_spec(select_multiple = FALSE)
   )
 
-  testthat::expect_class(
+  testthat::expect_s3_class(
     do.call(
       mod$ui,
       c(list("a_id"), mod$ui_args)
