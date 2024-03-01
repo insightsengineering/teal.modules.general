@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_data_table.R
 \name{tm_data_table}
 \alias{tm_data_table}
-\title{Data Table Viewer Teal Module}
+\title{\code{teal} module: Data table viewer}
 \usage{
 tm_data_table(
   label = "Data Table",
@@ -20,47 +20,52 @@ tm_data_table(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{variables_selected}{(\code{list}) A named list of character vectors of the variables (i.e. columns)
-which should be initially shown for each dataset. Names of list elements should correspond to the names
-of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
+\item{variables_selected}{(\verb{named list}) Character vectors of the variables (i.e. columns)
+which should be initially shown for each dataset.
+Names of list elements should correspond to the names of the datasets available in the app.
+If no entry is specified for a dataset, the first six variables from that
 dataset will initially be shown.}
 
 \item{datasets_selected}{(\code{character}) A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of length zero (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible;
-using other types will cause an error.}
+If vector of \code{length == 0} (default) then all datasets are shown.
+Note: Only datasets of the \code{data.frame} class are compatible.}
 
-\item{dt_args}{(named \code{list}) Additional arguments to be passed to \code{DT::datatable}
+\item{dt_args}{(\verb{named list}) Additional arguments to be passed to \code{\link[DT:datatable]{DT::datatable()}}
 (must not include \code{data} or \code{options}).}
 
-\item{dt_options}{(named \code{list}) The \code{options} argument to \code{DT::datatable}. By default
+\item{dt_options}{(\verb{named list}) The \code{options} argument to \code{DT::datatable}. By default
 \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
 
 \item{server_rendering}{(\code{logical}) should the data table be rendered server side
-(see \code{server} argument of \code{DT::renderDataTable()})}
+(see \code{server} argument of \code{\link[DT:dataTableOutput]{DT::renderDataTable()}})}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-A data table viewer shows the data using a paginated table.
-specifically designed for use with \code{data.frames}.
+Module provides a dynamic and interactive way to view \code{data.frame}s in a \code{teal} application.
+It uses the \code{DT} package to display data tables in a paginated, searchable, and sortable format,
+which helps to enhance data exploration and analysis.
 }
 \details{
-The \code{DT} package has an option \code{DT.TOJSON_ARGS} to show \code{Inf} and \code{NA} in data tables. If this is something
-you require then set \code{options(DT.TOJSON_ARGS =  list(na = "string"))} before running the module.
+The \code{DT} package has an option \code{DT.TOJSON_ARGS} to show \code{Inf} and \code{NA} in data tables.
+Configure the \code{DT.TOJSON_ARGS} option via
+\code{options(DT.TOJSON_ARGS = list(na = "string"))} before running the module.
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
 \examples{
 # general data example
-
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   iris <- iris
 })
 datanames(data) <- c("iris")
@@ -83,7 +88,7 @@ if (interactive()) {
 # CDISC data example
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
 })
 datanames(data) <- "ADSL"

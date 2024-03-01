@@ -1,7 +1,6 @@
 ---
 title: "Using data table"
-author: "coreDev team"
-date: "`r Sys.Date()`"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
@@ -10,23 +9,23 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Teal application to use association plot with various datasets types
+# `teal` application to display data table with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside a data table module:
+This vignette will guide you through the four parts to create a `teal` application using
+various types of datasets using the data table module `tm_data_table()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
-## Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 ```
 
-## Create data sets
+## 2 - Create data sets
 
 Inside this app 3 datasets will be used
 
@@ -35,7 +34,6 @@ Inside this app 3 datasets will be used
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -45,67 +43,75 @@ data <- within(data, {
 datanames <- c("ADSL", "ADTTE", "ADLB")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/reference/cdisc_data). The app itself will be constructed by multiple calls of `tm_data_table` using different
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`.
+The app itself will be constructed by multiple calls of `tm_data_table()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
-  data = data,
-  modules = teal::modules(
-    # two-datasets example
-    tm_data_table(
-      label = "Two datasets",
-      variables_selected = list(
-        ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-        ADTTE = c(
-          "STUDYID", "USUBJID", "SUBJID", "SITEID",
-          "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
-        )
-      )
-    ),
-    # subsetting or changing order of datasets
-    tm_data_table(
-      label = "Datasets order",
-      variables_selected = list(
-        ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-        ADLB = c(
-          "STUDYID", "USUBJID", "SUBJID", "SITEID",
-          "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
-        )
-      ),
-      datasets_selected = c("ADTTE", "ADLB", "ADSL")
-    ),
-    # advanced usage of DT options and extensions
-    tm_data_table(
-      label = "Advanced DT usage",
-      dt_args = list(extensions = c("Buttons", "ColReorder", "FixedHeader")),
-      dt_options = list(
-        searching = FALSE,
-        pageLength = 30,
-        lengthMenu = c(5, 15, 25, 50, 100),
-        scrollX = FALSE,
-        dom = "lBrtip",
-        buttons = c("copy", "csv", "excel", "pdf", "print"),
-        colReorder = TRUE,
-        fixedHeader = TRUE
-      )
+# configuration for the two-datasets example
+mod1 <- tm_data_table(
+  label = "Two datasets",
+  variables_selected = list(
+    ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+    ADTTE = c(
+      "STUDYID", "USUBJID", "SUBJID", "SITEID",
+      "PARAM", "PARAMCD", "ARM", "ARMCD", "AVAL", "CNSR"
     )
+  )
+)
+
+# configuration for the subsetting or changing order of datasets
+mod2 <- tm_data_table(
+  label = "Datasets order",
+  variables_selected = list(
+    ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+    ADLB = c(
+      "STUDYID", "USUBJID", "SUBJID", "SITEID",
+      "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
+    )
+  ),
+  datasets_selected = c("ADTTE", "ADLB", "ADSL")
+)
+
+# configuration for the advanced usage of DT options and extensions
+mod3 <- tm_data_table(
+  label = "Advanced DT usage",
+  dt_args = list(extensions = c("Buttons", "ColReorder", "FixedHeader")),
+  dt_options = list(
+    searching = FALSE,
+    pageLength = 30,
+    lengthMenu = c(5, 15, 25, 50, 100),
+    scrollX = FALSE,
+    dom = "lBrtip",
+    buttons = c("copy", "csv", "excel", "pdf", "print"),
+    colReorder = TRUE,
+    fixedHeader = TRUE
+  )
+)
+
+# initialize the app
+app <- init(
+  data = data,
+  modules = modules(
+    mod1,
+    mod2,
+    mod3
   )
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an R session.  
+A simple `shiny::shinyApp()` call will let you run the app. 
+Note that app is only displayed when running this code inside an `R` session.  
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
+<img src="images/app-using-data-table.png" style = "display: block; margin: 0px; width: 100%"/>

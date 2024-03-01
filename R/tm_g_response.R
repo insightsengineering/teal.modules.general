@@ -1,28 +1,43 @@
-#' Response Plots
-#' @md
+#' `teal` module: Response plot
+#'
+#' Generates a response plot for a given `response` and `x` variables.
+#' This module allows users customize and add annotations to the plot depending
+#' on the module's arguments.
+#' It supports showing the counts grouped by other variable facets (by row / column),
+#' swapping the coordinates, show count annotations and displaying the response plot
+#' as frequency or density.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which variable to use as the response. You can define one fixed column by using the
-#'   setting `fixed = TRUE` inside the `select_spec`.
-#'  `data_extract_spec` must not allow multiple selection in this case.
+#' Which variable to use as the response.
+#' You can define one fixed column by setting `fixed = TRUE` inside the `select_spec`.
+#'
+#' The `data_extract_spec` must not allow multiple selection in this case.
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-#'   columns from the `data` allowed in teal.
-#'  `data_extract_spec` must not allow multiple selection in this case.
-#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data columns to use for faceting rows.
-#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data to use for faceting columns.
-#' @param coord_flip optional, (`logical`) Whether to flip coordinates between `x` and `response`.
-#' @param count_labels optional, (`logical`) Whether to show count labels.
-#'   Defaults to `TRUE`.
-#' @param freq optional, (`logical`) Whether to display frequency (`TRUE`) or density (`FALSE`).
-#'   Defaults to density (`FALSE`).
+#' Specifies which variable to use on the X-axis of the response plot.
+#' Allow the user to select multiple columns from the `data` allowed in teal.
+#'
+#' The `data_extract_spec` must not allow multiple selection in this case.
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' optional specification of the data variable(s) to use for faceting columns.
+#' @param coord_flip (`logical(1)`)
+#' Indicates whether to flip coordinates between `x` and `response`.
+#' The default value is `FALSE` and it will show the `x` variable on the x-axis
+#' and the `response` variable on the y-axis.
+#' @param count_labels (`logical(1)`)
+#' Indicates whether to show count labels.
+#' Defaults to `TRUE`.
+#' @param freq (`logical(1)`)
+#' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
+#' Defaults to density (`FALSE`).
+#'
+#' @inherit shared_params return
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
-#'   \code{vignette("using-response-plot", package = "teal.modules.general")}.
+#' `vignette("using-response-plot", package = "teal.modules.general")`.
 #'
 #' @examples
 #' # general data example
@@ -30,7 +45,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   mtcars <- mtcars
 #'   for (v in c("cyl", "vs", "am", "gear")) {
 #'     mtcars[[v]] <- as.factor(mtcars[[v]])
@@ -78,7 +93,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- c("ADSL")
@@ -137,32 +152,35 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
+
+  # Normalize the parameters
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+
+  # Start of assertions
   checkmate::assert_string(label)
-  ggtheme <- match.arg(ggtheme)
+
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1)))) {
     stop("'response' should not allow empty values")
   }
-  if (!all(vapply(response, function(x) !x$select$multiple, logical(1)))) {
-    stop("'response' should not allow multiple selection")
-  }
+  assert_single_selection(response)
+
   checkmate::assert_list(x, types = "data_extract_spec")
   if (!all(vapply(x, function(x) !("" %in% x$select$choices), logical(1)))) {
     stop("'x' should not allow empty values")
   }
-  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
-    stop("'x' should not allow multiple selection")
-  }
+  assert_single_selection(x)
+
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_flag(coord_flip)
   checkmate::assert_flag(count_labels)
   checkmate::assert_flag(rotate_xaxis_labels)
   checkmate::assert_flag(freq)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -171,8 +189,14 @@ tm_g_response <- function(label = "Response Plot",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  ggtheme <- match.arg(ggtheme)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -195,6 +219,7 @@ tm_g_response <- function(label = "Response Plot",
   )
 }
 
+# UI function for the response module
 ui_g_response <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -270,6 +295,7 @@ ui_g_response <- function(id, ...) {
   )
 }
 
+# Server function for the response module
 srv_g_response <- function(id,
                            data,
                            reporter,
@@ -346,7 +372,7 @@ srv_g_response <- function(id,
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]] # nolint: object_name.
+      ANL <- qenv[["ANL"]]
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
 
@@ -383,7 +409,7 @@ srv_g_response <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)), # nolint: object_name.
+            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)),
             env = list(x = x, x_cl = x_cl)
           )
         )
@@ -392,11 +418,10 @@ srv_g_response <- function(id,
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
-          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]), # nolint: object_name.
+          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]),
           env = list(resp_var = resp_var)
         )
       ) %>%
-        # nolint start
         # rowf and colf will be a NULL if not set by a user
         teal.code::eval_code(
           substitute(
@@ -416,12 +441,10 @@ srv_g_response <- function(id,
             env = list(x_cl = x_cl, rowf = rowf, colf = colf)
           )
         )
-      # nolint end
 
       plot_call <- substitute(
-        expr =
-          ggplot(ANL2, aes(x = x_cl, y = ns)) +
-            geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +
+          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,

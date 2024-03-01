@@ -1,37 +1,39 @@
-#' Data Table Viewer Teal Module
+#' `teal` module: Data table viewer
 #'
-#' A data table viewer shows the data using a paginated table.
-#' specifically designed for use with `data.frames`.
-#' @md
+#' Module provides a dynamic and interactive way to view `data.frame`s in a `teal` application.
+#' It uses the `DT` package to display data tables in a paginated, searchable, and sortable format,
+#' which helps to enhance data exploration and analysis.
+#'
+#' The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables.
+#' Configure the `DT.TOJSON_ARGS` option via
+#' `options(DT.TOJSON_ARGS = list(na = "string"))` before running the module.
+#' Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param variables_selected (`list`) A named list of character vectors of the variables (i.e. columns)
-#'   which should be initially shown for each dataset. Names of list elements should correspond to the names
-#'   of the datasets available in the app. If no entry is specified for a dataset, the first six variables from that
-#'   dataset will initially be shown.
+#' @param variables_selected (`named list`) Character vectors of the variables (i.e. columns)
+#' which should be initially shown for each dataset.
+#' Names of list elements should correspond to the names of the datasets available in the app.
+#' If no entry is specified for a dataset, the first six variables from that
+#' dataset will initially be shown.
 #' @param datasets_selected (`character`) A vector of datasets which should be
-#'   shown and in what order. Names in the vector have to correspond with datasets names.
-#'   If vector of length zero (default) then all datasets are shown.
-#'   Note: Only datasets of the `data.frame` class are compatible;
-#'   using other types will cause an error.
-#' @param dt_args (named `list`) Additional arguments to be passed to `DT::datatable`
-#'   (must not include `data` or `options`).
-#' @param dt_options (named `list`) The `options` argument to `DT::datatable`. By default
-#'   `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
+#' shown and in what order. Names in the vector have to correspond with datasets names.
+#' If vector of `length == 0` (default) then all datasets are shown.
+#' Note: Only datasets of the `data.frame` class are compatible.
+#' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
+#' (must not include `data` or `options`).
+#' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
+#' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
-#'   (see `server` argument of `DT::renderDataTable()`)
-#' @details
-#'   The `DT` package has an option `DT.TOJSON_ARGS` to show `Inf` and `NA` in data tables. If this is something
-#'   you require then set `options(DT.TOJSON_ARGS =  list(na = "string"))` before running the module.
-#'   Note though that sorting of numeric columns with `NA`/`Inf` will be lexicographic not numerical.
+#' (see `server` argument of [DT::renderDataTable()])
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
-#'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   iris <- iris
 #' })
 #' datanames(data) <- c("iris")
@@ -54,7 +56,7 @@
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
@@ -89,7 +91,10 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
+
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert_list(variables_selected, min.len = 0, types = "character", names = "named")
   if (length(variables_selected) > 0) {
     lapply(seq_along(variables_selected), function(i) {
@@ -99,14 +104,17 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
+
   checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
-  checkmate::assert_list(dt_options, names = "named")
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
   )
-
+  checkmate::assert_list(dt_options, names = "named")
   checkmate::assert_flag(server_rendering)
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
   module(
     label,
@@ -127,8 +135,7 @@ tm_data_table <- function(label = "Data Table",
   )
 }
 
-
-# ui page module
+# UI page module
 ui_page_data_table <- function(id,
                                pre_output = NULL,
                                post_output = NULL) {
@@ -162,8 +169,7 @@ ui_page_data_table <- function(id,
   )
 }
 
-
-# server page module
+# Server page module
 srv_page_data_table <- function(id,
                                 data,
                                 datasets_selected,
@@ -247,6 +253,7 @@ srv_page_data_table <- function(id,
   })
 }
 
+# UI function for the data_table module
 ui_data_table <- function(id,
                           choices,
                           selected) {
@@ -276,6 +283,7 @@ ui_data_table <- function(id,
   )
 }
 
+# Server function for the data_table module
 srv_data_table <- function(id,
                            data,
                            dataname,
@@ -301,7 +309,7 @@ srv_data_table <- function(id,
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
       dataframe_selected <- if (if_distinct()) {
-        dplyr::count(df, dplyr::across(tidyselect::all_of(variables)))
+        dplyr::count(df, dplyr::across(dplyr::all_of(variables)))
       } else {
         df[variables]
       }

@@ -1,20 +1,21 @@
-#' Scatterplot and Regression Model
-#' @md
+#' `teal` module: Scatterplot and regression analysis
+#'
+#' Module for visualizing regression analysis, including scatterplots and
+#' various regression diagnostics plots.
+#' It allows users to explore the relationship between a set of regressors and a response variable,
+#' visualize residuals, and identify outliers.
+#'
+#' @note For more examples, please see the vignette "Using regression plots" via
+#' `vignette("using-regression-plots", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Regressor variables from an incoming dataset with filtering and selecting.
+#' Regressor variables from an incoming dataset with filtering and selecting.
 #' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Response variables from an incoming dataset with filtering and selecting.
-#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
-#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#' @param default_outlier_label optional, (`character`) The default column selected to label outliers.
-#' @param default_plot_type optional, (`numeric`) Defaults to Response vs Regressor.
+#' Response variables from an incoming dataset with filtering and selecting.
+#' @param default_outlier_label (`character`) optional, default column selected to label outliers.
+#' @param default_plot_type (`numeric`) optional, defaults to "Response vs Regressor".
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
 #' 3. Normal Q-Q
@@ -39,8 +40,7 @@
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
 #'
-#' @note For more examples, please see the vignette "Using regression plots" via
-#'   `vignette("using-regression-plots", package = "teal.modules.general")`.
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
@@ -48,7 +48,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   CO2 <- CO2
 #' })
 #' datanames(data) <- c("CO2")
@@ -93,7 +93,7 @@
 #'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
@@ -162,9 +162,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_list(regressor, types = "data_extract_spec")
 
   checkmate::assert_list(response, types = "data_extract_spec")
-  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
-    stop("'response' should not allow multiple selection")
-  }
+  assert_single_selection(response)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -203,7 +201,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
+  checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
 
   if (length(label_segment_threshold) == 1) {
@@ -219,7 +217,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   }
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
   args[["plot_choices"]] <- plot_choices
   data_extract_list <- list(
@@ -245,6 +243,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   )
 }
 
+# UI function for the regression module
 ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -355,7 +354,7 @@ ui_a_regression <- function(id, ...) {
   )
 }
 
-
+# Server function for the regression module
 srv_a_regression <- function(id,
                              data,
                              reporter,
@@ -437,7 +436,7 @@ srv_a_regression <- function(id,
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      ANL <- anl_merged_q()[["ANL"]] # nolint: object_name.
+      ANL <- anl_merged_q()[["ANL"]]
       teal::validate_has_data(ANL, 10)
 
       validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
@@ -547,7 +546,7 @@ srv_a_regression <- function(id,
 
       plot_type_0 <- function() {
         fit <- fit_r()[["fit"]]
-        ANL <- anl_merged_q()[["ANL"]] # nolint: object_name.
+        ANL <- anl_merged_q()[["ANL"]]
 
         stopifnot(ncol(fit$model) == 2)
 

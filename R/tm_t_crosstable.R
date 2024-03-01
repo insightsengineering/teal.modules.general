@@ -1,22 +1,29 @@
-#' Create a simple cross-table
-#' @md
+#' `teal` module: Cross-table
+#'
+#' Generates a simple cross-table of two variables from a dataset with custom
+#' options for showing percentages and sub-totals.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Object with all available choices with pre-selected option for variable X - row values. In case
-#'  of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
-#'  rendered according to selection order.
+#' Object with all available choices with pre-selected option for variable X - row values.
+#' In case of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
+#' rendered according to selection order.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'  Object with all available choices with pre-selected option for variable Y - column values
-#'  \code{data_extract_spec} must not allow multiple selection in this case.
+#' Object with all available choices with pre-selected option for variable Y - column values.
 #'
-#' @param show_percentage optional, (`logical`) Whether to show percentages
-#'   (relevant only when `x` is a `factor`). Defaults to `TRUE`.
-#' @param show_total optional, (`logical`) Whether to show total column. Defaults to `TRUE`.
+#' `data_extract_spec` must not allow multiple selection in this case.
+#' @param show_percentage (`logical(1)`)
+#' Indicates whether to show percentages (relevant only when `x` is a `factor`).
+#' Defaults to `TRUE`.
+#' @param show_total (`logical(1)`)
+#' Indicates whether to show total column.
+#' Defaults to `TRUE`.
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
-#'   `vignette("using-cross-table", package = "teal.modules.general")`.
+#' `vignette("using-cross-table", package = "teal.modules.general")`.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
@@ -132,22 +139,31 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args()) {
   logger::log_info("Initializing tm_t_crosstable")
+
+  # Requires Suggested packages
   if (!requireNamespace("rtables", quietly = TRUE)) {
     stop("Cannot load rtables - please install the package or restart your session.")
   }
+
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
+
   checkmate::assert_list(y, types = "data_extract_spec")
-  if (any(vapply(y, function(x) x$select$multiple, logical(1)))) {
-    stop("'y' should not allow multiple selection")
-  }
+  assert_single_selection(y)
+
   checkmate::assert_flag(show_percentage)
   checkmate::assert_flag(show_total)
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
+  # End of assertions
 
+  # Make UI args
   ui_args <- as.list(environment())
 
   server_args <- list(
@@ -167,6 +183,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   )
 }
 
+# UI function for the cross-table module
 ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, post_output, ...) {
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
@@ -216,6 +233,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
   )
 }
 
+# Server function for the cross-table module
 srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -284,7 +302,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     output_q <- reactive({
       teal::validate_inputs(iv_r())
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       # As this is a summary
       x_name <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -334,7 +352,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           substitute(
             expr = {
               lyt <- basic_tables %>%
-              split_call %>% # styler: off
+                split_call %>% # styler: off
                 rtables::add_colcounts() %>%
                 tern::analyze_vars(
                   vars = x_name,
@@ -368,7 +386,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         teal.code::eval_code(
           substitute(
             expr = {
-              ANL <- tern::df_explicit_na(ANL) # nolint: object_name.
+              ANL <- tern::df_explicit_na(ANL)
               tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
               tbl
             },

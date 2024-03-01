@@ -1,30 +1,37 @@
-#' Stack Plots of variables and show association with reference variable
-#' @md
+#' `teal` module: Stack plots of variables and show association with reference variable
+#'
+#' Module provides functionality for visualizing the distribution of variables and
+#' their association with a reference variable.
+#' It supports configuring the appearance of the plots, including themes and whether to show associations.
+#'
+#'
+#' @note For more examples, please see the vignette "Using association plot" via
+#' `vignette("using-association-plot", package = "teal.modules.general")`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   reference variable, must set `multiple = FALSE`.
+#' Reference variable, must accepts a `data_extract_spec` with `select_spec(multiple = FALSE)`
+#' to ensure single selection option.
 #' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   associated variables.
-#' @param show_association optional, (`logical`) Whether show association of `vars`
-#'   with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme,association_theme optional, (`character`) `ggplot2` themes to be used by default.
-#'   Default to `"gray"`.
+#' Variables to be associated with the reference variable.
+#' @param show_association (`logical`) optional, whether show association of `vars`
+#' with reference variable. Defaults to `TRUE`.
+#' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
+#' Default to `"gray"`.
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
 #'
-#' @note For more examples, please see the vignette "Using association plot" via
-#'   \code{vignette("using-association-plot", package = "teal.modules.general")}.
+#' @inherit shared_params return
 #'
 #' @examples
-#' # general data exapmle
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   CO2 <- CO2
 #'   factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
 #'   CO2[factors] <- lapply(CO2[factors], as.character)
@@ -65,11 +72,9 @@
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
@@ -128,17 +133,23 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
+
+  # Normalize the parameters
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)
   if (inherits(vars, "data_extract_spec")) vars <- list(vars)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert_list(ref, types = "data_extract_spec")
   if (!all(vapply(ref, function(x) !x$select$multiple, logical(1)))) {
     stop("'ref' should not allow multiple selection")
   }
+
   checkmate::assert_list(vars, types = "data_extract_spec")
   checkmate::assert_flag(show_association)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -146,12 +157,19 @@ tm_g_association <- function(label = "Association",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
+
   distribution_theme <- match.arg(distribution_theme)
   association_theme <- match.arg(association_theme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+  # End of assertions
 
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -172,6 +190,7 @@ tm_g_association <- function(label = "Association",
   )
 }
 
+# UI function for the association module
 ui_tm_g_association <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -249,6 +268,7 @@ ui_tm_g_association <- function(id, ...) {
   )
 }
 
+# Server function for the association module
 srv_tm_g_association <- function(id,
                                  data,
                                  reporter,
@@ -306,7 +326,7 @@ srv_tm_g_association <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
       teal::validate_has_data(ANL, 3)
 
       vars_names <- merged$anl_input_r()$columns_source$vars

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_outliers.R
 \name{tm_outliers}
 \alias{tm_outliers}
-\title{Outliers Module}
+\title{\code{teal} module: Outliers analysis}
 \usage{
 tm_outliers(
   label = "Outliers Module",
@@ -21,14 +21,14 @@ tm_outliers(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-variable to consider for the outliers analysis.}
+Specifies variable(s) to be analyzed for outliers.}
 
-\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-categorical factor to split the selected outlier variables on.}
+\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specifies the categorical variable(s) to split the selected outlier variables on.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
@@ -36,25 +36,31 @@ List names should match the following: \code{c("default", "Boxplot","Density Plo
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module to analyze and identify outliers using different methods
+such as IQR, Z-score, and Percentiles, and offers visualizations including
+box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
 \examples{
-# general data example
 library(teal.widgets)
 
+# general data example
 data <- teal_data()
 data <- within(data, {
   CO2 <- CO2
@@ -105,8 +111,6 @@ if (interactive()) {
 }
 
 # CDISC data example
-library(teal.widgets)
-
 data <- teal_data()
 data <- within(data, {
   ADSL <- rADSL

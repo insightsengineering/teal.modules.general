@@ -1,32 +1,33 @@
-#' Principal component analysis module
-#' @md
+#' `teal` module: Principal component analysis
+#'
+#' Module conducts principal component analysis (PCA) on a given dataset and offers different
+#' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
+#' Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
+#' font size, through UI inputs.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Columns used to compute PCA.
-#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size.
-#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#' @param font_size optional, (`numeric`) font size control for title, x-axis label, y-axis label and legend.
-#'   If scalar then the font size will have a fixed size. If a slider should be presented to adjust the plot
-#'   point sizes dynamically then it can be a vector of length three with `c(value, min, max)`.
-#'
+#' specifying columns used to compute PCA.
+#' @param font_size (`numeric`) optional, specifies font size.
+#' It controls the font size for plot titles, axis labels, and legends.
+#' - If vector of `length == 1` then the font sizes will have a fixed size.
+#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
 #'
+#' @inherit shared_params return
+#'
 #' @examples
-#' # general data example
 #' library(teal.widgets)
 #'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   USArrests <- USArrests
 #' })
+#'
 #' datanames(data) <- "USArrests"
 #'
 #' app <- init(
@@ -51,17 +52,14 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
 #' # CDISC data example
-#' library(teal.widgets)
-#'
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
 #' datanames(data) <- "ADSL"
@@ -70,7 +68,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     teal.modules.general::tm_a_pca(
+#'     tm_a_pca(
 #'       "PCA",
 #'       dat = data_extract_spec(
 #'         dataname = "ADSL",
@@ -89,7 +87,6 @@
 #'     )
 #'   )
 #' )
-#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -109,13 +106,37 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
+
+  # Normalize the parameters
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(dat, types = "data_extract_spec")
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
   ggtheme <- match.arg(ggtheme)
+
+  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
   checkmate::assert_flag(rotate_xaxis_labels)
+
+  if (length(font_size) == 1) {
+    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+  } else {
+    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
+  }
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -131,25 +152,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
   }
 
-  if (length(font_size) == 1) {
-    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-  } else {
-    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
-  }
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-
-  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
-  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
-  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(dat = dat)
@@ -171,7 +178,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   )
 }
 
-
+# UI function for the PCA module
 ui_a_pca <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
@@ -282,6 +289,7 @@ ui_a_pca <- function(id, ...) {
   )
 }
 
+# Server function for the PCA module
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
@@ -383,7 +391,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       teal::validate_has_data(ANL, 10)
       validate(need(
@@ -414,7 +422,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -427,7 +435,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       if (na_action == "drop") {
         qenv <- teal.code::eval_code(
           qenv,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint: object_name.
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns))
         )
       }
 
@@ -649,7 +657,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     plot_biplot <- function(base_q) {
       qenv <- base_q
 
-      ANL <- qenv[["ANL"]] # nolint: object_name.
+      ANL <- qenv[["ANL"]]
 
       resp_col <- as.character(merged$anl_input_r()$columns_source$response)
       dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_missing_data.R
 \name{tm_missing_data}
 \alias{tm_missing_data}
-\title{Missing data module}
+\title{\code{teal} module: Missing data analysis}
 \usage{
 tm_missing_data(
   label = "Missing data",
@@ -21,18 +21,19 @@ tm_missing_data(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{parent_dataname}{(\code{character(1)}) If this \code{dataname} exists in then "the by subject"graph is displayed.
-For \code{CDISC} data. In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
+\item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
+If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be
+ignored.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"classic"}.}
+\item{ggtheme}{(\code{character}) optional, specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
@@ -40,15 +41,21 @@ List names should match the following: \code{c("default", "Summary Obs", "Summar
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Present analysis of missing observations and patients.
-specifically designed for use with \code{data.frames}.
+This module analyzes missing data in \code{data.frame}s to help users explore missing observations and
+gain insights into the completeness of their data.
+It is useful for clinical data analysis within the context of \code{CDISC} standards and
+adaptable for general data analysis purposes.
 }
 \examples{
 library(teal.widgets)
@@ -66,7 +73,7 @@ tm_missing_data_module <- tm_missing_data(
 # general example data
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
 
   add_nas <- function(x) {
     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
@@ -94,7 +101,7 @@ if (interactive()) {
 # CDISC example data
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
   ADRS <- rADRS
 })
