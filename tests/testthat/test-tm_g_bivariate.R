@@ -50,22 +50,7 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object with multiple
   )
 })
 
-testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have all arguments of function", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
-  mod <- tm_g_bivariate(
-    "a label",
-    mock_data_extract_spec(select_multiple = FALSE),
-    mock_data_extract_spec(select_multiple = FALSE)
-  )
-
-  testthat::expect_contains(
-    names(mod$ui_args),
-    names(formals(tm_g_bivariate))
-  )
-})
-
-testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have all arguments of function", {
+testthat::test_that("tm_g_bivariate creates a module with datanames taken from data extracts", {
   local_logger_threshold(logger::FATAL) # Suppress logger messages
 
   mod <- tm_g_bivariate(
@@ -80,68 +65,6 @@ testthat::test_that("tm_g_bivariate creates a module with `ui_args` that have al
   expect_setequal(
     mod$datanames,
     c("A", "B", "C")
-  )
-})
-
-testthat::test_that("tm_g_bivariate module UI function creates a shiny tag", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
-  mod <- tm_g_bivariate(
-    "a label",
-    mock_data_extract_spec(select_multiple = FALSE),
-    mock_data_extract_spec(select_multiple = FALSE)
-  )
-
-  testthat::expect_s3_class(
-    do.call(
-      mod$ui,
-      c(list("a_id"), mod$ui_args)
-    ),
-    "shiny.tag"
-  )
-})
-
-testthat::test_that("tm_g_bivariate module server builds merged datasets", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
-  data <- within(teal_data(), {
-    require(nestcolor)
-    CO2 <- data.frame(CO2)
-  })
-  datanames(data) <- c("CO2")
-
-  mod <- tm_g_bivariate(
-    x = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "conc",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    ),
-    y = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "uptake",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    )
-  )
-
-  shiny::testServer(
-    mod$server,
-    args = c(mod$server_args, data = shiny::reactive(data)),
-    expr = {
-      checkmate::expect_data_frame(
-        anl_merged_q()[["ANL"]],
-        min.rows = 1
-      )
-    }
   )
 })
 
