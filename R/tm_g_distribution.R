@@ -518,7 +518,7 @@ srv_distribution <- function(id,
             )
           }
 
-          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]] # nolint: object_name.
+          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]]
           params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
           params_vec <- round(unname(unlist(params)), 2)
           params_names <- names(params)
@@ -558,7 +558,7 @@ srv_distribution <- function(id,
     common_q <- reactive({
       # Create a private stack for this function only.
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
       dist_var <- merge_vars()$dist_var
       s_var <- merge_vars()$s_var
       g_var <- merge_vars()$g_var
@@ -585,7 +585,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"), # nolint: object_name.
+            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"),
             env = list(g_var = g_var)
           )
         )
@@ -601,7 +601,7 @@ srv_distribution <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"), # nolint: object_name.
+            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"),
             env = list(s_var = s_var)
           )
         )
@@ -1024,7 +1024,7 @@ srv_distribution <- function(id,
       },
       valueExpr = {
         # Create a private stack for this function only.
-        ANL <- common_q()[["ANL"]] # nolint: object_name.
+        ANL <- common_q()[["ANL"]]
 
         dist_var <- merge_vars()$dist_var
         s_var <- merge_vars()$s_var
