@@ -29,7 +29,7 @@ body:
     id: security-policy
     attributes:
       label: Security Policy
-      description: By submitting this issue, you agree to follow our [Security Policy.](https://github.com/insightsengineering/teal.modules.general/latest-tag/security/policy)
+      description: By submitting this issue, you agree to follow our [Security Policy.](https://github.com/insightsengineering/teal.modules.general/security/policy)
       options:
         - label: I agree to follow this project's Security Policy.
           required: true

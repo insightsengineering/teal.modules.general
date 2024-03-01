@@ -54,7 +54,7 @@ jobs:
         checking Rd line widths .* NOTE
         checking top-level files .* NOTE
       unit-test-report-brand: >-
-        https://raw.githubusercontent.com/insightsengineering/hex-stickers/latest-tag/thumbs/teal.png
+        https://raw.githubusercontent.com/insightsengineering/latest-tag/thumbs/teal.png
   coverage:
     name: Coverage 📔
     needs: [release, docs]
