@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9027</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9029</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,15 +59,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -100,10 +91,9 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Using data table</h1>
-                        <h4 data-toc-skip class="author">coreDev
-team</h4>
+                        <h4 data-toc-skip class="author">NEST
+CoreDev</h4>
             
-            <h4 data-toc-skip class="date">2024-02-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/HEAD/vignettes/using-data-table.Rmd" class="external-link"><code>vignettes/using-data-table.Rmd</code></a></small>
       <div class="d-none name"><code>using-data-table.Rmd</code></div>
@@ -112,26 +102,27 @@ team</h4>
     
     
 <div class="section level2">
-<h2 id="section-teal-application-to-use-association-plot-with-various-datasets-types">Teal application to use association plot with various datasets
-types<a class="anchor" aria-label="anchor" href="#section-teal-application-to-use-association-plot-with-various-datasets-types"></a>
+<h2 id="section-teal-application-to-display-data-table-with-various-datasets-types">
+<code>teal</code> application to display data table with various
+datasets types<a class="anchor" aria-label="anchor" href="#section-teal-application-to-display-data-table-with-various-datasets-types"></a>
 </h2>
-<p>This vignette will guide you through 4 parts to create a teal
-application using various types of datasets inside a data table
-module:</p>
+<p>This vignette will guide you through the four parts to create a
+<code>teal</code> application using various types of datasets using the
+data table module <code><a href="../reference/tm_data_table.html">tm_data_table()</a></code>:</p>
 <ol style="list-style-type: decimal">
-<li>Load Libraries</li>
+<li>Load libraries</li>
 <li>Create data sets</li>
 <li>Create an <code>app</code> variable</li>
-<li>Run the App</li>
+<li>Run the app</li>
 </ol>
 <div class="section level3">
-<h3 id="section-loading-libraries">Loading libraries<a class="anchor" aria-label="anchor" href="#section-loading-libraries"></a>
+<h3 id="section-load-libraries">1 - Load libraries<a class="anchor" aria-label="anchor" href="#section-load-libraries"></a>
 </h3>
 <div class="sourceCode" id="section-cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span> <span class="co"># used to create the app</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-create-data-sets">Create data sets<a class="anchor" aria-label="anchor" href="#section-create-data-sets"></a>
+<h3 id="section-create-data-sets">2 - Create data sets<a class="anchor" aria-label="anchor" href="#section-create-data-sets"></a>
 </h3>
 <p>Inside this app 3 datasets will be used</p>
 <ol style="list-style-type: decimal">
@@ -144,8 +135,7 @@ module:</p>
 subject</li>
 </ol>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
 <span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
@@ -153,71 +143,77 @@ subject</li>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span>, <span class="st">"ADLB"</span><span class="op">)</span></span>
 <span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
-<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
-<span><span class="co"># nolint end</span></span></code></pre></div>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-create-an-app-variable">Create an <code>app</code> variable<a class="anchor" aria-label="anchor" href="#section-create-an-app-variable"></a>
+<h3 id="section-create-an-app-variable">3 - Create an <code>app</code> variable<a class="anchor" aria-label="anchor" href="#section-create-an-app-variable"></a>
 </h3>
-<p>This is the most important section. We will use the <a href="https://insightsengineering.github.io/teal/reference/init" class="external-link"><code>teal::init</code></a>
-function to create an app. The data will be handed over using <a href="https://insightsengineering.github.io/teal.data/reference/cdisc_data" class="external-link"><code>teal.data::cdisc_data</code></a>.
-The app itself will be constructed by multiple calls of
-<code>tm_data_table</code> using different combinations of data
-sets.</p>
+<p>This is the most important section. We will use the
+<code><a href="https://insightsengineering.github.io/teal/latest-tag/reference/init.html" class="external-link">teal::init()</a></code> function to create an app. The data will be
+handed over using <code><a href="https://insightsengineering.github.io/teal.data/latest-tag/reference/teal_data.html" class="external-link">teal.data::teal_data()</a></code>. The app itself
+will be constructed by multiple calls of <code><a href="../reference/tm_data_table.html">tm_data_table()</a></code>
+using different combinations of data sets.</p>
 <div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/teal_modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
-<span>    <span class="co"># two-datasets example</span></span>
-<span>    <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
-<span>      label <span class="op">=</span> <span class="st">"Two datasets"</span>,</span>
-<span>      variables_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        ADSL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>, <span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span>,</span>
-<span>        ADTTE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>          <span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>,</span>
-<span>          <span class="st">"PARAM"</span>, <span class="st">"PARAMCD"</span>, <span class="st">"ARM"</span>, <span class="st">"ARMCD"</span>, <span class="st">"AVAL"</span>, <span class="st">"CNSR"</span></span>
-<span>        <span class="op">)</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="co"># subsetting or changing order of datasets</span></span>
-<span>    <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
-<span>      label <span class="op">=</span> <span class="st">"Datasets order"</span>,</span>
-<span>      variables_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        ADSL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>, <span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span>,</span>
-<span>        ADLB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>          <span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>,</span>
-<span>          <span class="st">"PARAM"</span>, <span class="st">"PARAMCD"</span>, <span class="st">"AVISIT"</span>, <span class="st">"AVISITN"</span>, <span class="st">"AVAL"</span>, <span class="st">"CHG"</span></span>
-<span>        <span class="op">)</span></span>
-<span>      <span class="op">)</span>,</span>
-<span>      datasets_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="st">"ADLB"</span>, <span class="st">"ADSL"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="co"># advanced usage of DT options and extensions</span></span>
-<span>    <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
-<span>      label <span class="op">=</span> <span class="st">"Advanced DT usage"</span>,</span>
-<span>      dt_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>extensions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Buttons"</span>, <span class="st">"ColReorder"</span>, <span class="st">"FixedHeader"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>      dt_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        searching <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>        pageLength <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>        lengthMenu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">15</span>, <span class="fl">25</span>, <span class="fl">50</span>, <span class="fl">100</span><span class="op">)</span>,</span>
-<span>        scrollX <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>        dom <span class="op">=</span> <span class="st">"lBrtip"</span>,</span>
-<span>        buttons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"copy"</span>, <span class="st">"csv"</span>, <span class="st">"excel"</span>, <span class="st">"pdf"</span>, <span class="st">"print"</span><span class="op">)</span>,</span>
-<span>        colReorder <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>        fixedHeader <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>      <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># configuration for the two-datasets example</span></span>
+<span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Two datasets"</span>,</span>
+<span>  variables_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    ADSL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>, <span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span>,</span>
+<span>    ADTTE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>,</span>
+<span>      <span class="st">"PARAM"</span>, <span class="st">"PARAMCD"</span>, <span class="st">"ARM"</span>, <span class="st">"ARMCD"</span>, <span class="st">"AVAL"</span>, <span class="st">"CNSR"</span></span>
 <span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># configuration for the subsetting or changing order of datasets</span></span>
+<span><span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Datasets order"</span>,</span>
+<span>  variables_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    ADSL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>, <span class="st">"AGE"</span>, <span class="st">"SEX"</span><span class="op">)</span>,</span>
+<span>    ADLB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>, <span class="st">"SUBJID"</span>, <span class="st">"SITEID"</span>,</span>
+<span>      <span class="st">"PARAM"</span>, <span class="st">"PARAMCD"</span>, <span class="st">"AVISIT"</span>, <span class="st">"AVISITN"</span>, <span class="st">"AVAL"</span>, <span class="st">"CHG"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  datasets_selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADTTE"</span>, <span class="st">"ADLB"</span>, <span class="st">"ADSL"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># configuration for the advanced usage of DT options and extensions</span></span>
+<span><span class="va">mod3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_data_table.html">tm_data_table</a></span><span class="op">(</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Advanced DT usage"</span>,</span>
+<span>  dt_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>extensions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Buttons"</span>, <span class="st">"ColReorder"</span>, <span class="st">"FixedHeader"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  dt_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    searching <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    pageLength <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>    lengthMenu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">15</span>, <span class="fl">25</span>, <span class="fl">50</span>, <span class="fl">100</span><span class="op">)</span>,</span>
+<span>    scrollX <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    dom <span class="op">=</span> <span class="st">"lBrtip"</span>,</span>
+<span>    buttons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"copy"</span>, <span class="st">"csv"</span>, <span class="st">"excel"</span>, <span class="st">"pdf"</span>, <span class="st">"print"</span><span class="op">)</span>,</span>
+<span>    colReorder <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    fixedHeader <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># initialize the app</span></span>
+<span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span>
+<span>    <span class="va">mod1</span>,</span>
+<span>    <span class="va">mod2</span>,</span>
+<span>    <span class="va">mod3</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-run-the-app">Run the app<a class="anchor" aria-label="anchor" href="#section-run-the-app"></a>
+<h3 id="section-run-the-app">4 - Run the app<a class="anchor" aria-label="anchor" href="#section-run-the-app"></a>
 </h3>
-<p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp</a></code> call will let you run the app.
-Note that app is only displayed when running this code inside an R
-session.</p>
+<p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp()</a></code> call will let you run the
+app. Note that app is only displayed when running this code inside an
+<code>R</code> session.</p>
 <div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<iframe data-deferred-src="app20d558374244e7139bbe1867feecb3ed/?w=&amp;__subapp__=1" width="1024" height="1024" class="shiny-frame shiny-frame-deferred"></iframe>
+<p><img src="images/app-using-data-table.png" style="display: block; margin: 0px; width: 100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

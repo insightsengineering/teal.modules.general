@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9027</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16.9029</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,15 +59,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -100,10 +91,9 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Getting started with teal.modules.general</h1>
-                        <h4 data-toc-skip class="author">NEST CoreDev
-Team</h4>
+                        <h4 data-toc-skip class="author">NEST
+CoreDev</h4>
             
-            <h4 data-toc-skip class="date">01.04.2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/HEAD/vignettes/teal-modules-general.Rmd" class="external-link"><code>vignettes/teal-modules-general.Rmd</code></a></small>
       <div class="d-none name"><code>teal-modules-general.Rmd</code></div>
@@ -114,27 +104,26 @@ Team</h4>
 <div class="section level3">
 <h3 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h3>
-<p><code>teal</code> is a package that extends the <code>shiny</code>
-framework to build interactive GUI applications using the R programming
-language. <code>shiny</code>, and hence <code>teal</code>, are
-implemented to allow the building of large applications by combining
-small, decoupled modules. <code>teal.modules.general</code> is a package
-consisting of a set of modules that are used to build <code>teal</code>
-applications. It is “general” in the sense that the intended functions
-of these modules are more fundamental. This is in contrast to the
-intended functions of its sister package,
-<code>teal.modules.clinical</code>, which is more specialized around
-clinical data. The modules of <code>teal.modules.general</code> can be
-combined with modules of <code>teal.modules.clinical</code> and / or
-other <code>shiny</code> modules to build a large <code>teal</code> /
+<p><code>teal</code> extends the <code>shiny</code> framework, enabling
+the creation of interactive GUI applications using the <code>R</code>.
+<code>shiny</code>, and <code>teal</code>facilitate the development of
+extensive applications through combining small, decoupled modules. The
+<code>teal.modules.general</code> package consist of collection of
+modules essential for developing <code>teal</code> applications. It is
+“general” in the sense that the intended functions of these modules are
+more fundamental. This contrasts with the more specialized focus on
+clinical data found in the <code>teal.modules.clinical</code> package.
+The modules from <code>teal.modules.general</code> can be used in
+conjunction with modules from <code>teal.modules.clinical</code> and /
+or other <code>shiny</code> modules to build a large <code>teal</code> /
 <code>shiny</code> app.</p>
 <p>The concepts presented here require knowledge about the core features
 of <code>teal</code>, specifically on how to launch a <code>teal</code>
 application and how to pass data into it. Therefore, it is highly
 recommended to refer to the <a href="https://insightsengineering.github.io/teal/index.html" class="external-link"><code>README</code></a>
-file and the introductory <a href="https://insightsengineering.github.io/teal/articles/teal.html" class="external-link">vignette</a>
+file and the introductory <a href="https://insightsengineering.github.io/teal/latest-tag/articles/getting-started-with-teal.html" class="external-link">vignette</a>
 of the <code>teal</code> package.</p>
-<p>See also <code>teal.modules.clinical's</code> <a href="https://insightsengineering.github.io/teal.modules.clinical/index.html" class="external-link"><code>README</code></a>.</p>
+<p>See also <code>teal.modules.clinical</code>’s <a href="https://insightsengineering.github.io/teal.modules.clinical/latest-tag/index.html" class="external-link"><code>README</code></a>.</p>
 </div>
 <div class="section level3">
 <h3 id="main-features">Main features<a class="anchor" aria-label="anchor" href="#main-features"></a>
@@ -143,24 +132,26 @@ of the <code>teal</code> package.</p>
 <code>teal.modules.general</code> provides tools and solutions (modules)
 for:</p>
 <ul>
-<li>viewing data in tabular form</li>
+<li>viewing data in tabular formats</li>
 <li>visualizing data in plots and graphs</li>
 <li>viewing data and files in a directory</li>
 <li>examining missing and extreme values in data</li>
 <li>performing data analysis</li>
 </ul>
-<p>See <a href="https://insightsengineering.github.io/teal.modules.general/reference/index.html">package
+<p>See <a href="https://insightsengineering.github.io/teal.modules.general/latest-tag/reference/index.html">package
 functions / modules</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="example-application">Example application<a class="anchor" aria-label="anchor" href="#example-application"></a>
 </h3>
-<p>A simple application including a <code>tm_variable_browser</code>
-module could look like this:</p>
+<p>A simple application featuring the <code><a href="../reference/tm_variable_browser.html">tm_variable_browser()</a></code>
+module:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># load libraries</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.widgets/" class="external-link">teal.widgets</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># nolint start</span></span>
+<span><span class="co"># teal_data object</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
@@ -169,75 +160,70 @@ module could look like this:</p>
 <span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
 <span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
 <span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
-<span><span class="co"># nolint end</span></span>
 <span></span>
-<span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/teal_modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
-<span>      label <span class="op">=</span> <span class="st">"Variable browser"</span>,</span>
-<span>      ggplot2_args <span class="op">=</span> <span class="fu">teal.widgets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.widgets/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span></span>
-<span>        labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Plot generated by Variable Browser Module"</span><span class="op">)</span></span>
-<span>      <span class="op">)</span>,</span>
-<span>    <span class="op">)</span></span>
+<span><span class="co"># tm_variable_browser module</span></span>
+<span><span class="va">tm_variable_browser_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Variable browser"</span>,</span>
+<span>  ggplot2_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.widgets/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span></span>
+<span>    labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Plot generated by Variable Browser Module"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># initialize the app</span></span>
+<span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span><span class="va">tm_variable_browser_module</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p><img src="images/app-teal-modules-general.png" style="display: block; margin: 0px; width: 100%"></p>
 <p>Let’s break the above app into pieces:</p>
+<p>1: Load the necessary libraries and data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span></span></code></pre></div>
-<p>The line mentioned above imports the library required for this
-example and loads data from within that library.</p>
-<p>Now, we are building a <code>teal_data</code> object that will serve
-as the source of data for the teal app. <code>teal_data</code> not only
-encapsulates the data for the app, but it also houses the code required
-to create the data to maintain reproducibility. To do this, we create an
-empty <code>teal_data</code> object and evaluate code to produce the
-data within the <code>teal_data</code> object, so both the code and data
-are stored together.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.widgets/" class="external-link">teal.widgets</a></span><span class="op">)</span></span></code></pre></div>
+<p>2: Construct a <code>teal_data</code> object containing that will
+serve as the source of data for the <code>teal</code> app.
+<code>teal_data</code> not only encapsulates the data for the app, but
+it also houses the code required to create the data to maintain
+reproducibility.</p>
+<p>To do this, we create an empty <code>teal_data</code> object and
+evaluate code to produce the data within the <code>teal_data</code>
+object, so both the code and data are stored together.</p>
 <p>Following this, we set the <code>datanames</code> and
 <code>join_keys</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
 <span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADTTE.html">rADTTE</a></span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
 <span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
-<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
-<span><span class="co"># nolint end</span></span></code></pre></div>
-<p>There is no need to load <code>teal</code> as
-<code>teal.modules.general</code> already depends on it.</p>
-<p>In the next step, we use <code>teal</code> to create
-<code>shiny</code> <code>ui</code> and <code>server</code> functions so
-we can launch using <code>shiny</code>. The <code>data</code> argument
-tells <code>teal</code> about the input data - the two datasets
-<code>ADSL</code> and <code>ADTTE</code> - and the <code>modules</code>
-argument indicates the modules included in the application. Here, we
-include only one - <code>tm_variable_browser</code>.</p>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span></code></pre></div>
+<p>3: Initialize a <code>teal</code> application with specified data and
+modules, in this case, the module: <code>tm_variable_browser</code>,
+datasets:<code>ADSL</code> and <code>ADTTE</code>.</p>
+<p><code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp()</a></code> use the <code>ui</code> and
+<code>server</code> component to initialize the <code>teal</code>
+app.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/init.html" class="external-link">init</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  modules <span class="op">=</span> <span class="fu">teal</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal/latest-tag/reference/teal_modules.html" class="external-link">modules</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
-<span>      <span class="co"># module name to display in the GUI</span></span>
-<span>      label <span class="op">=</span> <span class="st">"Variable browser"</span>,</span>
-<span>      <span class="co"># this argument takes a set of arguments to pass to ggplot2.</span></span>
-<span>      <span class="co"># the arguments must have the same names as its ggplot2 counterpart, e.g. `subtitle`</span></span>
-<span>      ggplot2_args <span class="op">=</span> <span class="fu">teal.widgets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/teal.widgets/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span></span>
-<span>        labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Plot generated by Variable Browser Module"</span><span class="op">)</span></span>
-<span>      <span class="op">)</span>,</span>
-<span>    <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tm_variable_browser_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
+<span>  <span class="co"># module name to display in the GUI</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Variable browser"</span>,</span>
+<span>  <span class="co"># this argument takes a set of arguments to pass to ggplot2.</span></span>
+<span>  <span class="co"># the arguments must have the same names as its ggplot2 counterpart, e.g. `subtitle`</span></span>
+<span>  ggplot2_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/teal.widgets/man/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span></span>
+<span>    labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Plot generated by Variable Browser Module"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The <code>shiny</code> function <code>shinyApp</code> used the
-<code>ui</code> and <code>server</code> objects to initialize the
-<code>teal</code> app.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span><span class="va">tm_variable_browser_module</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></code></pre></div>
 <p>In a <code>teal</code> app, data and modules are decoupled. In the
 app above:</p>
 <ul>
@@ -247,13 +233,12 @@ app above:</p>
 <code>modules</code> argument.</p></li>
 <li>
 <p>The <code>init</code> function took these arguments and returned
-a list, which can be demonstrated by running:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+a list containing <code>ui</code> and <code>server</code> object, which
+can be demonstrated by running:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">app</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "list"</span></span></code></pre>
-<p>This list contains two R objects named <code>ui</code> and
-<code>server</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">app</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "ui"     "server"</span></span></code></pre>
 </li>
