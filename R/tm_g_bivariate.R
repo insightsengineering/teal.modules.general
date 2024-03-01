@@ -460,6 +460,14 @@ srv_g_bivariate <- function(id,
       color = color, fill = fill, size = size
     )
 
+    rule_var <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()$select
+        if (length(value) == 0L && length(othervalue) == 0L) {
+          "Please select at least one of x-variable or y-variable"
+        }
+      }
+    }
     rule_diff <- function(other) {
       function(value) {
         othervalue <- selector_list()[[other]]()[["select"]]
@@ -475,8 +483,8 @@ srv_g_bivariate <- function(id,
       data_extract = data_extract,
       datasets = data,
       select_validation_rule = list(
-        x = shinyvalidate::sv_required("Please select at least one of x-variable"),
-        y = shinyvalidate::sv_required("Please select at least one of y-variable"),
+        x = rule_var("y"),
+        y = rule_var("x"),
         row_facet = shinyvalidate::compose_rules(
           shinyvalidate::sv_optional(),
           rule_diff("col_facet")
@@ -578,7 +586,7 @@ srv_g_bivariate <- function(id,
         size <- NULL
       }
 
-      teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
       cl <- bivariate_plot_call(
         data_name = "ANL",
