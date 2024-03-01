@@ -299,7 +299,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]] # nolint: object_name.
+      ANL <- qenv[["ANL"]]
 
       cols_names <- merged$anl_input_r()$columns_source$variables
       alpha <- input$alpha
@@ -326,7 +326,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>% # nolint: object_name.
+            expr = ANL <- ANL[, cols_names] %>%
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
             env = list(cols_names = cols_names)
@@ -336,7 +336,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>% # nolint: object_name.
+            expr = ANL <- ANL[, cols_names] %>%
               droplevels(),
             env = list(cols_names = cols_names)
           )
@@ -421,7 +421,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
     output$message <- renderText({
       shiny::req(iv_r()$is_valid())
       req(selector_list()$variables())
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
       cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {

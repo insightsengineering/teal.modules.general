@@ -391,7 +391,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       teal::validate_has_data(ANL, 10)
       validate(need(
@@ -422,7 +422,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint: object_name.
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       qenv <- teal.code::eval_code(
         merged$anl_q_r(),
@@ -435,7 +435,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       if (na_action == "drop") {
         qenv <- teal.code::eval_code(
           qenv,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns)) # nolint: object_name.
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns))
         )
       }
 
@@ -657,7 +657,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     plot_biplot <- function(base_q) {
       qenv <- base_q
 
-      ANL <- qenv[["ANL"]] # nolint: object_name.
+      ANL <- qenv[["ANL"]]
 
       resp_col <- as.character(merged$anl_input_r()$columns_source$response)
       dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
