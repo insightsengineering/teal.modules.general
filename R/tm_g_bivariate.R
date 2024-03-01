@@ -18,31 +18,31 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Variable names selected to plot along the y-axis by default.
 #' Can be numeric, factor or character.
-#' @param use_density (`logical`, optional) Indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
+#' @param use_density (`logical`) optional, indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
 #' Defaults to frequency (`FALSE`).
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables for row facetting.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables for column facetting.
-#' @param facet (`logical`, optional) to specify whether the facet encodings `ui` elements are toggled
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) to use for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) to use for faceting columns.
+#' @param facet (`logical`) optional, specifies whether the facet encodings `ui` elements are toggled
 #' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #' are supplied.
 #' @param color_settings (`logical`) Whether coloring, filling and size should be applied
 #' and `UI` tool offered to the user.
-#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the outline color inside the coloring settings.
+#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the outline color inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the fill color inside the coloring settings.
+#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the fill color inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the size of `geom_point` plots inside the coloring settings.
+#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the size of `geom_point` plots inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param free_x_scales (`logical`, optional) Whether X scaling shall be changeable.
+#' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
-#' @param free_y_scales (`logical`, optional) Whether Y scaling shall be changeable.
+#' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
-#' @param swap_axes (`logical`, optional) Whether to swap X and Y axes. Defaults to `FALSE`.
+#' @param swap_axes (`logical`) optional, whether to swap X and Y axes. Defaults to `FALSE`.
 #'
 #' @inherit shared_params return
 #'
@@ -594,8 +594,7 @@ srv_g_bivariate <- function(id,
         size <- NULL
       }
 
-
-      teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
       cl <- bivariate_plot_call(
         data_name = "ANL",

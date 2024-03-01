@@ -9,9 +9,9 @@ render_tab_header(dataset_name, output, data)
 \arguments{
 \item{dataset_name}{(\code{character}) the name of the dataset of the tab}
 
-\item{output}{(\code{session$output}) the shiny session output}
+\item{output}{(\code{session$output}) the \code{shiny} session output}
 
-\item{data}{(\code{tdata}) the object containing all datasets}
+\item{data}{(\code{teal_data}) the object containing all datasets}
 }
 \description{
 Renders the text headlining a single tab in the left-hand side tabset panel

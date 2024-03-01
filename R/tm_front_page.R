@@ -8,7 +8,7 @@
 #' element, if named the name is shown first in bold as a header followed by the value. The first
 #' element's header is displayed larger than the others.
 #' @param tables (`named list` of `data.frame`s) tables to be shown in the module.
-#' @param additional_tags (`shiny.tag.list` or `html`) additional shiny tags or `html` to be included after the table,
+#' @param additional_tags (`shiny.tag.list` or `html`) additional `shiny` tags or `html` to be included after the table,
 #' for example to include an image, `tagList(tags$img(src = "image.png"))` or to include further `html`,
 #' `HTML("html text here")`.
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each

@@ -28,11 +28,11 @@ allow users to not show variables in other datasets which exist in this \code{da
 This is typically used to remove \code{ADSL} columns in \code{CDISC} data.
 In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}

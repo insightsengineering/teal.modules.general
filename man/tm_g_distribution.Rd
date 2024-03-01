@@ -32,21 +32,20 @@ Categorical variable used to split the distribution analysis.}
 \item{group_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Variable used for faceting plot into multiple panels.}
 
-\item{freq}{(\code{logical}, optional) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+\item{freq}{(\code{logical}) optional, whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args} or \verb{named list} of \code{ggplot2_args}s) optional.
-Object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} and contains settings for all the plots,
-or is a named \code{list} of \code{ggplot2_args} objects for plot-specific settings.
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
+with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Histogram", "QQplot")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{bins}{(\code{integer(1)} or \code{integer(3)}, optional)  Determines the number of bins for the histogram.
+\item{bins}{(\code{integer(1)} or \code{integer(3)}) optional,  specifies the number of bins for the histogram.
 \itemize{
 \item When the length of \code{bins} is one: The histogram bins will have a fixed size based on the \code{bins} provided.
 \item When the length of \code{bins} is three: The histogram bins are dynamically adjusted based on vector of \code{value}, \code{min},
@@ -54,10 +53,10 @@ and \code{max}.
 Defaults to \code{c(30L, 1L, 100L)}.
 }}
 
-\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
 \item{pre_output}{(\code{shiny.tag}, optional)\cr
