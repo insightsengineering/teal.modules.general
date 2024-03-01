@@ -1,28 +1,23 @@
-# teal.modules.general 0.2.16.9030
+# teal.modules.general 0.3.0
 
 ### Enhancements
-
 * Updated the package docs and vignettes with the new way of specifying data for `teal::init()`. The `data` argument will accept a `teal_data` object
 
 ### Bug fixes
-
 * Outlier labels no longer appear out of bounds in `tm_a_regression`.
 * Fixed a bug in `tm_outliers` when changing the selected variable would cause a popup.
 
 ### Miscellaneous
-
 * Removed `teal.slice` dependencies.
 * Specified minimal version of package dependencies.
 
 # teal.modules.general 0.2.16
 
 ### Breaking changes
-
 * Replaced `chunks` with simpler `qenv` class.
 * Replaced `datasets` argument containing `FilteredData` with the new arguments `data` (`tdata` object) and `filter_panel_api` (`FilterPanelAPI`).
 
 ### Enhancements
-
 * Added `parent_dataname` argument to `tm_variable_browser` and `tm_missing_data` to allow specification of parent dataset for these modules.
 * Improved `UI` labels and plot panel title in `tm_g_association`.
 * Added inputs `tm_variable_browser` module for text size and plot theme.
@@ -36,7 +31,6 @@
 * Fixed a bug in `tm_variable_browser` when changing filters would reset the selected variable to the first on the list.
 
 ### Miscellaneous
-
 * Removed `scda` package dependency from examples.
 * Replaced deprecated `ggplot2` functions `..count..`, `..density..` and `..prop..`.
 * Version bump on `forcats` dependency.
