@@ -38,7 +38,7 @@ Imports:
     logger (>= 0.2.0),
     scales,
     shinyjs,
-    shinyTree,
+    shinyTree (>= 0.2.8),
     shinyvalidate,
     shinyWidgets (>= 0.5.1),
     stats,
