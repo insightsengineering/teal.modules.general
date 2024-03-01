@@ -67,14 +67,18 @@ tm_front_page <- function(label = "Front page",
                           additional_tags = tagList(),
                           footnotes = character(0),
                           show_metadata = FALSE) {
+  logger::log_info("Initializing tm_front_page")
+
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_character(header_text, min.len = 0, any.missing = FALSE)
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   checkmate::assert_flag(show_metadata)
+  # End of assertions
 
-  logger::log_info("Initializing tm_front_page")
+  # Make UI args
   args <- as.list(environment())
 
   module(

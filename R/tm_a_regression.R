@@ -162,9 +162,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_list(regressor, types = "data_extract_spec")
 
   checkmate::assert_list(response, types = "data_extract_spec")
-  if (!all(vapply(response, function(x) !(x$select$multiple), logical(1)))) {
-    stop("'response' should not allow multiple selection")
-  }
+  assert_single_selection(response)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -203,7 +201,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  checkmate::assert_integerish(default_plot_type, lower = 1, upper = 7)
+  checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
 
   if (length(label_segment_threshold) == 1) {
@@ -219,7 +217,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   }
   # End of assertions
 
-  # Send ui args
+  # Make UI args
   args <- as.list(environment())
   args[["plot_choices"]] <- plot_choices
   data_extract_list <- list(

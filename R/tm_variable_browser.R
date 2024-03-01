@@ -77,6 +77,8 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 post_output = NULL,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_variable_browser")
+
+  # Requires Suggested packages
   if (!requireNamespace("sparkline", quietly = TRUE)) {
     stop("Cannot load sparkline - please install the package or restart your session.")
   }
@@ -86,10 +88,16 @@ tm_variable_browser <- function(label = "Variable Browser",
   if (!requireNamespace("jsonlite", quietly = TRUE)) {
     stop("Cannot load jsonlite - please install the package or restart your session.")
   }
+
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  # End of assertions
+
   datasets_selected <- unique(datasets_selected)
 
   module(

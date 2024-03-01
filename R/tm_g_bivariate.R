@@ -194,6 +194,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
+
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
@@ -202,52 +204,36 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (inherits(fill, "data_extract_spec")) fill <- list(fill)
   if (inherits(size, "data_extract_spec")) size <- list(size)
 
-  checkmate::assert_list(x, types = "data_extract_spec")
-  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
-    stop("'x' should not allow multiple selection")
-  }
-  checkmate::assert_list(y, types = "data_extract_spec")
-  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
-    stop("'y' should not allow multiple selection")
-  }
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'row_facet' should not allow multiple selection")
-  }
-  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'col_facet' should not allow multiple selection")
-  }
-  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(color, function(x) !x$select$multiple, logical(1)))) {
-    stop("'color' should not allow multiple selection")
-  }
-  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(fill, function(x) !x$select$multiple, logical(1)))) {
-    stop("'fill' should not allow multiple selection")
-  }
-  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(size, function(x) !x$select$multiple, logical(1)))) {
-    stop("'size' should not allow multiple selection")
-  }
-
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_flag(use_density)
-  checkmate::assert_flag(color_settings)
-  checkmate::assert_flag(free_x_scales)
-  checkmate::assert_flag(free_y_scales)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  checkmate::assert_flag(swap_axes)
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
+  checkmate::assert_list(x, types = "data_extract_spec")
+  assert_single_selection(x)
+
+  checkmate::assert_list(y, types = "data_extract_spec")
+  assert_single_selection(y)
+
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
+
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(col_facet)
+
+  checkmate::assert_flag(facet)
+
+  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(color)
+
+  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(fill)
+
+  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(size)
+
+  checkmate::assert_flag(use_density)
+
+  # Determines color, fill & size if they are not explicitly set
+  checkmate::assert_flag(color_settings)
   if (color_settings) {
     if (is.null(color)) {
       color <- x
@@ -267,6 +253,28 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     }
   }
 
+  checkmate::assert_flag(free_x_scales)
+  checkmate::assert_flag(free_y_scales)
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(swap_axes)
+
+  ggtheme <- match.arg(ggtheme)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

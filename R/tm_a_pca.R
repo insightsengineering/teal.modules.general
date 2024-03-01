@@ -106,13 +106,37 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
+
+  # Normalize the parameters
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(dat, types = "data_extract_spec")
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
   ggtheme <- match.arg(ggtheme)
+
+  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
   checkmate::assert_flag(rotate_xaxis_labels)
+
+  if (length(font_size) == 1) {
+    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+  } else {
+    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
+  }
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -128,25 +152,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
   }
 
-  if (length(font_size) == 1) {
-    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-  } else {
-    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
-  }
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-
-  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
-  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
-  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(dat = dat)

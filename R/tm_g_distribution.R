@@ -121,6 +121,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               post_output = NULL) {
   logger::log_info("Initializing tm_g_distribution")
 
+  # Requires Suggested packages
   extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
@@ -130,28 +131,47 @@ tm_g_distribution <- function(label = "Distribution Module",
     ))
   }
 
+  # Normalize the parameters
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
   if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
   if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
+  checkmate::assert_string(label)
+
+  checkmate::assert_list(dist_var, "data_extract_spec")
+  checkmate::assert_false(dist_var[[1L]]$select$multiple)
+
+  checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_flag(freq)
   ggtheme <- match.arg(ggtheme)
+
+  plot_choices <- c("Histogram", "QQplot")
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
   if (length(bins) == 1) {
     checkmate::assert_numeric(bins, any.missing = FALSE, lower = 1)
   } else {
     checkmate::assert_numeric(bins, len = 3, any.missing = FALSE, lower = 1)
     checkmate::assert_numeric(bins[1], lower = bins[2], upper = bins[3], .var.name = "bins")
   }
-  checkmate::assert_string(label)
-  checkmate::assert_list(dist_var, "data_extract_spec")
-  checkmate::assert_false(dist_var[[1]]$select$multiple)
-  checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_flag(freq)
-  plot_choices <- c("Histogram", "QQplot")
-  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
-  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

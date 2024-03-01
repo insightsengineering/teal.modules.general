@@ -133,17 +133,23 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
+
+  # Normalize the parameters
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)
   if (inherits(vars, "data_extract_spec")) vars <- list(vars)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert_list(ref, types = "data_extract_spec")
   if (!all(vapply(ref, function(x) !x$select$multiple, logical(1)))) {
     stop("'ref' should not allow multiple selection")
   }
+
   checkmate::assert_list(vars, types = "data_extract_spec")
   checkmate::assert_flag(show_association)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -151,12 +157,19 @@ tm_g_association <- function(label = "Association",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
+
   distribution_theme <- match.arg(distribution_theme)
   association_theme <- match.arg(association_theme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+  # End of assertions
 
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
