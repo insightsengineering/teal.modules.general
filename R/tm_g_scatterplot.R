@@ -1,4 +1,4 @@
-#' Scatterplot module
+#' `teal` module: Scatterplot
 #'
 #' Generates a customizable scatterplot using `ggplot2`.
 #' This module allows users to select variables for the x and y axes,
@@ -14,25 +14,21 @@
 #' variable names selected to plot along the x-axis by default.
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
 #' variable names selected to plot along the y-axis by default.
-#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Defines the point size encoding. If `NULL` then no size encoding option will be displayed.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Specifies the variable(s) for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Specifies the variable(s) for faceting columns.
-#' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length == 1` then the plot points will have a fixed opacity.
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length == 1` then the plot point sizes will have a fixed size
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param shape (`character`, optional) A character vector with the names of the
+#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' defines the color encoding. If `NULL` then no color encoding option will be displayed.
+#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' defines the point size encoding. If `NULL` then no size encoding option will be displayed.
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specifies the variable(s) for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specifies the variable(s) for faceting columns.
+#' @param shape (`character`) optional, character vector with the names of the
 #' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
 #' `vignette("ggplot2-specs", package="ggplot2")`.
-#' @param max_deg (`integer`, optional) The maximum degree for the polynomial trend line. Must not be less than 1.
-#' @param table_dec (`integer`, optional) Number of decimal places used to round numeric values in the table.
+#' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
+#' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -233,6 +229,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
 
+  # Requires Suggested packages
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
@@ -242,6 +239,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ))
   }
 
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -250,39 +248,18 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
   if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
+
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
+
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'row_facet' should not allow multiple selection")
-  }
-  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'col_facet' should not allow multiple selection")
-  }
-  checkmate::assert_character(shape)
-
-  checkmate::assert_int(max_deg, lower = 1L)
-  checkmate::assert_scalar(table_dec)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  if (length(alpha) == 1) {
-    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
-  }
-
-  if (length(size) == 1) {
-    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
-  }
+  assert_single_selection(col_facet)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -292,8 +269,34 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
 
+  checkmate::assert_character(shape)
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
+  checkmate::assert_int(max_deg, lower = 1L)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  ggtheme <- match.arg(ggtheme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_scalar(table_dec)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(

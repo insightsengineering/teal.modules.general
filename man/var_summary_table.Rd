@@ -14,7 +14,7 @@ var_summary_table(x, numeric_as_factor, dt_rows, outlier_definition)
 \item{dt_rows}{\code{numeric} current/latest \code{DT} page length}
 
 \item{outlier_definition}{If 0 no outliers are removed, otherwise
-outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)}
+outliers (those more than \verb{outlier_definition*IQR below/above Q1/Q3} be removed)}
 }
 \value{
 text with simple statistics.

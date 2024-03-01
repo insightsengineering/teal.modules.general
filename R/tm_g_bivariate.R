@@ -1,4 +1,4 @@
-#' Univariate and bivariate visualizations module
+#' `teal` module: Univariate and bivariate visualizations
 #'
 #' Module enables the creation of univariate and bivariate plots,
 #' facilitating the exploration of data distributions and relationships between two variables.
@@ -18,36 +18,38 @@
 #' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Variable names selected to plot along the y-axis by default.
 #' Can be numeric, factor or character.
-#' @param use_density (`logical`, optional) Indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
+#' @param use_density (`logical`) optional, indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
 #' Defaults to frequency (`FALSE`).
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables for row facetting.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables for column facetting.
-#' @param facet (`logical`, optional) to specify whether the facet encodings `ui` elements are toggled
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) to use for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) to use for faceting columns.
+#' @param facet (`logical`) optional, specifies whether the facet encodings `ui` elements are toggled
 #' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #' are supplied.
 #' @param color_settings (`logical`) Whether coloring, filling and size should be applied
 #' and `UI` tool offered to the user.
-#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the outline color inside the coloring settings.
+#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the outline color inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the fill color inside the coloring settings.
+#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the fill color inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Variables selected for the size of `geom_point` plots inside the coloring settings.
+#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specification of the data variable(s) selected for the size of `geom_point` plots inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
-#' @param free_x_scales (`logical`, optional) Whether X scaling shall be changeable.
+#' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
-#' @param free_y_scales (`logical`, optional) Whether Y scaling shall be changeable.
+#' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
-#' @param swap_axes (`logical`, optional) Whether to swap X and Y axes. Defaults to `FALSE`.
+#' @param swap_axes (`logical`) optional, whether to swap X and Y axes. Defaults to `FALSE`.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
 #'
-#' # general data exapmle
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
@@ -192,6 +194,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL) {
   logger::log_info("Initializing tm_g_bivariate")
+
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
@@ -200,52 +204,36 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (inherits(fill, "data_extract_spec")) fill <- list(fill)
   if (inherits(size, "data_extract_spec")) size <- list(size)
 
-  checkmate::assert_list(x, types = "data_extract_spec")
-  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
-    stop("'x' should not allow multiple selection")
-  }
-  checkmate::assert_list(y, types = "data_extract_spec")
-  if (!all(vapply(y, function(x) !x$select$multiple, logical(1)))) {
-    stop("'y' should not allow multiple selection")
-  }
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'row_facet' should not allow multiple selection")
-  }
-  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'col_facet' should not allow multiple selection")
-  }
-  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(color, function(x) !x$select$multiple, logical(1)))) {
-    stop("'color' should not allow multiple selection")
-  }
-  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(fill, function(x) !x$select$multiple, logical(1)))) {
-    stop("'fill' should not allow multiple selection")
-  }
-  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(size, function(x) !x$select$multiple, logical(1)))) {
-    stop("'size' should not allow multiple selection")
-  }
-
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_flag(use_density)
-  checkmate::assert_flag(color_settings)
-  checkmate::assert_flag(free_x_scales)
-  checkmate::assert_flag(free_y_scales)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  checkmate::assert_flag(swap_axes)
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-  checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
+  checkmate::assert_list(x, types = "data_extract_spec")
+  assert_single_selection(x)
+
+  checkmate::assert_list(y, types = "data_extract_spec")
+  assert_single_selection(y)
+
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
+
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(col_facet)
+
+  checkmate::assert_flag(facet)
+
+  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(color)
+
+  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(fill)
+
+  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(size)
+
+  checkmate::assert_flag(use_density)
+
+  # Determines color, fill & size if they are not explicitly set
+  checkmate::assert_flag(color_settings)
   if (color_settings) {
     if (is.null(color)) {
       color <- x
@@ -265,6 +253,28 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     }
   }
 
+  checkmate::assert_flag(free_x_scales)
+  checkmate::assert_flag(free_y_scales)
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
+  checkmate::assert_flag(rotate_xaxis_labels)
+  checkmate::assert_flag(swap_axes)
+
+  ggtheme <- match.arg(ggtheme)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -291,9 +301,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   )
 }
 
-# UI function for the bivariate module.
-#' @noRd
-#' @keywords internal
+# UI function for the bivariate module
 ui_g_bivariate <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(
@@ -434,9 +442,7 @@ ui_g_bivariate <- function(id, ...) {
   )
 }
 
-# Server function for the bivariate module.
-#' @noRd
-#' @keywords internal
+# Server function for the bivariate module
 srv_g_bivariate <- function(id,
                             data,
                             reporter,
@@ -588,8 +594,7 @@ srv_g_bivariate <- function(id,
         size <- NULL
       }
 
-
-      teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
       cl <- bivariate_plot_call(
         data_name = "ANL",
@@ -718,8 +723,6 @@ srv_g_bivariate <- function(id,
 }
 
 # Get Substituted ggplot call
-#' @noRd
-#' @keywords internal
 bivariate_plot_call <- function(data_name,
                                 x = character(0),
                                 y = character(0),
@@ -734,7 +737,7 @@ bivariate_plot_call <- function(data_name,
                                 alpha = double(0),
                                 size = 2,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical")
+  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
   validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
@@ -770,10 +773,8 @@ bivariate_plot_call <- function(data_name,
 
 # Create ggplot part of plot call
 # Due to the type of the x and y variable the plot type is chosen
-#' @noRd
-#' @keywords internal
-bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
-                                  y_class = c("NULL", "numeric", "integer", "factor", "character", "logical"),
+bivariate_ggplot_call <- function(x_class,
+                                  y_class,
                                   freq = TRUE,
                                   theme = "gray",
                                   rotate_xaxis_labels = FALSE,
@@ -786,21 +787,26 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
                                   ylab = "-",
                                   data_name = "ANL",
                                   ggplot2_args = teal.widgets::ggplot2_args()) {
-  x_class <- match.arg(x_class)
-  y_class <- match.arg(y_class)
-
-  if (x_class %in% c("character", "logical")) {
-    x_class <- "factor"
-  }
-  if (x_class %in% c("integer")) {
-    x_class <- "numeric"
-  }
-  if (y_class %in% c("character", "logical")) {
-    y_class <- "factor"
-  }
-  if (y_class %in% c("integer")) {
-    y_class <- "numeric"
-  }
+  x_class <- switch(x_class,
+    "character" = ,
+    "ordered" = ,
+    "logical" = ,
+    "factor" = "factor",
+    "integer" = ,
+    "numeric" = "numeric",
+    "NULL" = "NULL",
+    stop("unsupported x_class: ", x_class)
+  )
+  y_class <- switch(y_class,
+    "character" = ,
+    "ordered" = ,
+    "logical" = ,
+    "factor" = "factor",
+    "integer" = ,
+    "numeric" = "numeric",
+    "NULL" = "NULL",
+    stop("unsupported y_class: ", y_class)
+  )
 
   if (all(c(x_class, y_class) == "NULL")) {
     stop("either x or y is required")
@@ -955,9 +961,7 @@ bivariate_ggplot_call <- function(x_class = c("NULL", "numeric", "integer", "fac
   plot_call
 }
 
-#' Create facet call
-#' @noRd
-#' @keywords internal
+# Create facet call
 facet_ggplot_call <- function(row_facet = character(0),
                               col_facet = character(0),
                               free_x_scales = FALSE,
@@ -988,8 +992,6 @@ facet_ggplot_call <- function(row_facet = character(0),
   }
 }
 
-#' @noRd
-#' @keywords internal
 coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,

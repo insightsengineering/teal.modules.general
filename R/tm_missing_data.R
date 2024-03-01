@@ -1,6 +1,6 @@
-#' Missing data analysis module
+#' `teal` module: Missing data analysis
 #'
-#' Module analyzes missing data in `data.frame`s to help users explore missing observations and
+#' This module analyzes missing data in `data.frame`s to help users explore missing observations and
 #' gain insights into the completeness of their data.
 #' It is useful for clinical data analysis within the context of `CDISC` standards and
 #' adaptable for general data analysis purposes.
@@ -10,10 +10,12 @@
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
 #' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
 #' ignored.
-#' @param ggtheme (`character`, optional) Specifies the default `ggplot2` theme for plots. Defaults to `classic`.
+#' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -87,17 +89,22 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
+  logger::log_info("Initializing tm_missing_data")
+
+  # Requires Suggested packages
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
     stop("Cannot load gridExtra - please install the package or restart your session.")
   }
   if (!requireNamespace("rlang", quietly = TRUE)) {
     stop("Cannot load rlang - please install the package or restart your session.")
   }
-  logger::log_info("Initializing tm_missing_data")
+
+  # Normalize the parameters
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -105,10 +112,17 @@ tm_missing_data <- function(label = "Missing data",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
+
+  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
+
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
   module(
     label,

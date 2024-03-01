@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_a_regression.R
 \name{tm_a_regression}
 \alias{tm_a_regression}
-\title{Scatterplot and regression model}
+\title{\code{teal} module: Scatterplot and regression analysis}
 \usage{
 tm_a_regression(
   label = "Regression Analysis",
@@ -17,7 +17,8 @@ tm_a_regression(
   pre_output = NULL,
   post_output = NULL,
   default_plot_type = 1,
-  default_outlier_label = "USUBJID"
+  default_outlier_label = "USUBJID",
+  label_segment_threshold = c(0.5, 0, 10)
 )
 }
 \arguments{
@@ -30,29 +31,29 @@ Regressor variables from an incoming dataset with filtering and selecting.}
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Response variables from an incoming dataset with filtering and selecting.}
 
-\item{plot_height}{optional, (\code{numeric}) Specifies the plot height as a three-element vector of
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) Specifies the plot width as a three-element vector of
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{alpha}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point opacity.
+\item{alpha}{(\code{integer(1)} or \code{integer(3)}) optional, specifies point opacity.
 \itemize{
 \item When the length of \code{alpha} is one: the plot points will have a fixed opacity.
 \item When the length of \code{alpha} is three: the plot points opacity are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{size}{(\code{integer(1)} or \code{integer(3)}, optional) Specifies point size.
+\item{size}{(\code{integer(1)} or \code{integer(3)}) optional, specifies point size.
 \itemize{
 \item When the length of \code{size} is one: the plot point sizes will have a fixed size.
 \item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
@@ -60,14 +61,14 @@ List names should match the following: \verb{c("default", "Response vs Regressor
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed before the module's output,
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) Text or UI element to be displayed after the module's output,
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{default_plot_type}{(\code{numeric}, optional) Defaults to Response vs Regressor.
+\item{default_plot_type}{(\code{numeric}) optional, defaults to "Response vs Regressor".
 \enumerate{
 \item Response vs Regressor
 \item Residuals vs Fitted
@@ -78,7 +79,26 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
-\item{default_outlier_label}{(\code{character}, optional) The default column selected to label outliers.}
+\item{default_outlier_label}{(\code{character}) optional, default column selected to label outliers.}
+
+\item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
+Minimum distance between label and point on the plot that triggers the creation of
+a line segment between the two.
+This may happen when the label cannot be placed next to the point as it overlaps another
+label or point.
+The value is used as the \code{min.segment.length} parameter to the \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}} function.
+
+It can take the following forms:
+\itemize{
+\item \code{numeric(1)}: Fixed value used for the minimum distance and the slider is not presented in the UI.
+\item \code{numeric(3)}: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
+
+It takes the form of \code{c(value, min, max)} and it is passed to the \code{value_min_max}
+argument in \code{teal.widgets::optionalSliderInputValMinMax}.
+}}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module for visualizing regression analysis, including scatterplots and

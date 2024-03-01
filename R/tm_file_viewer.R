@@ -1,4 +1,4 @@
-#' File viewer module
+#' `teal` module: File viewer
 #'
 #' The file viewer module provides a tool to view static files.
 #' Supported formats include text formats, `PDF`, `PNG` `APNG`,
@@ -8,18 +8,20 @@
 #' @inheritParams shared_params
 #' @param input_path (`list`) of the input paths, optional. Each element can be:
 #'
-#' 1. Specific path to files of accepted formats
-#' 2. A directory or a URL
-#'
-#' The paths can be specified as absolute paths or relative to the running
-#' directory of the application.
+#' Paths can be specified as absolute paths or relative to the running directory of the application.
 #' Default to the current working directory if not supplied.
 #'
 #' @inherit shared_params return
 #'
 #' @examples
+#' data <- teal_data()
+#' data <- within(data, {
+#'   data <- data.frame(1)
+#' })
+#' datanames(data) <- c("data")
+#'
 #' app <- init(
-#'   data = teal_data(data = 1), # Mock dataset to initialize the app without error
+#'   data = data,
 #'   modules = modules(
 #'     tm_file_viewer(
 #'       input_path = list(
@@ -34,30 +36,30 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
 #' @export
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (length(label) == 0 || identical(label, "")) {
-    label <- " "
-  }
-  if (length(input_path) == 0 || identical(input_path, "")) {
-    input_path <- list()
-  }
 
+  # Normalize the parameters
+  if (length(label) == 0 || identical(label, "")) label <- " "
+  if (length(input_path) == 0 || identical(input_path, "")) input_path <- list()
+
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert(
     checkmate::check_list(input_path, types = "character", min.len = 0),
     checkmate::check_character(input_path, min.len = 1)
   )
-
   if (length(input_path) > 0) {
     valid_url <- function(url_input, timeout = 2) {
       con <- try(url(url_input), silent = TRUE)
       check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
       try(close.connection(con), silent = TRUE)
-      ifelse(is.null(check), TRUE, FALSE)
+      is.null(check)
     }
     idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
 
@@ -75,8 +77,9 @@ tm_file_viewer <- function(label = "File Viewer Module",
       "No file or url paths were provided."
     )
   }
+  # End of assertions
 
-
+  # Make UI args
   args <- as.list(environment())
 
   module(

@@ -1,4 +1,4 @@
-#' Data table viewer module
+#' `teal` module: Data table viewer
 #'
 #' Module provides a dynamic and interactive way to view `data.frame`s in a `teal` application.
 #' It uses the `DT` package to display data tables in a paginated, searchable, and sortable format,
@@ -26,6 +26,8 @@
 #' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
 #' (see `server` argument of [DT::renderDataTable()])
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' # general data example
@@ -89,7 +91,10 @@ tm_data_table <- function(label = "Data Table",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_data_table")
+
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert_list(variables_selected, min.len = 0, types = "character", names = "named")
   if (length(variables_selected) > 0) {
     lapply(seq_along(variables_selected), function(i) {
@@ -99,14 +104,17 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
+
   checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
-  checkmate::assert_list(dt_options, names = "named")
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
   )
-
+  checkmate::assert_list(dt_options, names = "named")
   checkmate::assert_flag(server_rendering)
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
   module(
     label,

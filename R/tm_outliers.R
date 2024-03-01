@@ -1,4 +1,4 @@
-#' Outliers module
+#' `teal` module: Outliers analysis
 #'
 #' Module to analyze and identify outliers using different methods
 #' such as IQR, Z-score, and Percentiles, and offers visualizations including
@@ -9,11 +9,13 @@
 #'
 #' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Specifies variable(s) to be analyzed for outliers.
-#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`, optional)
-#' Specifies the categorical variable(s) to split the selected outlier variables on.
+#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specifies the categorical variable(s) to split the selected outlier variables on.
 #'
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -130,13 +132,16 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL) {
   logger::log_info("Initializing tm_outliers")
+
+  # Normalize the parameters
   if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
   if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(outlier_var, types = "data_extract_spec")
+
   checkmate::assert_list(categorical_var, types = "data_extract_spec", null.ok = TRUE)
   if (is.list(categorical_var)) {
     lapply(categorical_var, function(x) {
@@ -145,10 +150,26 @@ tm_outliers <- function(label = "Outliers Module",
       }
     })
   }
+
+  ggtheme <- match.arg(ggtheme)
+
   plot_choices <- c("Boxplot", "Density Plot", "Cumulative Distribution Plot")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -197,7 +218,8 @@ ui_outliers <- function(id, ...) {
         )
       ),
       br(), hr(),
-      uiOutput(ns("table_ui_wrap"))
+      uiOutput(ns("table_ui_wrap")),
+      DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = div(
       ### Reporter
@@ -1050,12 +1072,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = {
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
+        shiny::req(iv_r()$is_valid()) # Same validation as output$table_ui_wrap
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
         ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]] # nolint: object_name.
         ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]] # nolint: object_name.
         ANL <- common_code_q()[["ANL"]] # nolint: object_name.
+
         plot_brush <- if (tab == "Boxplot") {
           boxplot_r()
           box_pws$brush()
@@ -1187,8 +1211,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           multiple = TRUE
         ),
         h4("Outlier Table"),
-        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows")),
-        DT::dataTableOutput(session$ns("table_ui"))
+        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
       )
     })
 

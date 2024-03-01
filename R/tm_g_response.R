@@ -1,4 +1,4 @@
-#' Response plot module
+#' `teal` module: Response plot
 #'
 #' Generates a response plot for a given `response` and `x` variables.
 #' This module allows users customize and add annotations to the plot depending
@@ -152,32 +152,35 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL) {
   logger::log_info("Initializing tm_g_response")
+
+  # Normalize the parameters
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+
+  # Start of assertions
   checkmate::assert_string(label)
-  ggtheme <- match.arg(ggtheme)
+
   checkmate::assert_list(response, types = "data_extract_spec")
   if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1)))) {
     stop("'response' should not allow empty values")
   }
-  if (!all(vapply(response, function(x) !x$select$multiple, logical(1)))) {
-    stop("'response' should not allow multiple selection")
-  }
+  assert_single_selection(response)
+
   checkmate::assert_list(x, types = "data_extract_spec")
   if (!all(vapply(x, function(x) !("" %in% x$select$choices), logical(1)))) {
     stop("'x' should not allow empty values")
   }
-  if (!all(vapply(x, function(x) !x$select$multiple, logical(1)))) {
-    stop("'x' should not allow multiple selection")
-  }
+  assert_single_selection(x)
+
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_flag(coord_flip)
   checkmate::assert_flag(count_labels)
   checkmate::assert_flag(rotate_xaxis_labels)
   checkmate::assert_flag(freq)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -186,8 +189,14 @@ tm_g_response <- function(label = "Response Plot",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  ggtheme <- match.arg(ggtheme)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -413,7 +422,6 @@ srv_g_response <- function(id,
           env = list(resp_var = resp_var)
         )
       ) %>%
-        # nolint start
         # rowf and colf will be a NULL if not set by a user
         teal.code::eval_code(
           substitute(
@@ -433,7 +441,6 @@ srv_g_response <- function(id,
             env = list(x_cl = x_cl, rowf = rowf, colf = colf)
           )
         )
-      # nolint end
 
       plot_call <- substitute(
         expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +

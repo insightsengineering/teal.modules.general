@@ -1,4 +1,4 @@
-#' Principal component analysis module
+#' `teal` module: Principal component analysis
 #'
 #' Module conducts principal component analysis (PCA) on a given dataset and offers different
 #' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
@@ -8,19 +8,15 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   specifying columns used to compute PCA.
-#' @param alpha (`numeric`, optional) Specifies point opacity.
-#' - If vector of `length == 1` then the plot points will have a fixed opacity.
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param size (`numeric`, optional) Specifies point size.
-#' - If vector of `length == 1` then the plot point sizes will have a fixed size
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param font_size (`numeric`, optional) Specifies font size.
+#' specifying columns used to compute PCA.
+#' @param font_size (`numeric`) optional, specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -110,13 +106,37 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL) {
   logger::log_info("Initializing tm_a_pca")
+
+  # Normalize the parameters
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(dat, types = "data_extract_spec")
+
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
+  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
+  checkmate::assert_numeric(
+    plot_width[1],
+    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
+  )
+
   ggtheme <- match.arg(ggtheme)
+
+  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
+  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
+  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
   checkmate::assert_flag(rotate_xaxis_labels)
+
+  if (length(font_size) == 1) {
+    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+  } else {
+    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
+    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
+  }
 
   if (length(alpha) == 1) {
     checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE, lower = 0, upper = 1)
@@ -132,25 +152,11 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
   }
 
-  if (length(font_size) == 1) {
-    checkmate::assert_numeric(font_size, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-  } else {
-    checkmate::assert_numeric(font_size, len = 3, any.missing = FALSE, finite = TRUE, lower = 8, upper = 20)
-    checkmate::assert_numeric(font_size[1], lower = font_size[2], upper = font_size[3], .var.name = "font_size")
-  }
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
-  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
-  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
-  checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
-  checkmate::assert_numeric(
-    plot_width[1],
-    lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
-  )
-
-  plot_choices <- c("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")
-  checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
-  checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(dat = dat)
@@ -296,11 +302,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       response[[i]]$select$multiple <- FALSE
       response[[i]]$select$always_selected <- NULL
       response[[i]]$select$selected <- NULL
-      response[[i]]$select$choices <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
-      response[[i]]$select$choices <- setdiff(
-        response[[i]]$select$choices,
-        unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
-      )
+      all_cols <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
+      ignore_cols <- unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
+      color_cols <- all_cols[!names(all_cols) %in% ignore_cols]
+      response[[i]]$select$choices <- choices_labeled(names(color_cols), color_cols)
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(

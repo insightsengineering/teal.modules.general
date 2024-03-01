@@ -1,4 +1,4 @@
-#' Stack plots of variables and show association with reference variable
+#' `teal` module: Stack plots of variables and show association with reference variable
 #'
 #' Module provides functionality for visualizing the distribution of variables and
 #' their association with a reference variable.
@@ -15,13 +15,15 @@
 #' to ensure single selection option.
 #' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Variables to be associated with the reference variable.
-#' @param show_association (`logical`) optional whether show association of `vars`
+#' @param show_association (`logical`) optional, whether show association of `vars`
 #' with reference variable. Defaults to `TRUE`.
-#' @param distribution_theme,association_theme (`character`) optional `ggplot2` themes to be used by default.
+#' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
 #' Default to `"gray"`.
 #'
 #' @templateVar ggnames "Bivariate1", "Bivariate2"
 #' @template ggplot2_args_multi
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' library(teal.widgets)
@@ -131,17 +133,23 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_association")
+
+  # Normalize the parameters
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)
   if (inherits(vars, "data_extract_spec")) vars <- list(vars)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert_list(ref, types = "data_extract_spec")
   if (!all(vapply(ref, function(x) !x$select$multiple, logical(1)))) {
     stop("'ref' should not allow multiple selection")
   }
+
   checkmate::assert_list(vars, types = "data_extract_spec")
   checkmate::assert_flag(show_association)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -149,12 +157,19 @@ tm_g_association <- function(label = "Association",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
+
   distribution_theme <- match.arg(distribution_theme)
   association_theme <- match.arg(association_theme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+  # End of assertions
 
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -341,7 +356,7 @@ srv_tm_g_association <- function(id,
       teal::validate_has_data(ANL[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
       # reference
-      ref_class <- class(ANL[[ref_name]])
+      ref_class <- class(ANL[[ref_name]])[1]
       if (is.numeric(ANL[[ref_name]]) && log_transformation) {
         # works for both integers and doubles
         ref_cl_name <- call("log", as.name(ref_name))
@@ -378,7 +393,7 @@ srv_tm_g_association <- function(id,
       print_call <- quote(print(p))
 
       var_calls <- lapply(vars_names, function(var_i) {
-        var_class <- class(ANL[[var_i]])
+        var_class <- class(ANL[[var_i]])[1]
         if (is.numeric(ANL[[var_i]]) && log_transformation) {
           # works for both integers and doubles
           var_cl_name <- call("log", as.name(var_i))
