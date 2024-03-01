@@ -18,8 +18,8 @@ repos:
           - ggmosaic
           - ggplot2
           - shiny
-          - insightsengineering/teal
-          - insightsengineering/teal.transform
+          - teal
+          - teal.transform
           - checkmate
           - dplyr
           - DT
