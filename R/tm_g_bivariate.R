@@ -586,8 +586,7 @@ srv_g_bivariate <- function(id,
         size <- NULL
       }
 
-
-      teal::validate_has_data(ANL[, c(x_name, y_name)], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
       cl <- bivariate_plot_call(
         data_name = "ANL",
