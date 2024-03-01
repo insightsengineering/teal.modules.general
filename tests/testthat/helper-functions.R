@@ -1,9 +1,9 @@
 local_logger_threshold <- function(threshold, envir = parent.frame()) {
   old <- logger::log_threshold(namespace = "teal.modules.general")
-  if (!requireNamespace("withr", quietly = FALSE)) {
-    return(invisible(old))
-  }
-  withr::defer(logger::log_threshold(old, namespace = "teal.modules.general"), envir = envir)
+
+  # Equivalent to withr::defer
+  thunk <- as.call(list(function() logger::log_threshold(old, namespace = "teal.modules.general")))
+  do.call(base::on.exit, list(thunk, TRUE, FALSE), envir = envir)
   logger::log_threshold(threshold, namespace = "teal.modules.general")
   invisible(old)
 }
