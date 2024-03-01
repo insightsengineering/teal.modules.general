@@ -811,7 +811,7 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 #'
 #' @param input (`session$input`) the shiny session input
 #' @param plot_var (`list`) list of a data frame and an array of variable names
-#' @param data (`tdata`) the datasets passed to the module
+#' @param data (`teal_data`) the datasets passed to the module
 #'
 #' @returns `logical` TRUE if validations pass; a `shiny` validation error otherwise
 #' @keywords internal
@@ -843,7 +843,7 @@ get_plotted_data <- function(input, plot_var, data) {
 #'
 #' @param datanames (`character`) the name of the dataset
 #' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
-#' @param data (`tdata`) the object containing all datasets
+#' @param data (`teal_data`) the object containing all datasets
 #' @param input (`session$input`) the shiny session input
 #' @param output (`session$output`) the shiny session output
 #' @param columns_names (`environment`) the environment containing bindings for each dataset

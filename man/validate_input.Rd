@@ -11,7 +11,7 @@ validate_input(input, plot_var, data)
 
 \item{plot_var}{(\code{list}) list of a data frame and an array of variable names}
 
-\item{data}{(\code{tdata}) the datasets passed to the module}
+\item{data}{(\code{teal_data}) the datasets passed to the module}
 }
 \value{
 \code{logical} TRUE if validations pass; a \code{shiny} validation error otherwise
