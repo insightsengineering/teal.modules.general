@@ -19,11 +19,11 @@ render_single_tab(
 
 \item{parent_dataname}{(\code{character}) the name of a parent \code{dataname} to filter out variables from}
 
-\item{output}{(\code{session$output}) the shiny session output}
+\item{output}{(\code{session$output}) the \code{shiny} session output}
 
 \item{data}{(\code{teal_data}) the object containing all datasets}
 
-\item{input}{(\code{session$input}) the shiny session input}
+\item{input}{(\code{session$input}) the \code{shiny} session input}
 
 \item{columns_names}{(\code{environment}) the environment containing bindings for each dataset}
 

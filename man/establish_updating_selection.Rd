@@ -9,7 +9,7 @@ establish_updating_selection(datanames, input, plot_var, columns_names)
 \arguments{
 \item{datanames}{(\code{character}) the name of the dataset}
 
-\item{input}{(\code{session$input}) the shiny session input}
+\item{input}{(\code{session$input}) the \code{shiny} session input}
 
 \item{plot_var}{(\code{list}) the list containing the currently selected dataset (tab) and its column names}
 
