@@ -200,7 +200,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
       textOutput(ns("title")),
       teal.widgets::table_with_settings_ui(ns("table"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###

@@ -202,7 +202,7 @@ ui_tm_g_association <- function(id, ...) {
       tags$br(),
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###

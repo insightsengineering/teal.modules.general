@@ -206,12 +206,12 @@ ui_distribution <- function(id, ...) {
         tabPanel("Histogram", teal.widgets::plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", teal.widgets::plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      h3("Statistics Table"),
+      tags$h3("Statistics Table"),
       DT::dataTableOutput(ns("summary_table")),
-      h3("Tests"),
+      tags$h3("Tests"),
       DT::dataTableOutput(ns("t_stats"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -274,12 +274,12 @@ ui_distribution <- function(id, ...) {
             "Theoretical Distribution",
             teal.widgets::optionalSelectInput(
               ns("t_dist"),
-              div(
+              tags$div(
                 class = "teal-tooltip",
                 tagList(
                   "Distribution:",
                   icon("circle-info"),
-                  span(
+                  tags$span(
                     class = "tooltiptext",
                     "Default parameters are optimized with MASS::fitdistr function."
                   )
@@ -291,7 +291,7 @@ ui_distribution <- function(id, ...) {
             ),
             numericInput(ns("dist_param1"), label = "param1", value = NULL),
             numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            span(actionButton(ns("params_reset"), "Reset params")),
+            tags$span(actionButton(ns("params_reset"), "Reset params")),
             collapsed = FALSE
           )
         )

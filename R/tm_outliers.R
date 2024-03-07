@@ -201,7 +201,7 @@ ui_outliers <- function(id, ...) {
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
       uiOutput(ns("total_missing")),
-      br(), hr(),
+      tags$br(), tags$hr(),
       tabsetPanel(
         id = ns("tabs"),
         tabPanel(
@@ -217,11 +217,11 @@ ui_outliers <- function(id, ...) {
           teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot"))
         )
       ),
-      br(), hr(),
+      tags$br(), tags$hr(),
       uiOutput(ns("table_ui_wrap")),
       DT::dataTableOutput(ns("table_ui"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -1174,7 +1174,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
       teal::validate_has_data(ANL, 1)
       ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
-      h5(
+      tags$h5(
         sprintf(
           "%s %d / %d [%.02f%%]",
           "Total number of outlier(s):",
@@ -1210,7 +1210,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           selected = NULL,
           multiple = TRUE
         ),
-        h4("Outlier Table"),
+        tags$h4("Outlier Table"),
         teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
       )
     })

@@ -197,7 +197,7 @@ ui_a_pca <- function(id, ...) {
       output = teal.widgets::white_small_well(
         uiOutput(ns("all_plots"))
       ),
-      encoding = div(
+      encoding = tags$div(
         ### Reporter
         teal.reporter::simple_reporter_ui(ns("simple_reporter")),
         ###
@@ -986,11 +986,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     output$tbl_importance_ui <- renderUI({
       req("importance" %in% input$tables_display)
-      div(
+      tags$div(
         align = "center",
         tags$h4("Principal components importance"),
         tableOutput(session$ns("tbl_importance")),
-        hr()
+        tags$hr()
       )
     })
 
@@ -1006,11 +1006,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     output$tbl_eigenvector_ui <- renderUI({
       req("eigenvector" %in% input$tables_display)
-      div(
+      tags$div(
         align = "center",
         tags$h4("Eigenvectors"),
         tableOutput(session$ns("tbl_eigenvector")),
-        hr()
+        tags$hr()
       )
     })
 

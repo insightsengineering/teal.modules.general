@@ -145,16 +145,16 @@ ui_variable_browser <- function(id,
             ### Reporter
             teal.reporter::simple_reporter_ui(ns("simple_reporter")),
             ###
-            div(
+            tags$div(
               class = "block",
               uiOutput(ns("ui_histogram_display"))
             ),
-            div(
+            tags$div(
               class = "block",
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
-            br(),
+            tags$br(),
             # input user-defined text size
             teal.widgets::panel_item(
               title = "Plot settings",
@@ -175,7 +175,7 @@ ui_variable_browser <- function(id,
                 ))
               )
             ),
-            br(),
+            tags$br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
           )
@@ -231,11 +231,11 @@ srv_variable_browser <- function(id,
             lapply(datanames, function(dataname) {
               tabPanel(
                 dataname,
-                div(
+                tags$div(
                   class = "mt-4",
                   textOutput(ns(paste0("dataset_summary_", dataname)))
                 ),
-                div(
+                tags$div(
                   class = "mt-4",
                   teal.widgets::get_dt_rows(
                     ns(paste0("variable_browser_", dataname)),
@@ -321,9 +321,9 @@ srv_variable_browser <- function(id,
 
       numeric_ui <- tagList(
         fluidRow(
-          div(
+          tags$div(
             class = "col-md-4",
-            br(),
+            tags$br(),
             shinyWidgets::switchInput(
               inputId = session$ns("display_density"),
               label = "Show density",
@@ -333,9 +333,9 @@ srv_variable_browser <- function(id,
               handleWidth = "50px"
             )
           ),
-          div(
+          tags$div(
             class = "col-md-4",
-            br(),
+            tags$br(),
             shinyWidgets::switchInput(
               inputId = session$ns("remove_outliers"),
               label = "Remove outliers",
@@ -345,12 +345,12 @@ srv_variable_browser <- function(id,
               handleWidth = "50px"
             )
           ),
-          div(
+          tags$div(
             class = "col-md-4",
             uiOutput(session$ns("outlier_definition_slider_ui"))
           )
         ),
-        div(
+        tags$div(
           class = "ml-4",
           uiOutput(session$ns("ui_density_help")),
           uiOutput(session$ns("ui_outlier_help"))
@@ -391,7 +391,7 @@ srv_variable_browser <- function(id,
       df <- data()[[dataname]]
 
       numeric_ui <- tagList(fluidRow(
-        div(
+        tags$div(
           class = "col-md-4",
           shinyWidgets::switchInput(
             inputId = session$ns("remove_NA_hist"),
@@ -422,12 +422,12 @@ srv_variable_browser <- function(id,
       req(input$remove_outliers)
       sliderInput(
         inputId = session$ns("outlier_definition_slider"),
-        div(
+        tags$div(
           class = "teal-tooltip",
           tagList(
             "Outlier definition:",
             icon("circle-info"),
-            span(
+            tags$span(
               class = "tooltiptext",
               paste(
                 "Use the slider to choose the cut-off value to define outliers; the larger the value the",

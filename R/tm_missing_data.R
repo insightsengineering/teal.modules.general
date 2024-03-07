@@ -144,7 +144,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        div(
+        tags$div(
           class = "flex",
           column(
             width = 12,
@@ -152,7 +152,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
           )
         )
       ),
-      encoding = div(
+      encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
       ),
       uiOutput(ns("dataset_reporter")),
@@ -185,7 +185,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
                 title = x,
                 column(
                   width = 12,
-                  div(
+                  tags$div(
                     class = "mt-4",
                     ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
                   )
@@ -335,7 +335,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      span("Select only vars with missings", class = "whitespace-normal"),
+      tags$span("Select only vars with missings", class = "whitespace-normal"),
       width = "100%",
       class = "mb-4"
     ),
@@ -343,12 +343,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       is_tab_active_js(ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
-        div(
+        tags$div(
           class = "teal-tooltip",
           tagList(
             "Add **anyna** variable",
             icon("circle-info"),
-            span(
+            tags$span(
               class = "tooltiptext",
               "Describes the number of observations with at least one missing value in any variable."
             )
@@ -359,12 +359,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       if (summary_per_patient) {
         checkboxInput(
           ns("if_patients_plot"),
-          div(
+          tags$div(
             class = "teal-tooltip",
             tagList(
               "Add summary per patients",
               icon("circle-info"),
-              span(
+              tags$span(
                 class = "tooltiptext",
                 paste(
                   "Displays the number of missing values per observation,",

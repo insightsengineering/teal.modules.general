@@ -313,7 +313,7 @@ ui_g_bivariate <- function(id, ...) {
     output = teal.widgets::white_small_well(
       tags$div(teal.widgets::plot_with_settings_ui(id = ns("myplot")))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -344,13 +344,13 @@ ui_g_bivariate <- function(id, ...) {
         )
       ),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
-        div(
+        tags$div(
           class = "data-extract-box",
           tags$label("Facetting"),
           shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
-            div(
+            tags$div(
               if (!is.null(args$row_facet)) {
                 teal.transform::data_extract_ui(
                   id = ns("row_facet"),
@@ -375,13 +375,13 @@ ui_g_bivariate <- function(id, ...) {
       },
       if (args$color_settings) {
         # Put a grey border around the coloring settings
-        div(
+        tags$div(
           class = "data-extract-box",
           tags$label("Color settings"),
           shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
-            div(
+            tags$div(
               teal.transform::data_extract_ui(
                 id = ns("color"),
                 label = "Outline color by variable",
@@ -394,7 +394,7 @@ ui_g_bivariate <- function(id, ...) {
                 data_extract_spec = args$fill,
                 is_single_dataset = is_single_dataset_value
               ),
-              div(
+              tags$div(
                 id = ns("size_settings"),
                 teal.transform::data_extract_ui(
                   id = ns("size"),

@@ -100,10 +100,10 @@ ui_viewer <- function(id, ...) {
   shiny::tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
-      output = div(
+      output = tags$div(
         uiOutput(ns("output"))
       ),
-      encoding = div(
+      encoding = tags$div(
         class = "file_viewer_encoding",
         tags$label("Encodings", class = "text-primary"),
         shinyTree::shinyTree(

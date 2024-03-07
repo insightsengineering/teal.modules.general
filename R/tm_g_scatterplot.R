@@ -338,7 +338,7 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-      encoding = div(
+      encoding = tags$div(
         ### Reporter
         teal.reporter::simple_reporter_ui(ns("simple_reporter")),
         ###
@@ -432,11 +432,11 @@ ui_g_scatterplot <- function(id, ...) {
             shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
             shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
             uiOutput(ns("num_na_removed")),
-            div(
+            tags$div(
               id = ns("label_pos"),
-              div(strong("Stats position")),
-              div(class = "inline-block w-10", helpText("Left")),
-              div(
+              tags$div(tags$strog("Stats position")),
+              tags$div(class = "inline-block w-10", helpText("Left")),
+              tags$div(
                 class = "inline-block w-70",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
@@ -444,7 +444,7 @@ ui_g_scatterplot <- function(id, ...) {
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              div(class = "inline-block w-10", helpText("Right"))
+              tags$div(class = "inline-block w-10", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
