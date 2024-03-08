@@ -488,8 +488,8 @@ srv_tm_g_association <- function(id,
         )
     })
 
-    plot_r <- shiny::reactive({
-      shiny::req(iv_r()$is_valid())
+    plot_r <- reactive({
+      req(iv_r()$is_valid())
       output_q()[["p"]]
     })
 

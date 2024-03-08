@@ -329,7 +329,7 @@ ui_g_scatterplot <- function(id, ...) {
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -599,7 +599,7 @@ srv_g_scatterplot <- function(id,
         x_var <- as.vector(merged$anl_input_r()$columns_source$x)
         y_var <- as.vector(merged$anl_input_r()$columns_source$y)
         if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
-          shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
+          tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
       }
     })

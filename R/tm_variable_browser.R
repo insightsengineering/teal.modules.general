@@ -123,7 +123,7 @@ ui_variable_browser <- function(id,
                                 post_output = NULL) {
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
@@ -1003,7 +1003,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
     selected_page_ix <- 0
 
     # Retrieve current selected variable if any
-    isolated_variable <- shiny::isolate(plot_var$variable[[dataset_name]])
+    isolated_variable <- isolate(plot_var$variable[[dataset_name]])
 
     if (!is.null(isolated_variable)) {
       index <- which(columns_names[[dataset_name]] == isolated_variable)[1]
@@ -1013,7 +1013,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
     # Retrieve the index of the first item of the current page
     #  it works with varying number of entries on the page (10, 25, ...)
     table_id_sel <- paste0("variable_browser_", dataset_name, "_state")
-    dt_state <- shiny::isolate(input[[table_id_sel]])
+    dt_state <- isolate(input[[table_id_sel]])
     if (selected_ix != 1 && !is.null(dt_state)) {
       selected_page_ix <- floor(selected_ix / dt_state$length) * dt_state$length
     }

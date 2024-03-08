@@ -419,7 +419,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       req(selector_list()$variables())
       ANL <- merged$anl_q_r()[["ANL"]]
       cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))

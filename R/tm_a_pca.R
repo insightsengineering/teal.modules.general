@@ -191,7 +191,7 @@ ui_a_pca <- function(id, ...) {
     color_selector[[i]]$select$selected <- NULL
   }
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(

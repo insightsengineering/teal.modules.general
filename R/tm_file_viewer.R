@@ -97,7 +97,7 @@ ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = tags$div(

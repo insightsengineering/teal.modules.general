@@ -398,7 +398,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     output$title <- renderText(output_q()[["title"]])
 
     table_r <- reactive({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       output_q()[["tbl"]]
     })
 

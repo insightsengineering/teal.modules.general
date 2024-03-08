@@ -674,7 +674,7 @@ srv_g_bivariate <- function(id,
         teal.code::eval_code(print_call)
     })
 
-    plot_r <- shiny::reactive({
+    plot_r <- reactive({
       output_q()[["p"]]
     })
 
