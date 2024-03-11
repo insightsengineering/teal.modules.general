@@ -1,7 +1,6 @@
 ---
 title: "Using outliers module"
-author: "Mahmoud Hallal"
-date: "`r Sys.Date()`"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
@@ -10,33 +9,32 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Teal application to analyze and report outliers with various datasets types.
+# `teal` application to analyze and report outliers with various datasets types.
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside the outliers module:
+This vignette will guide you through the four parts to create a `teal` application using
+various types of datasets using the outliers module `tm_outliers()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
-## Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
-Inside this app 5 datasets will be used
+Inside this app 3 datasets will be used
 
 1. `ADSL` A wide data set with subject data
 2. `ADRS` A long data set with response data for subjects at different time points of the study
 3. `ADLB` A long data set with lab measurements for each subject
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-# nolint start
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -46,144 +44,155 @@ data <- within(data, {
 datanames <- c("ADSL", "ADRS", "ADLB")
 datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
-# nolint end
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_outliers` using different
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`. The app
+itself will be constructed by multiple calls of `tm_outliers()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
-app <- teal::init(
-  data = data,
-  modules = teal::modules(
-    # tm_outliers ----
-    modules(
-      label = "Outliers module",
-      tm_outliers(
-        label = "Single wide dataset",
-        outlier_var = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-            selected = "AGE",
-            fixed = FALSE
-          )
-        ),
-        categorical_var = teal.transform::data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(
-              data[["ADSL"]],
-              subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-            ),
-            selected = "RACE",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        )
+# configuration for the single wide dataset
+mod1 <- tm_outliers(
+  label = "Single wide dataset",
+  outlier_var = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
+      selected = "AGE",
+      fixed = FALSE
+    )
+  ),
+  categorical_var = data_extract_spec(
+    dataname = "ADSL",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(
+        data[["ADSL"]],
+        subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
       ),
-      tm_outliers(
-        label = "Wide and long datasets",
-        outlier_var = list(
-          teal.transform::data_extract_spec(
-            dataname = "ADSL",
-            select = select_spec(
-              label = "Select variable:",
-              choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-              selected = "AGE",
-              fixed = FALSE
-            )
-          ),
-          teal.transform::data_extract_spec(
-            dataname = "ADLB",
-            select = select_spec(
-              label = "Select variable:",
-              choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
-              selected = "AVAL",
-              multiple = FALSE,
-              fixed = FALSE
-            )
-          )
+      selected = "RACE",
+      multiple = FALSE,
+      fixed = FALSE
+    )
+  )
+)
+
+# configuration for the wide and long datasets
+mod2 <- tm_outliers(
+  label = "Wide and long datasets",
+  outlier_var = list(
+    data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
+        selected = "AGE",
+        fixed = FALSE
+      )
+    ),
+    data_extract_spec(
+      dataname = "ADLB",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
+        selected = "AVAL",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+  ),
+  categorical_var =
+    data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(
+          data[["ADSL"]],
+          subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
         ),
-        categorical_var =
-          teal.transform::data_extract_spec(
-            dataname = "ADSL",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(
-                data[["ADSL"]],
-                subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-              ),
-              selected = "RACE",
-              multiple = FALSE,
-              fixed = FALSE
-            )
-          )
-      ),
-      tm_outliers(
-        label = "Multiple long datasets",
-        outlier_var = list(
-          teal.transform::data_extract_spec(
-            dataname = "ADRS",
-            select = select_spec(
-              label = "Select variable:",
-              choices = variable_choices(data[["ADRS"]], c("ADY", "EOSDY")),
-              selected = "ADY",
-              fixed = FALSE
-            )
-          ),
-          teal.transform::data_extract_spec(
-            dataname = "ADLB",
-            select = select_spec(
-              label = "Select variable:",
-              choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
-              selected = "AVAL",
-              multiple = FALSE,
-              fixed = FALSE
-            )
-          )
+        selected = "RACE",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+)
+
+# configuration for the multiple long datasets
+mod3 <- tm_outliers(
+  label = "Multiple long datasets",
+  outlier_var = list(
+    data_extract_spec(
+      dataname = "ADRS",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADRS"]], c("ADY", "EOSDY")),
+        selected = "ADY",
+        fixed = FALSE
+      )
+    ),
+    data_extract_spec(
+      dataname = "ADLB",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
+        selected = "AVAL",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+  ),
+  categorical_var = list(
+    data_extract_spec(
+      dataname = "ADRS",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(data[["ADRS"]], c("ARM", "ACTARM")),
+        selected = "ARM",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    ),
+    data_extract_spec(
+      dataname = "ADLB",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(
+          data[["ADLB"]],
+          subset = names(Filter(isTRUE, sapply(data[["ADLB"]], is.factor)))
         ),
-        categorical_var = list(
-          teal.transform::data_extract_spec(
-            dataname = "ADRS",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(data[["ADRS"]], c("ARM", "ACTARM")),
-              selected = "ARM",
-              multiple = FALSE,
-              fixed = FALSE
-            )
-          ),
-          teal.transform::data_extract_spec(
-            dataname = "ADLB",
-            select = select_spec(
-              label = "Select variables:",
-              choices = variable_choices(
-                data[["ADLB"]],
-                subset = names(Filter(isTRUE, sapply(data[["ADLB"]], is.factor)))
-              ),
-              selected = "RACE",
-              multiple = FALSE,
-              fixed = FALSE
-            )
-          )
-        )
+        selected = "RACE",
+        multiple = FALSE,
+        fixed = FALSE
       )
     )
   )
 )
+
+# initialize the app
+app <- init(
+  data = data,
+  modules = modules(
+    # tm_outliers ----
+    modules(
+      label = "Outliers module",
+      mod1,
+      mod2,
+      mod3
+    )
+  )
+)
 ```
-## Run the app
+## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app. 
-Note that app is only displayed when running this code inside an R session.  
+A simple `shiny::shinyApp()` call will let you run the app. 
+Note that app is only displayed when running this code inside an `R` session.  
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
+
+<img src="images/app-using-outliers-module.png" style = "display: block; margin: 0px; width: 100%"/>

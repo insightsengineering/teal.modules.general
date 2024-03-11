@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_t_crosstable.R
 \name{tm_t_crosstable}
 \alias{tm_t_crosstable}
-\title{Create a simple cross-table}
+\title{\code{teal} module: Cross-table}
 \usage{
 tm_t_crosstable(
   label = "Cross Table",
@@ -16,28 +16,33 @@ tm_t_crosstable(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable X - row values. In case
-of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if table elements should be
+Object with all available choices with pre-selected option for variable X - row values.
+In case of \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if table elements should be
 rendered according to selection order.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for variable Y - column values
+Object with all available choices with pre-selected option for variable Y - column values.
+
 \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{show_percentage}{optional, (\code{logical}) Whether to show percentages
-(relevant only when \code{x} is a \code{factor}). Defaults to \code{TRUE}.}
+\item{show_percentage}{(\code{logical(1)})
+Indicates whether to show percentages (relevant only when \code{x} is a \code{factor}).
+Defaults to \code{TRUE}.}
 
-\item{show_total}{optional, (\code{logical}) Whether to show total column. Defaults to \code{TRUE}.}
+\item{show_total}{(\code{logical(1)})
+Indicates whether to show total column.
+Defaults to \code{TRUE}.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
 \item{basic_table_args}{(\code{basic_table_args}) object created by \code{\link[teal.widgets:basic_table_args]{teal.widgets::basic_table_args()}}
 with settings for the module table.
@@ -45,32 +50,86 @@ The argument is merged with options variable \code{teal.basic_table_args} and de
 
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
-Create a simple cross-table
+Generates a simple cross-table of two variables from a dataset with custom
+options for showing percentages and sub-totals.
 }
 \note{
 For more examples, please see the vignette "Using cross table" via
 \code{vignette("using-cross-table", package = "teal.modules.general")}.
 }
 \examples{
-# Percentage cross table of variables from ADSL dataset
+# general data example
+library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
+  mtcars <- mtcars
+  for (v in c("cyl", "vs", "am", "gear")) {
+    mtcars[[v]] <- as.factor(mtcars[[v]])
+  }
+  mtcars[["primary_key"]] <- seq_len(nrow(mtcars))
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- "mtcars"
+join_keys(data) <- join_keys(join_key("mtcars", "mtcars", "primary_key"))
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_t_crosstable(
+  modules = modules(
+    tm_t_crosstable(
       label = "Cross Table",
-      x = teal.transform::data_extract_spec(
+      x = data_extract_spec(
+        dataname = "mtcars",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
+          selected = c("cyl", "gear"),
+          multiple = TRUE,
+          ordered = TRUE,
+          fixed = FALSE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "mtcars",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
+          selected = "vs",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      basic_table_args = basic_table_args(
+        subtitles = "Table generated by Crosstable Module"
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+library(teal.widgets)
+
+data <- teal_data()
+data <- within(data, {
+  ADSL <- rADSL
+})
+datanames(data) <- "ADSL"
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_t_crosstable(
+      label = "Cross Table",
+      x = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
@@ -82,9 +141,9 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      y = teal.transform::data_extract_spec(
+      y = data_extract_spec(
         dataname = "ADSL",
-        select = teal.transform::select_spec(
+        select = select_spec(
           label = "Select variable:",
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))
@@ -95,7 +154,7 @@ app <- teal::init(
           fixed = FALSE
         )
       ),
-      basic_table_args = teal.widgets::basic_table_args(
+      basic_table_args = basic_table_args(
         subtitles = "Table generated by Crosstable Module"
       )
     )
@@ -104,4 +163,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

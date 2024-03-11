@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_scatterplotmatrix.R
 \name{tm_g_scatterplotmatrix}
 \alias{tm_g_scatterplotmatrix}
-\title{Create a scatterplot matrix}
+\title{\code{teal} module: Scatterplot matrix}
 \usage{
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
@@ -14,53 +14,139 @@ tm_g_scatterplotmatrix(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{variables}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Plotting variables from an incoming dataset with filtering and selecting. In case of
+Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-The available datasets to choose from for each dataset selector is the same and
-determined by the argument \code{variables}.
+Generates a scatterplot matrix from selected \code{variables} from datasets.
+Each plot within the matrix represents the relationship between two variables,
+providing the overview of correlations and distributions across selected data.
 }
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
 \examples{
-# Scatterplot matrix of variables from ADSL dataset
-
+# general data example
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
-  ADRS <- teal.modules.general::rADRS
+  countries <- data.frame(
+    id = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+    government = factor(
+      c(2, 2, 2, 1, 2, 2, 1, 1, 1, 2),
+      labels = c("Monarchy", "Republic")
+    ),
+    language_family = factor(
+      c(1, 3, 3, 3, 3, 2, 1, 1, 3, 1),
+      labels = c("Germanic", "Hellenic", "Romance")
+    ),
+    population = c(83, 67, 60, 47, 10, 11, 17, 11, 0.6, 9),
+    area = c(357, 551, 301, 505, 92, 132, 41, 30, 2.6, 83),
+    gdp = c(3.4, 2.7, 2.1, 1.4, 0.3, 0.2, 0.7, 0.5, 0.1, 0.4),
+    debt = c(2.1, 2.3, 2.4, 2.6, 2.3, 2.4, 2.3, 2.4, 2.3, 2.4)
+  )
+  sales <- data.frame(
+    id = 1:50,
+    country_id = sample(
+      c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+      size = 50,
+      replace = TRUE
+    ),
+    year = sort(sample(2010:2020, 50, replace = TRUE)),
+    venue = sample(c("small", "medium", "large", "online"), 50, replace = TRUE),
+    cancelled = sample(c(TRUE, FALSE), 50, replace = TRUE),
+    quantity = rnorm(50, 100, 20),
+    costs = rnorm(50, 80, 20),
+    profit = rnorm(50, 20, 10)
+  )
 })
-datanames <- c("ADSL", "ADRS")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("countries", "sales")
+join_keys(data) <- join_keys(
+  join_key("countries", "countries", "id"),
+  join_key("sales", "sales", "id"),
+  join_key("countries", "sales", c("id" = "country_id"))
+)
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_g_scatterplotmatrix(
+  modules = modules(
+    tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
+          dataname = "countries",
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(data[["countries"]]),
+            selected = c("area", "gdp", "debt"),
+            multiple = TRUE,
+            ordered = TRUE,
+            fixed = FALSE
+          )
+        ),
+        data_extract_spec(
+          dataname = "sales",
+          filter = filter_spec(
+            label = "Select variable:",
+            vars = "country_id",
+            choices = value_choices(data[["sales"]], "country_id"),
+            selected = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+            multiple = TRUE
+          ),
+          select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(data[["sales"]], c("quantity", "costs", "profit")),
+            selected = c("quantity", "costs", "profit"),
+            multiple = TRUE,
+            ordered = TRUE,
+            fixed = FALSE
+          )
+        )
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  ADSL <- rADSL
+  ADRS <- rADRS
+})
+datanames(data) <- c("ADSL", "ADRS")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix",
+      variables = list(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
@@ -71,9 +157,9 @@ app <- teal::init(
             fixed = FALSE
           )
         ),
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADRS",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
@@ -96,4 +182,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

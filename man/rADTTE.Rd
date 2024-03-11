@@ -3,7 +3,7 @@
 \docType{data}
 \name{rADTTE}
 \alias{rADTTE}
-\title{Random Time to Event Analysis Dataset}
+\title{Random time to event analysis dataset}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 2000 rows and 67 columns.
 }
@@ -14,7 +14,7 @@ internal
 rADTTE
 }
 \description{
-Random Time to Event Analysis Dataset
+Random time to event analysis dataset
 }
 \keyword{datasets}
 \keyword{internal}

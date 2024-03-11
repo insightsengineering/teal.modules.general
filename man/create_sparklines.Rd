@@ -2,19 +2,25 @@
 % Please edit documentation in R/tm_variable_browser.R
 \name{create_sparklines}
 \alias{create_sparklines}
-\alias{create_sparklines.default}
+\alias{create_sparklines.logical}
+\alias{create_sparklines.numeric}
+\alias{create_sparklines.character}
+\alias{create_sparklines.factor}
 \alias{create_sparklines.Date}
 \alias{create_sparklines.POSIXct}
 \alias{create_sparklines.POSIXlt}
-\alias{create_sparklines.character}
-\alias{create_sparklines.logical}
-\alias{create_sparklines.factor}
-\alias{create_sparklines.numeric}
+\alias{create_sparklines.default}
 \title{S3 generic for \code{sparkline} widget HTML}
 \usage{
 create_sparklines(arr, width = 150, ...)
 
-\method{create_sparklines}{default}(arr, width = 150, ...)
+\method{create_sparklines}{logical}(arr, ...)
+
+\method{create_sparklines}{numeric}(arr, width = 150, ...)
+
+\method{create_sparklines}{character}(arr, ...)
+
+\method{create_sparklines}{factor}(arr, width = 150, bar_spacing = 5, bar_width = 20, ...)
 
 \method{create_sparklines}{Date}(arr, width = 150, bar_spacing = 5, bar_width = 20, ...)
 
@@ -22,50 +28,26 @@ create_sparklines(arr, width = 150, ...)
 
 \method{create_sparklines}{POSIXlt}(arr, width = 150, bar_spacing = 5, bar_width = 20, ...)
 
-\method{create_sparklines}{character}(arr, ...)
-
-\method{create_sparklines}{logical}(arr, ...)
-
-\method{create_sparklines}{factor}(arr, width = 150, bar_spacing = 5, bar_width = 20, ...)
-
-\method{create_sparklines}{numeric}(arr, width = 150, ...)
+\method{create_sparklines}{default}(arr, width = 150, ...)
 }
 \arguments{
 \item{arr}{vector of any type and length}
 
 \item{width}{\code{numeric} the width of the \code{sparkline} widget (pixels)}
 
-\item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};  see
-\href{https://omnipotent.net/jquery.sparkline/#common}{\code{jquery.sparkline docs}}}
+\item{...}{\code{list} additional options passed to bar plots of \code{jquery.sparkline};
+see \href{https://omnipotent.net/jquery.sparkline/#common}{\verb{jquery.sparkline docs}}}
 
-\item{bar_spacing}{\code{numeric} spacing between the bars (in pixels)}
+\item{bar_spacing}{\code{numeric} the spacing between the bars (in pixels)}
 
-\item{bar_width}{\code{numeric} width of the bars (in pixels)}
+\item{bar_width}{\code{numeric} the width of the bars (in pixels)}
 }
 \value{
-character variable containing the HTML code of the \code{sparkline} HTML widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
-
-\code{character} with HTML code for the \code{sparkline} widget
+Character string containing HTML code of the \code{sparkline} HTML widget.
 }
 \description{
 Generates the \code{sparkline} HTML code corresponding to the input array.
 For numeric variables creates a box plot, for character and factors - bar plot.
 Produces an empty string for variables of other types.
-
-Coerces a character vector to factor and delegates to the \code{create_sparklines.factor}
-
-Coerces logical vector to factor and delegates to the \code{create_sparklines.factor}
 }
 \keyword{internal}

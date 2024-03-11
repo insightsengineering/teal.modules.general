@@ -2,14 +2,13 @@
 % Please edit documentation in R/tm_outliers.R
 \name{tm_outliers}
 \alias{tm_outliers}
-\title{Outliers Module}
+\title{\code{teal} module: Outliers analysis}
 \usage{
 tm_outliers(
   label = "Outliers Module",
   outlier_var,
   categorical_var = NULL,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -18,20 +17,18 @@ tm_outliers(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \link[teal]{teal_slices}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{outlier_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-variable to consider for the outliers analysis.}
+Specifies variable(s) to be analyzed for outliers.}
 
-\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-categorical factor to split the selected outlier variables on.}
+\item{categorical_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specifies the categorical variable(s) to split the selected outlier variables on.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{optional, (\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
@@ -39,40 +36,97 @@ List names should match the following: \code{c("default", "Boxplot","Density Plo
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 Module to analyze and identify outliers using different methods
+such as IQR, Z-score, and Percentiles, and offers visualizations including
+box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
 \examples{
+library(teal.widgets)
 
+# general data example
 data <- teal_data()
 data <- within(data, {
-  ADSL <- teal.modules.general::rADSL
+  CO2 <- CO2
+  CO2[["primary_key"]] <- seq_len(nrow(CO2))
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- "CO2"
+join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
+
+vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_outliers(
+      outlier_var = list(
+        data_extract_spec(
+          dataname = "CO2",
+          select = select_spec(
+            label = "Select variable:",
+            choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+            selected = "uptake",
+            multiple = FALSE,
+            fixed = FALSE
+          )
+        )
+      ),
+      categorical_var = list(
+        data_extract_spec(
+          dataname = "CO2",
+          filter = filter_spec(
+            vars = vars,
+            choices = value_choices(data[["CO2"]], vars$selected),
+            selected = value_choices(data[["CO2"]], vars$selected),
+            multiple = TRUE
+          )
+        )
+      ),
+      ggplot2_args = list(
+        ggplot2_args(
+          labs = list(subtitle = "Plot generated by Outliers Module")
+        )
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  ADSL <- rADSL
+})
+datanames(data) <- "ADSL"
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 
-app <- teal::init(
+app <- init(
   data = data,
-  modules = teal::modules(
-    teal.modules.general::tm_outliers(
+  modules = modules(
+    tm_outliers(
       outlier_var = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variable:",
@@ -84,9 +138,9 @@ app <- teal::init(
         )
       ),
       categorical_var = list(
-        teal.transform::data_extract_spec(
+        data_extract_spec(
           dataname = "ADSL",
-          filter = teal.transform::filter_spec(
+          filter = filter_spec(
             vars = vars,
             choices = value_choices(data[["ADSL"]], vars$selected),
             selected = value_choices(data[["ADSL"]], vars$selected),
@@ -95,7 +149,7 @@ app <- teal::init(
         )
       ),
       ggplot2_args = list(
-        teal.widgets::ggplot2_args(
+        ggplot2_args(
           labs = list(subtitle = "Plot generated by Outliers Module")
         )
       )
@@ -105,4 +159,5 @@ app <- teal::init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

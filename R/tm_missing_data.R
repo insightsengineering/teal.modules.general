@@ -1,74 +1,110 @@
-#' Missing data module
+#' `teal` module: Missing data analysis
 #'
-#' Present analysis of missing observations and patients.
-#' specifically designed for use with `data.frames`.
+#' This module analyzes missing data in `data.frame`s to help users explore missing observations and
+#' gain insights into the completeness of their data.
+#' It is useful for clinical data analysis within the context of `CDISC` standards and
+#' adaptable for general data analysis purposes.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param parent_dataname (`character(1)`) If this `dataname` exists in then "the by subject"graph is displayed.
-#'   For `CDISC` data. In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param ggtheme optional, (`character`) `ggplot2` theme to be used by default.
-#'   One of `c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")`.
-#'   Each theme can be chosen by the user during the session. Defaults to `"classic"`.
+#' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
+#' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
+#' ignored.
+#' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
 #' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
 #' @template ggplot2_args_multi
 #'
-#' @export
+#' @inherit shared_params return
 #'
 #' @examples
+#' library(teal.widgets)
 #'
+#' # module specification used in apps below
+#' tm_missing_data_module <- tm_missing_data(
+#'   ggplot2_args = list(
+#'     "Combinations Hist" = ggplot2_args(
+#'       labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+#'     ),
+#'     "Combinations Main" = ggplot2_args(labs = list(title = NULL))
+#'   )
+#' )
+#'
+#' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
-#'   ADSL <- teal.modules.general::rADSL
-#'   ADRS <- teal.modules.general::rADRS
-#' })
-#' datanames <- c("ADSL", "ADRS")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#'   require(nestcolor)
 #'
-#' app <- teal::init(
+#'   add_nas <- function(x) {
+#'     x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
+#'     x
+#'   }
+#'
+#'   iris <- iris
+#'   mtcars <- mtcars
+#'
+#'   iris[] <- lapply(iris, add_nas)
+#'   mtcars[] <- lapply(mtcars, add_nas)
+#'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
+#'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
+#' })
+#' datanames(data) <- c("iris", "mtcars")
+#'
+#' app <- init(
 #'   data = data,
-#'   modules = teal::modules(
-#'     teal.modules.general::tm_missing_data(
-#'       ggplot2_args = list(
-#'         "Combinations Hist" = teal.widgets::ggplot2_args(
-#'           labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-#'         ),
-#'         "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
-#'       )
-#'     )
-#'   )
+#'   modules = modules(tm_missing_data_module)
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' # CDISC example data
+#' data <- teal_data()
+#' data <- within(data, {
+#'   require(nestcolor)
+#'   ADSL <- rADSL
+#'   ADRS <- rADRS
+#' })
+#' datanames(data) <- c("ADSL", "ADRS")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(tm_missing_data_module)
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @export
+#'
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
                             parent_dataname = "ADSL",
-                            ggtheme = c(
-                              "classic", "gray", "bw", "linedraw",
-                              "light", "dark", "minimal", "void", "test"
-                            ),
+                            ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
                               "Combinations Hist" = teal.widgets::ggplot2_args(labs = list(caption = NULL)),
                               "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
+  message("Initializing tm_missing_data")
+  
+  # Requires Suggested packages
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
     stop("Cannot load gridExtra - please install the package or restart your session.")
   }
   if (!requireNamespace("rlang", quietly = TRUE)) {
     stop("Cannot load rlang - please install the package or restart your session.")
   }
-  message("Initializing tm_missing_data")
+
+  # Normalize the parameters
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
+  # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
+
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   checkmate::assert_numeric(plot_width, len = 3, any.missing = FALSE, null.ok = TRUE, finite = TRUE)
@@ -76,10 +112,17 @@ tm_missing_data <- function(label = "Missing data",
     plot_width[1],
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
+
+  checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
+
   plot_choices <- c("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  # End of assertions
 
   module(
     label,
@@ -94,6 +137,7 @@ tm_missing_data <- function(label = "Missing data",
   )
 }
 
+# UI function for the missing data module (all datasets)
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   shiny::tagList(
@@ -118,6 +162,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   )
 }
 
+# Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
   moduleServer(id, function(input, output, session) {
@@ -204,6 +249,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
   })
 }
 
+# UI function for the missing data module (single dataset)
 ui_missing_data <- function(id, by_subject_plot = FALSE) {
   ns <- NS(id)
 
@@ -273,6 +319,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
   )
 }
 
+# UI encoding for the missing data module (all datasets)
 encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames) {
   ns <- NS(id)
 
@@ -353,7 +400,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       selectInput(
         inputId = ns("ggtheme"),
         label = "Theme (by ggplot):",
-        choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+        choices = ggplot_themes,
         selected = ggtheme,
         multiple = FALSE
       )
@@ -361,6 +408,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
+# Server function for the missing data (single dataset)
 srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
                              plot_height, plot_width, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
@@ -430,14 +478,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         teal.code::eval_code(
           data(),
           substitute(
-            expr = ANL <- anl_name[, selected_vars, drop = FALSE], # nolint
+            expr = ANL <- anl_name[, selected_vars, drop = FALSE],
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
           )
         )
       } else {
         teal.code::eval_code(
           data(),
-          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname))) # nolint
+          substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname)))
         )
       }
 
@@ -445,13 +493,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[group_var]] <- anl_name[[group_var]], # nolint
+            expr = ANL[[group_var]] <- anl_name[[group_var]],
             env = list(group_var = group_var, anl_name = as.name(dataname))
           )
         )
       }
 
-      new_col_name <- "**anyna**" # nolint variable assigned and used
+      new_col_name <- "**anyna**"
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -465,11 +513,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               } else {
                 labels <- ifelse(cols == new_col_name | cols == "", cols, paste0(column_labels[cols], " [", cols, "]"))
               }
-              return(labels)
+              labels
             },
           env = list(
             new_col_name = new_col_name,
-            column_labels_value = c(var_labels(data_r())[selected_vars()],
+            column_labels_value = c(teal.data::col_labels(data_r())[selected_vars()],
               new_col_name = new_col_name
             )
           )
@@ -559,9 +607,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       # display those previously selected values that are still available
       selected <- if (!is.null(prev_choices) && any(prev_choices %in% choices)) {
         prev_choices[match(choices[choices %in% prev_choices], prev_choices)]
-      } else if (!is.null(prev_choices) &&
-        !any(prev_choices %in% choices) &&
-        isolate(prev_group_by_var()) == input$group_by_var) {
+      } else if (
+        !is.null(prev_choices) &&
+          !any(prev_choices %in% choices) &&
+          isolate(prev_group_by_var()) == input$group_by_var
+      ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
         NULL
@@ -591,11 +641,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       qenv <- common_code_q()
 
       if (input$any_na) {
-        new_col_name <- "**anyna**" # nolint (local variable is assigned and used)
+        new_col_name <- "**anyna**"
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE), # nolint
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE),
             env = list(new_col_name = new_col_name)
           )
         )
@@ -612,7 +662,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
               dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-              tidyr::pivot_longer(tidyselect::everything(), names_to = "col", values_to = "n_na") %>%
+              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
               dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
               tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
               dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
@@ -705,7 +755,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
                 dplyr::group_by_at(parent_keys) %>%
                 dplyr::summarise_all(anyNA) %>%
-                tidyr::pivot_longer(cols = !tidyselect::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+                tidyr::pivot_longer(cols = !dplyr::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
                 dplyr::group_by_at(c("col")) %>%
                 dplyr::summarise(count_na = sum(anyna)) %>%
                 dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
@@ -980,13 +1030,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
       )
 
-      group_vals <- input$group_by_vals # nolint (local variable is assigned and used)
+      group_vals <- input$group_by_vals
       variables_select <- input$variables_select
       vars <- unique(variables_select, group_var)
-      count_type <- input$count_type # nolint (local variable is assigned and used)
+      count_type <- input$count_type
 
       if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
-        variables <- selected_vars() # nolint (local variable is assigned and used)
+        variables <- selected_vars()
       } else {
         variables <- colnames(anl)
       }
@@ -1013,7 +1063,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
               summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
                 dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
-                tidyr::pivot_longer(!tidyselect::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
                 tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
                 dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
             },
@@ -1028,7 +1078,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
-              tidyr::pivot_longer(tidyselect::everything(),
+              tidyr::pivot_longer(dplyr::everything(),
                 names_to = "Variable",
                 values_to = paste0("Missing (N=", nrow(ANL), ")")
               ) %>%
@@ -1091,7 +1141,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             # order subjects by decreasing number of missing and then by
             # missingness pattern (defined using sha1)
             order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::transmute(
                 id = dplyr::row_number(),
                 number_NA = apply(., 1, sum),
@@ -1102,7 +1152,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
             # order columns by decreasing percent of missing values
             ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -tidyselect::all_of(parent_keys)) %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::summarise(
                 column = create_cols_labels(colnames(.)),
                 na_count = apply(., MARGIN = 2, FUN = sum),
@@ -1111,7 +1161,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::arrange(na_percent, dplyr::desc(column))
 
             summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -tidyselect::all_of(parent_keys)) %>%
+              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
               dplyr::mutate(col = create_cols_labels(col))
           })
         ) %>%

@@ -1,6 +1,11 @@
 # teal.modules.general
 
 <!-- start badges -->
+[![CRAN Version](https://www.r-pkg.org/badges/version/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Last Month Downloads](http://cranlogs.r-pkg.org/badges/last-month/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Last Week Downloads](http://cranlogs.r-pkg.org/badges/last-week/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+
 [![Check 🛠](https://github.com/insightsengineering/teal.modules.general/actions/workflows/check.yaml/badge.svg)](https://insightsengineering.github.io/teal.modules.general/main/unit-test-report/)
 [![Docs 📚](https://github.com/insightsengineering/teal.modules.general/actions/workflows/docs.yaml/badge.svg)](https://insightsengineering.github.io/teal.modules.general/)
 [![Code Coverage 📔](https://raw.githubusercontent.com/insightsengineering/teal.modules.general/_xml_coverage_reports/data/main/badge.svg)](https://insightsengineering.github.io/teal.modules.general/main/coverage-report/)
@@ -35,17 +40,31 @@ Please see [`teal` gallery](https://github.com/insightsengineering/teal.gallery)
 
 ## Installation
 
-From July 2023 `insightsengineering` packages are available on [r-universe](https://r-universe.dev/).
-
 ```r
 # stable versions
-install.packages('teal.modules.general', repos = c('https://insightsengineering.r-universe.dev', 'https://cloud.r-project.org'))
+install.packages('teal.modules.general')
 
-# beta versions
-install.packages('teal.modules.general', repos = c('https://pharmaverse.r-universe.dev', 'https://cloud.r-project.org'))
+# install.packages("pak")
+pak::pak("insightsengineering/teal.modules.general@*release")
 ```
 
-See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package.
+Alternatively, you might want to use the development version available on [r-universe](https://r-universe.dev/).
+
+```r
+# beta versions
+install.packages('teal.modules.general', repos = c('https://pharmaverse.r-universe.dev', getOption('repos')))
+
+# install.packages("pak")
+pak::pak("insightsengineering/teal.modules.general")
+```
+
+## Usage
+
+See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package or visit [Package Website](https://insightsengineering.github.io/teal.modules.general/latest-tag/).
+
+## Getting help
+
+If you encounter a bug or have a feature request, please file an issue. For questions, discussions, and staying up to date, please use the `teal` channel in the [`pharmaverse` slack workspace](https://pharmaverse.slack.com).
 
 ## Acknowledgment
 

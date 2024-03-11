@@ -6,7 +6,7 @@ default_language_version:
   python: python3
 repos:
   - repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.3.2.9027
+    rev: v0.4.0
     hooks:
       - id: style-files
         name: Style code with `styler`
@@ -18,16 +18,17 @@ repos:
           - ggmosaic
           - ggplot2
           - shiny
-          - shinyTree
-          - insightsengineering/teal
+          - teal
+          - teal.transform
           - checkmate
           - dplyr
           - DT
           - forcats
+          - ggrepel
           - grid
-          - magrittr
           - scales
           - shinyjs
+          - shinyTree
           - shinyvalidate
           - shinyWidgets
           - stats
@@ -37,12 +38,10 @@ repos:
           - insightsengineering/teal.logger
           - insightsengineering/teal.reporter
           - insightsengineering/teal.slice
-          - insightsengineering/teal.transform
           - insightsengineering/teal.widgets
           - tern
           - tibble
           - tidyr
-          - tidyselect
           - utils
 
       - id: spell-check
