@@ -90,7 +90,7 @@ tm_missing_data <- function(label = "Missing data",
                             pre_output = NULL,
                             post_output = NULL) {
   message("Initializing tm_missing_data")
-  
+
   # Requires Suggested packages
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
     stop("Cannot load gridExtra - please install the package or restart your session.")

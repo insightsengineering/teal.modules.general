@@ -1,6 +1,4 @@
 testthat::test_that("tm_g_bivariate creates a `teal_module` object", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_s3_class(
     tm_g_bivariate(
       "a label",
@@ -23,8 +21,6 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object", {
 })
 
 testthat::test_that("tm_g_bivariate creates a `teal_module` object with default options", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_s3_class(
     tm_g_bivariate(
       "a label",
@@ -36,8 +32,6 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object with default 
 })
 
 testthat::test_that("tm_g_bivariate creates a `teal_module` object with multiple data extract specs", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_s3_class(
     tm_g_bivariate(
       "a label",
@@ -51,8 +45,6 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object with multiple
 })
 
 testthat::test_that("tm_g_bivariate creates a module with datanames taken from data extracts", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   mod <- tm_g_bivariate(
     "a label",
     list(
@@ -71,8 +63,6 @@ testthat::test_that("tm_g_bivariate creates a module with datanames taken from d
 # Test `x` and `y` arguments with invalid data_extract_spec
 
 testthat::test_that("tm_g_bivariate fails when `x` contains a spec with multiple selection", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -86,8 +76,6 @@ testthat::test_that("tm_g_bivariate fails when `x` contains a spec with multiple
 })
 
 testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (at least one ) multiple selection", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -102,8 +90,6 @@ testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (
 })
 
 testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (at least one ) multiple selection", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -118,8 +104,6 @@ testthat::test_that("tm_g_bivariate fails when `x` contains multiple spec with (
 })
 
 testthat::test_that("tm_g_bivariate fails when `y` contains multiple spec with (at least one ) multiple selection", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -136,8 +120,6 @@ testthat::test_that("tm_g_bivariate fails when `y` contains multiple spec with (
 # Test `plot_height` and `plot_width` arguments
 
 testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -150,8 +132,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
 })
 
 testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -164,8 +144,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
 })
 
 testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -178,8 +156,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_height` is not valid", {
 })
 
 testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -192,8 +168,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
 })
 
 testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -206,8 +180,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
 })
 
 testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -222,8 +194,6 @@ testthat::test_that("tm_g_bivariate fails when `plot_width` is not valid", {
 # Test `color_settings` argument
 
 testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `color` is supplied", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -237,8 +207,6 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `col
 })
 
 testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `size` is supplied", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -252,8 +220,6 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `siz
 })
 
 testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `fill` is supplied", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   testthat::expect_error(
     tm_g_bivariate(
       "a label",
@@ -267,8 +233,6 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `fil
 })
 
 testthat::test_that("tm_g_bivariate determines `color`, `size` and `fill` when `color_setting` is TRUE", {
-  local_logger_threshold(logger::FATAL) # Suppress logger messages
-
   mod <- tm_g_bivariate(
     "a label",
     mock_data_extract_spec(select_multiple = FALSE),

@@ -68,7 +68,7 @@ tm_front_page <- function(label = "Front page",
                           footnotes = character(0),
                           show_metadata = FALSE) {
   message("Initializing tm_front_page")
-  
+
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_character(header_text, min.len = 0, any.missing = FALSE)

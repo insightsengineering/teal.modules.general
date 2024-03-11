@@ -42,13 +42,6 @@
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   message("Initializing tm_file_viewer")
-  
-  if (length(label) == 0 || identical(label, "")) {
-    label <- " "
-  }
-  if (length(input_path) == 0 || identical(input_path, "")) {
-    input_path <- list()
-  }
 
   # Normalize the parameters
   if (length(label) == 0 || identical(label, "")) label <- " "
