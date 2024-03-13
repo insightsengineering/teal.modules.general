@@ -370,6 +370,9 @@ srv_a_regression <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+
+    ns <- session$ns
+
     rule_rvr1 <- function(value) {
       if (isTRUE(input$plot_type == "Response vs Regressor")) {
         if (length(value) > 1L) {
@@ -472,7 +475,7 @@ srv_a_regression <- function(id,
           session = session,
           inputId = "label_var",
           choices = opts,
-          selected = selected
+          selected = restoreInput(ns("label_var"), selected)
         )
 
         data <- fortify(stats::lm(form, data = ANL))
@@ -484,7 +487,7 @@ srv_a_regression <- function(id,
           inputId = "outlier",
           min = 1,
           max = max_outlier,
-          value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9
+          value = restoreInput(ns("outlier"), if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
         )
       }
 
