@@ -171,6 +171,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
       is.data.frame(isolate(data())[[name]])
     }, datanames)
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
+
     ns <- session$ns
 
     output$dataset_tabs <- renderUI({
@@ -416,6 +417,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+
+    ns <- session$ns
+
     prev_group_by_var <- reactiveVal("")
     data_r <- reactive(data()[[dataname]])
     data_keys <- reactive(unlist(teal.data::join_keys(data())[[dataname]]))
@@ -550,7 +554,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       selected <- choices <- unname(unlist(choices))
 
       teal.widgets::optionalSelectInput(
-        session$ns("variables_select"),
+        ns("variables_select"),
         label = "Select variables",
         label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
         choices = teal.transform::variable_choices(data_r(), choices),
@@ -573,7 +577,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         session = session,
         inputId = "variables_select",
         choices = teal.transform::variable_choices(data_r()),
-        selected = selected
+        selected = restoreInput(ns("variables_select"), selected)
       )
     })
 
@@ -584,7 +588,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
       )
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_var"),
+        ns("group_by_var"),
         label = "Group by variable",
         choices = cat_choices,
         selected = `if`(
@@ -625,7 +629,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
 
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_vals"),
+        ns("group_by_vals"),
         label = "Filter levels",
         choices = choices,
         selected = selected,
@@ -872,7 +876,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
 
       teal.widgets::optionalSliderInputValMinMax(
-        session$ns("combination_cutoff"),
+        ns("combination_cutoff"),
         "Combination cut-off",
         c(value, range(x))
       )
