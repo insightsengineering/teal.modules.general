@@ -355,6 +355,9 @@ srv_distribution <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+
+    ns <- session$ns
+
     rule_req <- function(value) {
       if (isTRUE(input$dist_tests %in% c(
         "Fligner-Killeen",
@@ -486,7 +489,7 @@ srv_distribution <- function(id,
     output$scales_types_ui <- renderUI({
       if ("group_i" %in% names(selector_list()) && length(selector_list()$group_i()$filters[[1]]$selected) > 0) {
         shinyWidgets::prettyRadioButtons(
-          session$ns("scales_type"),
+          ns("scales_type"),
           label = "Scales:",
           choices = c("Fixed", "Free"),
           selected = "Fixed",
@@ -523,11 +526,27 @@ srv_distribution <- function(id,
           params_vec <- round(unname(unlist(params)), 2)
           params_names <- names(params)
 
-          updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-          updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
+          updateNumericInput(
+            inputId = "dist_param1",
+            label = params_names[1],
+            value = restoreInput(ns("dist_param1"), params_vec[1])
+          )
+          updateNumericInput(
+            inputId = "dist_param2",
+            label = params_names[2],
+            value = restoreInput(ns("dist_param1"), params_vec[2])
+          )
         } else {
-          updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-          updateNumericInput(session, "dist_param2", label = "param2", value = NA)
+          updateNumericInput(
+            inputId = "dist_param1",
+            label = "param1",
+            value = restoreInput(ns("dist_param1"), NA)
+          )
+          updateNumericInput(
+            inputId = "dist_param2",
+            label = "param2",
+            value = restoreInput(ns("dist_param2"), NA)
+          )
         }
       },
       ignoreInit = TRUE
