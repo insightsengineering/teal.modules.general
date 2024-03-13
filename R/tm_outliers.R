@@ -331,6 +331,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+
+    ns <- session$ns
+
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
     rule_diff <- function(other) {
@@ -1064,7 +1067,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         session,
         inputId = "table_ui_columns",
         choices = dplyr::setdiff(choices, names(ANL_OUTLIER)),
-        selected = isolate(input$table_ui_columns)
+        selected = restoreInput(ns("table_ui_columns"), isolate(input$table_ui_columns))
       )
     })
 
@@ -1204,14 +1207,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       shiny::req(iv_r()$is_valid())
       tagList(
         teal.widgets::optionalSelectInput(
-          inputId = session$ns("table_ui_columns"),
+          inputId = ns("table_ui_columns"),
           label = "Choose additional columns",
           choices = NULL,
           selected = NULL,
           multiple = TRUE
         ),
         h4("Outlier Table"),
-        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
+        teal.widgets::get_dt_rows(ns("table_ui"), ns("table_ui_rows"))
       )
     })
 
