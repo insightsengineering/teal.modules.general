@@ -254,7 +254,7 @@ ui_a_regression <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
       tags$div(verbatimTextOutput(ns("text")))
     )),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -284,12 +284,12 @@ ui_a_regression <- function(id, ...) {
         ns = ns,
         teal.widgets::optionalSliderInput(
           ns("outlier"),
-          div(
+          tags$div(
             class = "teal-tooltip",
             tagList(
               "Outlier definition:",
               icon("circle-info"),
-              span(
+              tags$span(
                 class = "tooltiptext",
                 paste(
                   "Use the slider to choose the cut-off value to define outliers.",
@@ -314,12 +314,12 @@ ui_a_regression <- function(id, ...) {
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
-            label = div(
+            label = tags$div(
               class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
                 icon("circle-info"),
-                span(
+                tags$span(
                   class = "tooltiptext",
                   paste(
                     "Use the slider to choose the cut-off value to define minimum distance between label and point",
