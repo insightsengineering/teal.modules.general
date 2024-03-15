@@ -140,11 +140,11 @@ tm_missing_data <- function(label = "Missing data",
 # UI function for the missing data module (all datasets)
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        div(
+        tags$div(
           class = "flex",
           column(
             width = 12,
@@ -152,7 +152,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
           )
         )
       ),
-      encoding = div(
+      encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
       ),
       uiOutput(ns("dataset_reporter")),
@@ -186,7 +186,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
                 title = x,
                 column(
                   width = 12,
-                  div(
+                  tags$div(
                     class = "mt-4",
                     ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
                   )
@@ -259,11 +259,11 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Summary",
       teal.widgets::plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
           "sorted by magnitude."
         )),
-        p(
+        tags$p(
           'The "summary per patients" graph is showing how many subjects have at least one missing observation',
           "for each variable. It will be most useful for panel datasets."
         )
@@ -273,7 +273,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Combinations",
       teal.widgets::plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
@@ -281,7 +281,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
           "In this case there would be a bar of height 70 in the top graph and",
           'the column below this in the second graph would have rows "A" and "B" cells shaded red.'
         )),
-        p(paste(
+        tags$p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
           'are shown in the graph and the "Combination cut-off" slider can be used to adjust the number shown.'
         ))
@@ -300,7 +300,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
         "Grouped by Subject",
         teal.widgets::plot_with_settings_ui(id = ns("by_subject_plot")),
         helpText(
-          p(paste(
+          tags$p(paste(
             "This graph shows the missingness with respect to subjects rather than individual rows of the",
             "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
             "with at least one record in this dataset are shown. For a given subject, if they have any missing",
@@ -336,7 +336,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      span("Select only vars with missings", class = "whitespace-normal"),
+      tags$span("Select only vars with missings", class = "whitespace-normal"),
       width = "100%",
       class = "mb-4"
     ),
@@ -344,12 +344,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       is_tab_active_js(ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
-        div(
+        tags$div(
           class = "teal-tooltip",
           tagList(
             "Add **anyna** variable",
             icon("circle-info"),
-            span(
+            tags$span(
               class = "tooltiptext",
               "Describes the number of observations with at least one missing value in any variable."
             )
@@ -360,12 +360,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       if (summary_per_patient) {
         checkboxInput(
           ns("if_patients_plot"),
-          div(
+          tags$div(
             class = "teal-tooltip",
             tagList(
               "Add summary per patients",
               icon("circle-info"),
-              span(
+              tags$span(
                 class = "tooltiptext",
                 paste(
                   "Displays the number of missing values per observation,",

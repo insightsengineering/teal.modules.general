@@ -209,10 +209,10 @@ ui_g_scatterplotmatrix <- function(id, ...) {
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       textOutput(ns("message")),
-      br(),
+      tags$br(),
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -224,7 +224,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         data_extract_spec = args$variables,
         is_single_dataset = is_single_dataset_value
       ),
-      hr(),
+      tags$hr(),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -419,7 +419,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       req(selector_list()$variables())
       ANL <- merged$anl_q_r()[["ANL"]]
       cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
