@@ -417,7 +417,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-
     ns <- session$ns
 
     prev_group_by_var <- reactiveVal("")

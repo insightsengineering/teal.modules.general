@@ -331,7 +331,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-
     ns <- session$ns
 
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
