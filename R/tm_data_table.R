@@ -196,41 +196,44 @@ srv_page_data_table <- function(id,
     output$dataset_table <- renderUI({
       do.call(
         tabsetPanel,
-        lapply(
-          datanames,
-          function(x) {
-            dataset <- isolate(data()[[x]])
-            choices <- names(dataset)
-            labels <- vapply(
-              dataset,
-              function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
-              character(1)
-            )
-            names(choices) <- ifelse(
-              is.na(labels) | labels == "",
-              choices,
-              paste(choices, labels, sep = ": ")
-            )
-            variables_selected <- if (!is.null(variables_selected[[x]])) {
-              variables_selected[[x]]
-            } else {
-              utils::head(choices)
-            }
-            tabPanel(
-              title = x,
-              column(
-                width = 12,
-                tags$div(
-                  class = "mt-4",
-                  ui_data_table(
-                    id = session$ns(x),
-                    choices = choices,
-                    selected = variables_selected
+        c(
+          list(id = session$ns("dataname_tab")),
+          lapply(
+            datanames,
+            function(x) {
+              dataset <- isolate(data()[[x]])
+              choices <- names(dataset)
+              labels <- vapply(
+                dataset,
+                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                character(1)
+              )
+              names(choices) <- ifelse(
+                is.na(labels) | labels == "",
+                choices,
+                paste(choices, labels, sep = ": ")
+              )
+              variables_selected <- if (!is.null(variables_selected[[x]])) {
+                variables_selected[[x]]
+              } else {
+                utils::head(choices)
+              }
+              tabPanel(
+                title = x,
+                column(
+                  width = 12,
+                  div(
+                    class = "mt-4",
+                    ui_data_table(
+                      id = session$ns(x),
+                      choices = choices,
+                      selected = variables_selected
+                    )
                   )
                 )
               )
-            )
-          }
+            }
+          )
         )
       )
     })
