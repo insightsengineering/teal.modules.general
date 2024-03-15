@@ -258,11 +258,11 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Summary",
       teal.widgets::plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
           "sorted by magnitude."
         )),
-        p(
+        tags$p(
           'The "summary per patients" graph is showing how many subjects have at least one missing observation',
           "for each variable. It will be most useful for panel datasets."
         )
@@ -272,7 +272,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Combinations",
       teal.widgets::plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
@@ -280,7 +280,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
           "In this case there would be a bar of height 70 in the top graph and",
           'the column below this in the second graph would have rows "A" and "B" cells shaded red.'
         )),
-        p(paste(
+        tags$p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
           'are shown in the graph and the "Combination cut-off" slider can be used to adjust the number shown.'
         ))
@@ -299,7 +299,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
         "Grouped by Subject",
         teal.widgets::plot_with_settings_ui(id = ns("by_subject_plot")),
         helpText(
-          p(paste(
+          tags$p(paste(
             "This graph shows the missingness with respect to subjects rather than individual rows of the",
             "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
             "with at least one record in this dataset are shown. For a given subject, if they have any missing",
