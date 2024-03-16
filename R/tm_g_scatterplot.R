@@ -434,7 +434,7 @@ ui_g_scatterplot <- function(id, ...) {
             uiOutput(ns("num_na_removed")),
             tags$div(
               id = ns("label_pos"),
-              tags$div(tags$strog("Stats position")),
+              tags$div(tags$strong("Stats position")),
               tags$div(class = "inline-block w-10", helpText("Left")),
               tags$div(
                 class = "inline-block w-70",
