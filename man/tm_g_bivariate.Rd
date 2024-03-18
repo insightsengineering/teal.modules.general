@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_bivariate.R
 \name{tm_g_bivariate}
 \alias{tm_g_bivariate}
-\title{Univariate and bivariate visualizations}
+\title{\code{teal} module: Univariate and bivariate visualizations}
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",
@@ -22,72 +22,71 @@ tm_g_bivariate(
   plot_width = NULL,
   rotate_xaxis_labels = FALSE,
   swap_axes = FALSE,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable names selected to plot along the x-axis by default. Variable can be numeric, factor or character.
-No empty selections are allowed!}
+Variable names selected to plot along the x-axis by default.
+Can be numeric, factor or character.
+No empty selections are allowed.}
 
 \item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variable names selected to plot along the y-axis by default. Variable can be numeric, factor or character.}
+Variable names selected to plot along the y-axis by default.
+Can be numeric, factor or character.}
 
-\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables for row facetting.}
+\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specification of the data variable(s) to use for faceting rows.}
 
-\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables for col facetting.}
+\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specification of the data variable(s) to use for faceting columns.}
 
-\item{facet}{optional, (\code{logical}) to specify whether the facet encodings \code{ui} elements are toggled
+\item{facet}{(\code{logical}) optional, specifies whether the facet encodings \code{ui} elements are toggled
 on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
 are supplied.}
 
-\item{color}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the outline color inside the coloring settings.
+\item{color}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specification of the data variable(s) selected for the outline color inside the coloring settings.
 It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
-\item{fill}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the fill color inside the coloring settings.
+\item{fill}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specification of the data variable(s) selected for the fill color inside the coloring settings.
 It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
-\item{size}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Variables selected for the size of \code{geom_point} plots inside the coloring settings.
+\item{size}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+specification of the data variable(s) selected for the size of \code{geom_point} plots inside the coloring settings.
 It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
-\item{use_density}{optional, (\code{logical}) value for whether density (\code{TRUE}) is plotted or
-frequency (\code{FALSE}). Defaults to frequency (\code{FALSE}).}
+\item{use_density}{(\code{logical}) optional, indicates whether to plot density (\code{TRUE}) or frequency (\code{FALSE}).
+Defaults to frequency (\code{FALSE}).}
 
 \item{color_settings}{(\code{logical}) Whether coloring, filling and size should be applied
 and \code{UI} tool offered to the user.}
 
-\item{free_x_scales}{optional, (\code{logical}) Whether X scaling shall be changeable.
+\item{free_x_scales}{(\code{logical}) optional, whether X scaling shall be changeable.
 Does not allow scaling to be changed by default (\code{FALSE}).}
 
-\item{free_y_scales}{optional, (\code{logical}) Whether Y scaling shall be changeable.
+\item{free_y_scales}{(\code{logical}) optional, whether Y scaling shall be changeable.
 Does not allow scaling to be changed by default (\code{FALSE}).}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+\item{rotate_xaxis_labels}{(\code{logical}) optional, whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{swap_axes}{optional, (\code{logical}) Whether to swap X and Y axes. Defaults to \code{FALSE}.}
+\item{swap_axes}{(\code{logical}) optional, whether to swap X and Y axes. Defaults to \code{FALSE}.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
@@ -95,14 +94,19 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Univariate and bivariate visualizations
+Module enables the creation of univariate and bivariate plots,
+facilitating the exploration of data distributions and relationships between two variables.
 }
 \details{
 This is a general module to visualize 1 & 2 dimensional data.
@@ -112,15 +116,77 @@ For more examples, please see the vignette "Using bivariate plot" via
 \code{vignette("using-bivariate-plot", package = "teal.modules.general")}.
 }
 \examples{
-# Bivariate plot of selected variable (AGE) against selected (SEX)
+library(teal.widgets)
+
+# general data example
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
+  CO2 <- data.frame(CO2)
+})
+datanames(data) <- c("CO2")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_bivariate(
+      x = data_extract_spec(
+        dataname = "CO2",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["CO2"]]),
+          selected = "conc",
+          fixed = FALSE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "CO2",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["CO2"]]),
+          selected = "uptake",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      row_facet = data_extract_spec(
+        dataname = "CO2",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["CO2"]]),
+          selected = "Type",
+          fixed = FALSE
+        )
+      ),
+      col_facet = data_extract_spec(
+        dataname = "CO2",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["CO2"]]),
+          selected = "Treatment",
+          fixed = FALSE
+        )
+      ),
+      ggplot2_args = ggplot2_args(
+        labs = list(subtitle = "Plot generated by Bivariate Module")
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
   ADSL <- rADSL
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("ADSL")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 app <- init(
   data = data,
@@ -163,7 +229,7 @@ app <- init(
           fixed = FALSE
         )
       ),
-      ggplot2_args = teal.widgets::ggplot2_args(
+      ggplot2_args = ggplot2_args(
         labs = list(subtitle = "Plot generated by Bivariate Module")
       )
     )
@@ -172,4 +238,5 @@ app <- init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

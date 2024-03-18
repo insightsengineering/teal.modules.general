@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{varname_w_label}
 \alias{varname_w_label}
-\title{Get variable name with label}
+\title{Generate a string for a variable including its label}
 \usage{
 varname_w_label(
   var_names,
@@ -17,25 +17,14 @@ varname_w_label(
 
 \item{dataset}{(\code{dataset}) Name of analysis dataset.}
 
-\item{wrap_width}{(\code{numeric}) Number of characters to wrap original
-label to. Defaults to 80.}
+\item{wrap_width}{(\code{numeric}) Number of characters to wrap original label to. Defaults to 80.}
 
-\item{prefix}{(\code{character}) String to paste to the beginning of the
-variable name with label.}
-
-\item{suffix}{(\code{character}) String to paste to the end of the variable
-name with label.}
+\item{prefix, suffix}{(\code{character}) String to paste to the beginning/end of the variable name with label.}
 }
 \value{
 (\code{character}) String with variable name and label.
 }
 \description{
-Get variable name with label
-}
-\examples{
-varname_w_label <- getFromNamespace("varname_w_label", "teal.modules.general")
-
-ADSL <- rADSL
-varname_w_label("AGE", ADSL)
+Generate a string for a variable including its label
 }
 \keyword{internal}

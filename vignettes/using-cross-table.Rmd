@@ -1,7 +1,6 @@
 ---
 title: "Using cross table"
-author: "Dawid Kałędkowski"
-date: "`r Sys.Date()`"
+author: "NEST CoreDev"
 output: rmarkdown::html_vignette
 runtime: shiny
 vignette: >
@@ -10,24 +9,24 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Teal application to use cross table with various datasets types
+# `teal` application to use cross table with various datasets types
 
-This vignette will guide you through 4 parts to create a teal application using
-various types of datasets inside an cross table module:
+This vignette will guide you through the four parts to create a `teal` application using
+various types of datasets using the cross table module `tm_t_crosstable()`:
 
-1. Load Libraries
+1. Load libraries
 2. Create data sets
 3. Create an `app` variable
-4. Run the App
+4. Run the app
 
-## Loading libraries
+## 1 - Load libraries
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
 
-## Create data sets
+## 2 - Create data sets
 
 Inside this app 2 datasets will be used
 
@@ -37,8 +36,8 @@ Inside this app 2 datasets will be used
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
 data <- teal_data()
 data <- within(data, {
-  ADSL <- rADSL
-  ADLB <- rADLB %>%
+  ADSL <- teal.modules.general::rADSL
+  ADLB <- teal.modules.general::rADLB %>%
     mutate(CHGC = as.factor(case_when(
       CHG < 1 ~ "N",
       CHG > 1 ~ "P",
@@ -50,89 +49,98 @@ datanames(data) <- datanames
 join_keys(data) <- default_cdisc_join_keys[datanames]
 ```
 
-## Create an `app` variable
+## 3 - Create an `app` variable
 
-This is the most important section. We will use the [`teal::init`](https://insightsengineering.github.io/teal/reference/init) function to
-create an app. The data will be handed over using [`teal.data::cdisc_data`](https://insightsengineering.github.io/teal.data/reference/cdisc_data). The app
-itself will be constructed by multiple calls of `tm_t_crosstable` using different
+This is the most important section. We will use the `teal::init()` function to
+create an app. The data will be handed over using `teal.data::teal_data()`. The app
+itself will be constructed by multiple calls of `tm_t_crosstable()` using different
 combinations of data sets.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+# configuration for the single wide dataset
+mod1 <- tm_t_crosstable(
+  label = "Single wide dataset",
+  x = data_extract_spec(
+    "ADSL",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADSL"]]),
+      selected = names(data[["ADSL"]])[5],
+      multiple = TRUE,
+      fixed = FALSE,
+      ordered = TRUE
+    )
+  ),
+  y = data_extract_spec(
+    "ADSL",
+    select = select_spec(
+      label = "Select variable:",
+      choices = variable_choices(data[["ADSL"]]),
+      selected = names(data[["ADSL"]])[6],
+      multiple = FALSE,
+      fixed = FALSE
+    )
+  )
+)
+
+# configuration for the same long datasets (different subsets)
+mod2 <- tm_t_crosstable(
+  label = "Same long datasets (different subsets)",
+  x = data_extract_spec(
+    dataname = "ADLB",
+    filter = filter_spec(
+      vars = "PARAMCD",
+      choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+      selected = levels(data[["ADLB"]]$PARAMCD)[1],
+      multiple = FALSE
+    ),
+    select = select_spec(
+      choices = variable_choices(data[["ADLB"]]),
+      selected = "AVISIT",
+      multiple = TRUE,
+      fixed = FALSE,
+      ordered = TRUE,
+      label = "Select variable:"
+    )
+  ),
+  y = data_extract_spec(
+    dataname = "ADLB",
+    filter = filter_spec(
+      vars = "PARAMCD",
+      choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
+      selected = levels(data[["ADLB"]]$PARAMCD)[1],
+      multiple = FALSE
+    ),
+    select = select_spec(
+      choices = variable_choices(data[["ADLB"]]),
+      selected = "LOQFL",
+      multiple = FALSE,
+      fixed = FALSE,
+      label = "Select variable:"
+    )
+  )
+)
+
+# initialize the app
 app <- init(
   data = data,
   modules = modules(
     modules(
       label = "Cross table",
-      tm_t_crosstable(
-        label = "Single wide dataset",
-        x = teal.transform::data_extract_spec(
-          "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]]),
-            selected = names(data[["ADSL"]])[5],
-            multiple = TRUE,
-            fixed = FALSE,
-            ordered = TRUE
-          )
-        ),
-        y = teal.transform::data_extract_spec(
-          "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]]),
-            selected = names(data[["ADSL"]])[6],
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        )
-      ),
-      tm_t_crosstable(
-        label = "Same long datasets (different subsets)",
-        x = teal.transform::data_extract_spec(
-          dataname = "ADLB",
-          filter = teal.transform::filter_spec(
-            vars = "PARAMCD",
-            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-            selected = levels(data[["ADLB"]]$PARAMCD)[1],
-            multiple = FALSE
-          ),
-          select = select_spec(
-            choices = variable_choices(data[["ADLB"]]),
-            selected = "AVISIT",
-            multiple = TRUE,
-            fixed = FALSE,
-            ordered = TRUE,
-            label = "Select variable:"
-          )
-        ),
-        y = teal.transform::data_extract_spec(
-          dataname = "ADLB",
-          filter = teal.transform::filter_spec(
-            vars = "PARAMCD",
-            choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-            selected = levels(data[["ADLB"]]$PARAMCD)[1],
-            multiple = FALSE
-          ),
-          select = select_spec(
-            choices = variable_choices(data[["ADLB"]]),
-            selected = "LOQFL",
-            multiple = FALSE,
-            fixed = FALSE,
-            label = "Select variable:"
-          )
-        )
-      )
+      mod1,
+      mod2
     )
   )
 )
 ```
 
-## Run the app
+## 4 - Run the app
 
-A simple `shiny::shinyApp` call will let you run the app.
-Note that app is only displayed when running this code inside an R session.
+A simple `shiny::shinyApp()` call will let you run the app.
+Note that app is only displayed when running this code inside an `R` session.
 
-```{r echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
+
+<img src="images/app-using-cross-table.png" style = "display: block; margin: 0px; width: 100%"/>

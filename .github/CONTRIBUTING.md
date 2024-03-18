@@ -130,7 +130,7 @@ The package maintainer also reserves the right to adjust the criteria to recogni
 If you have further questions regarding the contribution guidelines, please contact the package/repository maintainer.
 
 <!-- urls -->
-[docs]: https://insightsengineering.github.io/teal.modules.general/index.html
-[articles]: https://insightsengineering.github.io/teal.modules.general/main/articles/index.html
-[license]: https://insightsengineering.github.io/teal.modules.general/main/LICENSE-text.html
+[docs]: https://insightsengineering.github.io/teal.modules.general/latest-tag/
+[articles]: https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/index.html
+[license]: https://insightsengineering.github.io/teal.modules.general/latest-tag/LICENSE-text.html
 [insights]: https://github.com/insightsengineering/teal.modules.general/pulse

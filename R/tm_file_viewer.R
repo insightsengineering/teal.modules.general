@@ -1,16 +1,17 @@
-#' File Viewer Teal Module
+#' `teal` module: File viewer
 #'
 #' The file viewer module provides a tool to view static files.
-#' Supported formats include text formats, \code{PDF}, \code{PNG}, \code{APNG},
-#' \code{JPEG}, \code{SVG}, \code{WEBP}, \code{GIF} and \code{BMP}.
+#' Supported formats include text formats, `PDF`, `PNG` `APNG`,
+#' `JPEG` `SVG`, `WEBP`, `GIF` and `BMP`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param input_path optional, (`list`) of the input paths to either: specific files of accepted formats,
-#'   a directory or a URL. The paths can be specified as absolute paths or relative to the running
-#'   directory of the application. Will default to current working directory if not supplied.
+#' @param input_path (`list`) of the input paths, optional. Each element can be:
 #'
-#' @export
+#' Paths can be specified as absolute paths or relative to the running directory of the application.
+#' Default to the current working directory if not supplied.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data()
@@ -27,8 +28,7 @@
 #'         folder = system.file("sample_files", package = "teal.modules.general"),
 #'         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
 #'         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-#'         url =
-#'           "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+#'         url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
 #'       )
 #'     )
 #'   )
@@ -37,28 +37,29 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @export
+#'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
   logger::log_info("Initializing tm_file_viewer")
-  if (length(label) == 0 || identical(label, "")) {
-    label <- " "
-  }
-  if (length(input_path) == 0 || identical(input_path, "")) {
-    input_path <- list()
-  }
 
+  # Normalize the parameters
+  if (length(label) == 0 || identical(label, "")) label <- " "
+  if (length(input_path) == 0 || identical(input_path, "")) input_path <- list()
+
+  # Start of assertions
   checkmate::assert_string(label)
+
   checkmate::assert(
     checkmate::check_list(input_path, types = "character", min.len = 0),
     checkmate::check_character(input_path, min.len = 1)
   )
-
   if (length(input_path) > 0) {
     valid_url <- function(url_input, timeout = 2) {
       con <- try(url(url_input), silent = TRUE)
       check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = timeout), silent = TRUE)[1])
       try(close.connection(con), silent = TRUE)
-      ifelse(is.null(check), TRUE, FALSE)
+      is.null(check)
     }
     idx <- vapply(input_path, function(x) file.exists(x) || valid_url(x), logical(1))
 
@@ -76,8 +77,9 @@ tm_file_viewer <- function(label = "File Viewer Module",
       "No file or url paths were provided."
     )
   }
+  # End of assertions
 
-
+  # Make UI args
   args <- as.list(environment())
 
   module(
@@ -90,17 +92,18 @@ tm_file_viewer <- function(label = "File Viewer Module",
   )
 }
 
+# UI function for the file viewer module
 ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
-      output = div(
+      output = tags$div(
         uiOutput(ns("output"))
       ),
-      encoding = div(
+      encoding = tags$div(
         class = "file_viewer_encoding",
         tags$label("Encodings", class = "text-primary"),
         shinyTree::shinyTree(
@@ -116,6 +119,7 @@ ui_viewer <- function(id, ...) {
   )
 }
 
+# Server function for the file viewer module
 srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
     temp_dir <- tempfile()

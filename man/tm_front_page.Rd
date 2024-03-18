@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_front_page.R
 \name{tm_front_page}
 \alias{tm_front_page}
-\title{Front page module}
+\title{\code{teal} module: Front page}
 \usage{
 tm_front_page(
   label = "Front page",
@@ -14,40 +14,40 @@ tm_front_page(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{header_text}{\verb{character vector} text to be shown at the top of the module, for each
+\item{header_text}{(\code{character} vector) text to be shown at the top of the module, for each
 element, if named the name is shown first in bold as a header followed by the value. The first
-element's header is displayed larger than the others}
+element's header is displayed larger than the others.}
 
-\item{tables}{\verb{named list of dataframes} tables to be shown in the module}
+\item{tables}{(\verb{named list} of \code{data.frame}s) tables to be shown in the module.}
 
-\item{additional_tags}{\code{shiny.tag.list} or \code{html} additional shiny tags or \code{html} to be included after the table,
+\item{additional_tags}{(\code{shiny.tag.list} or \code{html}) additional \code{shiny} tags or \code{html} to be included after the table,
 for example to include an image, \code{tagList(tags$img(src = "image.png"))} or to include further \code{html},
-\code{HTML("html text here")}}
+\code{HTML("html text here")}.}
 
-\item{footnotes}{\verb{character vector} text to be shown at the bottom of the module, for each
-element, if named the name is shown first in bold, followed by the value}
+\item{footnotes}{(\code{character} vector) of text to be shown at the bottom of the module, for each
+element, if named the name is shown first in bold, followed by the value.}
 
-\item{show_metadata}{\code{logical} should the metadata of the datasets be available on the module?}
+\item{show_metadata}{(\code{logical}) indicating whether the metadata of the datasets be available on the module.}
 }
 \value{
-A \code{teal} module to be used in \code{teal} applications
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-This \code{teal} module creates a simple front page for \code{teal} applications
+Creates a simple front page for \code{teal} applications, displaying
+introductory text, tables, additional \code{html} or \code{shiny} tags, and footnotes.
 }
 \examples{
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
   ADSL <- rADSL
   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- "ADSL"
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
@@ -76,7 +76,9 @@ app <- init(
   header = tags$h1("Sample Application"),
   footer = tags$p("Application footer"),
 )
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

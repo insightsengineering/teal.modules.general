@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_g_response.R
 \name{tm_g_response}
 \alias{tm_g_response}
-\title{Response Plots}
+\title{\code{teal} module: Response plot}
 \usage{
 tm_g_response(
   label = "Response Plot",
@@ -16,53 +16,57 @@ tm_g_response(
   freq = FALSE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void",
-    "test"),
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module. Any label possible except
-\code{"global_filters"} - read more in \code{mapping} argument of \code{\link[teal:teal_slices]{teal_slices()}}.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use as the response. You can define one fixed column by using the
-setting \code{fixed = TRUE} inside the \code{select_spec}.
-\code{data_extract_spec} must not allow multiple selection in this case.}
+Which variable to use as the response.
+You can define one fixed column by setting \code{fixed = TRUE} inside the \code{select_spec}.
+
+The \code{data_extract_spec} must not allow multiple selection in this case.}
 
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which variable to use on the X-axis of the response plot. Allow the user to select multiple
-columns from the \code{data} allowed in teal.
-\code{data_extract_spec} must not allow multiple selection in this case.}
+Specifies which variable to use on the X-axis of the response plot.
+Allow the user to select multiple columns from the \code{data} allowed in teal.
 
-\item{row_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data columns to use for faceting rows.}
+The \code{data_extract_spec} must not allow multiple selection in this case.}
 
-\item{col_facet}{optional, (\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Which data to use for faceting columns.}
+\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+optional specification of the data variable(s) to use for faceting rows.}
 
-\item{coord_flip}{optional, (\code{logical}) Whether to flip coordinates between \code{x} and \code{response}.}
+\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+optional specification of the data variable(s) to use for faceting columns.}
 
-\item{count_labels}{optional, (\code{logical}) Whether to show count labels.
+\item{coord_flip}{(\code{logical(1)})
+Indicates whether to flip coordinates between \code{x} and \code{response}.
+The default value is \code{FALSE} and it will show the \code{x} variable on the x-axis
+and the \code{response} variable on the y-axis.}
+
+\item{count_labels}{(\code{logical(1)})
+Indicates whether to show count labels.
 Defaults to \code{TRUE}.}
 
-\item{rotate_xaxis_labels}{optional, (\code{logical}) Whether to rotate plot X axis labels. Does not
+\item{rotate_xaxis_labels}{(\code{logical}) optional, whether to rotate plot X axis labels. Does not
 rotate by default (\code{FALSE}).}
 
-\item{freq}{optional, (\code{logical}) Whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
+\item{freq}{(\code{logical(1)})
+Indicates whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
 Defaults to density (\code{FALSE}).}
 
-\item{plot_height}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot height.}
+\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
+\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{plot_width}{optional, (\code{numeric}) A vector of length three with \verb{c(value, min and max)}
-for a slider encoding the plot width.}
+\item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
+\code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{ggtheme}{optional, (\code{character}) \code{ggplot2} theme to be used by default.
-One of \code{c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test")}.
-Each theme can be chosen by the user during the session. Defaults to \code{"gray"}.}
+\item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
 \item{ggplot2_args}{(\code{ggplot2_args}) object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
 with settings for the module plot.
@@ -70,30 +74,87 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
-into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Response Plots
+Generates a response plot for a given \code{response} and \code{x} variables.
+This module allows users customize and add annotations to the plot depending
+on the module's arguments.
+It supports showing the counts grouped by other variable facets (by row / column),
+swapping the coordinates, show count annotations and displaying the response plot
+as frequency or density.
 }
 \note{
 For more examples, please see the vignette "Using response plot" via
 \code{vignette("using-response-plot", package = "teal.modules.general")}.
 }
 \examples{
-# Response plot with selected response (BMRKR1) and selected x variable (RACE)
+# general data example
+library(teal.widgets)
 
 data <- teal_data()
 data <- within(data, {
-  library(nestcolor)
+  require(nestcolor)
+  mtcars <- mtcars
+  for (v in c("cyl", "vs", "am", "gear")) {
+    mtcars[[v]] <- as.factor(mtcars[[v]])
+  }
+})
+datanames(data) <- "mtcars"
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_response(
+      label = "Response Plots",
+      response = data_extract_spec(
+        dataname = "mtcars",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["mtcars"]], c("cyl", "gear")),
+          selected = "cyl",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      x = data_extract_spec(
+        dataname = "mtcars",
+        select = select_spec(
+          label = "Select variable:",
+          choices = variable_choices(data[["mtcars"]], c("vs", "am")),
+          selected = "vs",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      ggplot2_args = ggplot2_args(
+        labs = list(subtitle = "Plot generated by Response Module")
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+library(teal.widgets)
+
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
   ADSL <- rADSL
 })
-datanames <- c("ADSL")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+datanames(data) <- c("ADSL")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 app <- init(
   data = data,
@@ -120,7 +181,7 @@ app <- init(
           fixed = FALSE
         )
       ),
-      ggplot2_args = teal.widgets::ggplot2_args(
+      ggplot2_args = ggplot2_args(
         labs = list(subtitle = "Plot generated by Response Module")
       )
     )
@@ -129,4 +190,5 @@ app <- init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 }

@@ -1,50 +1,132 @@
-#' Create a simple scatterplot
+#' `teal` module: Scatterplot
 #'
-#' Create a plot with the \code{\link{ggplot2}[geom_point]} function
-#' @md
-#'
-#' @inheritParams teal::module
-#' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Variable
-#'   names selected to plot along the x-axis by default.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Variable
-#'   names selected to plot along the y-axis by default.
-#' @param color_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#' @param size_by optional (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Defines the point size encoding. If `NULL` then no size encoding option will be displayed.
-#' @param row_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data columns to use for faceting rows.
-#' @param col_facet optional, (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#'   Which data to use for faceting columns.
-#' @param alpha optional, (`numeric`) If scalar then the plot points will have a fixed opacity. If a
-#'   slider should be presented to adjust the plot point opacity dynamically then it can be a vector of
-#'   length three with `c(value, min, max)`.
-#' @param size optional, (`numeric`) If scalar then the plot point sizes will have a fixed size
-#'   If a slider should be presented to adjust the plot point sizes dynamically then it can be a
-#'   vector of length three with `c(value, min, max)`.
-#' @param shape optional, (`character`) A character vector with the English names of the
-#'   shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
-#'   `vignette("ggplot2-specs", package="ggplot2")`.
-#' @param max_deg optional, (`integer`) The maximum degree for the polynomial trend line. Must not be less than 1.
-#' @param table_dec optional, (`integer`) Number of decimal places used to round numeric values in the table.
-#'
+#' Generates a customizable scatterplot using `ggplot2`.
+#' This module allows users to select variables for the x and y axes,
+#' color and size encodings, faceting options, and more. It supports log transformations,
+#' trend line additions, and dynamic adjustments of point opacity and size through UI controls.
 #'
 #' @note For more examples, please see the vignette "Using scatterplot" via
 #'   `vignette("using-scatterplot", package = "teal.modules.general")`.
 #'
-#' @export
-#' @examples
-#' # Scatterplot of variables from ADSL dataset
+#' @inheritParams teal::module
+#' @inheritParams shared_params
+#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' variable names selected to plot along the x-axis by default.
+#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' variable names selected to plot along the y-axis by default.
+#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' defines the color encoding. If `NULL` then no color encoding option will be displayed.
+#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' defines the point size encoding. If `NULL` then no size encoding option will be displayed.
+#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specifies the variable(s) for faceting rows.
+#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' specifies the variable(s) for faceting columns.
+#' @param shape (`character`) optional, character vector with the names of the
+#' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
+#' `vignette("ggplot2-specs", package="ggplot2")`.
+#' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
+#' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
 #'
+#' @inherit shared_params return
+#'
+#' @examples
+#' library(teal.widgets)
+#'
+#' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   library(nestcolor)
+#'   require(nestcolor)
+#'   CO2 <- CO2
+#' })
+#' datanames(data) <- "CO2"
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_g_scatterplot(
+#'       label = "Scatterplot Choices",
+#'       x = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+#'           selected = "conc",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       y = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+#'           selected = "uptake",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       color_by = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(
+#'             data[["CO2"]],
+#'             c("Plant", "Type", "Treatment", "conc", "uptake")
+#'           ),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       size_by = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+#'           selected = "uptake",
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       row_facet = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       col_facet = data_extract_spec(
+#'         dataname = "CO2",
+#'         select = select_spec(
+#'           label = "Select variable:",
+#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+#'           selected = NULL,
+#'           multiple = FALSE,
+#'           fixed = FALSE
+#'         )
+#'       ),
+#'       ggplot2_args = ggplot2_args(
+#'         labs = list(subtitle = "Plot generated by Scatterplot Module")
+#'       )
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' # CDISC data example
+#' data <- teal_data()
+#' data <- within(data, {
+#'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames <- c("ADSL")
-#' datanames(data) <- datanames
-#' join_keys(data) <- default_cdisc_join_keys[datanames]
+#' datanames(data) <- c("ADSL")
+#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -55,10 +137,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("AGE", "BMRKR1", "BMRKR2")
-#'           ),
+#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
 #'           selected = "AGE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -68,10 +147,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("AGE", "BMRKR1", "BMRKR2")
-#'           ),
+#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -94,10 +170,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
-#'           ),
+#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
 #'           selected = "AGE",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -107,10 +180,7 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("BMRKR2", "RACE", "REGION1")
-#'           ),
+#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -120,16 +190,13 @@
 #'         dataname = "ADSL",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("BMRKR2", "RACE", "REGION1")
-#'           ),
+#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
 #'           selected = NULL,
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         )
 #'       ),
-#'       ggplot2_args = teal.widgets::ggplot2_args(
+#'       ggplot2_args = ggplot2_args(
 #'         labs = list(subtitle = "Plot generated by Scatterplot Module")
 #'       )
 #'     )
@@ -138,6 +205,9 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#'
+#' @export
+#'
 tm_g_scatterplot <- function(label = "Scatterplot",
                              x,
                              y,
@@ -152,16 +222,14 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              size = c(5, 1, 15),
                              max_deg = 5L,
                              rotate_xaxis_labels = FALSE,
-                             ggtheme = c(
-                               "gray", "bw", "linedraw", "light", "dark",
-                               "minimal", "classic", "void", "test"
-                             ),
+                             ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                              pre_output = NULL,
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   logger::log_info("Initializing tm_g_scatterplot")
 
+  # Requires Suggested packages
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
   missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
   if (length(missing_packages) > 0L) {
@@ -171,6 +239,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ))
   }
 
+  # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
   if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
@@ -179,39 +248,18 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
   if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
-  ggtheme <- match.arg(ggtheme)
+  # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(x, types = "data_extract_spec")
   checkmate::assert_list(y, types = "data_extract_spec")
   checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
+
   checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
+
   checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  if (!all(vapply(row_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'row_facet' should not allow multiple selection")
-  }
-  if (!all(vapply(col_facet, function(x) !x$select$multiple, logical(1)))) {
-    stop("'col_facet' should not allow multiple selection")
-  }
-  checkmate::assert_character(shape)
-
-  checkmate::assert_int(max_deg, lower = 1L)
-  checkmate::assert_scalar(table_dec)
-  checkmate::assert_flag(rotate_xaxis_labels)
-  if (length(alpha) == 1) {
-    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
-  }
-
-  if (length(size) == 1) {
-    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
-  } else {
-    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
-    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
-  }
+  assert_single_selection(col_facet)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -221,8 +269,34 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  if (length(alpha) == 1) {
+    checkmate::assert_numeric(alpha, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(alpha, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(alpha[1], lower = alpha[2], upper = alpha[3], .var.name = "alpha")
+  }
 
+  checkmate::assert_character(shape)
+
+  if (length(size) == 1) {
+    checkmate::assert_numeric(size, any.missing = FALSE, finite = TRUE)
+  } else {
+    checkmate::assert_numeric(size, len = 3, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(size[1], lower = size[2], upper = size[3], .var.name = "size")
+  }
+
+  checkmate::assert_int(max_deg, lower = 1L)
+  checkmate::assert_flag(rotate_xaxis_labels)
+  ggtheme <- match.arg(ggtheme)
+
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_scalar(table_dec)
+  checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  # End of assertions
+
+  # Make UI args
   args <- as.list(environment())
 
   data_extract_list <- list(
@@ -247,6 +321,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   )
 }
 
+# UI function for the scatterplot module
 ui_g_scatterplot <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -254,7 +329,7 @@ ui_g_scatterplot <- function(id, ...) {
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -263,7 +338,7 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-      encoding = div(
+      encoding = tags$div(
         ### Reporter
         teal.reporter::simple_reporter_ui(ns("simple_reporter")),
         ###
@@ -357,11 +432,11 @@ ui_g_scatterplot <- function(id, ...) {
             shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
             shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
             uiOutput(ns("num_na_removed")),
-            div(
+            tags$div(
               id = ns("label_pos"),
-              div(strong("Stats position")),
-              div(class = "inline-block w-10", helpText("Left")),
-              div(
+              tags$div(tags$strog("Stats position")),
+              tags$div(class = "inline-block w-10", helpText("Left")),
+              tags$div(
                 class = "inline-block w-70",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
@@ -369,7 +444,7 @@ ui_g_scatterplot <- function(id, ...) {
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              div(class = "inline-block w-10", helpText("Right"))
+              tags$div(class = "inline-block w-10", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
@@ -381,7 +456,7 @@ ui_g_scatterplot <- function(id, ...) {
             selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
-              choices = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void", "test"),
+              choices = ggplot_themes,
               selected = args$ggtheme,
               multiple = FALSE
             )
@@ -398,6 +473,7 @@ ui_g_scatterplot <- function(id, ...) {
   )
 }
 
+# Server function for the scatterplot module
 srv_g_scatterplot <- function(id,
                               data,
                               reporter,
@@ -462,9 +538,13 @@ srv_g_scatterplot <- function(id,
       teal.transform::compose_and_enable_validators(iv, selector_list)
     })
     iv_facet <- shinyvalidate::InputValidator$new()
-    iv_facet$add_rule("add_density", ~ if (isTRUE(.) &&
-      (length(selector_list()$row_facet()$select) > 0L ||
-        length(selector_list()$col_facet()$select) > 0L)) {
+    iv_facet$add_rule("add_density", ~ if (
+      isTRUE(.) &&
+        (
+          length(selector_list()$row_facet()$select) > 0L ||
+            length(selector_list()$col_facet()$select) > 0L
+        )
+    ) {
       "Cannot add marginal density when Row or Column facetting has been selected"
     })
     iv_facet$enable()
@@ -488,7 +568,7 @@ srv_g_scatterplot <- function(id,
     )
 
     trend_line_is_applicable <- reactive({
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]]
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
       y_var <- as.vector(merged$anl_input_r()$columns_source$y)
       length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
@@ -515,11 +595,11 @@ srv_g_scatterplot <- function(id,
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
-        ANL <- merged$anl_q_r()[["ANL"]] # nolint
+        ANL <- merged$anl_q_r()[["ANL"]]
         x_var <- as.vector(merged$anl_input_r()$columns_source$x)
         y_var <- as.vector(merged$anl_input_r()$columns_source$y)
         if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
-          shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
+          tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
       }
     })
@@ -527,8 +607,10 @@ srv_g_scatterplot <- function(id,
     observeEvent(
       eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
-        if (length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
-          length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+        if (
+          length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
+            length(merged$anl_input_r()$columns_source$row_facet) == 0
+        ) {
           shinyjs::hide("free_scales")
         } else {
           shinyjs::show("free_scales")
@@ -539,7 +621,7 @@ srv_g_scatterplot <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r(), iv_facet)
 
-      ANL <- merged$anl_q_r()[["ANL"]] # nolint
+      ANL <- merged$anl_q_r()[["ANL"]]
 
       x_var <- as.vector(merged$anl_input_r()$columns_source$x)
       y_var <- as.vector(merged$anl_input_r()$columns_source$y)
@@ -555,16 +637,16 @@ srv_g_scatterplot <- function(id,
       } else {
         as.vector(merged$anl_input_r()$columns_source$col_facet)
       }
-      alpha <- input$alpha # nolint
-      size <- input$size # nolint
-      rotate_xaxis_labels <- input$rotate_xaxis_labels # nolint
+      alpha <- input$alpha
+      size <- input$size
+      rotate_xaxis_labels <- input$rotate_xaxis_labels
       add_density <- input$add_density
       ggtheme <- input$ggtheme
       rug_plot <- input$rug_plot
-      color <- input$color # nolint
-      shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape) # nolint
+      color <- input$color
+      shape <- `if`(is.null(input$shape) || identical(input$shape, ""), "circle", input$shape)
       smoothing_degree <- as.integer(input$smoothing_degree)
-      ci <- input$ci # nolint
+      ci <- input$ci
 
       log_x <- input$log_x
       log_y <- input$log_y
@@ -585,9 +667,11 @@ srv_g_scatterplot <- function(id,
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
         validate(need(
-          !(inherits(ANL[[color_by_var]], "Date") ||
-            inherits(ANL[[color_by_var]], "POSIXct") ||
-            inherits(ANL[[color_by_var]], "POSIXlt")),
+          !(
+            inherits(ANL[[color_by_var]], "Date") ||
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")
+          ),
           "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
         \n Uncheck the 'Add marginal density' checkbox to display the plot."
         ))
@@ -640,7 +724,7 @@ srv_g_scatterplot <- function(id,
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]), # nolint
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]),
             env = list(
               x_var = x_var,
               log_x_fn = as.name(log_x_fn),
@@ -655,7 +739,7 @@ srv_g_scatterplot <- function(id,
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]), # nolint
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]),
             env = list(
               y_var = y_var,
               log_y_fn = as.name(log_y_fn),
@@ -788,7 +872,7 @@ srv_g_scatterplot <- function(id,
             plot_q <- teal.code::eval_code(
               plot_q,
               substitute(
-                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)), # nolint
+                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)),
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
               )
             )
@@ -850,7 +934,7 @@ srv_g_scatterplot <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1)) # nolint
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
