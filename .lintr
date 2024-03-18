@@ -4,35 +4,3 @@ linters: linters_with_defaults(
   object_usage_linter = NULL,
   object_name_linter = object_name_linter(styles = c("snake_case", "symbols"), regexes = c(ANL = "^ANL_?[0-9A-Z_]*$", ADaM = "^r?AD[A-Z]{2,3}_?[0-9]*$"))
   )
-exclusions: list(
-    "vignettes/teal-modules-general.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-association-plot.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-bivariate-plot.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-cross-table.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-data-table.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-outliers-module.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-regression-plots.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-response-plot.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-scatterplot-matrix.Rmd" = list(
-      object_name_linter = Inf
-    ),
-    "vignettes/using-scatterplot.Rmd" = list(
-      object_name_linter = Inf
-    )
-  )
