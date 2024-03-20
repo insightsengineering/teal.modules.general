@@ -141,7 +141,7 @@ ui_page_data_table <- function(id,
                                post_output = NULL) {
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -220,7 +220,7 @@ srv_page_data_table <- function(id,
               title = x,
               column(
                 width = 12,
-                div(
+                tags$div(
                   class = "mt-4",
                   ui_data_table(
                     id = session$ns(x),

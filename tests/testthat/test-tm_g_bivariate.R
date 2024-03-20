@@ -7,7 +7,7 @@ testthat::test_that("tm_g_bivariate creates a `teal_module` object", {
       row_facet = mock_data_extract_spec(select_multiple = FALSE),
       col_facet = mock_data_extract_spec(select_multiple = FALSE),
       facet = TRUE,
-      color_setting = TRUE,
+      color_settings = TRUE,
       use_density = TRUE,
       free_x_scales = TRUE,
       free_y_scales = TRUE,
@@ -199,7 +199,7 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `col
       "a label",
       mock_data_extract_spec(select_multiple = FALSE),
       mock_data_extract_spec(select_multiple = FALSE),
-      color_setting = FALSE,
+      color_settings = FALSE,
       color = mock_data_extract_spec()
     ),
     "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
@@ -212,7 +212,7 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `siz
       "a label",
       mock_data_extract_spec(select_multiple = FALSE),
       mock_data_extract_spec(select_multiple = FALSE),
-      color_setting = FALSE,
+      color_settings = FALSE,
       size = mock_data_extract_spec()
     ),
     "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
@@ -225,7 +225,7 @@ testthat::test_that("tm_g_bivariate fails when `color_setting` is FALSE and `fil
       "a label",
       mock_data_extract_spec(select_multiple = FALSE),
       mock_data_extract_spec(select_multiple = FALSE),
-      color_setting = FALSE,
+      color_settings = FALSE,
       fill = mock_data_extract_spec()
     ),
     "'color_settings' argument needs to be set to TRUE if 'color', 'fill', and/or 'size' is/are supplied."
@@ -237,7 +237,7 @@ testthat::test_that("tm_g_bivariate determines `color`, `size` and `fill` when `
     "a label",
     mock_data_extract_spec(select_multiple = FALSE),
     mock_data_extract_spec(select_multiple = FALSE),
-    color_setting = TRUE
+    color_settings = TRUE
   )
 
   testthat::expect_contains(

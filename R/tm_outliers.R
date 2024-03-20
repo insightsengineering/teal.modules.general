@@ -201,7 +201,7 @@ ui_outliers <- function(id, ...) {
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
       uiOutput(ns("total_missing")),
-      br(), hr(),
+      tags$br(), tags$hr(),
       tabsetPanel(
         id = ns("tabs"),
         tabPanel(
@@ -217,11 +217,11 @@ ui_outliers <- function(id, ...) {
           teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot"))
         )
       ),
-      br(), hr(),
+      tags$br(), tags$hr(),
       uiOutput(ns("table_ui_wrap")),
       DT::dataTableOutput(ns("table_ui"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -387,7 +387,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     )
 
     n_outlier_missing <- reactive({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       ANL <- merged$anl_q_r()[["ANL"]]
       sum(is.na(ANL[[outlier_var]]))
@@ -397,7 +397,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     dataname_first <- isolate(teal.data::datanames(data())[[1]])
 
     common_code_q <- reactive({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
 
       ANL <- merged$anl_q_r()[["ANL"]]
       qenv <- merged$anl_q_r()
@@ -1072,7 +1072,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = {
         tab <- input$tabs
         req(tab) # tab is NULL upon app launch, hence will crash without this statement
-        shiny::req(iv_r()$is_valid()) # Same validation as output$table_ui_wrap
+        req(iv_r()$is_valid()) # Same validation as output$table_ui_wrap
         outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
 
@@ -1169,12 +1169,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     )
 
     output$total_outliers <- renderUI({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       ANL <- merged$anl_q_r()[["ANL"]]
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
       teal::validate_has_data(ANL, 1)
       ANL_OUTLIER_SELECTED <- ANL_OUTLIER[ANL_OUTLIER$is_outlier_selected, ]
-      h5(
+      tags$h5(
         sprintf(
           "%s %d / %d [%.02f%%]",
           "Total number of outlier(s):",
@@ -1201,7 +1201,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     output$table_ui_wrap <- renderUI({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       tagList(
         teal.widgets::optionalSelectInput(
           inputId = session$ns("table_ui_columns"),
@@ -1210,7 +1210,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           selected = NULL,
           multiple = TRUE
         ),
-        h4("Outlier Table"),
+        tags$h4("Outlier Table"),
         teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
       )
     })

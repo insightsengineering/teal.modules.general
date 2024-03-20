@@ -248,7 +248,7 @@ include_css_files <- function(pattern = "*") {
   if (length(css_files) == 0) {
     return(NULL)
   }
-  shiny::singleton(shiny::tags$head(lapply(css_files, shiny::includeCSS)))
+  singleton(tags$head(lapply(css_files, includeCSS)))
 }
 
 #' JavaScript condition to check if a specific tab is active

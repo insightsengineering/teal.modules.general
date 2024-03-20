@@ -229,7 +229,7 @@ ui_g_response <- function(id, ...) {
     output = teal.widgets::white_small_well(
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
