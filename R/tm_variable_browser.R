@@ -76,7 +76,7 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 pre_output = NULL,
                                 post_output = NULL,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_variable_browser")
+  message("Initializing tm_variable_browser")
 
   # Requires Suggested packages
   if (!requireNamespace("sparkline", quietly = TRUE)) {

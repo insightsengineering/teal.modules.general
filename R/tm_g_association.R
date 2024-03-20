@@ -132,7 +132,7 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_g_association")
+  message("Initializing tm_g_association")
 
   # Normalize the parameters
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)

@@ -105,7 +105,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL) {
-  logger::log_info("Initializing tm_a_pca")
+  message("Initializing tm_a_pca")
 
   # Normalize the parameters
   if (inherits(dat, "data_extract_spec")) dat <- list(dat)

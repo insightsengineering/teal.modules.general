@@ -89,7 +89,7 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
-  logger::log_info("Initializing tm_missing_data")
+  message("Initializing tm_missing_data")
 
   # Requires Suggested packages
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
