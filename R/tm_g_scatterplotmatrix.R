@@ -162,7 +162,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    plot_width = NULL,
                                    pre_output = NULL,
                                    post_output = NULL) {
-  logger::log_info("Initializing tm_g_scatterplotmatrix")
+  message("Initializing tm_g_scatterplotmatrix")
 
   # Requires Suggested packages
   if (!requireNamespace("lattice", quietly = TRUE)) {

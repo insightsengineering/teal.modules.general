@@ -67,7 +67,7 @@ tm_front_page <- function(label = "Front page",
                           additional_tags = tagList(),
                           footnotes = character(0),
                           show_metadata = FALSE) {
-  logger::log_info("Initializing tm_front_page")
+  message("Initializing tm_front_page")
 
   # Start of assertions
   checkmate::assert_string(label)

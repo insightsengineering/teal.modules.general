@@ -90,7 +90,7 @@ tm_data_table <- function(label = "Data Table",
                           server_rendering = FALSE,
                           pre_output = NULL,
                           post_output = NULL) {
-  logger::log_info("Initializing tm_data_table")
+  message("Initializing tm_data_table")
 
   # Start of assertions
   checkmate::assert_string(label)

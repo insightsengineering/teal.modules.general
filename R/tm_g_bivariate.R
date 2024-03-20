@@ -193,7 +193,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL) {
-  logger::log_info("Initializing tm_g_bivariate")
+  message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
