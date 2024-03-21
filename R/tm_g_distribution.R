@@ -291,7 +291,7 @@ ui_distribution <- function(id, ...) {
             ),
             numericInput(ns("dist_param1"), label = "param1", value = NULL),
             numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            tags$span(actionButton(ns("params_reset"), "Reset params")),
+            tags$span(actionButton(ns("params_reset"), "Default params")),
             collapsed = FALSE
           )
         )
@@ -505,6 +505,7 @@ srv_distribution <- function(id,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
+        req(input$params_reset)
         params <-
           if (length(input$t_dist) != 0) {
             dist_var2 <- as.vector(merged$anl_input_r()$columns_source$dist_i)
@@ -541,6 +542,10 @@ srv_distribution <- function(id,
       },
       ignoreInit = TRUE
     )
+
+    observeEvent(input$params_reset, {
+      updateActionButton(inputId = "params_reset", label = "Reset params")
+    })
 
     merge_vars <- reactive({
       teal::validate_inputs(iv_r())
