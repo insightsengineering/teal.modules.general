@@ -115,6 +115,7 @@ tm_variable_browser <- function(label = "Variable Browser",
       post_output = post_output
     )
   )
+  # `shiny` inputs are stored properly but the majority of the module is state of `datatable` which is not stored.
   attr(ans, "teal_bookmarkable") <- NULL
   ans
 }
