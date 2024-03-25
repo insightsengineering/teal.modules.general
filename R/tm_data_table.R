@@ -116,7 +116,7 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  module(
+  ans <- module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
@@ -133,6 +133,8 @@ tm_data_table <- function(label = "Data Table",
       post_output = post_output
     )
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI page module

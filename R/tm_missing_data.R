@@ -124,7 +124,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  module(
+  ans <- module(
     label,
     server = srv_page_missing_data,
     server_args = list(
@@ -135,6 +135,8 @@ tm_missing_data <- function(label = "Missing data",
     datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the missing data module (all datasets)

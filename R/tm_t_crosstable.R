@@ -173,7 +173,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     basic_table_args = basic_table_args
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_t_crosstable,
     ui = ui_t_crosstable,
@@ -181,6 +181,8 @@ tm_t_crosstable <- function(label = "Cross Table",
     server_args = server_args,
     datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the cross-table module

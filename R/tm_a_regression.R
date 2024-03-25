@@ -225,7 +225,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     response = response
   )
 
-  module(
+  nas <- module(
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
@@ -241,6 +241,8 @@ tm_a_regression <- function(label = "Regression Analysis",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the regression module

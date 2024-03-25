@@ -308,7 +308,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     col_facet = col_facet
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
@@ -319,6 +319,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the scatterplot module

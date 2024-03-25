@@ -177,7 +177,7 @@ tm_g_association <- function(label = "Association",
     vars = vars
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
@@ -188,6 +188,8 @@ tm_g_association <- function(label = "Association",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the association module

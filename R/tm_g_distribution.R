@@ -180,7 +180,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     group_var = group_var
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_distribution,
     server_args = c(
@@ -191,6 +191,8 @@ tm_g_distribution <- function(label = "Distribution Module",
     ui_args = args,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the distribution module

@@ -177,7 +177,7 @@ tm_outliers <- function(label = "Outliers Module",
     categorical_var = categorical_var
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_outliers,
     server_args = c(
@@ -188,6 +188,8 @@ tm_outliers <- function(label = "Outliers Module",
     ui_args = args,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- FALSE
+  ans
 }
 
 # UI function for the outliers module

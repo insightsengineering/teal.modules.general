@@ -206,7 +206,7 @@ tm_g_response <- function(label = "Response Plot",
     col_facet = col_facet
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
@@ -217,6 +217,8 @@ tm_g_response <- function(label = "Response Plot",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the response module

@@ -161,7 +161,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   data_extract_list <- list(dat = dat)
 
-  module(
+  ans <- module(
     label = label,
     server = srv_a_pca,
     ui = ui_a_pca,
@@ -176,6 +176,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the PCA module

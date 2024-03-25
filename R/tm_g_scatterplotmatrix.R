@@ -191,7 +191,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   # Make UI args
   args <- as.list(environment())
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
@@ -199,6 +199,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
     datanames = teal.transform::get_extract_datanames(variables)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the scatterplot matrix module

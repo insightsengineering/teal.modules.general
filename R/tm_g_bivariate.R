@@ -288,7 +288,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     size = size
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
@@ -299,6 +299,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the bivariate module
