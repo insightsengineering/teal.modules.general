@@ -181,7 +181,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     server_args = server_args,
     datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
