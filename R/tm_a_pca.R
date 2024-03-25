@@ -176,7 +176,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- FALSE
   ans
 }
 
