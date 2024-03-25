@@ -90,7 +90,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
     ui_args = args,
     datanames = NULL
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- FALSE
   ans
 }
 
