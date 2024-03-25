@@ -225,7 +225,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     response = response
   )
 
-  nas <- module(
+  ans <- module(
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
