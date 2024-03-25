@@ -135,7 +135,7 @@ tm_missing_data <- function(label = "Missing data",
     datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
-  attr(ans, "teal_bookmarkable") <- TRUE
+  attr(ans, "teal_bookmarkable") <- NULL
   ans
 }
 
