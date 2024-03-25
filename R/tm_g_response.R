@@ -217,7 +217,7 @@ tm_g_response <- function(label = "Response Plot",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
