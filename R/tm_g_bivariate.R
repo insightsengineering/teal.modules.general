@@ -299,7 +299,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
@@ -465,6 +465,8 @@ srv_g_bivariate <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     data_extract <- list(
       x = x, y = y, row_facet = row_facet, col_facet = col_facet,
       color = color, fill = fill, size = size
@@ -588,7 +590,7 @@ srv_g_bivariate <- function(id,
         }
       } else {
         shinyjs::hide("add_lines")
-        updateCheckboxInput(session, "add_lines", value = FALSE)
+        updateCheckboxInput(session, "add_lines", value = restoreInput(ns("add_lines"), FALSE))
         shinyjs::hide("alpha")
         shinyjs::hide("fixed_size")
         shinyjs::hide("size_settings")
