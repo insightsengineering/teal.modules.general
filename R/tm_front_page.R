@@ -130,8 +130,6 @@ ui_front_page <- function(id, ...) {
       )
     )
   )
-  attr(ans, "teal_bookmarkable") <- NULL
-  ans
 }
 
 # Server function for the front page module
