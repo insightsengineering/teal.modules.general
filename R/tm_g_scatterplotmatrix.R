@@ -199,7 +199,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
     datanames = teal.transform::get_extract_datanames(variables)
   )
-  attr(ans, "teal_bookmarkable") <- NULL
+  attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
