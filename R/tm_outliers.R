@@ -188,7 +188,7 @@ tm_outliers <- function(label = "Outliers Module",
     ui_args = args,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
-  attr(ans, "teal_bookmarkable") <- FALSE
+  attr(ans, "teal_bookmarkable") <- NULL
   ans
 }
 

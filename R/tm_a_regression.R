@@ -241,7 +241,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
-  attr(ans, "teal_bookmarkable") <- TRUE
+  attr(ans, "teal_bookmarkable") <- FALSE
   ans
 }
 
