@@ -301,7 +301,7 @@ srv_data_table <- function(id,
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
     iv$add_rule("variables", shinyvalidate::sv_in_set(
-      set = names(data()[[dataname]]), message_fmt = "Not all selected variables exist in the data"
+      set = names(isolate(data())[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
 
