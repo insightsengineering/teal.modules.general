@@ -167,6 +167,8 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 # Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
@@ -239,8 +241,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
         srv_missing_data(
           id = x,
           data = data,
-          reporter = reporter,
-          filter_panel_api = filter_panel_api,
+          reporter = if (with_reporter) reporter,
+          filter_panel_api = if (with_filter) filter_panel_api,
           dataname = x,
           parent_dataname = parent_dataname,
           plot_height = plot_height,

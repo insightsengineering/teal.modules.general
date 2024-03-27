@@ -1060,14 +1060,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    choices <- teal.transform::variable_choices(data()[[dataname_first]])
+    choices <- reactive(teal.transform::variable_choices(data()[[dataname_first]]))
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
       teal.widgets::updateOptionalSelectInput(
         session,
         inputId = "table_ui_columns",
-        choices = dplyr::setdiff(choices, names(ANL_OUTLIER)),
+        choices = dplyr::setdiff(choices(), names(ANL_OUTLIER)),
         selected = restoreInput(ns("table_ui_columns"), isolate(input$table_ui_columns))
       )
     })
