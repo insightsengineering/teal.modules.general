@@ -100,7 +100,7 @@ tm_variable_browser <- function(label = "Variable Browser",
 
   datasets_selected <- unique(datasets_selected)
 
-  module(
+  ans <- module(
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
@@ -115,6 +115,9 @@ tm_variable_browser <- function(label = "Variable Browser",
       post_output = post_output
     )
   )
+  # `shiny` inputs are stored properly but the majority of the module is state of `datatable` which is not stored.
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the variable browser module

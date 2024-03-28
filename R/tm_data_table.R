@@ -116,7 +116,7 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  module(
+  ans <- module(
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
@@ -133,6 +133,8 @@ tm_data_table <- function(label = "Data Table",
       post_output = post_output
     )
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI page module
@@ -196,41 +198,44 @@ srv_page_data_table <- function(id,
     output$dataset_table <- renderUI({
       do.call(
         tabsetPanel,
-        lapply(
-          datanames,
-          function(x) {
-            dataset <- isolate(data()[[x]])
-            choices <- names(dataset)
-            labels <- vapply(
-              dataset,
-              function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
-              character(1)
-            )
-            names(choices) <- ifelse(
-              is.na(labels) | labels == "",
-              choices,
-              paste(choices, labels, sep = ": ")
-            )
-            variables_selected <- if (!is.null(variables_selected[[x]])) {
-              variables_selected[[x]]
-            } else {
-              utils::head(choices)
-            }
-            tabPanel(
-              title = x,
-              column(
-                width = 12,
-                tags$div(
-                  class = "mt-4",
-                  ui_data_table(
-                    id = session$ns(x),
-                    choices = choices,
-                    selected = variables_selected
+        c(
+          list(id = session$ns("dataname_tab")),
+          lapply(
+            datanames,
+            function(x) {
+              dataset <- isolate(data()[[x]])
+              choices <- names(dataset)
+              labels <- vapply(
+                dataset,
+                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                character(1)
+              )
+              names(choices) <- ifelse(
+                is.na(labels) | labels == "",
+                choices,
+                paste(choices, labels, sep = ": ")
+              )
+              variables_selected <- if (!is.null(variables_selected[[x]])) {
+                variables_selected[[x]]
+              } else {
+                utils::head(choices)
+              }
+              tabPanel(
+                title = x,
+                column(
+                  width = 12,
+                  div(
+                    class = "mt-4",
+                    ui_data_table(
+                      id = session$ns(x),
+                      choices = choices,
+                      selected = variables_selected
+                    )
                   )
                 )
               )
-            )
-          }
+            }
+          )
         )
       )
     })
@@ -296,7 +301,7 @@ srv_data_table <- function(id,
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
     iv$add_rule("variables", shinyvalidate::sv_in_set(
-      set = names(data()[[dataname]]), message_fmt = "Not all selected variables exist in the data"
+      set = names(isolate(data())[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
 

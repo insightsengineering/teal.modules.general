@@ -180,7 +180,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     group_var = group_var
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_distribution,
     server_args = c(
@@ -191,6 +191,8 @@ tm_g_distribution <- function(label = "Distribution Module",
     ui_args = args,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the distribution module
@@ -291,7 +293,7 @@ ui_distribution <- function(id, ...) {
             ),
             numericInput(ns("dist_param1"), label = "param1", value = NULL),
             numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            tags$span(actionButton(ns("params_reset"), "Reset params")),
+            tags$span(actionButton(ns("params_reset"), "Default params")),
             collapsed = FALSE
           )
         )
@@ -355,6 +357,8 @@ srv_distribution <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     rule_req <- function(value) {
       if (isTRUE(input$dist_tests %in% c(
         "Fligner-Killeen",
@@ -486,7 +490,7 @@ srv_distribution <- function(id,
     output$scales_types_ui <- renderUI({
       if ("group_i" %in% names(selector_list()) && length(selector_list()$group_i()$filters[[1]]$selected) > 0) {
         shinyWidgets::prettyRadioButtons(
-          session$ns("scales_type"),
+          ns("scales_type"),
           label = "Scales:",
           choices = c("Fixed", "Free"),
           selected = "Fixed",
@@ -503,35 +507,47 @@ srv_distribution <- function(id,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
-        if (length(input$t_dist) != 0) {
-          dist_var2 <- as.vector(merged$anl_input_r()$columns_source$dist_i)
+        req(input$params_reset)
+        params <-
+          if (length(input$t_dist) != 0) {
+            dist_var2 <- as.vector(merged$anl_input_r()$columns_source$dist_i)
 
-          get_dist_params <- function(x, dist) {
-            if (dist == "unif") {
-              res <- as.list(range(x))
-              names(res) <- c("min", "max")
-              return(res)
+            get_dist_params <- function(x, dist) {
+              if (dist == "unif") {
+                return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
+              }
+              tryCatch(
+                MASS::fitdistr(x, densfun = dist)$estimate,
+                error = function(e) c(param1 = NA_real_, param2 = NA_real_)
+              )
             }
-            tryCatch(
-              as.list(MASS::fitdistr(x, densfun = dist)$estimate),
-              error = function(e) list(param1 = NA, param2 = NA)
-            )
+
+            ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]]
+            round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist), 2)
+          } else {
+            c("param1" = NA_real_, "param2" = NA_real_)
           }
 
-          ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]]
-          params <- get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist)
-          params_vec <- round(unname(unlist(params)), 2)
-          params_names <- names(params)
+        params_vals <- unname(params)
+        params_names <- names(params)
 
-          updateNumericInput(session, "dist_param1", label = params_names[1], value = params_vec[1])
-          updateNumericInput(session, "dist_param2", label = params_names[2], value = params_vec[2])
-        } else {
-          updateNumericInput(session, "dist_param1", label = "param1", value = NA)
-          updateNumericInput(session, "dist_param2", label = "param2", value = NA)
-        }
+        updateNumericInput(
+          inputId = "dist_param1",
+          label = params_names[1],
+          value = restoreInput(ns("dist_param1"), params_vals[1])
+        )
+        updateNumericInput(
+          inputId = "dist_param2",
+          label = params_names[2],
+          value = restoreInput(ns("dist_param1"), params_vals[2])
+        )
       },
       ignoreInit = TRUE
     )
+
+    observeEvent(input$params_reset, {
+      updateActionButton(inputId = "params_reset", label = "Reset params")
+    })
 
     merge_vars <- reactive({
       teal::validate_inputs(iv_r())

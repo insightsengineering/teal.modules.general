@@ -124,7 +124,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  module(
+  ans <- module(
     label,
     server = srv_page_missing_data,
     server_args = list(
@@ -135,6 +135,8 @@ tm_missing_data <- function(label = "Missing data",
     datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the missing data module (all datasets)
@@ -165,12 +167,15 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 # Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
+
     ns <- session$ns
 
     output$dataset_tabs <- renderUI({
@@ -236,8 +241,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
         srv_missing_data(
           id = x,
           data = data,
-          reporter = reporter,
-          filter_panel_api = filter_panel_api,
+          reporter = if (with_reporter) reporter,
+          filter_panel_api = if (with_filter) filter_panel_api,
           dataname = x,
           parent_dataname = parent_dataname,
           plot_height = plot_height,
@@ -416,6 +421,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     prev_group_by_var <- reactiveVal("")
     data_r <- reactive(data()[[dataname]])
     data_keys <- reactive(unlist(teal.data::join_keys(data())[[dataname]]))
@@ -550,7 +557,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       selected <- choices <- unname(unlist(choices))
 
       teal.widgets::optionalSelectInput(
-        session$ns("variables_select"),
+        ns("variables_select"),
         label = "Select variables",
         label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
         choices = teal.transform::variable_choices(data_r(), choices),
@@ -573,7 +580,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         session = session,
         inputId = "variables_select",
         choices = teal.transform::variable_choices(data_r()),
-        selected = selected
+        selected = restoreInput(ns("variables_select"), selected)
       )
     })
 
@@ -584,7 +591,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
       )
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_var"),
+        ns("group_by_var"),
         label = "Group by variable",
         choices = cat_choices,
         selected = `if`(
@@ -625,7 +632,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
 
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_vals"),
+        ns("group_by_vals"),
         label = "Filter levels",
         choices = choices,
         selected = selected,
@@ -872,7 +879,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
 
       teal.widgets::optionalSliderInputValMinMax(
-        session$ns("combination_cutoff"),
+        ns("combination_cutoff"),
         "Combination cut-off",
         c(value, range(x))
       )

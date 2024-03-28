@@ -81,7 +81,7 @@ tm_front_page <- function(label = "Front page",
   # Make UI args
   args <- as.list(environment())
 
-  module(
+  ans <- module(
     label = label,
     server = srv_front_page,
     ui = ui_front_page,
@@ -89,6 +89,8 @@ tm_front_page <- function(label = "Front page",
     server_args = list(tables = tables, show_metadata = show_metadata),
     datanames = if (show_metadata) "all" else NULL
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the front page module
@@ -136,6 +138,8 @@ srv_front_page <- function(id, data, tables, show_metadata) {
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    setBookmarkExclude("metadata_button")
 
     lapply(seq_along(tables), function(idx) {
       output[[paste0("table_", idx)]] <- renderTable(

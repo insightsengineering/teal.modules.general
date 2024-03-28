@@ -82,7 +82,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   # Make UI args
   args <- as.list(environment())
 
-  module(
+  ans <- module(
     label = label,
     server = srv_viewer,
     server_args = list(input_path = input_path),
@@ -90,6 +90,8 @@ tm_file_viewer <- function(label = "File Viewer Module",
     ui_args = args,
     datanames = NULL
   )
+  attr(ans, "teal_bookmarkable") <- FALSE
+  ans
 }
 
 # UI function for the file viewer module

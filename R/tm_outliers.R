@@ -177,7 +177,7 @@ tm_outliers <- function(label = "Outliers Module",
     categorical_var = categorical_var
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_outliers,
     server_args = c(
@@ -188,6 +188,8 @@ tm_outliers <- function(label = "Outliers Module",
     ui_args = args,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the outliers module
@@ -331,6 +333,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     vars <- list(outlier_var = outlier_var, categorical_var = categorical_var)
 
     rule_diff <- function(other) {
@@ -1056,15 +1060,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    choices <- teal.transform::variable_choices(data()[[dataname_first]])
+    choices <- reactive(teal.transform::variable_choices(data()[[dataname_first]]))
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
       teal.widgets::updateOptionalSelectInput(
         session,
         inputId = "table_ui_columns",
-        choices = dplyr::setdiff(choices, names(ANL_OUTLIER)),
-        selected = isolate(input$table_ui_columns)
+        choices = dplyr::setdiff(choices(), names(ANL_OUTLIER)),
+        selected = restoreInput(ns("table_ui_columns"), isolate(input$table_ui_columns))
       )
     })
 
@@ -1204,14 +1208,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       req(iv_r()$is_valid())
       tagList(
         teal.widgets::optionalSelectInput(
-          inputId = session$ns("table_ui_columns"),
+          inputId = ns("table_ui_columns"),
           label = "Choose additional columns",
           choices = NULL,
           selected = NULL,
           multiple = TRUE
         ),
         tags$h4("Outlier Table"),
-        teal.widgets::get_dt_rows(session$ns("table_ui"), session$ns("table_ui_rows"))
+        teal.widgets::get_dt_rows(ns("table_ui"), ns("table_ui_rows"))
       )
     })
 
