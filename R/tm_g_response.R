@@ -151,7 +151,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL) {
-  logger::log_info("Initializing tm_g_response")
+  message("Initializing tm_g_response")
 
   # Normalize the parameters
   if (inherits(response, "data_extract_spec")) response <- list(response)
@@ -206,7 +206,7 @@ tm_g_response <- function(label = "Response Plot",
     col_facet = col_facet
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_response,
     ui = ui_g_response,
@@ -217,6 +217,8 @@ tm_g_response <- function(label = "Response Plot",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the response module
@@ -229,7 +231,7 @@ ui_g_response <- function(id, ...) {
     output = teal.widgets::white_small_well(
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###

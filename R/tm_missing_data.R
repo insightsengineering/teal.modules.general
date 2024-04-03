@@ -89,7 +89,7 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL) {
-  logger::log_info("Initializing tm_missing_data")
+  message("Initializing tm_missing_data")
 
   # Requires Suggested packages
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
@@ -124,7 +124,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   # End of assertions
 
-  module(
+  ans <- module(
     label,
     server = srv_page_missing_data,
     server_args = list(
@@ -135,16 +135,18 @@ tm_missing_data <- function(label = "Missing data",
     datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the missing data module (all datasets)
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        div(
+        tags$div(
           class = "flex",
           column(
             width = 12,
@@ -152,7 +154,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
           )
         )
       ),
-      encoding = div(
+      encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
       ),
       uiOutput(ns("dataset_reporter")),
@@ -165,12 +167,15 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 # Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme) {
+  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
+
     ns <- session$ns
 
     output$dataset_tabs <- renderUI({
@@ -185,7 +190,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
                 title = x,
                 column(
                   width = 12,
-                  div(
+                  tags$div(
                     class = "mt-4",
                     ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
                   )
@@ -236,8 +241,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
         srv_missing_data(
           id = x,
           data = data,
-          reporter = reporter,
-          filter_panel_api = filter_panel_api,
+          reporter = if (with_reporter) reporter,
+          filter_panel_api = if (with_filter) filter_panel_api,
           dataname = x,
           parent_dataname = parent_dataname,
           plot_height = plot_height,
@@ -258,11 +263,11 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Summary",
       teal.widgets::plot_with_settings_ui(id = ns("summary_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Summary" graph shows the number of missing values per variable (both absolute and percentage),',
           "sorted by magnitude."
         )),
-        p(
+        tags$p(
           'The "summary per patients" graph is showing how many subjects have at least one missing observation',
           "for each variable. It will be most useful for panel datasets."
         )
@@ -272,7 +277,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
       "Combinations",
       teal.widgets::plot_with_settings_ui(id = ns("combination_plot")),
       helpText(
-        p(paste(
+        tags$p(paste(
           'The "Combinations" graph is used to explore the relationship between the missing data within',
           "different columns of the dataset.",
           "It shows the different patterns of missingness in the rows of the data.",
@@ -280,7 +285,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
           "In this case there would be a bar of height 70 in the top graph and",
           'the column below this in the second graph would have rows "A" and "B" cells shaded red.'
         )),
-        p(paste(
+        tags$p(paste(
           "Due to the large number of missing data patterns possible, only those with a large set of observations",
           'are shown in the graph and the "Combination cut-off" slider can be used to adjust the number shown.'
         ))
@@ -299,7 +304,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
         "Grouped by Subject",
         teal.widgets::plot_with_settings_ui(id = ns("by_subject_plot")),
         helpText(
-          p(paste(
+          tags$p(paste(
             "This graph shows the missingness with respect to subjects rather than individual rows of the",
             "dataset. Each row represents one dataset variable and each column a single subject. Only subjects",
             "with at least one record in this dataset are shown. For a given subject, if they have any missing",
@@ -335,7 +340,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      span("Select only vars with missings", class = "whitespace-normal"),
+      tags$span("Select only vars with missings", class = "whitespace-normal"),
       width = "100%",
       class = "mb-4"
     ),
@@ -343,12 +348,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       is_tab_active_js(ns("summary_type"), "Summary"),
       checkboxInput(
         ns("any_na"),
-        div(
+        tags$div(
           class = "teal-tooltip",
           tagList(
             "Add **anyna** variable",
             icon("circle-info"),
-            span(
+            tags$span(
               class = "tooltiptext",
               "Describes the number of observations with at least one missing value in any variable."
             )
@@ -359,12 +364,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       if (summary_per_patient) {
         checkboxInput(
           ns("if_patients_plot"),
-          div(
+          tags$div(
             class = "teal-tooltip",
             tagList(
               "Add summary per patients",
               icon("circle-info"),
-              span(
+              tags$span(
                 class = "tooltiptext",
                 paste(
                   "Displays the number of missing values per observation,",
@@ -416,6 +421,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     prev_group_by_var <- reactiveVal("")
     data_r <- reactive(data()[[dataname]])
     data_keys <- reactive(unlist(teal.data::join_keys(data())[[dataname]]))
@@ -550,7 +557,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       selected <- choices <- unname(unlist(choices))
 
       teal.widgets::optionalSelectInput(
-        session$ns("variables_select"),
+        ns("variables_select"),
         label = "Select variables",
         label_help = HTML(paste0("Dataset: ", tags$code(dataname))),
         choices = teal.transform::variable_choices(data_r(), choices),
@@ -573,7 +580,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         session = session,
         inputId = "variables_select",
         choices = teal.transform::variable_choices(data_r()),
-        selected = selected
+        selected = restoreInput(ns("variables_select"), selected)
       )
     })
 
@@ -584,7 +591,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         need(cat_choices, "Dataset does not have any non-numeric or non-datetime variables to use to group data with")
       )
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_var"),
+        ns("group_by_var"),
         label = "Group by variable",
         choices = cat_choices,
         selected = `if`(
@@ -625,7 +632,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
 
       teal.widgets::optionalSelectInput(
-        session$ns("group_by_vals"),
+        ns("group_by_vals"),
         label = "Filter levels",
         choices = choices,
         selected = selected,
@@ -872,7 +879,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
 
       teal.widgets::optionalSliderInputValMinMax(
-        session$ns("combination_cutoff"),
+        ns("combination_cutoff"),
         "Combination cut-off",
         c(value, range(x))
       )

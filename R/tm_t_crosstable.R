@@ -138,7 +138,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args()) {
-  logger::log_info("Initializing tm_t_crosstable")
+  message("Initializing tm_t_crosstable")
 
   # Requires Suggested packages
   if (!requireNamespace("rtables", quietly = TRUE)) {
@@ -173,7 +173,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     basic_table_args = basic_table_args
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_t_crosstable,
     ui = ui_t_crosstable,
@@ -181,6 +181,8 @@ tm_t_crosstable <- function(label = "Cross Table",
     server_args = server_args,
     datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the cross-table module
@@ -200,7 +202,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
       textOutput(ns("title")),
       teal.widgets::table_with_settings_ui(ns("table"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -398,7 +400,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     output$title <- renderText(output_q()[["title"]])
 
     table_r <- reactive({
-      shiny::req(iv_r()$is_valid())
+      req(iv_r()$is_valid())
       output_q()[["tbl"]]
     })
 

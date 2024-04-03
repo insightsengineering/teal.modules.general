@@ -193,7 +193,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL) {
-  logger::log_info("Initializing tm_g_bivariate")
+  message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
@@ -288,7 +288,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     size = size
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
@@ -299,6 +299,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the bivariate module
@@ -313,7 +315,7 @@ ui_g_bivariate <- function(id, ...) {
     output = teal.widgets::white_small_well(
       tags$div(teal.widgets::plot_with_settings_ui(id = ns("myplot")))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -344,13 +346,13 @@ ui_g_bivariate <- function(id, ...) {
         )
       ),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
-        div(
+        tags$div(
           class = "data-extract-box",
           tags$label("Facetting"),
           shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
-            div(
+            tags$div(
               if (!is.null(args$row_facet)) {
                 teal.transform::data_extract_ui(
                   id = ns("row_facet"),
@@ -375,13 +377,13 @@ ui_g_bivariate <- function(id, ...) {
       },
       if (args$color_settings) {
         # Put a grey border around the coloring settings
-        div(
+        tags$div(
           class = "data-extract-box",
           tags$label("Color settings"),
           shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
-            div(
+            tags$div(
               teal.transform::data_extract_ui(
                 id = ns("color"),
                 label = "Outline color by variable",
@@ -394,7 +396,7 @@ ui_g_bivariate <- function(id, ...) {
                 data_extract_spec = args$fill,
                 is_single_dataset = is_single_dataset_value
               ),
-              div(
+              tags$div(
                 id = ns("size_settings"),
                 teal.transform::data_extract_ui(
                   id = ns("size"),
@@ -463,6 +465,8 @@ srv_g_bivariate <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     data_extract <- list(
       x = x, y = y, row_facet = row_facet, col_facet = col_facet,
       color = color, fill = fill, size = size
@@ -586,7 +590,7 @@ srv_g_bivariate <- function(id,
         }
       } else {
         shinyjs::hide("add_lines")
-        updateCheckboxInput(session, "add_lines", value = FALSE)
+        updateCheckboxInput(session, "add_lines", value = restoreInput(ns("add_lines"), FALSE))
         shinyjs::hide("alpha")
         shinyjs::hide("fixed_size")
         shinyjs::hide("size_settings")
@@ -674,7 +678,7 @@ srv_g_bivariate <- function(id,
         teal.code::eval_code(print_call)
     })
 
-    plot_r <- shiny::reactive({
+    plot_r <- reactive({
       output_q()[["p"]]
     })
 

@@ -150,7 +150,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10)) {
-  logger::log_info("Initializing tm_a_regression")
+  message("Initializing tm_a_regression")
 
   # Normalize the parameters
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
@@ -225,7 +225,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     response = response
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
@@ -241,6 +241,8 @@ tm_a_regression <- function(label = "Regression Analysis",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- FALSE
+  ans
 }
 
 # UI function for the regression module
@@ -254,7 +256,7 @@ ui_a_regression <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
       tags$div(verbatimTextOutput(ns("text")))
     )),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -284,12 +286,12 @@ ui_a_regression <- function(id, ...) {
         ns = ns,
         teal.widgets::optionalSliderInput(
           ns("outlier"),
-          div(
+          tags$div(
             class = "teal-tooltip",
             tagList(
               "Outlier definition:",
               icon("circle-info"),
-              span(
+              tags$span(
                 class = "tooltiptext",
                 paste(
                   "Use the slider to choose the cut-off value to define outliers.",
@@ -314,12 +316,12 @@ ui_a_regression <- function(id, ...) {
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
-            label = div(
+            label = tags$div(
               class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
                 icon("circle-info"),
-                span(
+                tags$span(
                   class = "tooltiptext",
                   paste(
                     "Use the slider to choose the cut-off value to define minimum distance between label and point",
@@ -370,6 +372,8 @@ srv_a_regression <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     rule_rvr1 <- function(value) {
       if (isTRUE(input$plot_type == "Response vs Regressor")) {
         if (length(value) > 1L) {
@@ -472,7 +476,7 @@ srv_a_regression <- function(id,
           session = session,
           inputId = "label_var",
           choices = opts,
-          selected = selected
+          selected = restoreInput(ns("label_var"), selected)
         )
 
         data <- fortify(stats::lm(form, data = ANL))
@@ -484,7 +488,7 @@ srv_a_regression <- function(id,
           inputId = "outlier",
           min = 1,
           max = max_outlier,
-          value = if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9
+          value = restoreInput(ns("outlier"), if (cur_outlier < max_outlier) cur_outlier else max_outlier * .9)
         )
       }
 

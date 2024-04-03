@@ -76,7 +76,7 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 pre_output = NULL,
                                 post_output = NULL,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_variable_browser")
+  message("Initializing tm_variable_browser")
 
   # Requires Suggested packages
   if (!requireNamespace("sparkline", quietly = TRUE)) {
@@ -100,7 +100,7 @@ tm_variable_browser <- function(label = "Variable Browser",
 
   datasets_selected <- unique(datasets_selected)
 
-  module(
+  ans <- module(
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
@@ -115,6 +115,9 @@ tm_variable_browser <- function(label = "Variable Browser",
       post_output = post_output
     )
   )
+  # `shiny` inputs are stored properly but the majority of the module is state of `datatable` which is not stored.
+  attr(ans, "teal_bookmarkable") <- NULL
+  ans
 }
 
 # UI function for the variable browser module
@@ -123,7 +126,7 @@ ui_variable_browser <- function(id,
                                 post_output = NULL) {
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
@@ -145,16 +148,16 @@ ui_variable_browser <- function(id,
             ### Reporter
             teal.reporter::simple_reporter_ui(ns("simple_reporter")),
             ###
-            div(
+            tags$div(
               class = "block",
               uiOutput(ns("ui_histogram_display"))
             ),
-            div(
+            tags$div(
               class = "block",
               uiOutput(ns("ui_numeric_display"))
             ),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
-            br(),
+            tags$br(),
             # input user-defined text size
             teal.widgets::panel_item(
               title = "Plot settings",
@@ -175,7 +178,7 @@ ui_variable_browser <- function(id,
                 ))
               )
             ),
-            br(),
+            tags$br(),
             teal.widgets::get_dt_rows(ns("variable_summary_table"), ns("variable_summary_table_rows")),
             DT::dataTableOutput(ns("variable_summary_table"))
           )
@@ -231,11 +234,11 @@ srv_variable_browser <- function(id,
             lapply(datanames, function(dataname) {
               tabPanel(
                 dataname,
-                div(
+                tags$div(
                   class = "mt-4",
                   textOutput(ns(paste0("dataset_summary_", dataname)))
                 ),
-                div(
+                tags$div(
                   class = "mt-4",
                   teal.widgets::get_dt_rows(
                     ns(paste0("variable_browser_", dataname)),
@@ -321,9 +324,9 @@ srv_variable_browser <- function(id,
 
       numeric_ui <- tagList(
         fluidRow(
-          div(
+          tags$div(
             class = "col-md-4",
-            br(),
+            tags$br(),
             shinyWidgets::switchInput(
               inputId = session$ns("display_density"),
               label = "Show density",
@@ -333,9 +336,9 @@ srv_variable_browser <- function(id,
               handleWidth = "50px"
             )
           ),
-          div(
+          tags$div(
             class = "col-md-4",
-            br(),
+            tags$br(),
             shinyWidgets::switchInput(
               inputId = session$ns("remove_outliers"),
               label = "Remove outliers",
@@ -345,12 +348,12 @@ srv_variable_browser <- function(id,
               handleWidth = "50px"
             )
           ),
-          div(
+          tags$div(
             class = "col-md-4",
             uiOutput(session$ns("outlier_definition_slider_ui"))
           )
         ),
-        div(
+        tags$div(
           class = "ml-4",
           uiOutput(session$ns("ui_density_help")),
           uiOutput(session$ns("ui_outlier_help"))
@@ -391,7 +394,7 @@ srv_variable_browser <- function(id,
       df <- data()[[dataname]]
 
       numeric_ui <- tagList(fluidRow(
-        div(
+        tags$div(
           class = "col-md-4",
           shinyWidgets::switchInput(
             inputId = session$ns("remove_NA_hist"),
@@ -422,12 +425,12 @@ srv_variable_browser <- function(id,
       req(input$remove_outliers)
       sliderInput(
         inputId = session$ns("outlier_definition_slider"),
-        div(
+        tags$div(
           class = "teal-tooltip",
           tagList(
             "Outlier definition:",
             icon("circle-info"),
-            span(
+            tags$span(
               class = "tooltiptext",
               paste(
                 "Use the slider to choose the cut-off value to define outliers; the larger the value the",
@@ -1003,7 +1006,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
     selected_page_ix <- 0
 
     # Retrieve current selected variable if any
-    isolated_variable <- shiny::isolate(plot_var$variable[[dataset_name]])
+    isolated_variable <- isolate(plot_var$variable[[dataset_name]])
 
     if (!is.null(isolated_variable)) {
       index <- which(columns_names[[dataset_name]] == isolated_variable)[1]
@@ -1013,7 +1016,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
     # Retrieve the index of the first item of the current page
     #  it works with varying number of entries on the page (10, 25, ...)
     table_id_sel <- paste0("variable_browser_", dataset_name, "_state")
-    dt_state <- shiny::isolate(input[[table_id_sel]])
+    dt_state <- isolate(input[[table_id_sel]])
     if (selected_ix != 1 && !is.null(dt_state)) {
       selected_page_ix <- floor(selected_ix / dt_state$length) * dt_state$length
     }

@@ -41,7 +41,7 @@
 #'
 tm_file_viewer <- function(label = "File Viewer Module",
                            input_path = list("Current Working Directory" = ".")) {
-  logger::log_info("Initializing tm_file_viewer")
+  message("Initializing tm_file_viewer")
 
   # Normalize the parameters
   if (length(label) == 0 || identical(label, "")) label <- " "
@@ -82,7 +82,7 @@ tm_file_viewer <- function(label = "File Viewer Module",
   # Make UI args
   args <- as.list(environment())
 
-  module(
+  ans <- module(
     label = label,
     server = srv_viewer,
     server_args = list(input_path = input_path),
@@ -90,6 +90,8 @@ tm_file_viewer <- function(label = "File Viewer Module",
     ui_args = args,
     datanames = NULL
   )
+  attr(ans, "teal_bookmarkable") <- FALSE
+  ans
 }
 
 # UI function for the file viewer module
@@ -97,13 +99,13 @@ ui_viewer <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
-      output = div(
+      output = tags$div(
         uiOutput(ns("output"))
       ),
-      encoding = div(
+      encoding = tags$div(
         class = "file_viewer_encoding",
         tags$label("Encodings", class = "text-primary"),
         shinyTree::shinyTree(

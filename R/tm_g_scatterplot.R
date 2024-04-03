@@ -227,7 +227,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_g_scatterplot")
+  message("Initializing tm_g_scatterplot")
 
   # Requires Suggested packages
   extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
@@ -308,7 +308,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     col_facet = col_facet
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_g_scatterplot,
     ui = ui_g_scatterplot,
@@ -319,6 +319,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the scatterplot module
@@ -329,7 +331,7 @@ ui_g_scatterplot <- function(id, ...) {
     args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
   )
 
-  shiny::tagList(
+  tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -338,7 +340,7 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-      encoding = div(
+      encoding = tags$div(
         ### Reporter
         teal.reporter::simple_reporter_ui(ns("simple_reporter")),
         ###
@@ -432,11 +434,11 @@ ui_g_scatterplot <- function(id, ...) {
             shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
             shinyjs::hidden(checkboxInput(ns("show_r2"), "Show adj-R Squared", value = TRUE)),
             uiOutput(ns("num_na_removed")),
-            div(
+            tags$div(
               id = ns("label_pos"),
-              div(strong("Stats position")),
-              div(class = "inline-block w-10", helpText("Left")),
-              div(
+              tags$div(tags$strong("Stats position")),
+              tags$div(class = "inline-block w-10", helpText("Left")),
+              tags$div(
                 class = "inline-block w-70",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
@@ -444,7 +446,7 @@ ui_g_scatterplot <- function(id, ...) {
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              div(class = "inline-block w-10", helpText("Right"))
+              tags$div(class = "inline-block w-10", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
@@ -599,7 +601,7 @@ srv_g_scatterplot <- function(id,
         x_var <- as.vector(merged$anl_input_r()$columns_source$x)
         y_var <- as.vector(merged$anl_input_r()$columns_source$y)
         if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
-          shiny::tags$div(paste(num_total_na, "row(s) with missing values were removed"), shiny::tags$hr())
+          tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
       }
     })

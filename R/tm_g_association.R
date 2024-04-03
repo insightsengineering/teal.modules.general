@@ -132,7 +132,7 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args()) {
-  logger::log_info("Initializing tm_g_association")
+  message("Initializing tm_g_association")
 
   # Normalize the parameters
   if (inherits(ref, "data_extract_spec")) ref <- list(ref)
@@ -177,7 +177,7 @@ tm_g_association <- function(label = "Association",
     vars = vars
   )
 
-  module(
+  ans <- module(
     label = label,
     server = srv_tm_g_association,
     ui = ui_tm_g_association,
@@ -188,6 +188,8 @@ tm_g_association <- function(label = "Association",
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
+  attr(ans, "teal_bookmarkable") <- TRUE
+  ans
 }
 
 # UI function for the association module
@@ -202,7 +204,7 @@ ui_tm_g_association <- function(id, ...) {
       tags$br(),
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
-    encoding = div(
+    encoding = tags$div(
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
@@ -488,8 +490,8 @@ srv_tm_g_association <- function(id,
         )
     })
 
-    plot_r <- shiny::reactive({
-      shiny::req(iv_r()$is_valid())
+    plot_r <- reactive({
+      req(iv_r()$is_valid())
       output_q()[["p"]]
     })
 
