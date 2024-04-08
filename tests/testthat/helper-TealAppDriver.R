@@ -1,5 +1,5 @@
 # Import non-exported TealAppDriver from `teal` package
-TealAppDriver <- getFromNamespace("TealAppDriver", "teal")
+TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
 
 # Helper function
 simple_teal_data <- function() {
