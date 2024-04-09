@@ -15,7 +15,7 @@ simple_teal_data <- function() {
 simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
   datasets <- match.arg(datasets, several.ok = TRUE)
   data <- within(
-    teal.data::teal_data(join_keys = teal.data::default_cdisc_join_keys[datasets]),
+    teal.data::teal_data(),
     {
       require(nestcolor)
       ADSL <- teal.modules.general::rADSL
@@ -24,5 +24,6 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
     }
   )
   teal.data::datanames(data) <- datasets
+  teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[datasets]
   data
 }
