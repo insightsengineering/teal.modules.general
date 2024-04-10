@@ -264,7 +264,7 @@ ui_a_pca <- function(id, ...) {
             collapsed = TRUE,
             conditionalPanel(
               condition = sprintf(
-                "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+                "input['%s'] == 'Elbow plot' || input['%s'] == 'Eigenvector plot'",
                 ns("plot_type"),
                 ns("plot_type")
               ),
