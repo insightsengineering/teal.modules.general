@@ -5,3 +5,5 @@
 
 ### global variables
 ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")
+
+interactive <- NULL
