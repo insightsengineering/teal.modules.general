@@ -44,6 +44,18 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
 
   testthat::expect_match(app$get_active_module_output("tbl_eigenvector"), "UrbanPop")
 
+  # Original Coordinate
+  app$set_module_input("plot_type", "Biplot")
+  app$set_module_input("variables", c("Murder"))
+  app$expect_no_validation_error()
+
+  # Color by
+  app$set_module_input("response-dataset_USArrests_singleextract-select", c("Assault"))
+  app$expect_no_validation_error()
+
+  app$set_module_input("response-dataset_USArrests_singleextract-select", c("Murder"))
+  app$expect_validation_error()
+
   app$stop()
 })
 
