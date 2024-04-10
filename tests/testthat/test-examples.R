@@ -1,3 +1,7 @@
+# this test requires a `man` directory in the `tests/testthat` directory
+# (presumably symlinked to the package root `man` directory to avoid duplication)
+# this also requires `devtools::document()` to be run before running the tests
+
 rd_files <- function() {
   list.files(testthat::test_path("man"), pattern = "\\.[Rr]d$", full.names = TRUE)
 }
@@ -27,16 +31,18 @@ with_mocked_app_bindings <- function(code) {
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
+    args <- list(...)
+    args[["launch.browser"]] <- FALSE # needed for RStudio
+
     app_driver <- shinytest2::AppDriver$new(
       x,
-      shiny_args = list(...),
-      timeout = 20000,
-      load_timeout = 100000,
+      shiny_args = args,
+      timeout = 20 * 1000,
+      load_timeout = 20 * 1000,
       check_names = FALSE, # explicit check below
       options = options() # https://github.com/rstudio/shinytest2/issues/377
     )
     on.exit(app_driver$stop(), add = TRUE)
-
     app_driver$wait_for_idle()
 
     # Simple testing
