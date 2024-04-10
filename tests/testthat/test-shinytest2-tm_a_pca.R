@@ -76,8 +76,6 @@ testthat::test_that("e2e - tm_a_pca: encodings update main panel", {
     )
   )
 
-  app$view()
-  browser()
   # Display section (hides tables)
 
   app$set_module_input("tables_display", c())
