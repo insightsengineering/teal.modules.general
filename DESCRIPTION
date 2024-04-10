@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9006
-Date: 2024-04-02
+Version: 0.3.0.9007
+Date: 2024-04-10
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -90,9 +90,8 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
     deepayan/lattice, daroczig/logger, MASS,
     insightsengineering/nestcolor, r-lib/rlang,
-    insightsengineering/rtables, sparkline, rstudio/shinytest2, 
-    insightsengineering/teal.data,
-    r-lib/testthat, r-lib/withr
+    insightsengineering/rtables, sparkline, rstudio/shinytest2,
+    insightsengineering/teal.data, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
