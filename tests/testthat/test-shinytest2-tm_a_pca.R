@@ -1,4 +1,4 @@
-testthat::test_that("e2e - tm_a_pca: data extract changes output", {
+testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigenvector table", {
   skip_if_too_deep(5)
 
   app_driver <- local_app_tm_a_pca()
@@ -13,21 +13,33 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   testthat::expect_failure(
     testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
   )
+})
+
+testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes output of plot", {
+  skip_if_too_deep(5)
+
+  app_driver <- local_app_tm_a_pca()
+
+  app_driver$set_module_input("plot_type", "Circle plot")
+  app_driver$wait_for_idle()
 
   app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "UrbanPop"))
   app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
+})
 
-  # Original Coordinate
+testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be from non-selected variable set", {
+  skip_if_too_deep(5)
+
+  app_driver <- local_app_tm_a_pca()
+
   app_driver$set_module_input("plot_type", "Biplot")
-  app_driver$set_module_input("variables", c("Murder"))
   app_driver$wait_for_idle()
-  app_driver$expect_no_validation_error()
 
-  # Color by
-  app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("Assault"))
+  # Change colors of data points
+  app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("UrbanPop"))
   app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
@@ -38,7 +50,7 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_pca: encodings update main panel", {
+testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate errors", {
   skip_if_too_deep(5)
 
   app_driver <- local_app_tm_a_pca()
