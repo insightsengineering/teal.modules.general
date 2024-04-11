@@ -7,10 +7,9 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
     require(nestcolor)
     require(ggplot2)
 
-    USArrests <- USArrests
+    USArrests <- USArrests # nolint: object_name.
   })
   datanames(data) <- "USArrests"
-
 
   app <- TealAppDriver$new(
     data = data,
@@ -67,7 +66,7 @@ testthat::test_that("e2e - tm_a_pca: encodings update main panel", {
   data <- within(teal_data(), {
     require(nestcolor)
 
-    USArrests <- USArrests
+    USArrests <- USArrests # nolint: object_name.
   })
   datanames(data) <- "USArrests"
 
@@ -125,10 +124,14 @@ testthat::test_that("e2e - tm_a_pca: encodings update main panel", {
   app$set_module_input("na_action", "drop")
   app$set_module_input("na_action", "none")
 
-  # Selected plot specific settings is not visible for Elbow plot
+  # Selected plot's specific settings is not visible
   no_plot_settings_selector <- sprintf("#%s-%s %s", app$active_module_ns(), "plot_settings", "span.help-block")
   x_axis_selector <- sprintf("#%s-%s", app$active_module_ns(), "x_axis")
-  color_by_selector <- sprintf("#%s-%s", app$active_module_ns(), "response-dataset_USArrests_singleextract-select_input")
+  color_by_selector <- sprintf(
+    "#%s-%s",
+    app$active_module_ns(),
+    "response-dataset_USArrests_singleextract-select_input"
+  )
 
   app$set_module_input("plot_type", "Elbow plot", wait = FALSE)
   testthat::expect_true(app$is_visible(no_plot_settings_selector))
@@ -136,9 +139,12 @@ testthat::test_that("e2e - tm_a_pca: encodings update main panel", {
   testthat::expect_false(app$is_visible(color_by_selector))
 
   app$set_module_input("plot_type", "Circle plot", wait = FALSE)
+  testthat::expect_false(app$is_visible(no_plot_settings_selector))
   testthat::expect_true(app$is_visible(x_axis_selector))
 
   app$set_module_input("plot_type", "Biplot", wait = FALSE)
+  testthat::expect_false(app$is_visible(no_plot_settings_selector))
+  testthat::expect_true(app$is_visible(x_axis_selector))
   testthat::expect_true(app$is_visible(color_by_selector))
 
   # Theme
