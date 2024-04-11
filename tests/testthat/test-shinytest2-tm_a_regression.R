@@ -43,7 +43,7 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   )
 
   app$expect_no_shiny_error()
-  #app$open_url()
+  # app$open_url()
 
   testthat::expect_equal(
     app$get_text("#teal-main_ui-root-active_tab > li.active > a"),
@@ -53,8 +53,8 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   # Check MAIN encoding panel
   # DO WE NEED any function for checking top of the encoding panel part?
   encoding_dataset <- app$get_text("#teal-main_ui-root-regression > div > div.col-md-3 > div.well > div > span")
-  testthat::expect_match(encoding_dataset, 'Dataset', fixed = TRUE)
-  testthat::expect_match(encoding_dataset, 'CO2', fixed = TRUE)
+  testthat::expect_match(encoding_dataset, "Dataset", fixed = TRUE)
+  testthat::expect_match(encoding_dataset, "CO2", fixed = TRUE)
 
 
   # Check plot settings
@@ -63,7 +63,7 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
     "Normal Q-Q"
   )
 
-  #teal-main_ui-root-regression-module-
+  # teal-main_ui-root-regression-module-
 
   testthat::expect_identical(
     app$get_active_module_input("regressor-dataset_CO2_singleextract-select"),
@@ -77,9 +77,9 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   )
 
   plot_types <- app$active_module_element_text("plot_type > div")
-  testthat::expect_match(plot_types, 'Response vs Regressor', fixed = TRUE)
-  testthat::expect_match(plot_types, 'Scale-Location', fixed = TRUE)
-  testthat::expect_match(plot_types, 'Residuals vs Leverage', fixed = TRUE)
+  testthat::expect_match(plot_types, "Response vs Regressor", fixed = TRUE)
+  testthat::expect_match(plot_types, "Scale-Location", fixed = TRUE)
+  testthat::expect_match(plot_types, "Residuals vs Leverage", fixed = TRUE)
 
   app$set_module_input("plot_type", "Residuals vs Fitted")
   app$expect_no_validation_error()
@@ -134,7 +134,7 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
 
   # Review the content of the toggle.
   testthat::expect_equal(
-    #app$get_text(
+    # app$get_text(
     app$active_module_element_text("myplot-downbutton-file_format-label"),
     "File type"
   )
@@ -146,5 +146,4 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
 
 
   app$stop()
-
 })
