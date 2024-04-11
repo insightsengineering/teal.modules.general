@@ -1,10 +1,13 @@
 test_that("e2e: tm_front_page initializes without errors", {
+  skip_if_too_deep(5)
+  require(shinytest2)
+
   data <- simple_cdisc_data()
   data <- within(data, {
     attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
   })
 
-  app <- teal:::TealAppDriver$new(
+  app <- TealAppDriver$new(
     data = data,
     modules = teal::modules(
       tm_front_page(
