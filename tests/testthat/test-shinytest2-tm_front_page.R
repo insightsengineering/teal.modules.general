@@ -1,5 +1,5 @@
 test_that("e2e: tm_front_page initializes without errors", {
-  skip_if_too_deep(9)
+  skip_if_too_deep(3)
   require(shinytest2)
 
   data <- simple_cdisc_data()
@@ -9,19 +9,18 @@ test_that("e2e: tm_front_page initializes without errors", {
 
   app <- TealAppDriver$new(
     data = data,
-    modules = teal::modules(
-      tm_front_page(
-        header_text = c(
-          "Important information" = "It can go here.",
-          "Other information" = "Can go here."
-        ),
-        tables = list("MTCARS" = head(mtcars, 5), "IRIS" = head(iris, 5)),
-        additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
-        footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
-        show_metadata = TRUE
-      )
+    modules = tm_front_page(
+      header_text = c(
+        "Important information" = "It can go here.",
+        "Other information" = "Can go here."
+      ),
+      tables = list("MTCARS" = head(mtcars, 5), "IRIS" = head(iris, 5)),
+      additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
+      footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
+      show_metadata = TRUE
     ),
-    timeout = 3000
+    timeout = 3000,
+    seed = 1
   )
 
   app$expect_no_shiny_error()
