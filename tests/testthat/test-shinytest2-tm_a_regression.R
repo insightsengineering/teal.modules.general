@@ -6,6 +6,7 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
 
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
+    require(ggplot2)
     CO2 <- CO2 # nolint: object_name.
   })
   datanames(data) <- c("CO2")
@@ -14,6 +15,7 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
     data = data,
     modules = tm_a_regression(
       label = "Regression",
+      default_plot_type = 3,
       response = teal.transform::data_extract_spec(
         dataname = "CO2",
         select = teal.transform::select_spec(
@@ -42,6 +44,41 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
 
   app$expect_no_shiny_error()
   #app$open_url()
+
+  testthat::expect_equal(
+    app$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Regression"
+  )
+
+  # Check MAIN encoding panel
+  # DO WE NEED any function for checking top of the encoding panel part?
+  encoding_dataset <- app$get_text("#teal-main_ui-root-regression > div > div.col-md-3 > div.well > div > span")
+  testthat::expect_match(encoding_dataset, 'Dataset', fixed = TRUE)
+  testthat::expect_match(encoding_dataset, 'CO2', fixed = TRUE)
+
+  # Check plot settings
+  testthat::expect_identical(
+    app$get_active_module_input("plot_type"),
+    "Normal Q-Q"
+  )
+
+  plot_types <- app$active_module_element_text("plot_type > div")
+  testthat::expect_match(plot_types, 'Response vs Regressor', fixed = TRUE)
+  testthat::expect_match(plot_types, 'Scale-Location', fixed = TRUE)
+  testthat::expect_match(plot_types, 'Residuals vs Leverage', fixed = TRUE)
+
+  app$set_module_input("plot_type", "Residuals vs Fitted")
+  app$expect_no_validation_error()
+  app$set_module_input("plot_type", "Normal Q-Q")
+  app$expect_no_validation_error()
+
+  # NO OUTLIER DEFINITION
+  app$set_module_input("show_outlier", FALSE)
+  testthat::expect_false(app$is_visible(app$active_module_element("outlier-label")))
+
+  # BRING BACK OUTLIER DEFINITION
+  app$set_module_input("show_outlier", TRUE)
+  testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
 
   app$stop()
 
