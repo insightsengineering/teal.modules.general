@@ -1,7 +1,7 @@
 testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   skip_if_too_deep(5)
 
-  data <- within(teal_data(), {
+  data <- within(teal.data::teal_data(), {
     require(nestcolor)
 
     USArrests <- USArrests # nolint: object_name.
@@ -11,10 +11,10 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   app <- TealAppDriver$new(
     data = data,
     modules = tm_a_pca(
-      dat = data_extract_spec(
+      dat = teal.transform::data_extract_spec(
         dataname = "USArrests",
-        select = select_spec(
-          choices = variable_choices(
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(
             data = data[["USArrests"]],
             c("Murder", "Assault", "UrbanPop", "Rape")
           ),
