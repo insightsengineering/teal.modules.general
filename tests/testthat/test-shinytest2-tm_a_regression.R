@@ -56,10 +56,24 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   testthat::expect_match(encoding_dataset, 'Dataset', fixed = TRUE)
   testthat::expect_match(encoding_dataset, 'CO2', fixed = TRUE)
 
+
   # Check plot settings
   testthat::expect_identical(
     app$get_active_module_input("plot_type"),
     "Normal Q-Q"
+  )
+
+  #teal-main_ui-root-regression-module-
+
+  testthat::expect_identical(
+    app$get_active_module_input("regressor-dataset_CO2_singleextract-select"),
+    "conc"
+  )
+  app$set_module_input("regressor-dataset_CO2_singleextract-select", "Treatment")
+  app$expect_no_validation_error()
+  testthat::expect_identical(
+    app$get_active_module_input("regressor-dataset_CO2_singleextract-select"),
+    "Treatment"
   )
 
   plot_types <- app$active_module_element_text("plot_type > div")
