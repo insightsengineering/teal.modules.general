@@ -16,17 +16,26 @@ test_that("e2e: tm_front_page initializes without errors", {
     timeout = 3000
   )
 
-  app$wait_for_idle()
   app$expect_no_shiny_error()
 
-  # variable selected
-
-  # tab selection
-
   # tables
+  app$expect_screenshot(selector = app$active_module_element("mtcars-data_table"))
 
-  # table caption
+  # variable selected
+  testthat::expect_equal(
+    app$get_active_module_input("mtcars-variables"),
+    c("mpg", "cyl", "disp", "hp", "drat", "wt")
+  )
+  app$set_module_input("mtcars-variables", c("vs", "am"))
+  testthat::expect_equal(
+    app$get_active_module_input("mtcars-variables"),
+    c("vs", "am")
+  )
 
+  # distinct selection
+  app$click(selector = app$active_module_element("if_distinct"))
+  testthat::expect_true(app$is_visible(app$active_module_element("mtcars-data_table")))
+  app$expect_screenshot(selector = app$active_module_element("mtcars-data_table"))
 
   app$stop()
 })
