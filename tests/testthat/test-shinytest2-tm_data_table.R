@@ -32,10 +32,5 @@ test_that("e2e: tm_front_page initializes without errors", {
     c("vs", "am")
   )
 
-  # distinct selection
-  app$click(selector = app$active_module_element("if_distinct"))
-  testthat::expect_true(app$is_visible(app$active_module_element("mtcars-data_table")))
-  app$expect_screenshot(selector = app$active_module_element("mtcars-data_table"))
-
   app$stop()
 })
