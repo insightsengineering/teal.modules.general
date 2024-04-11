@@ -1,11 +1,8 @@
 testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   skip_if_too_deep(5)
 
-  require(shinytest2)
-
   data <- within(teal_data(), {
     require(nestcolor)
-    require(ggplot2)
 
     USArrests <- USArrests # nolint: object_name.
   })
@@ -29,7 +26,8 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   )
 
   # Data selection (adds rows to tables)
-  app$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"))
+  app$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"), wait = FALSE)
+  app$wait_for_idle()
   app$expect_no_validation_error()
 
   testthat::expect_match(app$get_active_module_output("tbl_eigenvector"), "Assault")
@@ -39,6 +37,7 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   )
 
   app$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "UrbanPop"))
+  app$wait_for_idle()
   app$expect_no_validation_error()
 
   testthat::expect_match(app$get_active_module_output("tbl_eigenvector"), "UrbanPop")
@@ -46,13 +45,16 @@ testthat::test_that("e2e - tm_a_pca: data extract changes output", {
   # Original Coordinate
   app$set_module_input("plot_type", "Biplot")
   app$set_module_input("variables", c("Murder"))
+  app$wait_for_idle()
   app$expect_no_validation_error()
 
   # Color by
   app$set_module_input("response-dataset_USArrests_singleextract-select", c("Assault"))
+  app$wait_for_idle()
   app$expect_no_validation_error()
 
   app$set_module_input("response-dataset_USArrests_singleextract-select", c("Murder"))
+  app$wait_for_idle()
   app$expect_validation_error()
 
   app$stop()
