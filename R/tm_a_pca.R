@@ -694,7 +694,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
               rot_vars <- pca$rotation[, c(x_axis, y_axis)] %>%
                 dplyr::as_tibble(rownames = "label") %>%
-                dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
+                dplyr::mutate_at(ggplot2::vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
           )
