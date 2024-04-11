@@ -125,7 +125,6 @@ data <- within(data, {
   CO2 <- data.frame(CO2)
 })
 datanames(data) <- c("CO2")
-join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 app <- init(
   data = data,
