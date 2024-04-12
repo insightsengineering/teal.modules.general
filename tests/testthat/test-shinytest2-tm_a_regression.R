@@ -1,9 +1,6 @@
 testthat::test_that("e2e - tm_a_regerssion: ", {
   skip_if_too_deep(5)
 
-  # Needed until this is merged https://github.com/insightsengineering/teal/pull/1198
-  require(shinytest2)
-
   app <- app_driver_tm_a_regression()
   app$expect_no_shiny_error()
 
