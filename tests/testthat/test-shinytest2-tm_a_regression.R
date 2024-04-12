@@ -16,9 +16,8 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
 
   # Check MAIN encoding panel
   # DO WE NEED any function for checking top of the encoding panel part?
-  encoding_dataset <- app$get_text("#teal-main_ui-root-regression > div > div.col-md-3 > div.well > div > span")
-  testthat::expect_match(encoding_dataset, "Dataset", fixed = TRUE)
-  testthat::expect_match(encoding_dataset, "CO2", fixed = TRUE)
+  encoding_dataset <- app$get_text("#teal-main_ui-root-regression .help-block")
+  testthat::expect_match(encoding_dataset, "Dataset:[\n ]*CO2", all = FALSE)
 
 
   # Check plot settings
