@@ -768,7 +768,7 @@ srv_g_scatterplot <- function(id,
         "ANL"
       }
 
-      plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
+      plot_call <- substitute(expr = pre_pro_anl %>% ggplot2::ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
