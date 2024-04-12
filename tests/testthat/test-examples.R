@@ -38,15 +38,10 @@ with_mocked_app_bindings <- function(code) {
   # change to `print(shiny__shinyApp(...))` and remove allow warning once fixed
   mocked_shinyApp <- function(ui, server, ...) { # nolint object_name_linter.
     functionBody(server) <- bquote({
-      pkgload::load_all(
-        .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
-        export_all = FALSE,
-        attach_testthat = FALSE,
-        warn_conflicts = FALSE
-      )
+      library(.(testthat::testing_package()), character.only = TRUE)
       .(functionBody(server))
     })
-    print(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
+    mocked_runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
@@ -68,6 +63,22 @@ with_mocked_app_bindings <- function(code) {
     ## warning in the app does not invoke a warning in the test
     ## https://github.com/rstudio/shinytest2/issues/378
     app_logs <- subset(app_driver$get_logs(), location == "shiny")[["message"]]
+
+    # Check if the teal app has content (indicator of a Shiny App fatal error)
+    if (identical(trimws(app_driver$get_text("#teal-main_ui_container")), "")) {
+      tryCatch(
+        app_driver$wait_for_idle(duration = 2000), # wait 2 seconds for session to disconnect
+        error = function(err) {
+          stop(
+            sprintf(
+              "Teal Application is empty. An Error may have occured:\n%s",
+              paste0(subset(app_driver$get_logs(), location == "shiny")[["message"]], collapse = "\n")
+            )
+          )
+        }
+      )
+    }
+
     # allow `Warning in file(con, "r")` warning coming from pkgload::load_all()
     if (any(grepl("Warning in.*", app_logs) & !grepl("Warning in file\\(con, \"r\"\\)", app_logs))) {
       warning(
@@ -81,9 +92,17 @@ with_mocked_app_bindings <- function(code) {
     ## Throw an error instead of a warning (default `AppDriver$new(..., check_names = TRUE)` throws a warning)
     app_driver$expect_unique_names()
 
+    err_el <- Filter(
+      function(x) {
+        allowed_errors <- getOption("test_examples.discard_error_regex", "")
+        identical(allowed_errors, "") || !grepl(allowed_errors, x)
+      },
+      app_driver$get_html(".shiny-output-error")
+    )
+
     ## shinytest2 captures app crash but teal continues on error inside the module
     ## we need to use a different way to check if there are errors
-    if (!is.null(err_el <- app_driver$get_html(".shiny-output-error"))) {
+    if (!is.null(err_el) && length(err_el) > 0) {
       stop(sprintf("Module error is observed:\n%s", err_el))
     }
 
@@ -117,6 +136,11 @@ strict_exceptions <- c(
   "tm_a_pca.Rd"
 )
 
+discard_validation_regex <- list(
+  "tm_file_viewer.Rd" = "Please select a file\\.",
+  "tm_g_distribution.Rd" = "Please select a test"
+)
+
 for (i in rd_files()) {
   testthat::test_that(
     paste0("example-", basename(i)),
@@ -127,6 +151,12 @@ for (i in rd_files()) {
         withr::local_options(opts_partial_match_old)
         withr::defer(options(op))
       }
+      # Allow for specific validation errors for individual examples
+      withr::local_options(
+        list(
+          "test_examples.discard_error_regex" = discard_validation_regex[[basename(i)]]
+        )
+      )
       with_mocked_app_bindings(
         # suppress warnings coming from saving qenv https://github.com/insightsengineering/teal.code/issues/194
         suppress_warnings(
