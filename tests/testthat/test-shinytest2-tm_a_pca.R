@@ -5,7 +5,6 @@ testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigen
 
   # Data selection (adds rows to tables)
   app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"), wait = FALSE)
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "Assault")
@@ -21,10 +20,8 @@ testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes
   app_driver <- local_app_tm_a_pca()
 
   app_driver$set_module_input("plot_type", "Circle plot")
-  app_driver$wait_for_idle()
 
   app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "UrbanPop"))
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
@@ -36,15 +33,12 @@ testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be fro
   app_driver <- local_app_tm_a_pca()
 
   app_driver$set_module_input("plot_type", "Biplot")
-  app_driver$wait_for_idle()
 
   # Change colors of data points
   app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("UrbanPop"))
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("Murder"))
-  app_driver$wait_for_idle()
   app_driver$expect_validation_error()
 
   app_driver$stop()
