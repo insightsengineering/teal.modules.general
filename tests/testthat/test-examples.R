@@ -92,6 +92,8 @@ with_mocked_app_bindings <- function(code) {
     ## Throw an error instead of a warning (default `AppDriver$new(..., check_names = TRUE)` throws a warning)
     app_driver$expect_unique_names()
 
+    browser()
+
     err_el <- Filter(
       function(x) {
         allowed_errors <- getOption("test_examples.discard_error_regex", "")
