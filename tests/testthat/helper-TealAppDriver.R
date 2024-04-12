@@ -29,7 +29,6 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 }
 
 app_driver_tm_a_regression <- function() {
-
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
     require(ggplot2)
