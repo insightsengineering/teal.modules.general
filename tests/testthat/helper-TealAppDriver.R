@@ -31,7 +31,7 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 # local app drivers for module testing ----------------------------------------
 # based on examples
 
-local_app_tm_a_pca <- function() {
+app_driver_tm_a_pca <- function() {
   # Dataset only used once
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
