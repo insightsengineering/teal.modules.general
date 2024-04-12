@@ -68,7 +68,6 @@ Suggests:
     logger (>= 0.2.0),
     MASS,
     nestcolor (>= 0.1.0),
-    pkgload,
     rlang (>= 1.0.0),
     rtables (>= 0.6.6),
     shinytest2,
