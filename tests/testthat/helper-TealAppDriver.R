@@ -31,6 +31,7 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 app_driver_tm_g_association <- function() {
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
+    require(ggplot2)
     CO2 <- CO2
     factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
     CO2[factors] <- lapply(CO2[factors], as.character)
