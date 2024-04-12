@@ -1,4 +1,4 @@
-testthat::test_that("e2e - tm_a_regerssion: ", {
+testthat::test_that("e2e - tm_a_regerssion: verify encoding values and widgets", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_a_regression()
