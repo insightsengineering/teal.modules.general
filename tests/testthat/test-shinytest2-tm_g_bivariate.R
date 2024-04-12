@@ -2,6 +2,7 @@ app_driver_tm_g_bivariate <- function() {
   data <- teal.data::teal_data()
   data <- within(data, {
     require(nestcolor)
+    require(ggplot2)
     CO2 <- data.frame(CO2) # nolint: object_name.
   })
   teal.data::datanames(data) <- c("CO2")
