@@ -37,9 +37,8 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
     )
   )
 
-  # Using AppDriver to click does not trigger DT callback.
-
-  # Find a categorical variable to mock a click
+  ## Using AppDriver to click does not trigger DT callback.
+  ## Find a categorical variable to mock a click
   categorical_index <- min(
     c(
       which(
@@ -64,7 +63,7 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
     )
   }
 
-  # Test will fail if Level column is not found
+  ## Test will fail if Level column is not found
   testthat::expect_contains(
     trimws(app_driver$active_module_element_text("variable_summary_table table th")),
     "Level"
@@ -83,23 +82,28 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
 
   selector_ns <- app_driver$active_module_element
 
-  # Test show density button
+  # Show density button being clicked on and off
+  app_driver$click(selector = selector_ns("display_density"))
+  app_driver$expect_no_shiny_error()
   app_driver$click(selector = selector_ns("display_density"))
   app_driver$expect_no_shiny_error()
 
   # Test Enable Remove outliers button
   testthat::expect_null(
     app_driver$active_module_element_text("outlier_definition_slider")
-  ) # Does not exist initially
+  ) ## Does not exist initially
 
   app_driver$click(selector = selector_ns("remove_outliers"))
   app_driver$expect_no_shiny_error()
   testthat::expect_length(
     app_driver$active_module_element_text("outlier_definition_slider"),
     1
-  ) # Added to UI
+  ) ## Added to UI
 
   app_driver$set_module_input("outlier_definition_slider", 2)
+  app_driver$expect_no_shiny_error()
+
+  app_driver$click(selector = selector_ns("remove_outliers"))
   app_driver$expect_no_shiny_error()
 
   # Test changing plot settings
