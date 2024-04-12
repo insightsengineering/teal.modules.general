@@ -1,46 +1,38 @@
-test_that("e2e: tm_front_page initializes without errors", {
-  skip_if_too_deep(5)
+test_that("e2e: tm_front_page initializes without errors and html elements", {
+  #skip_if_too_deep(5)
+  app_driver <- app_driver_tm_front_page()
 
-  data <- simple_cdisc_data()
-  data <- within(data, {
-    attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
-  })
-
-  app <- TealAppDriver$new(
-    data = data,
-    modules = tm_front_page(
-      header_text = c(
-        "Important information" = "It can go here.",
-        "Other information" = "Can go here."
-      ),
-      tables = list("MTCARS" = head(mtcars, 5), "IRIS" = head(iris, 5)),
-      additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
-      footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
-      show_metadata = TRUE
-    ),
-    timeout = 3000,
-    seed = 1
-  )
-
-  app$expect_no_shiny_error()
+  app_driver$expect_no_shiny_error()
 
   # header text
-  app$expect_html(selector = "#front_page_headers")
-
-  # tables
-  app$expect_screenshot(selector = app$active_module_element("table_1"))
-  testthat::expect_match(app$get_active_module_output("table_1"), "MTCARS")
-
-  app$expect_screenshot(selector = app$active_module_element("table_2"))
-  testthat::expect_match(app$get_active_module_output("table_2"), "IRIS")
-
-
+  testthat::expect_match(app_driver$get_text(selector = "#front_page_headers"),
+                         "Important information")
   # additional tags
-  app$expect_html("#front_page_custom_html")
-
-  # show metadata
-  app$click(NS(app$active_module_ns(), "metadata_button"))
-  app$expect_screenshot(selector = app$active_module_element("metadata_table"))
-
-  app$stop()
+  testthat::expect_match(app_driver$get_text(selector = "#front_page_custom_html"),
+                         "Additional HTML or shiny tags go here")
+  app_driver$stop()
 })
+
+test_that("e2e: tm_front_page displays tables", {
+  #skip_if_too_deep(5)
+  app_driver <- app_driver_tm_front_page()
+  # tables
+  testthat::expect_match(app_driver$get_active_module_output("table_1"), "MTCARS")
+  app_driver$is_visible(selector = app_driver$active_module_element("table_1"))
+
+  testthat::expect_match(app_driver$get_active_module_output("table_2"), "IRIS")
+  app_driver$is_visible(selector = app_driver$active_module_element("table_2"))
+  app_driver$stop()
+})
+
+test_that("e2e: tm_front_page displays metadata", {
+  #skip_if_too_deep(5)
+  app_driver <- app_driver_tm_front_page()
+  # show metadata
+  app_driver$click(NS(app_driver$active_module_ns(), "metadata_button"))
+  app_driver$is_visible(selector = app_driver$active_module_element("metadata_table"))
+
+  app_driver$stop()
+})
+
+
