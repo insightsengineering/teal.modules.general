@@ -77,3 +77,66 @@ testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specif
 
   app$stop()
 })
+
+testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when facet is toggled off", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_g_bivariate()
+
+  module_ns <- app$active_module_ns()
+  row_facet_selector <- sprintf("#%s-row_facet-dataset_CO2_singleextract-select", module_ns)
+  col_facet_selector <- sprintf("#%s-col_facet-dataset_CO2_singleextract-select", module_ns)
+  x_scale_selector <- sprintf("#%s-free_x_scales", module_ns)
+  y_scale_selector <- sprintf("#%s-free_y_scales", module_ns)
+
+  testthat::expect_true(app$is_visible(row_facet_selector))
+  testthat::expect_true(app$is_visible(col_facet_selector))
+  testthat::expect_true(app$is_visible(x_scale_selector))
+  testthat::expect_true(app$is_visible(y_scale_selector))
+
+  app$set_module_input("facetting", FALSE)
+
+  testthat::expect_false(app$is_visible(row_facet_selector))
+  testthat::expect_false(app$is_visible(col_facet_selector))
+  testthat::expect_false(app$is_visible(x_scale_selector))
+  testthat::expect_false(app$is_visible(y_scale_selector))
+})
+
+testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outputs without validation errors", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_g_bivariate()
+
+  app$set_module_input("alpha", 1)
+  app$expect_no_validation_error()
+
+  app$set_module_input("fixed_size", 6)
+  app$expect_no_validation_error()
+
+  app$set_module_input("add_lines", TRUE)
+  app$expect_no_validation_error()
+
+  app$set_module_input("x-dataset_CO2_singleextract-select", "Plant")
+  app$expect_no_validation_error()
+
+  app$set_module_input("y-dataset_CO2_singleextract-select", "conc")
+  app$expect_no_validation_error()
+
+  app$set_module_input("row_facet-dataset_CO2_singleextract-select", "Plant")
+  app$expect_no_validation_error()
+
+  app$set_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
+  app$expect_no_validation_error()
+
+  app$set_module_input("free_x_scales", TRUE)
+  app$expect_no_validation_error()
+
+  app$set_module_input("free_y_scales", TRUE)
+  app$expect_no_validation_error()
+
+  app$set_module_input("rotate_xaxis_labels", TRUE)
+
+  app$set_module_input("swap_axes", TRUE)
+
+  app$set_module_input("ggtheme", "light")
+})
