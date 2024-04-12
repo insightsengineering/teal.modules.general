@@ -64,7 +64,7 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
     )
   }
 
-  # Test will fail if Species column is not found
+  # Test will fail if Level column is not found
   testthat::expect_contains(
     trimws(app_driver$active_module_element_text("variable_summary_table table th")),
     "Level"
