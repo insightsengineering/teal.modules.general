@@ -1,53 +1,48 @@
-testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specified defaults", {
-  skip_if_too_deep(5)
-
-  # needed untill this is merged https://github.com/insightsengineering/teal/pull/1198
-  require(shinytest2)
-
-  data <- teal_data()
+app_driver_tm_g_bivariate <- function() {
+  data <- teal.data::teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- data.frame(CO2)
+    CO2 <- data.frame(CO2) # nolint: object_name.
   })
-  datanames(data) <- c("CO2")
+  teal.data::datanames(data) <- c("CO2")
 
-  app <- TealAppDriver$new(
+  TealAppDriver$new(
     data = data,
-    modules = modules(
+    modules = teal::modules(
       tm_g_bivariate(
-        x = data_extract_spec(
+        x = teal.transform::data_extract_spec(
           dataname = "CO2",
-          select = select_spec(
+          select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = variable_choices(data[["CO2"]]),
+            choices = teal.transform::variable_choices(data[["CO2"]]),
             selected = "conc",
             fixed = FALSE
           )
         ),
-        y = data_extract_spec(
+        y = teal.transform::data_extract_spec(
           dataname = "CO2",
-          select = select_spec(
+          select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = variable_choices(data[["CO2"]]),
+            choices = teal.transform::variable_choices(data[["CO2"]]),
             selected = "uptake",
             multiple = FALSE,
             fixed = FALSE
           )
         ),
-        row_facet = data_extract_spec(
+        row_facet = teal.transform::data_extract_spec(
           dataname = "CO2",
-          select = select_spec(
+          select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = variable_choices(data[["CO2"]]),
+            choices = teal.transform::variable_choices(data[["CO2"]]),
             selected = "Type",
             fixed = FALSE
           )
         ),
-        col_facet = data_extract_spec(
+        col_facet = teal.transform::data_extract_spec(
           dataname = "CO2",
-          select = select_spec(
+          select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = variable_choices(data[["CO2"]]),
+            choices = teal.transform::variable_choices(data[["CO2"]]),
             selected = "Treatment",
             fixed = FALSE
           )
@@ -58,6 +53,12 @@ testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specif
       )
     )
   )
+}
+
+testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specified defaults", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_g_bivariate()
 
   app$expect_no_shiny_error()
 
