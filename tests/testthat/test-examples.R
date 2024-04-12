@@ -92,7 +92,7 @@ with_mocked_app_bindings <- function(code) {
     ## Throw an error instead of a warning (default `AppDriver$new(..., check_names = TRUE)` throws a warning)
     app_driver$expect_unique_names()
 
-    browser()
+    print(app_driver$get_html(".tab-pane.active"))
 
     err_el <- Filter(
       function(x) {
@@ -147,6 +147,7 @@ for (i in rd_files()) {
   testthat::test_that(
     paste0("example-", basename(i)),
     {
+      print(Sys.getenv("TESTING_DEPTH"))
       skip_if_too_deep(5)
       if (basename(i) %in% strict_exceptions) {
         op <- options()
