@@ -29,7 +29,7 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 }
 
 app_driver_tm_g_association <- function() {
-  data <- within(teal.data::data, {
+  data <- within(teal.data::teal_data(), {
     require(nestcolor)
     CO2 <- CO2
     factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
