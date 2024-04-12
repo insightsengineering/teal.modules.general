@@ -146,6 +146,7 @@ for (i in rd_files()) {
     paste0("example-", basename(i)),
     {
       testthat::skip_on_cran()
+      skip_if_too_deep(5)
       if (basename(i) %in% strict_exceptions) {
         op <- options()
         withr::local_options(opts_partial_match_old)
