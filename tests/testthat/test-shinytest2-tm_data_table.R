@@ -1,36 +1,23 @@
 test_that("e2e: tm_front_page initializes without errors", {
   skip_if_too_deep(5)
-  require(shinytest2)
+  app_driver <- app_driver_tm_data_table()
 
-  app <- TealAppDriver$new(
-    data = simple_teal_data(),
-    modules = teal::modules(
-      tm_data_table(
-        variables_selected = list(
-          iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
-        ),
-        datasets_selected = "mtcars",
-        dt_args = list(caption = "Table Caption")
-      )
-    ),
-    timeout = 3000
-  )
-
-  app$expect_no_shiny_error()
+  app_driver$expect_no_shiny_error()
 
   # tables
-  app$expect_screenshot(selector = app$active_module_element("mtcars-data_table"))
+  testthat::expect_match(app_driver$get_active_module_output("iris-data_table"), "IRIS")
+  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("iris-data_table")))
 
   # variable selected
   testthat::expect_equal(
-    app$get_active_module_input("mtcars-variables"),
+    app_driver$get_active_module_input("mtcars-variables"),
     c("mpg", "cyl", "disp", "hp", "drat", "wt")
   )
-  app$set_module_input("mtcars-variables", c("vs", "am"))
+  app_driver$set_module_input("mtcars-variables", c("vs", "am"))
   testthat::expect_equal(
-    app$get_active_module_input("mtcars-variables"),
+    app_driver$get_active_module_input("mtcars-variables"),
     c("vs", "am")
   )
 
-  app$stop()
+  app_driver$stop()
 })
