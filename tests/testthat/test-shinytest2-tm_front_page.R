@@ -22,19 +22,20 @@ test_that("e2e: tm_front_page displays tables", {
   app_driver <- app_driver_tm_front_page()
   # tables
   testthat::expect_match(app_driver$get_active_module_output("table_1"), "MTCARS")
-  app_driver$is_visible(selector = app_driver$active_module_element("table_1"))
+  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table_1")))
 
   testthat::expect_match(app_driver$get_active_module_output("table_2"), "IRIS")
-  app_driver$is_visible(selector = app_driver$active_module_element("table_2"))
+  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table_2")))
   app_driver$stop()
 })
 
 test_that("e2e: tm_front_page displays metadata", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
+
   # show metadata
   app_driver$click(NS(app_driver$active_module_ns(), "metadata_button"))
-  app_driver$is_visible(selector = app_driver$active_module_element("metadata_table"))
+  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("metadata_table")))
 
   app_driver$stop()
 })
