@@ -42,8 +42,10 @@ app_driver_tm_data_table <- function() {
         ),
         datasets_selected = c("iris", "mtcars"),
         dt_args = list(caption = "Table Caption"),
-        dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
-                          scrollX = TRUE),
+        dt_options = list(
+          searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
+          scrollX = TRUE
+        ),
         server_rendering = FALSE,
         pre_output = NULL,
         post_output = NULL
