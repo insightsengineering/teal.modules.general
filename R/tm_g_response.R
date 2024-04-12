@@ -445,8 +445,8 @@ srv_g_response <- function(id,
         )
 
       plot_call <- substitute(
-        expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +
-          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot2::ggplot(ANL2, ggplot2::aes(x = x_cl, y = ns)) +
+          ggplot2::geom_bar(ggplot2::aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,
@@ -459,16 +459,16 @@ srv_g_response <- function(id,
       if (counts) {
         plot_call <- substitute(
           expr = plot_call +
-            geom_text(
+            ggplot2::geom_text(
               data = ANL2,
-              aes(label = ns, x = x_cl, y = ns, group = resp_cl),
+              ggplot2::aes(label = ns, x = x_cl, y = ns, group = resp_cl),
               col = "white",
               vjust = "middle",
               hjust = "middle",
               position = position_anl2_value
             ) +
-            geom_text(
-              data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
+            ggplot2::geom_text(
+              data = ANL3, ggplot2::aes(label = ns, x = x_cl, y = anl3_y),
               hjust = hjust_value,
               vjust = vjust_value,
               position = position_anl3_value
@@ -479,7 +479,7 @@ srv_g_response <- function(id,
             resp_cl = resp_cl,
             hjust_value = if (swap_axes) "left" else "middle",
             vjust_value = if (swap_axes) "middle" else -1,
-            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)),
+            position_anl2_value = if (!freq) quote(ggplot2::position_fill(0.5)) else quote(ggplot2::position_stack(0.5)),
             anl3_y = if (!freq) 1.1 else as.name("ns"),
             position_anl3_value = if (!freq) "fill" else "stack"
           )
@@ -487,7 +487,7 @@ srv_g_response <- function(id,
       }
 
       if (swap_axes) {
-        plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
+        plot_call <- substitute(plot_call + ggplot2::coord_flip(), env = list(plot_call = plot_call))
       }
 
       facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
@@ -506,7 +506,7 @@ srv_g_response <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
