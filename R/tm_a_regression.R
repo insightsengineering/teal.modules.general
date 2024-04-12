@@ -702,7 +702,7 @@ srv_a_regression <- function(id,
         if (show_outlier) {
           plot <- substitute(
             expr = plot +
-              stat_qq(
+              ggplot2::stat_qq(
                 geom = ggrepel::GeomTextRepel,
                 label = label_col %>%
                   data.frame(label = .) %>%
