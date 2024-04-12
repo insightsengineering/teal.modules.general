@@ -29,13 +29,12 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 }
 
 app_driver_tm_a_regression <- function() {
-
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
     require(ggplot2)
     CO2 <- CO2 # nolint: object_name.
   })
-  datanames(data) <- c("CO2")
+  teal.data::datanames(data) <- c("CO2")
 
   TealAppDriver$new(
     data = data,
