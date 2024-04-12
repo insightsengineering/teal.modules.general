@@ -1,7 +1,7 @@
 testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigenvector table", {
   skip_if_too_deep(5)
 
-  app_driver <- app_tm_a_pca()
+  app_driver <- app_driver_tm_a_pca()
 
   # Data selection (adds rows to tables)
   app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"), wait = FALSE)
@@ -17,7 +17,7 @@ testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigen
 testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes output of plot", {
   skip_if_too_deep(5)
 
-  app_driver <- app_tm_a_pca()
+  app_driver <- app_driver_tm_a_pca()
 
   app_driver$set_module_input("plot_type", "Circle plot")
 
@@ -30,7 +30,7 @@ testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes
 testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be from non-selected variable set", {
   skip_if_too_deep(5)
 
-  app_driver <- app_tm_a_pca()
+  app_driver <- app_driver_tm_a_pca()
 
   app_driver$set_module_input("plot_type", "Biplot")
 
@@ -47,7 +47,7 @@ testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be fro
 testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate errors", {
   skip_if_too_deep(5)
 
-  app_driver <- app_tm_a_pca()
+  app_driver <- app_driver_tm_a_pca()
 
   # Display section (hides tables)
 
