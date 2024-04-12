@@ -650,7 +650,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(.fitted, .resid)) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, .resid)) +
             ggplot2::geom_point(size = size, alpha = alpha) +
             ggplot2::geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
             ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
@@ -694,7 +694,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(sample = .stdresid)) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(sample = .stdresid)) +
             ggplot2::stat_qq(size = size, alpha = alpha) +
             ggplot2::geom_abline(linetype = "dashed"),
           env = list(size = size, alpha = alpha)
@@ -753,7 +753,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, sqrt(abs(.stdresid)))) +
             ggplot2::geom_point(size = size, alpha = alpha) +
             ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
           env = list(size = size, alpha = alpha)
@@ -796,7 +796,7 @@ srv_a_regression <- function(id,
         shinyjs::hide("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(seq_along(.cooksd), .cooksd)) +
             ggplot2::geom_col(alpha = alpha),
           env = list(alpha = alpha)
         )
@@ -812,7 +812,7 @@ srv_a_regression <- function(id,
                 linetype = "dashed"
               ) +
               ggplot2::geom_text(
-                aes(
+                ggplot2::aes(
                   x = 0,
                   y = mean(data$.cooksd, na.rm = TRUE),
                   label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
@@ -863,7 +863,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(.hat, .stdresid)) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .stdresid)) +
             ggplot2::geom_vline(
               size = 1,
               colour = "black",
@@ -918,7 +918,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(data = data, aes(.hat, .cooksd)) +
+          expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .cooksd)) +
             ggplot2::geom_vline(xintercept = 0, colour = NA) +
             ggplot2::geom_abline(
               slope = seq(0, 3, by = 0.5),
