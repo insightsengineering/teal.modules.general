@@ -704,9 +704,11 @@ plot_var_summary <- function(var,
         var <- stringr::str_wrap(var, width = wrap_character)
       }
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
-      ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
-        geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
-        scale_fill_manual(values = c("gray50", "tan"))
+      ggplot2::ggplot(data.frame(var), ggplot2::aes(x = forcats::fct_infreq(as.factor(var)))) +
+        ggplot2::geom_bar(
+          stat = "count", ggplot2::aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE
+        ) +
+        ggplot2::scale_fill_manual(values = c("gray50", "tan"))
     }
   } else if (is.numeric(var)) {
     validate(need(any(!is.na(var)), "No data left to visualize."))
@@ -718,8 +720,8 @@ plot_var_summary <- function(var,
 
     if (numeric_as_factor) {
       var <- factor(var)
-      ggplot(NULL, aes(x = var)) +
-        geom_histogram(stat = "count")
+      ggplot2::ggplot(NULL, ggplot2::aes(x = var)) +
+        ggplot2::geom_histogram(stat = "count")
     } else {
       # remove outliers
       if (outlier_definition != 0) {
@@ -738,10 +740,10 @@ plot_var_summary <- function(var,
       }
       ## histogram
       binwidth <- get_bin_width(var)
-      p <- ggplot(data = data.frame(var = var), aes(x = var, y = after_stat(count))) +
-        geom_histogram(binwidth = binwidth) +
-        scale_y_continuous(
-          sec.axis = sec_axis(
+      p <- ggplot2::ggplot(data = data.frame(var = var), ggplot2::aes(x = var, y = ggplot2::after_stat(count))) +
+        ggplot2::geom_histogram(binwidth = binwidth) +
+        ggplot2::scale_y_continuous(
+          sec.axis = ggplot2::sec_axis(
             trans = ~ . / nrow(data.frame(var = var)),
             labels = scales::percent,
             name = "proportion (in %)"
@@ -749,11 +751,11 @@ plot_var_summary <- function(var,
         )
 
       if (display_density) {
-        p <- p + geom_density(aes(y = after_stat(count * binwidth)))
+        p <- p + ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(count * binwidth)))
       }
 
       if (outlier_definition != 0) {
-        p <- p + annotate(
+        p <- p + ggplot2::annotate(
           geom = "text",
           label = outlier_text,
           x = Inf, y = Inf,
@@ -768,8 +770,8 @@ plot_var_summary <- function(var,
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
-    p <- ggplot(data = data.frame(var = var), aes(x = var, y = after_stat(count))) +
-      geom_histogram(binwidth = binwidth)
+    p <- ggplot2::ggplot(data = data.frame(var = var), ggplot2::aes(x = var, y = ggplot2::after_stat(count))) +
+      ggplot2::geom_histogram(binwidth = binwidth)
   } else {
     grid::textGrob(
       paste(strwrap(
@@ -793,7 +795,7 @@ plot_var_summary <- function(var,
     if (is.numeric(var) && !numeric_as_factor) {
       # numeric not as factor
       plot_main <- plot_main +
-        theme_light() +
+        ggplot2::theme_light() +
         list(
           labs = do.call("labs", all_ggplot2_args$labs),
           theme = do.call("theme", all_ggplot2_args$theme)
@@ -801,13 +803,13 @@ plot_var_summary <- function(var,
     } else {
       # factor low number of levels OR numeric as factor OR Date
       plot_main <- plot_main +
-        theme_light() +
+        ggplot2::theme_light() +
         list(
           labs = do.call("labs", all_ggplot2_args$labs),
           theme = do.call("theme", all_ggplot2_args$theme)
         )
     }
-    plot_main <- ggplotGrob(plot_main)
+    plot_main <- ggplot2::ggplotGrob(plot_main)
   }
 
   grid::grid.draw(plot_main)
