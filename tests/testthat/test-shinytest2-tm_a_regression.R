@@ -1,13 +1,11 @@
 testthat::test_that("e2e - tm_a_regerssion: ", {
   skip_if_too_deep(5)
 
-  # needed untill this is merged https://github.com/insightsengineering/teal/pull/1198
+  # Needed until this is merged https://github.com/insightsengineering/teal/pull/1198
   require(shinytest2)
 
   app <- app_driver_tm_a_regression()
-
   app$expect_no_shiny_error()
-  # app$open_url()
 
   testthat::expect_equal(
     app$get_text("#teal-main_ui-root-active_tab > li.active > a"),
@@ -48,18 +46,19 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   app$set_module_input("plot_type", "Normal Q-Q")
   app$expect_no_validation_error()
 
-  # NO OUTLIER DEFINITION
+  # No outlier definition.
   app$set_module_input("show_outlier", FALSE)
   testthat::expect_false(app$is_visible(app$active_module_element("outlier-label")))
+  app$expect_no_validation_error()
 
-  # BRING BACK OUTLIER DEFINITION
+  # Bring back outlier definition.
   app$set_module_input("show_outlier", TRUE)
   testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
+  app$expect_no_validation_error()
 
-
-  # Plot settings are not visible
+  # Plot settings are not visible.
   testthat::expect_false(app$is_visible(app$active_module_element("size-label")))
-  # After click they are visible
+  # After click they are visible.
   app$click("#_div > div.panel-heading.collapsed")
   testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
   app$set_module_input("size-label", 3)
