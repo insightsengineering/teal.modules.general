@@ -36,7 +36,7 @@
 #' specification of the data variable(s) selected for the fill color inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
 #' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the size of `ggplot2::geom_point` plots inside the coloring settings.
+#' specification of the data variable(s) selected for the size of `geom_point` plots inside the coloring settings.
 #' It will be applied when `color_settings` is set to `TRUE`.
 #' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).

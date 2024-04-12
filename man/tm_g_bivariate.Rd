@@ -60,7 +60,7 @@ specification of the data variable(s) selected for the fill color inside the col
 It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
 \item{size}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
-specification of the data variable(s) selected for the size of \code{ggplot2::geom_point} plots inside the coloring settings.
+specification of the data variable(s) selected for the size of \code{geom_point} plots inside the coloring settings.
 It will be applied when \code{color_settings} is set to \code{TRUE}.}
 
 \item{use_density}{(\code{logical}) optional, indicates whether to plot density (\code{TRUE}) or frequency (\code{FALSE}).
