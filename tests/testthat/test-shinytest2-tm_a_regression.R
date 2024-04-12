@@ -55,7 +55,7 @@ testthat::test_that("e2e - tm_a_regerssion: verify encoding values and widgets",
   # Plot settings are not visible.
   testthat::expect_false(app$is_visible(app$active_module_element("size-label")))
   # After click they are visible.
-  app$click("#_div > div.panel-heading.collapsed")
+  app$click(selector = "#_div > div.panel-heading.collapsed")
   testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
   app$set_module_input("size-label", 3)
   app$expect_no_validation_error()
