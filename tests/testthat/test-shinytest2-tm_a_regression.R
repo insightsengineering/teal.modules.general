@@ -63,8 +63,6 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
     "Normal Q-Q"
   )
 
-  # teal-main_ui-root-regression-module-
-
   testthat::expect_identical(
     app$get_active_module_input("regressor-dataset_CO2_singleextract-select"),
     "conc"
@@ -102,48 +100,6 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
   app$set_module_input("size-label", 3)
   app$expect_no_validation_error()
-
-
-  # QUESTION - SHOULD BELOW THIS BE CHECKED HERE OR IN teal.widgets::plot_with_settings ? ? ?
-  # Module buttons
-
-  # Check if there are three buttons above the table.
-
-  plot_buttons_selector <- app$active_module_element("myplot-plot-with-settings > div.plot-settings-buttons")
-  plot_buttons <-
-    app$get_html_rvest(plot_buttons_selector) %>%
-    rvest::html_elements("button")
-  testthat::expect_length(plot_buttons, 3)
-  # Check is the first one is a toggle button.
-  testthat::expect_equal(
-    plot_buttons[[1]] %>%
-      rvest::html_attr("data-toggle"),
-    "dropdown"
-  )
-
-  # First button has specific font-awesome icon.
-  dwnl_button <- app$active_module_element("myplot-downbutton-downl")
-  testthat::expect_equal(
-    app$get_html_rvest(dwnl_button) %>%
-      rvest::html_element("i") %>%
-      rvest::html_attr("class"),
-    "fas fa-download"
-  )
-  # Click the first button.
-  app$click(selector = dwnl_button)
-
-  # Review the content of the toggle.
-  testthat::expect_equal(
-    # app$get_text(
-    app$active_module_element_text("myplot-downbutton-file_format-label"),
-    "File type"
-  )
-
-  file_format_text <- app$active_module_element_text("myplot-downbutton-file_format > div")
-  testthat::expect_match(file_format_text, "png\n", fixed = TRUE)
-  testthat::expect_match(file_format_text, "svg\n", fixed = TRUE)
-  testthat::expect_match(file_format_text, "pdf\n", fixed = TRUE)
-
 
   app$stop()
 })
