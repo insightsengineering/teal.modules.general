@@ -1,88 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_data_table" timestamp="2024-04-11T14:11:26Z" hostname="bb4587925dc8" tests="2" skipped="1" failures="0" errors="0" time="4.686">
-    <testcase time="4.494" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors"/>
-    <testcase time="0.192" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors">
-      <skipped message="Reason: On CRAN ('test-shinytest2-tm_data_table.R:22:3')"/>
+  <testsuite name="shinytest2-tm_data_table" timestamp="2024-04-12T09:39:39Z" hostname="4b4654c45acd" tests="5" skipped="0" failures="1" errors="1" time="4.83">
+    <testcase time="4.571" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors"/>
+    <testcase time="0.17" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors">
+      <failure type="failure" message="app_driver\$get_active_module_output\(&quot;iris-data_table&quot;\) does not match &quot;IRIS&quot;. ('test-shinytest2-tm_data_table.R:8:3')">app_driver\$get_active_module_output\("iris-data_table"\) does not match "IRIS".
+Actual value: "\{"x":\{"filter":"none","vertical":false,"caption":"&lt;caption&gt;Table Caption&lt;\\\\/caption&gt;","data":\[\["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150"\],\[5\.1,4\.9,4\.7,4\.6,5,5\.4,4\.6,5,4\.4,4\.9,5\.4,4\.8,4\.8,4\.3,5\.8,5\.7,5\.4,5\.1,5\.7,5\.1,5\.4,5\.1,4\.6,5\.1,4\.8,5,5,5\.2,5\.2,4\.7,4\.8,5\.4,5\.2,5\.5,4\.9,5,5\.5,4\.9,4\.4,5\.1,5,4\.5,4\.4,5,5\.1,4\.8,5\.1,4\.6,5\.3,5,7,6\.4,6\.9,5\.5,6\.5,5\.7,6\.3,4\.9,6\.6,5\.2,5,5\.9,6,6\.1,5\.6,6\.7,5\.6,5\.8,6\.2,5\.6,5\.9,6\.1,6\.3,6\.1,6\.4,6\.6,6\.8,6\.7,6,5\.7,5\.5,5\.5,5\.8,6,5\.4,6,6\.7,6\.3,5\.6,5\.5,5\.5,6\.1,5\.8,5,5\.6,5\.7,5\.7,6\.2,5\.1,5\.7,6\.3,5\.8,7\.1,6\.3,6\.5,7\.6,4\.9,7\.3,6\.7,7\.2,6\.5,6\.4,6\.8,5\.7,5\.8,6\.4,6\.5,7\.7,7\.7,6,6\.9,5\.6,7\.7,6\.3,6\.7,7\.2,6\.2,6\.1,6\.4,7\.2,7\.4,7\.9,6\.4,6\.3,6\.1,7\.7,6\.3,6\.4,6,6\.9,6\.7,6\.9,5\.8,6\.8,6\.7,6\.7,6\.3,6\.5,6\.2,5\.9\],\[3\.5,3,3\.2,3\.1,3\.6,3\.9,3\.4,3\.4,2\.9,3\.1,3\.7,3\.4,3,3,4,4\.4,3\.9,3\.5,3\.8,3\.8,3\.4,3\.7,3\.6,3\.3,3\.4,3,3\.4,3\.5,3\.4,3\.2,3\.1,3\.4,4\.1,4\.2,3\.1,3\.2,3\.5,3\.6,3,3\.4,3\.5,2\.3,3\.2,3\.5,3\.8,3,3\.8,3\.2,3\.7,3\.3,3\.2,3\.2,3\.1,2\.3,2\.8,2\.8,3\.3,2\.4,2\.9,2\.7,2,3,2\.2,2\.9,2\.9,3\.1,3,2\.7,2\.2,2\.5,3\.2,2\.8,2\.5,2\.8,2\.9,3,2\.8,3,2\.9,2\.6,2\.4,2\.4,2\.7,2\.7,3,3\.4,3\.1,2\.3,3,2\.5,2\.6,3,2\.6,2\.3,2\.7,3,2\.9,2\.9,2\.5,2\.8,3\.3,2\.7,3,2\.9,3,3,2\.5,2\.9,2\.5,3\.6,3\.2,2\.7,3,2\.5,2\.8,3\.2,3,3\.8,2\.6,2\.2,3\.2,2\.8,2\.8,2\.7,3\.3,3\.2,2\.8,3,2\.8,3,2\.8,3\.8,2\.8,2\.8,2\.6,3,3\.4,3\.1,3,3\.1,3\.1,3\.1,2\.7,3\.2,3\.3,3,2\.5,3,3\.4,3\],\[1\.4,1\.4,1\.3,1\.5,1\.4,1\.7,1\.4,1\.5,1\.4,1\.5,1\.5,1\.6,1\.4,1\.1,1\.2,1\.5,1\.3,1\.4,1\.7,1\.5,1\.7,1\.5,1,1\.7,1\.9,1\.6,1\.6,1\.5,1\.4,1\.6,1\.6,1\.5,1\.5,1\.4,1\.5,1\.2,1\.3,1\.4,1\.3,1\.5,1\.3,1\.3,1\.3,1\.6,1\.9,1\.4,1\.6,1\.4,1\.5,1\.4,4\.7,4\.5,4\.9,4,4\.6,4\.5,4\.7,3\.3,4\.6,3\.9,3\.5,4\.2,4,4\.7,3\.6,4\.4,4\.5,4\.1,4\.5,3\.9,4\.8,4,4\.9,4\.7,4\.3,4\.4,4\.8,5,4\.5,3\.5,3\.8,3\.7,3\.9,5\.1,4\.5,4\.5,4\.7,4\.4,4\.1,4,4\.4,4\.6,4,3\.3,4\.2,4\.2,4\.2,4\.3,3,4\.1,6,5\.1,5\.9,5\.6,5\.8,6\.6,4\.5,6\.3,5\.8,6\.1,5\.1,5\.3,5\.5,5,5\.1,5\.3,5\.5,6\.7,6\.9,5,5\.7,4\.9,6\.7,4\.9,5\.7,6,4\.8,4\.9,5\.6,5\.8,6\.1,6\.4,5\.6,5\.1,5\.6,6\.1,5\.6,5\.5,4\.8,5\.4,5\.6,5\.1,5\.1,5\.9,5\.7,5\.2,5,5\.2,5\.4,5\.1\],\[0\.2,0\.2,0\.2,0\.2,0\.2,0\.4,0\.3,0\.2,0\.2,0\.1,0\.2,0\.2,0\.1,0\.1,0\.2,0\.4,0\.4,0\.3,0\.3,0\.3,0\.2,0\.4,0\.2,0\.5,0\.2,0\.2,0\.4,0\.2,0\.2,0\.2,0\.2,0\.4,0\.1,0\.2,0\.2,0\.2,0\.2,0\.1,0\.2,0\.2,0\.3,0\.3,0\.2,0\.6,0\.4,0\.3,0\.2,0\.2,0\.2,0\.2,1\.4,1\.5,1\.5,1\.3,1\.5,1\.3,1\.6,1,1\.3,1\.4,1,1\.5,1,1\.4,1\.3,1\.4,1\.5,1,1\.5,1\.1,1\.8,1\.3,1\.5,1\.2,1\.3,1\.4,1\.4,1\.7,1\.5,1,1\.1,1,1\.2,1\.6,1\.5,1\.6,1\.5,1\.3,1\.3,1\.3,1\.2,1\.4,1\.2,1,1\.3,1\.2,1\.3,1\.3,1\.1,1\.3,2\.5,1\.9,2\.1,1\.8,2\.2,2\.1,1\.7,1\.8,1\.8,2\.5,2,1\.9,2\.1,2,2\.4,2\.3,1\.8,2\.2,2\.3,1\.5,2\.3,2,2,1\.8,2\.1,1\.8,1\.8,1\.8,2\.1,1\.6,1\.9,2,2\.2,1\.5,1\.4,2\.3,2\.4,1\.8,1\.8,2\.1,2\.4,2\.3,1\.9,2\.3,2\.5,2\.3,1\.9,2,2\.3,1\.8\],\["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica"\]\],"container":"&lt;table class=\\\\"display\\\\"&gt;\\\\n  &lt;thead&gt;\\\\n    &lt;tr&gt;\\\\n      &lt;th&gt; &lt;\\\\/th&gt;\\\\n      &lt;th&gt;Sepal\.Length&lt;\\\\/th&gt;\\\\n      &lt;th&gt;Sepal\.Width&lt;\\\\/th&gt;\\\\n      &lt;th&gt;Petal\.Length&lt;\\\\/th&gt;\\\\n      &lt;th&gt;Petal\.Width&lt;\\\\/th&gt;\\\\n      &lt;th&gt;Species&lt;\\\\/th&gt;\\\\n    &lt;\\\\/tr&gt;\\\\n  &lt;\\\\/thead&gt;\\\\n&lt;\\\\/table&gt;","options":\{"searching":false,"pageLength":30,"lengthMenu":\[5,15,30,100\],"scrollX":true,"columnDefs":\[\{"className":"dt-right","targets":\[1,2,3,4\]\},\{"orderable":false,"targets":0\},\{"name":" ","targets":0\},\{"name":"Sepal\.Length","targets":1\},\{"name":"Sepal\.Width","targets":2\},\{"name":"Petal\.Length","targets":3\},\{"name":"Petal\.Width","targets":4\},\{"name":"Species","targets":5\}\],"order":\[\],"autoWidth":false,"orderClasses":false\},"selection":\{"mode":"multiple","selected":null,"target":"row","selectable":null\}\},"evals":\[\],"jsHooks":\[\],"deps":\[\{"name":"jquery","version":"3\.6\.0","src":\{"href":"jquery-3\.6\.0"\},"meta":null,"script":"jquery-3\.6\.0\.min\.js","stylesheet":null,"head":null,"attachment":null,"all_files":true\},\{"name":"dt-core","version":"1\.13\.6","src":\{"href":"dt-core-1\.13\.6"\},"meta":null,"script":"js/jquery\.dataTables\.min\.js","stylesheet":\["css/jquery\.dataTables\.min\.css","css/jquery\.dataTables\.extra\.css"\],"head":null,"attachment":null,"package":null,"all_files":false\},\{"name":"crosstalk","version":"1\.2\.1","src":\{"href":"crosstalk-1\.2\.1"\},"meta":null,"script":"js/crosstalk\.min\.js","stylesheet":"css/crosstalk\.min\.css","head":null,"attachment":null,"all_files":true\}\]\}"
+Backtrace:
+    ▆
+ 1. └─testthat::expect_match(...) at test-shinytest2-tm_data_table.R:8:3
+ 2.   └─testthat:::expect_match_(...)</failure>
+    </testcase>
+    <testcase time="0.0410000000000004" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors"/>
+    <testcase time="0.0229999999999997" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors"/>
+    <testcase time="0.0250000000000004" classname="shinytest2_tm_data_table" name="e2e_tm_front_page_initializes_without_errors">
+      <error type="error" message="Error in `app_driver$set_module_input(&quot;mtcars-variables&quot;, c(&quot;vs&quot;, &quot;am&quot;))`: object 'wait' not found ('test-shinytest2-tm_data_table.R:16:3')">Error in `app_driver$set_module_input("mtcars-variables", c("vs", "am"))`: object 'wait' not found
+Backtrace:
+    ▆
+ 1. └─app_driver$set_module_input("mtcars-variables", c("vs", "am")) at test-shinytest2-tm_data_table.R:16:3
+ 2.   └─base::isFALSE(dots[[wait]])</error>
     </testcase>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-11T14:11:30Z" hostname="bb4587925dc8" tests="18" skipped="0" failures="0" errors="0" time="0.17">
-    <testcase time="0.0460000000000003" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="18" skipped="0" failures="0" errors="0" time="0.166">
+    <testcase time="0.0449999999999999" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
     <testcase time="0.00499999999999989" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
     <testcase time="0.00499999999999989" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00499999999999989" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.0149999999999997" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00399999999999956" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
     <testcase time="0.00700000000000056" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00700000000000056" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0120000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00700000000000056" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
     <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.0110000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00500000000000078" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+    <testcase time="0.00700000000000056" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.00800000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00499999999999989" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-11T14:11:31Z" hostname="bb4587925dc8" tests="21" skipped="0" failures="0" errors="0" time="0.075">
-    <testcase time="0.0169999999999995" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="21" skipped="0" failures="0" errors="0" time="0.076">
+    <testcase time="0.0209999999999999" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00499999999999989" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00400000000000045" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00400000000000045" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00299999999999923" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00599999999999934" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00499999999999989" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00299999999999923" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00399999999999956" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00199999999999978" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-11T14:11:31Z" hostname="bb4587925dc8" tests="4" skipped="0" failures="0" errors="0" time="0.02">
-    <testcase time="0.00699999999999967" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00499999999999989" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.00300000000000011" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00499999999999989" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="front_page" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="4" skipped="0" failures="0" errors="0" time="0.024">
+    <testcase time="0.00700000000000056" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00399999999999956" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00400000000000045" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00899999999999945" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-11T14:11:31Z" hostname="bb4587925dc8" tests="15" skipped="0" failures="0" errors="0" time="0.027">
+  <testsuite name="g_expert_cl" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="15" skipped="0" failures="0" errors="0" time="0.027">
     <testcase time="0.00499999999999989" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00199999999999978" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00200000000000067" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00199999999999978" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999999978" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00200000000000067" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00199999999999978" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
     <testcase time="0.00100000000000033" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00199999999999978" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-11T14:11:31Z" hostname="bb4587925dc8" tests="6" skipped="0" failures="0" errors="0" time="0.025">
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="6" skipped="0" failures="0" errors="0" time="0.024">
     <testcase time="0.00900000000000034" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00299999999999923" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00199999999999978" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00400000000000045" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00499999999999989" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00199999999999978" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-11T14:11:31Z" hostname="bb4587925dc8" tests="3" skipped="0" failures="0" errors="0" time="0.017">
-    <testcase time="0.00899999999999945" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00499999999999989" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+  <testsuite name="variable_browser" timestamp="2024-04-12T09:39:44Z" hostname="4b4654c45acd" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+    <testcase time="0.00499999999999989" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00400000000000045" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00399999999999956" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
