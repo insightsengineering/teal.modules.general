@@ -65,5 +65,4 @@ app_driver_tm_g_association <- function() {
       )
     )
   )
-
 }
