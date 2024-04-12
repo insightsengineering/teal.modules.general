@@ -41,7 +41,7 @@ with_mocked_app_bindings <- function(code) {
       library(.(testthat::testing_package()), character.only = TRUE)
       .(functionBody(server))
     })
-    mocked_runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
+    print(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
