@@ -24,7 +24,7 @@ test_that("e2e: tm_front_page variable selection", {
   # default variable selection
   testthat::expect_equal(
     app_driver$get_active_module_input("iris-variables"),
-    c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species" )
+    c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
   )
 
   # new variable selection
