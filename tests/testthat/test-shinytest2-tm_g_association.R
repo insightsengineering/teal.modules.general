@@ -38,7 +38,7 @@ testthat::test_that("e2e - tm_g_association: ", {
   # Plot settings are not visible.
   testthat::expect_false(app$is_visible(app$active_module_element("swap_axes")))
   # After click they are visible.
-  app$click("#_div > div.panel-heading")
+  app$click(selector = "#_div > div.panel-heading")
   testthat::expect_true(app$is_visible(app$active_module_element("swap_axes")))
   app$set_module_input("swap_axes", TRUE)
   app$set_module_input("rotate_xaxis_labels", TRUE)
