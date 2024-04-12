@@ -4,13 +4,6 @@ testthat::test_that("e2e - tm_a_regerssion: ", {
   # needed untill this is merged https://github.com/insightsengineering/teal/pull/1198
   require(shinytest2)
 
-  data <- within(teal.data::teal_data(), {
-    require(nestcolor)
-    require(ggplot2)
-    CO2 <- CO2 # nolint: object_name.
-  })
-  datanames(data) <- c("CO2")
-
   app <- app_driver_tm_a_regression()
 
   app$expect_no_shiny_error()
