@@ -71,6 +71,7 @@ Suggests:
     rlang (>= 1.0.0),
     rtables (>= 0.6.6),
     shinytest2,
+    pkgload,
     sparkline,
     testthat (>= 3.0.4),
     withr (>= 2.0.0)
@@ -91,6 +92,7 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     deepayan/lattice, daroczig/logger, MASS,
     insightsengineering/nestcolor, r-lib/rlang,
     insightsengineering/rtables, sparkline, rstudio/shinytest2,
+    r-lib/pkgload,
     insightsengineering/teal.data, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
