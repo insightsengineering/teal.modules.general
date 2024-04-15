@@ -17,6 +17,7 @@ init_teal_app_driver <- function(...) {
       })
       do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
     },
+    # shinyApp is being called without prefix, so it needs to be mocked in {teal}
     .package = "teal"
   )
 }
