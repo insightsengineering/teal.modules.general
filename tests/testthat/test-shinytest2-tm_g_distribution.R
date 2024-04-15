@@ -95,7 +95,7 @@ testthat::test_that("e2e - tm_g_distribution: encoding inputs produce output wit
   app$set_module_input("t_dist", "normal")
   app$click(NS(app$active_module_ns(), "params_reset"))
 
-  app$expect_no_shiny_error()
+  app$expect_no_validation_error()
 
   app$stop()
 })
