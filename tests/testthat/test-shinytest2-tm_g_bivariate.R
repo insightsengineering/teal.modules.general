@@ -7,7 +7,7 @@ app_driver_tm_g_bivariate <- function() {
   })
   teal.data::datanames(data) <- c("CO2")
 
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = data,
     modules = tm_g_bivariate(
       x = teal.transform::data_extract_spec(

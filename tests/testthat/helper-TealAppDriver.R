@@ -1,5 +1,25 @@
 # Import non-exported TealAppDriver from `teal` package
-TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
+
+init_teal_app_driver <- function(...) {
+  shiny__shinyApp <- shiny::shinyApp
+  testthat::with_mocked_bindings(
+    {
+      TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
+      TealAppDriver$new(...)
+    },
+    shinyApp = function(ui, server, ...) {
+      functionBody(server) <- bquote({
+        library(.(testthat::testing_package()), character.only = TRUE)
+        # Packages in Depends that are used in modules' output
+        library(ggmosaic)
+        library(ggplot2)
+        .(functionBody(server))
+      })
+      do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
+    },
+    .package = "teal"
+  )
+}
 
 # Helper function
 simple_teal_data <- function() {
