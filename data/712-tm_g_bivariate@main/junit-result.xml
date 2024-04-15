@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-15T09:34:09Z" hostname="f586a4cdd15b" tests="3" skipped="0" failures="0" errors="3" time="306.033">
-    <testcase time="102.545" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults">
+  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-15T10:17:45Z" hostname="57b2569e694b" tests="3" skipped="0" failures="0" errors="3" time="306.072">
+    <testcase time="102.556" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults">
       <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_g_bivariate.R:60:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
     timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
     screenshot_args = screenshot_args, check_names = check_names, 
@@ -15,27 +15,27 @@ Caused by error in `app_wait_for_idle()`:
 
 ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
 ℹ AppDriver logs:
-{shinytest2} R  info   09:34:10.79 Start AppDriver initialization
-{shinytest2} R  info   09:34:10.85 Starting Shiny app
-{shinytest2} R  info   09:34:11.88 Creating new ChromoteSession
-{shinytest2} R  info   09:34:11.95 Navigating to Shiny app
-{shinytest2} R  info   09:34:12.04 Injecting shiny-tracer.js
-{chromote}   JS info   09:34:12.06 shinytest2; jQuery not found
-{chromote}   JS info   09:34:12.07 shinytest2; Loaded
-{shinytest2} R  info   09:34:12.07 Waiting for Shiny to become ready
-{chromote}   JS info   09:34:12.16 shinytest2; jQuery found
-{chromote}   JS info   09:34:12.16 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   09:34:12.23 shinytest2; Connected
-{chromote}   JS info   09:34:12.27 shinytest2; shiny:busy
-{shinytest2} R  info   09:34:12.28 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   09:34:12.29 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   09:34:13.22 shinytest2; shiny:idle
-{chromote}   JS info   09:34:13.22 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   09:34:13.22 shinytest2; shiny:value error
-{chromote}   JS info   09:34:13.22 shinytest2; shiny:busy
-{chromote}   JS info   09:34:13.23 shinytest2; shiny:idle
-{chromote}   JS info   09:34:13.25 shinytest2; shiny:busy
-{shinytest2} R  info   09:35:52.32 Error while initializing AppDriver:
+{shinytest2} R  info   10:17:46.06 Start AppDriver initialization
+{shinytest2} R  info   10:17:46.11 Starting Shiny app
+{shinytest2} R  info   10:17:47.15 Creating new ChromoteSession
+{shinytest2} R  info   10:17:47.22 Navigating to Shiny app
+{shinytest2} R  info   10:17:47.30 Injecting shiny-tracer.js
+{chromote}   JS info   10:17:47.33 shinytest2; jQuery not found
+{chromote}   JS info   10:17:47.34 shinytest2; Loaded
+{shinytest2} R  info   10:17:47.34 Waiting for Shiny to become ready
+{chromote}   JS info   10:17:47.42 shinytest2; jQuery found
+{chromote}   JS info   10:17:47.43 shinytest2; Waiting for shiny session to connect
+{chromote}   JS info   10:17:47.49 shinytest2; Connected
+{chromote}   JS info   10:17:47.53 shinytest2; shiny:busy
+{shinytest2} R  info   10:17:47.56 Waiting for Shiny to become idle for 200ms within 1e+05ms
+{chromote}   JS info   10:17:47.57 shinytest2; Waiting for Shiny to be stable
+{chromote}   JS info   10:17:48.46 shinytest2; shiny:idle
+{chromote}   JS info   10:17:48.46 shinytest2; shiny:value teal-identifier
+{chromote}   JS info   10:17:48.46 shinytest2; shiny:value error
+{chromote}   JS info   10:17:48.46 shinytest2; shiny:busy
+{chromote}   JS info   10:17:48.46 shinytest2; shiny:idle
+{chromote}   JS info   10:17:48.49 shinytest2; shiny:busy
+{shinytest2} R  info   10:19:27.60 Error while initializing AppDriver:
                                    Shiny app did not become stable in 1e+05ms.
                                    Message: An error occurred while waiting for Shiny to be stable
                                    Caused by error in `app_wait_for_idle()`:
@@ -56,7 +56,7 @@ Caused by error in `app_wait_for_idle()`:
 {shiny}      R  stderr ----------- 
 {shiny}      R  stderr ----------- Running application in test mode.
 {shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:4986
+{shiny}      R  stderr ----------- Listening on http://127.0.0.1:5083
 {shiny}      R  stderr ----------- Initializing reporter_previewer_module
 {shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
 {shiny}      R  stderr -----------   153: facet_ggplot_call
@@ -139,27 +139,27 @@ Caused by error in `app_wait_for_idle()`:
 
 ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
 ℹ AppDriver logs:
-{shinytest2} R  info   09:35:52.65 Start AppDriver initialization
-{shinytest2} R  info   09:35:52.67 Starting Shiny app
-{shinytest2} R  info   09:35:53.70 Creating new ChromoteSession
-{shinytest2} R  info   09:35:53.73 Navigating to Shiny app
-{shinytest2} R  info   09:35:53.81 Injecting shiny-tracer.js
-{chromote}   JS info   09:35:53.82 shinytest2; jQuery not found
-{chromote}   JS info   09:35:53.82 shinytest2; Loaded
-{shinytest2} R  info   09:35:53.82 Waiting for Shiny to become ready
-{chromote}   JS info   09:35:53.91 shinytest2; jQuery found
-{chromote}   JS info   09:35:53.91 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   09:35:53.97 shinytest2; Connected
-{chromote}   JS info   09:35:54.01 shinytest2; shiny:busy
-{shinytest2} R  info   09:35:54.05 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   09:35:54.05 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   09:35:54.95 shinytest2; shiny:idle
-{chromote}   JS info   09:35:54.95 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   09:35:54.95 shinytest2; shiny:value error
-{chromote}   JS info   09:35:54.96 shinytest2; shiny:busy
-{chromote}   JS info   09:35:54.96 shinytest2; shiny:idle
-{chromote}   JS info   09:35:54.98 shinytest2; shiny:busy
-{shinytest2} R  info   09:37:34.06 Error while initializing AppDriver:
+{shinytest2} R  info   10:19:27.93 Start AppDriver initialization
+{shinytest2} R  info   10:19:27.95 Starting Shiny app
+{shinytest2} R  info   10:19:28.98 Creating new ChromoteSession
+{shinytest2} R  info   10:19:29.01 Navigating to Shiny app
+{shinytest2} R  info   10:19:29.09 Injecting shiny-tracer.js
+{chromote}   JS info   10:19:29.10 shinytest2; jQuery not found
+{chromote}   JS info   10:19:29.10 shinytest2; Loaded
+{shinytest2} R  info   10:19:29.10 Waiting for Shiny to become ready
+{chromote}   JS info   10:19:29.19 shinytest2; jQuery found
+{chromote}   JS info   10:19:29.19 shinytest2; Waiting for shiny session to connect
+{chromote}   JS info   10:19:29.25 shinytest2; Connected
+{chromote}   JS info   10:19:29.29 shinytest2; shiny:busy
+{shinytest2} R  info   10:19:29.32 Waiting for Shiny to become idle for 200ms within 1e+05ms
+{chromote}   JS info   10:19:29.33 shinytest2; Waiting for Shiny to be stable
+{chromote}   JS info   10:19:30.30 shinytest2; shiny:idle
+{chromote}   JS info   10:19:30.30 shinytest2; shiny:value teal-identifier
+{chromote}   JS info   10:19:30.31 shinytest2; shiny:value error
+{chromote}   JS info   10:19:30.31 shinytest2; shiny:busy
+{chromote}   JS info   10:19:30.31 shinytest2; shiny:idle
+{chromote}   JS info   10:19:30.33 shinytest2; shiny:busy
+{shinytest2} R  info   10:21:09.34 Error while initializing AppDriver:
                                    Shiny app did not become stable in 1e+05ms.
                                    Message: An error occurred while waiting for Shiny to be stable
                                    Caused by error in `app_wait_for_idle()`:
@@ -180,7 +180,7 @@ Caused by error in `app_wait_for_idle()`:
 {shiny}      R  stderr ----------- 
 {shiny}      R  stderr ----------- Running application in test mode.
 {shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6645
+{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6722
 {shiny}      R  stderr ----------- Initializing reporter_previewer_module
 {shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
 {shiny}      R  stderr -----------   153: facet_ggplot_call
@@ -249,7 +249,7 @@ Backtrace:
  23.   └─shinytest2:::app_abort(...)
  24.     └─rlang::abort(..., app = self, call = call)</error>
     </testcase>
-    <testcase time="101.726" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+    <testcase time="101.754" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
       <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_g_bivariate.R:108:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
     timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
     screenshot_args = screenshot_args, check_names = check_names, 
@@ -263,27 +263,27 @@ Caused by error in `app_wait_for_idle()`:
 
 ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
 ℹ AppDriver logs:
-{shinytest2} R  info   09:37:34.40 Start AppDriver initialization
-{shinytest2} R  info   09:37:34.42 Starting Shiny app
-{shinytest2} R  info   09:37:35.45 Creating new ChromoteSession
-{shinytest2} R  info   09:37:35.48 Navigating to Shiny app
-{shinytest2} R  info   09:37:35.57 Injecting shiny-tracer.js
-{chromote}   JS info   09:37:35.58 shinytest2; jQuery not found
-{chromote}   JS info   09:37:35.58 shinytest2; Loaded
-{shinytest2} R  info   09:37:35.58 Waiting for Shiny to become ready
-{chromote}   JS info   09:37:35.66 shinytest2; jQuery found
-{chromote}   JS info   09:37:35.66 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   09:37:35.73 shinytest2; Connected
-{chromote}   JS info   09:37:35.77 shinytest2; shiny:busy
-{shinytest2} R  info   09:37:35.80 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   09:37:35.80 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   09:37:36.71 shinytest2; shiny:idle
-{chromote}   JS info   09:37:36.71 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   09:37:36.71 shinytest2; shiny:value error
-{chromote}   JS info   09:37:36.71 shinytest2; shiny:busy
-{chromote}   JS info   09:37:36.71 shinytest2; shiny:idle
-{chromote}   JS info   09:37:36.74 shinytest2; shiny:busy
-{shinytest2} R  info   09:39:15.81 Error while initializing AppDriver:
+{shinytest2} R  info   10:21:09.69 Start AppDriver initialization
+{shinytest2} R  info   10:21:09.71 Starting Shiny app
+{shinytest2} R  info   10:21:10.74 Creating new ChromoteSession
+{shinytest2} R  info   10:21:10.77 Navigating to Shiny app
+{shinytest2} R  info   10:21:10.87 Injecting shiny-tracer.js
+{chromote}   JS info   10:21:10.88 shinytest2; jQuery not found
+{chromote}   JS info   10:21:10.88 shinytest2; Loaded
+{shinytest2} R  info   10:21:10.88 Waiting for Shiny to become ready
+{chromote}   JS info   10:21:10.97 shinytest2; jQuery found
+{chromote}   JS info   10:21:10.97 shinytest2; Waiting for shiny session to connect
+{chromote}   JS info   10:21:11.04 shinytest2; Connected
+{chromote}   JS info   10:21:11.08 shinytest2; shiny:busy
+{shinytest2} R  info   10:21:11.10 Waiting for Shiny to become idle for 200ms within 1e+05ms
+{chromote}   JS info   10:21:11.10 shinytest2; Waiting for Shiny to be stable
+{chromote}   JS info   10:21:11.99 shinytest2; shiny:idle
+{chromote}   JS info   10:21:12.00 shinytest2; shiny:value teal-identifier
+{chromote}   JS info   10:21:12.00 shinytest2; shiny:value error
+{chromote}   JS info   10:21:12.00 shinytest2; shiny:busy
+{chromote}   JS info   10:21:12.00 shinytest2; shiny:idle
+{chromote}   JS info   10:21:12.02 shinytest2; shiny:busy
+{shinytest2} R  info   10:22:51.12 Error while initializing AppDriver:
                                    Shiny app did not become stable in 1e+05ms.
                                    Message: An error occurred while waiting for Shiny to be stable
                                    Caused by error in `app_wait_for_idle()`:
@@ -304,7 +304,7 @@ Caused by error in `app_wait_for_idle()`:
 {shiny}      R  stderr ----------- 
 {shiny}      R  stderr ----------- Running application in test mode.
 {shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:4221
+{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6357
 {shiny}      R  stderr ----------- Initializing reporter_previewer_module
 {shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
 {shiny}      R  stderr -----------   153: facet_ggplot_call
@@ -374,138 +374,83 @@ Backtrace:
  24.     └─rlang::abort(..., app = self, call = call)</error>
     </testcase>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-15T09:39:15Z" hostname="f586a4cdd15b" tests="18" skipped="0" failures="0" errors="0" time="0.182">
-    <testcase time="0.0649999999999977" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.0040000000000191" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="18" skipped="0" failures="0" errors="0" time="0.175">
+    <testcase time="0.0589999999999691" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
     <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
     <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.00799999999998136" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00599999999997181" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00799999999998136" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.00799999999998136" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.0110000000000241" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.00699999999994816" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
     <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00900000000001455" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-15T09:39:16Z" hostname="f586a4cdd15b" tests="21" skipped="0" failures="0" errors="0" time="0.074">
-    <testcase time="0.0169999999999959" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="21" skipped="0" failures="0" errors="0" time="0.071">
+    <testcase time="0.0159999999999627" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00600000000002865" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00399999999996226" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-15T09:39:16Z" hostname="f586a4cdd15b" tests="4" skipped="0" failures="0" errors="0" time="0.019">
+  <testsuite name="front_page" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="4" skipped="0" failures="0" errors="0" time="0.019">
     <testcase time="0.00600000000002865" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
     <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
     <testcase time="0.0040000000000191" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
     <testcase time="0.00399999999996226" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-15T09:39:16Z" hostname="f586a4cdd15b" tests="15" skipped="0" failures="11" errors="0" time="0.155">
+  <testsuite name="g_expert_cl" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="15" skipped="0" failures="0" errors="0" time="0.026">
     <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(colour = ADSL)&quot;. ('test_g_expert_cl.R:7:3')">... %&gt;% deparse() not equal to "aes(colour = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL)"
-y[1]: "aes(colour = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0130000000000337" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:12:3')">... %&gt;% deparse() not equal to "aes(colour = ADSL, fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"
-y[1]: "aes(colour = ADSL, fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="coloring_ggplot_call(&quot;ADSL&quot;, &quot;ADSL&quot;, &quot;ADSL&quot;, FALSE) %&gt;% deparse() not equal to &quot;aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:16:3')">coloring_ggplot_call("ADSL", "ADSL", "ADSL", FALSE) %&gt;% deparse() not equal to "aes(colour = ADSL, fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"
-y[1]: "aes(colour = ADSL, fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0129999999999768" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:20:3')">... %&gt;% deparse() not equal to "aes(colour = ADSL, fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"
-y[1]: "aes(colour = ADSL, fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0169999999999959" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="coloring_ggplot_call(&quot;ADSL&quot;, &quot;ADSL&quot;, &quot;ADSL&quot;, TRUE) %&gt;% deparse() not equal to &quot;aes(colour = ADSL, fill = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:25:3')">coloring_ggplot_call("ADSL", "ADSL", "ADSL", TRUE) %&gt;% deparse() not equal to "aes(colour = ADSL, fill = ADSL, size = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)"
-y[1]: "aes(colour = ADSL, fill = ADSL, size = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(colour = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:29:3')">... %&gt;% deparse() not equal to "aes(colour = ADSL, size = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, size = ADSL)"
-y[1]: "aes(colour = ADSL, size = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.0040000000000191" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:40:3')">... %&gt;% deparse() not equal to "aes(fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(fill = ADSL)"
-y[1]: "aes(fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:44:3')">... %&gt;% deparse() not equal to "aes(fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(fill = ADSL)"
-y[1]: "aes(fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:48:3')">... %&gt;% deparse() not equal to "aes(fill = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(fill = ADSL)"
-y[1]: "aes(fill = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(colour = ADSL, fill = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:52:3')">... %&gt;% deparse() not equal to "aes(colour = ADSL, fill = ADSL, size = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)"
-y[1]: "aes(colour = ADSL, fill = ADSL, size = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.0149999999999864" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var">
-      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;aes(size = ADSL)&quot;. ('test_g_expert_cl.R:59:3')">... %&gt;% deparse() not equal to "aes(size = ADSL)".
-1/1 mismatches
-x[1]: "ggplot2::aes(size = ADSL)"
-y[1]: "aes(size = ADSL)"</failure>
-    </testcase>
-    <testcase time="0.00999999999999091" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.0029999999999859" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.0029999999999859" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-15T09:39:16Z" hostname="f586a4cdd15b" tests="6" skipped="0" failures="0" errors="0" time="0.024">
-    <testcase time="0.00999999999999091" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="6" skipped="0" failures="0" errors="0" time="0.028">
+    <testcase time="0.00900000000001455" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.0029999999999859" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00200000000000955" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00499999999999545" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00200000000000955" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.007000000000005" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.0040000000000191" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.0029999999999859" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00200000000000955" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-15T09:39:16Z" hostname="f586a4cdd15b" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+  <testsuite name="variable_browser" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="3" skipped="0" failures="0" errors="0" time="0.013">
     <testcase time="0.00499999999999545" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00499999999999545" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.0029999999999859" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+    <testcase time="0.0040000000000191" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.0040000000000191" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
