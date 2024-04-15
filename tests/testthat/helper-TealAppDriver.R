@@ -32,9 +32,9 @@ app_driver_tm_g_association <- function() {
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
     require(ggplot2)
-    CO2 <- CO2
+    CO2 <- CO2 # nolint: object_name.
     factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
-    CO2[factors] <- lapply(CO2[factors], as.character)
+    CO2[factors] <- lapply(CO2[factors], as.character) # nolint: object_name.
   })
   teal.data::datanames(data) <- c("CO2")
 
