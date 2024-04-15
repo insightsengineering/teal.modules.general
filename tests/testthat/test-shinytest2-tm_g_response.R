@@ -57,3 +57,20 @@ testthat::test_that("e2e - tm_g_response: module is initialised with the specifi
 
   app$stop()
 })
+testthat::test_that("e2e - tm_g_response: encoding inputs produce output without validation errors", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_g_response()
+
+  app$set_module_input("response-dataset_ADSL_singleextract-select", "COUNTRY")
+  app$set_module_input("x-dataset_ADSL_singleextract-select", "SEX")
+  app$set_module_input("freq", "frequency")
+  app$set_module_input("count_labels", FALSE)
+  app$set_module_input("coord_flip", TRUE)
+  app$set_module_input("rotate_xaxis_labels", TRUE)
+  app$set_module_input("ggtheme", "light")
+
+  app$expect_no_validation_error()
+
+  app$stop()
+})
