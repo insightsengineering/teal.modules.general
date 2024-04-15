@@ -1,3 +1,31 @@
+app_driver_tm_a_pca <- function() {
+  # Dataset only used once
+  data <- within(teal.data::teal_data(), {
+    require(nestcolor)
+
+    USArrests <- USArrests # nolint: object_name.
+  })
+  teal.data::datanames(data) <- "USArrests"
+
+
+  TealAppDriver$new(
+    data = data,
+    modules = tm_a_pca(
+      dat = teal.transform::data_extract_spec(
+        dataname = "USArrests",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(
+            data = data[["USArrests"]],
+            c("Murder", "Assault", "UrbanPop", "Rape")
+          ),
+          selected = c("Murder", "Assault"),
+          multiple = TRUE
+        )
+      )
+    )
+  )
+}
+
 testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigenvector table", {
   skip_if_too_deep(5)
 
