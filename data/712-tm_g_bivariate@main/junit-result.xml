@@ -1,456 +1,205 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-15T10:17:45Z" hostname="57b2569e694b" tests="3" skipped="0" failures="0" errors="3" time="306.072">
-    <testcase time="102.556" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults">
-      <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_g_bivariate.R:60:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
-    timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
-    screenshot_args = screenshot_args, check_names = check_names, 
-    name = name, variant = variant, view = view, height = height, 
-    width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, 
-    render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-15T10:33:19Z" hostname="d1ba7696e1d0" tests="31" skipped="0" failures="9" errors="0" time="20.649">
+    <testcase time="4.919" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.126" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.032" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0679999999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0700000000000003" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0679999999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0740000000000007" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0709999999999997" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0679999999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0680000000000005" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0670000000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.069" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0669999999999993" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0690000000000008" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="4.143" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00500000000000078" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00499999999999901" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.946000000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00599999999999845" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00500000000000078" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="4.75" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:113:3')">self$get_html(".shiny-output-error-validation") is not NULL
 
-
-ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
-ℹ AppDriver logs:
-{shinytest2} R  info   10:17:46.06 Start AppDriver initialization
-{shinytest2} R  info   10:17:46.11 Starting Shiny app
-{shinytest2} R  info   10:17:47.15 Creating new ChromoteSession
-{shinytest2} R  info   10:17:47.22 Navigating to Shiny app
-{shinytest2} R  info   10:17:47.30 Injecting shiny-tracer.js
-{chromote}   JS info   10:17:47.33 shinytest2; jQuery not found
-{chromote}   JS info   10:17:47.34 shinytest2; Loaded
-{shinytest2} R  info   10:17:47.34 Waiting for Shiny to become ready
-{chromote}   JS info   10:17:47.42 shinytest2; jQuery found
-{chromote}   JS info   10:17:47.43 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   10:17:47.49 shinytest2; Connected
-{chromote}   JS info   10:17:47.53 shinytest2; shiny:busy
-{shinytest2} R  info   10:17:47.56 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   10:17:47.57 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   10:17:48.46 shinytest2; shiny:idle
-{chromote}   JS info   10:17:48.46 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   10:17:48.46 shinytest2; shiny:value error
-{chromote}   JS info   10:17:48.46 shinytest2; shiny:busy
-{chromote}   JS info   10:17:48.46 shinytest2; shiny:idle
-{chromote}   JS info   10:17:48.49 shinytest2; shiny:busy
-{shinytest2} R  info   10:19:27.60 Error while initializing AppDriver:
-                                   Shiny app did not become stable in 1e+05ms.
-                                   Message: An error occurred while waiting for Shiny to be stable
-                                   Caused by error in `app_wait_for_idle()`:
-                                   ! An error occurred while waiting for Shiny to be stable
-{shiny}      R  stderr ----------- Loading required package: shiny
-{shiny}      R  stderr ----------- Attempting to load the environment ‘package:nestcolor’
-{shiny}      R  stderr ----------- Loading required package: teal.data
-{shiny}      R  stderr ----------- Loading required package: teal.code
-{shiny}      R  stderr ----------- Loading required package: teal.slice
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- You are using teal version 0.15.2.9026
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Attaching package: ‘teal’
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- The following objects are masked from ‘package:teal.slice’:
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr -----------     as.teal_slices, teal_slices
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Running application in test mode.
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:5083
-{shiny}      R  stderr ----------- Initializing reporter_previewer_module
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   153: facet_ggplot_call
-{shiny}      R  stderr -----------   152: &lt;reactive&gt;
-{shiny}      R  stderr -----------   136: output_q
-{shiny}      R  stderr -----------   135: &lt;reactive&gt;
-{shiny}      R  stderr -----------   119: plot_r
-{shiny}      R  stderr -----------   110: renderUI
-{shiny}      R  stderr -----------   109: func
-{shiny}      R  stderr -----------    96: renderFunc
-{shiny}      R  stderr -----------    95: output$teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main
-{shiny}      R  stderr -----------    14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    10: base::do.call
-{shiny}      R  stderr -----------     9: base::saveRDS
-{shiny}      R  stderr -----------     8: base::withCallingHandlers
-{shiny}      R  stderr -----------     7: doTryCatch
-{shiny}      R  stderr -----------     6: tryCatchOne
-{shiny}      R  stderr -----------     5: tryCatchList
-{shiny}      R  stderr -----------     2: tryCatchList
-{shiny}      R  stderr -----------     1: base::tryCatch
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   10: base::do.call
-{shiny}      R  stderr -----------    9: base::saveRDS
-{shiny}      R  stderr -----------    8: base::withCallingHandlers
-{shiny}      R  stderr -----------    7: doTryCatch
-{shiny}      R  stderr -----------    6: tryCatchOne
-{shiny}      R  stderr -----------    5: tryCatchList
-{shiny}      R  stderr -----------    2: tryCatchList
-{shiny}      R  stderr -----------    1: base::tryCatch
-
-
-Caused by error in `app_initialize_()`:
-! Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Treatment]", yfacet_label = "[Type]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
 Backtrace:
-     ▆
-  1. ├─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:60:3
-  2. │ └─TealAppDriver$new(...) at test-shinytest2-tm_g_bivariate.R:10:3
-  3. │   └─teal (local) initialize(...)
-  4. │     ├─base::suppressWarnings(...)
-  5. │     │ └─base::withCallingHandlers(...)
-  6. │     └─super$initialize(...)
-  7. │       └─shinytest2:::app_initialize(...)
-  8. │         ├─base::withCallingHandlers(...)
-  9. │         └─shinytest2:::app_initialize_(self, private, ..., view = view)
- 10. │           ├─base::withCallingHandlers(...)
- 11. │           └─self$wait_for_idle(duration = 200, timeout = private$load_timeout)
- 12. │             └─shinytest2:::app_wait_for_idle(...)
- 13. │               └─shinytest2:::app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
- 14. │                 └─rlang::abort(..., app = self, call = call)
- 15. │                   └─rlang:::signal_abort(cnd, .file)
- 16. │                     └─base::signalCondition(cnd)
- 17. ├─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 18. │ └─shinytest2:::app_abort(...)
- 19. │   └─rlang::abort(..., app = self, call = call)
- 20. │     └─rlang:::signal_abort(cnd, .file)
- 21. │       └─base::signalCondition(cnd)
- 22. └─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 23.   └─shinytest2:::app_abort(...)
- 24.     └─rlang::abort(..., app = self, call = call)</error>
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:113:3
+ 2.   └─testthat::expect_null(...)</failure>
     </testcase>
-    <testcase time="101.762" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off">
-      <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_g_bivariate.R:84:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
-    timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
-    screenshot_args = screenshot_args, check_names = check_names, 
-    name = name, variant = variant, view = view, height = height, 
-    width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, 
-    render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+    <testcase time="0.592000000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:116:3')">self$get_html(".shiny-output-error-validation") is not NULL
 
-
-ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
-ℹ AppDriver logs:
-{shinytest2} R  info   10:19:27.93 Start AppDriver initialization
-{shinytest2} R  info   10:19:27.95 Starting Shiny app
-{shinytest2} R  info   10:19:28.98 Creating new ChromoteSession
-{shinytest2} R  info   10:19:29.01 Navigating to Shiny app
-{shinytest2} R  info   10:19:29.09 Injecting shiny-tracer.js
-{chromote}   JS info   10:19:29.10 shinytest2; jQuery not found
-{chromote}   JS info   10:19:29.10 shinytest2; Loaded
-{shinytest2} R  info   10:19:29.10 Waiting for Shiny to become ready
-{chromote}   JS info   10:19:29.19 shinytest2; jQuery found
-{chromote}   JS info   10:19:29.19 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   10:19:29.25 shinytest2; Connected
-{chromote}   JS info   10:19:29.29 shinytest2; shiny:busy
-{shinytest2} R  info   10:19:29.32 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   10:19:29.33 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   10:19:30.30 shinytest2; shiny:idle
-{chromote}   JS info   10:19:30.30 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   10:19:30.31 shinytest2; shiny:value error
-{chromote}   JS info   10:19:30.31 shinytest2; shiny:busy
-{chromote}   JS info   10:19:30.31 shinytest2; shiny:idle
-{chromote}   JS info   10:19:30.33 shinytest2; shiny:busy
-{shinytest2} R  info   10:21:09.34 Error while initializing AppDriver:
-                                   Shiny app did not become stable in 1e+05ms.
-                                   Message: An error occurred while waiting for Shiny to be stable
-                                   Caused by error in `app_wait_for_idle()`:
-                                   ! An error occurred while waiting for Shiny to be stable
-{shiny}      R  stderr ----------- Loading required package: shiny
-{shiny}      R  stderr ----------- Attempting to load the environment ‘package:nestcolor’
-{shiny}      R  stderr ----------- Loading required package: teal.data
-{shiny}      R  stderr ----------- Loading required package: teal.code
-{shiny}      R  stderr ----------- Loading required package: teal.slice
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- You are using teal version 0.15.2.9026
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Attaching package: ‘teal’
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- The following objects are masked from ‘package:teal.slice’:
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr -----------     as.teal_slices, teal_slices
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Running application in test mode.
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6722
-{shiny}      R  stderr ----------- Initializing reporter_previewer_module
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   153: facet_ggplot_call
-{shiny}      R  stderr -----------   152: &lt;reactive&gt;
-{shiny}      R  stderr -----------   136: output_q
-{shiny}      R  stderr -----------   135: &lt;reactive&gt;
-{shiny}      R  stderr -----------   119: plot_r
-{shiny}      R  stderr -----------   110: renderUI
-{shiny}      R  stderr -----------   109: func
-{shiny}      R  stderr -----------    96: renderFunc
-{shiny}      R  stderr -----------    95: output$teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main
-{shiny}      R  stderr -----------    14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    10: base::do.call
-{shiny}      R  stderr -----------     9: base::saveRDS
-{shiny}      R  stderr -----------     8: base::withCallingHandlers
-{shiny}      R  stderr -----------     7: doTryCatch
-{shiny}      R  stderr -----------     6: tryCatchOne
-{shiny}      R  stderr -----------     5: tryCatchList
-{shiny}      R  stderr -----------     2: tryCatchList
-{shiny}      R  stderr -----------     1: base::tryCatch
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   10: base::do.call
-{shiny}      R  stderr -----------    9: base::saveRDS
-{shiny}      R  stderr -----------    8: base::withCallingHandlers
-{shiny}      R  stderr -----------    7: doTryCatch
-{shiny}      R  stderr -----------    6: tryCatchOne
-{shiny}      R  stderr -----------    5: tryCatchList
-{shiny}      R  stderr -----------    2: tryCatchList
-{shiny}      R  stderr -----------    1: base::tryCatch
-
-
-Caused by error in `app_initialize_()`:
-! Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Treatment]", yfacet_label = "[Type]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
 Backtrace:
-     ▆
-  1. ├─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:84:3
-  2. │ └─TealAppDriver$new(...) at test-shinytest2-tm_g_bivariate.R:10:3
-  3. │   └─teal (local) initialize(...)
-  4. │     ├─base::suppressWarnings(...)
-  5. │     │ └─base::withCallingHandlers(...)
-  6. │     └─super$initialize(...)
-  7. │       └─shinytest2:::app_initialize(...)
-  8. │         ├─base::withCallingHandlers(...)
-  9. │         └─shinytest2:::app_initialize_(self, private, ..., view = view)
- 10. │           ├─base::withCallingHandlers(...)
- 11. │           └─self$wait_for_idle(duration = 200, timeout = private$load_timeout)
- 12. │             └─shinytest2:::app_wait_for_idle(...)
- 13. │               └─shinytest2:::app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
- 14. │                 └─rlang::abort(..., app = self, call = call)
- 15. │                   └─rlang:::signal_abort(cnd, .file)
- 16. │                     └─base::signalCondition(cnd)
- 17. ├─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 18. │ └─shinytest2:::app_abort(...)
- 19. │   └─rlang::abort(..., app = self, call = call)
- 20. │     └─rlang:::signal_abort(cnd, .file)
- 21. │       └─base::signalCondition(cnd)
- 22. └─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 23.   └─shinytest2:::app_abort(...)
- 24.     └─rlang::abort(..., app = self, call = call)</error>
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:116:3
+ 2.   └─testthat::expect_null(...)</failure>
     </testcase>
-    <testcase time="101.754" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
-      <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_g_bivariate.R:108:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
-    timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
-    screenshot_args = screenshot_args, check_names = check_names, 
-    name = name, variant = variant, view = view, height = height, 
-    width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, 
-    render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+    <testcase time="0.620999999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:119:3')">self$get_html(".shiny-output-error-validation") is not NULL
 
-
-ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
-ℹ AppDriver logs:
-{shinytest2} R  info   10:21:09.69 Start AppDriver initialization
-{shinytest2} R  info   10:21:09.71 Starting Shiny app
-{shinytest2} R  info   10:21:10.74 Creating new ChromoteSession
-{shinytest2} R  info   10:21:10.77 Navigating to Shiny app
-{shinytest2} R  info   10:21:10.87 Injecting shiny-tracer.js
-{chromote}   JS info   10:21:10.88 shinytest2; jQuery not found
-{chromote}   JS info   10:21:10.88 shinytest2; Loaded
-{shinytest2} R  info   10:21:10.88 Waiting for Shiny to become ready
-{chromote}   JS info   10:21:10.97 shinytest2; jQuery found
-{chromote}   JS info   10:21:10.97 shinytest2; Waiting for shiny session to connect
-{chromote}   JS info   10:21:11.04 shinytest2; Connected
-{chromote}   JS info   10:21:11.08 shinytest2; shiny:busy
-{shinytest2} R  info   10:21:11.10 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{chromote}   JS info   10:21:11.10 shinytest2; Waiting for Shiny to be stable
-{chromote}   JS info   10:21:11.99 shinytest2; shiny:idle
-{chromote}   JS info   10:21:12.00 shinytest2; shiny:value teal-identifier
-{chromote}   JS info   10:21:12.00 shinytest2; shiny:value error
-{chromote}   JS info   10:21:12.00 shinytest2; shiny:busy
-{chromote}   JS info   10:21:12.00 shinytest2; shiny:idle
-{chromote}   JS info   10:21:12.02 shinytest2; shiny:busy
-{shinytest2} R  info   10:22:51.12 Error while initializing AppDriver:
-                                   Shiny app did not become stable in 1e+05ms.
-                                   Message: An error occurred while waiting for Shiny to be stable
-                                   Caused by error in `app_wait_for_idle()`:
-                                   ! An error occurred while waiting for Shiny to be stable
-{shiny}      R  stderr ----------- Loading required package: shiny
-{shiny}      R  stderr ----------- Attempting to load the environment ‘package:nestcolor’
-{shiny}      R  stderr ----------- Loading required package: teal.data
-{shiny}      R  stderr ----------- Loading required package: teal.code
-{shiny}      R  stderr ----------- Loading required package: teal.slice
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- You are using teal version 0.15.2.9026
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Attaching package: ‘teal’
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- The following objects are masked from ‘package:teal.slice’:
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr -----------     as.teal_slices, teal_slices
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Running application in test mode.
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6357
-{shiny}      R  stderr ----------- Initializing reporter_previewer_module
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   153: facet_ggplot_call
-{shiny}      R  stderr -----------   152: &lt;reactive&gt;
-{shiny}      R  stderr -----------   136: output_q
-{shiny}      R  stderr -----------   135: &lt;reactive&gt;
-{shiny}      R  stderr -----------   119: plot_r
-{shiny}      R  stderr -----------   110: renderUI
-{shiny}      R  stderr -----------   109: func
-{shiny}      R  stderr -----------    96: renderFunc
-{shiny}      R  stderr -----------    95: output$teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main
-{shiny}      R  stderr -----------    14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------    10: base::do.call
-{shiny}      R  stderr -----------     9: base::saveRDS
-{shiny}      R  stderr -----------     8: base::withCallingHandlers
-{shiny}      R  stderr -----------     7: doTryCatch
-{shiny}      R  stderr -----------     6: tryCatchOne
-{shiny}      R  stderr -----------     5: tryCatchList
-{shiny}      R  stderr -----------     2: tryCatchList
-{shiny}      R  stderr -----------     1: base::tryCatch
-{shiny}      R  stderr ----------- Warning: Error in facet_ggplot_call: non-interactive browser() -- left over from debugging?
-{shiny}      R  stderr -----------   14: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   12: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   11: &lt;Anonymous&gt;
-{shiny}      R  stderr -----------   10: base::do.call
-{shiny}      R  stderr -----------    9: base::saveRDS
-{shiny}      R  stderr -----------    8: base::withCallingHandlers
-{shiny}      R  stderr -----------    7: doTryCatch
-{shiny}      R  stderr -----------    6: tryCatchOne
-{shiny}      R  stderr -----------    5: tryCatchList
-{shiny}      R  stderr -----------    2: tryCatchList
-{shiny}      R  stderr -----------    1: base::tryCatch
-
-
-Caused by error in `app_initialize_()`:
-! Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "geom_line" \n when evaluating qenv code:\np &amp;lt;- ggplot2::ggplot(ANL) + ggplot2::aes(x = conc, y = uptake) + ggplot2::geom_point(alpha = 1, size = 6, pch = 21) + ggplot2::labs(subtitle = "Plot generated by Bivariate Module", x = "[conc]", y = "[uptake]") + ggplot2::theme_gray() + ggplot2::facet_grid(rows = dplyr::vars(Type), cols = dplyr::vars(Treatment), scales = "fixed") + geom_line(size = 1)&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
 Backtrace:
-     ▆
-  1. ├─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:108:3
-  2. │ └─TealAppDriver$new(...) at test-shinytest2-tm_g_bivariate.R:10:3
-  3. │   └─teal (local) initialize(...)
-  4. │     ├─base::suppressWarnings(...)
-  5. │     │ └─base::withCallingHandlers(...)
-  6. │     └─super$initialize(...)
-  7. │       └─shinytest2:::app_initialize(...)
-  8. │         ├─base::withCallingHandlers(...)
-  9. │         └─shinytest2:::app_initialize_(self, private, ..., view = view)
- 10. │           ├─base::withCallingHandlers(...)
- 11. │           └─self$wait_for_idle(duration = 200, timeout = private$load_timeout)
- 12. │             └─shinytest2:::app_wait_for_idle(...)
- 13. │               └─shinytest2:::app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
- 14. │                 └─rlang::abort(..., app = self, call = call)
- 15. │                   └─rlang:::signal_abort(cnd, .file)
- 16. │                     └─base::signalCondition(cnd)
- 17. ├─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 18. │ └─shinytest2:::app_abort(...)
- 19. │   └─rlang::abort(..., app = self, call = call)
- 20. │     └─rlang:::signal_abort(cnd, .file)
- 21. │       └─base::signalCondition(cnd)
- 22. └─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 23.   └─shinytest2:::app_abort(...)
- 24.     └─rlang::abort(..., app = self, call = call)</error>
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:119:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.663" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:122:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Treatment]", yfacet_label = "[Type]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:122:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.649000000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:125:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Treatment]", yfacet_label = "[Type]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:125:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.625" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:128:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Treatment]", yfacet_label = "[Plant]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:128:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.637" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:131:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Type]", yfacet_label = "[Plant]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:131:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.579999999999998" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:134:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Type]", yfacet_label = "[Plant]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:134:3
+ 2.   └─testthat::expect_null(...)</failure>
+    </testcase>
+    <testcase time="0.574000000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
+      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_g_bivariate.R:137:3')">self$get_html(".shiny-output-error-validation") is not NULL
+
+`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-bivariate_plots-module-myplot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "add_facet_labels" \n when evaluating qenv code:\np &amp;lt;- add_facet_labels(p, xfacet_label = "[Type]", yfacet_label = "[Plant]")&lt;/div&gt;')
+`expected` is NULL
+No validation error is observed
+Backtrace:
+    ▆
+ 1. └─app$expect_no_validation_error() at test-shinytest2-tm_g_bivariate.R:137:3
+ 2.   └─testthat::expect_null(...)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="18" skipped="0" failures="0" errors="0" time="0.175">
-    <testcase time="0.0589999999999691" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00799999999998136" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0110000000000241" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.00699999999994816" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="18" skipped="0" failures="0" errors="0" time="1.877">
+    <testcase time="1.755" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.0130000000000017" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="21" skipped="0" failures="0" errors="0" time="0.071">
-    <testcase time="0.0159999999999627" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00399999999996226" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.0029999999999859" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00300000000004275" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="21" skipped="0" failures="0" errors="0" time="0.073">
+    <testcase time="0.0169999999999995" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00400000000000134" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="4" skipped="0" failures="0" errors="0" time="0.019">
-    <testcase time="0.00600000000002865" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.0040000000000191" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00399999999996226" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="front_page" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="4" skipped="0" failures="0" errors="0" time="0.018">
+    <testcase time="0.00600000000000023" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00399999999999778" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="15" skipped="0" failures="0" errors="0" time="0.026">
-    <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.0029999999999859" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.0010000000000332" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.0029999999999859" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00200000000000955" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+  <testsuite name="g_expert_cl" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="15" skipped="0" failures="0" errors="0" time="0.03">
+    <testcase time="0.00499999999999901" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00400000000000134" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="6" skipped="0" failures="0" errors="0" time="0.028">
-    <testcase time="0.00900000000001455" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.0029999999999859" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.007000000000005" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.0040000000000191" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.0029999999999859" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00200000000000955" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="6" skipped="0" failures="0" errors="0" time="0.024">
+    <testcase time="0.00900000000000034" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00500000000000256" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-15T10:22:51Z" hostname="57b2569e694b" tests="3" skipped="0" failures="0" errors="0" time="0.013">
-    <testcase time="0.00499999999999545" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.0040000000000191" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.0040000000000191" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+  <testsuite name="variable_browser" timestamp="2024-04-15T10:33:42Z" hostname="d1ba7696e1d0" tests="3" skipped="0" failures="0" errors="0" time="0.012">
+    <testcase time="0.00499999999999901" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00400000000000134" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
