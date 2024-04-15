@@ -1,7 +1,7 @@
 # Import non-exported TealAppDriver from `teal` package
 
 init_teal_app_driver <- function(...) {
-  shiny__shinyApp <- shiny::shinyApp
+  shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
   testthat::with_mocked_bindings(
     {
       TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
