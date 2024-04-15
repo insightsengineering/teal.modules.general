@@ -60,7 +60,37 @@ testthat::test_that("e2e - tm_a_regerssion: outlier definition and label are vis
   app$expect_no_shiny_error()
 
   testthat::expect_true(app$get_active_module_input("show_outlier"))
+  testthat::expect_true(app$is_visible(app$active_module_element("outlier-label")))
   testthat::expect_true(app$is_visible(app$active_module_element("label_var_input")))
+
+  app$stop()
+})
+
+testthat::test_that("e2e - tm_a_regerssion: outlier definition and label have default values and label text", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_a_regression()
+  app$expect_no_shiny_error()
+
+  testthat::expect_match(
+    app$active_module_element_text("label_var_input"),
+    "Outlier label",
+    fixed = TRUE
+  )
+  outlier_label <- app$active_module_element_text("outlier-label")
+  testthat::expect_match(
+    outlier_label,
+    "Outlier definition:",
+    fixed = TRUE
+  )
+  testthat::expect_match(
+    outlier_label,
+    "distance greater than the value on the slider times the mean of the Cook",
+    fixed = TRUE
+  )
+
+  testthat::expect_identical(app$get_active_module_input("label_var"), "uptake")
+  testthat::expect_identical(app$get_active_module_input("outlier"), 9)
 
   app$stop()
 })
@@ -99,7 +129,23 @@ testthat::test_that("e2e - tm_a_regerssion: clicking plot settings accordion pan
 
   testthat::expect_true(app$is_visible(app$active_module_element("alpha-label")))
   testthat::expect_true(app$is_visible(app$active_module_element("label_min_segment-label")))
-  testthat::expect_true(app$is_visible(app$active_module_element("module-ggtheme-label")))
+  testthat::expect_true(app$is_visible(app$active_module_element("ggtheme-label")))
+
+  app$stop()
+})
+
+testthat::test_that("e2e - tm_a_regerssion: plot settings have default values", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_a_regression()
+  app$expect_no_shiny_error()
+
+  app$click(selector = "#_div > div.panel-heading.collapsed")
+
+  testthat::expect_identical(app$get_active_module_input("size"), 2)
+  testthat::expect_identical(app$get_active_module_input("alpha"), 1)
+  testthat::expect_identical(app$get_active_module_input("label_min_segment"), 0.5)
+  testthat::expect_identical(app$get_active_module_input("ggtheme"), "gray")
 
   app$stop()
 })
