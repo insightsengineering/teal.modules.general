@@ -802,7 +802,7 @@ srv_g_scatterplot <- function(id,
         )
       }
 
-      if (rug_plot) plot_call <- substitute(expr = plot_call + geom_rug(), env = list(plot_call = plot_call))
+      if (rug_plot) plot_call <- substitute(expr = plot_call + ggplot2::geom_rug(), env = list(plot_call = plot_call))
 
       plot_label_generator <- function(rhs_formula = quote(y ~ 1),
                                        show_form = input$show_form,
@@ -812,14 +812,14 @@ srv_g_scatterplot <- function(id,
                                        label_size = input$label_size) {
         stopifnot(sum(show_form, show_r2, show_count) >= 1)
         aes_label <- paste0(
-          "aes(",
+          "ggplot2::aes(",
           if (show_count) "n = n, ",
           "label = ",
           if (sum(show_form, show_r2, show_count) > 1) "paste(",
           paste(
             c(
-              if (show_form) "stat(eq.label)",
-              if (show_r2) "stat(adj.rr.label)",
+              if (show_form) "ggplot2::stat(eq.label)",
+              if (show_r2) "ggplot2::stat(adj.rr.label)",
               if (show_count) "paste('N ~`=`~', n)"
             ),
             collapse = ", "
@@ -936,7 +936,7 @@ srv_g_scatterplot <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
