@@ -150,7 +150,6 @@ facet_ggplot_call <- function(row_facet = character(0),
     "fixed"
   }
 
-  browser()
   if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     NULL
   } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
