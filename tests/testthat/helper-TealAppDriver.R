@@ -1,5 +1,8 @@
-# Import non-exported TealAppDriver from `teal` package
-
+# Initialization function to create a new TealAppDriver object
+#
+# It handles the library loading of itself and necessary packages used without
+# package prefixes.
+# Related to https://github.com/rstudio/shinytest2/issues/381
 init_teal_app_driver <- function(...) {
   shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
   testthat::with_mocked_bindings(
