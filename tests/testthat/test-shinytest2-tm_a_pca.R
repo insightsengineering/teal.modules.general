@@ -106,8 +106,11 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate
   # Pre-processing
 
   app_driver$set_module_input("standardization", "center")
+  app_driver$expect_no_validation_error
   app_driver$set_module_input("standardization", "center_scale")
+  app_driver$expect_no_validation_error
   app_driver$set_module_input("standardization", "none") # Initial value
+  app_driver$expect_no_validation_error
 
   # NA Action
 
