@@ -34,7 +34,7 @@ app_driver_tm_missing_data <- function() {
   )
 }
 
-test_that("e2e: tm_missing_data initializes without errors and shows encodings", {
+test_that("e2e: tm_missing_data initializes without errors", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -55,13 +55,14 @@ test_that("e2e: Default settings and visibility of the summary graph", {
 
 
   app_driver$click(selector = app_driver$active_module_element("iris-filter_na"))
+  app_driver$expect_no_validation_error()
 
   app_driver$click(selector = app_driver$active_module_element("iris-any_na"))
   app_driver$expect_no_validation_error()
 
   app_driver$set_module_input("iris-ggtheme", "classic", timeout_ = 10000)
 
-  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("iris-summary_plot")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s-%s", app_driver$active_module_element("iris-summary_plot"), "plot_out_main")))
 
   app_driver$stop()
 })
@@ -76,7 +77,7 @@ test_that("e2e: Check default settings and visibility of the combinations graph 
 
   app_driver$set_module_input(input_id = "iris-summary_type", "Combinations")
   app_driver$expect_no_validation_error()
-  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("iris-combination_plot")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s-%s",app_driver$active_module_element("iris-combination_plot"), "plot_out_main")))
 
   app_driver$stop()
 })
@@ -86,6 +87,7 @@ test_that("e2e: Validate functionality and UI response for 'By Variable Levels'"
   app_driver <- app_driver_tm_missing_data()
   # BY variablelevels
   app_driver$set_module_input(input_id = "iris-summary_type", "By Variable Levels")
+  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
 
