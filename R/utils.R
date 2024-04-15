@@ -128,7 +128,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   })
 }
 
-#' Add the package prefix for `ggplot2::facet_grid` and `dplyr::vars`
+# Add the package prefix for `ggplot2::facet_grid` and `dplyr::vars`
 add_facet_call_pkg_prefix <- function(fun_call) {
   fun_call_str <- gsub("^facet_grid\\(", "ggplot2::facet_grid\\(", deparse(fun_call))
   fun_call_str <- gsub("vars\\(", "dplyr::vars\\(", fun_call_str)
