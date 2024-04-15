@@ -11,8 +11,27 @@ init_teal_app_driver <- function(...) {
       TealAppDriver$new(...)
     },
     shinyApp = function(ui, server, ...) {
+      # Load the package in the environment where the server function is defined
+      # The pkgload::load_all() method is used on interactive and has a caveat
+      # when one of the functions use `system.file` as it may return an empty
+      # string
+      load_package_call <- if (testthat::is_testing()) {
+        bquote(
+          library(.(testthat::testing_package()), character.only = TRUE)
+        )
+      } else {
+        bquote(
+          pkgload::load_all(
+            .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
+            export_all = FALSE,
+            attach_testthat = FALSE,
+            warn_conflicts = FALSE
+          )
+        )
+      }
+
       functionBody(server) <- bquote({
-        library(.(testthat::testing_package()), character.only = TRUE)
+        .(load_package_call)
         # Packages in Depends that are used in modules' output
         library(ggmosaic)
         library(ggplot2)
