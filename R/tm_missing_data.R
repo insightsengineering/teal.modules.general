@@ -730,7 +730,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
               labels = c("Present", "Missing")
             ) +
-            ggplot2::scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+            ggplot2::scale_y_continuous(
+              labels = scales::percent_format(),
+              breaks = seq(0, 1, by = 0.1),
+              expand = c(0, 0)
+            ) +
             ggplot2::geom_text(
               ggplot2::aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
               hjust = 1,
@@ -803,7 +807,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
                 fill = ~isna
               ) +
               ggplot2::geom_bar(alpha = 1, stat = "identity", position = "fill") +
-              ggplot2::scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+              ggplot2::scale_y_continuous(
+                labels = scales::percent_format(),
+                breaks = seq(0, 1, by = 0.1),
+                expand = c(0, 0)
+              ) +
               ggplot2::scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
@@ -972,7 +980,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::distinct() %>%
               ggplot2::ggplot(ggplot2::aes(x = id, y = n)) +
               ggplot2::geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
-              ggplot2::geom_text(ggplot2::aes(label = n), position = ggplot2::position_dodge(width = 0.9), vjust = -0.25) +
+              ggplot2::geom_text(
+                ggplot2::aes(label = n),
+                position = ggplot2::position_dodge(width = 0.9),
+                vjust = -0.25
+              ) +
               ggplot2::ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
               labs1 +
               ggthemes1 +
