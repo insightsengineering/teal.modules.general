@@ -27,29 +27,3 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
   teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[datasets]
   data
 }
-
-# local app drivers for module testing ----------------------------------------
-# based on examples
-
-app_driver_tm_front_page <- function() {
-  data <- simple_cdisc_data()
-  data <- within(data, {
-    attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
-  })
-
-  TealAppDriver$new(
-    data = data,
-    modules = tm_front_page(
-      label = "Data Table",
-      header_text = c(
-        "Important information" = "It can go here.",
-        "Other information" = "Can go here."
-      ),
-      tables = list("MTCARS" = head(mtcars, 5), "IRIS" = head(iris, 5)),
-      additional_tags = HTML("Additional HTML or shiny tags go here"),
-      footnotes = "This is a footnote",
-      show_metadata = TRUE
-    ),
-    timeout = 3000
-  )
-}
