@@ -36,8 +36,10 @@ testthat::test_that("e2e - tm_a_regerssion:
   plot_types <- app$active_module_element_text("plot_type > div")
 
   possible_choices <-
-    c("Response vs Regressor", "Scale-Location", "Residuals vs Leverage",
-      "Residuals vs Fitted", "Normal Q-Q", "Cook's distance", "Cook's dist vs Leverage")
+    c(
+      "Response vs Regressor", "Scale-Location", "Residuals vs Leverage",
+      "Residuals vs Fitted", "Normal Q-Q", "Cook's distance", "Cook's dist vs Leverage"
+    )
 
   invisible(
     lapply(
