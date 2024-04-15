@@ -46,11 +46,15 @@ test_that("e2e: Default settings and visibility of the summary graph", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
-  testthat::expect_equal(app_driver$get_active_module_input("iris-summary_type"),
-                         "Summary")
+  testthat::expect_equal(
+    app_driver$get_active_module_input("iris-summary_type"),
+    "Summary"
+  )
 
-  testthat::expect_setequal(app_driver$get_active_module_input("iris-variables_select"),
-                            c("Petal.Length", "Sepal.Length", "Petal.Width", "Species", "Sepal.Width"))
+  testthat::expect_setequal(
+    app_driver$get_active_module_input("iris-variables_select"),
+    c("Petal.Length", "Sepal.Length", "Petal.Width", "Species", "Sepal.Width")
+  )
 
 
 
@@ -77,7 +81,7 @@ test_that("e2e: Check default settings and visibility of the combinations graph 
 
   app_driver$set_module_input(input_id = "iris-summary_type", "Combinations")
   app_driver$expect_no_validation_error()
-  testthat::expect_true(app_driver$is_visible(sprintf("%s-%s",app_driver$active_module_element("iris-combination_plot"), "plot_out_main")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s-%s", app_driver$active_module_element("iris-combination_plot"), "plot_out_main")))
 
   app_driver$stop()
 })
@@ -91,16 +95,22 @@ test_that("e2e: Validate functionality and UI response for 'By Variable Levels'"
   app_driver$expect_no_validation_error()
 
 
-  testthat::expect_equal(app_driver$get_active_module_input("iris-group_by_var"),
-                         "Species")
-  testthat::expect_setequal(app_driver$get_active_module_input("iris-group_by_vals"),
-                            c("NA", "setosa", "versicolor", "virginica"))
+  testthat::expect_equal(
+    app_driver$get_active_module_input("iris-group_by_var"),
+    "Species"
+  )
+  testthat::expect_setequal(
+    app_driver$get_active_module_input("iris-group_by_vals"),
+    c("NA", "setosa", "versicolor", "virginica")
+  )
 
   app_driver$set_module_input(input_id = "iris-group_by_vals", c("versicolor", "virginica"))
   app_driver$expect_no_validation_error()
 
-  testthat::expect_equal(app_driver$get_active_module_input("iris-count_type"),
-                         "counts")
+  testthat::expect_equal(
+    app_driver$get_active_module_input("iris-count_type"),
+    "counts"
+  )
   app_driver$set_module_input("iris-count_type", "proportions")
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("iris-levels_table")))
 
