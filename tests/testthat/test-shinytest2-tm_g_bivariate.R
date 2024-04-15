@@ -100,6 +100,8 @@ testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when fac
   testthat::expect_false(app$is_visible(col_facet_selector))
   testthat::expect_false(app$is_visible(x_scale_selector))
   testthat::expect_false(app$is_visible(y_scale_selector))
+
+  app$stop()
 })
 
 testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outputs without validation errors", {
@@ -139,4 +141,6 @@ testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outp
   app$set_module_input("swap_axes", TRUE)
 
   app$set_module_input("ggtheme", "light")
+
+  app$stop()
 })
