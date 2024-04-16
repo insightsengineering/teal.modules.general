@@ -92,7 +92,7 @@ testthat::test_that("e2e - tm_a_regerssion: outlier definition and label have de
   )
 
   testthat::expect_identical(app$get_active_module_input("label_var"), "uptake")
-  testthat::expect_identical(app$get_active_module_input("outlier"), 9)
+  testthat::expect_identical(app$get_active_module_input("outlier"), 9L)
 
   app$stop()
 })
