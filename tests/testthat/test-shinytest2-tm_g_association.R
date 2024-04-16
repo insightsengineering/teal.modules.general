@@ -9,6 +9,7 @@ testthat::test_that("e2e - tm_g_association: ", {
     "Plant"
   )
   app$set_active_module_input("ref-dataset_CO2_singleextract-select", "Type")
+  app$wait_for_idle()
   app$expect_no_validation_error()
   testthat::expect_identical(
     app$get_active_module_input("ref-dataset_CO2_singleextract-select"),
@@ -20,6 +21,7 @@ testthat::test_that("e2e - tm_g_association: ", {
     "Treatment"
   )
   app$set_active_module_input("vars-dataset_CO2_singleextract-select", "Plant")
+  app$wait_for_idle()
   app$expect_no_validation_error()
   testthat::expect_identical(
     app$get_active_module_input("vars-dataset_CO2_singleextract-select"),
@@ -33,6 +35,7 @@ testthat::test_that("e2e - tm_g_association: ", {
   app$set_active_module_input("association", FALSE)
   app$set_active_module_input("show_dist", TRUE)
   app$set_active_module_input("log_transformation", TRUE)
+  app$wait_for_idle()
   app$expect_no_shiny_error()
 
   # Plot settings are not visible.
@@ -42,6 +45,7 @@ testthat::test_that("e2e - tm_g_association: ", {
   testthat::expect_true(app$is_visible(app$active_module_element("swap_axes")))
   app$set_active_module_input("swap_axes", TRUE)
   app$set_active_module_input("rotate_xaxis_labels", TRUE)
+  app$wait_for_idle()
   app$expect_no_validation_error()
 
   app$stop()
