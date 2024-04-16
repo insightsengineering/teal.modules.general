@@ -64,7 +64,7 @@ test_that("e2e: Default settings and visibility of the summary graph", {
   app_driver$click(selector = app_driver$active_module_element("iris-any_na"))
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("iris-ggtheme", "classic", timeout_ = 10000)
+  app_driver$set_active_module_input("iris-ggtheme", "classic", timeout_ = 10000)
 
   testthat::expect_true(
     app_driver$is_visible(
