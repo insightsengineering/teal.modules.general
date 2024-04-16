@@ -50,7 +50,7 @@ test_that("e2e: tm_data_table variable selection", {
   )
 
   # new variable selection
-  app_driver$set_module_input("iris-variables", c("Petal.Width", "Species"))
+  app_driver$set_active_module_input("iris-variables", c("Petal.Width", "Species"))
   app_driver$expect_no_validation_error()
   testthat::expect_equal(
     app_driver$get_active_module_input("iris-variables"),
