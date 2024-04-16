@@ -1,5 +1,37 @@
-# Import non-exported TealAppDriver from `teal` package
-TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
+# Initialization function to create a new TealAppDriver object
+#
+# It handles the library loading of itself and necessary packages used without
+# package prefixes.
+# Related to https://github.com/rstudio/shinytest2/issues/381
+init_teal_app_driver <- function(...) {
+  shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
+  testthat::with_mocked_bindings(
+    {
+      TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
+      TealAppDriver$new(...)
+    },
+    shinyApp = function(ui, server, ...) {
+      # Load the package in the environment where the server function is defined
+      # The pkgload::load_all() method is used on interactive and has a caveat
+      # when one of the functions use `system.file` as it may return an empty
+      # string
+      functionBody(server) <- bquote({
+        pkgload::load_all(
+          .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
+          export_all = FALSE,
+          attach_testthat = FALSE,
+          warn_conflicts = FALSE
+        )
+        library(.(testthat::testing_package()), character.only = TRUE)
+        .(functionBody(server))
+      })
+      print(server)
+      do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
+    },
+    # shinyApp is being called without prefix, so it needs to be mocked in {teal}
+    .package = "teal"
+  )
+}
 
 # Helper function
 simple_teal_data <- function() {
