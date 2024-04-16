@@ -38,7 +38,7 @@ app_driver_tm_g_association <- function() {
   })
   teal.data::datanames(data) <- c("CO2")
 
-  app <- TealAppDriver$new(
+  TealAppDriver$new(
     data = data,
     modules = tm_g_association(
       ref = teal.transform::data_extract_spec(
