@@ -1,4 +1,26 @@
-test_that("e2e: tm_front_page initializes without errors", {
+app_driver_tm_data_table <- function() {
+  app <- TealAppDriver$new(
+    data = simple_teal_data(),
+    modules = tm_data_table(
+      label = "Data Table",
+      variables_selected = list(
+        iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+      ),
+      datasets_selected = c("iris", "mtcars"),
+      dt_args = list(caption = "Table Caption"),
+      dt_options = list(
+        searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
+        scrollX = TRUE
+      ),
+      server_rendering = FALSE,
+      pre_output = NULL,
+      post_output = NULL
+    ),
+    timeout = 3000
+  )
+}
+
+test_that("e2e: tm_data_table initializes without errors", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
@@ -6,7 +28,7 @@ test_that("e2e: tm_front_page initializes without errors", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_front_page displays data table", {
+test_that("e2e: tm_data_table displays data table", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
@@ -17,7 +39,7 @@ test_that("e2e: tm_front_page displays data table", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_front_page variable selection", {
+test_that("e2e: tm_data_table variable selection", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
