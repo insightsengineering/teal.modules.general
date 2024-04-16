@@ -22,7 +22,7 @@ testthat::test_that("e2e - tm_a_regerssion:
     app$get_active_module_input("regressor-dataset_CO2_singleextract-select"),
     "conc"
   )
-  app$set_module_input("regressor-dataset_CO2_singleextract-select", "Treatment")
+  app$set_active_module_input("regressor-dataset_CO2_singleextract-select", "Treatment")
   app$stop()
 })
 
@@ -46,7 +46,7 @@ testthat::test_that("e2e - tm_a_regerssion:
       possible_choices,
       function(choice) {
         expect_match(plot_types, choice, fixed = TRUE)
-        app$set_module_input("plot_type", choice)
+        app$set_active_module_input("plot_type", choice)
         app$expect_no_validation_error()
       }
     )
@@ -103,7 +103,7 @@ testthat::test_that("e2e - tm_a_regerssion: unchecking display outlier hides out
   app <- app_driver_tm_a_regression()
   app$expect_no_shiny_error()
 
-  app$set_module_input("show_outlier", FALSE)
+  app$set_active_module_input("show_outlier", FALSE)
   testthat::expect_false(app$is_visible(app$active_module_element("outlier-label")))
   testthat::expect_false(app$is_visible(app$active_module_element("label_var_input")))
 
