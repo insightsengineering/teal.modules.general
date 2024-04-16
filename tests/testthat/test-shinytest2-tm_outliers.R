@@ -24,6 +24,27 @@ testthat::test_that("e2e - tm_outliers:
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
 
+  testthat::expect_identical(
+    app_driver$get_active_module_input("outlier_var-dataset_CO2_singleextract-select"),
+    "uptake"
+  )
+  app_driver$set_active_module_input("outlier_var-dataset_CO2_singleextract-select", "conc")
+  app_driver$expect_no_shiny_error()
+
+  testthat::expect_identical(
+    app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col"),
+    "Plant"
+  )
+  app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", "Type")
+  app_driver$expect_no_shiny_error()
+
+  # testthat::expect_identical(
+  #   app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals"),
+  #   "TODO: THIS DOESNT WORK"
+  # )
+  # app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", "TODO")
+  # app_driver$expect_no_shiny_error()
+
   app_driver$stop()
 })
 
