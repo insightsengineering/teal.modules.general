@@ -86,7 +86,7 @@ test_that("e2e: Check default settings and visibility of the combinations graph 
 
   # combination graph
 
-  app_driver$set_module_input(input_id = "iris-summary_type", "Combinations")
+  app_driver$set_active_module_input(input_id = "iris-summary_type", "Combinations")
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
