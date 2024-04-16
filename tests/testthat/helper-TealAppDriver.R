@@ -15,28 +15,17 @@ init_teal_app_driver <- function(...) {
       # The pkgload::load_all() method is used on interactive and has a caveat
       # when one of the functions use `system.file` as it may return an empty
       # string
-      load_package_call <- if (testthat::is_testing()) {
-        bquote(
-          library(.(testthat::testing_package()), character.only = TRUE)
-        )
-      } else {
-        bquote(
-          pkgload::load_all(
-            .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
-            export_all = FALSE,
-            attach_testthat = FALSE,
-            warn_conflicts = FALSE
-          )
-        )
-      }
-
       functionBody(server) <- bquote({
-        .(load_package_call)
-        # Packages in Depends that are used in modules' output
-        library(ggmosaic)
-        library(ggplot2)
+        pkgload::load_all(
+          .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
+          export_all = FALSE,
+          attach_testthat = FALSE,
+          warn_conflicts = FALSE
+        )
+        library(.(testthat::testing_package()), character.only = TRUE)
         .(functionBody(server))
       })
+      print(server)
       do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
     },
     # shinyApp is being called without prefix, so it needs to be mocked in {teal}
