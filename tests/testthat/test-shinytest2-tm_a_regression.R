@@ -1,5 +1,4 @@
-testthat::test_that("e2e - tm_a_regerssion:
-  data extract spec elements are initialized with the default values specified by response and regressor arg", {
+testthat::test_that("e2e - tm_a_regerssion: data parameter and module label is passed properly", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_a_regression()
@@ -13,9 +12,19 @@ testthat::test_that("e2e - tm_a_regerssion:
   encoding_dataset <- app$get_text("#teal-main_ui-root-regression .help-block")
   testthat::expect_match(encoding_dataset, "Dataset:[\n ]*CO2", all = FALSE)
 
+  app$stop()
+})
+
+testthat::test_that("e2e - tm_a_regerssion:
+  data extract spec elements are initialized with the default values specified by response and regressor arg", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_a_regression()
+  app$expect_no_shiny_error()
+
   testthat::expect_identical(
-    app$get_active_module_input("plot_type"),
-    "Normal Q-Q"
+    app$active_module_element_text("response-dataset_CO2_singleextract-select_selected_text"),
+    "uptake"
   )
 
   testthat::expect_identical(
@@ -23,6 +32,19 @@ testthat::test_that("e2e - tm_a_regerssion:
     "conc"
   )
   app$set_active_module_input("regressor-dataset_CO2_singleextract-select", "Treatment")
+  app$stop()
+})
+
+testthat::test_that("e2e - tm_a_regerssion: plot_type is set properly", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_a_regression()
+  app$expect_no_shiny_error()
+
+  testthat::expect_identical(
+    app$get_active_module_input("plot_type"),
+    "Normal Q-Q"
+  )
   app$stop()
 })
 
