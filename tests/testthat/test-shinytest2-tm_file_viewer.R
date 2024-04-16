@@ -19,7 +19,8 @@ test_that("e2e: tm_file_viewer initializes without errors and shows files tree s
   app_driver <- app_driver_tm_file_viewer()
 
   app_driver$expect_no_shiny_error()
-
+  # check valid path
+  app_driver$expect_no_validation_error()
   # encoding are visible
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("tree")))
   list_files <- app_driver$get_html_rvest(selector = app_driver$active_module_element("tree")) %>%
@@ -30,7 +31,6 @@ test_that("e2e: tm_file_viewer initializes without errors and shows files tree s
     c("folder", "png", "txt", "url")
   )
 
-
   app_driver$stop()
 })
 
@@ -40,6 +40,14 @@ test_that("e2e: tm_file_viewer shows selected image file", {
 
   app_driver$click(selector = "[id= '4_anchor']")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("output")))
+
+  img_src <- app_driver$get_html_rvest(app_driver$active_module_element("output")) %>%
+    rvest::html_element("img") %>%
+    rvest::html_attr("src")
+
+  testthat::expect_true(!is.na(pre_text))
+  testthat::expect_true(length(pre_text) > 0)
+
   app_driver$stop()
 })
 
@@ -49,6 +57,13 @@ test_that("e2e: tm_file_viewer shows selected text file", {
 
   app_driver$click(selector = "[id= '5_anchor']")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("output")))
+
+  pre_text <- app_driver$get_html_rvest(app_driver$active_module_element("output")) %>%
+    rvest::html_element("pre") %>%
+    rvest::html_text()
+  testthat::expect_true(!is.na(pre_text))
+  testthat::expect_true(length(pre_text) > 0)
+
   app_driver$stop()
 })
 
