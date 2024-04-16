@@ -118,7 +118,7 @@ test_that("e2e: Validate functionality and UI response for 'By Variable Levels'"
     c("NA", "setosa", "versicolor", "virginica")
   )
 
-  app_driver$set_module_input(input_id = "iris-group_by_vals", c("versicolor", "virginica"))
+  app_driver$set_active_module_input(input_id = "iris-group_by_vals", c("versicolor", "virginica"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_equal(
