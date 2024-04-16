@@ -125,7 +125,7 @@ test_that("e2e: Validate functionality and UI response for 'By Variable Levels'"
     app_driver$get_active_module_input("iris-count_type"),
     "counts"
   )
-  app_driver$set_module_input("iris-count_type", "proportions")
+  app_driver$set_active_module_input("iris-count_type", "proportions")
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("iris-levels_table")))
 
   app_driver$stop()
