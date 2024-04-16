@@ -1,5 +1,5 @@
 app_driver_tm_data_table <- function() {
-TealAppDriver$new(
+  TealAppDriver$new(
     data = simple_teal_data(),
     modules = tm_data_table(
       label = "Data Table",
