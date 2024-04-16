@@ -104,7 +104,7 @@ test_that("e2e: Validate functionality and UI response for 'By Variable Levels'"
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # BY variablelevels
-  app_driver$set_module_input(input_id = "iris-summary_type", "By Variable Levels")
+  app_driver$set_active_module_input(input_id = "iris-summary_type", "By Variable Levels")
   app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
