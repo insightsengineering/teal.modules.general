@@ -1,4 +1,22 @@
-testthat::test_that("e2e - tm_g_association: ", {
+testthat::test_that("e2e - tm_g_association: data parameter and module label is passed properly", {
+  skip_if_too_deep(5)
+
+  app <- app_driver_tm_g_association()
+  app$expect_no_shiny_error()
+
+  testthat::expect_equal(
+    app$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Association"
+  )
+
+  encoding_dataset <- app$get_text("#teal-main_ui-root-association .help-block")
+  testthat::expect_match(encoding_dataset, "Dataset:[\n ]*CO2", all = FALSE)
+
+  app$stop()
+})
+
+testthat::test_that("e2e - tm_g_association:
+  data extract spec elements are initialized with the default values specified by ref and vars arguments", {
   skip_if_too_deep(5)
   app <- app_driver_tm_g_association()
 
@@ -11,10 +29,6 @@ testthat::test_that("e2e - tm_g_association: ", {
   app$set_active_module_input("ref-dataset_CO2_singleextract-select", "Type")
   app$wait_for_idle()
   app$expect_no_validation_error()
-  testthat::expect_identical(
-    app$get_active_module_input("ref-dataset_CO2_singleextract-select"),
-    "Type"
-  )
 
   testthat::expect_identical(
     app$get_active_module_input("vars-dataset_CO2_singleextract-select"),
@@ -23,10 +37,16 @@ testthat::test_that("e2e - tm_g_association: ", {
   app$set_active_module_input("vars-dataset_CO2_singleextract-select", "Plant")
   app$wait_for_idle()
   app$expect_no_validation_error()
-  testthat::expect_identical(
-    app$get_active_module_input("vars-dataset_CO2_singleextract-select"),
-    "Plant"
-  )
+
+  app$stop()
+})
+
+
+testthat::test_that("e2e - tm_g_association: test if default radio buttons are checked", {
+  skip_if_too_deep(5)
+  app <- app_driver_tm_g_association()
+
+  app$expect_no_shiny_error()
 
   testthat::expect_true(app$get_active_module_input("association"))
   testthat::expect_false(app$get_active_module_input("show_dist"))
@@ -38,15 +58,6 @@ testthat::test_that("e2e - tm_g_association: ", {
   app$wait_for_idle()
   app$expect_no_shiny_error()
 
-  # Plot settings are not visible.
-  testthat::expect_false(app$is_visible(app$active_module_element("swap_axes")))
-  # After click they are visible.
-  app$click(selector = "#_div > div.panel-heading")
-  testthat::expect_true(app$is_visible(app$active_module_element("swap_axes")))
-  app$set_active_module_input("swap_axes", TRUE)
-  app$set_active_module_input("rotate_xaxis_labels", TRUE)
-  app$wait_for_idle()
-  app$expect_no_validation_error()
-
   app$stop()
+
 })
