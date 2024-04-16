@@ -39,7 +39,7 @@ test_that("e2e: tm_data_table displays data table", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_data_table variable selection", {
+test_that("e2e: tm_data_table verify default variable selection and set new selection", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
