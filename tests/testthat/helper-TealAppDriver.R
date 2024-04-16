@@ -13,7 +13,7 @@ init_teal_app_driver <- function(...) {
     shinyApp = function(ui, server, ...) {
       functionBody(server) <- bquote({
         # Hint to shinytest2 that this package is should be available (via {globals})
-        .local_add_facet_labels <- add_facet_labels
+        .hint_to_load_package <- add_facet_labels
         .(functionBody(server))
       })
 
