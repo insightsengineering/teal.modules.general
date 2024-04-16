@@ -1,7 +1,7 @@
 # Initialization function to create a new TealAppDriver object
 #
-# It handles the library loading of itself and necessary packages used without
-# package prefixes.
+# By manipulating the server function as below, we can hint shinytest2 to load
+# this package and its "Depends".
 # Related to https://github.com/rstudio/shinytest2/issues/381
 init_teal_app_driver <- function(...) {
   shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
