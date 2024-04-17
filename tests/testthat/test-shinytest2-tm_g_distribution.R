@@ -70,7 +70,7 @@ testthat::test_that("e2e - tm_g_distribution: module is initialised with the spe
   testthat::expect_equal(app$get_active_module_input("tabs"), "Histogram")
 
   # Encodings in the QQplot tab
-  app$set_module_input("tabs", "QQplot")
+  app$set_active_module_input("tabs", "QQplot")
   testthat::expect_true(app$get_active_module_input("qq_line"))
 
   app$stop()
@@ -82,17 +82,17 @@ testthat::test_that("e2e - tm_g_distribution: encoding inputs produce output wit
   app <- app_driver_tm_g_distribution()
 
   # Encodings in the Histogram tab
-  app$set_module_input("group_i-dataset_ADSL_singleextract-filter1-col", "ARM")
-  app$set_module_input("group_i-dataset_ADSL_singleextract-filter1-vals", c("A: Drug X", "C: Combination"))
-  app$set_module_input("scales_type", "Free")
-  app$set_module_input("strata_i-dataset_ADSL_singleextract-filter1-col", "COUNTRY")
-  app$set_module_input("strata_i-dataset_ADSL_singleextract-filter1-vals", c("USA", "CAN", "BRA"))
-  app$set_module_input("bins", 50)
-  app$set_module_input("add_dens", FALSE)
+  app$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col", "ARM")
+  app$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals", c("A: Drug X", "C: Combination"))
+  app$set_active_module_input("scales_type", "Free")
+  app$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-col", "COUNTRY")
+  app$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-vals", c("USA", "CAN", "BRA"))
+  app$set_active_module_input("bins", 50)
+  app$set_active_module_input("add_dens", FALSE)
 
   # Encodings in the QQplot tab
-  app$set_module_input("tabs", "QQplot")
-  app$set_module_input("t_dist", "normal")
+  app$set_active_module_input("tabs", "QQplot")
+  app$set_active_module_input("t_dist", "normal")
   app$click(NS(app$active_module_ns(), "params_reset"))
 
   app$expect_no_validation_error()
