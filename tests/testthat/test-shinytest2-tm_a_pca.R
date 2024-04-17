@@ -8,7 +8,7 @@ app_driver_tm_a_pca <- function() {
   teal.data::datanames(data) <- "USArrests"
 
 
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = data,
     modules = tm_a_pca(
       dat = teal.transform::data_extract_spec(
