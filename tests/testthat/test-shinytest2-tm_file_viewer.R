@@ -1,5 +1,5 @@
 app_driver_tm_file_viewer <- function() {
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = simple_teal_data(),
     modules = tm_file_viewer(
       label = "File Viewer Module",
