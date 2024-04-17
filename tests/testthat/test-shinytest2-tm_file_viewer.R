@@ -15,7 +15,7 @@ app_driver_tm_file_viewer <- function() {
 }
 
 test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree specified in input_path argument", {
-  # skip_if_too_deep(5)
+  skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
   app_driver$expect_no_shiny_error()
