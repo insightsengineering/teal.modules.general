@@ -7,7 +7,7 @@ app_driver_tm_front_page <- function() {
   TealAppDriver$new(
     data = data,
     modules = tm_front_page(
-      label = "Data Table",
+      label = "Front page",
       header_text = c(
         "Important information" = "It can go here.",
         "Other information" = "Can go here."
@@ -21,11 +21,16 @@ app_driver_tm_front_page <- function() {
   )
 }
 
-test_that("e2e: tm_front_page initializes without errors and html elements", {
+test_that("e2e - tm_front_page: Initializes without errors and check html elements", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
 
   app_driver$expect_no_shiny_error()
+
+  testthat::expect_equal(
+    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Front page"
+  )
 
   # header text
   testthat::expect_match(
@@ -40,7 +45,7 @@ test_that("e2e: tm_front_page initializes without errors and html elements", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_front_page displays tables", {
+test_that("e2e - tm_front_page: Verify the module displays tables", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
   # tables
@@ -52,7 +57,7 @@ test_that("e2e: tm_front_page displays tables", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_front_page displays metadata", {
+test_that("e2e - tm_front_page: Verify the module displays metadata", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
 
