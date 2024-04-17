@@ -1,5 +1,5 @@
 app_driver_tm_g_scatterplotmatrix <- function() {
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = simple_cdisc_data(),
     modules = tm_g_scatterplotmatrixmatrix(
       label = "Scatterplot matrix",
