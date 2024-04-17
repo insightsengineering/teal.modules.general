@@ -821,7 +821,7 @@ bivariate_ggplot_call <- function(x_class,
     Reduce(function(x, y) call("+", x, y), args)
   }
 
-  plot_call <- substitute(ggplot2::ggplot(data_name), env = list(data_name = as.name(data_name)))
+  plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
