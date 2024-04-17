@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="shinytest2-tm_outliers" timestamp="2024-04-17T12:37:15Z" hostname="7f65c07ff834" tests="43" skipped="0" failures="4" errors="2" time="71.317">
+    <testcase time="7.292" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_parameter_and_module_label_is_passed_properly"/>
+    <testcase time="0.0220000000000002" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_parameter_and_module_label_is_passed_properly"/>
+    <testcase time="0.011000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_parameter_and_module_label_is_passed_properly"/>
+    <testcase time="0.000999999999999446" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_parameter_and_module_label_is_passed_properly"/>
+    <testcase time="5.66" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="0.0629999999999988" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="1.436" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="0.0259999999999998" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="0.675999999999998" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="0.0410000000000004" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument">
+      <failure type="failure" message="app_driver$get_active_module_input(&quot;categorical_var-dataset_CO2_singleextract-filter1-vals&quot;) not identical to c(...). ('test-shinytest2-tm_outliers.R:87:3')">app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals") not identical to c(...).
+target is NULL, current is character</failure>
+    </testcase>
+    <testcase time="1.067" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument"/>
+    <testcase time="5.728" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_plot_type_is_set_properly_and_has_proper_possible_choices"/>
+    <testcase time="0.163999999999998" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_plot_type_is_set_properly_and_has_proper_possible_choices"/>
+    <testcase time="0.00500000000000256" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_plot_type_is_set_properly_and_has_proper_possible_choices"/>
+    <testcase time="1.454" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_plot_type_is_set_properly_and_has_proper_possible_choices"/>
+    <testcase time="5.889" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_module_is_divided_into_3_tabs"/>
+    <testcase time="0.0629999999999988" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_module_is_divided_into_3_tabs"/>
+    <testcase time="0.00799999999999912" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_module_is_divided_into_3_tabs"/>
+    <testcase time="5.796" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_plot_type_is_hidden_when_Boxplot_tab_is_not_selected"/>
+    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_plot_type_is_hidden_when_Boxplot_tab_is_not_selected">
+      <error type="error" message="Error in `eval(code, test_env)`: object 'app' not found ('test-shinytest2-tm_outliers.R:137:3')">Error in `eval(code, test_env)`: object 'app' not found
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_true(app_driver$is_visible(app$active_module_element("boxplot_alts"))) at test-shinytest2-tm_outliers.R:137:3
+ 2. │ └─testthat::quasi_label(enquo(object), label, arg = "object")
+ 3. │   └─rlang::eval_bare(expr, quo_get_env(quo))
+ 4. └─app_driver$is_visible(app$active_module_element("boxplot_alts"))
+ 5.   └─checkmate::assert_string(selector)
+ 6.     └─checkmate::checkString(...)
+ 7.       └─... %and% ...
+ 8.         └─base::isTRUE(lhs)</error>
+    </testcase>
+    <testcase time="5.825" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_radio_buttons_are_set_properly"/>
+    <testcase time="0.0949999999999989" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_radio_buttons_are_set_properly"/>
+    <testcase time="0.0589999999999975" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_radio_buttons_are_set_properly"/>
+    <testcase time="2.79600000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_default_radio_buttons_are_set_properly"/>
+    <testcase time="5.675" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_method_parameters_are_set_properly"/>
+    <testcase time="0.0640000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_method_parameters_are_set_properly"/>
+    <testcase time="0.00500000000000256" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_method_parameters_are_set_properly"/>
+    <testcase time="0.00199999999999534" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_method_parameters_are_set_properly"/>
+    <testcase time="5.648" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_definition_text_and_range_are_displayed_properly_depending_on_method"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_definition_text_and_range_are_displayed_properly_depending_on_method">
+      <error type="error" message="Error in `eval(code, test_env)`: object 'app' not found ('test-shinytest2-tm_outliers.R:186:3')">Error in `eval(code, test_env)`: object 'app' not found
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_true(app_driver$is_visible(app$active_module_element("iqr_slider"))) at test-shinytest2-tm_outliers.R:186:3
+ 2. │ └─testthat::quasi_label(enquo(object), label, arg = "object")
+ 3. │   └─rlang::eval_bare(expr, quo_get_env(quo))
+ 4. └─app_driver$is_visible(app$active_module_element("iqr_slider"))
+ 5.   └─checkmate::assert_string(selector)
+ 6.     └─checkmate::checkString(...)
+ 7.       └─... %and% ...
+ 8.         └─base::isTRUE(lhs)</error>
+    </testcase>
+    <testcase time="5.668" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00500000000000256" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00399999999999778" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="0.0630000000000024" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="2.75299999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00500000000000966" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="1.29599999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00400000000000489" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outliers_summary_table_is_displayed_with_proper_content"/>
+    <testcase time="5.895" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00400000000000489" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_table_is_displayed_with_proper_content"/>
+    <testcase time="0.00399999999999068" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_table_is_displayed_with_proper_content">
+      <failure type="failure" message="`table_content` does not match &quot;1116Qn1&quot;. ('test-shinytest2-tm_outliers.R:288:5')">`table_content` does not match "1116Qn1".
+Actual value: "Show 102550100 entries\n  \n     primary_keyuptakePlant\n  The brushed area does not contain outlier observations for the currently defined threshold\nShowing 0 to 0 of 0 entriesPreviousNext"
+Backtrace:
+    ▆
+ 1. └─teal.modules.general (local) test_match(c("1", "1", "16", "Qn1")) at test-shinytest2-tm_outliers.R:296:3
+ 2.   └─testthat::expect_match(...) at test-shinytest2-tm_outliers.R:288:5
+ 3.     └─testthat:::expect_match_(...)</failure>
+    </testcase>
+    <testcase time="0.0170000000000101" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_table_is_displayed_with_proper_content">
+      <failure type="failure" message="`table_content` does not match &quot;42214.2Qc1&quot;. ('test-shinytest2-tm_outliers.R:288:5')">`table_content` does not match "42214.2Qc1".
+Actual value: "Show 102550100 entries\n  \n     primary_keyuptakePlant\n  The brushed area does not contain outlier observations for the currently defined threshold\nShowing 0 to 0 of 0 entriesPreviousNext"
+Backtrace:
+    ▆
+ 1. └─teal.modules.general (local) test_match(c("4", "22", "14.2", "Qc1")) at test-shinytest2-tm_outliers.R:297:3
+ 2.   └─testthat::expect_match(...) at test-shinytest2-tm_outliers.R:288:5
+ 3.     └─testthat:::expect_match_(...)</failure>
+    </testcase>
+    <testcase time="0.0169999999999959" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_outlier_table_is_displayed_with_proper_content">
+      <failure type="failure" message="`table_content` does not match &quot;106410.5Mc1&quot;. ('test-shinytest2-tm_outliers.R:288:5')">`table_content` does not match "106410.5Mc1".
+Actual value: "Show 102550100 entries\n  \n     primary_keyuptakePlant\n  The brushed area does not contain outlier observations for the currently defined threshold\nShowing 0 to 0 of 0 entriesPreviousNext"
+Backtrace:
+    ▆
+ 1. └─teal.modules.general (local) test_match(c("10", "64", "10.5", "Mc1")) at test-shinytest2-tm_outliers.R:298:3
+ 2.   └─testthat::expect_match(...) at test-shinytest2-tm_outliers.R:288:5
+ 3.     └─testthat:::expect_match_(...)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="18" skipped="0" failures="0" errors="0" time="0.205">
+    <testcase time="0.0889999999999986" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00400000000000489" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00799999999999557" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00699999999999079" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00800000000000978" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0109999999999957" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00699999999999079" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00699999999999079" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+  </testsuite>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="21" skipped="0" failures="0" errors="0" time="0.072">
+    <testcase time="0.0169999999999959" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00499999999999545" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00200000000000955" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+  </testsuite>
+  <testsuite name="front_page" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="4" skipped="0" failures="0" errors="0" time="0.019">
+    <testcase time="0.00600000000000023" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00400000000000489" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00400000000000489" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  </testsuite>
+  <testsuite name="g_expert_cl" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="15" skipped="0" failures="0" errors="0" time="0.03">
+    <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00199999999999534" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999990564" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00199999999999534" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.007000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999990564" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999990564" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00199999999999534" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+  </testsuite>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="6" skipped="0" failures="0" errors="0" time="0.025">
+    <testcase time="0.0100000000000051" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00199999999999534" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00499999999999545" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00200000000000955" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+  </testsuite>
+  <testsuite name="variable_browser" timestamp="2024-04-17T12:38:26Z" hostname="7f65c07ff834" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+    <testcase time="0.00499999999999545" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00400000000000489" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00399999999999068" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+  </testsuite>
+</testsuites>
