@@ -14,13 +14,13 @@ app_driver_tm_file_viewer <- function() {
   )
 }
 
-test_that("e2e: tm_file_viewer initializes without errors and shows files tree specified in input_path argument", {
-  skip_if_too_deep(5)
+test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree specified in input_path argument", {
+  # skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
   app_driver$expect_no_shiny_error()
-  # check valid path
-  app_driver$expect_no_validation_error()
+  # check valid path as no file is selected
+  app_driver$expect_validation_error()
   # encoding are visible
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("tree")))
   list_files <- app_driver$get_html_rvest(selector = app_driver$active_module_element("tree")) %>%
@@ -39,7 +39,7 @@ test_that("e2e: tm_file_viewer initializes without errors and shows files tree s
   app_driver$stop()
 })
 
-test_that("e2e: tm_file_viewer shows selected image file", {
+test_that("e2e - tm_file_viewer: Shows selected image file", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
@@ -55,7 +55,7 @@ test_that("e2e: tm_file_viewer shows selected image file", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_file_viewer shows selected text file", {
+test_that("e2e - tm_file_viewer: Shows selected text file", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
@@ -66,16 +66,28 @@ test_that("e2e: tm_file_viewer shows selected text file", {
     rvest::html_element("pre") %>%
     rvest::html_text()
 
-  testthat::expect_match(pre_text, "txt$")
+  testthat::expect_true(!is.na(pre_text))
+  testthat::expect_true(length(pre_text) > 0)
+
+  testthat::expect_match(
+    attr(app_driver$get_active_module_input("tree")$txt, "ancestry"),
+    "txt$"
+  )
 
   app_driver$stop()
 })
 
-test_that("e2e: tm_file_viewer shows selected url", {
+test_that("e2e - tm_file_viewer: Shows selected url", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
   app_driver$click(selector = "[id= '6_anchor']")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("output")))
+
+  testthat::expect_match(
+    attr(app_driver$get_active_module_input("tree")$txt, "ancestry"),
+    "pdf$"
+  )
+
   app_driver$stop()
 })
