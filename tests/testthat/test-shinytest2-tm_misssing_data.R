@@ -34,15 +34,28 @@ app_driver_tm_missing_data <- function() {
   )
 }
 
-test_that("e2e: tm_missing_data initializes without errors", {
+test_that("e2e - tm_missing_data: Initializes without errors", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
+
+  testthat::expect_equal(
+    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Missing data"
+  )
+
+  app_driver$get_text(app_driver$active_module_element("data-module-dataset_encodings"))
+  encoding_dataset <- app_driver$get_text(
+         sprintf("%s %s",app_driver$active_module_element("dataset_encodings"),".help-block"))
+
+  testthat::expect_match(encoding_dataset, "Datasets:\\n    iris, mtcars\\n", all = FALSE)
+
+
   app_driver$stop()
 })
 
-test_that("e2e: Default settings and visibility of the summary graph", {
+test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
@@ -78,7 +91,7 @@ test_that("e2e: Default settings and visibility of the summary graph", {
   app_driver$stop()
 })
 
-test_that("e2e: Check default settings and visibility of the combinations graph and encodings", {
+test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -100,7 +113,7 @@ test_that("e2e: Check default settings and visibility of the combinations graph 
   app_driver$stop()
 })
 
-test_that("e2e: Validate functionality and UI response for 'By Variable Levels'", {
+test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # BY variablelevels
