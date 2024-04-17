@@ -51,12 +51,12 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
   )
 
   if (!is.infinite(categorical_index)) {
-    app_driver$set_module_input(
+    app_driver$set_active_module_input(
       sprintf("variable_browser_%s_rows_selected", current_var),
       categorical_index,
       allow_no_input_binding_ = TRUE
     )
-    app_driver$set_module_input(
+    app_driver$set_active_module_input(
       sprintf("variable_browser_%s_last_clicked", current_var),
       categorical_index,
       allow_no_input_binding_ = TRUE
@@ -100,7 +100,7 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
     1
   ) ## Added to UI
 
-  app_driver$set_module_input("outlier_definition_slider", 2)
+  app_driver$set_active_module_input("outlier_definition_slider", 2)
   app_driver$expect_no_shiny_error()
 
   app_driver$click(selector = selector_ns("remove_outliers"))
@@ -109,25 +109,25 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
   # Test changing plot settings
   testthat::expect_false(app_driver$is_visible(selector_ns("ggplot_theme-selectized")))
 
-  app_driver$set_module_input("ggplot_theme", "bw")
+  app_driver$set_active_module_input("ggplot_theme", "bw")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("ggplot_theme", "light")
+  app_driver$set_active_module_input("ggplot_theme", "light")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("ggplot_theme", "dark")
-  app_driver$expect_no_validation_error()
-
-  app_driver$set_module_input("font_size", "8")
-  app_driver$expect_no_validation_error()
-  app_driver$set_module_input("font_size", "20")
-  app_driver$expect_no_validation_error()
-  app_driver$set_module_input("font_size", "15")
+  app_driver$set_active_module_input("ggplot_theme", "dark")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("label_rotation", "25")
+  app_driver$set_active_module_input("font_size", "8")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("label_rotation", "0")
+  app_driver$set_active_module_input("font_size", "20")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("label_rotation", "90")
+  app_driver$set_active_module_input("font_size", "15")
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("label_rotation", "25")
+  app_driver$expect_no_validation_error()
+  app_driver$set_active_module_input("label_rotation", "0")
+  app_driver$expect_no_validation_error()
+  app_driver$set_active_module_input("label_rotation", "90")
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
