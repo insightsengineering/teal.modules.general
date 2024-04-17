@@ -1,7 +1,7 @@
 app_driver_tm_g_scatterplotmatrix <- function() {
   init_teal_app_driver(
     data = simple_cdisc_data(),
-    modules = tm_g_scatterplotmatrixmatrix(
+    modules = tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
         data_extract_spec(
@@ -43,15 +43,24 @@ app_driver_tm_g_scatterplotmatrix <- function() {
   )
 }
 
-test_that("e2e: tm_g_scatterplotmatrix initializes without errors", {
+test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   app_driver$expect_no_shiny_error()
+
+  testthat::expect_equal(
+    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Scatterplot matrix"
+  )
+
+  encoding_dataset <- app_driver$get_text("#teal-main_ui-root-scatterplot_matrix .help-block")
+  testthat::expect_match(encoding_dataset, "Datasets:\\n *ADSL, ADRS\\n", all = FALSE)
+
   app_driver$stop()
 })
 
-test_that("e2e: tm_g_scatterplotmatrix displays data table", {
+test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -61,7 +70,7 @@ test_that("e2e: tm_g_scatterplotmatrix displays data table", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_g_scatterplotmatrix data selection (data_extracts) default value and setting", {
+test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (data_extracts) for data selection", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -88,7 +97,7 @@ test_that("e2e: tm_g_scatterplotmatrix data selection (data_extracts) default va
   app_driver$stop()
 })
 
-test_that("e2e: tm_g_scatterplotmatrix changes plot settings", {
+test_that("e2e - tm_g_scatterplotmatrix: Change plot settings", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
