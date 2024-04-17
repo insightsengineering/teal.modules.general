@@ -94,10 +94,17 @@ testthat::test_that("e2e - tm_outliers:
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers:", {
+testthat::test_that("e2e - tm_outliers: default plot_type is set properly and has proper possible choices", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  testthat::expect_identical(app_driver$get_active_module_input("boxplot_alts"), "Box plot")
+
+  testthat::expect_identical(app_driver$active_module_element_text("boxplot_alts"), "Box plot\nViolin plot")
+
+  app_driver$set_active_module_input("boxplot_alts", "Violin plot")
   app_driver$expect_no_shiny_error()
 
   app_driver$stop()
