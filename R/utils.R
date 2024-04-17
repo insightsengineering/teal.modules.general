@@ -128,47 +128,6 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
   })
 }
 
-# Add the package prefix for `ggplot2::facet_grid` and `dplyr::vars`
-add_facet_call_pkg_prefix <- function(fun_call) {
-  fun_call_str <- gsub("^facet_grid\\(", "ggplot2::facet_grid\\(", deparse(fun_call))
-  fun_call_str <- gsub("vars\\(", "dplyr::vars\\(", fun_call_str)
-  str2lang(fun_call_str)
-}
-
-# Create facet call
-facet_ggplot_call <- function(row_facet = character(0),
-                              col_facet = character(0),
-                              free_x_scales = FALSE,
-                              free_y_scales = FALSE) {
-  scales <- if (free_x_scales && free_y_scales) {
-    "free"
-  } else if (free_x_scales) {
-    "free_x"
-  } else if (free_y_scales) {
-    "free_y"
-  } else {
-    "fixed"
-  }
-
-  if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
-    NULL
-  } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
-    fun_call <- call(
-      "facet_grid",
-      rows = call_fun_dots("vars", row_facet),
-      cols = call_fun_dots("vars", col_facet),
-      scales = scales
-    )
-    add_facet_call_pkg_prefix(fun_call)
-  } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
-    fun_call <- call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-    add_facet_call_pkg_prefix(fun_call)
-  } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
-    fun_call <- call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
-    add_facet_call_pkg_prefix(fun_call)
-  }
-}
-
 #' Call a function with a character vector for the `...` argument
 #'
 #' @param fun (`character`) Name of a function where the `...` argument shall be replaced by values from `str_args`.
