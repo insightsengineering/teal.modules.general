@@ -817,72 +817,72 @@ bivariate_ggplot_call <- function(x_class,
     Reduce(function(x, y) call("+", x, y), args)
   }
 
-  plot_call <- substitute(ggplot2::ggplot(data_name), env = list(data_name = as.name(data_name)))
+  plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = xval), env = list(xval = x)))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_histogram(bins = 30)),
+        quote(geom_histogram(bins = 30)),
         quote(ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_histogram(bins = 30, ggplot2::aes(y = ggplot2::after_stat(density)))),
-        quote(ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
   } else if (x_class == "NULL" && y_class == "numeric") {
-    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = yval), env = list(yval = y)))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_histogram(bins = 30)),
+        quote(geom_histogram(bins = 30)),
         quote(ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_histogram(bins = 30, ggplot2::aes(y = ggplot2::after_stat(density)))),
-        quote(ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
+        quote(geom_density(aes(y = after_stat(density)))),
         quote(ylab("Density"))
       )
     }
   } else if (x_class == "factor" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = xval), env = list(xval = x)))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_bar()),
+        quote(geom_bar()),
         quote(ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_bar(ggplot2::aes(y = ggplot2::after_stat(prop), group = 1))),
+        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
         quote(ylab("Fraction"))
       )
     }
   } else if (x_class == "NULL" && y_class == "factor") {
-    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = yval), env = list(yval = y)))
+    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_bar()),
+        quote(geom_bar()),
         quote(ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_bar(ggplot2::aes(y = ggplot2::after_stat(prop), group = 1))),
+        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
         quote(ylab("Fraction"))
       )
     }
@@ -890,16 +890,16 @@ bivariate_ggplot_call <- function(x_class,
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(ggplot2::aes(x = xval, y = yval), env = list(xval = x, yval = y)),
+      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
         substitute(
-          ggplot2::geom_point(alpha = alphaval, size = sizeval, pch = 21),
+          geom_point(alpha = alphaval, size = sizeval, pch = 21),
           env = list(alphaval = alpha, sizeval = size)
         ),
         substitute(
-          ggplot2::geom_point(alpha = alphaval, pch = 21),
+          geom_point(alpha = alphaval, pch = 21),
           env = list(alphaval = alpha)
         )
       )
@@ -907,15 +907,15 @@ bivariate_ggplot_call <- function(x_class,
   } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric")) {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(ggplot2::aes(x = xval, y = yval), env = list(xval = x, yval = y)),
-      quote(ggplot2::geom_boxplot())
+      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
+      quote(geom_boxplot())
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
       substitute(
-        ggmosaic::geom_mosaic(ggplot2::aes(x = ggmosaic::product(xval), fill = yval), na.rm = TRUE),
+        ggmosaic::geom_mosaic(aes(x = ggmosaic::product(xval), fill = yval), na.rm = TRUE),
         env = list(xval = x, yval = y)
       )
     )
@@ -972,7 +972,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = ggplot2::aes(colour = colour_name, fill = fill_name, size = size_name),
+      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (
@@ -981,14 +981,14 @@ coloring_ggplot_call <- function(colour,
       is_point &&
       identical(size, character(0))
   ) {
-    substitute(expr = ggplot2::aes(fill = fill_name), env = list(fill_name = as.name(fill)))
+    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (
     !identical(colour, character(0)) &&
       !identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
     substitute(
-      expr = ggplot2::aes(colour = colour_name, fill = fill_name),
+      expr = aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
   } else if (
@@ -996,20 +996,20 @@ coloring_ggplot_call <- function(colour,
       identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
-    substitute(expr = ggplot2::aes(colour = colour_name), env = list(colour_name = as.name(colour)))
+    substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (
     identical(colour, character(0)) &&
       !identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
-    substitute(expr = ggplot2::aes(fill = fill_name), env = list(fill_name = as.name(fill)))
+    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (
     identical(colour, character(0)) &&
       identical(fill, character(0)) &&
       is_point &&
       !identical(size, character(0))
   ) {
-    substitute(expr = ggplot2::aes(size = size_name), env = list(size_name = as.name(size)))
+    substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (
     !identical(colour, character(0)) &&
       identical(fill, character(0)) &&
@@ -1017,7 +1017,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = ggplot2::aes(colour = colour_name, size = size_name),
+      expr = aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
   } else if (
@@ -1027,7 +1027,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = ggplot2::aes(colour = colour_name, fill = fill_name, size = size_name),
+      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else {

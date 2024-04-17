@@ -153,19 +153,16 @@ facet_ggplot_call <- function(row_facet = character(0),
   if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
     NULL
   } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
-    fun_call <- call(
+    call(
       "facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
-    add_facet_call_pkg_prefix(fun_call)
   } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
-    fun_call <- call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
-    add_facet_call_pkg_prefix(fun_call)
+    call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
   } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
-    fun_call <- call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
-    add_facet_call_pkg_prefix(fun_call)
+    call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
 
