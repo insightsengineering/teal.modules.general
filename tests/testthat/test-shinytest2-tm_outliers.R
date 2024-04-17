@@ -86,8 +86,10 @@ testthat::test_that("e2e - tm_outliers:
 
   testthat::expect_identical(
     app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals"),
-    c("Qn1", "Qn2", "Qn3", "Qc1", "Qc2", "Qc3", "Mn1", "Mn2", "Mn3",
-      "Mc1", "Mc2", "Mc3")
+    c(
+      "Qn1", "Qn2", "Qn3", "Qc1", "Qc2", "Qc3", "Mn1", "Mn2", "Mn3",
+      "Mc1", "Mc2", "Mc3"
+    )
     # THIS WILL HAVE DIFFERENT ORDER ONCE THIS IS FIXED https://github.com/insightsengineering/teal.modules.general/issues/735
   )
   app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", c("Qn1", "Qn2", "Qn3"))
