@@ -70,6 +70,7 @@ Suggests:
     nestcolor (>= 0.1.0),
     rlang (>= 1.0.0),
     rtables (>= 0.6.6),
+    rvest,
     shinytest2,
     sparkline,
     testthat (>= 3.0.4),
@@ -89,8 +90,8 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
     gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
     deepayan/lattice, daroczig/logger, MASS,
-    insightsengineering/nestcolor, r-lib/rlang,
-    insightsengineering/rtables, sparkline, rstudio/shinytest2,
+    insightsengineering/nestcolor, r-lib/rlang, insightsengineering/rtables, 
+    tidyverse/rvest, sparkline, rstudio/shinytest2,
     insightsengineering/teal.data, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
