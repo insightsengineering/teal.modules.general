@@ -67,8 +67,10 @@ test_that("e2e: tm_g_scatterplotmatrix data selection (data_extracts) default va
 
   # default variable selection
   dataset <- app_driver$get_active_module_input("variables-dataset")
-  variables <- app_driver$get_active_module_input(sprintf("variables-dataset_%s_singleextract-select",
-                                                          dataset))
+  variables <- app_driver$get_active_module_input(sprintf(
+    "variables-dataset_%s_singleextract-select",
+    dataset
+  ))
   testthat::expect_equal(
     dataset,
     "ADSL"
@@ -87,7 +89,6 @@ test_that("e2e: tm_g_scatterplotmatrix data selection (data_extracts) default va
 })
 
 test_that("e2e: tm_g_scatterplotmatrix changes plot settings", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
