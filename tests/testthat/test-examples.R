@@ -110,8 +110,6 @@ with_mocked_app_bindings <- function(code) {
     if (!is.null(err_el <- app_driver$get_html(".shiny-input-container.has-error:not(.shiny-output-error-validation)"))) { # nolint line_length_linter.
       stop(sprintf("shinyvalidate error is observed:\n%s", err_el))
     }
-
-    app_driver$get_screenshot(sprintf("~/%s", uuid::UUIDgenerate()))
   }
 
   # support both `shinyApp(...)` as well as prefixed `shiny::shinyApp(...)` calls
