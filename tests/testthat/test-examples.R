@@ -32,16 +32,16 @@ suppress_warnings <- function(expr, pattern = "*", ...) {
 }
 
 with_mocked_app_bindings <- function(code) {
-  shiny__shinyApp <- shiny::shinyApp # nolint object_name_linter.
-
+  shiny__shinyApp <- shiny::shinyApp # nolint object_name.
+  shiny__runApp <- shiny::runApp # nolint object_name.
   # workaround of https://github.com/rstudio/shinytest2/issues/381
   # change to `print(shiny__shinyApp(...))` and remove allow warning once fixed
-  mocked_shinyApp <- function(ui, server, ...) { # nolint object_name_linter.
+  mocked_shinyApp <- function(ui, server, ...) { # nolint object_linter.
     functionBody(server) <- bquote({
-      library(.(testthat::testing_package()), character.only = TRUE)
+      .hint_to_load_package <- add_facet_labels # Hint to shinytest2 when looking for packages in globals
       .(functionBody(server))
     })
-    print(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
+    shiny::runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
@@ -92,8 +92,6 @@ with_mocked_app_bindings <- function(code) {
     ## Throw an error instead of a warning (default `AppDriver$new(..., check_names = TRUE)` throws a warning)
     app_driver$expect_unique_names()
 
-    print(app_driver$get_html(".tab-pane.active"))
-
     err_el <- Filter(
       function(x) {
         allowed_errors <- getOption("test_examples.discard_error_regex", "")
@@ -112,6 +110,8 @@ with_mocked_app_bindings <- function(code) {
     if (!is.null(err_el <- app_driver$get_html(".shiny-input-container.has-error:not(.shiny-output-error-validation)"))) { # nolint line_length_linter.
       stop(sprintf("shinyvalidate error is observed:\n%s", err_el))
     }
+
+    app_driver$get_screenshot(sprintf("~/%s", uuid::UUIDgenerate()))
   }
 
   # support both `shinyApp(...)` as well as prefixed `shiny::shinyApp(...)` calls
@@ -147,7 +147,6 @@ for (i in rd_files()) {
   testthat::test_that(
     paste0("example-", basename(i)),
     {
-      print(Sys.getenv("TESTING_DEPTH"))
       skip_if_too_deep(5)
       if (basename(i) %in% strict_exceptions) {
         op <- options()
