@@ -65,7 +65,7 @@ test_that("e2e - tm_t_crosstable: Verify module displays data table", {
   app_driver <- app_driver_tm_t_crosstable()
 
   # table
-  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table-with-settings")))
+  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table-table-with-settings")))
 
   app_driver$stop()
 })
