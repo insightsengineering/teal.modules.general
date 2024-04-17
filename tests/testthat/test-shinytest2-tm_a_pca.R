@@ -32,7 +32,7 @@ testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigen
   app_driver <- app_driver_tm_a_pca()
 
   # Data selection (adds rows to tables)
-  app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"), wait = FALSE)
+  app_driver$set_active_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "Assault"), wait = FALSE)
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "Assault")
@@ -47,9 +47,9 @@ testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes
 
   app_driver <- app_driver_tm_a_pca()
 
-  app_driver$set_module_input("plot_type", "Circle plot")
+  app_driver$set_active_module_input("plot_type", "Circle plot")
 
-  app_driver$set_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "UrbanPop"))
+  app_driver$set_active_module_input("dat-dataset_USArrests_singleextract-select", c("Murder", "UrbanPop"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
@@ -60,13 +60,13 @@ testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be fro
 
   app_driver <- app_driver_tm_a_pca()
 
-  app_driver$set_module_input("plot_type", "Biplot")
+  app_driver$set_active_module_input("plot_type", "Biplot")
 
   # Change colors of data points
-  app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("UrbanPop"))
+  app_driver$set_active_module_input("response-dataset_USArrests_singleextract-select", c("UrbanPop"))
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("response-dataset_USArrests_singleextract-select", c("Murder"))
+  app_driver$set_active_module_input("response-dataset_USArrests_singleextract-select", c("Murder"))
   app_driver$expect_validation_error()
 
   app_driver$stop()
@@ -79,7 +79,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate
 
   # Display section (hides tables)
 
-  app_driver$set_module_input("tables_display", c())
+  app_driver$set_active_module_input("tables_display", c())
   app_driver$expect_no_validation_error()
 
   testthat::expect_type(app_driver$get_active_module_output("tbl_importance"), "list")
@@ -91,31 +91,31 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate
   # Plot type (select each)
 
   # Changing input will trigger an output change
-  app_driver$set_module_input("plot_type", "Circle plot")
+  app_driver$set_active_module_input("plot_type", "Circle plot")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("plot_type", "Biplot")
+  app_driver$set_active_module_input("plot_type", "Biplot")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("plot_type", "Eigenvector plot")
+  app_driver$set_active_module_input("plot_type", "Eigenvector plot")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("plot_type", "Elbow plot") # Initial value
+  app_driver$set_active_module_input("plot_type", "Elbow plot") # Initial value
   app_driver$expect_no_validation_error()
 
   # Pre-processing
 
-  app_driver$set_module_input("standardization", "center")
+  app_driver$set_active_module_input("standardization", "center")
   app_driver$expect_no_validation_error
-  app_driver$set_module_input("standardization", "center_scale")
+  app_driver$set_active_module_input("standardization", "center_scale")
   app_driver$expect_no_validation_error
-  app_driver$set_module_input("standardization", "none") # Initial value
+  app_driver$set_active_module_input("standardization", "none") # Initial value
   app_driver$expect_no_validation_error
 
   # NA Action
 
-  app_driver$set_module_input("na_action", "drop")
-  app_driver$set_module_input("na_action", "none")
+  app_driver$set_active_module_input("na_action", "drop")
+  app_driver$set_active_module_input("na_action", "none")
 
   # Selected plot's specific settings is not visible
   no_plot_settings_selector <- sprintf("#%s-%s %s", app_driver$active_module_ns(), "plot_settings", "span.help-block")
@@ -126,38 +126,38 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings does not generate
     "response-dataset_USArrests_singleextract-select_input"
   )
 
-  app_driver$set_module_input("plot_type", "Elbow plot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Elbow plot", wait = FALSE)
   testthat::expect_true(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_false(app_driver$is_visible(x_axis_selector))
   testthat::expect_false(app_driver$is_visible(color_by_selector))
 
-  app_driver$set_module_input("plot_type", "Circle plot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Circle plot", wait = FALSE)
   testthat::expect_false(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_true(app_driver$is_visible(x_axis_selector))
 
-  app_driver$set_module_input("plot_type", "Biplot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Biplot", wait = FALSE)
   testthat::expect_false(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_true(app_driver$is_visible(x_axis_selector))
   testthat::expect_true(app_driver$is_visible(color_by_selector))
 
   # Theme
 
-  app_driver$set_module_input("ggtheme-selectized", "bw")
+  app_driver$set_active_module_input("ggtheme-selectized", "bw")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("ggtheme-selectized", "light")
+  app_driver$set_active_module_input("ggtheme-selectized", "light")
   app_driver$expect_no_validation_error()
-  app_driver$set_module_input("ggtheme-selectized", "dark")
+  app_driver$set_active_module_input("ggtheme-selectized", "dark")
   app_driver$expect_no_validation_error()
 
   # Font size
 
-  app_driver$set_module_input("font_size", "8")
+  app_driver$set_active_module_input("font_size", "8")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("font_size", "20")
+  app_driver$set_active_module_input("font_size", "20")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_module_input("font_size", "15")
+  app_driver$set_active_module_input("font_size", "15")
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
