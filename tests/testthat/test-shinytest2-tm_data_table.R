@@ -20,15 +20,21 @@ app_driver_tm_data_table <- function() {
   )
 }
 
-test_that("e2e: tm_data_table initializes without errors", {
+test_that("e2e - tm_data_table: Initializes without errors", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
   app_driver$expect_no_shiny_error()
+
+  testthat::expect_equal(
+    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "Data Table"
+  )
+
   app_driver$stop()
 })
 
-test_that("e2e: tm_data_table displays data table", {
+test_that("e2e - tm_data_table: Verify module displays data table", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
@@ -39,7 +45,7 @@ test_that("e2e: tm_data_table displays data table", {
   app_driver$stop()
 })
 
-test_that("e2e: tm_data_table verify default variable selection and set new selection", {
+test_that("e2e - tm_data_table: Verify default variable selection and set new selection", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
