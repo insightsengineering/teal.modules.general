@@ -47,7 +47,8 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 
   app_driver$get_text(app_driver$active_module_element("data-module-dataset_encodings"))
   encoding_dataset <- app_driver$get_text(
-         sprintf("%s %s",app_driver$active_module_element("dataset_encodings"),".help-block"))
+    sprintf("%s %s", app_driver$active_module_element("dataset_encodings"), ".help-block")
+  )
 
   testthat::expect_match(encoding_dataset, "Datasets:\\n    iris, mtcars\\n", all = FALSE)
 
