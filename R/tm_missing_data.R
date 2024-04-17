@@ -700,7 +700,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = "Variable", y = "Missing observations"),
-        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_text(angle = 45, hjust = 1)))
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -718,32 +718,32 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv,
         substitute(
           p1 <- summary_plot_obs %>%
-            ggplot2::ggplot() +
-            ggplot2::aes(
+            ggplot() +
+            aes(
               x = factor(create_cols_labels(col), levels = x_levels),
               y = n_pct,
               fill = isna
             ) +
-            ggplot2::geom_bar(position = "fill", stat = "identity") +
-            ggplot2::scale_fill_manual(
+            geom_bar(position = "fill", stat = "identity") +
+            scale_fill_manual(
               name = "",
               values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
               labels = c("Present", "Missing")
             ) +
-            ggplot2::scale_y_continuous(
+            scale_y_continuous(
               labels = scales::percent_format(),
               breaks = seq(0, 1, by = 0.1),
               expand = c(0, 0)
             ) +
-            ggplot2::geom_text(
-              ggplot2::aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+            geom_text(
+              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
               hjust = 1,
               color = "black"
             ) +
             labs +
             ggthemes +
             themes +
-            ggplot2::coord_flip(),
+            coord_flip(),
           env = list(
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme,
@@ -780,8 +780,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           labs = list(x = "", y = "Missing patients"),
           theme = list(
             legend.position = "bottom",
-            axis.text.x = quote(ggplot2::element_text(angle = 45, hjust = 1)),
-            axis.text.y = quote(ggplot2::element_blank())
+            axis.text.x = quote(element_text(angle = 45, hjust = 1)),
+            axis.text.y = quote(element_blank())
           )
         )
 
@@ -800,32 +800,32 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           qenv,
           substitute(
             p2 <- summary_plot_patients %>%
-              ggplot2::ggplot() +
-              ggplot2::aes_(
+              ggplot() +
+              aes_(
                 x = ~ factor(create_cols_labels(col), levels = x_levels),
                 y = ~n_pct,
                 fill = ~isna
               ) +
-              ggplot2::geom_bar(alpha = 1, stat = "identity", position = "fill") +
-              ggplot2::scale_y_continuous(
+              geom_bar(alpha = 1, stat = "identity", position = "fill") +
+              scale_y_continuous(
                 labels = scales::percent_format(),
                 breaks = seq(0, 1, by = 0.1),
                 expand = c(0, 0)
               ) +
-              ggplot2::scale_fill_manual(
+              scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
-              ggplot2::geom_text(
-                ggplot2::aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+              geom_text(
+                aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
                 hjust = 1,
                 color = "black"
               ) +
               labs +
               ggthemes +
               themes +
-              ggplot2::coord_flip(),
+              coord_flip(),
             env = list(
               labs = parsed_ggplot2_args$labs,
               themes = parsed_ggplot2_args$theme,
@@ -835,8 +835,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         ) %>%
           teal.code::eval_code(
             quote({
-              g1 <- ggplot2::ggplotGrob(p1)
-              g2 <- ggplot2::ggplotGrob(p2)
+              g1 <- ggplotGrob(p1)
+              g2 <- ggplotGrob(p2)
               g <- gridExtra::gtable_cbind(g1, g2, size = "first")
               g$heights <- grid::unit.pmax(g1$heights, g2$heights)
               grid::grid.newpage()
@@ -846,7 +846,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         qenv <- teal.code::eval_code(
           qenv,
           quote({
-            g <- ggplot2::ggplotGrob(p1)
+            g <- ggplotGrob(p1)
             grid::grid.newpage()
           })
         )
@@ -935,7 +935,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         labs = list(x = "", y = ""),
         theme = list(
           legend.position = "bottom",
-          axis.text.x = quote(ggplot2::element_blank())
+          axis.text.x = quote(element_blank())
         )
       )
 
@@ -954,9 +954,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         labs = list(x = "", y = ""),
         theme = list(
           legend.position = "bottom",
-          axis.text.x = quote(ggplot2::element_blank()),
-          axis.ticks = quote(ggplot2::element_blank()),
-          panel.grid.major = quote(ggplot2::element_blank())
+          axis.text.x = quote(element_blank()),
+          axis.ticks = quote(element_blank()),
+          panel.grid.major = quote(element_blank())
         )
       )
 
@@ -978,14 +978,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             p1 <- data_combination_plot_cutoff %>%
               dplyr::select(id, n) %>%
               dplyr::distinct() %>%
-              ggplot2::ggplot(ggplot2::aes(x = id, y = n)) +
-              ggplot2::geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
-              ggplot2::geom_text(
-                ggplot2::aes(label = n),
-                position = ggplot2::position_dodge(width = 0.9),
+              ggplot(aes(x = id, y = n)) +
+              geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
+              geom_text(
+                aes(label = n),
+                position = position_dodge(width = 0.9),
                 vjust = -0.25
               ) +
-              ggplot2::ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+              ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
               labs1 +
               ggthemes1 +
               themes1
@@ -993,23 +993,23 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
             graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
             graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
 
-            p2 <- data_combination_plot_cutoff %>% ggplot2::ggplot() +
-              ggplot2::aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-              ggplot2::geom_tile(alpha = 0.85, height = 0.95) +
-              ggplot2::scale_fill_manual(
+            p2 <- data_combination_plot_cutoff %>% ggplot() +
+              aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+              geom_tile(alpha = 0.85, height = 0.95) +
+              scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
-              ggplot2::geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-              ggplot2::geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-              ggplot2::coord_flip() +
+              geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+              geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+              coord_flip() +
               labs2 +
               ggthemes2 +
               themes2
 
-            g1 <- ggplot2::ggplotGrob(p1)
-            g2 <- ggplot2::ggplotGrob(p2)
+            g1 <- ggplotGrob(p1)
+            g2 <- ggplotGrob(p2)
 
             g <- gridExtra::gtable_rbind(g1, g2, size = "last")
             g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
@@ -1120,7 +1120,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = "", y = ""),
-        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_blank()))
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -1187,20 +1187,20 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         teal.code::eval_code(
           substitute(
             expr = {
-              g <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
+              g <- ggplot(summary_plot_patients, aes(
                 x = factor(id, levels = order_subjects),
                 y = factor(col, levels = ordered_columns[["column"]]),
                 fill = isna
               )) +
-                ggplot2::geom_raster() +
-                ggplot2::annotate(
+                geom_raster() +
+                annotate(
                   "text",
                   x = length(order_subjects),
                   y = seq_len(nrow(ordered_columns)),
                   hjust = 1,
                   label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
                 ) +
-                ggplot2::scale_fill_manual(
+                scale_fill_manual(
                   name = "",
                   values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                   labels = c("Present", "Missing (at least one)")
