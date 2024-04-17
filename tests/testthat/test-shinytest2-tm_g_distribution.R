@@ -11,7 +11,7 @@ app_driver_tm_g_distribution <- function() {
     selected = NULL
   )
 
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = data,
     modules = teal::modules(
       tm_g_distribution(
