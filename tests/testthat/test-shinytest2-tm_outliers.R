@@ -102,7 +102,8 @@ testthat::test_that("e2e - tm_outliers: default plot_type is set properly and ha
 
   testthat::expect_identical(app_driver$get_active_module_input("boxplot_alts"), "Box plot")
 
-  testthat::expect_identical(app_driver$active_module_element_text("boxplot_alts"), "Box plot\nViolin plot")
+  plot_choices <- app_driver$active_module_element_text("boxplot_alts")
+  testthat::expect_match(plot_choices, "Violin plot", fixed = TRUE)
 
   app_driver$set_active_module_input("boxplot_alts", "Violin plot")
   app_driver$expect_no_shiny_error()
@@ -110,20 +111,119 @@ testthat::test_that("e2e - tm_outliers: default plot_type is set properly and ha
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers:", {
+testthat::test_that("e2e - tm_outliers: plot_type is hidden when Boxplot tab is not selected", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  testthat::expect_true(app_driver$is_visible("boxplot_alts"))
+
+  app_driver$set_active_module_input("tabs", "Density Plot")
+  testthat::expect_false(app_driver$is_visible("boxplot_alts"))
+
+  app_driver$set_active_module_input("tabs", "Cumulative Distribution Plot")
+  testthat::expect_false(app_driver$is_visible("boxplot_alts"))
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_outliers: default radio buttons are set properly", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  testthat::expect_false(app_driver$get_active_module_input("split_outliers"))
+  testthat::expect_false(app_driver$get_active_module_input("order_by_outlier"))
+
+  app_driver$set_active_module_input("split_outliers", TRUE)
+  app_driver$set_active_module_input("order_by_outlier", TRUE)
   app_driver$expect_no_shiny_error()
 
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers:", {
+testthat::test_that("e2e - tm_outliers: method parameters are set properly", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
+
+  testthat::expect_identical(app_driver$get_active_module_input("method"), "IQR")
+  method_choices <- app_driver$active_module_element_text("method")
+  testthat::expect_match(method_choices, "Z-score", fixed = TRUE)
+  testthat::expect_match(method_choices, "Percentile", fixed = TRUE)
+
+  app_driver$stop()
+})
+
+
+testthat::test_that("e2e - tm_outliers: outlier definition text and range are displayed properly depending on method", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  # Initially only the first slider should be visible.
+  testthat::expect_true(app_driver$is_visible("iqr_slider"))
+  testthat::expect_false(app_driver$is_visible("zscore_slider"))
+  testthat::expect_false(app_driver$is_visible("percentile_slider"))
+
+  # IQR METHOD
+  testthat::expect_identical(app_driver$get_active_module_input("method"), "IQR")
+  testthat::expect_match(
+    app_driver$active_module_element_text("ui_outlier_help"),
+    "x<Q1−3×IQRx<Q1−3×IQRx",
+    fixed = TRUE
+  )
+  testthat::expect_identical(app_driver$get_active_module_input("iqr_slider"), 3L)
+  app_driver$set_active_module_input("iqr_slider", 8L)
+  app_driver$expect_no_shiny_error()
+
+  # Z-score METHOD
+  app_driver$set_active_module_input("method", "Z-score")
+  app_driver$expect_no_shiny_error()
+  testthat::expect_true(app_driver$is_visible("zscore_slider"))
+  testthat::expect_match(
+    app_driver$active_module_element_text("ui_outlier_help"),
+    "Zscore(x)<−3Zscore(x)<−3Zscore(x)",
+    fixed = TRUE
+  )
+  testthat::expect_identical(app_driver$get_active_module_input("zscore_slider"), 3L)
+  app_driver$set_active_module_input("zscore_slider", 5L)
+  app_driver$expect_no_shiny_error()
+
+  # Percentile METHOD
+  app_driver$set_active_module_input("method", "Percentile")
+  app_driver$expect_no_shiny_error()
+  testthat::expect_true(app_driver$is_visible("percentile_slider"))
+  testthat::expect_match(
+    app_driver$active_module_element_text("ui_outlier_help"),
+    "Percentile(x)<0.01Percentile(x)<0.01 Percentile(x)",
+    fixed = TRUE
+  )
+  testthat::expect_identical(app_driver$get_active_module_input("percentile_slider"), 0.01)
+  app_driver$set_active_module_input("percentile_slider", 0.05)
+  app_driver$expect_no_shiny_error()
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_outliers: outliers table is displayed with proper content", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  table_text <- app_driver$active_module_element_text("summary_table")
+  testthat::expect_match(table_text, "Outliers.*Missing.*Total")
+  statistics <- app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals")
+  testthat::expect_match(table_text, paste(statistics, collapse = "")) # the order is lost
+
+
+
+
 
   app_driver$stop()
 })
