@@ -31,6 +31,11 @@ test_that("e2e: tm_file_viewer initializes without errors and shows files tree s
     c("folder", "png", "txt", "url")
   )
 
+  testthat::expect_equal(
+    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    "File Viewer Module"
+  )
+
   app_driver$stop()
 })
 
@@ -45,8 +50,7 @@ test_that("e2e: tm_file_viewer shows selected image file", {
     rvest::html_element("img") %>%
     rvest::html_attr("src")
 
-  testthat::expect_true(!is.na(pre_text))
-  testthat::expect_true(length(pre_text) > 0)
+  testthat::expect_match(img_src, "png$")
 
   app_driver$stop()
 })
@@ -61,8 +65,8 @@ test_that("e2e: tm_file_viewer shows selected text file", {
   pre_text <- app_driver$get_html_rvest(app_driver$active_module_element("output")) %>%
     rvest::html_element("pre") %>%
     rvest::html_text()
-  testthat::expect_true(!is.na(pre_text))
-  testthat::expect_true(length(pre_text) > 0)
+
+  testthat::expect_match(pre_text, "txt$")
 
   app_driver$stop()
 })
