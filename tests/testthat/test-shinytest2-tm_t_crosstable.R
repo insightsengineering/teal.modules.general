@@ -80,11 +80,6 @@ test_that("e2e: tm_t_crosstable data selection (data_extracts) default value and
   app_driver$set_active_module_input("y-dataset_ADSL_singleextract-select", "ETHNIC")
   app_driver$expect_no_validation_error()
 
-  testthat::expect_equal(
-    app_driver$get_active_module_input("iris-variables"),
-    c("Petal.Width", "Species")
-  )
-
   app_driver$stop()
 })
 
