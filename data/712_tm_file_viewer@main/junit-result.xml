@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_file_viewer" timestamp="2024-04-16T12:47:34Z" hostname="609e99293c8f" tests="9" skipped="0" failures="1" errors="3" time="17.561">
-    <testcase time="4.573" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="0.0300000000000002" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
+  <testsuite name="shinytest2-tm_file_viewer" timestamp="2024-04-17T07:18:30Z" hostname="ff7a294fe2ad" tests="9" skipped="0" failures="1" errors="3" time="16.262">
+    <testcase time="4.501" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
+    <testcase time="0.0289999999999999" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
       <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_file_viewer.R:23:3')">self$get_html(".shiny-output-error-validation") is not NULL
 
 `actual` is a character vector ('&lt;div id="teal-main_ui-root-file_viewer_module-module-output" class="shiny-html-output shiny-bound-output shiny-output-error shiny-output-error-shiny.silent.error shiny-output-error-validation" aria-live="polite"&gt;Please select a file.&lt;/div&gt;')
@@ -13,8 +13,8 @@ Backtrace:
  1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_file_viewer.R:23:3
  2.   └─testthat::expect_null(...)</failure>
     </testcase>
-    <testcase time="0.0389999999999997" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="0.00499999999999989" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
+    <testcase time="0.04" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
+    <testcase time="0.00500000000000078" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
       <error type="error" message="&lt;packageNotFoundError/error/condition&gt; ('test-shinytest2-tm_file_viewer.R:26:3')">&lt;packageNotFoundError/error/condition&gt;
 Error in `loadNamespace(x)`: there is no package called 'rvest'
 Backtrace:
@@ -25,109 +25,109 @@ Backtrace:
  4.     └─base (local) withOneRestart(expr, restarts[[1L]])
  5.       └─base (local) doWithOneRestart(return(expr), restart)</error>
     </testcase>
-    <testcase time="3.788" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_image_file"/>
-    <testcase time="0.00500000000000078" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_image_file">
-      <error type="error" message="&lt;packageNotFoundError/error/condition&gt; ('test-shinytest2-tm_file_viewer.R:44:3')">&lt;packageNotFoundError/error/condition&gt;
+    <testcase time="3.777" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_image_file"/>
+    <testcase time="0.00399999999999956" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_image_file">
+      <error type="error" message="&lt;packageNotFoundError/error/condition&gt; ('test-shinytest2-tm_file_viewer.R:49:3')">&lt;packageNotFoundError/error/condition&gt;
 Error in `loadNamespace(x)`: there is no package called 'rvest'
 Backtrace:
     ▆
- 1. ├─... %&gt;% rvest::html_attr("src") at test-shinytest2-tm_file_viewer.R:44:3
+ 1. ├─... %&gt;% rvest::html_attr("src") at test-shinytest2-tm_file_viewer.R:49:3
  2. └─base::loadNamespace(x)
  3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
  4.     └─base (local) withOneRestart(expr, restarts[[1L]])
  5.       └─base (local) doWithOneRestart(return(expr), restart)</error>
     </testcase>
-    <testcase time="4.847" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_text_file"/>
-    <testcase time="0.00500000000000078" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_text_file">
-      <error type="error" message="&lt;packageNotFoundError/error/condition&gt; ('test-shinytest2-tm_file_viewer.R:61:3')">&lt;packageNotFoundError/error/condition&gt;
+    <testcase time="3.8" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_text_file"/>
+    <testcase time="0.00499999999999901" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_text_file">
+      <error type="error" message="&lt;packageNotFoundError/error/condition&gt; ('test-shinytest2-tm_file_viewer.R:65:3')">&lt;packageNotFoundError/error/condition&gt;
 Error in `loadNamespace(x)`: there is no package called 'rvest'
 Backtrace:
     ▆
- 1. ├─... %&gt;% rvest::html_text() at test-shinytest2-tm_file_viewer.R:61:3
+ 1. ├─... %&gt;% rvest::html_text() at test-shinytest2-tm_file_viewer.R:65:3
  2. └─base::loadNamespace(x)
  3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
  4.     └─base (local) withOneRestart(expr, restarts[[1L]])
  5.       └─base (local) doWithOneRestart(return(expr), restart)</error>
     </testcase>
-    <testcase time="4.269" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_url"/>
+    <testcase time="4.101" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_shows_selected_url"/>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-16T12:47:51Z" hostname="609e99293c8f" tests="18" skipped="0" failures="0" errors="0" time="0.194">
-    <testcase time="0.0760000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00399999999999778" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="18" skipped="0" failures="0" errors="0" time="0.192">
+    <testcase time="0.0749999999999993" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00400000000000134" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
     <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
     <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
     <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.0130000000000017" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
     <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.0120000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
     <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-16T12:47:51Z" hostname="609e99293c8f" tests="21" skipped="0" failures="0" errors="0" time="0.072">
-    <testcase time="0.0160000000000018" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="21" skipped="0" failures="0" errors="0" time="0.072">
+    <testcase time="0.017000000000003" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00400000000000134" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00400000000000134" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-16T12:47:52Z" hostname="609e99293c8f" tests="4" skipped="0" failures="0" errors="0" time="0.018">
+  <testsuite name="front_page" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="4" skipped="0" failures="0" errors="0" time="0.018">
     <testcase time="0.00600000000000023" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00399999999999778" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
     <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00399999999999778" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-16T12:47:52Z" hostname="609e99293c8f" tests="15" skipped="0" failures="0" errors="0" time="0.026">
-    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+  <testsuite name="g_expert_cl" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="15" skipped="0" failures="0" errors="0" time="0.025">
+    <testcase time="0.00599999999999667" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-16T12:47:52Z" hostname="609e99293c8f" tests="6" skipped="0" failures="0" errors="0" time="0.024">
-    <testcase time="0.00900000000000034" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="6" skipped="0" failures="0" errors="0" time="0.028">
+    <testcase time="0.0129999999999981" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00499999999999901" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00200000000000244" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00500000000000256" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-16T12:47:52Z" hostname="609e99293c8f" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+  <testsuite name="variable_browser" timestamp="2024-04-17T07:18:46Z" hostname="ff7a294fe2ad" tests="3" skipped="0" failures="0" errors="0" time="0.012">
     <testcase time="0.00499999999999901" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
     <testcase time="0.00400000000000134" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.00399999999999778" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+    <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
