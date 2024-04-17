@@ -1,4 +1,4 @@
-app_driver_tm_g_scatterplotmatrix <- function() {  # nolint: object_length_linter.
+app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter.
   init_teal_app_driver(
     data = simple_cdisc_data(),
     modules = tm_g_scatterplotmatrix(
