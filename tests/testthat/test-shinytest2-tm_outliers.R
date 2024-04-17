@@ -113,6 +113,21 @@ testthat::test_that("e2e - tm_outliers: default plot_type is set properly and ha
   app_driver$stop()
 })
 
+testthat::test_that("e2e - tm_outliers: module is divided into 3 tabs", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  testthat::expect_identical(app_driver$get_active_module_input("tabs"), "Boxplot")
+  testthat::expect_match(
+    app_driver$active_module_element_text("tabs"),
+    "Boxplot.*Density Plot.*Cumulative Distribution Plot",
+    fixed = FALSE
+  )
+  app_driver$stop()
+})
+
 testthat::test_that("e2e - tm_outliers: plot_type is hidden when Boxplot tab is not selected", {
   skip_if_too_deep(5)
 
@@ -212,12 +227,13 @@ testthat::test_that("e2e - tm_outliers: outlier definition text and range are di
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: outliers table is displayed with proper content", {
+testthat::test_that("e2e - tm_outliers: outliers summary table is displayed with proper content", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
 
+  # Initial state.
   testthat::expect_identical(
     app_driver$active_module_element_text("total_outliers"),
     "Total number of outlier(s): 0 / 84 [0.00%]"
@@ -227,6 +243,59 @@ testthat::test_that("e2e - tm_outliers: outliers table is displayed with proper 
   testthat::expect_match(table_text, "Outliers.*Missing.*Total")
   statistics <- app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals")
   testthat::expect_match(table_text, paste(statistics, collapse = "|"), fixed = FALSE)
+
+  # Change method to Z-score and adjust slider.
+  app_driver$set_active_module_input("method", "Z-score")
+  app_driver$set_active_module_input("zscore_slider", 1.5)
+  testthat::expect_identical(
+    app_driver$active_module_element_text("total_outliers"),
+    "Total number of outlier(s): 8 / 84 [9.52%]"
+  )
+  table_text <- app_driver$active_module_element_text("summary_table")
+  testthat::expect_match(
+    table_text,
+    "01 [14.29%]2 [28.57%]001 [14.29%]001 [14.29%]1 [14.29%]1 [14.29%]1 [14.29%]",
+    fixed = TRUE
+  )
+
+  # Select split outliers.
+  app_driver$set_active_module_input("split_outliers", TRUE)
+  testthat::expect_identical(
+    app_driver$active_module_element_text("total_outliers"),
+    "Total number of outlier(s): 12 / 84 [14.29%]"
+  )
+  table_text <- app_driver$active_module_element_text("summary_table")
+  testthat::expect_match(
+    table_text,
+    "1 [14.29%]1 [14.29%]1 [14.29%]1 [14.29%]1 [14.29%]1 [14.29%]1 [14.29%]1",
+    fixed = TRUE
+  )
+
+
+  app_driver$stop()
+})
+
+
+testthat::test_that("e2e - tm_outliers: outlier table is displayed with proper content", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_outlier()
+  app_driver$expect_no_shiny_error()
+
+  table_content <- app_driver$active_module_element_text("table_ui")
+
+  test_match <- function(x) {
+    testthat::expect_match(
+      table_content,
+      paste(x, collapse = ""),
+      fixed = TRUE
+    )
+  }
+
+  test_match(c("primary_key", "uptake", "Plant"))
+  test_match(c("1", "1", "16", "Qn1"))
+  test_match(c("4", "22", "14.2", "Qc1"))
+  test_match(c("10", "64", "10.5", "Mc1"))
 
   app_driver$stop()
 })
