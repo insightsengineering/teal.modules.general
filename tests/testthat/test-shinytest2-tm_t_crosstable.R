@@ -1,5 +1,5 @@
 app_driver_tm_t_crosstable <- function() {
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = simple_cdisc_data(),
     modules = tm_t_crosstable(
       label = "Cross Table",
