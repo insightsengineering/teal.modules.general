@@ -4,7 +4,6 @@
 # this package and its "Depends".
 # Related to https://github.com/rstudio/shinytest2/issues/381
 init_teal_app_driver <- function(...) {
-  shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
   testthat::with_mocked_bindings(
     {
       TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
@@ -17,9 +16,10 @@ init_teal_app_driver <- function(...) {
         .(functionBody(server))
       })
 
-      do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
+      shiny::shinyApp(ui, server, ...)
     },
-    # shinyApp is being called without prefix, so it needs to be mocked in {teal}
+    # The relevant shinyApp call in `TealAppDriver` is being called without prefix,
+    # hence why the package bindings that is changed is in `{teal}` and not `{shiny}`
     .package = "teal"
   )
 }
