@@ -13,7 +13,7 @@ app_driver_tm_missing_data <- function() {
     mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
   })
 
-  TealAppDriver$new(
+  init_teal_app_driver(
     data = data,
     modules = tm_missing_data(
       label = "Missing data",
