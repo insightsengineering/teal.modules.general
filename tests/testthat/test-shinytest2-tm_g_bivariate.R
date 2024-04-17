@@ -93,7 +93,7 @@ testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when fac
   testthat::expect_true(app$is_visible(x_scale_selector))
   testthat::expect_true(app$is_visible(y_scale_selector))
 
-  app$set_module_input("facetting", FALSE)
+  app$set_active_module_input("facetting", FALSE)
 
   testthat::expect_false(app$is_visible(row_facet_selector))
   testthat::expect_false(app$is_visible(col_facet_selector))
@@ -108,38 +108,38 @@ testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outp
 
   app <- app_driver_tm_g_bivariate()
 
-  app$set_module_input("alpha", 1)
+  app$set_active_module_input("alpha", 1)
   app$expect_no_validation_error()
 
-  app$set_module_input("fixed_size", 6)
+  app$set_active_module_input("fixed_size", 6)
   app$expect_no_validation_error()
 
-  app$set_module_input("add_lines", TRUE)
+  app$set_active_module_input("add_lines", TRUE)
   app$expect_no_validation_error()
 
-  app$set_module_input("x-dataset_CO2_singleextract-select", "Plant")
+  app$set_active_module_input("x-dataset_CO2_singleextract-select", "Plant")
   app$expect_no_validation_error()
 
-  app$set_module_input("y-dataset_CO2_singleextract-select", "conc")
+  app$set_active_module_input("y-dataset_CO2_singleextract-select", "conc")
   app$expect_no_validation_error()
 
-  app$set_module_input("row_facet-dataset_CO2_singleextract-select", "Plant")
+  app$set_active_module_input("row_facet-dataset_CO2_singleextract-select", "Plant")
   app$expect_no_validation_error()
 
-  app$set_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
+  app$set_active_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
   app$expect_no_validation_error()
 
-  app$set_module_input("free_x_scales", TRUE)
+  app$set_active_module_input("free_x_scales", TRUE)
   app$expect_no_validation_error()
 
-  app$set_module_input("free_y_scales", TRUE)
+  app$set_active_module_input("free_y_scales", TRUE)
   app$expect_no_validation_error()
 
-  app$set_module_input("rotate_xaxis_labels", TRUE)
+  app$set_active_module_input("rotate_xaxis_labels", TRUE)
 
-  app$set_module_input("swap_axes", TRUE)
+  app$set_active_module_input("swap_axes", TRUE)
 
-  app$set_module_input("ggtheme", "light")
+  app$set_active_module_input("ggtheme", "light")
 
   app$stop()
 })
