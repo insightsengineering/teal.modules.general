@@ -1,34 +1,25 @@
 # Initialization function to create a new TealAppDriver object
 #
-# It handles the library loading of itself and necessary packages used without
-# package prefixes.
+# By manipulating the server function as below, we can hint {shinytest2} to load
+# this package and its "Depends".
 # Related to https://github.com/rstudio/shinytest2/issues/381
 init_teal_app_driver <- function(...) {
-  shiny__shinyApp <- shiny::shinyApp # nolint: object_name.
   testthat::with_mocked_bindings(
     {
       TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
       TealAppDriver$new(...)
     },
     shinyApp = function(ui, server, ...) {
-      # Load the package in the environment where the server function is defined
-      # The pkgload::load_all() method is used on interactive and has a caveat
-      # when one of the functions use `system.file` as it may return an empty
-      # string
       functionBody(server) <- bquote({
-        pkgload::load_all(
-          .(normalizePath(file.path(testthat::test_path(), "..", ".."))),
-          export_all = FALSE,
-          attach_testthat = FALSE,
-          warn_conflicts = FALSE
-        )
-        library(.(testthat::testing_package()), character.only = TRUE)
+        # Hint to shinytest2 that this package should be available (via {globals})
+        .hint_to_load_package <- add_facet_labels
         .(functionBody(server))
       })
-      print(server)
-      do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...)))
+
+      shiny::shinyApp(ui, server, ...)
     },
-    # shinyApp is being called without prefix, so it needs to be mocked in {teal}
+    # The relevant shinyApp call in `TealAppDriver` is being called without prefix,
+    # hence why the package bindings that is changed is in {teal} and not {shiny}
     .package = "teal"
   )
 }
