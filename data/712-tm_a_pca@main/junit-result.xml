@@ -1,254 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_a_pca" timestamp="2024-04-17T08:19:44Z" hostname="a02baa58b237" tests="30" skipped="0" failures="14" errors="0" time="30.852">
-    <testcase time="5.1" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:36:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(mapping = aes_string(x = "component", y = "value")) + geom_bar(aes(fill = "Single variance"), data = dplyr::filter(elb_dat, metric == "Proportion of Variance"), color = "black", stat = "identity") + geom_point(aes(color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + geom_line(aes(group = 1, color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + ggplot2::labs(x = "Principal component", y = "Proportion of variance explained",      color = "", fill = "Legend") + scale_color_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[3])) + scale_fill_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[1])) + ggplot2::theme_gray() + ggplot2::theme(legend.position = "right", legend.spacing.y = grid::unit(-5, "pt"), legend.title = element_text(vjust = 25), axis.text.x = element_text(angle = 0, hjust = 0.5), text = element_text(size = 12))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:36:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.202999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table"/>
-    <testcase time="0.108000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table"/>
-    <testcase time="5.473" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Original_coordinates_data_extract_changes_output_of_plot">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:53:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(pca_rot) + geom_point(aes_string(x = "PC1", y = "PC2")) + geom_label(aes_string(x = "PC1", y = "PC2", label = "label"), nudge_x = 0.1, nudge_y = 0.05, fontface = "bold") + geom_path(aes(x, y, group = 1), data = circle_data) + geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) + labs() + ggplot2::theme_gray() + ggplot2::theme(text = element_text(size = 12), axis.text.x = element_text(angle = 0, hjust = 0.5))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:53:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.185" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Original_coordinates_data_extract_changes_output_of_plot"/>
-    <testcase time="5.209" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:67:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:67:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.640000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set"/>
-    <testcase time="4.473" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:83:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(mapping = aes_string(x = "component", y = "value")) + geom_bar(aes(fill = "Single variance"), data = dplyr::filter(elb_dat, metric == "Proportion of Variance"), color = "black", stat = "identity") + geom_point(aes(color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + geom_line(aes(group = 1, color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + ggplot2::labs(x = "Principal component", y = "Proportion of variance explained",      color = "", fill = "Legend") + scale_color_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[3])) + scale_fill_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[1])) + ggplot2::theme_gray() + ggplot2::theme(legend.position = "right", legend.spacing.y = grid::unit(-5, "pt"), legend.title = element_text(vjust = 25), axis.text.x = element_text(angle = 0, hjust = 0.5), text = element_text(size = 12))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:83:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.113" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.0689999999999991" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.0680000000000014" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.0670000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.626000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:95:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(pca_rot) + geom_point(aes_string(x = "PC1", y = "PC2")) + geom_label(aes_string(x = "PC1", y = "PC2", label = "label"), nudge_x = 0.1, nudge_y = 0.05, fontface = "bold") + geom_path(aes(x, y, group = 1), data = circle_data) + geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) + labs() + ggplot2::theme_gray() + ggplot2::theme(text = element_text(size = 12), axis.text.x = element_text(angle = 0, hjust = 0.5))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:95:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.606000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:98:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:98:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.611999999999998" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:101:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(pca_rot) + geom_bar(aes_string(x = "Variable", y = "PC1"), stat = "identity", color = "black", fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]) + geom_text(aes(x = Variable, y = PC1, label = round(PC1, 3), vjust = ifelse(PC1 &amp;gt; 0, -0.5, 1.3))) + ggplot2::theme_gray() + ggplot2::theme(text = element_text(size = 12), axis.text.x = element_text(angle = 0, hjust = 0.5))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:101:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.600999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:104:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "ggplot" \n when evaluating qenv code:\ng &amp;lt;- ggplot(mapping = aes_string(x = "component", y = "value")) + geom_bar(aes(fill = "Single variance"), data = dplyr::filter(elb_dat, metric == "Proportion of Variance"), color = "black", stat = "identity") + geom_point(aes(color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + geom_line(aes(group = 1, color = "Cumulative variance"), data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")) + ggplot2::labs(x = "Principal component", y = "Proportion of variance explained",      color = "", fill = "Legend") + scale_color_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[3])) + scale_fill_manual(values = c(`Cumulative variance` = cols[2], `Single variance` = cols[1])) + ggplot2::theme_gray() + ggplot2::theme(legend.position = "right", legend.spacing.y = grid::unit(-5, "pt"), legend.title = element_text(vjust = 25), axis.text.x = element_text(angle = 0, hjust = 0.5), text = element_text(size = 12))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:104:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="3.189" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+  <testsuite name="shinytest2-tm_a_pca" timestamp="2024-04-17T08:36:17Z" hostname="d616f6bbabe6" tests="30" skipped="0" failures="0" errors="0" time="40.08">
+    <testcase time="6.14" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table"/>
+    <testcase time="0.182" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table"/>
+    <testcase time="0.109999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Data_selection_data_extract_changes_eigenvector_table"/>
+    <testcase time="7.056" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Original_coordinates_data_extract_changes_output_of_plot"/>
+    <testcase time="0.163" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Original_coordinates_data_extract_changes_output_of_plot"/>
+    <testcase time="7.024" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set"/>
+    <testcase time="0.651" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set"/>
+    <testcase time="5.671" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0990000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0629999999999988" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0640000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0640000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.827999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.844000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.785999999999998" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.888999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="4.812" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
     <testcase time="0.00500000000000256" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.00499999999999901" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.036999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.0120000000000005" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.0339999999999989" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0349999999999966" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0110000000000028" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.0360000000000014" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
     <testcase time="0.00600000000000023" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
     <testcase time="0.00600000000000023" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
-    <testcase time="0.597999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:146:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:146:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.545999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:148:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:148:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.547000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:150:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:150:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.579000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:155:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:155:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.568000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:158:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:158:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
-    <testcase time="0.566999999999997" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors">
-      <failure type="failure" message="self$get_html(&quot;.shiny-output-error-validation&quot;) is not NULL ('test-shinytest2-tm_a_pca.R:161:3')">self$get_html(".shiny-output-error-validation") is not NULL
-
-`actual` is a character vector ('&lt;div class="shiny-html-output plot_out_container shiny-bound-output shiny-output-error shiny-output-error-validation shiny-output-error-try-error" id="teal-main_ui-root-principal_component_analysis-module-pca_plot-plot_out_main" width="100%" aria-live="polite"&gt;could not find function "vars" \n when evaluating qenv code:\nrot_vars &amp;lt;- pca$rotation[, c("PC1", "PC2")] %&amp;gt;% dplyr::as_tibble(rownames = "label") %&amp;gt;% dplyr::mutate_at(vars(c("PC1", "PC2")), function(x) r * x/sqrt(max(v_scale)))&lt;/div&gt;')
-`expected` is NULL
-No validation error is observed
-Backtrace:
-    ▆
- 1. └─app_driver$expect_no_validation_error() at test-shinytest2-tm_a_pca.R:161:3
- 2.   └─testthat::expect_null(...)</failure>
-    </testcase>
+    <testcase time="1.043" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.530999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.531999999999996" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.815000000000005" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.806999999999995" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
+    <testcase time="0.801000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_does_not_generate_errors"/>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-17T08:20:14Z" hostname="a02baa58b237" tests="18" skipped="0" failures="0" errors="0" time="0.219">
-    <testcase time="0.0990000000000038" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00399999999999778" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00399999999999778" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.0140000000000029" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-17T08:36:57Z" hostname="d616f6bbabe6" tests="18" skipped="0" failures="0" errors="0" time="0.224">
+    <testcase time="0.106000000000002" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
     <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00799999999999557" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+    <testcase time="0.00799999999999557" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00799999999999557" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.00799999999999557" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-17T08:20:15Z" hostname="a02baa58b237" tests="21" skipped="0" failures="0" errors="0" time="0.077">
-    <testcase time="0.017000000000003" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-17T08:36:58Z" hostname="d616f6bbabe6" tests="21" skipped="0" failures="0" errors="0" time="0.081">
+    <testcase time="0.0189999999999984" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00800000000000267" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00800000000000267" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-17T08:20:15Z" hostname="a02baa58b237" tests="4" skipped="0" failures="0" errors="0" time="0.019">
-    <testcase time="0.00600000000000023" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00500000000000256" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.00300000000000011" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00500000000000256" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="front_page" timestamp="2024-04-17T08:36:58Z" hostname="d616f6bbabe6" tests="4" skipped="0" failures="0" errors="0" time="0.021">
+    <testcase time="0.007000000000005" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00400000000000489" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-17T08:20:15Z" hostname="a02baa58b237" tests="15" skipped="0" failures="0" errors="0" time="0.026">
-    <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00199999999999534" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+  <testsuite name="g_expert_cl" timestamp="2024-04-17T08:36:58Z" hostname="d616f6bbabe6" tests="15" skipped="0" failures="0" errors="0" time="0.028">
+    <testcase time="0.00500000000000256" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999999534" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00399999999999778" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00100000000000477" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
     <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-17T08:20:15Z" hostname="a02baa58b237" tests="6" skipped="0" failures="0" errors="0" time="0.024">
-    <testcase time="0.00900000000000034" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-17T08:36:58Z" hostname="d616f6bbabe6" tests="6" skipped="0" failures="0" errors="0" time="0.025">
+    <testcase time="0.00899999999999324" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00399999999999778" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00199999999999534" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00500000000000256" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00200000000000244" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-17T08:20:15Z" hostname="a02baa58b237" tests="3" skipped="0" failures="0" errors="0" time="0.013">
-    <testcase time="0.00500000000000256" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00399999999999778" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.00400000000000489" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+  <testsuite name="variable_browser" timestamp="2024-04-17T08:36:58Z" hostname="d616f6bbabe6" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+    <testcase time="0.00499999999999545" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00500000000000256" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
