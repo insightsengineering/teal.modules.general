@@ -84,7 +84,6 @@ test_that("e2e: tm_t_crosstable data selection (data_extracts) default value and
 })
 
 test_that("e2e: tm_t_crosstable changes table settings", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -96,4 +95,3 @@ test_that("e2e: tm_t_crosstable changes table settings", {
 
   app_driver$stop()
 })
-
