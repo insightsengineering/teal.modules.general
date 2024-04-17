@@ -662,7 +662,11 @@ srv_g_bivariate <- function(id,
             # Add facetting labels
             # optional: grid.newpage() # nolint: commented_code.
             # Prefixed with teal.modules.general as its usage will appear in "Show R code"
-            p <- teal.modules.general::add_facet_labels(p, xfacet_label = nulled_col_facet_name, yfacet_label = nulled_row_facet_name)
+            p <- teal.modules.general::add_facet_labels(
+              p,
+              xfacet_label = nulled_col_facet_name,
+              yfacet_label = nulled_row_facet_name
+            )
             grid::grid.newpage()
             grid::grid.draw(p)
           },
