@@ -1,141 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-16T13:49:24Z" hostname="82385368c876" tests="3" skipped="0" failures="0" errors="3" time="7.169">
-    <testcase time="2.868" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults">
-      <error type="error" message="Error in `app_get_values(self, private, input = input, output = output,  ('test-shinytest2-tm_g_bivariate.R:59:3')">Error in `app_get_values(self, private, input = input, output = output, 
-    export = export, ..., hash_images = hash_images)`: Shiny server returned 404 for values URL: http://127.0.0.1:5252/session/146d04a943f1f26b422296738bd9ca33/dataobj/shinytest?w=&amp;nonce=571f8a15b&amp;input=1&amp;output=1&amp;export=1&amp;format=rds&amp;sortC=1
-ℹ Is `shiny::runApp(test.mode = TRUE)` enabled?
-Backtrace:
-     ▆
-  1. └─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:59:3
-  2.   └─teal.modules.general:::init_teal_app_driver(...) at test-shinytest2-tm_g_bivariate.R:9:3
-  3.     ├─testthat::with_mocked_bindings(...) at tests/testthat/helper-TealAppDriver.R:8:3
-  4.     └─TealAppDriver$new(...) at tests/testthat/helper-TealAppDriver.R:11:7
-  5.       └─teal (local) initialize(...)
-  6.         └─private$set_active_ns()
-  7.           └─self$get_values()
-  8.             └─shinytest2:::app_get_values(...)
-  9.               └─shinytest2:::app_httr_get(...)
- 10.                 └─shinytest2 (local) fn_404(req)
- 11.                   └─shinytest2:::app_abort(...)
- 12.                     └─rlang::abort(..., app = self, call = call)</error>
-    </testcase>
-    <testcase time="2.206" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off">
-      <error type="error" message="Error in `app_get_values(self, private, input = input, output = output,  ('test-shinytest2-tm_g_bivariate.R:83:3')">Error in `app_get_values(self, private, input = input, output = output, 
-    export = export, ..., hash_images = hash_images)`: Shiny server returned 404 for values URL: http://127.0.0.1:7596/session/af310edd04af95394703abbe79463102/dataobj/shinytest?w=&amp;nonce=e0ee0673b&amp;input=1&amp;output=1&amp;export=1&amp;format=rds&amp;sortC=1
-ℹ Is `shiny::runApp(test.mode = TRUE)` enabled?
-Backtrace:
-     ▆
-  1. └─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:83:3
-  2.   └─teal.modules.general:::init_teal_app_driver(...) at test-shinytest2-tm_g_bivariate.R:9:3
-  3.     ├─testthat::with_mocked_bindings(...) at tests/testthat/helper-TealAppDriver.R:8:3
-  4.     └─TealAppDriver$new(...) at tests/testthat/helper-TealAppDriver.R:11:7
-  5.       └─teal (local) initialize(...)
-  6.         └─private$set_active_ns()
-  7.           └─self$get_values()
-  8.             └─shinytest2:::app_get_values(...)
-  9.               └─shinytest2:::app_httr_get(...)
- 10.                 └─shinytest2 (local) fn_404(req)
- 11.                   └─shinytest2:::app_abort(...)
- 12.                     └─rlang::abort(..., app = self, call = call)</error>
-    </testcase>
-    <testcase time="2.095" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors">
-      <error type="error" message="Error in `app_get_values(self, private, input = input, output = output,  ('test-shinytest2-tm_g_bivariate.R:109:3')">Error in `app_get_values(self, private, input = input, output = output, 
-    export = export, ..., hash_images = hash_images)`: Shiny server returned 404 for values URL: http://127.0.0.1:7053/session/78cbe1f8421f1933489057fe13f9486a/dataobj/shinytest?w=&amp;nonce=4707842ec&amp;input=1&amp;output=1&amp;export=1&amp;format=rds&amp;sortC=1
-ℹ Is `shiny::runApp(test.mode = TRUE)` enabled?
-Backtrace:
-     ▆
-  1. └─teal.modules.general (local) app_driver_tm_g_bivariate() at test-shinytest2-tm_g_bivariate.R:109:3
-  2.   └─teal.modules.general:::init_teal_app_driver(...) at test-shinytest2-tm_g_bivariate.R:9:3
-  3.     ├─testthat::with_mocked_bindings(...) at tests/testthat/helper-TealAppDriver.R:8:3
-  4.     └─TealAppDriver$new(...) at tests/testthat/helper-TealAppDriver.R:11:7
-  5.       └─teal (local) initialize(...)
-  6.         └─private$set_active_ns()
-  7.           └─self$get_values()
-  8.             └─shinytest2:::app_get_values(...)
-  9.               └─shinytest2:::app_httr_get(...)
- 10.                 └─shinytest2 (local) fn_404(req)
- 11.                   └─shinytest2:::app_abort(...)
- 12.                     └─rlang::abort(..., app = self, call = call)</error>
-    </testcase>
+  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2024-04-17T08:32:03Z" hostname="6f30020c5847" tests="31" skipped="0" failures="0" errors="0" time="29.129">
+    <testcase time="5.513" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.112" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0630000000000006" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0619999999999994" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0580000000000007" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.056" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0570000000000004" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0599999999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0600000000000005" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0590000000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0589999999999993" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0570000000000004" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.056" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="0.0569999999999995" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_module_is_initialised_with_the_specified_defaults"/>
+    <testcase time="4.499" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00500000000000078" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.817" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00499999999999901" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00500000000000078" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="0.00600000000000023" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_facetting_options_are_hidden_when_facet_is_toggled_off"/>
+    <testcase time="5.466" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="0.890999999999998" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="0.942" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="1.708" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="1.088" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="1.883" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="2.055" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="1.69" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
+    <testcase time="1.728" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_setting_encoding_inputs_produces_outputs_without_validation_errors"/>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2024-04-16T13:49:31Z" hostname="82385368c876" tests="18" skipped="0" failures="0" errors="0" time="0.181">
-    <testcase time="0.0589999999999993" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00400000000000134" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00500000000000078" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0120000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+  <testsuite name="tm_g_bivariate" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="18" skipped="0" failures="0" errors="0" time="5.53">
+    <testcase time="5.407" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00499999999999545" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.0129999999999981" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.007000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.0069999999999979" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-16T13:49:31Z" hostname="82385368c876" tests="21" skipped="0" failures="0" errors="0" time="0.074">
-    <testcase time="0.0180000000000007" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="21" skipped="0" failures="0" errors="0" time="0.081">
+    <testcase time="0.0200000000000031" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00399999999999956" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00400000000000489" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00500000000000078" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999534" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00500000000000078" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00299999999999834" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00600000000000023" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2024-04-16T13:49:31Z" hostname="82385368c876" tests="4" skipped="0" failures="0" errors="0" time="0.02">
-    <testcase time="0.00700000000000145" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00499999999999901" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.00399999999999956" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="front_page" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="4" skipped="0" failures="0" errors="0" time="0.019">
+    <testcase time="0.00600000000000023" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00499999999999545" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00400000000000489" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00399999999999778" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2024-04-16T13:49:31Z" hostname="82385368c876" tests="15" skipped="0" failures="0" errors="0" time="0.032">
-    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+  <testsuite name="g_expert_cl" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="15" skipped="0" failures="11" errors="0" time="0.173">
+    <testcase time="0.00500000000000256" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00499999999999545" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL)&quot;. ('test_g_expert_cl.R:7:3')">... %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0240000000000009" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:12:3')">... %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, fill = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0200000000000031" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="coloring_ggplot_call(&quot;ADSL&quot;, &quot;ADSL&quot;, &quot;ADSL&quot;, FALSE) %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:16:3')">coloring_ggplot_call("ADSL", "ADSL", "ADSL", FALSE) %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, fill = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0129999999999981" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, fill = ADSL)&quot;. ('test_g_expert_cl.R:20:3')">... %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, fill = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="coloring_ggplot_call(&quot;ADSL&quot;, &quot;ADSL&quot;, &quot;ADSL&quot;, TRUE) %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:25:3')">coloring_ggplot_call("ADSL", "ADSL", "ADSL", TRUE) %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, fill = ADSL, size = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0129999999999981" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:29:3')">... %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, size = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, size = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, size = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00399999999999778" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:40:3')">... %&gt;% deparse() not equal to "ggplot2::aes(fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(fill = ADSL)"
+y[1]: "ggplot2::aes(fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:44:3')">... %&gt;% deparse() not equal to "ggplot2::aes(fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(fill = ADSL)"
+y[1]: "ggplot2::aes(fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.017000000000003" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(fill = ADSL)&quot;. ('test_g_expert_cl.R:48:3')">... %&gt;% deparse() not equal to "ggplot2::aes(fill = ADSL)".
+1/1 mismatches
+x[1]: "aes(fill = ADSL)"
+y[1]: "ggplot2::aes(fill = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0120000000000005" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)&quot;. ('test_g_expert_cl.R:52:3')">... %&gt;% deparse() not equal to "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)".
+1/1 mismatches
+x[1]: "aes(colour = ADSL, fill = ADSL, size = ADSL)"
+y[1]: "ggplot2::aes(colour = ADSL, fill = ADSL, size = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.0140000000000029" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var">
+      <failure type="failure" message="... %&gt;% deparse() not equal to &quot;ggplot2::aes(size = ADSL)&quot;. ('test_g_expert_cl.R:59:3')">... %&gt;% deparse() not equal to "ggplot2::aes(size = ADSL)".
+1/1 mismatches
+x[1]: "aes(size = ADSL)"
+y[1]: "ggplot2::aes(size = ADSL)"</failure>
+    </testcase>
+    <testcase time="0.00900000000000034" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-16T13:49:31Z" hostname="82385368c876" tests="6" skipped="0" failures="0" errors="0" time="0.024">
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="6" skipped="0" failures="0" errors="0" time="0.024">
     <testcase time="0.00900000000000034" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00299999999999834" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00400000000000134" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00399999999999778" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00200000000000244" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2024-04-16T13:49:32Z" hostname="82385368c876" tests="3" skipped="0" failures="0" errors="0" time="0.013">
-    <testcase time="0.00500000000000078" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00499999999999901" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+  <testsuite name="variable_browser" timestamp="2024-04-17T08:32:38Z" hostname="6f30020c5847" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+    <testcase time="0.00600000000000023" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00399999999999778" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
     <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
