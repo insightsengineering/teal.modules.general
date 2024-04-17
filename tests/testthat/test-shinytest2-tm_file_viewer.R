@@ -85,7 +85,7 @@ test_that("e2e - tm_file_viewer: Shows selected url", {
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("output")))
 
   testthat::expect_match(
-    attr(app_driver$get_active_module_input("tree")$txt, "ancestry"),
+    attr(app_driver$get_active_module_input("tree")$url, "ancestry"),
     "pdf$"
   )
 
