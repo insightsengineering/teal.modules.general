@@ -218,10 +218,15 @@ testthat::test_that("e2e - tm_outliers: outliers table is displayed with proper 
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
 
+  testthat::expect_identical(
+    app_driver$active_module_element_text("total_outliers"),
+    "Total number of outlier(s): 0 / 84 [0.00%]"
+  )
+
   table_text <- app_driver$active_module_element_text("summary_table")
   testthat::expect_match(table_text, "Outliers.*Missing.*Total")
   statistics <- app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals")
-  testthat::expect_match(table_text, paste(statistics, collapse = "")) # the order is lost
-  # WILL IMPROVE THE ABOVE ONCE this is fixed: https://github.com/insightsengineering/teal.modules.general/issues/735
+  testthat::expect_match(table_text, paste(statistics, collapse = "|"), fixed = FALSE)
+
   app_driver$stop()
 })
