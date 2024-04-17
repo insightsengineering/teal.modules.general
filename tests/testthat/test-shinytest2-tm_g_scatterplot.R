@@ -117,10 +117,10 @@ testthat::test_that("e2e - tm_g_scatterplot: base for the log transformation can
 
   app <- app_driver_tm_g_scatterplot()
 
-  app$set_module_input("log_x", TRUE)
-  app$set_module_input("log_x_base", "log2")
-  app$set_module_input("log_y", TRUE)
-  app$set_module_input("log_y_base", "log10")
+  app$set_active_module_input("log_x", TRUE)
+  app$set_active_module_input("log_x_base", "log2")
+  app$set_active_module_input("log_y", TRUE)
+  app$set_active_module_input("log_y_base", "log10")
   app$expect_no_validation_error()
 
   app$stop()
@@ -131,10 +131,10 @@ testthat::test_that("e2e - tm_g_scatterplot: base for the log transformation can
 
   app <- app_driver_tm_g_scatterplot()
 
-  app$set_module_input("log_x", TRUE)
-  app$set_module_input("log_x_base", "log2")
-  app$set_module_input("log_y", TRUE)
-  app$set_module_input("log_y_base", "log10")
+  app$set_active_module_input("log_x", TRUE)
+  app$set_active_module_input("log_x_base", "log2")
+  app$set_active_module_input("log_y", TRUE)
+  app$set_active_module_input("log_y_base", "log10")
   app$expect_no_validation_error()
 
   app$stop()
@@ -145,15 +145,15 @@ testthat::test_that("e2e - tm_g_scatterplot: log transform is only possible for 
 
   app <- app_driver_tm_g_scatterplot()
 
-  app$set_module_input("x-dataset_ADSL_singleextract-select", "BMRKR2")
-  app$set_module_input("log_x", TRUE)
+  app$set_active_module_input("x-dataset_ADSL_singleextract-select", "BMRKR2")
+  app$set_active_module_input("log_x", TRUE)
   app$expect_validation_error()
 
-  app$set_module_input("x-dataset_ADSL_singleextract-select", "BMRKR1")
+  app$set_active_module_input("x-dataset_ADSL_singleextract-select", "BMRKR1")
   app$expect_no_validation_error()
 
-  app$set_module_input("y-dataset_ADSL_singleextract-select", "BMRKR2")
-  app$set_module_input("log_y", TRUE)
+  app$set_active_module_input("y-dataset_ADSL_singleextract-select", "BMRKR2")
+  app$set_active_module_input("log_y", TRUE)
   app$expect_validation_error()
 
   app$stop()
@@ -164,8 +164,8 @@ testthat::test_that("e2e - tm_g_scatterplot: get validation error when facetting
 
   app <- app_driver_tm_g_scatterplot()
 
-  app$set_module_input("row_facet-dataset_ADSL_singleextract-select", "RACE")
-  app$set_module_input("col_facet-dataset_ADSL_singleextract-select", "RACE")
+  app$set_active_module_input("row_facet-dataset_ADSL_singleextract-select", "RACE")
+  app$set_active_module_input("col_facet-dataset_ADSL_singleextract-select", "RACE")
   app$expect_validation_error()
 
   app$stop()
@@ -176,17 +176,17 @@ testthat::test_that("e2e - tm_g_scatterplot: encoding inputs produce output with
 
   app <- app_driver_tm_g_scatterplot()
 
-  app$set_module_input("color_by-dataset_ADSL_singleextract-select", "REGION1")
-  app$set_module_input("size_by-dataset_ADSL_singleextract-select", "BMRKR1")
-  app$set_module_input("row_facet-dataset_ADSL_singleextract-select", "RACE")
-  app$set_module_input("col_facet-dataset_ADSL_singleextract-select", "BMRKR2")
-  app$set_module_input("alpha", 0.5)
-  app$set_module_input("shape", "square")
-  app$set_module_input("size", 8)
-  app$set_module_input("rotate_xaxis_labels", TRUE)
-  app$set_module_input("rug_plot", TRUE)
-  app$set_module_input("show_count", TRUE)
-  app$set_module_input("ggtheme", "light")
+  app$set_active_module_input("color_by-dataset_ADSL_singleextract-select", "REGION1")
+  app$set_active_module_input("size_by-dataset_ADSL_singleextract-select", "BMRKR1")
+  app$set_active_module_input("row_facet-dataset_ADSL_singleextract-select", "RACE")
+  app$set_active_module_input("col_facet-dataset_ADSL_singleextract-select", "BMRKR2")
+  app$set_active_module_input("alpha", 0.5)
+  app$set_active_module_input("shape", "square")
+  app$set_active_module_input("size", 8)
+  app$set_active_module_input("rotate_xaxis_labels", TRUE)
+  app$set_active_module_input("rug_plot", TRUE)
+  app$set_active_module_input("show_count", TRUE)
+  app$set_active_module_input("ggtheme", "light")
 
   app$expect_no_validation_error()
 
