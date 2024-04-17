@@ -49,53 +49,53 @@ app_driver_tm_g_distribution <- function() {
 testthat::test_that("e2e - tm_g_distribution: module is initialised with the specified defaults", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_distribution()
+  app_driver <- app_driver_tm_g_distribution()
 
-  app$expect_no_shiny_error()
+  app_driver$expect_no_shiny_error()
 
   # Encodings in the Histogram tab
-  testthat::expect_equal(app$get_active_module_input("dist_i-dataset_ADSL_singleextract-select"), "BMRKR1")
-  testthat::expect_null(app$get_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col"))
-  testthat::expect_null(app$get_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals"))
-  testthat::expect_null(app$get_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-col"))
-  testthat::expect_equal(app$get_active_module_input("bins"), 30)
-  testthat::expect_equal(app$get_active_module_input("main_type"), "Density")
-  testthat::expect_true(app$get_active_module_input("add_dens"))
-  testthat::expect_null(app$get_active_module_input("t_dist"))
-  testthat::expect_identical(app$get_active_module_input("dist_param1"), NA)
-  testthat::expect_identical(app$get_active_module_input("dist_param2"), NA)
-  testthat::expect_null(app$get_active_module_input("dist_tests"))
-  testthat::expect_equal(app$get_active_module_input("roundn"), 2)
-  testthat::expect_equal(app$get_active_module_input("ggtheme"), "gray")
-  testthat::expect_equal(app$get_active_module_input("tabs"), "Histogram")
+  testthat::expect_equal(app_driver$get_active_module_input("dist_i-dataset_ADSL_singleextract-select"), "BMRKR1")
+  testthat::expect_null(app_driver$get_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col"))
+  testthat::expect_null(app_driver$get_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals"))
+  testthat::expect_null(app_driver$get_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-col"))
+  testthat::expect_equal(app_driver$get_active_module_input("bins"), 30)
+  testthat::expect_equal(app_driver$get_active_module_input("main_type"), "Density")
+  testthat::expect_true(app_driver$get_active_module_input("add_dens"))
+  testthat::expect_null(app_driver$get_active_module_input("t_dist"))
+  testthat::expect_identical(app_driver$get_active_module_input("dist_param1"), NA)
+  testthat::expect_identical(app_driver$get_active_module_input("dist_param2"), NA)
+  testthat::expect_null(app_driver$get_active_module_input("dist_tests"))
+  testthat::expect_equal(app_driver$get_active_module_input("roundn"), 2)
+  testthat::expect_equal(app_driver$get_active_module_input("ggtheme"), "gray")
+  testthat::expect_equal(app_driver$get_active_module_input("tabs"), "Histogram")
 
   # Encodings in the QQplot tab
-  app$set_active_module_input("tabs", "QQplot")
-  testthat::expect_true(app$get_active_module_input("qq_line"))
+  app_driver$set_active_module_input("tabs", "QQplot")
+  testthat::expect_true(app_driver$get_active_module_input("qq_line"))
 
-  app$stop()
+  app_driver$stop()
 })
 
 testthat::test_that("e2e - tm_g_distribution: encoding inputs produce output without validation errors", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_distribution()
+  app_driver <- app_driver_tm_g_distribution()
 
   # Encodings in the Histogram tab
-  app$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col", "ARM")
-  app$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals", c("A: Drug X", "C: Combination"))
-  app$set_active_module_input("scales_type", "Free")
-  app$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-col", "COUNTRY")
-  app$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-vals", c("USA", "CAN", "BRA"))
-  app$set_active_module_input("bins", 50)
-  app$set_active_module_input("add_dens", FALSE)
+  app_driver$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col", "ARM")
+  app_driver$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals", c("A: Drug X", "C: Combination"))
+  app_driver$set_active_module_input("scales_type", "Free")
+  app_driver$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-col", "COUNTRY")
+  app_driver$set_active_module_input("strata_i-dataset_ADSL_singleextract-filter1-vals", c("USA", "CAN", "BRA"))
+  app_driver$set_active_module_input("bins", 50)
+  app_driver$set_active_module_input("add_dens", FALSE)
 
   # Encodings in the QQplot tab
-  app$set_active_module_input("tabs", "QQplot")
-  app$set_active_module_input("t_dist", "normal")
-  app$click(NS(app$active_module_ns(), "params_reset"))
+  app_driver$set_active_module_input("tabs", "QQplot")
+  app_driver$set_active_module_input("t_dist", "normal")
+  app_driver$click(NS(app_driver$active_module_ns(), "params_reset"))
 
-  app$expect_no_validation_error()
+  app_driver$expect_no_validation_error()
 
-  app$stop()
+  app_driver$stop()
 })
