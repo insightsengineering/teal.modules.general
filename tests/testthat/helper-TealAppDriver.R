@@ -1,7 +1,7 @@
 # Import non-exported TealAppDriver from `teal` package
 TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
 
-# Data helper functions for reusable datasets ---------------------------------
+# Helper function
 simple_teal_data <- function() {
   data <- within(teal.data::teal_data(), {
     require(nestcolor)
