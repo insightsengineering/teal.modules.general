@@ -16,7 +16,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
             fixed = FALSE
           )
         ),
-        data_extract_spec(
+        teal.transform::data_extract_spec(
           dataname = "ADRS",
           filter = filter_spec(
             label = "Select endpoints:",
