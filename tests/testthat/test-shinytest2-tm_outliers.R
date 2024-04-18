@@ -80,7 +80,7 @@ testthat::test_that("e2e - tm_outliers:
     "uptake"
   )
   app_driver$set_active_module_input("outlier_var-dataset_CO2_singleextract-select", "conc")
-  app_driver$expect_no_shiny_error()
+  app_driver$expect_no_validation_error()
 
   testthat::expect_identical(
     app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col"),
