@@ -5,7 +5,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
     modules = tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        data_extract_spec(
+        teal.transform::data_extract_spec(
           dataname = "ADSL",
           select = select_spec(
             label = "Select variables:",
