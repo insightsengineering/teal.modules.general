@@ -10,7 +10,8 @@ app_driver_tm_outlier <- function() {
   vars <- teal.transform::choices_selected(
     teal.transform::variable_choices(
       data[["CO2"]],
-      c("Plant", "Type", "Treatment"))
+      c("Plant", "Type", "Treatment")
+    )
   )
 
   init_teal_app_driver(
