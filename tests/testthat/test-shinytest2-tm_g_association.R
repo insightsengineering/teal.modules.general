@@ -86,7 +86,7 @@ testthat::test_that("e2e - tm_g_association: module plot is visible", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
-  app_driver$is_visible(app_driver$active_module_element("myplot-plot_main > img"))
+  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("myplot-plot_main > img")))
 
   app_driver$stop()
 })
