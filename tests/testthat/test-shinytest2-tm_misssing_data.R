@@ -98,10 +98,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
-      sprintf(
-        "%s-%s", app_driver$active_module_element("iris-combination_plot"),
-        "plot_out_main"
-      )
+        app_driver$active_module_element("iris-combination_plot-plot_out_main")
     )
   )
 
