@@ -33,6 +33,8 @@ app_driver_tm_a_pca <- function() {
   )
 }
 
+# Defaults --------------------------------------------------------------------
+
 testthat::test_that("e2e - tm_a_pca: module is initialised with the specified defaults in function call", {
   skip_if_too_deep(5)
 
