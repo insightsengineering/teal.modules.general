@@ -9,7 +9,6 @@ app_driver_tm_a_regression <- function() {
     data = data,
     modules = tm_a_regression(
       label = "Regression",
-      default_plot_type = 3,
       response = teal.transform::data_extract_spec(
         dataname = "CO2",
         select = teal.transform::select_spec(
@@ -37,7 +36,7 @@ app_driver_tm_a_regression <- function() {
       ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
       pre_output = NULL,
       post_output = NULL,
-      default_plot_type = 1,
+      default_plot_type = 3,
       default_outlier_label = "USUBJID",
       label_segment_threshold = c(0.5, 0, 10),
       ggplot2_args = teal.widgets::ggplot2_args(
