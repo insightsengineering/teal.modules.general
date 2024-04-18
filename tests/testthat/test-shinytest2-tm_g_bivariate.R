@@ -82,23 +82,25 @@ testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when fac
 
   app_driver <- app_driver_tm_g_bivariate()
 
-  module_ns <- app_driver$active_module_ns()
-  row_facet_selector <- sprintf("#%s-row_facet-dataset_CO2_singleextract-select", module_ns)
-  col_facet_selector <- sprintf("#%s-col_facet-dataset_CO2_singleextract-select", module_ns)
-  x_scale_selector <- sprintf("#%s-free_x_scales", module_ns)
-  y_scale_selector <- sprintf("#%s-free_y_scales", module_ns)
-
-  testthat::expect_true(app_driver$is_visible(row_facet_selector))
-  testthat::expect_true(app_driver$is_visible(col_facet_selector))
-  testthat::expect_true(app_driver$is_visible(x_scale_selector))
-  testthat::expect_true(app_driver$is_visible(y_scale_selector))
+  testthat::expect_true(app_driver$is_visible(
+    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select"))
+  )
+  testthat::expect_true(
+    app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
+  )
+  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("free_x_scales")))
+  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("free_y_scales")))
 
   app_driver$set_active_module_input("facetting", FALSE)
 
-  testthat::expect_false(app_driver$is_visible(row_facet_selector))
-  testthat::expect_false(app_driver$is_visible(col_facet_selector))
-  testthat::expect_false(app_driver$is_visible(x_scale_selector))
-  testthat::expect_false(app_driver$is_visible(y_scale_selector))
+  testthat::expect_false(app_driver$is_visible(
+    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select"))
+  )
+  testthat::expect_false(
+    app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
+  )
+  testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("free_x_scales")))
+  testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("free_y_scales")))
 
   app_driver$stop()
 })
