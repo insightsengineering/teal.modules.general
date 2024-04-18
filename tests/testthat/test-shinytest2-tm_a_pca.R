@@ -52,7 +52,7 @@ testthat::test_that("e2e - tm_a_pca: module is initialised with the specified de
   testthat::expect_equal(app_driver$get_text(sprintf("#%s %s", module_parent_id, "#unique_id_post")), "A post output")
 
   # Plot options that can be changed in call
-  testthat::expect_equal(app_driver$get_active_module_input("rotate_xaxis_labels"))
+  testthat::expect_true(app_driver$get_active_module_input("rotate_xaxis_labels"))
   testthat::expect_equal(app_driver$get_active_module_input("ggtheme"), "light")
   testthat::expect_equal(app_driver$get_active_module_input("font_size"), 10)
 
