@@ -21,7 +21,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
           filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
-            choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+            choices = teal.transform::value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
             selected = "INVET - END OF INDUCTION",
             multiple = TRUE
           ),
