@@ -79,7 +79,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   testthat::expect_true(
     app_driver$is_visible(
-        app_driver$active_module_element("iris-summary_plot-plot_out_main")
+      app_driver$active_module_element("iris-summary_plot-plot_out_main")
     )
   )
 
@@ -98,7 +98,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
-        app_driver$active_module_element("iris-combination_plot-plot_out_main")
+      app_driver$active_module_element("iris-combination_plot-plot_out_main")
     )
   )
 
