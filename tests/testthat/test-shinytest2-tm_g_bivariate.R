@@ -56,90 +56,90 @@ app_driver_tm_g_bivariate <- function() {
 testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specified defaults", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_bivariate()
+  app_driver <- app_driver_tm_g_bivariate()
 
-  app$expect_no_shiny_error()
+  app_driver$expect_no_shiny_error()
 
-  testthat::expect_equal(app$get_active_module_input("x-dataset_CO2_singleextract-select"), "conc")
-  testthat::expect_equal(app$get_active_module_input("y-dataset_CO2_singleextract-select"), "uptake")
-  testthat::expect_true(app$get_active_module_input("facetting"))
-  testthat::expect_equal(app$get_active_module_input("row_facet-dataset_CO2_singleextract-select"), "Type")
-  testthat::expect_equal(app$get_active_module_input("col_facet-dataset_CO2_singleextract-select"), "Treatment")
-  testthat::expect_false(app$get_active_module_input("free_x_scales"))
-  testthat::expect_false(app$get_active_module_input("free_y_scales"))
-  testthat::expect_false(app$get_active_module_input("rotate_xaxis_labels"))
-  testthat::expect_false(app$get_active_module_input("swap_axes"))
-  testthat::expect_equal(app$get_active_module_input("ggtheme"), "gray")
-  testthat::expect_equal(app$get_active_module_input("alpha"), 0.5)
-  testthat::expect_equal(app$get_active_module_input("fixed_size"), 2)
-  testthat::expect_false(app$get_active_module_input("add_lines"))
+  testthat::expect_equal(app_driver$get_active_module_input("x-dataset_CO2_singleextract-select"), "conc")
+  testthat::expect_equal(app_driver$get_active_module_input("y-dataset_CO2_singleextract-select"), "uptake")
+  testthat::expect_true(app_driver$get_active_module_input("facetting"))
+  testthat::expect_equal(app_driver$get_active_module_input("row_facet-dataset_CO2_singleextract-select"), "Type")
+  testthat::expect_equal(app_driver$get_active_module_input("col_facet-dataset_CO2_singleextract-select"), "Treatment")
+  testthat::expect_false(app_driver$get_active_module_input("free_x_scales"))
+  testthat::expect_false(app_driver$get_active_module_input("free_y_scales"))
+  testthat::expect_false(app_driver$get_active_module_input("rotate_xaxis_labels"))
+  testthat::expect_false(app_driver$get_active_module_input("swap_axes"))
+  testthat::expect_equal(app_driver$get_active_module_input("ggtheme"), "gray")
+  testthat::expect_equal(app_driver$get_active_module_input("alpha"), 0.5)
+  testthat::expect_equal(app_driver$get_active_module_input("fixed_size"), 2)
+  testthat::expect_false(app_driver$get_active_module_input("add_lines"))
 
-  app$stop()
+  app_driver$stop()
 })
 
 testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when facet is toggled off", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_bivariate()
+  app_driver <- app_driver_tm_g_bivariate()
 
-  module_ns <- app$active_module_ns()
+  module_ns <- app_driver$active_module_ns()
   row_facet_selector <- sprintf("#%s-row_facet-dataset_CO2_singleextract-select", module_ns)
   col_facet_selector <- sprintf("#%s-col_facet-dataset_CO2_singleextract-select", module_ns)
   x_scale_selector <- sprintf("#%s-free_x_scales", module_ns)
   y_scale_selector <- sprintf("#%s-free_y_scales", module_ns)
 
-  testthat::expect_true(app$is_visible(row_facet_selector))
-  testthat::expect_true(app$is_visible(col_facet_selector))
-  testthat::expect_true(app$is_visible(x_scale_selector))
-  testthat::expect_true(app$is_visible(y_scale_selector))
+  testthat::expect_true(app_driver$is_visible(row_facet_selector))
+  testthat::expect_true(app_driver$is_visible(col_facet_selector))
+  testthat::expect_true(app_driver$is_visible(x_scale_selector))
+  testthat::expect_true(app_driver$is_visible(y_scale_selector))
 
-  app$set_active_module_input("facetting", FALSE)
+  app_driver$set_active_module_input("facetting", FALSE)
 
-  testthat::expect_false(app$is_visible(row_facet_selector))
-  testthat::expect_false(app$is_visible(col_facet_selector))
-  testthat::expect_false(app$is_visible(x_scale_selector))
-  testthat::expect_false(app$is_visible(y_scale_selector))
+  testthat::expect_false(app_driver$is_visible(row_facet_selector))
+  testthat::expect_false(app_driver$is_visible(col_facet_selector))
+  testthat::expect_false(app_driver$is_visible(x_scale_selector))
+  testthat::expect_false(app_driver$is_visible(y_scale_selector))
 
-  app$stop()
+  app_driver$stop()
 })
 
 testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outputs without validation errors", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_bivariate()
+  app_driver <- app_driver_tm_g_bivariate()
 
-  app$set_active_module_input("alpha", 1)
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("alpha", 1)
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("fixed_size", 6)
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("fixed_size", 6)
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("add_lines", TRUE)
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("add_lines", TRUE)
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("x-dataset_CO2_singleextract-select", "Plant")
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("x-dataset_CO2_singleextract-select", "Plant")
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("y-dataset_CO2_singleextract-select", "conc")
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("y-dataset_CO2_singleextract-select", "conc")
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("row_facet-dataset_CO2_singleextract-select", "Plant")
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("row_facet-dataset_CO2_singleextract-select", "Plant")
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("free_x_scales", TRUE)
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("free_x_scales", TRUE)
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("free_y_scales", TRUE)
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("free_y_scales", TRUE)
+  app_driver$expect_no_validation_error()
 
-  app$set_active_module_input("rotate_xaxis_labels", TRUE)
+  app_driver$set_active_module_input("rotate_xaxis_labels", TRUE)
 
-  app$set_active_module_input("swap_axes", TRUE)
+  app_driver$set_active_module_input("swap_axes", TRUE)
 
-  app$set_active_module_input("ggtheme", "light")
+  app_driver$set_active_module_input("ggtheme", "light")
 
-  app$stop()
+  app_driver$stop()
 })
