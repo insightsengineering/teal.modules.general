@@ -37,9 +37,7 @@ testthat::test_that("e2e - tm_a_pca: Data selection (data_extract) changes eigen
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "Assault")
 
-  testthat::expect_failure(
-    testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
-  )
+  testthat::expect_no_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
 })
 
 testthat::test_that("e2e - tm_a_pca: Original coordinates (data_extract) changes output of plot", {
