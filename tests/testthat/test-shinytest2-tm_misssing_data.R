@@ -110,7 +110,6 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   app_driver <- app_driver_tm_missing_data()
   # BY variablelevels
   app_driver$set_active_module_input(input_id = "iris-summary_type", "By Variable Levels")
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
 
