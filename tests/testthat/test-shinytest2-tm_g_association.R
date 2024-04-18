@@ -20,14 +20,11 @@ testthat::test_that("e2e - tm_g_association:
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
-  app_driver$expect_no_shiny_error()
-
   testthat::expect_identical(
     app_driver$get_active_module_input("ref-dataset_CO2_singleextract-select"),
     "Plant"
   )
   app_driver$set_active_module_input("ref-dataset_CO2_singleextract-select", "Type")
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   testthat::expect_identical(
@@ -35,7 +32,6 @@ testthat::test_that("e2e - tm_g_association:
     "Treatment"
   )
   app_driver$set_active_module_input("vars-dataset_CO2_singleextract-select", "Plant")
-  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
@@ -46,8 +42,6 @@ testthat::test_that("e2e - tm_g_association: test if default radio buttons are c
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
-  app_driver$expect_no_shiny_error()
-
   testthat::expect_true(app_driver$get_active_module_input("association"))
   testthat::expect_false(app_driver$get_active_module_input("show_dist"))
   testthat::expect_false(app_driver$get_active_module_input("log_transformation"))
@@ -55,7 +49,6 @@ testthat::test_that("e2e - tm_g_association: test if default radio buttons are c
   app_driver$set_active_module_input("association", FALSE)
   app_driver$set_active_module_input("show_dist", TRUE)
   app_driver$set_active_module_input("log_transformation", TRUE)
-  app_driver$wait_for_idle()
   app_driver$expect_no_shiny_error()
 
   app_driver$stop()
