@@ -41,7 +41,7 @@ with_mocked_app_bindings <- function(code) {
       .hint_to_load_package <- add_facet_labels # Hint to shinytest2 when looking for packages in globals
       .(functionBody(server))
     })
-    shiny::runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
+    shiny__runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
