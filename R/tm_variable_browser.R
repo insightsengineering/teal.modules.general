@@ -705,7 +705,9 @@ plot_var_summary <- function(var,
       }
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot(data.frame(var), aes(x = forcats::fct_infreq(as.factor(var)))) +
-        geom_bar(stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE) +
+        geom_bar(
+          stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE
+        ) +
         scale_fill_manual(values = c("gray50", "tan"))
     }
   } else if (is.numeric(var)) {
