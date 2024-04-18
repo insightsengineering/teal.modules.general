@@ -289,6 +289,9 @@ testthat::test_that("e2e - tm_outliers: outlier table is displayed with proper c
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
 
+  app_driver$set_active_module_input("method", "Z-score")
+  app_driver$set_active_module_input("zscore_slider", 1.5)
+
   table_content <- app_driver$active_module_element_text("table_ui")
 
   test_match <- function(x) {
@@ -300,9 +303,9 @@ testthat::test_that("e2e - tm_outliers: outlier table is displayed with proper c
   }
 
   test_match(c("primary_key", "uptake", "Plant"))
-  test_match(c("1", "1", "16", "Qn1"))
-  test_match(c("4", "22", "14.2", "Qc1"))
-  test_match(c("10", "64", "10.5", "Mc1"))
+  test_match(c("1", "14", "44.3", "Qn2"))
+  test_match(c("4", "29", "9.3", "Qc2"))
+  test_match(c("8", "78", "10.6", "Mc3"))
 
   app_driver$stop()
 })
