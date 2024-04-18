@@ -69,8 +69,6 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
     c("Petal.Length", "Sepal.Length", "Petal.Width", "Species", "Sepal.Width")
   )
 
-
-
   app_driver$click(selector = app_driver$active_module_element("iris-filter_na"))
   app_driver$expect_no_validation_error()
 
