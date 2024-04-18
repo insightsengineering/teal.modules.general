@@ -109,7 +109,5 @@ test_that("e2e - tm_g_scatterplotmatrix: Change plot settings", {
 
   app_driver$click(selector = app_driver$active_module_element("cor"))
   app_driver$expect_no_validation_error()
-
-
   app_driver$stop()
 })
