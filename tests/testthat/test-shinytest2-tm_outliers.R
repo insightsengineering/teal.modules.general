@@ -86,8 +86,6 @@ testthat::test_that("e2e - tm_outliers:
     app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col"),
     "Plant"
   )
-  app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", "Type")
-  app_driver$expect_no_shiny_error()
 
   testthat::expect_identical(
     app_driver$get_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-vals"),
@@ -99,6 +97,9 @@ testthat::test_that("e2e - tm_outliers:
     # https://github.com/insightsengineering/teal.modules.general/issues/735
   )
   app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", c("Qn1", "Qn2", "Qn3"))
+  app_driver$expect_no_shiny_error()
+
+  app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", "Type")
   app_driver$expect_no_shiny_error()
 
   app_driver$stop()
