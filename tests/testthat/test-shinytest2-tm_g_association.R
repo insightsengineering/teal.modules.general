@@ -11,6 +11,7 @@ app_driver_tm_g_association <- function() {
   init_teal_app_driver(
     data = data,
     modules = tm_g_association(
+      label = "Association",
       ref = teal.transform::data_extract_spec(
         dataname = "CO2",
         select = teal.transform::select_spec(
