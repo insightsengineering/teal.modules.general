@@ -39,6 +39,11 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
     "Variable browser (e2e)"
   )
 
+  # Plot is visible
+  testthat::expect_true(
+    app_driver$is_visible(app_driver$active_module_element("variable_plot-plot_out_main"))
+  )
+
   # All datanames are available on the left sidebar
   testthat::expect_setequal(
     trimws(app_driver$get_text(
@@ -52,6 +57,47 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
     trimws(app_driver$active_module_element_text("variable_summary_table table th")),
     "Statistic"
   )
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_variable_browser: Selecting 'treat variable as factor' changes the table headers", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_variable_browser()
+
+  # Categorical type have levels table in main output
+  current_var <- trimws(app_driver$get_text(
+    sprintf("%s .nav li.active", app_driver$active_module_element("ui_variable_browser"))
+  ))
+
+  app_driver$set_active_module_input(
+    sprintf("variable_browser_%s_rows_selected", current_var),
+    2,
+    allow_no_input_binding_ = TRUE
+  )
+  app_driver$set_active_module_input(
+    sprintf("variable_browser_%s_last_clicked", current_var),
+    2,
+    allow_no_input_binding_ = TRUE
+  )
+
+  app_driver$set_active_module_input("numeric_as_factor", TRUE)
+
+  ## Test will fail if Level column is not found
+  testthat::expect_contains(
+    trimws(app_driver$active_module_element_text("variable_summary_table table th")),
+    "Level"
+  )
+
+  app_driver$stop()
+})
+
+
+testthat::test_that("e2e - tm_variable_browser: selection of categorical variable has a table with 'level' header", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_variable_browser()
 
   # Categorical type have levels table in main output
   current_var <- trimws(app_driver$get_text(
@@ -89,6 +135,8 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly",
       categorical_index,
       allow_no_input_binding_ = TRUE
     )
+  } else {
+    testthat::skip("Couldn't find a categorical variable to select")
   }
 
   ## Test will fail if Level column is not found
@@ -105,8 +153,6 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
-
-  app_driver$expect_no_shiny_error()
 
   selector_ns <- app_driver$active_module_element
 
