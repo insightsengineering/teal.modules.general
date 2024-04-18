@@ -45,7 +45,6 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
     "Missing data"
   )
 
-  app_driver$get_text(app_driver$active_module_element("data-module-dataset_encodings"))
   encoding_dataset <- app_driver$get_text(
     sprintf("%s %s", app_driver$active_module_element("dataset_encodings"), ".help-block")
   )
