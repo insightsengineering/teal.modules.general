@@ -154,12 +154,10 @@ testthat::test_that("e2e - tm_variable_browser: changing 'display density' encod
 
   app_driver <- app_driver_tm_variable_browser()
 
-  selector_ns <- app_driver$active_module_element
-
   # Show density button being clicked on and off
-  app_driver$click(selector = selector_ns("display_density"))
+  app_driver$click(selector = app_driver$active_module_element("display_density"))
   app_driver$expect_no_shiny_error()
-  app_driver$click(selector = selector_ns("display_density"))
+  app_driver$click(selector = app_driver$active_module_element("display_density"))
   app_driver$expect_no_shiny_error()
 
 
@@ -176,7 +174,7 @@ testthat::test_that("e2e - tm_variable_browser: changing 'outlier definition' en
     app_driver$active_module_element_text("outlier_definition_slider")
   ) ## Does not exist initially
 
-  app_driver$click(selector = selector_ns("remove_outliers"))
+  app_driver$click(selector = app_driver$active_module_element("remove_outliers"))
   app_driver$expect_no_shiny_error()
   testthat::expect_length(
     app_driver$active_module_element_text("outlier_definition_slider"),
@@ -186,7 +184,7 @@ testthat::test_that("e2e - tm_variable_browser: changing 'outlier definition' en
   app_driver$set_active_module_input("outlier_definition_slider", 2)
   app_driver$expect_no_shiny_error()
 
-  app_driver$click(selector = selector_ns("remove_outliers"))
+  app_driver$click(selector = app_driver$active_module_element("remove_outliers"))
   app_driver$expect_no_shiny_error()
 
 
@@ -199,7 +197,7 @@ testthat::test_that("e2e - tm_variable_browser: changing plot setting encodings 
   app_driver <- app_driver_tm_variable_browser()
 
   # Test changing plot settings
-  testthat::expect_false(app_driver$is_visible(selector_ns("ggplot_theme-selectized")))
+  testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("ggplot_theme-selectized")))
 
   app_driver$set_active_module_input("ggplot_theme", "bw")
   app_driver$expect_no_validation_error()
