@@ -2,12 +2,16 @@ app_driver_tm_outlier <- function() {
   data <- teal.data::teal_data()
   data <- within(data, {
     CO2 <- CO2 # nolint: object_name
-    CO2[["primary_key"]] <- seq_len(nrow(CO2))
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: object_name
   })
   teal.data::datanames(data) <- "CO2"
   teal.data::join_keys(data) <- teal.data::join_keys(join_key("CO2", "CO2", "primary_key"))
 
-  vars <- teal.transform::choices_selected(teal.transform::variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+  vars <- teal.transform::choices_selected(
+    teal.transform::variable_choices(
+      data[["CO2"]],
+      c("Plant", "Type", "Treatment"))
+  )
 
   init_teal_app_driver(
     data = data,
@@ -90,7 +94,8 @@ testthat::test_that("e2e - tm_outliers:
       "Qn1", "Qn2", "Qn3", "Qc1", "Qc2", "Qc3", "Mn1", "Mn2", "Mn3",
       "Mc1", "Mc2", "Mc3"
     )
-    # THIS WILL HAVE DIFFERENT ORDER ONCE THIS IS FIXED https://github.com/insightsengineering/teal.modules.general/issues/735
+    # THIS WILL HAVE DIFFERENT ORDER ONCE THIS IS FIXED
+    # https://github.com/insightsengineering/teal.modules.general/issues/735
   )
   app_driver$set_active_module_input("categorical_var-dataset_CO2_singleextract-filter1-col", c("Qn1", "Qn2", "Qn3"))
   app_driver$expect_no_shiny_error()
