@@ -79,10 +79,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   testthat::expect_true(
     app_driver$is_visible(
-      sprintf(
-        "%s-%s", app_driver$active_module_element("iris-summary_plot"),
-        "plot_out_main"
-      )
+        app_driver$active_module_element("iris-summary_plot-plot_out_main")
     )
   )
 
