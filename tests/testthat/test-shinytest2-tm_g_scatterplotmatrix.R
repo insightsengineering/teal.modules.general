@@ -18,7 +18,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
         ),
         teal.transform::data_extract_spec(
           dataname = "ADRS",
-          filter = filter_spec(
+          filter = teal.transform::filter_spec(
             label = "Select endpoints:",
             vars = c("PARAMCD", "AVISIT"),
             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
