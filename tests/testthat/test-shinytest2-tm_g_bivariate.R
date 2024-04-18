@@ -83,8 +83,8 @@ testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when fac
   app_driver <- app_driver_tm_g_bivariate()
 
   testthat::expect_true(app_driver$is_visible(
-    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select"))
-  )
+    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
+  ))
   testthat::expect_true(
     app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
   )
@@ -94,8 +94,8 @@ testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when fac
   app_driver$set_active_module_input("facetting", FALSE)
 
   testthat::expect_false(app_driver$is_visible(
-    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select"))
-  )
+    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
+  ))
   testthat::expect_false(
     app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
   )
