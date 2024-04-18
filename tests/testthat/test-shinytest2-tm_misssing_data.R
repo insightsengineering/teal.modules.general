@@ -75,8 +75,6 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
   app_driver$click(selector = app_driver$active_module_element("iris-any_na"))
   app_driver$expect_no_validation_error()
 
-  app_driver$set_active_module_input("iris-ggtheme", "classic", timeout_ = 10000)
-
   testthat::expect_true(
     app_driver$is_visible(
       app_driver$active_module_element("iris-summary_plot-plot_out_main")
