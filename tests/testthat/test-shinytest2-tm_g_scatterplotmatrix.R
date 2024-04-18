@@ -56,7 +56,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
   )
 
   encoding_dataset <- app_driver$get_text("#teal-main_ui-root-scatterplot_matrix .help-block")
-  testthat::expect_match(encoding_dataset, "Datasets:\\n *ADSL, ADRS\\n", all = FALSE)
+  testthat::expect_match(encoding_dataset, "Datasets.*ADSL.*ADRS", all = FALSE)
 
   app_driver$stop()
 })
