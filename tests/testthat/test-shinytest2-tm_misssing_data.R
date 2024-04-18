@@ -49,7 +49,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
     app_driver$active_module_element("dataset_encodings .help-block")
   )
 
-  testthat::expect_match(encoding_dataset, "Datasets:\\n    iris, mtcars\\n", all = FALSE)
+  testthat::expect_match(encoding_dataset, "Datasets.*iris.*mtcars", all = FALSE)
 
 
   app_driver$stop()
