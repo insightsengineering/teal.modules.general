@@ -103,6 +103,7 @@ testthat::test_that("e2e - tm_g_association: test if default radio buttons are c
   app_driver$set_active_module_input("association", FALSE)
   app_driver$set_active_module_input("show_dist", TRUE)
   app_driver$set_active_module_input("log_transformation", TRUE)
+  app_driver$expect_no_validation_error()
   app_driver$expect_no_shiny_error()
 
   app_driver$stop()
