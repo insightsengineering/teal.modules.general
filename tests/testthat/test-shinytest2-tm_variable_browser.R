@@ -149,7 +149,7 @@ testthat::test_that("e2e - tm_variable_browser: selection of categorical variabl
 })
 
 
-testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn't show errors", {
+testthat::test_that("e2e - tm_variable_browser: changing 'display density' encoding doesn't show errors", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -161,6 +161,15 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
   app_driver$expect_no_shiny_error()
   app_driver$click(selector = selector_ns("display_density"))
   app_driver$expect_no_shiny_error()
+
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_variable_browser: changing 'outlier definition' encoding doesn't show errors", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_variable_browser()
 
   # Test Enable Remove outliers button
   testthat::expect_null(
@@ -179,6 +188,15 @@ testthat::test_that("e2e - tm_variable_browser: main output interactivity doesn'
 
   app_driver$click(selector = selector_ns("remove_outliers"))
   app_driver$expect_no_shiny_error()
+
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_variable_browser: changing plot setting encodings doesn't show errors", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_variable_browser()
 
   # Test changing plot settings
   testthat::expect_false(app_driver$is_visible(selector_ns("ggplot_theme-selectized")))
