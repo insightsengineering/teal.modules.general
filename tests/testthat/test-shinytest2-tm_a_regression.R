@@ -35,7 +35,6 @@ app_driver_tm_a_regression <- function() {
       alpha = c(1, 0, 1),
       size = c(2, 1, 8),
       ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-      ggplot2_args = teal.widgets::ggplot2_args(),
       pre_output = NULL,
       post_output = NULL,
       default_plot_type = 1,
