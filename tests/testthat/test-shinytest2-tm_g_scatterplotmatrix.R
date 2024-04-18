@@ -27,7 +27,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
           ),
           select = teal.transform::select_spec(
             label = "Select variables:",
-            choices = variable_choices(data[["ADRS"]]),
+            choices = teal.transform::variable_choices(data[["ADRS"]]),
             selected = c("AGE", "AVAL", "ADY"),
             multiple = TRUE,
             ordered = TRUE,
