@@ -92,7 +92,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   # combination graph
 
-  app_driver$set_active_module_input(input_id = "iris-summary_type", "Combinations")
+  app_driver$set_active_module_input("iris-summary_type", "Combinations")
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
@@ -100,14 +100,26 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
     )
   )
 
+  # combination encoding
+
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$active_module_element("iris-cutoff")
+    )
+  )
+
+  testthat::expect_identical(app_driver$get_active_module_input("iris-combination_cutoff"), 52L)
+  app_driver$set_active_module_input("iris-combination_cutoff", 10L)
+  app_driver$expect_no_validation_error()
+
   app_driver$stop()
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
-  # BY variablelevels
-  app_driver$set_active_module_input(input_id = "iris-summary_type", "By Variable Levels")
+  # By variable levels
+  app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
   app_driver$expect_no_validation_error()
 
 
@@ -120,7 +132,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
     c("NA", "setosa", "versicolor", "virginica")
   )
 
-  app_driver$set_active_module_input(input_id = "iris-group_by_vals", c("versicolor", "virginica"))
+  app_driver$set_active_module_input("iris-group_by_vals", c("versicolor", "virginica"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_equal(
