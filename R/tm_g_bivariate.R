@@ -965,6 +965,37 @@ bivariate_ggplot_call <- function(x_class,
   plot_call
 }
 
+# Create facet call
+facet_ggplot_call <- function(row_facet = character(0),
+                              col_facet = character(0),
+                              free_x_scales = FALSE,
+                              free_y_scales = FALSE) {
+  scales <- if (free_x_scales && free_y_scales) {
+    "free"
+  } else if (free_x_scales) {
+    "free_x"
+  } else if (free_y_scales) {
+    "free_y"
+  } else {
+    "fixed"
+  }
+
+  if (identical(row_facet, character(0)) && identical(col_facet, character(0))) {
+    NULL
+  } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
+    call(
+      "facet_grid",
+      rows = call_fun_dots("vars", row_facet),
+      cols = call_fun_dots("vars", col_facet),
+      scales = scales
+    )
+  } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
+    call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
+  } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
+    call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
+  }
+}
+
 coloring_ggplot_call <- function(colour,
                                  fill,
                                  size,
