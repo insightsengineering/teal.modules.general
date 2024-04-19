@@ -215,6 +215,15 @@ testthat::test_that("e2e - tm_g_bivariate: setting encoding inputs produces outp
   app_driver$set_active_module_input("col_facet-dataset_CO2_singleextract-select", "Type")
   app_driver$expect_no_validation_error()
 
+  app_driver$set_active_module_input("color-dataset_CO2_singleextract-select", "Type")
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("size-dataset_CO2_singleextract-select", "Type")
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("fill-dataset_CO2_singleextract-select", "Plant")
+  app_driver$expect_no_validation_error()
+
   app_driver$set_active_module_input("free_x_scales", TRUE)
   app_driver$expect_no_validation_error()
 
