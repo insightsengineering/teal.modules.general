@@ -69,7 +69,11 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
   # Distinct version.
   app_driver$set_active_module_input("if_distinct", TRUE)
   iris_extracted_distinct <- extract_iris_table()
-  iris_subset_distinct <- iris_subset %>% dplyr::mutate(n = 1)
+  iris_subset_distinct <- iris %>%
+    dplyr::mutate(n = 1) %>%
+    dplyr::arrange(dplyr::across(dplyr::everything())) %>%
+    dplyr::mutate(Species = as.character(Species)) %>%
+    dplyr::slice(1:30)
   testthat::expect_equal(iris_extracted_distinct, iris_subset_distinct)
 
   app_driver$stop()
