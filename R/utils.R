@@ -35,6 +35,10 @@
 #' - When the length of `size` is three: the plot points size are dynamically adjusted based on
 #' vector of `value`, `min`, and `max`.
 #'
+#' @param card_function (`function`) optional, custom function to create a report card.
+#' See [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/adding-support-for-reporting.html)
+#' for details.
+#'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @name shared_params
