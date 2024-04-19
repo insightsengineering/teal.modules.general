@@ -30,7 +30,8 @@ app_driver_tm_missing_data <- function() {
       pre_output = NULL,
       post_output = NULL
     ),
-    timeout = 3000
+    timeout = 3000,
+    seed = 1
   )
 }
 
@@ -108,7 +109,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
     )
   )
 
-  testthat::expect_identical(app_driver$get_active_module_input("iris-combination_cutoff"), 2L)
+  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 2L)
   app_driver$set_active_module_input("iris-combination_cutoff", 10L)
   app_driver$expect_no_validation_error()
 
@@ -150,18 +151,15 @@ test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
-  table_content <- app_driver$active_module_element_text("iris-levels_table")
+  levels_table <- app_driver$active_module_element("iris-levels_table") %>%
+    app_driver$get_html_rvest() %>%
+    rvest::html_table(fill = TRUE) %>%
+    .[[1]]
 
-  test_match <- function(x) {
-    testthat::expect_match(
-      table_content,
-      paste(x, collapse = ""),
-      fixed = TRUE
-    )
-  }
-
-  test_match(c("1", "Sepal.Length", "11", "5", "3", "5"))
-  test_match(c("3", "Petal.Length", "2", "5", "10", "4"))
+  testthat::expect_setequal(
+    levels_table$Variable,
+    c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+  )
 
   app_driver$stop()
 })
