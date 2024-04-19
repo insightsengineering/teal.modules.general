@@ -42,6 +42,18 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
   testthat::expect_match(app_driver$get_active_module_output("iris-data_table"), "Table Caption")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("iris-data_table")))
 
+  iris_extracted <- app_driver$active_module_element("iris-data_table") %>%
+    app_driver$get_html_rvest() %>%
+    rvest::html_table(fill = TRUE) %>%
+    .[[2]] %>%
+    dplyr::select(-1) %>%
+    data.frame()
+
+  iris_subset <- iris %>%
+    dplyr::mutate(Species = as.character(Species)) %>%
+    .[1:30,]
+  testthat::expect_equal(iris_extracted, iris_subset)
+
   app_driver$stop()
 })
 
