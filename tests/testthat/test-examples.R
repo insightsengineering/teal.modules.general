@@ -33,7 +33,6 @@ suppress_warnings <- function(expr, pattern = "*", ...) {
 
 with_mocked_app_bindings <- function(code) {
   shiny__shinyApp <- shiny::shinyApp # nolint object_name.
-  shiny__runApp <- shiny::runApp # nolint object_name.
   # workaround of https://github.com/rstudio/shinytest2/issues/381
   # change to `print(shiny__shinyApp(...))` and remove allow warning once fixed
   mocked_shinyApp <- function(ui, server, ...) { # nolint object_linter.
@@ -41,7 +40,7 @@ with_mocked_app_bindings <- function(code) {
       .hint_to_load_package <- add_facet_labels # Hint to shinytest2 when looking for packages in globals
       .(functionBody(server))
     })
-    shiny__runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
+    mocked_runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
   mocked_runApp <- function(x, ...) { # nolint object_name_linter.
