@@ -118,7 +118,8 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_height = c(600, 200, 2000),
                               plot_width = NULL,
                               pre_output = NULL,
-                              post_output = NULL) {
+                              post_output = NULL,
+                              card_function) {
   message("Initializing tm_g_distribution")
 
   # Requires Suggested packages
@@ -169,6 +170,12 @@ tm_g_distribution <- function(label = "Distribution Module",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  if (missing(card_function)) {
+    card_function <- tm_g_distribution_card_function
+  } else {
+    checkmate::assert_function(card_function)
+  }
   # End of assertions
 
   # Make UI args
@@ -185,7 +192,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     server = srv_distribution,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, card_function = card_function) # nolint: line_length.
     ),
     ui = ui_distribution,
     ui_args = args,
@@ -351,7 +358,8 @@ srv_distribution <- function(id,
                              group_var,
                              plot_height,
                              plot_width,
-                             ggplot2_args) {
+                             ggplot2_args,
+                             card_function) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -1282,37 +1290,39 @@ srv_distribution <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Distribution Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        if (input$tabs == "Histogram") {
-          card$append_plot(dist_r(), dim = pws1$dim())
-        } else if (input$tabs == "QQplot") {
-          card$append_plot(qq_r(), dim = pws2$dim())
-        }
-        card$append_text("Statistics table", "header3")
-
-        card$append_table(common_q()[["summary_table"]])
-        tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
-        if (inherits(tests_error, "data.frame")) {
-          card$append_text("Tests table", "header3")
-          card$append_table(tests_r())
-        }
-
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(teal.code::get_code(output_q()))
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      card_function <- hydrate_function(card_function, with_filter, filter_panel_api)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_function)
     }
     ###
   })
+}
+
+tm_g_distribution_card_function <- function(comment, label) { #nolint: object_length.
+  card <- teal::report_card_template(
+    title = "Distribution Plot",
+    label = label,
+    with_filter = with_filter,
+    filter_panel_api = filter_panel_api
+  )
+  card$append_text("Plot", "header3")
+  if (input$tabs == "Histogram") {
+    card$append_plot(dist_r(), dim = pws1$dim())
+  } else if (input$tabs == "QQplot") {
+    card$append_plot(qq_r(), dim = pws2$dim())
+  }
+  card$append_text("Statistics table", "header3")
+
+  card$append_table(common_q()[["summary_table"]])
+  tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
+  if (inherits(tests_error, "data.frame")) {
+    card$append_text("Tests table", "header3")
+    card$append_table(tests_r())
+  }
+
+  if (!comment == "") {
+    card$append_text("Comment", "header3")
+    card$append_text(comment)
+  }
+  card$append_src(teal.code::get_code(output_q()))
+  card
 }
