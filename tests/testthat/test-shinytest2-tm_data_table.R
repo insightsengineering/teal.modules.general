@@ -63,7 +63,7 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
   iris_extracted <- extract_iris_table()
   iris_subset <- iris %>%
     dplyr::mutate(Species = as.character(Species)) %>%
-   dplyr::slice(1:30)
+    dplyr::slice(1:30)
   testthat::expect_equal(iris_extracted, iris_subset)
 
   # Distinct version.
