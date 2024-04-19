@@ -46,6 +46,34 @@ app_driver_tm_g_bivariate <- function() {
           fixed = FALSE
         )
       ),
+      color = teal.transform::data_extract_spec(
+        dataname = "CO2",
+        select = teal.transform::select_spec(
+          label = "Select variable:",
+          choices = teal.transform::variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+          selected = "Treatment",
+          fixed = FALSE
+        )
+      ),
+      fill = teal.transform::data_extract_spec(
+        dataname = "CO2",
+        select = teal.transform::select_spec(
+          label = "Select variable:",
+          choices = teal.transform::variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+          selected = "Treatment",
+          fixed = FALSE
+        )
+      ),
+      size = teal.transform::data_extract_spec(
+        dataname = "CO2",
+        select = teal.transform::select_spec(
+          label = "Select variable:",
+          choices = teal.transform::variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+          selected = "Treatment",
+          fixed = FALSE
+        )
+      ),
+      color_settings = TRUE,
       free_x_scales = FALSE,
       free_y_scales = TRUE,
       ggplot2_args = teal.widgets::ggplot2_args(
@@ -67,6 +95,10 @@ testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specif
   testthat::expect_true(app_driver$get_active_module_input("facetting"))
   testthat::expect_equal(app_driver$get_active_module_input("row_facet-dataset_CO2_singleextract-select"), "Type")
   testthat::expect_equal(app_driver$get_active_module_input("col_facet-dataset_CO2_singleextract-select"), "Treatment")
+  testthat::expect_true(app_driver$get_active_module_input("coloring"))
+  testthat::expect_equal(app_driver$get_active_module_input("color-dataset_CO2_singleextract-select"), "Treatment")
+  testthat::expect_equal(app_driver$get_active_module_input("size-dataset_CO2_singleextract-select"), "Treatment")
+  testthat::expect_equal(app_driver$get_active_module_input("fill-dataset_CO2_singleextract-select"), "Treatment")
   testthat::expect_false(app_driver$get_active_module_input("free_x_scales"))
   testthat::expect_true(app_driver$get_active_module_input("free_y_scales"))
   testthat::expect_false(app_driver$get_active_module_input("rotate_xaxis_labels"))
@@ -79,27 +111,77 @@ testthat::test_that("e2e - tm_g_bivariate: module is initialised with the specif
   app_driver$stop()
 })
 
+testthat::test_that("e2e - tm_g_bivariate: coloring options are hidden when coloring is toggled off", {
+  skip_if_too_deep(5)
+  app_driver <- app_driver_tm_g_bivariate()
+
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$active_module_element("color-dataset_CO2_singleextract-select_input")
+    )
+  )
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$active_module_element("size-dataset_CO2_singleextract-select_input")
+    )
+  )
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$active_module_element("fill-dataset_CO2_singleextract-select_input")
+    )
+  )
+
+  app_driver$set_active_module_input("coloring", FALSE)
+
+  testthat::expect_false(
+    app_driver$is_visible(
+      app_driver$active_module_element("color-dataset_CO2_singleextract-select_input")
+    )
+  )
+  testthat::expect_false(
+    app_driver$is_visible(
+      app_driver$active_module_element("size-dataset_CO2_singleextract-select_input")
+    )
+  )
+  testthat::expect_false(
+    app_driver$is_visible(
+      app_driver$active_module_element("fill-dataset_CO2_singleextract-select_input")
+    )
+  )
+
+  app_driver$stop()
+
+})
+
 testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when facet is toggled off", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_bivariate()
 
-  testthat::expect_true(app_driver$is_visible(
-    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
-  ))
   testthat::expect_true(
-    app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
+    app_driver$is_visible(
+      app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
+    )
+  )
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select")
+    )
   )
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("free_x_scales")))
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("free_y_scales")))
 
   app_driver$set_active_module_input("facetting", FALSE)
 
-  testthat::expect_false(app_driver$is_visible(
-    app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
-  ))
   testthat::expect_false(
-    app_driver$is_visible(app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select"))
+    app_driver$is_visible(
+      app_driver$active_module_element("row_facet-dataset_CO2_singleextract-select")
+    )
+  )
+  testthat::expect_false(
+    app_driver$is_visible(
+      app_driver$active_module_element("col_facet-dataset_CO2_singleextract-select")
+    )
   )
   testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("free_x_scales")))
   testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("free_y_scales")))
