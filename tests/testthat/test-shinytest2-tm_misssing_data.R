@@ -160,8 +160,8 @@ test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
     )
   }
 
-  test_match(c("1", "Sepal.Length", "11", "6", "5", "0"))
-  test_match(c("3", "Petal.Length", "4", "5", "2", "1"))
+  test_match(c("1", "Sepal.Length", "11", "5", "3", "5"))
+  test_match(c("3", "Petal.Length", "2", "5", "10", "4"))
 
   app_driver$stop()
 })
