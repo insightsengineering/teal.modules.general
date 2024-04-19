@@ -51,7 +51,7 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
 
   iris_subset <- iris %>%
     dplyr::mutate(Species = as.character(Species)) %>%
-    .[1:30,]
+    .[1:30, ]
   testthat::expect_equal(iris_extracted, iris_subset)
 
   app_driver$stop()
