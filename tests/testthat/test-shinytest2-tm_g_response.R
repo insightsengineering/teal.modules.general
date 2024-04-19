@@ -16,7 +16,7 @@ app_driver_tm_g_response <- function() {
           dataname = "ADSL",
           select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY", "SEX")),
+            choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
             selected = "BMRKR2",
             multiple = FALSE,
             fixed = FALSE
@@ -60,7 +60,7 @@ testthat::test_that("e2e - tm_g_response: module is initialised with the specifi
 testthat::test_that("e2e - tm_g_response: encoding inputs produce output without validation errors", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_response()
+  app_driver <- app_driver_tm_g_response()
 
   app_driver$set_active_module_input("response-dataset_ADSL_singleextract-select", "COUNTRY")
   app_driver$expect_no_validation_error()
