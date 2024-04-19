@@ -34,6 +34,15 @@ test_that("e2e - tm_data_table: Initializes without errors", {
   app_driver$stop()
 })
 
+test_that("e2e - tm_data_table: Verify checkbox displayed over data table", {
+  skip_if_too_deep(5)
+  app_driver <- app_driver_tm_data_table()
+
+  testthat::expect_false(app_driver$get_active_module_input("if_distinct"))
+
+  app_driver$stop()
+})
+
 test_that("e2e - tm_data_table: Verify module displays data table", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
@@ -42,17 +51,26 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
   testthat::expect_match(app_driver$get_active_module_output("iris-data_table"), "Table Caption")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("iris-data_table")))
 
-  iris_extracted <- app_driver$active_module_element("iris-data_table") %>%
-    app_driver$get_html_rvest() %>%
-    rvest::html_table(fill = TRUE) %>%
-    .[[2]] %>%
-    dplyr::select(-1) %>%
-    data.frame()
-
+  extract_iris_table <- function() {
+    app_driver$active_module_element("iris-data_table") %>%
+      app_driver$get_html_rvest() %>%
+      rvest::html_table(fill = TRUE) %>%
+      .[[2]] %>%
+      dplyr::select(-1) %>%
+      data.frame()
+  }
+  # Non-distinct version.
+  iris_extracted <- extract_iris_table()
   iris_subset <- iris %>%
     dplyr::mutate(Species = as.character(Species)) %>%
     .[1:30, ]
   testthat::expect_equal(iris_extracted, iris_subset)
+
+  # Distinct version.
+  app_driver$set_active_module_input("if_distinct", TRUE)
+  iris_extracted_distinct <- extract_iris_table()
+  iris_subset_distinct <- iris_subset %>% mutate(n = 1)
+  testthat::expect_equal(iris_extracted_distinct, iris_subset_distinct)
 
   app_driver$stop()
 })
