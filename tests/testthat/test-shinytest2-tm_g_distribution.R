@@ -111,6 +111,11 @@ testthat::test_that("e2e - tm_g_distribution: qqplot istogram encoding inputs pr
   app_driver <- app_driver_tm_g_distribution()
 
   # Encodings in the QQplot tab
+  app_driver$set_active_module_input("main_type", "Density")
+  app_driver$expect_validation_error() # test needs to be updated to remove validation error
+  app_driver$set_active_module_input("dist_tests", "Shapiro-Wilk")
+  app_driver$expect_no_validation_error()
+
   app_driver$set_active_module_input("tabs", "QQplot")
   app_driver$set_active_module_input("t_dist", "normal")
   app_driver$click(NS(app_driver$active_module_ns(), "params_reset"))
