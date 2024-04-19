@@ -150,7 +150,6 @@ testthat::test_that("e2e - tm_g_bivariate: coloring options are hidden when colo
   )
 
   app_driver$stop()
-
 })
 
 testthat::test_that("e2e - tm_g_bivariate: facetting options are hidden when facet is toggled off", {
