@@ -16,7 +16,7 @@ app_driver_tm_g_response <- function() {
           dataname = "ADSL",
           select = teal.transform::select_spec(
             label = "Select variable:",
-            choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
+            choices = teal.transform::variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY", "SEX")),
             selected = "BMRKR2",
             multiple = FALSE,
             fixed = FALSE
@@ -43,34 +43,68 @@ app_driver_tm_g_response <- function() {
 testthat::test_that("e2e - tm_g_response: module is initialised with the specified defaults", {
   skip_if_too_deep(5)
 
-  app <- app_driver_tm_g_response()
+  app_driver <- app_driver_tm_g_response()
 
-  app$expect_no_shiny_error()
+  app_driver$expect_no_shiny_error()
 
-  testthat::expect_equal(app$get_active_module_input("response-dataset_ADSL_singleextract-select"), "BMRKR2")
-  testthat::expect_equal(app$get_active_module_input("x-dataset_ADSL_singleextract-select"), "RACE")
-  testthat::expect_equal(app$get_active_module_input("freq"), "density")
-  testthat::expect_true(app$get_active_module_input("count_labels"))
-  testthat::expect_false(app$get_active_module_input("coord_flip"))
-  testthat::expect_false(app$get_active_module_input("rotate_xaxis_labels"))
-  testthat::expect_equal(app$get_active_module_input("ggtheme"), "gray")
+  testthat::expect_equal(app_driver$get_active_module_input("response-dataset_ADSL_singleextract-select"), "BMRKR2")
+  testthat::expect_equal(app_driver$get_active_module_input("x-dataset_ADSL_singleextract-select"), "RACE")
+  testthat::expect_equal(app_driver$get_active_module_input("freq"), "density")
+  testthat::expect_true(app_driver$get_active_module_input("count_labels"))
+  testthat::expect_false(app_driver$get_active_module_input("coord_flip"))
+  testthat::expect_false(app_driver$get_active_module_input("rotate_xaxis_labels"))
+  testthat::expect_equal(app_driver$get_active_module_input("ggtheme"), "gray")
 
-  app$stop()
+  app_driver$stop()
 })
 testthat::test_that("e2e - tm_g_response: encoding inputs produce output without validation errors", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_response()
 
-  app$set_active_module_input("response-dataset_ADSL_singleextract-select", "COUNTRY")
-  app$set_active_module_input("x-dataset_ADSL_singleextract-select", "SEX")
-  app$set_active_module_input("freq", "frequency")
-  app$set_active_module_input("count_labels", FALSE)
-  app$set_active_module_input("coord_flip", TRUE)
-  app$set_active_module_input("rotate_xaxis_labels", TRUE)
-  app$set_active_module_input("ggtheme", "light")
+  app_driver$set_active_module_input("response-dataset_ADSL_singleextract-select", "COUNTRY")
+  app_driver$expect_no_validation_error()
 
-  app$expect_no_validation_error()
+  app_driver$set_active_module_input("x-dataset_ADSL_singleextract-select", "SEX")
+  app_driver$expect_no_validation_error()
 
-  app$stop()
+  app_driver$set_active_module_input("freq", "frequency")
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("count_labels", FALSE)
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("coord_flip", TRUE)
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("rotate_xaxis_labels", TRUE)
+  app_driver$expect_no_validation_error()
+
+  app_driver$set_active_module_input("ggtheme", "light")
+
+  app_driver$expect_no_validation_error()
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_g_response: deselecting response produces validation error", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_g_response()
+
+  app_driver$set_active_module_input("response-dataset_ADSL_singleextract-select", c())
+  app_driver$expect_validation_error()
+
+  app_driver$stop()
+})
+
+testthat::test_that("e2e - tm_g_response: deselecting x produces validation error", {
+  skip_if_too_deep(5)
+
+  app_driver <- app_driver_tm_g_response()
+
+  app_driver$set_active_module_input("x-dataset_ADSL_singleextract-select", c())
+  app_driver$expect_validation_error()
+
+  app_driver$stop()
 })
