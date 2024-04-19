@@ -1297,6 +1297,7 @@ srv_distribution <- function(id,
   })
 }
 
+#' @keywords internal
 tm_g_distribution_card_function <- function(comment, label) { #nolint: object_length.
   card <- teal::report_card_template(
     title = "Distribution Plot",
