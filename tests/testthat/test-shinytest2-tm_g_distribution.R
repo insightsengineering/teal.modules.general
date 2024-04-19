@@ -84,7 +84,10 @@ testthat::test_that("e2e - tm_g_distribution: histogram encoding inputs produce 
   app_driver$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-col", "ARM")
   app_driver$expect_no_validation_error()
 
-  app_driver$set_active_module_input("group_i-dataset_ADSL_singleextract-filter1-vals", c("A: Drug X", "C: Combination"))
+  app_driver$set_active_module_input(
+    "group_i-dataset_ADSL_singleextract-filter1-vals",
+    c("A: Drug X", "C: Combination")
+  )
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("scales_type", "Free")
@@ -105,7 +108,7 @@ testthat::test_that("e2e - tm_g_distribution: histogram encoding inputs produce 
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_distribution: qqplot istogram encoding inputs produce output without validation errors", {
+testthat::test_that("e2e - tm_g_distribution: qqplot encoding inputs produce output without validation errors", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()
