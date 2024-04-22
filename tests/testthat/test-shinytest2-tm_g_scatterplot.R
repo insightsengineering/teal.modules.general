@@ -84,7 +84,7 @@ app_driver_tm_g_scatterplot <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_g_scatterplot: module is initialised with the specified defaults", {
+testthat::test_that("e2e - tm_g_scatterplot: Module is initialised with the specified defaults", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -110,7 +110,7 @@ testthat::test_that("e2e - tm_g_scatterplot: module is initialised with the spec
   app$stop()
 })
 
-testthat::test_that("e2e - tm_g_scatterplot: base for the log transformation can be applied", {
+testthat::test_that("e2e - tm_g_scatterplot: Base for the log transformation can be applied", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -130,7 +130,7 @@ testthat::test_that("e2e - tm_g_scatterplot: base for the log transformation can
   app$stop()
 })
 
-testthat::test_that("e2e - tm_g_scatterplot: log transform is only possible for positive numeric vars", {
+testthat::test_that("e2e - tm_g_scatterplot: The log transform is only possible for positive numeric vars", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -149,7 +149,7 @@ testthat::test_that("e2e - tm_g_scatterplot: log transform is only possible for 
   app$stop()
 })
 
-testthat::test_that("e2e - tm_g_scatterplot: get validation error when facetting with the same row & col variable", {
+testthat::test_that("e2e - tm_g_scatterplot: Get validation error when facetting with the same row & col variable", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -161,7 +161,7 @@ testthat::test_that("e2e - tm_g_scatterplot: get validation error when facetting
   app$stop()
 })
 
-testthat::test_that("e2e - tm_g_scatterplot: encoding inputs produce output without validation errors", {
+testthat::test_that("e2e - tm_g_scatterplot: The encoding inputs produce output without validation errors", {
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()

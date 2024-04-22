@@ -46,7 +46,7 @@ app_driver_tm_a_regression <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_a_regression: data parameter and module label is passed properly", {
+testthat::test_that("e2e - tm_a_regression: Data parameter and module label is passed properly", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -64,7 +64,7 @@ testthat::test_that("e2e - tm_a_regression: data parameter and module label is p
 })
 
 testthat::test_that("e2e - tm_a_regression:
-  data extract spec elements are initialized with the default values specified by response and regressor arg", {
+  Data extract spec elements are initialized with the default values specified by response and regressor arg", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -82,7 +82,7 @@ testthat::test_that("e2e - tm_a_regression:
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_regression: plot_type is set properly", {
+testthat::test_that("e2e - tm_a_regression: Plot type is set properly", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -95,7 +95,7 @@ testthat::test_that("e2e - tm_a_regression: plot_type is set properly", {
 })
 
 testthat::test_that("e2e - tm_a_regression:
-  plot type has 7 specific choices & changing choices does not throw errors", {
+  Plot type has 7 specific choices & changing choices does not throw errors", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -122,7 +122,7 @@ testthat::test_that("e2e - tm_a_regression:
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_regression: outlier definition and label are visible by default", {
+testthat::test_that("e2e - tm_a_regression: Outlier definition and label are visible by default", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -134,7 +134,7 @@ testthat::test_that("e2e - tm_a_regression: outlier definition and label are vis
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_regression: outlier definition and label have default values and label text", {
+testthat::test_that("e2e - tm_a_regression: Outlier definition and label have default values and label text", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -162,7 +162,7 @@ testthat::test_that("e2e - tm_a_regression: outlier definition and label have de
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_regression: unchecking display outlier hides outlier label and definition", {
+testthat::test_that("e2e - tm_a_regression: Unchecking display outlier hides outlier label and definition", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()

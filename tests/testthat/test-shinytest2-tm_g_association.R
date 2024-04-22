@@ -45,7 +45,7 @@ app_driver_tm_g_association <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_g_association: data parameter and module label is passed properly", {
+testthat::test_that("e2e - tm_g_association: Data parameter and module label is passed properly", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_association()
@@ -63,7 +63,7 @@ testthat::test_that("e2e - tm_g_association: data parameter and module label is 
 })
 
 testthat::test_that("e2e - tm_g_association:
-  data extract spec elements are initialized with the default values specified by ref and vars arguments", {
+  Data extract spec elements are initialized with the default values specified by ref and vars arguments", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
@@ -83,7 +83,7 @@ testthat::test_that("e2e - tm_g_association:
 
   app_driver$stop()
 })
-testthat::test_that("e2e - tm_g_association: module plot is visible", {
+testthat::test_that("e2e - tm_g_association: Module plot is visible", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
@@ -93,7 +93,7 @@ testthat::test_that("e2e - tm_g_association: module plot is visible", {
 })
 
 
-testthat::test_that("e2e - tm_g_association: test if default radio buttons are checked", {
+testthat::test_that("e2e - tm_g_association: Check and set default values for radio buttons", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
