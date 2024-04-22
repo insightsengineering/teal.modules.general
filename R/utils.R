@@ -303,23 +303,23 @@ assert_single_selection <- function(x,
 #' Variables passed to `...` ass `name:value` pairs will be assigned with `value` under `name`.
 #' Variables passed directly will be assigned under the same name.
 #'
-#' Note that the `caller_env` argument must be passed named, otherwise it will be captured by `...`.
+#' Note that the `added_env` argument must be passed named, otherwise it will be captured by `...`.
 #'
 #' @param fun (`function`)
 #' @param ... additional variables to add to the new enclosure, see `Details`
-#' @param caller_env (`environment`) environment to hydrate `fun`'s enclosure with
+#' @param added_env (`environment`) environment to hydrate `fun`'s enclosure with
 #'
 #' @return A `function` which will work just like `fun` but in a different scope.
 #'
 #' @keywords internal
 #'
-hydrate_function <- function(fun, ..., caller_env = parent.frame()) {
+hydrate_function <- function(fun, ..., added_env = parent.frame()) {
   enclos_env <- environment(fun)
   env_new <- rlang::env_clone(enclos_env)
 
-  caller_vars <- setdiff(names(caller_env), names(enclos_env))
-  lapply(caller_vars, function(nm) {
-    assign(nm, get0(nm, envir = caller_env, inherits = FALSE), envir = env_new)
+  added_vars <- setdiff(names(added_env), names(enclos_env))
+  lapply(added_vars, function(nm) {
+    assign(nm, get0(nm, envir = added_env, inherits = FALSE), envir = env_new)
   })
 
   args <- list(...)

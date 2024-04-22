@@ -4,14 +4,14 @@
 \alias{hydrate_function}
 \title{Hydrate a function's enclosing environment}
 \usage{
-hydrate_function(fun, ..., caller_env = parent.frame())
+hydrate_function(fun, ..., added_env = parent.frame())
 }
 \arguments{
 \item{fun}{(\code{function})}
 
 \item{...}{additional variables to add to the new enclosure, see \code{Details}}
 
-\item{caller_env}{(\code{environment}) environment to hydrate \code{fun}'s enclosure with}
+\item{added_env}{(\code{environment}) environment to hydrate \code{fun}'s enclosure with}
 }
 \value{
 A \code{function} which will work just like \code{fun} but in a different scope.
@@ -36,6 +36,6 @@ As in the case of calling environment bindings, no overwriting will occur.
 Variables passed to \code{...} ass \code{name:value} pairs will be assigned with \code{value} under \code{name}.
 Variables passed directly will be assigned under the same name.
 
-Note that the \code{caller_env} argument must be passed named, otherwise it will be captured by \code{...}.
+Note that the \code{added_env} argument must be passed named, otherwise it will be captured by \code{...}.
 }
 \keyword{internal}
