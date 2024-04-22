@@ -454,7 +454,12 @@ srv_g_response <- function(id,
         )
       )
 
-      if (!freq) plot_call <- substitute(plot_call + expand_limits(y = c(0, 1.1)), env = list(plot_call = plot_call))
+      if (!freq) {
+        plot_call <- substitute(
+          plot_call + expand_limits(y = c(0, 1.1)),
+          env = list(plot_call = plot_call)
+        )
+      }
 
       if (counts) {
         plot_call <- substitute(
@@ -479,7 +484,7 @@ srv_g_response <- function(id,
             resp_cl = resp_cl,
             hjust_value = if (swap_axes) "left" else "middle",
             vjust_value = if (swap_axes) "middle" else -1,
-            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)),
+            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint: line_length.
             anl3_y = if (!freq) 1.1 else as.name("ns"),
             position_anl3_value = if (!freq) "fill" else "stack"
           )
