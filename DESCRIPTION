@@ -72,6 +72,7 @@ Suggests:
     rtables (>= 0.6.6),
     rvest,
     shinytest2,
+    pkgload,
     sparkline,
     testthat (>= 3.0.4),
     withr (>= 2.0.0)
