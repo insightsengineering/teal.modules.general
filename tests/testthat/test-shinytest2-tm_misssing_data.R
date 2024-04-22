@@ -109,7 +109,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
     )
   )
 
-  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 2L)
+  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
   app_driver$set_active_module_input("iris-combination_cutoff", 10L)
   app_driver$expect_no_validation_error()
 
