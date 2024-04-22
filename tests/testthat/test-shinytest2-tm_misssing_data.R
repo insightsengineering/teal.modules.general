@@ -1,5 +1,6 @@
 app_driver_tm_missing_data <- function() {
   data <- within(simple_teal_data(), {
+    set.seed(123)
     require(nestcolor)
 
     add_nas <- function(x) {
