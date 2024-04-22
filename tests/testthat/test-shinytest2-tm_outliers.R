@@ -184,7 +184,8 @@ testthat::test_that("e2e - tm_outliers: Method parameters are set properly.", {
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Outlier definition text and range are displayed properly depending on method.", {
+testthat::test_that("e2e - tm_outliers:
+  Outlier definition text and range are displayed properly depending on method.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
