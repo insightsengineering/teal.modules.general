@@ -49,7 +49,7 @@ app_driver_tm_outlier <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_outliers: Data parameter and module label is passed properly", {
+testthat::test_that("e2e - tm_outliers: Data parameter and module label is passed properly.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -69,7 +69,7 @@ testthat::test_that("e2e - tm_outliers: Data parameter and module label is passe
 
 testthat::test_that("e2e - tm_outliers:
   Data extract spec elements are initialized with the default values
-  specified by outlier_var and categorical_var argument", {
+  specified by outlier_var and categorical_var argument.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -105,7 +105,7 @@ testthat::test_that("e2e - tm_outliers:
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Plot type is correctly set by default and has appropriate possible options", {
+testthat::test_that("e2e - tm_outliers: Plot type is correctly set by default and has appropriate possible options.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -122,7 +122,7 @@ testthat::test_that("e2e - tm_outliers: Plot type is correctly set by default an
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Module is divided into 3 tabs", {
+testthat::test_that("e2e - tm_outliers: Module is divided into 3 tabs.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -137,7 +137,7 @@ testthat::test_that("e2e - tm_outliers: Module is divided into 3 tabs", {
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Plot type is hidden when Boxplot tab is not selected", {
+testthat::test_that("e2e - tm_outliers: Plot type is hidden when Boxplot tab is not selected.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -154,7 +154,7 @@ testthat::test_that("e2e - tm_outliers: Plot type is hidden when Boxplot tab is 
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Default radio buttons are set properly", {
+testthat::test_that("e2e - tm_outliers: Default radio buttons are set properly.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -170,7 +170,7 @@ testthat::test_that("e2e - tm_outliers: Default radio buttons are set properly",
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Method parameters are set properly", {
+testthat::test_that("e2e - tm_outliers: Method parameters are set properly.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -184,8 +184,7 @@ testthat::test_that("e2e - tm_outliers: Method parameters are set properly", {
   app_driver$stop()
 })
 
-
-testthat::test_that("e2e - tm_outliers: Outlier definition text and range are displayed properly depending on method", {
+testthat::test_that("e2e - tm_outliers: Outlier definition text and range are displayed properly depending on method.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -236,7 +235,7 @@ testthat::test_that("e2e - tm_outliers: Outlier definition text and range are di
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_outliers: Outliers summary table is displayed with proper content", {
+testthat::test_that("e2e - tm_outliers: Outliers summary table is displayed with proper content.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -284,8 +283,7 @@ testthat::test_that("e2e - tm_outliers: Outliers summary table is displayed with
   app_driver$stop()
 })
 
-
-testthat::test_that("e2e - tm_outliers: Outlier table is displayed with proper content", {
+testthat::test_that("e2e - tm_outliers: Outlier table is displayed with proper content.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()

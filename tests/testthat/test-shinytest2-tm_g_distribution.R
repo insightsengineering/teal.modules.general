@@ -47,7 +47,7 @@ app_driver_tm_g_distribution <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_g_distribution: Module is initialised with the specified defaults", {
+testthat::test_that("e2e - tm_g_distribution: Module is initialised with the specified defaults.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()
@@ -71,7 +71,7 @@ testthat::test_that("e2e - tm_g_distribution: Module is initialised with the spe
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce output without validation errors", {
+testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce output without validation errors.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()
@@ -108,7 +108,7 @@ testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce 
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce output without validation errors", {
+testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce output without validation errors.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()

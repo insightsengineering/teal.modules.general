@@ -85,7 +85,7 @@ app_driver_tm_g_bivariate <- function() {
   )
 }
 
-testthat::test_that("e2e - tm_g_bivariate: Module is initialised with the specified defaults", {
+testthat::test_that("e2e - tm_g_bivariate: Module is initialised with the specified defaults.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_bivariate()
@@ -113,7 +113,7 @@ testthat::test_that("e2e - tm_g_bivariate: Module is initialised with the specif
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_bivariate: Coloring options are hidden when coloring is toggled off", {
+testthat::test_that("e2e - tm_g_bivariate: Coloring options are hidden when coloring is toggled off.", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_bivariate()
 
@@ -154,7 +154,7 @@ testthat::test_that("e2e - tm_g_bivariate: Coloring options are hidden when colo
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_bivariate: Facetting options are hidden when facet is toggled off", {
+testthat::test_that("e2e - tm_g_bivariate: Facetting options are hidden when facet is toggled off.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_bivariate()
@@ -190,7 +190,7 @@ testthat::test_that("e2e - tm_g_bivariate: Facetting options are hidden when fac
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_g_bivariate: Setting encoding inputs produces outputs without validation errors", {
+testthat::test_that("e2e - tm_g_bivariate: Setting encoding inputs produces outputs without validation errors.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_bivariate()
