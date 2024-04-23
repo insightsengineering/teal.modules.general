@@ -1290,11 +1290,11 @@ srv_distribution <- function(id,
 
     ### REPORTER
     if (with_reporter) {
+      card_function <- function(comment, label, env, ...) card_function(...)
       env <- environment()
       remove(card_function, envir = env)
       env$with_filter <- with_filter
       env$filter_panel_api <- filter_panel_api
-      card_function <- function(comment, label, ...) card_function(...)
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_function, env = env)
     }
     ###
