@@ -1290,40 +1290,44 @@ srv_distribution <- function(id,
 
     ### REPORTER
     if (with_reporter) {
-      card_function <- hydrate_function(card_function, with_filter, filter_panel_api)
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_function)
+      env <- environment()
+      remove(card_function, envir = env)
+      env$with_filter <- with_filter
+      env$filter_panel_api <- filter_panel_api
+      card_function <- function(comment, label, ...) card_function(...)
+      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_function, env = env)
     }
     ###
   })
 }
 
 #' @keywords internal
-tm_g_distribution_card_function <- function(comment, label) { #nolint: object_length.
+tm_g_distribution_card_function <- function(comment, label, env) { # nolint: object_length.
   card <- teal::report_card_template(
     title = "Distribution Plot",
     label = label,
-    with_filter = with_filter,
-    filter_panel_api = filter_panel_api
+    with_filter = env$with_filter,
+    filter_panel_api = env$filter_panel_api
   )
   card$append_text("Plot", "header3")
-  if (input$tabs == "Histogram") {
-    card$append_plot(dist_r(), dim = pws1$dim())
-  } else if (input$tabs == "QQplot") {
-    card$append_plot(qq_r(), dim = pws2$dim())
+  if (env$input$tabs == "Histogram") {
+    card$append_plot(env$dist_r(), dim = env$pws1$dim())
+  } else if (env$input$tabs == "QQplot") {
+    card$append_plot(env$qq_r(), dim = env$pws2$dim())
   }
   card$append_text("Statistics table", "header3")
 
-  card$append_table(common_q()[["summary_table"]])
-  tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
+  card$append_table(env$common_q()[["summary_table"]])
+  tests_error <- tryCatch(expr = env$tests_r(), error = function(e) "error")
   if (inherits(tests_error, "data.frame")) {
     card$append_text("Tests table", "header3")
-    card$append_table(tests_r())
+    card$append_table(env$tests_r())
   }
 
   if (!comment == "") {
     card$append_text("Comment", "header3")
     card$append_text(comment)
   }
-  card$append_src(teal.code::get_code(output_q()))
+  card$append_src(teal.code::get_code(env$output_q()))
   card
 }
