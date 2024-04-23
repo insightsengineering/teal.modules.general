@@ -2,7 +2,6 @@
 title: "Using association plot"
 author: "NEST CoreDev"
 output: rmarkdown::html_vignette
-runtime: shiny
 vignette: >
   %\VignetteIndexEntry{Using association plot}
   %\VignetteEngine{knitr::rmarkdown}

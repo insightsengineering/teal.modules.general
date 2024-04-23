@@ -2,7 +2,6 @@
 title: "Using bivariate plot"
 author: "NEST CoreDev"
 output: rmarkdown::html_vignette
-runtime: shiny
 vignette: >
   %\VignetteIndexEntry{Using bivariate plot}
   %\VignetteEngine{knitr::rmarkdown}

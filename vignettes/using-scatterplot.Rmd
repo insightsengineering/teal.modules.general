@@ -2,7 +2,6 @@
 title: "Using scatterplot"
 author: "NEST CoreDev"
 output: rmarkdown::html_vignette
-runtime: shiny
 vignette: >
   %\VignetteIndexEntry{Using scatterplot}
   %\VignetteEngine{knitr::rmarkdown}

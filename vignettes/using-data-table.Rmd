@@ -2,7 +2,6 @@
 title: "Using data table"
 author: "NEST CoreDev"
 output: rmarkdown::html_vignette
-runtime: shiny
 vignette: >
   %\VignetteIndexEntry{Using data table}
   %\VignetteEngine{knitr::rmarkdown}
