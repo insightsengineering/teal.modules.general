@@ -90,7 +90,7 @@ datanames(data) <- "iris"
 
 app <- init(
   data = data,
-  modules = list(
+  modules = modules(
     tm_g_distribution(
       dist_var = data_extract_spec(
         dataname = "iris",
