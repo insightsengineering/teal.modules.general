@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9024</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9026</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,19 +59,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc2">v0.3.0-rc2</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc1">v0.3.0-rc1</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0">v0.3.0</a> </div></li>
-<!-- end dropdown for versions -->
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-reports">Reports</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-reports">
@@ -115,9 +102,9 @@ CoreDev</h4>
     
     
 <div class="section level2">
-<h2 id="section-teal-application-to-use-cross-table-with-various-datasets-types">
+<h2 id="teal-application-to-use-cross-table-with-various-datasets-types">
 <code>teal</code> application to use cross table with various
-datasets types<a class="anchor" aria-label="anchor" href="#section-teal-application-to-use-cross-table-with-various-datasets-types"></a>
+datasets types<a class="anchor" aria-label="anchor" href="#teal-application-to-use-cross-table-with-various-datasets-types"></a>
 </h2>
 <p>This vignette will guide you through the four parts to create a
 <code>teal</code> application using various types of datasets using the
@@ -129,14 +116,14 @@ cross table module <code><a href="../reference/tm_t_crosstable.html">tm_t_crosst
 <li>Run the app</li>
 </ol>
 <div class="section level3">
-<h3 id="section-load-libraries">1 - Load libraries<a class="anchor" aria-label="anchor" href="#section-load-libraries"></a>
+<h3 id="load-libraries">1 - Load libraries<a class="anchor" aria-label="anchor" href="#load-libraries"></a>
 </h3>
-<div class="sourceCode" id="section-cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span> <span class="co"># used to create the app</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co"># used to modify data sets</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-create-data-sets">2 - Create data sets<a class="anchor" aria-label="anchor" href="#section-create-data-sets"></a>
+<h3 id="create-data-sets">2 - Create data sets<a class="anchor" aria-label="anchor" href="#create-data-sets"></a>
 </h3>
 <p>Inside this app 2 datasets will be used</p>
 <ol style="list-style-type: decimal">
@@ -146,7 +133,7 @@ cross table module <code><a href="../reference/tm_t_crosstable.html">tm_t_crosst
 <code>ADLB</code> A long data set with lab measurements for each
 subject</li>
 </ol>
-<div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADSL.html">rADSL</a></span></span>
 <span>  <span class="va">ADLB</span> <span class="op">&lt;-</span> <span class="fu">teal.modules.general</span><span class="fu">::</span><span class="va"><a href="../reference/rADLB.html">rADLB</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -161,14 +148,14 @@ subject</li>
 <span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-create-an-app-variable">3 - Create an <code>app</code> variable<a class="anchor" aria-label="anchor" href="#section-create-an-app-variable"></a>
+<h3 id="create-an-app-variable">3 - Create an <code>app</code> variable<a class="anchor" aria-label="anchor" href="#create-an-app-variable"></a>
 </h3>
 <p>This is the most important section. We will use the
 <code><a href="https://insightsengineering.github.io/teal/latest-tag/reference/init.html" class="external-link">teal::init()</a></code> function to create an app. The data will be
 handed over using <code><a href="https://insightsengineering.github.io/teal.data/latest-tag/reference/teal_data.html" class="external-link">teal.data::teal_data()</a></code>. The app itself
 will be constructed by multiple calls of <code><a href="../reference/tm_t_crosstable.html">tm_t_crosstable()</a></code>
 using different combinations of data sets.</p>
-<div class="sourceCode" id="section-cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># configuration for the single wide dataset</span></span>
 <span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_t_crosstable.html">tm_t_crosstable</a></span><span class="op">(</span></span>
 <span>  label <span class="op">=</span> <span class="st">"Single wide dataset"</span>,</span>
@@ -246,12 +233,12 @@ using different combinations of data sets.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="section-run-the-app">4 - Run the app<a class="anchor" aria-label="anchor" href="#section-run-the-app"></a>
+<h3 id="run-the-app">4 - Run the app<a class="anchor" aria-label="anchor" href="#run-the-app"></a>
 </h3>
 <p>A simple <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp()</a></code> call will let you run the
 app. Note that app is only displayed when running this code inside an
 <code>R</code> session.</p>
-<div class="sourceCode" id="section-cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="images/app-using-cross-table.png" style="display: block; margin: 0px; width: 100%"></p>
 </div>
