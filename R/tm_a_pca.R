@@ -264,7 +264,7 @@ ui_a_pca <- function(id, ...) {
             collapsed = TRUE,
             conditionalPanel(
               condition = sprintf(
-                "input['%s'] == 'Elbow Plot' || input['%s'] == 'Eigenvector plot'",
+                "input['%s'] == 'Elbow plot' || input['%s'] == 'Eigenvector plot'",
                 ns("plot_type"),
                 ns("plot_type")
               ),
@@ -307,7 +307,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       all_cols <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
       ignore_cols <- unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
       color_cols <- all_cols[!names(all_cols) %in% ignore_cols]
-      response[[i]]$select$choices <- choices_labeled(names(color_cols), color_cols)
+      response[[i]]$select$choices <- teal.transform::choices_labeled(names(color_cols), color_cols)
     }
 
     selector_list <- teal.transform::data_extract_multiple_srv(

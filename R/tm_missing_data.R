@@ -730,7 +730,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
               labels = c("Present", "Missing")
             ) +
-            scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+            scale_y_continuous(
+              labels = scales::percent_format(),
+              breaks = seq(0, 1, by = 0.1),
+              expand = c(0, 0)
+            ) +
             geom_text(
               aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
               hjust = 1,
@@ -803,7 +807,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
                 fill = ~isna
               ) +
               geom_bar(alpha = 1, stat = "identity", position = "fill") +
-              scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, by = 0.1), expand = c(0, 0)) +
+              scale_y_continuous(
+                labels = scales::percent_format(),
+                breaks = seq(0, 1, by = 0.1),
+                expand = c(0, 0)
+              ) +
               scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
@@ -972,7 +980,11 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::distinct() %>%
               ggplot(aes(x = id, y = n)) +
               geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
-              geom_text(aes(label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
+              geom_text(
+                aes(label = n),
+                position = position_dodge(width = 0.9),
+                vjust = -0.25
+              ) +
               ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
               labs1 +
               ggthemes1 +
