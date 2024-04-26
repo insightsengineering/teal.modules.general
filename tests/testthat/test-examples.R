@@ -3,15 +3,15 @@
 # this also requires `devtools::document()` to be run before running the tests
 
 rd_files <- function() {
-  man_path <- if (testthat::is_checking()) {
+  man_path <- if (testthat::is_checking() && identical(Sys.getenv("R_COVR"), "true")) {
+    testthat::test_path("man")
+  } else if (testthat::is_checking()) {
     testthat::test_path("..", "..", "00_pkg_src", testthat::testing_package(), "man")
   } else {
     testthat::test_path("..", "..", "man")
   }
 
-  if (!dir.exists(man_path)) {
-    stop("Cannot find path to `man` directory.")
-  }
+  testthat::skip_if_not(dir.exists(man_path), "Cannot find path to `man` directory.")
 
   list.files(
     man_path,
