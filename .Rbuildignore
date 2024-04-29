@@ -47,3 +47,6 @@ coverage.*
 ^\.pre-commit-config\.yaml
 data-raw/data.R
 ^pkgdown$
+^.revdeprefs\.yaml$
+^revdep$
+^\.covrignore$
