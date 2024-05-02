@@ -1,4 +1,4 @@
-# teal.modules.general 0.3.0.9027
+# teal.modules.general 0.3.0.9029
 
 * Users can now provide their own card functions to specify the content that modules send to reports.
 
