@@ -282,7 +282,6 @@ ui_a_pca <- function(id, ...) {
         )
       ),
       forms = tagList(
-        teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
         teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
       ),
       pre_output = args$pre_output,
@@ -1032,13 +1031,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
       )
     })
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(output_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
-    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

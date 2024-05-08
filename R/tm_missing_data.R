@@ -228,7 +228,6 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
         conditionalPanel(
           is_tab_active_js(ns("dataname_tab"), x),
           tagList(
-            teal.widgets::verbatim_popup_ui(dataname_ns("warning"), "Show Warnings"),
             teal.widgets::verbatim_popup_ui(dataname_ns("rcode"), "Show R code")
           )
         )
@@ -1268,13 +1267,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         by_subject_plot_q()
       }
     })
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(final_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
-    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
