@@ -242,7 +242,6 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-
     logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selector_list <- teal.transform::data_extract_multiple_srv(

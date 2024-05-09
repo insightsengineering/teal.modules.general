@@ -357,7 +357,6 @@ srv_distribution <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-
     logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     setBookmarkExclude("params_reset")

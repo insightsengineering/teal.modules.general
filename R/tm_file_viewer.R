@@ -124,7 +124,6 @@ ui_viewer <- function(id, ...) {
 # Server function for the file viewer module
 srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
-
     logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     temp_dir <- tempfile()
