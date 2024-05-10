@@ -333,7 +333,6 @@ ui_distribution <- function(id, ...) {
       )
     ),
     forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
     pre_output = args$pre_output,
@@ -1267,13 +1266,6 @@ srv_distribution <- function(id,
       expr = tests_r(),
       options = list(scrollX = TRUE),
       rownames = FALSE
-    )
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(output_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
     )
 
     teal.widgets::verbatim_popup_srv(

@@ -317,7 +317,6 @@ ui_outliers <- function(id, ...) {
       )
     ),
     forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("warning"), "Show Warnings"),
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
     pre_output = args$pre_output,
@@ -1220,13 +1219,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         teal.widgets::get_dt_rows(ns("table_ui"), ns("table_ui_rows"))
       )
     })
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(final_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
-    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
