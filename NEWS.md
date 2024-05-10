@@ -1,5 +1,7 @@
 # teal.modules.general 0.3.0.9029
 
+* Removed `Show Warnings` modals from modules.
+
 # teal.modules.general 0.3.0
 
 ### Enhancements
