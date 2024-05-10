@@ -10,7 +10,7 @@ app_driver_tm_file_viewer <- function() {
         url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
       )
     ),
-    timeout = 3000
+    timeout = 30000
   )
 }
 

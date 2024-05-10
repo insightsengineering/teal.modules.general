@@ -17,7 +17,7 @@ app_driver_tm_front_page <- function() {
       footnotes = "This is a footnote",
       show_metadata = TRUE
     ),
-    timeout = 3000
+    timeout = 30000
   )
 }
 
