@@ -2,6 +2,9 @@
 
 * Removed `Show Warnings` modals from modules.
 
+### Enhancements
+* Added `{logger}` functionality for logging changes in shiny inputs in all modules. `{logger}` was added to Imports.
+
 # teal.modules.general 0.3.0
 
 ### Enhancements
