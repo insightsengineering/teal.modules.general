@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - main
+      - testing_tests@main
   workflow_dispatch:
 
 jobs:
@@ -50,7 +51,7 @@ jobs:
     with:
       additional-env-vars: |
         _R_CHECK_EXAMPLE_TIMING_THRESHOLD_=11
-        TESTING_DEPTH=5
+        TESTING_DEPTH=6
       enforce-note-blocklist: true
       publish-unit-test-report-gh-pages: false
       junit-xml-comparison: false

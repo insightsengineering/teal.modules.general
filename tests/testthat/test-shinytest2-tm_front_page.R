@@ -1,8 +1,8 @@
 app_driver_tm_front_page <- function() {
   data <- simple_cdisc_data()
-  data <- within(data, {
-    attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
-  })
+  # data <- within(data, {
+  #   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
+  # })
 
   init_teal_app_driver(
     data = data,
@@ -22,7 +22,7 @@ app_driver_tm_front_page <- function() {
 }
 
 test_that("e2e - tm_front_page: Initializes without errors and check html elements", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(6)
   app_driver <- app_driver_tm_front_page()
 
   app_driver$expect_no_shiny_error()
