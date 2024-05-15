@@ -5,7 +5,7 @@ app_driver_tm_front_page <- function() {
     attr(IRIS, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
   })
 
-  teal::init(
+  init_teal_app_driver(
     data = data,
     modules = tm_front_page(
       label = "Front page",
