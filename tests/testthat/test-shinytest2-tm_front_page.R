@@ -1,10 +1,11 @@
 app_driver_tm_front_page <- function() {
-  data <- simple_cdisc_data()
-  # data <- within(data, {
-  #   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
-  # })
+  data <- within(teal_data(), {
+    mtcars = mtcars
+    IRIS = iris
+    attr(IRIS, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
+  })
 
-  init_teal_app_driver(
+  teal::init(
     data = data,
     modules = tm_front_page(
       label = "Front page",
