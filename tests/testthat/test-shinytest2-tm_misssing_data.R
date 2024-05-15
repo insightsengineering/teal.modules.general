@@ -5,6 +5,11 @@ app_driver_tm_missing_data <- function() {
     IRIS = iris
     set.seed(123)
 
+    add_nas <- function(x) {
+      x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
+      x
+    }
+
     iris[] <- lapply(iris, add_nas)
     mtcars[] <- lapply(mtcars, add_nas)
     mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
