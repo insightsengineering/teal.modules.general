@@ -22,7 +22,7 @@ app_driver_tm_front_page <- function() {
 }
 
 test_that("e2e - tm_front_page: Initializes without errors and check html elements", {
-  skip_if_too_deep(6)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_front_page()
 
   app_driver$expect_no_shiny_error()
@@ -46,7 +46,7 @@ test_that("e2e - tm_front_page: Initializes without errors and check html elemen
 })
 
 test_that("e2e - tm_front_page: Verify the module displays tables", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_front_page()
   # tables
   testthat::expect_match(app_driver$get_active_module_output("table_1"), "MTCARS")
@@ -58,7 +58,7 @@ test_that("e2e - tm_front_page: Verify the module displays tables", {
 })
 
 test_that("e2e - tm_front_page: Verify the module displays metadata", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_front_page()
 
   # show metadata

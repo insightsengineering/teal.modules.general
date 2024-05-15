@@ -37,7 +37,7 @@ app_driver_tm_missing_data <- function() {
 }
 
 test_that("e2e - tm_missing_data: Initializes without errors", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
@@ -58,7 +58,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 })
 
 test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
   testthat::expect_equal(
@@ -87,7 +87,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 })
 
 test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
@@ -118,7 +118,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_missing_data()
   # By variable levels
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
@@ -148,7 +148,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
-  skip_if_too_deep(5)
+  skip_if_too_deep(4)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
