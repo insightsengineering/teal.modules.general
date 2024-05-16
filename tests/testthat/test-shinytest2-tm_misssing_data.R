@@ -67,7 +67,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
     app_driver$get_active_module_input("iris-summary_type"),
     "Summary"
   )
-
+  cat("iris-variables_select:", app_driver$get_active_module_input("iris-variables_select"), "\n")
   testthat::expect_setequal(
     app_driver$get_active_module_input("iris-variables_select"),
     c("Petal.Length", "Sepal.Length", "Petal.Width", "Species", "Sepal.Width")
