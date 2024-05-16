@@ -1,7 +1,6 @@
 app_driver_tm_missing_data <- function() {
   data <- within(simple_teal_data(), {
     set.seed(123)
-    require(nestcolor)
 
     add_nas <- function(x) {
       x[sample(seq_along(x), floor(length(x) * runif(1, .05, .17)))] <- NA
