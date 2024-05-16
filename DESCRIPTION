@@ -66,7 +66,7 @@ Suggests:
     jsonlite,
     knitr (>= 1.42),
     lattice (>= 0.18-4),
-    MASS
+    MASS,
     nestcolor (>= 0.1.0),
     pkgload,
     rlang (>= 1.0.0),
