@@ -2,6 +2,8 @@
 
 * Removed `Show Warnings` modals from modules.
 
+* Users can now provide their own card functions to specify the content that modules send to reports.
+
 # teal.modules.general 0.3.0
 
 ### Enhancements
