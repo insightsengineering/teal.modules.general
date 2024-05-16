@@ -124,6 +124,8 @@ ui_viewer <- function(id, ...) {
 # Server function for the file viewer module
 srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
+    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+
     temp_dir <- tempfile()
     if (!dir.exists(temp_dir)) {
       dir.create(temp_dir, recursive = TRUE)
