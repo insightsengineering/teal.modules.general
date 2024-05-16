@@ -1,4 +1,4 @@
-# teal.modules.general 0.3.0.9030
+# teal.modules.general 0.3.0.9031
 
 * Removed `Show Warnings` modals from modules.
 
@@ -41,6 +41,7 @@
 * Removed `scda` package dependency from examples.
 * Replaced deprecated `ggplot2` functions `..count..`, `..density..` and `..prop..`.
 * Version bump on `forcats` dependency.
+* Replaced `scda` data generation functions with `random.cdisc.data`
 
 # teal.modules.general 0.2.15
 
