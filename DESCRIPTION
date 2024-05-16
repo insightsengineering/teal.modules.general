@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9030
-Date: 2024-05-10
+Version: 0.3.0.9034
+Date: 2024-05-16
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -35,6 +35,7 @@ Imports:
     DT (>= 0.13),
     forcats (>= 1.0.0),
     grid,
+    logger (>= 0.3.0),
     scales,
     shinyjs,
     shinyTree (>= 0.2.8),
@@ -65,8 +66,7 @@ Suggests:
     jsonlite,
     knitr (>= 1.42),
     lattice (>= 0.18-4),
-    logger (>= 0.2.0),
-    MASS,
+    MASS
     nestcolor (>= 0.1.0),
     pkgload,
     rlang (>= 1.0.0),
@@ -82,16 +82,16 @@ VignetteBuilder:
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
-    rstudio/DT, tidyverse/forcats, r-lib/scales, daattali/shinyjs,
-    shinyTree/shinyTree, rstudio/shinyvalidate, dreamRs/shinyWidgets,
-    tidyverse/stringr, insightsengineering/teal.code,
-    insightsengineering/teal.data, insightsengineering/teal.logger,
-    insightsengineering/teal.reporter, insightsengineering/teal.widgets,
-    insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
-    tidymodels/broom, daattali/colourpicker, daattali/ggExtra,
-    aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
-    gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
-    deepayan/lattice, daroczig/logger, MASS,
+    rstudio/DT, tidyverse/forcats, daroczig/logger, r-lib/scales,
+    daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
+    dreamRs/shinyWidgets, tidyverse/stringr,
+    insightsengineering/teal.code, insightsengineering/teal.data,
+    insightsengineering/teal.logger, insightsengineering/teal.reporter,
+    insightsengineering/teal.widgets, insightsengineering/tern,
+    tidyverse/tibble, tidyverse/tidyr, tidymodels/broom,
+    daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
+    slowkow/ggrepel, baddstats/goftest, gridExtra, ramnathv/htmlwidgets,
+    jeroen/jsonlite, yihui/knitr, deepayan/lattice, MASS,
     insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
     rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
