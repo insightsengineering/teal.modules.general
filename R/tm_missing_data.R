@@ -170,6 +170,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
+    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
@@ -228,7 +230,6 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
         conditionalPanel(
           is_tab_active_js(ns("dataname_tab"), x),
           tagList(
-            teal.widgets::verbatim_popup_ui(dataname_ns("warning"), "Show Warnings"),
             teal.widgets::verbatim_popup_ui(dataname_ns("rcode"), "Show R code")
           )
         )
@@ -1268,13 +1269,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         by_subject_plot_q()
       }
     })
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(final_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(final_q())))
-    )
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

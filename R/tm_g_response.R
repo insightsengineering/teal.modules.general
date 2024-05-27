@@ -289,7 +289,6 @@ ui_g_response <- function(id, ...) {
       )
     ),
     forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("warning"), button_label = "Show Warnings"),
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
     pre_output = args$pre_output,
@@ -314,6 +313,8 @@ srv_g_response <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+
     data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
 
     rule_diff <- function(other) {
@@ -545,13 +546,6 @@ srv_g_response <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width
-    )
-
-    teal.widgets::verbatim_popup_srv(
-      id = "warning",
-      verbatim_content = reactive(teal.code::get_warnings(output_q())),
-      title = "Warning",
-      disabled = reactive(is.null(teal.code::get_warnings(output_q())))
     )
 
     teal.widgets::verbatim_popup_srv(
