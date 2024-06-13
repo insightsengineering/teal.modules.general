@@ -278,3 +278,23 @@ assert_single_selection <- function(x,
   }
   invisible(TRUE)
 }
+
+
+tmg_track_shiny_input_changes <- function(input) {
+  if (shiny::isRunning()) {
+
+    plot_nss <-
+      c("pca_plot", "myplot", "hist_plot", "qq_plot", "scatter_plot", "summary_plot", "combination_plot",
+        "by_subject_plot", "box_plot", "density_plot", "cum_density_plot", "variable_plot")
+
+    elements <- c("plot_modal_width", "flex_width", "plot_modal_height", "flex_height")
+
+    excluded_inputs <- unlist(lapply(plot_nss, paste, elements, sep = "-"))
+    logger::log_shiny_input_changes(
+      input,
+      level = logger::TRACE,
+      namespace = "teal.modules.general",
+      excluded_inputs = excluded_inputs
+    )
+  }
+}

@@ -459,7 +459,7 @@ srv_g_bivariate <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+    tmg_track_shiny_input_changes(input)
 
     ns <- session$ns
 
