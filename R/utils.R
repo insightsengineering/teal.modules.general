@@ -280,7 +280,7 @@ assert_single_selection <- function(x,
 }
 
 
-tmg_track_shiny_input_changes <- function(input) {
+track_shiny_input_changes <- function(input) {
   if (shiny::isRunning()) {
 
     plot_nss <-

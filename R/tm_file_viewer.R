@@ -124,7 +124,7 @@ ui_viewer <- function(id, ...) {
 # Server function for the file viewer module
 srv_viewer <- function(id, input_path) {
   moduleServer(id, function(input, output, session) {
-    tmg_track_shiny_input_changes(input)
+    track_shiny_input_changes(input)
 
     temp_dir <- tempfile()
     if (!dir.exists(temp_dir)) {

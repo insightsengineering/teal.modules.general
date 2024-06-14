@@ -371,7 +371,7 @@ srv_a_regression <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    tmg_track_shiny_input_changes(input)
+    track_shiny_input_changes(input)
 
     ns <- session$ns
 

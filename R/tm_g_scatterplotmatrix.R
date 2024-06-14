@@ -266,7 +266,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    tmg_track_shiny_input_changes(input)
+    track_shiny_input_changes(input)
 
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(variables = variables),
