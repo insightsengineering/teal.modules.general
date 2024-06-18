@@ -494,7 +494,7 @@ srv_g_scatterplot <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    track_shiny_input_changes(input)
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     data_extract <- list(
       x = x,
