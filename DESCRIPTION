@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9034
-Date: 2024-05-16
+Version: 0.3.0.9035
+Date: 2024-06-18
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -70,6 +70,7 @@ Suggests:
     nestcolor (>= 0.1.0),
     pkgload,
     rlang (>= 1.0.0),
+    rmarkdown (>= 2.23),
     rtables (>= 0.6.6),
     rvest,
     shinytest2,
@@ -91,7 +92,7 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
     slowkow/ggrepel, baddstats/goftest, gridExtra, ramnathv/htmlwidgets,
     jeroen/jsonlite, yihui/knitr, deepayan/lattice, MASS,
-    insightsengineering/nestcolor, r-lib/rlang,
+    insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
     rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
     r-lib/withr
