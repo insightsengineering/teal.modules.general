@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9035
-Date: 2024-06-18
+Version: 0.3.0.9036
+Date: 2024-06-19
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -64,8 +64,8 @@ Suggests:
     htmlwidgets,
     jsonlite,
     knitr (>= 1.42),
-    logger (>= 0.2.0),
     lattice (>= 0.18-4),
+    logger (>= 0.2.0),
     MASS,
     nestcolor (>= 0.1.0),
     pkgload,
@@ -82,16 +82,16 @@ VignetteBuilder:
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
-    rstudio/DT, tidyverse/forcats, r-lib/scales,
-    daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
-    dreamRs/shinyWidgets, tidyverse/stringr,
-    insightsengineering/teal.code, insightsengineering/teal.data,
-    insightsengineering/teal.logger, insightsengineering/teal.reporter,
-    insightsengineering/teal.widgets, insightsengineering/tern,
-    tidyverse/tibble, tidyverse/tidyr, tidymodels/broom,
-    daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
-    slowkow/ggrepel, baddstats/goftest, gridExtra, ramnathv/htmlwidgets,
-    jeroen/jsonlite, yihui/knitr, daroczig/logger, deepayan/lattice, MASS,
+    rstudio/DT, tidyverse/forcats, r-lib/scales, daattali/shinyjs,
+    shinyTree/shinyTree, rstudio/shinyvalidate, dreamRs/shinyWidgets,
+    tidyverse/stringr, insightsengineering/teal.code,
+    insightsengineering/teal.data, insightsengineering/teal.logger,
+    insightsengineering/teal.reporter, insightsengineering/teal.widgets,
+    insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
+    tidymodels/broom, daattali/colourpicker, daattali/ggExtra,
+    aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
+    gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
+    daroczig/logger, deepayan/lattice, MASS,
     insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
     rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
