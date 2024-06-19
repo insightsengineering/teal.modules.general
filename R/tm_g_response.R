@@ -313,7 +313,7 @@ srv_g_response <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
 
