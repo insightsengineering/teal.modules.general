@@ -75,7 +75,7 @@ Suggests:
     rvest,
     shinytest2,
     sparkline,
-    testthat (>= 3.0.4),
+    testthat (>= 3.1.9),
     withr (>= 2.0.0)
 VignetteBuilder:
     knitr
