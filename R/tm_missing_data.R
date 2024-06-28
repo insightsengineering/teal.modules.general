@@ -91,14 +91,6 @@ tm_missing_data <- function(label = "Missing data",
                             post_output = NULL) {
   message("Initializing tm_missing_data")
 
-  # Requires Suggested packages
-  if (!requireNamespace("gridExtra", quietly = TRUE)) {
-    stop("Cannot load gridExtra - please install the package or restart your session.")
-  }
-  if (!requireNamespace("rlang", quietly = TRUE)) {
-    stop("Cannot load rlang - please install the package or restart your session.")
-  }
-
   # Normalize the parameters
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
@@ -1158,6 +1150,15 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::summarise_all(anyNA) %>%
               dplyr::ungroup()
 
+            create_hash_base <- function(x) {
+              if(requireNamespace("rlang", quietly = TRUE)) {
+                rlang::hash(x)
+              } else {
+                raw_serialized <- serialize(x, NULL)
+                paste(as.integer(raw_serialized), collapse = "")
+              }
+            }
+
             # order subjects by decreasing number of missing and then by
             # missingness pattern (defined using sha1)
             order_subjects <- summary_plot_patients %>%
@@ -1165,7 +1166,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               dplyr::transmute(
                 id = dplyr::row_number(),
                 number_NA = apply(., 1, sum),
-                sha = apply(., 1, rlang::hash)
+                sha = apply(., 1, create_hash_base)
               ) %>%
               dplyr::arrange(dplyr::desc(number_NA), sha) %>%
               getElement(name = "id")
