@@ -170,7 +170,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
-    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     datanames <- isolate(teal.data::datanames(data()))
     datanames <- Filter(function(name) {

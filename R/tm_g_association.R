@@ -285,7 +285,7 @@ srv_tm_g_association <- function(id,
   checkmate::assert_class(isolate(data()), "teal_data")
 
   moduleServer(id, function(input, output, session) {
-    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(ref = ref, vars = vars),
