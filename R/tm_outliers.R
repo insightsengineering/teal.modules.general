@@ -332,7 +332,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    if (shiny::isRunning()) logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     ns <- session$ns
 
