@@ -229,16 +229,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   message("Initializing tm_g_scatterplot")
 
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
-
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
@@ -827,28 +817,31 @@ srv_g_scatterplot <- function(id,
           ),
           if (sum(show_form, show_r2, show_count) > 1) ", sep = '*\", \"*'))" else ")"
         )
-        label_geom <- substitute(
-          expr = ggpmisc::stat_poly_eq(
-            mapping = aes_label,
-            formula = rhs_formula,
-            parse = TRUE,
-            label.x = pos,
-            size = label_size
-          ),
-          env = list(
-            rhs_formula = rhs_formula,
-            pos = pos,
-            aes_label = str2lang(aes_label),
-            label_size = label_size
+
+        if (requireNamespace("ggpmisc", quietly = TRUE)) {
+          label_geom <- substitute(
+            expr = ggpmisc::stat_poly_eq(
+              mapping = aes_label,
+              formula = rhs_formula,
+              parse = TRUE,
+              label.x = pos,
+              size = label_size
+            ),
+            env = list(
+              rhs_formula = rhs_formula,
+              pos = pos,
+              aes_label = str2lang(aes_label),
+              label_size = label_size
+            )
           )
-        )
-        substitute(
-          expr = plot_call + label_geom,
-          env = list(
-            plot_call = plot_call,
-            label_geom = label_geom
+          substitute(
+            expr = plot_call + label_geom,
+            env = list(
+              plot_call = plot_call,
+              label_geom = label_geom
+            )
           )
-        )
+        }
       }
 
       if (trend_line_is_applicable()) {
@@ -949,20 +942,23 @@ srv_g_scatterplot <- function(id,
 
 
       if (add_density) {
-        plot_call <- substitute(
-          expr = ggExtra::ggMarginal(
-            plot_call + labs + ggthemes + themes,
-            type = "density",
-            groupColour = group_colour
-          ),
-          env = list(
-            plot_call = plot_call,
-            group_colour = if (length(color_by_var) > 0) TRUE else FALSE,
-            labs = parsed_ggplot2_args$labs,
-            ggthemes = parsed_ggplot2_args$ggtheme,
-            themes = parsed_ggplot2_args$theme
+        if (requireNamespace("ggExtra", quietly = TRUE)) {
+          plot_call <- substitute(
+            expr = ggExtra::ggMarginal(
+              plot_call + labs + ggthemes + themes,
+              type = "density",
+              groupColour = group_colour
+            ),
+            env = list(
+              plot_call = plot_call,
+              group_colour = if (length(color_by_var) > 0) TRUE else FALSE,
+              labs = parsed_ggplot2_args$labs,
+              ggthemes = parsed_ggplot2_args$ggtheme,
+              themes = parsed_ggplot2_args$theme
+            )
           )
-        )
+        }
+
       } else {
         plot_call <- substitute(
           expr = plot_call +

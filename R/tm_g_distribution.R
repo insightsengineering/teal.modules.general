@@ -121,16 +121,6 @@ tm_g_distribution <- function(label = "Distribution Module",
                               post_output = NULL) {
   message("Initializing tm_g_distribution")
 
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
-
   # Normalize the parameters
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
   if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
@@ -520,7 +510,11 @@ srv_distribution <- function(id,
                 return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
               }
               tryCatch(
-                MASS::fitdistr(x, densfun = dist)$estimate,
+                if (requireNamespace("MASS", quietly = TRUE)) {
+                  MASS::fitdistr(x, densfun = dist)$estimate
+                } else {
+                  stop()
+                } ,
                 error = function(e) c(param1 = NA_real_, param2 = NA_real_)
               )
             }
@@ -836,14 +830,16 @@ srv_distribution <- function(id,
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
 
-          plot_call <- substitute(
-            expr = plot_call + ggpp::geom_table_npc(
-              data = data,
-              aes(npcx = x, npcy = y, label = label),
-              hjust = 0, vjust = 1, size = 4
-            ),
-            env = list(plot_call = plot_call, data = datas, label = label)
-          )
+          if (requireNamespace("ggpp", quietly = TRUE)) {
+            plot_call <- substitute(
+              expr = plot_call + ggpp::geom_table_npc(
+                data = data,
+                aes(npcx = x, npcy = y, label = label),
+                hjust = 0, vjust = 1, size = 4
+              ),
+              env = list(plot_call = plot_call, data = datas, label = label)
+            )
+          }
         }
 
         if (
@@ -983,21 +979,23 @@ srv_distribution <- function(id,
           datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
           label <- quote(tb)
 
-          plot_call <- substitute(
-            expr = plot_call +
-              ggpp::geom_table_npc(
-                data = data,
-                aes(npcx = x, npcy = y, label = label),
-                hjust = 0,
-                vjust = 1,
-                size = 4
-              ),
-            env = list(
-              plot_call = plot_call,
-              data = datas,
-              label = label
+          if (requireNamespace("ggpp", quietly = TRUE)) {
+            plot_call <- substitute(
+              expr = plot_call +
+                ggpp::geom_table_npc(
+                  data = data,
+                  aes(npcx = x, npcy = y, label = label),
+                  hjust = 0,
+                  vjust = 1,
+                  size = 4
+                ),
+              env = list(
+                plot_call = plot_call,
+                data = datas,
+                label = label
+              )
             )
-          )
+          }
         }
 
         if (isTRUE(input$qq_line)) {

@@ -164,11 +164,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    post_output = NULL) {
   message("Initializing tm_g_scatterplotmatrix")
 
-  # Requires Suggested packages
-  if (!requireNamespace("lattice", quietly = TRUE)) {
-    stop("Cannot load lattice - please install the package or restart your session.")
-  }
-
   # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
