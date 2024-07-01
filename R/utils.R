@@ -35,6 +35,10 @@
 #' - When the length of `size` is three: the plot points size are dynamically adjusted based on
 #' vector of `value`, `min`, and `max`.
 #'
+#' @param card_function (`function`) optional, custom function to create a report card.
+#' See [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/adding-support-for-reporting.html)
+#' for details.
+#'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
 #' @name shared_params
@@ -277,4 +281,57 @@ assert_single_selection <- function(x,
     stop("'", .var.name, "' should not allow multiple selection")
   }
   invisible(TRUE)
+}
+
+#' Hydrate a function's enclosing environment
+#'
+#' Add bindings of an environment to a function's parent environment.
+#'
+#' This allows any funciton to use bindings present in any environment
+#' as if the funciton were defined there.
+#' All bindings of the additional environment are added to the function's enclosure,
+#' except bindings existing in the enclosure are _not_ overwritten.
+#'
+#' One may also want to add variables that are not bound in the caller
+#' but are accessible from the caller, e.g. they exist in the caller's parent frame.
+#' This may happen in `shiny` modules because `moduleServer` is called
+#' by the module server function so the server funciton's arguments are in scope
+#' of `moduleServer` but are not bindings in its environment.
+#' Such variables should be passed to `...`.
+#' As in the case of calling environment bindings, no overwriting will occur.
+#'
+#' Variables passed to `...` ass `name:value` pairs will be assigned with `value` under `name`.
+#' Variables passed directly will be assigned under the same name.
+#'
+#' Note that the `added_env` argument must be passed named, otherwise it will be captured by `...`.
+#'
+#' @param fun (`function`)
+#' @param ... additional variables to add to the new enclosure, see `Details`
+#' @param added_env (`environment`) environment to hydrate `fun`'s enclosure with
+#'
+#' @return A `function` which will work just like `fun` but in a different scope.
+#'
+#' @keywords internal
+#'
+hydrate_function <- function(fun, ..., added_env = parent.frame()) {
+  enclos_env <- environment(fun)
+  env_new <- rlang::env_clone(enclos_env)
+
+  added_vars <- setdiff(names(added_env), names(enclos_env))
+  lapply(added_vars, function(nm) {
+    assign(nm, get0(nm, envir = added_env, inherits = FALSE), envir = env_new)
+  })
+
+  args <- list(...)
+  arg_names <- vapply(as.list(substitute(list(...)))[-1L], as.character, character(1L))
+  names(arg_names)[names(arg_names) == ""] <- arg_names[names(arg_names) == ""]
+  names(args) <- arg_names
+
+  extras <- setdiff(arg_names, names(enclos_env))
+  lapply(extras, function(nm) {
+    assign(nm, args[[nm]], envir = env_new)
+  })
+
+  environment(fun) <- env_new
+  fun
 }
