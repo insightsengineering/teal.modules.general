@@ -201,6 +201,8 @@ srv_variable_browser <- function(id,
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
+    teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+
     # if there are < this number of unique records then a numeric
     # variable can be treated as a factor and all factors with < this groups
     # have their values plotted

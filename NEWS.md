@@ -1,4 +1,9 @@
-# teal.modules.general 0.3.0.9029
+# teal.modules.general 0.3.0.9038
+
+* Removed `Show Warnings` modals from modules.
+
+### Enhancements
+* Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
 
 * Users can now provide their own card functions to specify the content that modules send to reports.
 
@@ -38,6 +43,7 @@
 * Removed `scda` package dependency from examples.
 * Replaced deprecated `ggplot2` functions `..count..`, `..density..` and `..prop..`.
 * Version bump on `forcats` dependency.
+* Replaced `scda` data generation functions with `random.cdisc.data`
 
 # teal.modules.general 0.2.15
 

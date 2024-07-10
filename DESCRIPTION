@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9029
-Date: 2024-04-29
+Version: 0.3.0.9038
+Date: 2024-06-27
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -45,10 +45,10 @@ Imports:
     stringr (>= 1.4.1),
     teal.code (>= 0.5.0),
     teal.data (>= 0.5.0),
-    teal.logger (>= 0.1.3.9013),
+    teal.logger (>= 0.2.0.9004),
     teal.reporter (>= 0.3.0),
     teal.widgets (>= 0.4.0),
-    tern (>= 0.9.3),
+    tern (>= 0.9.5),
     tibble (>= 2.0.0),
     tidyr (>= 0.8.3),
     tools,
@@ -70,11 +70,12 @@ Suggests:
     MASS,
     nestcolor (>= 0.1.0),
     pkgload,
-    rtables (>= 0.6.6),
+    rmarkdown (>= 2.23),
+    rtables (>= 0.6.8),
     rvest,
     shinytest2,
     sparkline,
-    testthat (>= 3.0.4),
+    testthat (>= 3.1.9),
     withr (>= 2.0.0)
 VignetteBuilder:
     knitr
@@ -90,8 +91,8 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     tidymodels/broom, daattali/colourpicker, daattali/ggExtra,
     aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
     gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
-    deepayan/lattice, daroczig/logger, MASS,
-    insightsengineering/nestcolor, r-lib/rlang,
+    daroczig/logger, deepayan/lattice, MASS,
+    insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
     rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
     r-lib/withr

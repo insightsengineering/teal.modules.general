@@ -1,3 +1,5 @@
+nest_logo_url <- "https://raw.githubusercontent.com/insightsengineering/hex-stickers/main/PNG/nest.png"
+
 app_driver_tm_file_viewer <- function() {
   init_teal_app_driver(
     data = simple_teal_data(),
@@ -7,7 +9,7 @@ app_driver_tm_file_viewer <- function() {
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-        url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+        url = nest_logo_url
       )
     ),
     timeout = 3000
@@ -84,9 +86,9 @@ test_that("e2e - tm_file_viewer: Shows selected url", {
   app_driver$click(selector = "[id= '6_anchor']")
   testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("output")))
 
-  testthat::expect_match(
+  testthat::expect_equal(
     attr(app_driver$get_active_module_input("tree")$url, "ancestry"),
-    "pdf$"
+    nest_logo_url
   )
 
   app_driver$stop()

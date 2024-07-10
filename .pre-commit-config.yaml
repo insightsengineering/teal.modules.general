@@ -24,7 +24,6 @@ repos:
           - dplyr
           - DT
           - forcats
-          - ggrepel
           - grid
           - logger
           - scales
