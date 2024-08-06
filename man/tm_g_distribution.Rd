@@ -16,7 +16,8 @@ tm_g_distribution(
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  card_function
 )
 }
 \arguments{
@@ -59,11 +60,15 @@ Defaults to \code{c(30L, 1L, 100L)}.
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}) optional,\cr
+\item{pre_output}{(\code{shiny.tag}, optional)\cr
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}) optional, with text placed after the output to put the output
+\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
+
+\item{card_function}{(\code{function}) optional, custom function to create a report card.
+See \href{https://insightsengineering.github.io/teal/latest-tag/articles/adding-support-for-reporting.html}{this vignette}
+for details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -85,7 +90,7 @@ datanames(data) <- "iris"
 
 app <- init(
   data = data,
-  modules = list(
+  modules = modules(
     tm_g_distribution(
       dist_var = data_extract_spec(
         dataname = "iris",

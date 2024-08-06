@@ -47,6 +47,10 @@ vector of \code{value}, \code{min}, and \code{max}.
 \item When the length of \code{size} is three: the plot points size are dynamically adjusted based on
 vector of \code{value}, \code{min}, and \code{max}.
 }}
+
+\item{card_function}{(\code{function}) optional, custom function to create a report card.
+See \href{https://insightsengineering.github.io/teal/latest-tag/articles/adding-support-for-reporting.html}{this vignette}
+for details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
