@@ -94,11 +94,10 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     daroczig/logger, deepayan/lattice, MASS,
     insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
-    rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
-    r-lib/withr
+    rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
