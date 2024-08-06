@@ -32,3 +32,13 @@ jobs:
   rhub:
     name: R-hub 🌐
     uses: insightsengineering/r.pkg.template/.github/workflows/rhub.yaml@main
+    with:
+      lookup-refs: |
+        insightsengineering/teal.transform
+        insightsengineering/teal.code
+        insightsengineering/teal.data
+        insightsengineering/teal.logger
+        insightsengineering/teal.reporter
+        insightsengineering/teal.widgets
+        insightsengineering/tern
+        insightsengineering/rtables
