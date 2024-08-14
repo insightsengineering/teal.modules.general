@@ -56,11 +56,11 @@ testthat::test_that("e2e - tm_outliers: Data parameter and module label is passe
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "Outliers Module"
   )
 
-  encoding_dataset <- app_driver$get_text("#teal-main_ui-root-outliers_module .help-block")
+  encoding_dataset <- app_driver$get_text("#teal-teal_modules-outliers_module .help-block")
   testthat::expect_match(encoding_dataset, "Dataset:[\n ]*CO2", all = FALSE)
   testthat::expect_match(encoding_dataset, "Outlier data points", all = FALSE)
 

@@ -42,7 +42,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "Missing data"
   )
 
