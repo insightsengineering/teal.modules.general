@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9038
-Date: 2024-06-27
+Version: 0.3.0.9040
+Date: 2024-08-14
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -27,7 +27,7 @@ Depends:
     ggplot2 (>= 3.4.0),
     R (>= 3.6),
     shiny (>= 1.6.0),
-    teal (>= 0.15.1),
+    teal (>= 0.15.2.9052),
     teal.transform (>= 0.5.0)
 Imports:
     checkmate (>= 2.1.0),
@@ -94,8 +94,7 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     daroczig/logger, deepayan/lattice, MASS,
     insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
-    rstudio/shinytest2, insightsengineering/teal.data, r-lib/testthat,
-    r-lib/withr
+    rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US

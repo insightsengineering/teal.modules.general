@@ -28,7 +28,7 @@ test_that("e2e - tm_front_page: Initializes without errors and check html elemen
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "Front page"
   )
 

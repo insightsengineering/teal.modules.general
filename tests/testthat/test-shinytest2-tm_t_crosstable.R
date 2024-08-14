@@ -50,11 +50,11 @@ test_that("e2e - tm_t_crosstable: Initializes without errors", {
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "Cross Table"
   )
 
-  encoding_dataset <- app_driver$get_text("#teal-main_ui-root-cross_table .help-block")
+  encoding_dataset <- app_driver$get_text("#teal-teal_modules-cross_table .help-block")
   testthat::expect_match(encoding_dataset, "Dataset:\\n *ADSL\\n", all = FALSE)
 
   app_driver$stop()
