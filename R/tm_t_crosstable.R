@@ -140,11 +140,6 @@ tm_t_crosstable <- function(label = "Cross Table",
                             basic_table_args = teal.widgets::basic_table_args()) {
   message("Initializing tm_t_crosstable")
 
-  # Requires Suggested packages
-  if (!requireNamespace("rtables", quietly = TRUE)) {
-    stop("Cannot load rtables - please install the package or restart your session.")
-  }
-
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
