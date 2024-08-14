@@ -464,8 +464,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
 
     data_parent_keys <- reactive({
-      if (length(parent_dataname) > 0 && parent_dataname %in% names(data)) {
-        keys <- teal.data::join_keys(data)[[dataname]]
+      if (length(parent_dataname) > 0 && parent_dataname %in% teal.data::datanames(data())) {
+        keys <- teal.data::join_keys(data())[[dataname]]
         if (parent_dataname %in% names(keys)) {
           keys[[parent_dataname]]
         } else {

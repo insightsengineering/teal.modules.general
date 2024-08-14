@@ -34,7 +34,7 @@ test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree
   )
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "File Viewer Module"
   )
 

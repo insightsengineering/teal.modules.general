@@ -35,7 +35,7 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly."
 
   # Test tab name
   testthat::expect_equal(
-    trimws(app_driver$get_text("#teal-main_ui-root-active_tab > li.active")),
+    trimws(app_driver$get_text("#teal-teal_modules-active_tab > li.active")),
     "Variable browser (e2e)"
   )
 
