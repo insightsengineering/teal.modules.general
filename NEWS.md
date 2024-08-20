@@ -1,14 +1,17 @@
-# teal.modules.general 0.3.0.9039
+# teal.modules.general 0.3.0.9041
 
 * Removed `Show Warnings` modals from modules.
 
 ### Enhancements
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
 
+### Bug fixes
+* Fixed a bug in `tm_missing_data` in "Group by Subject" that was not using reactive data call.
+
 # teal.modules.general 0.3.0
 
 ### Enhancements
-* Updated the package docs and vignettes with the new way of specifying data for `teal::init()`. The `data` argument will accept a `teal_data` object
+* Updated the package docs and vignettes with the new way of specifying data for `teal::init()`. The `data` argument will accept a `teal_data` object.
 
 ### Bug fixes
 * Outlier labels no longer appear out of bounds in `tm_a_regression`.
