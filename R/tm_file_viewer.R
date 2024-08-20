@@ -13,6 +13,10 @@
 #'
 #' @inherit shared_params return
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
 #' @examples
 #' data <- teal_data()
 #' data <- within(data, {

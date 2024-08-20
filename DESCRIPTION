@@ -69,6 +69,7 @@ Suggests:
     MASS,
     nestcolor (>= 0.1.0),
     pkgload,
+    roxy.shinylive,
     rlang (>= 1.0.0),
     rmarkdown (>= 2.23),
     rtables (>= 0.6.8),
@@ -92,12 +93,12 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
     gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
     daroczig/logger, deepayan/lattice, MASS,
-    insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
+    insightsengineering/nestcolor, insightsengineering/roxy.shinylive, r-lib/rlang, rstudio/rmarkdown,
     insightsengineering/rtables, tidyverse/rvest, sparkline,
     rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, packages = c("roxy.shinylive"))
 RoxygenNote: 7.3.2

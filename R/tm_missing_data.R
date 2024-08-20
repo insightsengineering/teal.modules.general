@@ -17,19 +17,11 @@
 #'
 #' @inherit shared_params return
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
 #' @examples
-#' library(teal.widgets)
-#'
-#' # module specification used in apps below
-#' tm_missing_data_module <- tm_missing_data(
-#'   ggplot2_args = list(
-#'     "Combinations Hist" = ggplot2_args(
-#'       labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-#'     ),
-#'     "Combinations Main" = ggplot2_args(labs = list(title = NULL))
-#'   )
-#' )
-#'
 #' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -52,12 +44,19 @@
 #'
 #' app <- init(
 #'   data = data,
-#'   modules = modules(tm_missing_data_module)
+#'   modules = modules(
+#'     tm_missing_data()
+#'   )
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
 #' # CDISC example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -70,7 +69,9 @@
 #'
 #' app <- init(
 #'   data = data,
-#'   modules = modules(tm_missing_data_module)
+#'   modules = modules(
+#'     tm_missing_data()
+#'   )
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)

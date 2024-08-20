@@ -58,18 +58,6 @@ It is useful for clinical data analysis within the context of \code{CDISC} stand
 adaptable for general data analysis purposes.
 }
 \examples{
-library(teal.widgets)
-
-# module specification used in apps below
-tm_missing_data_module <- tm_missing_data(
-  ggplot2_args = list(
-    "Combinations Hist" = ggplot2_args(
-      labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
-    ),
-    "Combinations Main" = ggplot2_args(labs = list(title = NULL))
-  )
-)
-
 # general example data
 data <- teal_data()
 data <- within(data, {
@@ -92,7 +80,9 @@ datanames(data) <- c("iris", "mtcars")
 
 app <- init(
   data = data,
-  modules = modules(tm_missing_data_module)
+  modules = modules(
+    tm_missing_data()
+  )
 )
 if (interactive()) {
   shinyApp(app$ui, app$server)
@@ -110,10 +100,23 @@ join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 app <- init(
   data = data,
-  modules = modules(tm_missing_data_module)
+  modules = modules(
+    tm_missing_data()
+  )
 )
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 
 }
+\section{Examples in Shinylive}{
+\itemize{
+  \item example-1\cr
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6KWg8FExQytnhBHYwrxwtKwoFwq6ShJWRUeXdUJSugAvGEMrhkQJhGJI-z4yJHSDdKQYIkYLDRCoJMkMmkoV0ujddOwVORmJYdDYpj1RIUIKxAeh2CSACT1CnoTurRg6TpKCEQMBgn5AA}{Open in Shinylive}\cr
+    \if{html}{\out{<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6KWg8FExQytnhBHYwrxwtKwoFwq6ShJWRUeXdUJSugAvGEMrhkQJhGJI-z4yJHSDdKQYIkYLDRCoJMkMmkoV0ujddOwVORmJYdDYpj1RIUIKxAeh2CSACT1CnoTurRg6TpKCEQMBgn5AA" height="800" width="150\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem;"></iframe>}}
+  \item example-2\cr
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglGLiDYy5qAH1EqBsE2Khk3QB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGXzGYbHa3WGsAIm5gKUAX37M6HhRCtzbI10CdgUwKdHjquOl4-6AKyIVNIBrOFZtzL3jfjgTKGFSNII-FoogIaTuD2er2AG1gYh2cTkAF03NB0PkVMUjgNorldABeHFxXAzPhCESifG6UnCOEzOqkGBpGDA0QqCQZXLZbH9fq0Ey6dgqcjMSw6Gy2GrY0RlCCsQbodhoVAAEhaVSVytEMh0fVWSjAK0RQA}{Open in Shinylive}\cr
+    \if{html}{\out{<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglGLiDYy5qAH1EqBsE2Khk3QB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGXzGYbHa3WGsAIm5gKUAX37M6HhRCtzbI10CdgUwKdHjquOl4-6AKyIVNIBrOFZtzL3jfjgTKGFSNII-FoogIaTuD2er2AG1gYh2cTkAF03NB0PkVMUjgNorldABeHFxXAzPhCESifG6UnCOEzOqkGBpGDA0QqCQZXLZbH9fq0Ey6dgqcjMSw6Gy2GrY0RlCCsQbodhoVAAEhaVSVytEMh0fVWSjAK0RQA" height="800" width="150\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem;"></iframe>}}
+}
+}
+
