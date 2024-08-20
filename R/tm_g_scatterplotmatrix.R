@@ -22,7 +22,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examples
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -110,7 +110,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examples
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {

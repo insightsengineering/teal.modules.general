@@ -31,7 +31,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf all(vapply(c("ggpmisc", "ggpp", "goftest"), requireNamespace, logical(1), quietly = TRUE))
+#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggpp", quietly = TRUE) && require("goftest", quietly = TRUE) && require("MASS", quietly = TRUE) && require("broom", quietly = TRUE)
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -58,7 +58,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf all(vapply(c("ggpmisc", "ggpp", "goftest"), requireNamespace, logical(1), quietly = TRUE))
+#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggpp", quietly = TRUE) && require("goftest", quietly = TRUE) && require("MASS", quietly = TRUE) && require("broom", quietly = TRUE)
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {

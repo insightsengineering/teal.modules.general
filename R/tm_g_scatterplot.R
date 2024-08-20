@@ -34,7 +34,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf requireNamespace("ggpmisc", quietly = TRUE) && requireNamespace("ggExtra", quietly = TRUE)
+#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -122,7 +122,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf requireNamespace("ggpmisc", quietly = TRUE) && requireNamespace("ggExtra", quietly = TRUE)
+#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
