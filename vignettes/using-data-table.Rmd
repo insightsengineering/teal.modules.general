@@ -20,7 +20,7 @@ various types of datasets using the data table module `tm_data_table()`:
 
 ## 1 - Load libraries
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r library, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 ```
 
@@ -32,7 +32,7 @@ Inside this app 3 datasets will be used
 2. `ADTTE` A long data set with time to event data
 3. `ADLB` A long data set with lab measurements for each subject
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r data, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -51,7 +51,7 @@ create an app. The data will be handed over using `teal.data::teal_data()`.
 The app itself will be constructed by multiple calls of `tm_data_table()` using different
 combinations of data sets.
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r app, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # configuration for the two-datasets example
 mod1 <- tm_data_table(
   label = "Two datasets",
@@ -106,11 +106,28 @@ app <- init(
 
 ## 4 - Run the app
 
-A simple `shiny::shinyApp()` call will let you run the app. 
-Note that app is only displayed when running this code inside an `R` session.  
+A simple `shiny::shinyApp()` call will let you run the app.
+Note that app is only displayed when running this code inside an `R` session.
 
-```{r, echo=TRUE, results="hide", eval=base::interactive()}
+```{r shinyapp, echo=TRUE, results="hide", eval=base::interactive()}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
 <img src="images/app-using-data-table.png" style = "display: block; margin: 0px; width: 100%"/>
+
+```{r shinylive_section, echo = FALSE, results = 'asis'}
+cat("## 5 - Try it out with Shinylive\n\n")
+```
+
+```{r shinylive, echo = FALSE, out.width='150%', eval = knitr::is_html_output()}
+code <- paste0(c(
+  knitr::knit_code$get("library"),
+  knitr::knit_code$get("data"),
+  knitr::knit_code$get("app"),
+  knitr::knit_code$get("shinyapp")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+
+knitr::include_url(url, height = "800px")
+```

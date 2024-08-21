@@ -60,7 +60,14 @@ pak::pak("insightsengineering/teal.modules.general")
 
 ## Usage
 
-See package vignettes `browseVignettes(package = "teal.modules.general")` for usage of this package or visit [Package Website](https://insightsengineering.github.io/teal.modules.general/latest-tag/).
+Please start with the ["Getting Started" article](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/teal-modules-general.html), and then see the [package vignettes](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/index.html) for usage of this package.
+
+## Playground
+
+You can try out the package without installing it in the Shinylive:
+
+* [stable](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCGAC+AXSA)
+* [development](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMI1UgSxIGcAKAdzgCMAnAfVQGsA5jy5xURRgAIAvJILMAOmC4BaAK4Q6ANzhdGcJTMlKAFqVKpGiAPTXUJqFxhQdeuBlUbtu-RgAmcFpKuJKCcKQA8rQMEIpg7Nx8QiJiEkoAlJkKEAA2dNyOAJ7M5FA5GDBEfmo5cIwYYRC6ZenZYAC+ALpAA)
 
 ## Getting help
 

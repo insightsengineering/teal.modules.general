@@ -20,9 +20,10 @@ various types of datasets using the cross table module `tm_t_crosstable()`:
 
 ## 1 - Load libraries
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r library, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
+library(rtables)
 ```
 
 ## 2 - Create data sets
@@ -32,7 +33,7 @@ Inside this app 2 datasets will be used
 1. `ADSL` A wide data set with subject data
 2. `ADLB` A long data set with lab measurements for each subject
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
+```{r data, echo=TRUE, message=FALSE, warning=FALSE, results="hide", echo=2:6}
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
@@ -55,7 +56,7 @@ create an app. The data will be handed over using `teal.data::teal_data()`. The 
 itself will be constructed by multiple calls of `tm_t_crosstable()` using different
 combinations of data sets.
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r app, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # configuration for the single wide dataset
 mod1 <- tm_t_crosstable(
   label = "Single wide dataset",
@@ -138,8 +139,25 @@ app <- init(
 A simple `shiny::shinyApp()` call will let you run the app.
 Note that app is only displayed when running this code inside an `R` session.
 
-```{r, echo=TRUE, results="hide", eval=base::interactive()}
+```{r shinyapp, echo=TRUE, results="hide", eval=base::interactive()}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
 <img src="images/app-using-cross-table.png" style = "display: block; margin: 0px; width: 100%"/>
+
+```{r shinylive_section, echo = FALSE, results = 'asis'}
+cat("## 5 - Try it out with Shinylive\n\n")
+```
+
+```{r shinylive, echo = FALSE, out.width='150%', eval = knitr::is_html_output()}
+code <- paste0(c(
+  knitr::knit_code$get("library"),
+  knitr::knit_code$get("data"),
+  knitr::knit_code$get("app"),
+  knitr::knit_code$get("shinyapp")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+
+knitr::include_url(url, height = "800px")
+```
