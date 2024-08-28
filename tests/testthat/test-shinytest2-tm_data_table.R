@@ -44,6 +44,7 @@ test_that("e2e - tm_data_table: Verify checkbox displayed over data table", {
 })
 
 test_that("e2e - tm_data_table: Verify module displays data table", {
+  testthat::skip_if_not_installed("rvest")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 

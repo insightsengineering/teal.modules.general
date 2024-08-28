@@ -78,17 +78,6 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
   message("Initializing tm_variable_browser")
 
-  # Requires Suggested packages
-  if (!requireNamespace("sparkline", quietly = TRUE)) {
-    stop("Cannot load sparkline - please install the package or restart your session.")
-  }
-  if (!requireNamespace("htmlwidgets", quietly = TRUE)) {
-    stop("Cannot load htmlwidgets - please install the package or restart your session.")
-  }
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    stop("Cannot load jsonlite - please install the package or restart your session.")
-  }
-
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_character(datasets_selected)
@@ -1279,7 +1268,6 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 create_sparklines.default <- function(arr, width = 150, ...) {
   as.character(tags$code("unsupported variable type", class = "text-blue"))
 }
-
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(

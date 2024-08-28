@@ -147,6 +147,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
+  testthat::skip_if_not_installed("rvest")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 

@@ -145,6 +145,7 @@ for (i in rd_files()) {
     paste0("example-", basename(i)),
     {
       skip_if_too_deep(5)
+      testthat::skip_if_not_installed("pkgload")
       if (basename(i) %in% strict_exceptions) {
         op <- options()
         withr::local_options(opts_partial_match_old)

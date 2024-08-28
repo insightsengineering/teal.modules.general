@@ -229,16 +229,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.widgets::ggplot2_args()) {
   message("Initializing tm_g_scatterplot")
 
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
-
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
   if (inherits(y, "data_extract_spec")) y <- list(y)
