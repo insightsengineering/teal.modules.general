@@ -964,16 +964,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         substitute(
           expr = {
             columns_index <- union(
-              setdiff(names(ANL_OUTLIER), "is_outlier_selected"),
+              setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
               table_columns
             )
-            # update to check if the 'order' column exists before subsetting
-            if ("order" %in% names(ANL_OUTLIER_EXTENDED)){
-              ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
-            }else{
-              ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index[columns_index != "order"]]
-            }
-
+            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
           },
           env = list(
             table_columns = input$table_ui_columns
