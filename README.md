@@ -41,26 +41,19 @@ Please see [`teal` gallery](https://github.com/insightsengineering/teal.gallery)
 ## Installation
 
 ```r
-# stable versions
 install.packages('teal.modules.general')
-
-# install.packages("pak")
-pak::pak("insightsengineering/teal.modules.general@*release")
 ```
 
-Alternatively, you might want to use the development version available on [r-universe](https://r-universe.dev/).
+Alternatively, you might want to use the development version.
 
 ```r
-# beta versions
-install.packages('teal.modules.general', repos = c('https://pharmaverse.r-universe.dev', getOption('repos')))
-
 # install.packages("pak")
 pak::pak("insightsengineering/teal.modules.general")
 ```
 
 ## Usage
 
-Please start with the ["Getting Started" article](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/teal-modules-general.html), and then see the [package vignettes](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/index.html) for usage of this package.
+To understand how to use this package, please refer to the [Getting Started](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/teal-modules-general.html) article, which provides multiple examples of code implementation.
 
 ## Playground
 
