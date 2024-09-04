@@ -237,7 +237,7 @@ if (interactive()) {
 $(function() {
   var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
   if (if_pkgdown) {
-    $('.iframe-wrapper').css('width', '80vw');
+    $('.iframe-wrapper').css('width', '140%');
   }
 });
           </script>
@@ -254,7 +254,7 @@ $(function() {
 $(function() {
   var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
   if (if_pkgdown) {
-    $('.iframe-wrapper').css('width', '80vw');
+    $('.iframe-wrapper').css('width', '140%');
   }
 });
           </script>
