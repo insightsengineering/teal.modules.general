@@ -86,7 +86,21 @@ if (interactive()) {
 \itemize{
   \item example-1\cr
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH0y6pvTdT1JGdjbGlIUweC8kwdsIulFSdkHqwTjywd0AXl1BgDlnertdLhhBgbAk-1EiQUYCOCXVwdFWMli4TQJdUbBKgF9KpOh4UUSwuNjLMGo1BkoAFZEFT+ADWcFY-ySQNecBMUGEpH8BH4tFEBH8UJh8MRwB+sDEAK8cgAum4yFB6CJ-ABGFpJDAmZjwdgASQgJiIK10BBmYGqBzWYAAQmMUnY4AAPUjC0WzSWDWXvSpeJlwfwAJnZYU53Lg7AABgBhIjUQQwKosi2qsVWjVgWpy3TW232qoG52rUUAVgwwZSADYMBG5CkfXaHboAMyBkViiV4KVauQ6xnMpPGrymil8gVCoNi1yZwYAMS9CuVLsGAHF3QAJMaVJS65kqVDzFqTaYdQZ2PN6FnXXbj1m4EdgMd63QGqc9-UGudVKWLkTJ1czpNKLvQdAtFQxGZbpLCpKbjJ8IQiUTCh-CSkdDKkGD+LkkLGoKApEvDIQN0R4oH4GR-HIRsKw-UCpV5GBUHKLwyF0FRBUYGBPCsCAp0GXkVQIKAqgkIVHiyDADng0DBgAeTiGQMLLbDcJIAiwCtUjdHIsCZDgaiwFo3RYxEtdn1WNd-D7eY7wQiDcU0EhuGgwDJN0Ns7AAWUadN+CUvDuE0nTmnKXRRHiCBWGnCRnz4yi9H0JgAD45REwUiFICAvLEJswAADU4vFdkeUx8imUwiC8nzyHdABNDDnyYiy4GICB+CimLfPcrdQMsohIn8YYILCYUHBceDKgyMSt3AyDGGFLw7IAEliFkxXqWBUF3ap0DoEjlPw955M88hGqk9SWtQdN+toQa8Ky8bcuPWgTF0dgVHG9RNB0GxbDSLdLJUVg+pmtBUBavIUgulrRBkHQKiUD4lDAD4aSAA}{Open in Shinylive}\cr
-    \if{html}{\out{<div style="height: 800px"><iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH0y6pvTdT1JGdjbGlIUweC8kwdsIulFSdkHqwTjywd0AXl1BgDlnertdLhhBgbAk-1EiQUYCOCXVwdFWMli4TQJdUbBKgF9KpOh4UUSwuNjLMGo1BkoAFZEFT+ADWcFY-ySQNecBMUGEpH8BH4tFEBH8UJh8MRwB+sDEAK8cgAum4yFB6CJ-ABGFpJDAmZjwdgASQgJiIK10BBmYGqBzWYAAQmMUnY4AAPUjC0WzSWDWXvSpeJlwfwAJnZYU53Lg7AABgBhIjUQQwKosi2qsVWjVgWpy3TW232qoG52rUUAVgwwZSADYMBG5CkfXaHboAMyBkViiV4KVauQ6xnMpPGrymil8gVCoNi1yZwYAMS9CuVLsGAHF3QAJMaVJS65kqVDzFqTaYdQZ2PN6FnXXbj1m4EdgMd63QGqc9-UGudVKWLkTJ1czpNKLvQdAtFQxGZbpLCpKbjJ8IQiUTCh-CSkdDKkGD+LkkLGoKApEvDIQN0R4oH4GR-HIRsKw-UCpV5GBUHKLwyF0FRBUYGBPCsCAp0GXkVQIKAqgkIVHiyDADng0DBgAeTiGQMLLbDcJIAiwCtUjdHIsCZDgaiwFo3RYxEtdn1WNd-D7eY7wQiDcU0EhuGgwDJN0Ns7AAWUadN+CUvDuE0nTmnKXRRHiCBWGnCRnz4yi9H0JgAD45REwUiFICAvLEJswAADU4vFdkeUx8imUwiC8nzyHdABNDDnyYiy4GICB+CimLfPcrdQMsohIn8YYILCYUHBceDKgyMSt3AyDGGFLw7IAEliFkxXqWBUF3ap0DoEjlPw955M88hGqk9SWtQdN+toQa8Ky8bcuPWgTF0dgVHG9RNB0GxbDSLdLJUVg+pmtBUBavIUgulrRBkHQKiUD4lDAD4aSAA" height="125\%" width="125\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; -webkit-transform: scale(0.8); -webkit-transform-origin: 0 0"></iframe></div>}}
+    \if{html}{
+      \out{
+        <div class = "iframe-wrapper" style="height: 800px; width: 100\%">
+          <script type="text/javascript">
+$(function() {
+  var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
+  if (if_pkgdown) {
+    $('.iframe-wrapper').css('width', '80vw');
+  }
+});
+          </script>
+          <iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH0y6pvTdT1JGdjbGlIUweC8kwdsIulFSdkHqwTjywd0AXl1BgDlnertdLhhBgbAk-1EiQUYCOCXVwdFWMli4TQJdUbBKgF9KpOh4UUSwuNjLMGo1BkoAFZEFT+ADWcFY-ySQNecBMUGEpH8BH4tFEBH8UJh8MRwB+sDEAK8cgAum4yFB6CJ-ABGFpJDAmZjwdgASQgJiIK10BBmYGqBzWYAAQmMUnY4AAPUjC0WzSWDWXvSpeJlwfwAJnZYU53Lg7AABgBhIjUQQwKosi2qsVWjVgWpy3TW232qoG52rUUAVgwwZSADYMBG5CkfXaHboAMyBkViiV4KVauQ6xnMpPGrymil8gVCoNi1yZwYAMS9CuVLsGAHF3QAJMaVJS65kqVDzFqTaYdQZ2PN6FnXXbj1m4EdgMd63QGqc9-UGudVKWLkTJ1czpNKLvQdAtFQxGZbpLCpKbjJ8IQiUTCh-CSkdDKkGD+LkkLGoKApEvDIQN0R4oH4GR-HIRsKw-UCpV5GBUHKLwyF0FRBUYGBPCsCAp0GXkVQIKAqgkIVHiyDADng0DBgAeTiGQMLLbDcJIAiwCtUjdHIsCZDgaiwFo3RYxEtdn1WNd-D7eY7wQiDcU0EhuGgwDJN0Ns7AAWUadN+CUvDuE0nTmnKXRRHiCBWGnCRnz4yi9H0JgAD45REwUiFICAvLEJswAADU4vFdkeUx8imUwiC8nzyHdABNDDnyYiy4GICB+CimLfPcrdQMsohIn8YYILCYUHBceDKgyMSt3AyDGGFLw7IAEliFkxXqWBUF3ap0DoEjlPw955M88hGqk9SWtQdN+toQa8Ky8bcuPWgTF0dgVHG9RNB0GxbDSLdLJUVg+pmtBUBavIUgulrRBkHQKiUD4lDAD4aSAA" allow="fullscreen" scrolling="auto" style="height: 100\%; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem"></iframe>
+        </div>
+      }
+    }
 }
 }
 

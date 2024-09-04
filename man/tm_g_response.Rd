@@ -186,10 +186,38 @@ if (interactive()) {
 \itemize{
   \item example-1\cr
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuiloPBRMUMrYsosvldFm5oOhBio8gszildABefwZXBjPhCEQDXFE4RiDHnXSkGCJCSJaqiVAkURwKnU3TUKD0OB+XGLLBiFkQNm6AAK7VImzwY2pTJFYtxKUSYVIzA0iWZcHmcs5YNgegFYHhMoJZ05ujZIg0OKtfJ1pC1qB1HMtlW5vP52zAAGUHbatCxaDyRIhVnrLQR8kRaAQxHag4wQ-QRIlo7H45CUjc4ZcZQ9Srqlis8D6DowjnJze7ztbHXB+HbFgRlhGLe6YMJNJEjboAGIAQQAMr7nDXa6ZaKFG3ah6PXB3qf9OdXI7pQnaVWqNU7tbql+cDfBmyb8+3a-Xbbir3uXQfJ1yeXzT-6baRdEmU2GL5OM3GE1xL9QzgdMYwA7MMlzM8RgRMBCzmBYwA2PYUBgKsJ0vANyCbY0UNlQ9qS7agexEOcRzHTD3RMadZ1xecx3XSoV2XPUVy6LpaBMSYVHIXdtHZY4yjGURCggVhB3Qdg0FQAASepShk2S2UYHROmBJQwABO4gA}{Open in Shinylive}\cr
-    \if{html}{\out{<div style="height: 800px"><iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuiloPBRMUMrYsosvldFm5oOhBio8gszildABefwZXBjPhCEQDXFE4RiDHnXSkGCJCSJaqiVAkURwKnU3TUKD0OB+XGLLBiFkQNm6AAK7VImzwY2pTJFYtxKUSYVIzA0iWZcHmcs5YNgegFYHhMoJZ05ujZIg0OKtfJ1pC1qB1HMtlW5vP52zAAGUHbatCxaDyRIhVnrLQR8kRaAQxHag4wQ-QRIlo7H45CUjc4ZcZQ9Srqlis8D6DowjnJze7ztbHXB+HbFgRlhGLe6YMJNJEjboAGIAQQAMr7nDXa6ZaKFG3ah6PXB3qf9OdXI7pQnaVWqNU7tbql+cDfBmyb8+3a-Xbbir3uXQfJ1yeXzT-6baRdEmU2GL5OM3GE1xL9QzgdMYwA7MMlzM8RgRMBCzmBYwA2PYUBgKsJ0vANyCbY0UNlQ9qS7agexEOcRzHTD3RMadZ1xecx3XSoV2XPUVy6LpaBMSYVHIXdtHZY4yjGURCggVhB3Qdg0FQAASepShk2S2UYHROmBJQwABO4gA" height="125\%" width="125\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; -webkit-transform: scale(0.8); -webkit-transform-origin: 0 0"></iframe></div>}}
+    \if{html}{
+      \out{
+        <div class = "iframe-wrapper" style="height: 800px; width: 100\%">
+          <script type="text/javascript">
+$(function() {
+  var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
+  if (if_pkgdown) {
+    $('.iframe-wrapper').css('width', '80vw');
+  }
+});
+          </script>
+          <iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuiloPBRMUMrYsosvldFm5oOhBio8gszildABefwZXBjPhCEQDXFE4RiDHnXSkGCJCSJaqiVAkURwKnU3TUKD0OB+XGLLBiFkQNm6AAK7VImzwY2pTJFYtxKUSYVIzA0iWZcHmcs5YNgegFYHhMoJZ05ujZIg0OKtfJ1pC1qB1HMtlW5vP52zAAGUHbatCxaDyRIhVnrLQR8kRaAQxHag4wQ-QRIlo7H45CUjc4ZcZQ9Srqlis8D6DowjnJze7ztbHXB+HbFgRlhGLe6YMJNJEjboAGIAQQAMr7nDXa6ZaKFG3ah6PXB3qf9OdXI7pQnaVWqNU7tbql+cDfBmyb8+3a-Xbbir3uXQfJ1yeXzT-6baRdEmU2GL5OM3GE1xL9QzgdMYwA7MMlzM8RgRMBCzmBYwA2PYUBgKsJ0vANyCbY0UNlQ9qS7agexEOcRzHTD3RMadZ1xecx3XSoV2XPUVy6LpaBMSYVHIXdtHZY4yjGURCggVhB3Qdg0FQAASepShk2S2UYHROmBJQwABO4gA" allow="fullscreen" scrolling="auto" style="height: 100\%; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem"></iframe>
+        </div>
+      }
+    }
   \item example-2\cr
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+zOh4UQrc23yCdgUwKdGt-oArIhU0gGs4VmXMteN+OBMoYVI0gn5aUQI0w+Ozi+AF2DEK3CcgAum5oOgJipipsBiFcroALzw8K4Wq6PhCESiJEYgTCQHouqkGBpCRpBqiVAkURwWF1Bm6ahQehwai4rZYMTUiC03QABR6pFEWzRcMZlJ5fORmTS0VIzA0aSpcA2RMZKKgiz0yK2O1F6sZtJEGlxxtVTxVavFGrqzNZ7N1YACbItui0LFoLJEiANNttBBKRwIYlxHsYXvoImeQdoIcuuWAwD1I12YBBIKqarAACEALJYADSWAATKLdFsvAB5RwAOQcAE09nIxbaja6NHB+BzcwXi2W8IaNTBHrQ4jrdAAxQajALOVttuomWhRLu46ez1z+hn9W0todRXGy+WKy2oVX0tv-eA9-WD7d1c2m5FPs8XoeM+1snsuk2kd2et6cC+vei51IGwahsi4aRtGEFxoCmRJim0zppmujZnOAAa5acoMXiuGAcj7g+DKvmuTpYPhhELouI7UJo47rjOc60W2y6rt2yIbnOH66LuGoCXUAn9P0tAmLo7AqOQp7aHSxHVOiohlBArCDOg7BoKgAAkLRVFp2m0owOh9LMShgDMIJAA}{Open in Shinylive}\cr
-    \if{html}{\out{<div style="height: 800px"><iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+zOh4UQrc23yCdgUwKdGt-oArIhU0gGs4VmXMteN+OBMoYVI0gn5aUQI0w+Ozi+AF2DEK3CcgAum5oOgJipipsBiFcroALzw8K4Wq6PhCESiJEYgTCQHouqkGBpCRpBqiVAkURwWF1Bm6ahQehwai4rZYMTUiC03QABR6pFEWzRcMZlJ5fORmTS0VIzA0aSpcA2RMZKKgiz0yK2O1F6sZtJEGlxxtVTxVavFGrqzNZ7N1YACbItui0LFoLJEiANNttBBKRwIYlxHsYXvoImeQdoIcuuWAwD1I12YBBIKqarAACEALJYADSWAATKLdFsvAB5RwAOQcAE09nIxbaja6NHB+BzcwXi2W8IaNTBHrQ4jrdAAxQajALOVttuomWhRLu46ez1z+hn9W0todRXGy+WKy2oVX0tv-eA9-WD7d1c2m5FPs8XoeM+1snsuk2kd2et6cC+vei51IGwahsi4aRtGEFxoCmRJim0zppmujZnOAAa5acoMXiuGAcj7g+DKvmuTpYPhhELouI7UJo47rjOc60W2y6rt2yIbnOH66LuGoCXUAn9P0tAmLo7AqOQp7aHSxHVOiohlBArCDOg7BoKgAAkLRVFp2m0owOh9LMShgDMIJAA" height="125\%" width="125\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; -webkit-transform: scale(0.8); -webkit-transform-origin: 0 0"></iframe></div>}}
+    \if{html}{
+      \out{
+        <div class = "iframe-wrapper" style="height: 800px; width: 100\%">
+          <script type="text/javascript">
+$(function() {
+  var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
+  if (if_pkgdown) {
+    $('.iframe-wrapper').css('width', '80vw');
+  }
+});
+          </script>
+          <iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+zOh4UQrc23yCdgUwKdGt-oArIhU0gGs4VmXMteN+OBMoYVI0gn5aUQI0w+Ozi+AF2DEK3CcgAum5oOgJipipsBiFcroALzw8K4Wq6PhCESiJEYgTCQHouqkGBpCRpBqiVAkURwWF1Bm6ahQehwai4rZYMTUiC03QABR6pFEWzRcMZlJ5fORmTS0VIzA0aSpcA2RMZKKgiz0yK2O1F6sZtJEGlxxtVTxVavFGrqzNZ7N1YACbItui0LFoLJEiANNttBBKRwIYlxHsYXvoImeQdoIcuuWAwD1I12YBBIKqarAACEALJYADSWAATKLdFsvAB5RwAOQcAE09nIxbaja6NHB+BzcwXi2W8IaNTBHrQ4jrdAAxQajALOVttuomWhRLu46ez1z+hn9W0todRXGy+WKy2oVX0tv-eA9-WD7d1c2m5FPs8XoeM+1snsuk2kd2et6cC+vei51IGwahsi4aRtGEFxoCmRJim0zppmujZnOAAa5acoMXiuGAcj7g+DKvmuTpYPhhELouI7UJo47rjOc60W2y6rt2yIbnOH66LuGoCXUAn9P0tAmLo7AqOQp7aHSxHVOiohlBArCDOg7BoKgAAkLRVFp2m0owOh9LMShgDMIJAA" allow="fullscreen" scrolling="auto" style="height: 100\%; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem"></iframe>
+        </div>
+      }
+    }
 }
 }
 

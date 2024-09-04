@@ -55,7 +55,21 @@ if (interactive()) {
 \itemize{
   \item example-1\cr
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1Kk6HhRRLDbCIJ2BTAkltKlNFRslRjmiAysgF4cr1x03T4hEVFdEanhMX6MjNIYfxNaEX8tWjhImWWVjJVUQVJ-VE9Yud06UVIj44yTImp+GVvRVge4GDytnBmmBRLBUNtNjMWikrgQANZQKS3Fp+XgCRbiKQQNTUdrjAbPDKoCASL4-cj-SFAlqgmDguAbQGiAD0tPpjJEGGJEmhulhCKRIxRcG4aOmYkk0lkeImhNIAA9SGTfpTAcC2RCmaywZrOQrSLz+Yi9EKwKiFjNJdjpWA5PjCRlBIxqMiwLFSKRUKJEMzmSYPJIiFo-Vr+IxBBIWWd6PdYnB+MyAApERheGNwQwAESIBEE8DIhgAYimYJ5DABlVBwAi0TYETxWCDiVD8EwtWUrUrHLu6UqlWu6dgqcjMSw6Gy2NIE0TxCCsACC6HYXQAJIJaClV6IZDpGKUykowGUALpAA}{Open in Shinylive}\cr
-    \if{html}{\out{<div style="height: 800px"><iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1Kk6HhRRLDbCIJ2BTAkltKlNFRslRjmiAysgF4cr1x03T4hEVFdEanhMX6MjNIYfxNaEX8tWjhImWWVjJVUQVJ-VE9Yud06UVIj44yTImp+GVvRVge4GDytnBmmBRLBUNtNjMWikrgQANZQKS3Fp+XgCRbiKQQNTUdrjAbPDKoCASL4-cj-SFAlqgmDguAbQGiAD0tPpjJEGGJEmhulhCKRIxRcG4aOmYkk0lkeImhNIAA9SGTfpTAcC2RCmaywZrOQrSLz+Yi9EKwKiFjNJdjpWA5PjCRlBIxqMiwLFSKRUKJEMzmSYPJIiFo-Vr+IxBBIWWd6PdYnB+MyAApERheGNwQwAESIBEE8DIhgAYimYJ5DABlVBwAi0TYETxWCDiVD8EwtWUrUrHLu6UqlWu6dgqcjMSw6Gy2NIE0TxCCsACC6HYXQAJIJaClV6IZDpGKUykowGUALpAA" height="125\%" width="125\%" allow="fullscreen" scrolling="auto" style="border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; -webkit-transform: scale(0.8); -webkit-transform-origin: 0 0"></iframe></div>}}
+    \if{html}{
+      \out{
+        <div class = "iframe-wrapper" style="height: 800px; width: 100\%">
+          <script type="text/javascript">
+$(function() {
+  var if_pkgdown = [...document.scripts].filter(x => x.src.includes('pkgdown.js')).length > 0;
+  if (if_pkgdown) {
+    $('.iframe-wrapper').css('width', '80vw');
+  }
+});
+          </script>
+          <iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1Kk6HhRRLDbCIJ2BTAkltKlNFRslRjmiAysgF4cr1x03T4hEVFdEanhMX6MjNIYfxNaEX8tWjhImWWVjJVUQVJ-VE9Yud06UVIj44yTImp+GVvRVge4GDytnBmmBRLBUNtNjMWikrgQANZQKS3Fp+XgCRbiKQQNTUdrjAbPDKoCASL4-cj-SFAlqgmDguAbQGiAD0tPpjJEGGJEmhulhCKRIxRcG4aOmYkk0lkeImhNIAA9SGTfpTAcC2RCmaywZrOQrSLz+Yi9EKwKiFjNJdjpWA5PjCRlBIxqMiwLFSKRUKJEMzmSYPJIiFo-Vr+IxBBIWWd6PdYnB+MyAApERheGNwQwAESIBEE8DIhgAYimYJ5DABlVBwAi0TYETxWCDiVD8EwtWUrUrHLu6UqlWu6dgqcjMSw6Gy2NIE0TxCCsACC6HYXQAJIJaClV6IZDpGKUykowGUALpAA" allow="fullscreen" scrolling="auto" style="height: 100\%; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem"></iframe>
+        </div>
+      }
+    }
 }
 }
 
