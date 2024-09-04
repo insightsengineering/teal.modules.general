@@ -76,7 +76,7 @@ shinyApp(app$ui, app$server)
 
 <img src="images/app-teal-modules-general.png" style = "display: block; margin: 0px; width: 100%"/>
 
-## 5 - Try it out in Shinylive
+### Try it out in Shinylive
 
 ```{r shinylive_url, echo = FALSE, results = 'asis'}
 code <- paste0(c(
