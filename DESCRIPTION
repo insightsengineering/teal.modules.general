@@ -90,10 +90,10 @@ Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
     tidymodels/broom, daattali/colourpicker, daattali/ggExtra,
     aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
-    gridExtra, ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
-    daroczig/logger, deepayan/lattice, MASS,
-    insightsengineering/nestcolor, r-lib/rlang, rstudio/rmarkdown,
-    insightsengineering/rtables, tidyverse/rvest, sparkline,
+    ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr,
+    daroczig/logger, deepayan/lattice,
+    insightsengineering/nestcolor, r-lib/pkgload, r-lib/rlang, rstudio/rmarkdown,
+    insightsengineering/rtables, tidyverse/rvest, htmlwidgets/sparkline,
     rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
