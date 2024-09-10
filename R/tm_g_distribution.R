@@ -523,7 +523,7 @@ srv_distribution <- function(id,
             }
 
             ANL <- merged$anl_q_r()[["ANL"]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[selector_list()$dist_i()$select]])), input$t_dist), 2)
+            round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
           } else {
             c("param1" = NA_real_, "param2" = NA_real_)
           }
