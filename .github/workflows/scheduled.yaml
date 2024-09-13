@@ -66,6 +66,7 @@ jobs:
     uses: insightsengineering/r.pkg.template/.github/workflows/rhub.yaml@main
     with:
       lookup-refs: |
+        insightsengineering/teal
         insightsengineering/teal.transform
         insightsengineering/teal.code
         insightsengineering/teal.data
