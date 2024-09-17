@@ -907,9 +907,9 @@ render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
     df <- data()[[dataset_name]]
-    join_keys <- join_keys(data())
+    join_keys <- teal.data::join_keys(data())
     if (!is.null(join_keys)) {
-      key <- join_keys(data())[dataset_name, dataset_name]
+      key <- teal.data::join_keys(data())[dataset_name, dataset_name]
     } else {
       key <- NULL
     }
@@ -979,7 +979,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       # get icons proper for the data types
       icons <- vapply(df, function(x) class(x)[1L], character(1L))
 
-      join_keys <- join_keys(data())
+      join_keys <- teal.data::join_keys(data())
       if (!is.null(join_keys)) {
         icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }
