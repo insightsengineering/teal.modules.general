@@ -515,11 +515,8 @@ srv_distribution <- function(id,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
-        req(input$params_reset)
         params <-
           if (length(input$t_dist) != 0) {
-            dist_var2 <- as.vector(merged$anl_input_r()$columns_source$dist_i)
-
             get_dist_params <- function(x, dist) {
               if (dist == "unif") {
                 return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
@@ -530,8 +527,8 @@ srv_distribution <- function(id,
               )
             }
 
-            ANL <- merged$anl_q_r()[[as.character(dist_var[[1]]$dataname)]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var2]])), input$t_dist), 2)
+            ANL <- merged$anl_q_r()[["ANL"]]
+            round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
           } else {
             c("param1" = NA_real_, "param2" = NA_real_)
           }
