@@ -79,14 +79,10 @@ tm_variable_browser <- function(label = "Variable Browser",
   message("Initializing tm_variable_browser")
 
   # Requires Suggested packages
-  if (!requireNamespace("sparkline", quietly = TRUE)) {
-    stop("Cannot load sparkline - please install the package or restart your session.")
-  }
-  if (!requireNamespace("htmlwidgets", quietly = TRUE)) {
-    stop("Cannot load htmlwidgets - please install the package or restart your session.")
-  }
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    stop("Cannot load jsonlite - please install the package or restart your session.")
+  if (requireNamespace("sparkline", quietly = TRUE)) {
+    lapply(c("htmlwidgets", "jsonlite"), function(pkg) {
+      if (!requireNamespace(pkg, quietly = TRUE)) stop(paste("Cannot load", pkg, "- please install the package or restart your session."))
+    })
   }
 
   # Start of assertions
@@ -131,7 +127,9 @@ ui_variable_browser <- function(id,
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = fluidRow(
-        htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
+        if (requireNamespace("htmlwidgets", quietly = TRUE)) {
+          htmlwidgets::getDependency("sparkline")
+        }, # needed for sparklines to work
         column(
           6,
           # variable browser
@@ -985,22 +983,36 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       }
       icons <- variable_type_icons(icons)
 
-      # generate sparklines
-      sparklines_html <- vapply(
-        df,
-        create_sparklines,
-        FUN.VALUE = character(1),
-        USE.NAMES = FALSE
-      )
+      # Generate summaries or sparklines based on the availability of the sparkline package
+      if (requireNamespace("sparkline", quietly = TRUE)) {
+        sparklines_html <- vapply(
+          df,
+          create_sparklines,
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
+        summary_column_name <- "Sparklines"
+        summary_content <- sparklines_html
+      } else {
+        summaries <- vapply(
+          df,
+          create_text_summary,
+          FUN.VALUE = character(1),
+          USE.NAMES = FALSE
+        )
+        summary_column_name <- "Summaries"
+        summary_content <- summaries
+      }
 
+      # Create the output data frame
       df_output <- data.frame(
         Type = icons,
         Variable = names(labels),
         Label = labels,
         Missings = missings,
-        Sparklines = sparklines_html,
         stringsAsFactors = FALSE
       )
+      df_output[[summary_column_name]] <- summary_content
     }
 
     # Select row 1 as default / fallback
@@ -1031,7 +1043,9 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
       rownames = FALSE,
       selection = list(mode = "single", target = "row", selected = selected_ix),
       options = list(
-        fnDrawCallback = htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }"),
+        fnDrawCallback = if (requireNamespace("htmlwidgets", quietly = TRUE)) {
+          htmlwidgets::JS("function() { HTMLWidgets.staticRender(); }")
+        },
         pageLength = input[[paste0(table_ui_id, "_rows")]],
         displayStart = selected_page_ix
       )
@@ -1291,4 +1305,24 @@ custom_sparkline_formatter <- function(labels, counts) {
       jsonlite::toJSON(counts)
     )
   )
+}
+
+# Function to create text summaries
+create_text_summary <- function(arr) {
+  if (is.numeric(arr)) {
+    summary <- sprintf("Min: %.2f, Median: %.2f, Max: %.2f", min(arr, na.rm = TRUE), median(arr, na.rm = TRUE), max(arr, na.rm = TRUE))
+  } else if (is.factor(arr) || is.character(arr)) {
+    tbl <- sort(table(arr), decreasing = TRUE)
+    most_common <- names(tbl)[1]
+    least_common <- names(tbl)[length(tbl)]
+    summary <- sprintf("Most common: %s, Least common: %s", most_common, least_common)
+  } else if (inherits(arr, "Date") || inherits(arr, "POSIXct") || inherits(arr, "POSIXlt")) {
+    summary <- sprintf("Range: %s to %s", min(arr, na.rm = TRUE), max(arr, na.rm = TRUE))
+  } else if (is.logical(arr)) {
+    summary <- sprintf("TRUE: %d, FALSE: %d", sum(arr, na.rm = TRUE), sum(!arr, na.rm = TRUE))
+  } else {
+    summary <- "Unsupported type"
+  }
+
+  summary
 }
