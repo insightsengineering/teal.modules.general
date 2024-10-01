@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9049</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,19 +49,6 @@
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item dropdown">
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc2">v0.3.0-rc2</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc1">v0.3.0-rc1</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0">v0.3.0</a> </div></li>
-<!-- end dropdown for versions -->
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-reports" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Reports</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-reports">
 <li><a class="dropdown-item" href="../coverage-report/">Coverage report</a></li>
@@ -294,7 +281,15 @@ app. Note that app is only displayed when running this code inside an
 <code>R</code> session.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images/app-using-outliers-module.png" style="display: block; margin: 0px; width: 100%"></p>
+<p><img src="images%2Fapp-using-outliers-module.png" style="display: block; margin: 0px; width: 100%"></p>
+</div>
+<div class="section level3">
+<h3 id="try-it-out-in-shinylive">5 - Try it out in Shinylive<a class="anchor" aria-label="anchor" href="#try-it-out-in-shinylive"></a>
+</h3>
+<p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQACAMQLBouPwWkiCgozhRyWgBZwFaVAB0IdJiw79U1Vo0Uq1GrTr79aAM1YFfkMoBXVSUWtg0lCAHgBaLQNqAH1oqHY5KJCFBIUAd1pSY1oIdnTcBRBrBQUAQQARAGUAGVzErh4fYTFJaVlEREZG1pr6hqwm9qTuXgEe8SkIGW5B4YmmscaWgCFpzrmhEUX+1aHtnesAXyyIdOh4UWmCdkswEZa3yrfGya+FH4NXZvW73WBicohRR5MGPawAKyIpRSAGs4KxRJCYtDEvw4H4oMJSCkCL5RAQUojkWiMcBYWIALrWFTECB+WgSQTMUi0EgKPxERgmMyiUoSEQFWh4oIhcLWHwARn2MBSREEpDoMkxY2oUHocGoCgAvACwE0xRLCtL0nK8GM1RraDIUgA3FjGmUxFJwAAepGYBGJolQcBeY1q9I9gNGdogtVq6hEgY9idDQZDYbj8dquv1hpNbyaBrTCjdjFoepEiC+4fjBGMSIIYg9ZYr9BEJIbtCbmPSwGA0c+YAZDMqYfeAHEAKL-N47ACyWAA0lgFSC5Lhawni4HPAXJzPY9nauyfXuFAAxOotJozrO1W4PzdZgiGOASQXd7iu90m9Lev0A3TUNXnvT0oAeMx9w+GswNTZMTXg4DM2PBRcwNKMzR3UhSxYNtjmrI9j3rRtmxNVtKzgTtSO1MDsz7Ad3maIcR2fVCE0Eehwg9SDMQvWhqHIRh2FoUQABUsAAVSnSpRAsZwsSgftBzeViFFEjACUDQU5F0rcFA3fSkPPN4sDqABhQ82OPGAiVoJwoMva9b2s7NT3PK8bzvbNHwM6xbmZXQSHZTluV5OMBSFYozCtMwIM0agSAkcDwkiCAfAAJmVVV1U1RhaJzPUMP3AB1KU4ruNCkpSuAIlg2oHTyn8hRNOhRFIUD6JCAD-SgQMUmDED9MjaDmPq48kJTbCBozTr2PQ-NTSLJMcIo9s4EI1ziK7HsWzwyjqO7CEGJU4dR10V4D1nMAF2XVd1y27NjM0aDp3G1D3JepyvP03yn1rf9fV6-rBpQ48RtNC53vjSbEOm0G5tQhbMOWks1qraHsxIo6nnI-b1sOntFOUpjgTOsdLrqAA1a9rvMgAJCcMoe-TtxWkz3hpodHvjWzBPsiUTU8lzWf5Wgzy+4XvOPP6-KzQyXzfD9y1fVIy2NAHuqBoCZqGujwMgzCYKIp7sKmlbdbBpGisWwszfRsRNtF7Hdrx8sDpdiFRYjEISeN1jvbCTjuJNXj2H4wSZBE8SpJksJ5IcX3GP986NK07RXD0-X-uzsJsI5szLMx3m7Icj0pZ5k9xY85zpZ82tbgCiAWWCjkuUMcL+UFYUFD5nky8SiBkptWq0p8ABmbLGqdfK5uR-d51LiVB+H2VR-G6fnXV1rRI6zWvW1vrkMR+MIcBP4TZhs24YthHRfnpb7fxjHL6xnayNw92Cc93sk-PzZyYXUBAATWulOAA8k0BooCwC6UrnndmX0QHFyrhLcutdfoNy2oDQCR9LYnx9jEQ2o0yY81hggtM+D742xRk-L+L94E-z2vQqiP9ibJyBJcQB45qa0zwKaBmTMWa52ekbLmKDe5L0chXUWn10E-X1rLXyCtaivnIMrL8atfxoV3ifHBwNj7DRCMQyGGxi7kKQlQ3OD87YrU-vhR2EimFuwcYTY6f8mIXzUjwrA85roWTEnUXxwj2IUN3Eg94wTX4l35mXIWtd4FyPiQo1CSjsFa1wSDWaRiiHgiNpw8x18wmGOsTQ-cqNkwO1EE7XOzj7Ee3fgVUJ4E-YFPJoHUQwdao8XBHxASQlo4SWkrJBO7DARkzUmnI+Oks6hJUexUR+5C5WVFn3AW0iEmyOrpLDBiiG5jEbtYQKpQigVjoAALzMNFcw6BrAWGmCcveWZ0gegqGMboxwPQfK9mBFQpAVSb3ygoeIIL4i1m+U07MNiwDgNyjPJ43zi6Kh5plFFAhx77Plv5awogSgQFYHUdA7ALAABJBC0EqKS9QjAXQyEqEQVAPISC4x0e1dgpgOTGBwiaBUAAGDKAAWSoVpigej5YK3SYArgMiAA" class="external-link">Open
+in Shinylive</a></p>
+<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQACAMQLBouPwWkiCgozhRyWgBZwFaVAB0IdJiw79U1Vo0Uq1GrTr79aAM1YFfkMoBXVSUWtg0lCAHgBaLQNqAH1oqHY5KJCFBIUAd1pSY1oIdnTcBRBrBQUAQQARAGUAGVzErh4fYTFJaVlEREZG1pr6hqwm9qTuXgEe8SkIGW5B4YmmscaWgCFpzrmhEUX+1aHtnesAXyyIdOh4UWmCdkswEZa3yrfGya+FH4NXZvW73WBicohRR5MGPawAKyIpRSAGs4KxRJCYtDEvw4H4oMJSCkCL5RAQUojkWiMcBYWIALrWFTECB+WgSQTMUi0EgKPxERgmMyiUoSEQFWh4oIhcLWHwARn2MBSREEpDoMkxY2oUHocGoCgAvACwE0xRLCtL0nK8GM1RraDIUgA3FjGmUxFJwAAepGYBGJolQcBeY1q9I9gNGdogtVq6hEgY9idDQZDYbj8dquv1hpNbyaBrTCjdjFoepEiC+4fjBGMSIIYg9ZYr9BEJIbtCbmPSwGA0c+YAZDMqYfeAHEAKL-N47ACyWAA0lgFSC5Lhawni4HPAXJzPY9nauyfXuFAAxOotJozrO1W4PzdZgiGOASQXd7iu90m9Lev0A3TUNXnvT0oAeMx9w+GswNTZMTXg4DM2PBRcwNKMzR3UhSxYNtjmrI9j3rRtmxNVtKzgTtSO1MDsz7Ad3maIcR2fVCE0Eehwg9SDMQvWhqHIRh2FoUQABUsAAVSnSpRAsZwsSgftBzeViFFEjACUDQU5F0rcFA3fSkPPN4sDqABhQ82OPGAiVoJwoMva9b2s7NT3PK8bzvbNHwM6xbmZXQSHZTluV5OMBSFYozCtMwIM0agSAkcDwkiCAfAAJmVVV1U1RhaJzPUMP3AB1KU4ruNCkpSuAIlg2oHTyn8hRNOhRFIUD6JCAD-SgQMUmDED9MjaDmPq48kJTbCBozTr2PQ-NTSLJMcIo9s4EI1ziK7HsWzwyjqO7CEGJU4dR10V4D1nMAF2XVd1y27NjM0aDp3G1D3JepyvP03yn1rf9fV6-rBpQ48RtNC53vjSbEOm0G5tQhbMOWks1qraHsxIo6nnI-b1sOntFOUpjgTOsdLrqAA1a9rvMgAJCcMoe-TtxWkz3hpodHvjWzBPsiUTU8lzWf5Wgzy+4XvOPP6-KzQyXzfD9y1fVIy2NAHuqBoCZqGujwMgzCYKIp7sKmlbdbBpGisWwszfRsRNtF7Hdrx8sDpdiFRYjEISeN1jvbCTjuJNXj2H4wSZBE8SpJksJ5IcX3GP986NK07RXD0-X-uzsJsI5szLMx3m7Icj0pZ5k9xY85zpZ82tbgCiAWWCjkuUMcL+UFYUFD5nky8SiBkptWq0p8ABmbLGqdfK5uR-d51LiVB+H2VR-G6fnXV1rRI6zWvW1vrkMR+MIcBP4TZhs24YthHRfnpb7fxjHL6xnayNw92Cc93sk-PzZyYXUBAATWulOAA8k0BooCwC6UrnndmX0QHFyrhLcutdfoNy2oDQCR9LYnx9jEQ2o0yY81hggtM+D742xRk-L+L94E-z2vQqiP9ibJyBJcQB45qa0zwKaBmTMWa52ekbLmKDe5L0chXUWn10E-X1rLXyCtaivnIMrL8atfxoV3ifHBwNj7DRCMQyGGxi7kKQlQ3OD87YrU-vhR2EimFuwcYTY6f8mIXzUjwrA85roWTEnUXxwj2IUN3Eg94wTX4l35mXIWtd4FyPiQo1CSjsFa1wSDWaRiiHgiNpw8x18wmGOsTQ-cqNkwO1EE7XOzj7Ee3fgVUJ4E-YFPJoHUQwdao8XBHxASQlo4SWkrJBO7DARkzUmnI+Oks6hJUexUR+5C5WVFn3AW0iEmyOrpLDBiiG5jEbtYQKpQigVjoAALzMNFcw6BrAWGmCcveWZ0gegqGMboxwPQfK9mBFQpAVSb3ygoeIIL4i1m+U07MNiwDgNyjPJ43zi6Kh5plFFAhx77Plv5awogSgQFYHUdA7ALAABJBC0EqKS9QjAXQyEqEQVAPISC4x0e1dgpgOTGBwiaBUAAGDKAAWSoVpigej5YK3SYArgMiAA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
+</iframe>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

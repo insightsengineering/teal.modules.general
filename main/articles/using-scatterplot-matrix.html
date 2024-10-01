@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9049</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,19 +49,6 @@
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item dropdown">
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc2">v0.3.0-rc2</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc1">v0.3.0-rc1</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0">v0.3.0</a> </div></li>
-<!-- end dropdown for versions -->
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-reports" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Reports</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-reports">
 <li><a class="dropdown-item" href="../coverage-report/">Coverage report</a></li>
@@ -118,7 +105,8 @@ scatter plot matrix module <code><a href="../reference/tm_g_scatterplotmatrix.ht
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span> <span class="co"># used to create the app</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co"># used to modify data sets</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co"># used to modify data sets</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lattice.r-forge.r-project.org/" class="external-link">lattice</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-data-sets">2 - Create data sets<a class="anchor" aria-label="anchor" href="#create-data-sets"></a>
@@ -260,7 +248,15 @@ app. Note that app is only displayed when running this code inside an
 <code>R</code> session.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1024</span>, width <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images/app-using-scatterplot-matrix.png" style="display: block; margin: 0px; width: 100%"></p>
+<p><img src="images%2Fapp-using-scatterplot-matrix.png" style="display: block; margin: 0px; width: 100%"></p>
+</div>
+<div class="section level3">
+<h3 id="try-it-out-in-shinylive">5 - Try it out in Shinylive<a class="anchor" aria-label="anchor" href="#try-it-out-in-shinylive"></a>
+</h3>
+<p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQACAMQLBouPwWkiCgozhRyWgBZwFaVAB0IdJiw79U1Vo0Uq1GrTr79aAM1YFfkMoBXVSUWtbZjZ2akNSWgI4OWtg0lCAHgBaLQNqAH10qHZUiGKFHIUAd1pSY1oIdmLcBRBrBQUAQQARAGUAGUrcrh4fYTFJaVlEREZewYUAUgA+JY7OhRhBDPJ2ABUsfZ6AVSwFAF4FRiJBcvYocQhBeEYkg6OAUR79gFkFXKHfZ9H6-OStACMcjKnV6WD6wzy3F4Agm4ikEBk3Fm8x68I2vX2+0+iNGKKEInR02xc0JxIJPQGACFSflyWippiZrTGSzVusIJstjtDHB2ABhAASAHFxZdzOI-FACNpGOwCI84AVqqYmhshVLpZUFBCFAA-BSWMAAOStuH1m0NChWJvNlrAAAU7Q7OocTiSLVbslaHdCygBfMrFaDwUSIgjsK0LAZ291wvqppM-el4NO8q1RkIxsTNEKKKrR2BiawAKyIjQKAGs4KxRKWMuXcvw4ErhKQCgRfKICAU6w3m63gJXYwBdawqYgQPy0CSCZiJEgKPxERgmMyiRoSEQ1WjdoIhcLWHymqqkGAFCQFYcJGROIh3wxvAAeicFCni9BwNQ8pWn0h7HrUZ7FJeeAbAAbiwtBQPQlLysUBRwF+pDMCqT6oHACYOtOZhXFmgzen+nTqCIKrytRBH9qI+GEZRmwAUBIFgH0QEMQoCFvMhlKIBRQqdAQxj1skcZXPxSEoVq4mSSWxTAMAZEpmAM4zuCPphDxKqeFchFgF00qfJmYBYF04rmbmoGfAAGhZTK-FgADSWAQs5rkeQATAW9qsZ02zUIkTgkQofqfIFolbrQX6GQoABiXQDH00W6Tu3b6JoVxRaGGxlGU866CQy6ruutCbtuu71GYJBmNQJASOeGThJEEA+L5pL3o+z6kOQjBvh+2Hxb+nRWgA8pi-7Na1mqkCJfGIYJYhoSEGFYThjHMeNmzEZxdK2TFmz0bRVxnTtBF7UKilJGtMkrfJA4SfdbYqWpJnZrZWmtMZXQAGqpd57meSDfkFjpQV6TR5C5boiYmUDGmtFaLmg15dlgOjENgFDsUhWFx55Vg-onUKy4JfDKVpRl0NZTIiVReTbHIRxpFcfppDLQJ8miMJYAFX+RXWCVi7lWuhhVYKNV7lo1Q6E1EAtdBcARFeAgAMw9Q+T4agNr5NSN357exwEc-sCuzcr83tUtsmrdJ-60KIpA3fNm3YcqV0sbFB0c+mS1CpddFc3h126Z0ZucdxsM83JQlB6Jd1SfKDvPSnykhKpWb4pp2ks8HXOJf9yMWYDqXigFkfCqFtDhfKzM15TiU0+lhebAzOWN6TdOxfjonLqFMjykPg3h77sX-mz5vurHvEUI49ZkPzSdCvxTvGR6XRWb84o9OXAMAJJ9Ef+zV9DYmvanj3UIICnX1nGQ519ee-QjVrb7v++HyfZ8BR-T0O8ui-F-qfc+eMB6xUuolKaAMsBH2tADAECg+jiiwJ8T41pEHSjXpsQm9dibJVSulXSMJNhQI9phL2uEmIR2hv7PMRJjq6RDhdMOdDJ6xWjhzeetF06J1gpfXQj8nYCIfkpd62dPpHStFpShRdYYl0RhXFG7pxTWj6FgC+U9a5Ewik3YRLdqYkL7lPLuTNe5kI7mPEeVxbGMAnu7IUPC55cwUKgFgVZBqryEbojenEv4gJ-n4qemcxHcHvi9SR7YoAv1kfnVGQDv4HyxkE0BeMO5UWLvDKaGZQkEz7IQgxVjobkM6OQkWEASqNDqEhOgAAvMwdVzDoGsBYREtS3YbAqFcFoGxxioSuIMksDoRltl0q40C+tBrDS2J+eKeDrwdy6isrWQsKnWDKKIBoEBWBdHQA8dAAASQQtBWgWGOeoRgcEZCtCIKgDcEAnZ0FduwUwK5jDcyuBCAADL5AALK0SC9R5R-MBdCMA4YZxAA" class="external-link">Open
+in Shinylive</a></p>
+<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQACAMQLBouPwWkiCgozhRyWgBZwFaVAB0IdJiw79U1Vo0Uq1GrTr79aAM1YFfkMoBXVSUWtbZjZ2akNSWgI4OWtg0lCAHgBaLQNqAH10qHZUiGKFHIUAd1pSY1oIdmLcBRBrBQUAQQARAGUAGUrcrh4fYTFJaVlEREZewYUAUgA+JY7OhRhBDPJ2ABUsfZ6AVSwFAF4FRiJBcvYocQhBeEYkg6OAUR79gFkFXKHfZ9H6-OStACMcjKnV6WD6wzy3F4Agm4ikEBk3Fm8x68I2vX2+0+iNGKKEInR02xc0JxIJPQGACFSflyWippiZrTGSzVusIJstjtDHB2ABhAASAHFxZdzOI-FACNpGOwCI84AVqqYmhshVLpZUFBCFAA-BSWMAAOStuH1m0NChWJvNlrAAAU7Q7OocTiSLVbslaHdCygBfMrFaDwUSIgjsK0LAZ291wvqppM-el4NO8q1RkIxsTNEKKKrR2BiawAKyIjQKAGs4KxRKWMuXcvw4ErhKQCgRfKICAU6w3m63gJXYwBdawqYgQPy0CSCZiJEgKPxERgmMyiRoSEQ1WjdoIhcLWHymqqkGAFCQFYcJGROIh3wxvAAeicFCni9BwNQ8pWn0h7HrUZ7FJeeAbAAbiwtBQPQlLysUBRwF+pDMCqT6oHACYOtOZhXFmgzen+nTqCIKrytRBH9qI+GEZRmwAUBIFgH0QEMQoCFvMhlKIBRQqdAQxj1skcZXPxSEoVq4mSSWxTAMAZEpmAM4zuCPphDxKqeFchFgF00qfJmYBYF04rmbmoGfAAGhZTK-FgADSWAQs5rkeQATAW9qsZ02zUIkTgkQofqfIFolbrQX6GQoABiXQDH00W6Tu3b6JoVxRaGGxlGU866CQy6ruutCbtuu71GYJBmNQJASOeGThJEEA+L5pL3o+z6kOQjBvh+2Hxb+nRWgA8pi-7Na1mqkCJfGIYJYhoSEGFYThjHMeNmzEZxdK2TFmz0bRVxnTtBF7UKilJGtMkrfJA4SfdbYqWpJnZrZWmtMZXQAGqpd57meSDfkFjpQV6TR5C5boiYmUDGmtFaLmg15dlgOjENgFDsUhWFx55Vg-onUKy4JfDKVpRl0NZTIiVReTbHIRxpFcfppDLQJ8miMJYAFX+RXWCVi7lWuhhVYKNV7lo1Q6E1EAtdBcARFeAgAMw9Q+T4agNr5NSN357exwEc-sCuzcr83tUtsmrdJ-60KIpA3fNm3YcqV0sbFB0c+mS1CpddFc3h126Z0ZucdxsM83JQlB6Jd1SfKDvPSnykhKpWb4pp2ks8HXOJf9yMWYDqXigFkfCqFtDhfKzM15TiU0+lhebAzOWN6TdOxfjonLqFMjykPg3h77sX-mz5vurHvEUI49ZkPzSdCvxTvGR6XRWb84o9OXAMAJJ9Ef+zV9DYmvanj3UIICnX1nGQ519ee-QjVrb7v++HyfZ8BR-T0O8ui-F-qfc+eMB6xUuolKaAMsBH2tADAECg+jiiwJ8T41pEHSjXpsQm9dibJVSulXSMJNhQI9phL2uEmIR2hv7PMRJjq6RDhdMOdDJ6xWjhzeetF06J1gpfXQj8nYCIfkpd62dPpHStFpShRdYYl0RhXFG7pxTWj6FgC+U9a5Ewik3YRLdqYkL7lPLuTNe5kI7mPEeVxbGMAnu7IUPC55cwUKgFgVZBqryEbojenEv4gJ-n4qemcxHcHvi9SR7YoAv1kfnVGQDv4HyxkE0BeMO5UWLvDKaGZQkEz7IQgxVjobkM6OQkWEASqNDqEhOgAAvMwdVzDoGsBYREtS3YbAqFcFoGxxioSuIMksDoRltl0q40C+tBrDS2J+eKeDrwdy6isrWQsKnWDKKIBoEBWBdHQA8dAAASQQtBWgWGOeoRgcEZCtCIKgDcEAnZ0FduwUwK5jDcyuBCAADL5AALK0SC9R5R-MBdCMA4YZxAA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
+</iframe>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
