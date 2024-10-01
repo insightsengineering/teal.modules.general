@@ -20,7 +20,7 @@ various types of datasets using the bivariate plot module `tm_g_bivariate()`:
 
 ## 1 - Load libraries
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r library, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
@@ -35,7 +35,7 @@ Inside this app 4 datasets will be used
 3. `ADTTE` A long data set with time to event data
 4. `ADLB` A long data set with lab measurements for each subject
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r data, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL %>%
@@ -61,7 +61,7 @@ create an app. The data will be handed over using `teal.data::teal_data()`. The 
 itself will be constructed by multiple calls of `tm_g_bivariate()` using different
 combinations of data sets.
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
+```{r app, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 # configuration for the single wide dataset
 mod1 <- tm_g_bivariate(
   label = "Single wide dataset",
@@ -622,8 +622,26 @@ app <- init(
 A simple `shiny::shinyApp()` call will let you run the app.
 Note that app is only displayed when running this code inside an `R` session.
 
-```{r, echo=TRUE, results="hide", eval=base::interactive()}
+```{r shinyapp, echo=TRUE, results="hide", eval=base::interactive()}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 
 <img src="images/app-using-bivariate-plot.png" style = "display: block; margin: 0px; width: 100%"/>
+
+## 5 - Try it out in Shinylive
+
+```{r shinylive_url, echo = FALSE, results = 'asis'}
+code <- paste0(c(
+  knitr::knit_code$get("library"),
+  knitr::knit_code$get("data"),
+  knitr::knit_code$get("app"),
+  knitr::knit_code$get("shinyapp")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+cat(sprintf("[Open in Shinylive](%s)\n\n", url))
+```
+
+```{r shinylive_iframe, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+knitr::include_url(url, height = "800px")
+```

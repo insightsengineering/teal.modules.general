@@ -55,6 +55,13 @@ pak::pak("insightsengineering/teal.modules.general")
 
 To understand how to use this package, please refer to the [Getting Started](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/teal-modules-general.html) article, which provides multiple examples of code implementation.
 
+## Playground
+
+You can try out the package without installing it in the Shinylive:
+
+* [stable](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCGAC+AXSA)
+* [development](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMI1UgSxIGcAKAdzgCMAnAfVQGsA5jy5xURRgAIAvJILMAOmC4BaAK4Q6ANzhdGcJTMlKAFqVKpGiAPTXUJqFxhQdeuBlUbtu-RgAmcFpKuJKCcKQA8rQMEIpg7Nx8QiJiEkoAlJkKEAA2dNyOAJ7M5FA5GDBEfmo5cIwYYRC6ZenZYAC+ALpAA)
+
 ## Getting help
 
 If you encounter a bug or have a feature request, please file an issue. For questions, discussions, and staying up to date, please use the `teal` channel in the [`pharmaverse` slack workspace](https://pharmaverse.slack.com).

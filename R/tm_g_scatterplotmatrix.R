@@ -18,7 +18,11 @@
 #'
 #' @inherit shared_params return
 #'
-#' @examples
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -102,6 +106,11 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {

@@ -108,3 +108,18 @@ if (interactive()) {
 }
 
 }
+\section{Examples in Shinylive}{
+\describe{
+  \item{example-1}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQ20onG6vaJKAL5dKdDwosUZtlkE7ApgQ0tdSmioAyp5i93+GboAvPtBuBW6fEIi-ceXwmK7lZWkMMkZiUH0Io9PlVostCgXzEiVEcBEGjg-COujoLR+vx6jD6MIWSwAynBUNwMAAZCgSApLUoYrE4gDqtH4RLwuiWAAU4EEePiIIT8sS6WBGcyMJTqRzaRjUHACLQxKtzr85Gc9r9qYkWBIbrC+qR2AQ0JoSDClgBJLB69H2IEiXQAYS1Vggkrlui6lS6XVoJl07BU5GYlh0Nls5T2okKEFYAEF0OwNgASeqlKNgxg6TqjJRgEYAXSAA}{Open in Shinylive}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQ20onG6vaJKAL5dKdDwosUZtlkE7ApgQ0tdSmioAyp5i93+GboAvPtBuBW6fEIi-ceXwmK7lZWkMMkZiUH0Io9PlVostCgXzEiVEcBEGjg-COujoLR+vx6jD6MIWSwAynBUNwMAAZCgSApLUoYrE4gDqtH4RLwuiWAAU4EEePiIIT8sS6WBGcyMJTqRzaRjUHACLQxKtzr85Gc9r9qYkWBIbrC+qR2AQ0JoSDClgBJLB69H2IEiXQAYS1Vggkrlui6lS6XVoJl07BU5GYlh0Nls5T2okKEFYAEF0OwNgASeqlKNgxg6TqjJRgEYAXSAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
+  }
+  \item{example-2}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+zOh4UQrc23yFMCnRjaUAKyIVNIBrOFZlzLXjfjgTKGFSNIJ+WlECNP3Dk7PgBdgxFfCcgAum5oOgJipiuxaiFcroALyw8K4GF8IQiUQI3Ro4T-GF1UgwDK5NLhegiaEDOrUrQsWhQcliNKiOAiDRwfhYuiiUjsLZYgjQsABOyOHwATT8Pg2VQ2jgCjgAQgApKUy3QbBUqtV4DXCvx2Zw62WbADirl1mucAA0NnI5CiqdSQg8WBJMYjubyCGhNCQsRt+XYGSJvL6rBA7fjdP06v1+rQTLp2CpyMxLDobLYalTRGUIKxBuh2GhUAASFpVUtllmMHR9WZKMAzIFAA}{Open in Shinylive}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+zOh4UQrc23yFMCnRjaUAKyIVNIBrOFZlzLXjfjgTKGFSNIJ+WlECNP3Dk7PgBdgxFfCcgAum5oOgJipiuxaiFcroALyw8K4GF8IQiUQI3Ro4T-GF1UgwDK5NLhegiaEDOrUrQsWhQcliNKiOAiDRwfhYuiiUjsLZYgjQsABOyOHwATT8Pg2VQ2jgCjgAQgApKUy3QbBUqtV4DXCvx2Zw62WbADirl1mucAA0NnI5CiqdSQg8WBJMYjubyCGhNCQsRt+XYGSJvL6rBA7fjdP06v1+rQTLp2CpyMxLDobLYalTRGUIKxBuh2GhUAASFpVUtllmMHR9WZKMAzIFAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
+  }
+}
+}
+
