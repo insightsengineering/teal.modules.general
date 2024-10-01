@@ -149,13 +149,15 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
-                            label_segment_threshold = c(0.5, 0, 10)) {
+                            label_segment_threshold = c(0.5, 0, 10),
+                            decorator = list(default = teal_transform_module())) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
+  decorate_objs <- lapply(decorator, FUN = decorate_teal_data, output_name = "plot")
 
   # Start of assertions
   checkmate::assert_string(label)
@@ -229,14 +231,15 @@ tm_a_regression <- function(label = "Regression Analysis",
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
-    ui_args = args,
+    ui_args = c(args, decorate_objs = decorate_objs),
     server_args = c(
       data_extract_list,
       list(
         plot_height = plot_height,
         plot_width = plot_width,
         default_outlier_label = default_outlier_label,
-        ggplot2_args = ggplot2_args
+        ggplot2_args = ggplot2_args,
+        decorate_objs = decorate_objs
       )
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
@@ -246,7 +249,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 }
 
 # UI function for the regression module
-ui_a_regression <- function(id, ...) {
+ui_a_regression <- function(id, decorate_objs, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
@@ -280,6 +283,7 @@ ui_a_regression <- function(id, ...) {
         choices = args$plot_choices,
         selected = args$plot_choices[args$default_plot_type]
       ),
+      lapply(names(decorate_objs), function(i) ui_teal_data(ns(i), decorate_objs[[i]])),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
         condition = "input['show_outlier']",
@@ -365,7 +369,8 @@ srv_a_regression <- function(id,
                              plot_height,
                              plot_width,
                              ggplot2_args,
-                             default_outlier_label) {
+                             default_outlier_label,
+                             decorate_objs) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -859,7 +864,6 @@ srv_a_regression <- function(id,
         )
       }
 
-
       plot_type_5 <- function(plot_base) {
         shinyjs::show("size")
         shinyjs::show("alpha")
@@ -968,7 +972,7 @@ srv_a_regression <- function(id,
       qenv <- if (input_type == "Response vs Regressor") {
         plot_type_0()
       } else {
-        plot_base_q <- plot_base()
+        plot_base_q <- plot_base() # qenv, teal_data
         switch(input_type,
           "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
           "Normal Q-Q" = plot_base_q %>% plot_type_2(),
@@ -981,9 +985,28 @@ srv_a_regression <- function(id,
       qenv
     })
 
+    decorated_outputs <- sapply(
+      names(decorate_objs),
+      function(i) srv_teal_data(id = i, data = output_q, data_module = decorate_objs[[i]], modules = module())
+    )
 
-    fitted <- reactive(output_q()[["fit"]])
-    plot_r <- reactive(output_q()[["g"]])
+    # one base qenv (with plot) -> many decorators -> one plot output
+    # many qenvs with single plot --1.n-> many decorators ---n.1--> one plot output
+
+    decorated_outputs_q <- reactive({
+      switch(input$plot_type,
+        "Response vs Regressor" = decorated_outputs[[1]](),
+        "Residuals vs Fitted" = decorated_outputs[[1]](),
+        "Normal Q-Q" = decorated_outputs[[1]](),
+        "Scale-Location" = decorated_outputs[[1]](),
+        "Cook's distance" = decorated_outputs[[1]](),
+        "Residuals vs Leverage" = decorated_outputs[[1]](),
+        "Cook's dist vs Leverage" = decorated_outputs[[1]]()
+      )
+    })
+
+    fitted <- reactive(decorated_outputs_q()[["fit"]])
+    plot_r <- reactive(decorated_outputs_q()[["g"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -1003,7 +1026,7 @@ srv_a_regression <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(decorated_outputs_q())),
       title = "R code for the regression plot",
     )
 
@@ -1022,7 +1045,7 @@ srv_a_regression <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(decorated_outputs_q()))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
