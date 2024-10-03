@@ -70,6 +70,7 @@ jobs:
         insightsengineering/teal.transform
         insightsengineering/teal.code
         insightsengineering/teal.data
+        insightsengineering/teal.slice
         insightsengineering/teal.logger
         insightsengineering/teal.reporter
         insightsengineering/teal.widgets
