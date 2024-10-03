@@ -18,7 +18,8 @@ tm_a_regression(
   post_output = NULL,
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
-  label_segment_threshold = c(0.5, 0, 10)
+  label_segment_threshold = c(0.5, 0, 10),
+  decorator = list(default = teal_transform_module())
 )
 }
 \arguments{
