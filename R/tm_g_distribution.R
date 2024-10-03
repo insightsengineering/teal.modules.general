@@ -282,13 +282,13 @@ ui_distribution <- function(id, ...) {
             teal.widgets::optionalSelectInput(
               ns("t_dist"),
               tags$div(
-                class = "teal-tooltip",
                 tagList(
                   "Distribution:",
-                  icon("circle-info"),
-                  tags$span(
-                    class = "tooltiptext",
-                    "Default parameters are optimized with MASS::fitdistr function."
+                  bslib::tooltip(
+                    icon("circle-info"),
+                    tags$span(
+                      "Default parameters are optimized with MASS::fitdistr function."
+                    )
                   )
                 )
               ),

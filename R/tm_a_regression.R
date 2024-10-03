@@ -259,7 +259,7 @@ ui_a_regression <- function(id, ...) {
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
-      tags$label("Encodings", class = "text-primary"),
+      tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
         id = ns("response"),
@@ -286,12 +286,10 @@ ui_a_regression <- function(id, ...) {
         teal.widgets::optionalSliderInput(
           ns("outlier"),
           tags$div(
-            class = "teal-tooltip",
             tagList(
               "Outlier definition:",
-              icon("circle-info"),
-              tags$span(
-                class = "tooltiptext",
+              bslib::tooltip(
+                icon("fas fa-circle-info"),
                 paste(
                   "Use the slider to choose the cut-off value to define outliers.",
                   "Points with a Cook's distance greater than",
@@ -316,16 +314,16 @@ ui_a_regression <- function(id, ...) {
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
             label = tags$div(
-              class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
-                icon("circle-info"),
-                tags$span(
-                  class = "tooltiptext",
-                  paste(
-                    "Use the slider to choose the cut-off value to define minimum distance between label and point",
-                    "that generates a line segment.",
-                    "It's only valid when 'Display outlier labels' is checked."
+                bslib::tooltip(
+                  icon("circle-info"),
+                  tags$span(
+                    paste(
+                      "Use the slider to choose the cut-off value to define minimum distance between label and point",
+                      "that generates a line segment.",
+                      "It's only valid when 'Display outlier labels' is checked."
+                    )
                   )
                 )
               )

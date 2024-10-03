@@ -440,15 +440,15 @@ srv_variable_browser <- function(id,
       sliderInput(
         inputId = session$ns("outlier_definition_slider"),
         tags$div(
-          class = "teal-tooltip",
           tagList(
             "Outlier definition:",
-            icon("circle-info"),
-            tags$span(
-              class = "tooltiptext",
-              paste(
-                "Use the slider to choose the cut-off value to define outliers; the larger the value the",
-                "further below Q1/above Q3 points have to be in order to be classed as outliers"
+            bslib::tooltip(
+              icon("circle-info"),
+              tags$span(
+                paste(
+                  "Use the slider to choose the cut-off value to define outliers; the larger the value the",
+                  "further below Q1/above Q3 points have to be in order to be classed as outliers"
+                )
               )
             )
           )
