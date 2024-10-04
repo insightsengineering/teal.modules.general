@@ -146,7 +146,7 @@ In a `teal` app, data and modules are decoupled. In the app above:
 - The app developer specified the module and assigned it to the `modules` argument.
 - The `init` function took these arguments and returned a list containing `ui` and `server` object, which can be demonstrated by running:
 
-```{r, indent = "     "}
+```{r, indent = "     ", eval = requireNamespace("sparkline")}
 class(app)
 names(app)
 ```
