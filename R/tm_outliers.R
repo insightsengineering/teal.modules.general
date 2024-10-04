@@ -52,7 +52,7 @@
 #'
 #' ```{r}
 #' # The module uses `g` variable for the plot
-#' 
+#'
 #' # Will work
 #' lang_dec <- quote({
 #'   g <- g + ggplot2::ggtitle("A new title")
@@ -182,12 +182,12 @@
 #' module_decorator <- teal_transform_module(
 #'   ui = function(id) NULL,
 #'   srv = function(id, data) {
-#'      within(
-#'        data,
-#'        {
-#'          g <- g + ggplot2::ggtitle("A new title")
-#'        }
-#'      )
+#'     within(
+#'       data,
+#'       {
+#'         g <- g + ggplot2::ggtitle("A new title")
+#'       }
+#'     )
 #'   }
 #' )
 #'
@@ -213,7 +213,7 @@ tm_outliers <- function(label = "Outliers Module",
   if (inherits(outlier_var, "data_extract_spec")) outlier_var <- list(outlier_var)
   if (inherits(categorical_var, "data_extract_spec")) categorical_var <- list(categorical_var)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-  
+
   table_decorator <- decorate_teal_data(table_decorator, output_name = "summary_table")
   boxplot_decorator <- decorate_teal_data(boxplot_decorator, output_name = "g")
   violin_decorator <- decorate_teal_data(violin_decorator, output_name = "g")
@@ -266,8 +266,9 @@ tm_outliers <- function(label = "Outliers Module",
     server_args = c(
       data_extract_list,
       list(
-        plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, 
-        decorators = list(table = table_decorator, boxplot = boxplot_decorator, violin = violin_decorator, density = density_decorator, cum_dist = cum_dist_decorator))
+        plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args,
+        decorators = list(table = table_decorator, boxplot = boxplot_decorator, violin = violin_decorator, density = density_decorator, cum_dist = cum_dist_decorator)
+      )
     ),
     ui = ui_outliers,
     ui_args = c(args),
@@ -288,7 +289,7 @@ ui_outliers <- function(id, ...) {
     output = teal.widgets::white_small_well(
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
-      ui_teal_data(ns("table_decorator"), args$table_decorator),
+      ui_transform_data(ns("table_decorator"), transforms = args$table_decorator),
       uiOutput(ns("total_missing")),
       tags$br(), tags$hr(),
       tabsetPanel(
@@ -297,22 +298,22 @@ ui_outliers <- function(id, ...) {
           "Boxplot",
           conditionalPanel(
             condition = sprintf("input['%s'] == 'Box plot'", ns("boxplot_alts")),
-            ui_teal_data(ns("boxplot_decorator"), args$boxplot_decorator)
+            ui_transform_data(ns("boxplot_decorator"), args$boxplot_decorator)
           ),
           conditionalPanel(
-condition = sprintf("input['%s'] == 'Violin plot'", ns("boxplot_alts")),
-            ui_teal_data(ns("violin_decorator"), args$violin_decorator)
+            condition = sprintf("input['%s'] == 'Violin plot'", ns("boxplot_alts")),
+            ui_transform_data(ns("violin_decorator"), args$violin_decorator)
           ),
           teal.widgets::plot_with_settings_ui(id = ns("box_plot"))
         ),
         tabPanel(
           "Density Plot",
-          ui_teal_data(ns("density_decorator"), args$density_decorator),
+          ui_transform_data(ns("density_decorator"), args$density_decorator),
           teal.widgets::plot_with_settings_ui(id = ns("density_plot"))
         ),
         tabPanel(
           "Cumulative Distribution Plot",
-          ui_teal_data(ns("cum_dist_decorator"), args$cum_dist_decorator),
+          ui_transform_data(ns("cum_dist_decorator"), args$cum_dist_decorator),
           teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot"))
         )
       ),
@@ -766,7 +767,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       qenv
     })
 
-    decorated_table_q <- srv_teal_data(id = "table_decorator", data = common_code_q, data_module = decorators$table, modules = module())
+    decorated_table_q <- srv_transform_data("table_decorator", data = common_code_q, transforms = decorators$table)
     output$summary_table <- DT::renderDataTable(
       expr = {
         if (iv_r()$is_valid()) {
@@ -1044,15 +1045,20 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         teal.code::eval_code(quote(print(g)))
     })
 
+    decorated_boxplot_q <- srv_transform_data("boxplot_decorator", data = boxplot_q, transforms = decorators$boxplot)
+    decorated_violin_r <- srv_transform_data("violin_decorator", data = undecorated_boxplot_r, transforms = decorators$violin)
+    decorated_density_plot_q <- srv_transform_data("density_decorator", data = density_plot_q, transforms = decorators$density)
+    cumulative_plot_r <- srv_transform_data("cum_dist_decorator", data = undecorated_cumulative_plot_r, transforms = decorators$cum_dist)
+
     final_q <- reactive({
       req(input$tabs)
       tab_type <- input$tabs
       result_q <- if (tab_type == "Boxplot") {
-        boxplot_q()
+        decorated_boxplot_q()
       } else if (tab_type == "Density Plot") {
-        density_plot_q()
+        decorated_density_plot_q()
       } else if (tab_type == "Cumulative Distribution Plot") {
-        cumulative_plot_q()
+        decorated_cumulative_plot_q()
       }
       # used to display table when running show-r-code code
       #  added after the plots so that a change in selected columns doesn't affect
@@ -1122,12 +1128,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
-    undecorated_boxplot_r <- reactive({
+    boxplot_r <- reactive({
       teal::validate_inputs(iv_r())
-      boxplot_q()[["g"]]
+      decorated_boxplot_q()[["g"]]
     })
-    decorated_boxplot_r <- srv_teal_data(id = "boxplot_decorator", data = undecorated_boxplot_r, data_module = decorators$boxplot, modules = module())
-    decorated_violin_r <- srv_teal_data(id = "violin_decorator", data = undecorated_boxplot_r, data_module = decorators$violin, modules = module())
+
     boxplot_r <- reactive({
       req(input$boxplot_alts)
       if (input$boxplot_alts == "Box plot") {
@@ -1136,16 +1141,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         decorated_violin_r()
       }
     })
-    undecorated_density_plot_r <- reactive({
+
+    density_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      density_plot_q()[["g"]]
+      decorated_density_plot_q()[["g"]]
     })
-    density_plot_r <- srv_teal_data(id = "density_decorator", data = undecorated_density_plot_r, data_module = decorators$density, modules = module())
-    undecorated_cumulative_plot_r <- reactive({
+
+    cumulative_plot_r <- reactive({
       teal::validate_inputs(iv_r())
       cumulative_plot_q()[["g"]]
     })
-    cumulative_plot_r <- srv_teal_data(id = "cum_dist_decorator", data = undecorated_cumulative_plot_r, data_module = decorators$cum_dist, modules = module())
+
 
     box_pws <- teal.widgets::plot_with_settings_srv(
       id = "box_plot",
