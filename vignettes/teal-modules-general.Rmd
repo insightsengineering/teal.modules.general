@@ -39,7 +39,7 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 ### Example application
 
 A simple application featuring the `tm_variable_browser()` module:
-```{r app, message = FALSE, results = "hide", eval = requireNamespace("sparkline")}
+```{r app, message = FALSE, results = "hide", eval = requireNamespace("sparkline", quietly = TRUE))}
 # load libraries
 library(teal.modules.general)
 library(teal.widgets)
