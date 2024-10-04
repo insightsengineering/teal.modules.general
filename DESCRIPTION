@@ -81,7 +81,7 @@ Suggests:
 VignetteBuilder:
     knitr
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, insightsengineering/teal, insightsengineering/teal.slice,
+    rstudio/shiny, insightsengineering/teal, 
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
     rstudio/DT, tidyverse/forcats, r-lib/scales, daattali/shinyjs,
     shinyTree/shinyTree, rstudio/shinyvalidate, dreamRs/shinyWidgets,
