@@ -36,11 +36,23 @@
 #'
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
+#' @param decorator (`teal_transform_module`, `language`, `function`)
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
 #'
 #' @inherit shared_params return
+#'
+#' @section Decorating module's output:
+#' Outputs produced by the module can be modified for any application. To do so, one needs to provide
+#' [teal_transform_module()] with `server` modifying outputed object in `data` (`teal_data`). Each
+#' module might have a different output object name and it's type, so there is no standard code to achieve this.
+#' However, `teal` provides couple wrappers which can simplify the process of decorating module's outputs:
+#' - `decorator` as a `language`: provide a simple expression to modify object of interests. For example
+#' `g <- g + ggtitle("Custom Title")`. Provided expression must be a working expression within module internals.
+#' - `decorator` as a `function`: provide a function which will take the output object and modify it in desired way.
+#' When function is provided object names don't need to match module's internal naming. For example
+#' `function(x) x <- x + ggtitle("Custom Title")`.
 #'
 #' @examples
 #' # general data example
@@ -157,7 +169,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-  decorate_objs <- lapply(decorator, FUN = decorate_teal_data, output_name = "plot")
+  decorate_objs <- lapply(decorator, FUN = decorate_teal_data, output_name = "g")
 
   # Start of assertions
   checkmate::assert_string(label)
@@ -253,7 +265,6 @@ ui_a_regression <- function(id, decorate_objs, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
-
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(tags$div(
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
@@ -285,13 +296,13 @@ ui_a_regression <- function(id, decorate_objs, ...) {
       ),
       div(
         # todo: conditionalPanel based on the values of input$plot_type (we don't want to show inputs for hidden plots)
-        ui_teal_data(ns("d_0"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_1"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_2"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_3"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_4"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_5"), decorate_objs[[1]]),
-        ui_teal_data(ns("d_6"), decorate_objs[[1]])
+        ui_transform_data(ns("d_0"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_1"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_2"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_3"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_4"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_5"), transforms = decorate_objs[[1]]),
+        ui_transform_data(ns("d_6"), transforms = decorate_objs[[1]])
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
@@ -968,13 +979,13 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_0 <- srv_teal_data(id = "d_0", data = output_plot_0, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_1 <- srv_teal_data(id = "d_1", data = output_plot_1, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_2 <- srv_teal_data(id = "d_2", data = output_plot_2, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_3 <- srv_teal_data(id = "d_3", data = output_plot_3, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_4 <- srv_teal_data(id = "d_4", data = output_plot_4, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_5 <- srv_teal_data(id = "d_5", data = output_plot_5, data_module = decorate_objs[[1]], modules = module())
-    decorated_output_6 <- srv_teal_data(id = "d_6", data = output_plot_6, data_module = decorate_objs[[1]], modules = module())
+    decorated_output_0 <- srv_transform_data(id = "d_0", data = output_plot_0, transforms = decorate_objs[[1]])
+    decorated_output_1 <- srv_transform_data(id = "d_1", data = output_plot_1, transforms = decorate_objs[[1]])
+    decorated_output_2 <- srv_transform_data(id = "d_2", data = output_plot_2, transforms = decorate_objs[[1]])
+    decorated_output_3 <- srv_transform_data(id = "d_3", data = output_plot_3, transforms = decorate_objs[[1]])
+    decorated_output_4 <- srv_transform_data(id = "d_4", data = output_plot_4, transforms = decorate_objs[[1]])
+    decorated_output_5 <- srv_transform_data(id = "d_5", data = output_plot_5, transforms = decorate_objs[[1]])
+    decorated_output_6 <- srv_transform_data(id = "d_6", data = output_plot_6, transforms = decorate_objs[[1]])
 
 
     output_q <- reactive({
