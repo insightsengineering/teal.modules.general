@@ -117,7 +117,7 @@ shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 
 ## 5 - Try it out in Shinylive
 
-```{r shinylive_url, echo = FALSE, results = 'asis'}
+```{r shinylive_url, echo = FALSE, results = 'asis', eval = requireNamespace("roxy.shinylive")}
 code <- paste0(c(
   knitr::knit_code$get("library"),
   knitr::knit_code$get("data"),
