@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9050
-Date: 2024-10-01
+Version: 0.3.0.9051
+Date: 2024-10-07
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -81,7 +81,7 @@ Suggests:
 VignetteBuilder:
     knitr
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, insightsengineering/teal, 
+    rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
     rstudio/DT, tidyverse/forcats, r-lib/scales, daattali/shinyjs,
     shinyTree/shinyTree, rstudio/shinyvalidate, dreamRs/shinyWidgets,
