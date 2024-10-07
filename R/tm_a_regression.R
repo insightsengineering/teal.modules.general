@@ -295,14 +295,41 @@ ui_a_regression <- function(id, decorate_objs, ...) {
         selected = args$plot_choices[args$default_plot_type]
       ),
       div(
-        # todo: conditionalPanel based on the values of input$plot_type (we don't want to show inputs for hidden plots)
-        ui_transform_data(ns("d_0"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_1"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_2"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_3"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_4"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_5"), transforms = decorate_objs[[1]]),
-        ui_transform_data(ns("d_6"), transforms = decorate_objs[[1]])
+        conditionalPanel(
+          condition = "input.plot_type == 'Response vs Regressor'",
+          ns = ns,
+          ui_transform_data(ns("d_0"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Residuals vs Fitted'",
+          ns = ns,
+          ui_transform_data(ns("d_1"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Normal Q-Q'",
+          ns = ns,
+          ui_transform_data(ns("d_2"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Scale-Location'",
+          ns = ns,
+          ui_transform_data(ns("d_3"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Cook\\'s distance'",
+          ns = ns,
+          ui_transform_data(ns("d_4"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Residuals vs Leverage'",
+          ns = ns,
+          ui_transform_data(ns("d_5"), transforms = decorate_objs[[1]])
+        ),
+        conditionalPanel(
+          condition = "input.plot_type == 'Cook\\'s dist vs Leverage'",
+          ns = ns,
+          ui_transform_data(ns("d_6"), transforms = decorate_objs[[1]])
+        ),
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
@@ -991,13 +1018,13 @@ srv_a_regression <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
       switch(input$plot_type,
-        "Response vs Regressor" = output_plot_0(),
+        "Response vs Regressor" = decorated_output_0(),
         "Residuals vs Fitted" = decorated_output_1(),
-        "Normal Q-Q" = output_plot_2(),
-        "Scale-Location" = output_plot_3(),
-        "Cook's distance" = output_plot_4(),
-        "Residuals vs Leverage" = output_plot_5(),
-        "Cook's dist vs Leverage" = output_plot_6()
+        "Normal Q-Q" = decorated_output_2(),
+        "Scale-Location" = decorated_output_3(),
+        "Cook's distance" = decorated_output_4(),
+        "Residuals vs Leverage" = decorated_output_5(),
+        "Cook's dist vs Leverage" = decorated_output_6()
       )
     })
 
