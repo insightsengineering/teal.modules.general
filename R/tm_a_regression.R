@@ -36,7 +36,7 @@
 #'
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
-#' @param decorator (`teal_transform_module`, `language`, `function`)
+#' @param decorators (`list` of `teal_transform_module`)
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
@@ -162,14 +162,13 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10),
-                            decorator = list(default = teal_transform_module())) {
+                            decorators = list(default = teal_transform_module())) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-  decorate_objs <- lapply(decorator, FUN = decorate_teal_data, output_name = "g")
 
   # Start of assertions
   checkmate::assert_string(label)
@@ -217,6 +216,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
+  checkmate::assert_list(decorators, "teal_transform_module")
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -243,7 +243,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     label = label,
     server = srv_a_regression,
     ui = ui_a_regression,
-    ui_args = c(args, decorate_objs = decorate_objs),
+    ui_args = args,
     server_args = c(
       data_extract_list,
       list(
@@ -251,7 +251,7 @@ tm_a_regression <- function(label = "Regression Analysis",
         plot_width = plot_width,
         default_outlier_label = default_outlier_label,
         ggplot2_args = ggplot2_args,
-        decorate_objs = decorate_objs
+        decorators = decorators
       )
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
@@ -261,7 +261,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 }
 
 # UI function for the regression module
-ui_a_regression <- function(id, decorate_objs, ...) {
+ui_a_regression <- function(id, decorators, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
@@ -298,37 +298,37 @@ ui_a_regression <- function(id, decorate_objs, ...) {
         conditionalPanel(
           condition = "input.plot_type == 'Response vs Regressor'",
           ns = ns,
-          ui_transform_data(ns("d_0"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_0"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Residuals vs Fitted'",
           ns = ns,
-          ui_transform_data(ns("d_1"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_1"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Normal Q-Q'",
           ns = ns,
-          ui_transform_data(ns("d_2"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_2"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Scale-Location'",
           ns = ns,
-          ui_transform_data(ns("d_3"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_3"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Cook\\'s distance'",
           ns = ns,
-          ui_transform_data(ns("d_4"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_4"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Residuals vs Leverage'",
           ns = ns,
-          ui_transform_data(ns("d_5"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_5"), transforms = decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Cook\\'s dist vs Leverage'",
           ns = ns,
-          ui_transform_data(ns("d_6"), transforms = decorate_objs[[1]])
+          ui_teal_transform_module(ns("d_6"), transforms = decorators[[1]])
         ),
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
@@ -417,7 +417,7 @@ srv_a_regression <- function(id,
                              plot_width,
                              ggplot2_args,
                              default_outlier_label,
-                             decorate_objs) {
+                             decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -1006,13 +1006,13 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_0 <- srv_transform_data(id = "d_0", data = output_plot_0, transforms = decorate_objs[[1]])
-    decorated_output_1 <- srv_transform_data(id = "d_1", data = output_plot_1, transforms = decorate_objs[[1]])
-    decorated_output_2 <- srv_transform_data(id = "d_2", data = output_plot_2, transforms = decorate_objs[[1]])
-    decorated_output_3 <- srv_transform_data(id = "d_3", data = output_plot_3, transforms = decorate_objs[[1]])
-    decorated_output_4 <- srv_transform_data(id = "d_4", data = output_plot_4, transforms = decorate_objs[[1]])
-    decorated_output_5 <- srv_transform_data(id = "d_5", data = output_plot_5, transforms = decorate_objs[[1]])
-    decorated_output_6 <- srv_transform_data(id = "d_6", data = output_plot_6, transforms = decorate_objs[[1]])
+    decorated_output_0 <- srv_teal_transform_module(id = "d_0", data = output_plot_0, transforms = decorators[[1]])
+    decorated_output_1 <- srv_teal_transform_module(id = "d_1", data = output_plot_1, transforms = decorators[[1]])
+    decorated_output_2 <- srv_teal_transform_module(id = "d_2", data = output_plot_2, transforms = decorators[[1]])
+    decorated_output_3 <- srv_teal_transform_module(id = "d_3", data = output_plot_3, transforms = decorators[[1]])
+    decorated_output_4 <- srv_teal_transform_module(id = "d_4", data = output_plot_4, transforms = decorators[[1]])
+    decorated_output_5 <- srv_teal_transform_module(id = "d_5", data = output_plot_5, transforms = decorators[[1]])
+    decorated_output_6 <- srv_teal_transform_module(id = "d_6", data = output_plot_6, transforms = decorators[[1]])
 
 
     output_q <- reactive({
