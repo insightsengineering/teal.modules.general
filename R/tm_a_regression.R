@@ -653,7 +653,7 @@ srv_a_regression <- function(id,
             geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
-        if (show_outlier) {
+        if (input$show_outlier) {
           plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
         }
       }
