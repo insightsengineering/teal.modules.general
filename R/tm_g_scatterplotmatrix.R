@@ -56,7 +56,6 @@
 #'     profit = rnorm(50, 20, 10)
 #'   )
 #' })
-#' datanames(data) <- c("countries", "sales")
 #' join_keys(data) <- join_keys(
 #'   join_key("countries", "countries", "id"),
 #'   join_key("sales", "sales", "id"),
@@ -117,8 +116,7 @@
 #'   ADSL <- rADSL
 #'   ADRS <- rADRS
 #' })
-#' datanames(data) <- c("ADSL", "ADRS")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' app <- init(
 #'   data = data,

@@ -39,7 +39,6 @@
 #'   }
 #'   mtcars[["primary_key"]] <- seq_len(nrow(mtcars))
 #' })
-#' datanames(data) <- "mtcars"
 #' join_keys(data) <- join_keys(join_key("mtcars", "mtcars", "primary_key"))
 #'
 #' app <- init(
@@ -85,8 +84,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' app <- init(
 #'   data = data,

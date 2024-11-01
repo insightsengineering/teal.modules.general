@@ -28,7 +28,6 @@
 #'   CO2 <- CO2
 #'   CO2[["primary_key"]] <- seq_len(nrow(CO2))
 #' })
-#' datanames(data) <- "CO2"
 #' join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
 #'
 #' vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
@@ -77,8 +76,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
@@ -396,7 +394,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     # Used to create outlier table and the dropdown with additional columns
-    dataname_first <- isolate(teal.data::datanames(data())[[1]])
+    dataname_first <- isolate(ls(data())[[1]])
 
     common_code_q <- reactive({
       req(iv_r()$is_valid())

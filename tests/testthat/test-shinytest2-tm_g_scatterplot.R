@@ -4,8 +4,7 @@ app_driver_tm_g_scatterplot <- function() {
     require(nestcolor)
     ADSL <- rADSL
   })
-  teal.data::datanames(data) <- c("ADSL")
-  teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[teal.data::datanames(data)]
+  teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[ls(data)]
 
   init_teal_app_driver(
     data = data,

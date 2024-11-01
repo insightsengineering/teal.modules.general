@@ -39,7 +39,6 @@
 #' data <- within(data, {
 #'   iris <- iris
 #' })
-#' datanames(data) <- "iris"
 #'
 #' app <- init(
 #'   data = data,
@@ -68,8 +67,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- c("ADSL")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' vars1 <- choices_selected(
 #'   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),

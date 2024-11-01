@@ -50,9 +50,7 @@ data <- within(data, {
       TRUE ~ "-"
     )))
 })
-datanames <- c("ADSL", "ADRS", "ADTTE", "ADLB")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[ls(data)]
 ```
 
 ## 3 - Create an `app` variable

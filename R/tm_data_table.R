@@ -40,7 +40,6 @@
 #'   require(nestcolor)
 #'   iris <- iris
 #' })
-#' datanames(data) <- c("iris")
 #'
 #' app <- init(
 #'   data = data,
@@ -68,8 +67,7 @@
 #'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -196,7 +194,7 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- isolate(teal.data::datanames(data()))
+    datanames <- isolate(ls(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)

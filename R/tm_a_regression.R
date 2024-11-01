@@ -53,7 +53,6 @@
 #'   require(nestcolor)
 #'   CO2 <- CO2
 #' })
-#' datanames(data) <- c("CO2")
 #'
 #' app <- init(
 #'   data = data,
@@ -98,8 +97,7 @@
 #'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
 #'
 #' app <- init(
 #'   data = data,
