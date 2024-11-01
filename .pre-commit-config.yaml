@@ -33,6 +33,7 @@ repos:
           - shinyWidgets
           - stats
           - stringr
+          - insightsengineering/roxy.shinylive
           - insightsengineering/teal.code
           - insightsengineering/teal.data
           - insightsengineering/teal.logger
