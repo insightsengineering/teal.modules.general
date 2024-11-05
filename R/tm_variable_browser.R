@@ -64,7 +64,7 @@
 #'   ADSL <- rADSL
 #'   ADTTE <- rADTTE
 #' })
-#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -223,7 +223,7 @@ srv_variable_browser <- function(id,
 
     varname_numeric_as_factor <- reactiveValues()
 
-    datanames <- isolate(ls(data()))
+    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)

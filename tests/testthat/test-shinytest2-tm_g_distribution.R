@@ -1,7 +1,7 @@
 app_driver_tm_g_distribution <- function() {
   data <- teal.data::teal_data()
   data <- within(data, ADSL <- rADSL)
-  teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[ls(data)]
+  teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[names(data)]
 
   vars1 <- teal.transform::choices_selected(
     teal.transform::variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),

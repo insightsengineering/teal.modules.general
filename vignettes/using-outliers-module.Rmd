@@ -40,7 +40,7 @@ data <- within(data, {
   ADRS <- teal.modules.general::rADRS
   ADLB <- teal.modules.general::rADLB
 })
-join_keys(data) <- default_cdisc_join_keys[ls(data)]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```
 
 ## 3 - Create an `app` variable

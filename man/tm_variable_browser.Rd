@@ -85,7 +85,7 @@ data <- within(data, {
   ADSL <- rADSL
   ADTTE <- rADTTE
 })
-join_keys(data) <- default_cdisc_join_keys[ls(data)]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 
 app <- init(
   data = data,
@@ -108,9 +108,9 @@ if (interactive()) {
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEulLhsrr8UKRQunAAHrCoIkoLSwbGXNQA+jtQNtuLy0a65aQFKuwnUSBKuro+tKJ7b4wfL7owpAILE+VwBQMYNQgr1KRHgUKuMLhfxMUFotzM1C+KLRBQxfwAwgB5ABMXyJxKUAF9FBAlGhUF8VGi-FD5hcmo8-nwhCJPilucIxCzXq9ioctCxaFB6CJDkwiKVRDJhSLXtRpXBMSl-AA1SXSkS6eWKmT+P6vGkWpQ02gmXTsFTkZiWHQ2WzPVmiO4QVgAQXQ7HpABJvFFg0rGDpGDTKUowJSALpAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGopJecgAukolGhUJ8VLRSH4ICCPikAQi+EIRKImkrhGJpSCQcVHloWLQoPQRI8mERSqIZFrtSDqEa4NQmv4AGoGo3bM0WmT+BEgq5+pRXWgmXTsFTkZiWHQ2WxAmW6US-CCsUHodiigAk3iimctjB0jCuWKUYCxAqAA}{Open in Shinylive}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGg8FJLzkAF0lEo0KhPipaKQ-BAQR8UgCEXwhCJRE1lcIxDKQSDio8tCxaFB6CJHkwiKVRDJtTqQdRjXBqE1-AA1Q3G7bmy0yfwIkFXf1KK60Ey6dgqcjMSw6Gy2IGy3SiX4QVig9DsMUAEm8USzVsYOkYVyxSjAWMFQA}{Open in Shinylive}
     \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGopJecgAukolGhUJ8VLRSH4ICCPikAQi+EIRKImkrhGJpSCQcVHloWLQoPQRI8mERSqIZFrtSDqEa4NQmv4AGoGo3bM0WmT+BEgq5+pRXWgmXTsFTkZiWHQ2WxAmW6US-CCsUHodiigAk3iimctjB0jCuWKUYCxAqAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGg8FJLzkAF0lEo0KhPipaKQ-BAQR8UgCEXwhCJRE1lcIxDKQSDio8tCxaFB6CJHkwiKVRDJtTqQdRjXBqE1-AA1Q3G7bmy0yfwIkFXf1KK60Ey6dgqcjMSw6Gy2IGy3SiX4QVig9DsMUAEm8USzVsYOkYVyxSjAWMFQA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
 }
 }

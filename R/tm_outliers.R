@@ -76,7 +76,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
@@ -394,7 +394,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     # Used to create outlier table and the dropdown with additional columns
-    dataname_first <- isolate(ls(data())[[1]])
+    dataname_first <- isolate(names(data())[[1]])
 
     common_code_q <- reactive({
       req(iv_r()$is_valid())

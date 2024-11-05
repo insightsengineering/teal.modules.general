@@ -116,7 +116,7 @@
 #'   ADSL <- rADSL
 #'   ADRS <- rADRS
 #' })
-#' join_keys(data) <- default_cdisc_join_keys[ls(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
