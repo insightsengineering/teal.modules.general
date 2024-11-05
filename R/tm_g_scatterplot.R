@@ -341,8 +341,6 @@ ui_g_scatterplot <- function(id, ...) {
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
-        teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         ui_brush_filter(ns("brush_filter"))
       ),
       encoding = tags$div(

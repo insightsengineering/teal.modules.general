@@ -1,7 +1,12 @@
 ui_brush_filter <- function(id) {
   ns <- NS(id)
   div(
-    uiOutput(ns("brush_filter")),
+    tags$h1(id = ns("title"), tags$strong("Selected points:"), class = "text-center font-150p"),
+    teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
+    div(
+      actionButton(ns("apply_brush_filter"), "Apply filter"),
+      actionButton(ns("remove_brush_filter"), "Remove applied filter")
+    ),
     DT::dataTableOutput(ns("data_table"), width = "100%")
   )
 }
@@ -10,18 +15,35 @@ srv_brush_filter <- function(id, brush, data, filter_panel_api, selectors, table
   moduleServer(id, function(input, output, session) {
     selector_list <- isolate(selectors())
 
-    output$brush_filter <- renderUI({
-      states <- get_filter_state(filter_panel_api)
-      brushed_states <- Filter(
-        function(state) state$id == "brush_filter",
-        states
-      )
-      if (!is.null(brush())) {
-        actionButton(session$ns("apply_brush_filter"), "Apply filter")
-      } else if (length(brushed_states)) {
-        actionButton(session$ns("remove_brush_filter"), "Remove applied filter")
+    observeEvent(brush(), ignoreNULL = FALSE, {
+      if (is.null(brush())) {
+        shinyjs::hide("title")
+        shinyjs::hide("apply_brush_filter")
+        shinyjs::hide("data_table")
+      } else {
+        shinyjs::show("title")
+        shinyjs::show("apply_brush_filter")
+        shinyjs::show("data_table")
       }
     })
+
+    states_list <- reactive({
+      as.list(get_filter_state(filter_panel_api))
+    })
+
+    observeEvent(states_list(), {
+      brushed_states <- Filter(
+        function(state) state$id == "brush_filter",
+        states_list()
+      )
+      if (length(brushed_states)) {
+        shinyjs::show("remove_brush_filter")
+      } else {
+        shinyjs::hide("remove_brush_filter")
+      }
+    })
+
+
 
     observeEvent(input$remove_brush_filter, {
       remove_filter_state(
