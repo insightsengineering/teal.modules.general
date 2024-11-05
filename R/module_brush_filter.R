@@ -43,8 +43,6 @@ srv_brush_filter <- function(id, brush, data, filter_panel_api, selectors, table
       }
     })
 
-
-
     observeEvent(input$remove_brush_filter, {
       remove_filter_state(
         filter_panel_api,
@@ -68,10 +66,11 @@ srv_brush_filter <- function(id, brush, data, filter_panel_api, selectors, table
       ))
       eval(filter_call)
 
+      # todo: when added another time then it is duplicated
       slice <- teal_slices(teal_slice(
         dataname = "ADSL",
         varname = "USUBJID",
-        selected = merged_data$USUBJID,
+        selected = unique(merged_data$USUBJID),
         id = "brush_filter"
       ))
       set_filter_state(filter_panel_api, slice)
