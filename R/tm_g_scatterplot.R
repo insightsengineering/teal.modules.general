@@ -343,6 +343,7 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
         tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
+        uiOutput(ns("brush_filter")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
       encoding = tags$div(
@@ -997,8 +998,54 @@ srv_g_scatterplot <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width,
-      brushing = TRUE
+      brushing = TRUE,
+      click = TRUE
     )
+
+    output$brush_filter <- renderUI({
+      states <- get_filter_state(filter_panel_api)
+      brushed_states <- Filter(
+        function(state) state$id == "brush_filter",
+        states
+      )
+      if (!is.null(pws$brush())) {
+        actionButton(session$ns("apply_brush_filter"), "Apply filter")
+      } else if (length(brushed_states)) {
+        actionButton(session$ns("remove_brush_filter"), "Remove applied filter")
+      }
+    })
+
+    observeEvent(input$remove_brush_filter, {
+      remove_filter_state(
+        filter_panel_api,
+        teal_slices(
+          teal_slice(
+            dataname = "ADSL",
+            varname = "USUBJID",
+            id = "brush_filter"
+          )
+        )
+      )
+    })
+
+    observeEvent(input$apply_brush_filter, {
+      plot_brush <- pws$brush()
+      merged_data <- isolate(teal.code::dev_suppress(output_q()[["ANL"]]))
+      filter_call <- str2lang(sprintf(
+        "merged_data <- dplyr::filter(merged_data, %1$s >= %2$s & %1$s <= %3$s & %4$s >= %5$s & %4$s <= %6$s)",
+        plot_brush$mapping$x, plot_brush$xmin, plot_brush$xmax,
+        plot_brush$mapping$y, plot_brush$ymin, plot_brush$ymax
+      ))
+      eval(filter_call)
+
+      slice <- teal_slices(teal_slice(
+        dataname = "ADSL",
+        varname = "USUBJID",
+        selected = merged_data$USUBJID,
+        id = "brush_filter"
+      ))
+      set_filter_state(filter_panel_api, slice)
+    })
 
     output$data_table <- DT::renderDataTable({
       plot_brush <- pws$brush()
@@ -1008,7 +1055,6 @@ srv_g_scatterplot <- function(id,
       }
 
       merged_data <- isolate(teal.code::dev_suppress(output_q()[["ANL"]]))
-
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
       numeric_cols <- names(brushed_df)[
         vapply(brushed_df, function(x) is.numeric(x) && !is.integer(x), FUN.VALUE = logical(1))
@@ -1027,6 +1073,7 @@ srv_g_scatterplot <- function(id,
         DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
       }
     })
+
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
