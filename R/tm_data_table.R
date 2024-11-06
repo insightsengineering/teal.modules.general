@@ -187,7 +187,8 @@ srv_page_data_table <- function(id,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
-                                server_rendering) {
+                                server_rendering,
+                                filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -262,7 +263,8 @@ srv_page_data_table <- function(id,
           if_distinct = if_distinct,
           dt_args = dt_args,
           dt_options = dt_options,
-          server_rendering = server_rendering
+          server_rendering = server_rendering,
+          filter_panel_api = filter_panel_api
         )
       }
     )
@@ -283,6 +285,10 @@ ui_data_table <- function(id,
 
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
+    div(
+      actionButton(ns("apply_brush_filter"), "Apply filter"),
+      actionButton(ns("remove_brush_filter"), "Remove applied filter")
+    ),
     fluidRow(
       teal.widgets::optionalSelectInput(
         ns("variables"),
@@ -307,7 +313,8 @@ srv_data_table <- function(id,
                            if_distinct,
                            dt_args,
                            dt_options,
-                           server_rendering) {
+                           server_rendering,
+                           filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
@@ -337,6 +344,62 @@ srv_data_table <- function(id,
       dt_args$data <- dataframe_selected
 
       do.call(DT::datatable, dt_args)
+    })
+
+    observeEvent(input$data_table_rows_selected, ignoreNULL = FALSE, {
+      if (is.null(input$data_table_rows_selected)) {
+        shinyjs::hide("apply_brush_filter")
+      } else {
+        shinyjs::show("apply_brush_filter")
+      }
+    })
+
+    observeEvent(input$apply_brush_filter, {
+      if (is.null(input$data_table_rows_selected)) {
+        return(NULL)
+      }
+      # isolate({
+      #   foo1(brush, selector_list)
+      # })
+      dataset <- data()[[dataname]][input$data_table_rows_selected, ]
+      # todo: when added another time then it is duplicated
+      slice <- teal_slices(teal_slice(
+        dataname = "ADSL",
+        varname = "USUBJID",
+        selected = unique(dataset$USUBJID), # todo: this needs to be parametrised or based on join_keys
+        id = "brush_filter"
+      ))
+      shinyjs::hide("apply_brush_filter")
+      set_filter_state(filter_panel_api, slice)
+    })
+
+    states_list <- reactive({
+      as.list(get_filter_state(filter_panel_api))
+    })
+
+    observeEvent(input$remove_brush_filter, {
+      remove_filter_state(
+        filter_panel_api,
+        teal_slices(
+          teal_slice(
+            dataname = "ADSL",
+            varname = "USUBJID",
+            id = "brush_filter"
+          )
+        )
+      )
+    })
+
+    observeEvent(states_list(), {
+      brushed_states <- Filter(
+        function(state) state$id == "brush_filter",
+        states_list()
+      )
+      if (length(brushed_states)) {
+        shinyjs::show("remove_brush_filter")
+      } else {
+        shinyjs::hide("remove_brush_filter")
+      }
     })
   })
 }

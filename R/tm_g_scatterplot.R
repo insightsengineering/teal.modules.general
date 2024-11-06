@@ -341,7 +341,7 @@ ui_g_scatterplot <- function(id, ...) {
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        ui_brush_filter(ns("brush_filter"))
+        teal::ui_brush_filter(ns("brush_filter"))
       ),
       encoding = tags$div(
         ### Reporter
@@ -1001,10 +1001,10 @@ srv_g_scatterplot <- function(id,
 
     # todo:
     # validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
-    srv_brush_filter(
+    teal::srv_brush_filter(
       "brush_filter",
       brush = pws$brush,
-      data = output_q,
+      dataset = reactive(teal.code::dev_suppress(output_q()[["ANL"]])),
       filter_panel_api = filter_panel_api,
       selectors = selector_list,
       table_dec = table_dec
