@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9051</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9053</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,19 +49,6 @@
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item dropdown">
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc2">v0.3.0-rc2</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0-rc1">v0.3.0-rc1</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.16">v0.2.16</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.2.15">v0.2.15</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.3.0">v0.3.0</a> </div></li>
-<!-- end dropdown for versions -->
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-reports" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Reports</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-reports">
 <li><a class="dropdown-item" href="../coverage-report/">Coverage report</a></li>
@@ -156,9 +143,7 @@ module:</p>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="va">rADSL</span></span>
 <span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="va">rADTTE</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
-<span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
-<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># tm_variable_browser module</span></span>
 <span><span class="va">tm_variable_browser_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tm_variable_browser.html">tm_variable_browser</a></span><span class="op">(</span></span>
@@ -180,9 +165,9 @@ module:</p>
 <div class="section level3">
 <h3 id="try-it-out-in-shinylive">Try it out in Shinylive<a class="anchor" aria-label="anchor" href="#try-it-out-in-shinylive"></a>
 </h3>
-<p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAYgAIAbIqAEwYEsAjAJyi7bgDOAHQj1OPLgE8AFOSj0MMIswCu9QRgDmFOD3oBKEWO68ZchQHc2zbaQGHR409IGpeAazEQ4DkXXMA+sxQpFC0RBwAVnAEpCLBobQAPAC0tIEJUNIOmclpVqQAFmwQ0pm4tCAitLQAggAiAMoAMnm0XA0t1XX1ACq9AKJtHX2DIgC+OSFQ0PACbQTSQmCdzcsVyw39A8tTobOCZdP6bZkHwhCRRCUB7nCSAkehJ6m0zHAAZlBqpAEEzGwBAQAlcbncHsAzrBBABdER+dIwAIAN14bCgHHUAW4RAsAl0tCUqnUIlISNRfAxWJxeN0ASJajgbTJKLRVLg2K4uPxXCWEBq9AxcHotAAvLRlgA1NmYpk0nnrbqaTSoRikABMAV4mnm4uVqqIGq1XB1fJqAoxuvYAlILhUHFIbFI6jFErAAAU1bRtN4eORWBxJLRpZTZbQAEJc2lcWgAWWUjN23QcvggdBKTvRYgAXkyiky0KgRIW2hnbd1cuLyt0GeorbXDiyKejZZzuXSGymRAJihBJLV0NJCwASFRsCojnnI3T6MDjGFAA" class="external-link">Open
+<p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAYgAIAbIqAEwYEsAjAJyi7bgDOAHQj1OPLgE8AFOSj0MMIswCu9QRgDmFOD3oBKEWO68ZchQHc2zbaQGHR409IGpeAazEQ4DkXXMA+sxQpFC0RBwAVnAEpCLBobQAPAC0tIEJUNIOmclpVqQAFmwQ0pm4tCAitLQAggAiAMoAMnm0XA0t1XX1ACq9AKJtHX2DIgC+DpFEJQHucJICZSFQ+m3McABmUGqkAQTMbAIEAdOz84vA0PBLmfoAuiJ+6TABAG68bFAc6gHcRBYBLpaEpVOoRKRXh8+N9fv9AboAqC1HA2pD3p9YXA-lwAUCuNJuvRvnB6LQALy0IRgABqmJ+qPh+OpuG6mk0qEYpAATAFeJoBBTaOzOUQeXyuALCRAajViRxBZSxAJSC4VBxSGxSOohdSAApc4U6HjkVgcSS0Okwhm0ABCuIRXFoAFllCjqQ4ag5fBA6CUtV8xAAvVFFVFoVAiCNtf2q7q5SnlbrI9SKkFu1OyKH0uEO-FIjM+EQOATFCCSWroaQRgAkKjYFVr+Leun0YHG9yAA" class="external-link">Open
 in Shinylive</a></p>
-<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAYgAIAbIqAEwYEsAjAJyi7bgDOAHQj1OPLgE8AFOSj0MMIswCu9QRgDmFOD3oBKEWO68ZchQHc2zbaQGHR409IGpeAazEQ4DkXXMA+sxQpFC0RBwAVnAEpCLBobQAPAC0tIEJUNIOmclpVqQAFmwQ0pm4tCAitLQAggAiAMoAMnm0XA0t1XX1ACq9AKJtHX2DIgC+OSFQ0PACbQTSQmCdzcsVyw39A8tTobOCZdP6bZkHwhCRRCUB7nCSAkehJ6m0zHAAZlBqpAEEzGwBAQAlcbncHsAzrBBABdER+dIwAIAN14bCgHHUAW4RAsAl0tCUqnUIlISNRfAxWJxeN0ASJajgbTJKLRVLg2K4uPxXCWEBq9AxcHotAAvLRlgA1NmYpk0nnrbqaTSoRikABMAV4mnm4uVqqIGq1XB1fJqAoxuvYAlILhUHFIbFI6jFErAAAU1bRtN4eORWBxJLRpZTZbQAEJc2lcWgAWWUjN23QcvggdBKTvRYgAXkyiky0KgRIW2hnbd1cuLyt0GeorbXDiyKejZZzuXSGymRAJihBJLV0NJCwASFRsCojnnI3T6MDjGFAA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
+<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAYgAIAbIqAEwYEsAjAJyi7bgDOAHQj1OPLgE8AFOSj0MMIswCu9QRgDmFOD3oBKEWO68ZchQHc2zbaQGHR409IGpeAazEQ4DkXXMA+sxQpFC0RBwAVnAEpCLBobQAPAC0tIEJUNIOmclpVqQAFmwQ0pm4tCAitLQAggAiAMoAMnm0XA0t1XX1ACq9AKJtHX2DIgC+DpFEJQHucJICZSFQ+m3McABmUGqkAQTMbAIEAdOz84vA0PBLmfoAuiJ+6TABAG68bFAc6gHcRBYBLpaEpVOoRKRXh8+N9fv9AboAqC1HA2pD3p9YXA-lwAUCuNJuvRvnB6LQALy0IRgABqmJ+qPh+OpuG6mk0qEYpAATAFeJoBBTaOzOUQeXyuALCRAajViRxBZSxAJSC4VBxSGxSOohdSAApc4U6HjkVgcSS0Okwhm0ABCuIRXFoAFllCjqQ4ag5fBA6CUtV8xAAvVFFVFoVAiCNtf2q7q5SnlbrI9SKkFu1OyKH0uEO-FIjM+EQOATFCCSWroaQRgAkKjYFVr+Leun0YHG9yAA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
 </iframe>
 <p>Let’s break the above app into pieces:</p>
 <p>1: Load the necessary libraries and data.</p>
@@ -205,9 +190,7 @@ object, so both the code and data are stored together.</p>
 <span>  <span class="va">ADSL</span> <span class="op">&lt;-</span> <span class="va">rADSL</span></span>
 <span>  <span class="va">ADTTE</span> <span class="op">&lt;-</span> <span class="va">rADTTE</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="va">datanames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADTTE"</span><span class="op">)</span></span>
-<span><span class="fu">datanames</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">datanames</span></span>
-<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="va">datanames</span><span class="op">]</span></span></code></pre></div>
+<span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>3: Initialize a <code>teal</code> application with specified data and
 modules, in this case, the module: <code>tm_variable_browser</code>,
 datasets:<code>ADSL</code> and <code>ADTTE</code>.</p>
