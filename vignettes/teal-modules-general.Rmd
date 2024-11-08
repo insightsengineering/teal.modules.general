@@ -51,9 +51,7 @@ data <- within(data, {
   ADSL <- rADSL
   ADTTE <- rADTTE
 })
-datanames <- c("ADSL", "ADTTE")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 
 # tm_variable_browser module
 tm_variable_browser_module <- tm_variable_browser(
@@ -111,9 +109,7 @@ data <- within(data, {
   ADSL <- rADSL
   ADTTE <- rADTTE
 })
-datanames <- c("ADSL", "ADTTE")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```
 
 3: Initialize a `teal` application with specified data and modules, in this case, the module: `tm_variable_browser`, datasets:`ADSL` and `ADTTE`.

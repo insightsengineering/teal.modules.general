@@ -40,7 +40,6 @@
 #'   mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
 #'   mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
 #' })
-#' datanames(data) <- c("iris", "mtcars")
 #'
 #' app <- init(
 #'   data = data,
@@ -64,8 +63,7 @@
 #'   ADSL <- rADSL
 #'   ADRS <- rADRS
 #' })
-#' datanames(data) <- c("ADSL", "ADRS")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -173,10 +171,11 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    datanames <- isolate(teal.data::datanames(data()))
-    datanames <- Filter(function(name) {
-      is.data.frame(isolate(data())[[name]])
-    }, datanames)
+    datanames <- isolate(names(data()))
+    datanames <- Filter(
+      function(name) is.data.frame(isolate(data())[[name]]),
+      datanames
+    )
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
 
     ns <- session$ns
@@ -465,7 +464,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
 
     data_parent_keys <- reactive({
-      if (length(parent_dataname) > 0 && parent_dataname %in% teal.data::datanames(data())) {
+      if (length(parent_dataname) > 0 && parent_dataname %in% names(data())) {
         keys <- teal.data::join_keys(data())[[dataname]]
         if (parent_dataname %in% names(keys)) {
           keys[[parent_dataname]]
