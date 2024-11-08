@@ -3,7 +3,6 @@ app_driver_tm_a_regression <- function() {
     require(nestcolor)
     CO2 <- CO2 # nolint: object_name.
   })
-  teal.data::datanames(data) <- c("CO2")
 
   init_teal_app_driver(
     data = data,

@@ -39,9 +39,7 @@ data <- within(data, {
   ADTTE <- teal.modules.general::rADTTE
   ADLB <- teal.modules.general::rADLB
 })
-datanames <- c("ADSL", "ADTTE", "ADLB")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```
 
 ## 3 - Create an `app` variable

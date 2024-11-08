@@ -4,7 +4,6 @@ app_driver_tm_outlier <- function() {
     CO2 <- CO2 # nolint: object_name
     CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: object_name
   })
-  teal.data::datanames(data) <- "CO2"
   teal.data::join_keys(data) <- teal.data::join_keys(join_key("CO2", "CO2", "primary_key"))
 
   vars <- teal.transform::choices_selected(

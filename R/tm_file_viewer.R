@@ -22,7 +22,6 @@
 #' data <- within(data, {
 #'   data <- data.frame(1)
 #' })
-#' datanames(data) <- c("data")
 #'
 #' app <- init(
 #'   data = data,

@@ -37,7 +37,6 @@
 #'   faithful <- faithful
 #'   CO2 <- CO2
 #' })
-#' datanames(data) <- c("iris", "mtcars", "women", "faithful", "CO2")
 #'
 #' app <- init(
 #'   data = data,
@@ -65,8 +64,7 @@
 #'   ADSL <- rADSL
 #'   ADTTE <- rADTTE
 #' })
-#' datanames(data) <- c("ADSL", "ADTTE")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -225,7 +223,7 @@ srv_variable_browser <- function(id,
 
     varname_numeric_as_factor <- reactiveValues()
 
-    datanames <- isolate(teal.data::datanames(data()))
+    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)

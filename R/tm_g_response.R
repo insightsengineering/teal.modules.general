@@ -53,7 +53,6 @@
 #'     mtcars[[v]] <- as.factor(mtcars[[v]])
 #'   }
 #' })
-#' datanames(data) <- "mtcars"
 #'
 #' app <- init(
 #'   data = data,
@@ -98,8 +97,7 @@
 #'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- c("ADSL")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,

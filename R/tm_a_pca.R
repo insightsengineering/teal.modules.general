@@ -30,8 +30,6 @@
 #'   USArrests <- USArrests
 #' })
 #'
-#' datanames(data) <- "USArrests"
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
@@ -66,8 +64,7 @@
 #'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,

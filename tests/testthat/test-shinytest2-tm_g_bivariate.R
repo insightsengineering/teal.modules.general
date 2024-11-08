@@ -4,7 +4,6 @@ app_driver_tm_g_bivariate <- function() {
     require(nestcolor)
     CO2 <- data.frame(CO2) # nolint: object_name.
   })
-  teal.data::datanames(data) <- c("CO2")
 
   init_teal_app_driver(
     data = data,

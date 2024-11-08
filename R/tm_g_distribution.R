@@ -39,7 +39,6 @@
 #' data <- within(data, {
 #'   iris <- iris
 #' })
-#' datanames(data) <- "iris"
 #'
 #' app <- init(
 #'   data = data,
@@ -68,8 +67,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- c("ADSL")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' vars1 <- choices_selected(
 #'   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
@@ -1216,15 +1214,15 @@ srv_distribution <- function(id,
       # wrapped in if since could lead into validate error - we do want to continue
       test_r_qenv_out <- try(test_q(), silent = TRUE)
       if (!inherits(test_r_qenv_out, c("try-error", "error"))) {
-        qenv_final <- teal.code::join(qenv_final, test_q())
+        qenv_final <- c(qenv_final, test_q())
       }
 
       qenv_final <- if (tab == "Histogram") {
         req(dist_q())
-        teal.code::join(qenv_final, dist_q())
+        c(qenv_final, dist_q())
       } else if (tab == "QQplot") {
         req(qq_q())
-        teal.code::join(qenv_final, qq_q())
+        c(qenv_final, qq_q())
       }
       qenv_final
     })
