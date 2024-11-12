@@ -1,12 +1,12 @@
 ---
 # All available hooks: https://pre-commit.com/hooks.html
 # R specific hooks: https://github.com/lorenzwalthert/precommit
-default_stages: [commit]
+default_stages: [pre-commit]
 default_language_version:
   python: python3
 repos:
   - repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9001
+    rev: v0.4.3.9003
     hooks:
       - id: style-files
         name: Style code with `styler`
@@ -18,8 +18,6 @@ repos:
           - ggmosaic
           - ggplot2
           - shiny
-          - teal
-          - teal.transform
           - checkmate
           - dplyr
           - DT
@@ -33,6 +31,9 @@ repos:
           - shinyWidgets
           - stats
           - stringr
+          - insightsengineering/roxy.shinylive
+          - insightsengineering/teal
+          - insightsengineering/teal.transform
           - insightsengineering/teal.code
           - insightsengineering/teal.data
           - insightsengineering/teal.logger

@@ -17,6 +17,10 @@
 #'
 #' @inherit shared_params return
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
 #' @examples
 #' data <- teal_data()
 #' data <- within(data, {
@@ -24,8 +28,7 @@
 #'   ADSL <- rADSL
 #'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' table_1 <- data.frame(Info = c("A", "B"), Text = c("A", "B"))
 #' table_2 <- data.frame(`Column 1` = c("C", "D"), `Column 2` = c(5.5, 6.6), `Column 3` = c("A", "B"))
@@ -165,7 +168,7 @@ srv_front_page <- function(id, data, tables, show_metadata) {
       )
 
       metadata_data_frame <- reactive({
-        datanames <- teal.data::datanames(data())
+        datanames <- names(data())
         convert_metadata_to_dataframe(
           lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
           datanames
