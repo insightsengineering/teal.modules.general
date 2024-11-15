@@ -283,10 +283,7 @@ ui_data_table <- function(id,
 
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
-    div(
-      actionButton(ns("apply_brush_filter"), "Apply filter"),
-      actionButton(ns("remove_brush_filter"), "Remove applied filter")
-    ),
+    div(actionButton(ns("apply_brush_filter"), "Apply filter")),
     fluidRow(
       teal.widgets::optionalSelectInput(
         ns("variables"),
@@ -369,35 +366,6 @@ srv_data_table <- function(id,
       ))
       shinyjs::hide("apply_brush_filter")
       set_filter_state(filter_panel_api, slice)
-    })
-
-    states_list <- reactive({
-      as.list(get_filter_state(filter_panel_api))
-    })
-
-    observeEvent(input$remove_brush_filter, {
-      remove_filter_state(
-        filter_panel_api,
-        teal_slices(
-          teal_slice(
-            dataname = "ADSL",
-            varname = "USUBJID",
-            id = "brush_filter"
-          )
-        )
-      )
-    })
-
-    observeEvent(states_list(), {
-      brushed_states <- Filter(
-        function(state) state$id == "brush_filter",
-        states_list()
-      )
-      if (length(brushed_states)) {
-        shinyjs::show("remove_brush_filter")
-      } else {
-        shinyjs::hide("remove_brush_filter")
-      }
     })
   })
 }

@@ -2,7 +2,6 @@ pkgload::load_all("teal")
 pkgload::load_all("teal.widgets")
 pkgload::load_all("teal.modules.general")
 
-
 # Example data
 data <- within(teal_data(), {
   library(dplyr)
