@@ -35,6 +35,7 @@ data <- within(teal_data(), {
 app <- init(
   data = data,
   modules = modules(
+    tm_data_table(),
     tm_p_swimlane(
       dataname = "synthetic_data",
       id_var = "usubjid",
