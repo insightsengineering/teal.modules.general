@@ -16,7 +16,7 @@
 #' @param boxplot_decorator (`list` of `teal_transform_module`) optional,
 #' decorator for the box plot.
 #' @param violin_decorator (`list` of `teal_transform_module`) optional,
-#' decorator for the violing plot.
+#' decorator for the violin plot.
 #' @param density_decorator (`list` of `teal_transform_module`) optional,
 #' decorator for the density plot.
 #' @param cum_dist_decorator (`list` of `teal_transform_module`) optional,
@@ -27,25 +27,27 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating the tables and plots:
-#' The act of decoration means to modify the tables and plots output by this module.
-#' The module lets app developers do it by allowing them to execute arbitrary R code
-#' that modifies the objects displayed by the module.
+#' @inheritSection tm_a_regression Decorating Module Outputs
+#' @section Decorating `tm_outliers`:
 #'
-#' The module will execute the code contained in [`teal_transform_module`] before
-#' rendering the outputs in the application. This lets app developers modify
-#' features like: titles, labels, sizes, limits, etc. of the rendered tables
-#' and plots.
-#'
-#' The app developer should apply decorators carefuly with respect to the module's internal
-#' object names. To modify an output, app developer needs to find out the name of the table or plot
-#' that is being modified by the code in the `teal_transform_module` list element.
+#' This module creates below objects that can be modified with decorators:
+#' - `table` (`data.frame`)
+#' - `plot` (`ggplot2`)
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
+#' module_decorator <- teal_transform_module(
+#'   server = make_teal_transform_server(
+#'     expression({
+#'       plot <- plot + ggplot2::ggtitle("A new title")
+#'     })
+#'   )
+#' )
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -82,7 +84,8 @@
 #'             multiple = TRUE
 #'           )
 #'         )
-#'       )
+#'       ),
+#'       boxplot_decorator = module_decorator
 #'     )
 #'   )
 #' )
@@ -95,6 +98,15 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
+#' module_decorator <- teal_transform_module(
+#'   server = make_teal_transform_server(
+#'     expression({
+#'       plot <- plot + ggplot2::ggtitle("A new title")
+#'     })
+#'   )
+#' )
+#'
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -104,6 +116,8 @@
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
+#'
+#'
 #'
 #' app <- init(
 #'   data = data,
@@ -131,34 +145,14 @@
 #'             multiple = TRUE
 #'           )
 #'         )
-#'       )
+#'       ),
+#'       boxplot_decorator = module_decorator
 #'     )
 #'   )
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-#'
-#' # Decorators
-#' function_decorator <- function(p) {
-#'   p <- p + ggplot2::ggtitle("A new title")
-#' }
-#'
-#' quote_decorator <- quote({
-#'   g <- g + ggplot2::ggtitle("A new title")
-#' })
-#'
-#' module_decorator <- teal_transform_module(
-#'   ui = function(id) NULL,
-#'   srv = function(id, data) {
-#'     within(
-#'       data,
-#'       {
-#'         g <- g + ggplot2::ggtitle("A new title")
-#'       }
-#'     )
-#'   }
-#' )
 #'
 #' @export
 #'
@@ -251,7 +245,7 @@ ui_outliers <- function(id, ...) {
     output = teal.widgets::white_small_well(
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
-      ui_transform_data(ns("table_decorator"), transforms = args$table_decorator),
+      ui_teal_transform_data(ns("table_decorator"), args$table_decorator),
       uiOutput(ns("total_missing")),
       tags$br(), tags$hr(),
       tabsetPanel(
@@ -260,22 +254,22 @@ ui_outliers <- function(id, ...) {
           "Boxplot",
           conditionalPanel(
             condition = sprintf("input['%s'] == 'Box plot'", ns("boxplot_alts")),
-            ui_transform_data(ns("boxplot_decorator"), args$boxplot_decorator)
+            ui_teal_transform_data(ns("boxplot_decorator"), args$boxplot_decorator)
           ),
           conditionalPanel(
             condition = sprintf("input['%s'] == 'Violin plot'", ns("boxplot_alts")),
-            ui_transform_data(ns("violin_decorator"), args$violin_decorator)
+            ui_teal_transform_data(ns("violin_decorator"), args$violin_decorator)
           ),
           teal.widgets::plot_with_settings_ui(id = ns("box_plot"))
         ),
         tabPanel(
           "Density Plot",
-          ui_transform_data(ns("density_decorator"), args$density_decorator),
+          ui_teal_transform_data(ns("density_decorator"), args$density_decorator),
           teal.widgets::plot_with_settings_ui(id = ns("density_plot"))
         ),
         tabPanel(
           "Cumulative Distribution Plot",
-          ui_transform_data(ns("cum_dist_decorator"), args$cum_dist_decorator),
+          ui_teal_transform_data(ns("cum_dist_decorator"), args$cum_dist_decorator),
           teal.widgets::plot_with_settings_ui(id = ns("cum_density_plot"))
         )
       ),
@@ -827,7 +821,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = g <- plot_call +
+          expr = plot <- plot_call +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(
@@ -888,7 +882,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = g <- plot_call + labs + ggthemes + themes,
+          expr = plot <- plot_call + labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,
             labs = parsed_ggplot2_args$labs,
@@ -989,7 +983,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         qenv,
         substitute(
-          expr = g <- plot_call +
+          expr = plot <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
@@ -1004,10 +998,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
     })
 
-    decorated_boxplot_q <- srv_transform_data("boxplot_decorator", data = boxplot_q, transforms = decorators$boxplot)
-    decorated_violin_q <- srv_transform_data("violin_decorator", data = boxplot_q, transforms = decorators$violin)
-    decorated_density_plot_q <- srv_transform_data("density_decorator", data = density_plot_q, transforms = decorators$density)
-    decorated_cumulative_plot_q <- srv_transform_data("cum_dist_decorator", data = cumulative_plot_q, transforms = decorators$cum_dist)
+    decorated_boxplot_q <-
+      srv_teal_transform_data("boxplot_decorator", data = boxplot_q, transformators = decorators$boxplot_decorator)
+    decorated_violin_q <-
+      srv_teal_transform_data("violin_decorator", data = boxplot_q, transformators = decorators$violin_decorator)
+    decorated_density_plot_q <-
+      srv_teal_transform_data("density_decorator", data = density_plot_q, transformators = decorators$density_decorator)
+    decorated_cumulative_plot_q <-
+      srv_teal_transform_data("cum_dist_decorator", data = cumulative_plot_q, transformators = decorators$cum_dist_decorator)
 
     final_q <- reactive({
       req(input$tabs)
@@ -1030,7 +1028,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
               table_columns
             )
-            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
+            table <- ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
           },
           env = list(
             table_columns = input$table_ui_columns
@@ -1038,6 +1036,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
       )
     })
+
+
+    decorated_final_q <-
+      srv_teal_transform_data("cum_dist_decorator", data = final_q, transformators = decorators$table_decorator)
+    # TODO:
+    # reuse decorated_final_q in table generation
 
     # slider text
     output$ui_outlier_help <- renderUI({
