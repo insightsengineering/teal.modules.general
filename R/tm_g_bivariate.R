@@ -46,11 +46,24 @@
 #'
 #' @inherit shared_params return
 #'
+#' @inheritSection tm_a_regression Decorating Module Outputs
+#' @section Decorating `tm_outliers`:
+#'
+#' This module creates below objects that can be modified with decorators:
+#' - `plot` (`ggplot2`)
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
+#' plot_title <- teal_transform_module(
+#'   server = make_teal_transform_server(expression(
+#'     plot <- plot + ggtilte("Custom title")
+#'   ))
+#' )
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -97,7 +110,8 @@
 #'         selected = "Treatment",
 #'         fixed = FALSE
 #'       )
-#'     )
+#'     ),
+#'     decorators = list(plot_title)
 #'   )
 #' )
 #' if (interactive()) {
@@ -109,6 +123,13 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
+#' plot_title <- teal_transform_module(
+#'   server = make_teal_transform_server(expression(
+#'     plot <- plot + ggtilte("Custom title")
+#'   ))
+#' )
+#'
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -156,7 +177,8 @@
 #'         selected = "COUNTRY",
 #'         fixed = FALSE
 #'       )
-#'     )
+#'     ),
+#'     decorators = list(plot_title)
 #'   )
 #' )
 #' if (interactive()) {
@@ -185,7 +207,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
-                           post_output = NULL) {
+                           post_output = NULL,
+                           decorators = list(default = teal_transform_module())) {
   message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
@@ -265,6 +288,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module")
   # End of assertions
 
   # Make UI args
@@ -288,7 +313,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
+      decorators = decorators
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -338,6 +364,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
+      ui_teal_transform_data(ns("decorator"), transformators = args$decorators),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -451,7 +478,8 @@ srv_g_bivariate <- function(id,
                             size,
                             plot_height,
                             plot_width,
-                            ggplot2_args) {
+                            ggplot2_args,
+                            decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -661,7 +689,7 @@ srv_g_bivariate <- function(id,
             # Add facetting labels
             # optional: grid.newpage() # nolint: commented_code.
             # Prefixed with teal.modules.general as its usage will appear in "Show R code"
-            p <- teal.modules.general::add_facet_labels(
+            plot <- teal.modules.general::add_facet_labels(
               p,
               xfacet_label = nulled_col_facet_name,
               yfacet_label = nulled_row_facet_name
@@ -677,8 +705,10 @@ srv_g_bivariate <- function(id,
         teal.code::eval_code(print_call)
     })
 
+    decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+
     plot_r <- reactive({
-      output_q()[["p"]]
+      decorated_output_q()[["plot"]]
     })
 
     pws <- teal.widgets::plot_with_settings_srv(
@@ -690,7 +720,7 @@ srv_g_bivariate <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(decorated_output_q())),
       title = "Bivariate Plot"
     )
 
