@@ -36,7 +36,6 @@
 #'
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
-#' @param decorators (`list` of `teal_transform_module`)
 #'
 #' @templateVar ggnames `r regression_names`
 #' @template ggplot2_args_multi
@@ -288,7 +287,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 }
 
 # UI function for the regression module
-ui_a_regression <- function(id, decorators, ...) {
+ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
@@ -325,37 +324,37 @@ ui_a_regression <- function(id, decorators, ...) {
         conditionalPanel(
           condition = "input.plot_type == 'Response vs Regressor'",
           ns = ns,
-          ui_teal_transform_data(ns("d_0"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_0"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Residuals vs Fitted'",
           ns = ns,
-          ui_teal_transform_data(ns("d_1"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_1"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Normal Q-Q'",
           ns = ns,
-          ui_teal_transform_data(ns("d_2"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_2"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Scale-Location'",
           ns = ns,
-          ui_teal_transform_data(ns("d_3"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_3"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Cook\\'s distance'",
           ns = ns,
-          ui_teal_transform_data(ns("d_4"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_4"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Residuals vs Leverage'",
           ns = ns,
-          ui_teal_transform_data(ns("d_5"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_5"), transformators = args$decorators[[1]])
         ),
         conditionalPanel(
           condition = "input.plot_type == 'Cook\\'s dist vs Leverage'",
           ns = ns,
-          ui_teal_transform_data(ns("d_6"), transformators = decorators[[1]])
+          ui_teal_transform_data(ns("d_6"), transformators = args$decorators[[1]])
         ),
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
