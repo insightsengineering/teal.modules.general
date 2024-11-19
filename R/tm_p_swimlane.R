@@ -1,17 +1,12 @@
-tm_p_swimlane <- function(label = "Swimlane Plot Module",
-                          geom_specs,
-                          title,
-                          color_manual = NULL,
-                          shape_manual = NULL,
-                          size_manual = NULL) {
+tm_p_swimlane <- function(label = "Swimlane Plot Module", geom_specs, title) {
   module(
     label = label,
     ui = ui_p_swimlane,
     server = srv_p_swimlane,
     datanames = "all",
     server_args = list(
-      geom_specs = geom_specs, title = title,
-      color_manual = color_manual, shape_manual = shape_manual, size_manual = size_manual
+      geom_specs = geom_specs,
+      title = title
     )
   )
 }
@@ -28,9 +23,6 @@ srv_p_swimlane <- function(id,
                            data,
                            geom_specs,
                            title = "Swimlane plot",
-                           color_manual,
-                           shape_manual,
-                           size_manual,
                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     ggplot_call <- reactive({
@@ -71,8 +63,6 @@ srv_p_swimlane <- function(id,
     )
   })
 }
-
-
 
 merge_selectors2 <- function() {
   lappl
