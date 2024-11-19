@@ -12,7 +12,7 @@ data <- within(teal_data(), {
   .possible_end_days <- c(50, 60, 70)
 
   # Create sample data
-  synthetic_data <- tibble(subjid = c(1:15)) |>
+  synthetic_data <- tibble(subjid = c(1:15), strata = rep(c("category 1", "category 2"), length.out = 15)) |>
     rowwise() |>
     mutate(
       max_study_day = sample(.possible_end_days, 1),
@@ -57,6 +57,10 @@ app <- init(
           mapping = list(
             y = quote(subjid), x = quote(study_day), color = quote(response_type), shape = quote(response_type)
           )
+        ),
+        list(
+          geom = quote(facet_wrap),
+          facets = quote(vars(strata))
         )
       ),
       title = "Swimlane Efficacy Plot"

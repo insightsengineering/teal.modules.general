@@ -38,13 +38,13 @@ srv_p_swimlane <- function(id,
       points_calls <- lapply(geom_specs, function(x) {
         # todo: convert $geom, $data, and $mapping elements from character to language
         #       others can be kept as character
+        if (!is.null(x$mapping)) {
+          x$mapping <- as.call(c(as.name("aes"), x$mapping))
+        }
         basic_call <- as.call(
           c(
-            list(
-              x$geom,
-              mapping = as.call(c(as.name("aes"), x$mapping))
-            ),
-            x[!names(x) %in% c("geom", "mapping")]
+            list(x$geom),
+            x[!names(x) %in% "geom"]
           )
         )
       })
