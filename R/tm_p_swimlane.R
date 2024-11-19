@@ -1,4 +1,9 @@
-tm_p_swimlane <- function(label = "Swimlane Plot Module", geom_specs, title, color_manual, shape_manual, size_manual) {
+tm_p_swimlane <- function(label = "Swimlane Plot Module",
+                          geom_specs,
+                          title,
+                          color_manual = NULL,
+                          shape_manual = NULL,
+                          size_manual = NULL) {
   module(
     label = label,
     ui = ui_p_swimlane,
@@ -56,7 +61,7 @@ srv_p_swimlane <- function(id,
     output_q <- reactive(eval_code(data(), ggplot_call()))
 
     plot_r <- reactive(output_q()$p)
-    pws <- teal.widgets::plot_with_settings_srv(id = "myplot", plot_r = plot_r, gg2plotly = FALSE)
+    pws <- teal.widgets::plot_with_settings_srv(id = "myplot", plot_r = plot_r)
 
     teal::srv_brush_filter(
       "brush_filter",
