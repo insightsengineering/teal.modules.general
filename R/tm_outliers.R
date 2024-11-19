@@ -1285,7 +1285,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(final_q())),
+      verbatim_content = reactive(teal.code::get_code(req(final_q()))),
       title = "Show R Code for Outlier"
     )
 
