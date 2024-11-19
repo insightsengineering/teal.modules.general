@@ -1,15 +1,12 @@
-tm_p_swimlane <- function(label = "Swimlane Plot Module", dataname, id_var, avisit_var, shape_var, color_var) {
+tm_p_swimlane <- function(label = "Swimlane Plot Module", geom_specs, title, color_manual, shape_manual, size_manual) {
   module(
     label = label,
     ui = ui_p_swimlane,
     server = srv_p_swimlane,
-    datanames = "synthetic_data",
+    datanames = "all",
     server_args = list(
-      dataname = dataname,
-      id_var = id_var,
-      avisit_var = avisit_var,
-      shape_var = shape_var,
-      color_var = color_var
+      geom_specs = geom_specs, title = title,
+      color_manual = color_manual, shape_manual = shape_manual, size_manual = size_manual
     )
   )
 }
@@ -22,30 +19,44 @@ ui_p_swimlane <- function(id) {
   )
 }
 
-srv_p_swimlane <- function(id, data, dataname, id_var, avisit_var, shape_var, color_var, filter_panel_api) {
+srv_p_swimlane <- function(id,
+                           data,
+                           geom_specs,
+                           title = "Swimlane plot",
+                           color_manual,
+                           shape_manual,
+                           size_manual,
+                           filter_panel_api) {
   moduleServer(id, function(input, output, session) {
-    output_q <- reactive({
-      within(data(),
-        {
-          p <- ggplot(dataname, aes(x = avisit_var, y = subjid)) +
-            ggtitle("Swimlane Efficacy Table") +
-            geom_line(linewidth = 0.5) +
-            geom_point(aes(shape = shape_var), size = 5) +
-            geom_point(aes(color = color_var), size = 2) +
-            scale_shape_manual(values = c("Drug A" = 1, "Drug B" = 2)) +
-            scale_color_manual(values = c("CR" = "#9b59b6", "PR" = "#3498db")) +
-            labs(x = "Study Day", y = "Subject ID")
-        },
-        dataname = as.name(dataname),
-        id_var = as.name(id_var),
-        avisit_var = as.name(avisit_var),
-        shape_var = as.name(shape_var),
-        color_var = as.name(color_var)
+    ggplot_call <- reactive({
+      plot_call <- bquote(ggplot2::ggplot())
+      points_calls <- lapply(geom_specs, function(x) {
+        # todo: convert $geom, $data, and $mapping elements from character to language
+        #       others can be kept as character
+        basic_call <- as.call(
+          c(
+            list(
+              x$geom,
+              mapping = as.call(c(as.name("aes"), x$mapping))
+            ),
+            x[!names(x) %in% c("geom", "mapping")]
+          )
+        )
+      })
+
+      title_call <- substitute(ggtitle(title), list(title = title))
+
+      rhs <- Reduce(
+        x = c(plot_call, points_calls, title_call),
+        f = function(x, y) call("+", x, y)
       )
+      substitute(p <- rhs, list(rhs = rhs))
     })
 
+    output_q <- reactive(eval_code(data(), ggplot_call()))
+
     plot_r <- reactive(output_q()$p)
-    pws <- teal.widgets::plot_with_settings_srv(id = "myplot", plot_r = plot_r)
+    pws <- teal.widgets::plot_with_settings_srv(id = "myplot", plot_r = plot_r, gg2plotly = FALSE)
 
     teal::srv_brush_filter(
       "brush_filter",
@@ -54,4 +65,10 @@ srv_p_swimlane <- function(id, data, dataname, id_var, avisit_var, shape_var, co
       filter_panel_api = filter_panel_api
     )
   })
+}
+
+
+
+merge_selectors2 <- function() {
+  lappl
 }

@@ -36,14 +36,32 @@ app <- init(
   modules = modules(
     tm_data_table(),
     tm_p_swimlane(
-      dataname = "synthetic_data",
-      id_var = "usubjid",
-      avisit_var = "study_day",
-      shape_var = "assigned_drug",
-      color_var = "response_type"
+      label = "Swimlane",
+      geom_specs = list(
+        list(
+          geom = str2lang("ggplot2::geom_col"),
+          data = quote(synthetic_data),
+          mapping = list(y = quote(subjid), x = quote(max(study_day))),
+          width = 0.2
+        ), # geom_col(data = synthetic_data, mapping = aes(x = subjid, x = max(study_day), width = 0.2)
+        list(
+          geom = quote(geom_point),
+          data = quote(synthetic_data),
+          mapping = list(
+            y = quote(subjid), x = quote(study_day), color = quote(assigned_drug), shape = quote(assigned_drug)
+          )
+        ),
+        list(
+          geom = quote(geom_point),
+          data = quote(synthetic_data),
+          mapping = list(
+            y = quote(subjid), x = quote(study_day), color = quote(response_type), shape = quote(response_type)
+          )
+        )
+      ),
+      title = "Swimlane Efficacy Plot"
     )
-  ),
-  title = "Swimlane Efficacy Plot"
+  )
 )
 
 shinyApp(app$ui, app$server)
