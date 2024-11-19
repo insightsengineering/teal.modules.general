@@ -46,7 +46,6 @@
 #'
 #' @inherit shared_params return
 #'
-#' @inheritSection tm_a_regression Decorating Module Outputs
 #' @section Decorating `tm_outliers`:
 #'
 #' This module creates below objects that can be modified with decorators:
@@ -61,7 +60,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -120,7 +118,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
