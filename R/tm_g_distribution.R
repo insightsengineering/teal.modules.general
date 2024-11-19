@@ -27,7 +27,6 @@
 #'
 #' @inherit shared_params return
 #'
-#' @inheritSection tm_a_regression Decorating Module Outputs
 #' @section Decorating `tm_outliers`:
 #'
 #' This module creates below objects that can be modified with decorators:
