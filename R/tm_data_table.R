@@ -29,6 +29,14 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_data_table`:
+#'
+#' This module creates below objects that can be modified with decorators:
+#' - `table` (`DT::datatable`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -96,7 +104,8 @@ tm_data_table <- function(label = "Data Table",
                           ),
                           server_rendering = FALSE,
                           pre_output = NULL,
-                          post_output = NULL) {
+                          post_output = NULL,
+                          decorators = list(default = teal_transform_module())) {
   message("Initializing tm_data_table")
 
   # Start of assertions
@@ -121,6 +130,8 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_flag(server_rendering)
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module")
   # End of assertions
 
   ans <- module(
@@ -133,11 +144,13 @@ tm_data_table <- function(label = "Data Table",
       datasets_selected = datasets_selected,
       dt_args = dt_args,
       dt_options = dt_options,
-      server_rendering = server_rendering
+      server_rendering = server_rendering,
+      decorators = decorators
     ),
     ui_args = list(
       pre_output = pre_output,
-      post_output = post_output
+      post_output = post_output,
+      decorators = decorators
     )
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -147,7 +160,8 @@ tm_data_table <- function(label = "Data Table",
 # UI page module
 ui_page_data_table <- function(id,
                                pre_output = NULL,
-                               post_output = NULL) {
+                               post_output = NULL,
+                               decorators = decorators) {
   ns <- NS(id)
 
   tagList(
@@ -161,7 +175,8 @@ ui_page_data_table <- function(id,
               ns("if_distinct"),
               "Show only distinct rows:",
               value = FALSE
-            )
+            ),
+            ui_teal_transform_data(ns("decorator"), transformators = decorators)
           )
         ),
         fluidRow(
@@ -185,7 +200,8 @@ srv_page_data_table <- function(id,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
-                                server_rendering) {
+                                server_rendering,
+                                decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -260,7 +276,8 @@ srv_page_data_table <- function(id,
           if_distinct = if_distinct,
           dt_args = dt_args,
           dt_options = dt_options,
-          server_rendering = server_rendering
+          server_rendering = server_rendering,
+          decorators = decorators
         )
       }
     )
@@ -305,7 +322,8 @@ srv_data_table <- function(id,
                            if_distinct,
                            dt_args,
                            dt_options,
-                           server_rendering) {
+                           server_rendering,
+                           decorators) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
@@ -313,28 +331,48 @@ srv_data_table <- function(id,
       set = names(isolate(data())[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
+    #teal::validate_inputs(iv)
 
-    output$data_table <- DT::renderDataTable(server = server_rendering, {
-      teal::validate_inputs(iv)
-
+    data_table_data <- reactive({
       df <- data()[[dataname]]
-      variables <- input$variables
 
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
-      dataframe_selected <- if (if_distinct()) {
-        dplyr::count(df, dplyr::across(dplyr::all_of(variables)))
-      } else {
-        df[variables]
-      }
+      teal.code::eval_code(
+        data(),
+        substitute(
+          expr = {
+            dataframe_selected <- if (if_distinct) {
+              dplyr::count(dataname, dplyr::across(dplyr::all_of(variables)))
+            } else {
+              dataname[variables]
+            }
+            dt_args <- args
+            dt_args$options <- dt_options
+            if (!is.null(dt_rows)) {
+              dt_args$options$pageLength <- dt_rows
+            }
+            dt_args$data <- dataframe_selected
+            table <- do.call(DT::datatable, dt_args)
+          },
+          env = list(
+            dataname = as.name(dataname),
+            if_distinct = if_distinct(),
+            variables = input$variables,
+            args = dt_args,
+            dt_options = dt_options,
+            dt_rows = input$dt_rows
+          )
+        )
+      )
+    })
 
-      dt_args$options <- dt_options
-      if (!is.null(input$dt_rows)) {
-        dt_args$options$pageLength <- input$dt_rows
-      }
-      dt_args$data <- dataframe_selected
+    decorated_data_table_data <-
+      srv_teal_transform_data("decorate", data = data_table_data, transformators = decorators)
 
-      do.call(DT::datatable, dt_args)
+    output$data_table <- DT::renderDataTable(server = server_rendering, {
+      # no table is displayed
+      decorated_data_table_data()[["table"]]
     })
   })
 }
