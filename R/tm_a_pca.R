@@ -18,11 +18,13 @@
 #'
 #' @inherit shared_params return
 #'
-#' @inheritSection tm_a_regression Decorating Module Outputs
 #' @section Decorating `tm_a_pca`:
 #'
 #' This module creates below objects that can be modified with decorators:
 #' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
 #'
 #'
 #' @examplesShinylive
@@ -30,12 +32,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' plot_title <- teal_transform_module(
-#'   server = make_teal_transform_server(expression(
-#'     plot <- plot + ggtilte("Custom title")
-#'   ))
-#' )
 #'
 #' # general data example
 #' data <- teal_data()
@@ -59,8 +55,7 @@
 #'           multiple = TRUE
 #'         ),
 #'         filter = NULL
-#'       ),
-#'       decorators = list(plot_title)
+#'       )
 #'     )
 #'   )
 #' )
@@ -73,12 +68,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' plot_title <- teal_transform_module(
-#'   server = make_teal_transform_server(expression(
-#'     plot <- plot + ggtilte("Custom title")
-#'   ))
-#' )
 #'
 #' # CDISC data example
 #' data <- teal_data()
@@ -103,8 +92,7 @@
 #'           multiple = TRUE
 #'         ),
 #'         filter = NULL
-#'       ),
-#'       decorators = list(plot_title)
+#'       )
 #'     )
 #'   )
 #' )
