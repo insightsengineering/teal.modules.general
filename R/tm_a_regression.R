@@ -607,7 +607,6 @@ srv_a_regression <- function(id,
     })
 
     output_plot_0 <- reactive({
-
       fit <- fit_r()[["fit"]]
       ANL <- anl_merged_q()[["ANL"]]
 

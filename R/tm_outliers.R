@@ -984,7 +984,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     decorated_boxplot_q <- srv_teal_transform_data("boxplot_decorator", data = boxplot_q, transformators = decorators$boxplot)
     decorated_violin_q <- srv_teal_transform_data("violin_decorator", data = boxplot_q, transformators = decorators$violin)
-    decorated_density_plot_q <-srv_teal_transform_data("density_decorator", data = density_plot_q, transformators = decorators$density)
+    decorated_density_plot_q <- srv_teal_transform_data("density_decorator", data = density_plot_q, transformators = decorators$density)
     decorated_cumulative_plot_q <- srv_teal_transform_data("cum_dist_decorator", data = cumulative_plot_q, transformators = decorators$cum_dist)
 
     final_q <- reactive({
