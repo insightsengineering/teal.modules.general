@@ -720,7 +720,7 @@ srv_g_bivariate <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(decorated_output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "Bivariate Plot"
     )
 
