@@ -27,26 +27,20 @@
 #'
 #' @inherit shared_params return
 #'
-#' @inheritSection tm_a_regression Decorating Module Outputs
 #' @section Decorating `tm_outliers`:
 #'
 #' This module creates below objects that can be modified with decorators:
 #' - `table` (`data.frame`)
 #' - `plot` (`ggplot2`)
 #'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' module_decorator <- teal_transform_module(
-#'   server = make_teal_transform_server(
-#'     expression({
-#'       plot <- plot + ggplot2::ggtitle("A new title")
-#'     })
-#'   )
-#' )
 #'
 #' # general data example
 #' data <- teal_data()
@@ -84,8 +78,7 @@
 #'             multiple = TRUE
 #'           )
 #'         )
-#'       ),
-#'       boxplot_decorator = module_decorator
+#'       )
 #'     )
 #'   )
 #' )
@@ -98,14 +91,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' module_decorator <- teal_transform_module(
-#'   server = make_teal_transform_server(
-#'     expression({
-#'       plot <- plot + ggplot2::ggtitle("A new title")
-#'     })
-#'   )
-#' )
 #'
 #' # CDISC data example
 #' data <- teal_data()
@@ -145,8 +130,7 @@
 #'             multiple = TRUE
 #'           )
 #'         )
-#'       ),
-#'       boxplot_decorator = module_decorator
+#'       )
 #'     )
 #'   )
 #' )
@@ -1285,7 +1269,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(final_q())),
+      verbatim_content = reactive(teal.code::get_code(req(final_q()))),
       title = "Show R Code for Outlier"
     )
 
