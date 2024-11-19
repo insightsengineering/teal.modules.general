@@ -80,7 +80,7 @@ visually and statistically analyze the variable's distribution.
 \section{Decorating \code{tm_outliers}}{
 
 
-This module creates below objects that can be modified with decorators:
+This module generates the following objects, which can be modified in place using decorators:
 \itemize{
 \item \code{plot} (\code{ggplot2})
 \item \code{test_table} (\code{data.frame})

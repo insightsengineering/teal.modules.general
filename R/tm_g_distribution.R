@@ -29,7 +29,7 @@
 #'
 #' @section Decorating `tm_outliers`:
 #'
-#' This module creates below objects that can be modified with decorators:
+#' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #' - `test_table` (`data.frame`)
 #' - `summary_table` (`data.frame`)
@@ -1338,7 +1338,7 @@ srv_distribution <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
