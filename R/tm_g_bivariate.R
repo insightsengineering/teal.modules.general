@@ -52,17 +52,15 @@
 #' This module creates below objects that can be modified with decorators:
 #' - `plot` (`ggplot2`)
 #'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' plot_title <- teal_transform_module(
-#'   server = make_teal_transform_server(expression(
-#'     plot <- plot + ggtilte("Custom title")
-#'   ))
-#' )
 #'
 #' # general data example
 #' data <- teal_data()
@@ -110,8 +108,7 @@
 #'         selected = "Treatment",
 #'         fixed = FALSE
 #'       )
-#'     ),
-#'     decorators = list(plot_title)
+#'     )
 #'   )
 #' )
 #' if (interactive()) {
@@ -123,12 +120,6 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
-#'
-#' plot_title <- teal_transform_module(
-#'   server = make_teal_transform_server(expression(
-#'     plot <- plot + ggtilte("Custom title")
-#'   ))
-#' )
 #'
 #' # CDISC data example
 #' data <- teal_data()
@@ -177,8 +168,7 @@
 #'         selected = "COUNTRY",
 #'         fixed = FALSE
 #'       )
-#'     ),
-#'     decorators = list(plot_title)
+#'     )
 #'   )
 #' )
 #' if (interactive()) {
@@ -364,7 +354,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_teal_transform_data(ns("decorator"), transformators = args$decorators),
+      ui_teal_transform_data(ns("decorate"), transformators = args$decorators),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -682,7 +672,7 @@ srv_g_bivariate <- function(id,
       without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
       print_call <- if (without_facet) {
-        quote(print(p))
+        quote(print(plot))
       } else {
         substitute(
           expr = {
@@ -690,18 +680,18 @@ srv_g_bivariate <- function(id,
             # optional: grid.newpage() # nolint: commented_code.
             # Prefixed with teal.modules.general as its usage will appear in "Show R code"
             plot <- teal.modules.general::add_facet_labels(
-              p,
+              plot,
               xfacet_label = nulled_col_facet_name,
               yfacet_label = nulled_row_facet_name
             )
             grid::grid.newpage()
-            grid::grid.draw(p)
+            grid::grid.draw(plot)
           },
           env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
         )
       }
 
-      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- cl, env = list(cl = cl))) %>%
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = plot <- cl, env = list(cl = cl))) %>%
         teal.code::eval_code(print_call)
     })
 
