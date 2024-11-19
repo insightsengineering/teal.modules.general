@@ -281,6 +281,7 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
+            ui_teal_transform_data(ns("d_dist"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -289,6 +290,7 @@ ui_distribution <- function(id, ...) {
           teal.widgets::panel_item(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
+            ui_teal_transform_data(ns("d_qq"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -343,7 +345,6 @@ ui_distribution <- function(id, ...) {
         "Statistics Table",
         sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
       ),
-      ui_teal_transform_data(ns("decorate"), transformators = args$decorators[[1]]),
       teal.widgets::panel_item(
         title = "Plot settings",
         selectInput(
