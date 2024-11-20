@@ -117,7 +117,7 @@ For more examples, please see the vignette "Using regression plots" via
 \section{Decorating \code{tm_a_regression}}{
 
 
-This module creates below objects that can be modified with decorators:
+This module generates the following objects, which can be modified in place using decorators:
 \itemize{
 \item \code{plot} (\code{ggplot2})
 }
