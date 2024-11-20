@@ -80,7 +80,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 \section{Decorating \code{tm_outliers}}{
 
 
-This module creates below objects that can be modified with decorators:
+This module generates the following objects, which can be modified in place using decorators:
 \itemize{
 \item \code{table} (\code{data.frame})
 \item \code{plot} (\code{ggplot2})
