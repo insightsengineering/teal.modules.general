@@ -31,7 +31,7 @@
 #'
 #' @section Decorating `tm_data_table`:
 #'
-#' This module creates below objects that can be modified with decorators:
+#' This module generates the following objects, which can be modified in place using decorators:
 #' - `table` (`DT::datatable`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
@@ -186,6 +186,9 @@ ui_page_data_table <- function(id,
             uiOutput(ns("dataset_table"))
           )
         )
+      ),
+      forms = tagList(
+        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
       ),
       pre_output = pre_output,
       post_output = post_output
@@ -374,5 +377,12 @@ srv_data_table <- function(id,
       # no table is displayed
       decorated_data_table_data()[["table"]]
     })
+
+    teal.widgets::verbatim_popup_srv(
+      id = "rcode",
+      verbatim_content = reactive(teal.code::get_code(req(decorated_data_table_data()))),
+      title = "R Code for PCA"
+    )
+
   })
 }
