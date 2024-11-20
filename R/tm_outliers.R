@@ -984,6 +984,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     decorated_boxplot_q <- srv_teal_transform_data("boxplot_decorator", data = boxplot_q, transformators = decorators$boxplot)
     decorated_violin_q <- srv_teal_transform_data("violin_decorator", data = boxplot_q, transformators = decorators$violin)
+    # TODO decorated_violin_q is not used anywhere
     decorated_density_plot_q <- srv_teal_transform_data("density_decorator", data = density_plot_q, transformators = decorators$density)
     decorated_cumulative_plot_q <- srv_teal_transform_data("cum_dist_decorator", data = cumulative_plot_q, transformators = decorators$cum_dist)
 
@@ -1020,8 +1021,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     decorated_final_q <-
       srv_teal_transform_data("cum_dist_decorator", data = final_q, transformators = decorators$table_decorator)
-    # TODO:
-    # reuse decorated_final_q in table generation
+    # TODO: reuse decorated_final_q in table generation
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1301,7 +1301,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(final_q()))
+        card$append_src(teal.code::get_code(req(final_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
