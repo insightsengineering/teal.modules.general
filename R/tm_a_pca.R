@@ -240,7 +240,7 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_teal_transform_data(ns("decorator"), transformators = args$decorators)
+            ui_teal_transform_data(ns("decorate"), transformators = args$decorators)
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
