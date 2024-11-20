@@ -27,7 +27,7 @@
 #'
 #' @section Decorating `tm_g_association`:
 #'
-#' This module creates below objects that can be modified with decorators:
+#' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
@@ -247,7 +247,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_teal_transform_data(ns("decorate"), transformators = args$decorators)
+      ui_teal_transform_data(ns("decorate"), transformators = args$decorators),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -523,7 +523,7 @@ srv_tm_g_association <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(output_q()))),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "Association Plot"
     )
 
@@ -542,7 +542,7 @@ srv_tm_g_association <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
