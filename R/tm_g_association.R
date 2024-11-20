@@ -476,7 +476,6 @@ srv_tm_g_association <- function(id,
             )
           )
         }
-
       teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
@@ -502,6 +501,7 @@ srv_tm_g_association <- function(id,
           )
         )
     })
+    # TODO allow to decorate ref_call and var_calls before they are included in tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
 
     decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
 
