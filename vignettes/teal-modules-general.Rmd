@@ -10,16 +10,16 @@ vignette: >
 
 ### Introduction
 
-`teal` extends the `shiny` framework, enabling the creation of interactive GUI applications using the `R`. 
-`shiny`, and `teal`facilitate the development of extensive applications through combining small, decoupled modules. 
-The `teal.modules.general` package consist of collection of modules  essential for developing `teal` applications. 
-It is "general" in the sense that the intended functions of these modules are more fundamental. This contrasts with the more specialized focus on clinical data found in the `teal.modules.clinical` package. 
+`teal` extends the `shiny` framework, enabling the creation of interactive GUI applications using the `R`.
+`shiny`, and `teal`facilitate the development of extensive applications through combining small, decoupled modules.
+The `teal.modules.general` package consist of collection of modules  essential for developing `teal` applications.
+It is "general" in the sense that the intended functions of these modules are more fundamental. This contrasts with the more specialized focus on clinical data found in the `teal.modules.clinical` package.
 The modules from `teal.modules.general`  can be used in conjunction with modules from `teal.modules.clinical` and / or
 other `shiny` modules to build a large `teal` / `shiny` app.
 
 
 The concepts presented here require knowledge about the core features of `teal`, specifically on how to launch a `teal`
-application and how to pass data into it. Therefore, it is highly recommended to refer to the [`README`](https://insightsengineering.github.io/teal/index.html) file and 
+application and how to pass data into it. Therefore, it is highly recommended to refer to the [`README`](https://insightsengineering.github.io/teal/index.html) file and
 the introductory [vignette](https://insightsengineering.github.io/teal/latest-tag/articles/getting-started-with-teal.html) of the `teal` package.
 
 See also `teal.modules.clinical`'s [`README`](https://insightsengineering.github.io/teal.modules.clinical/latest-tag/index.html).
@@ -39,10 +39,11 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 ### Example application
 
 A simple application featuring the `tm_variable_browser()` module:
-```{r, message = FALSE, results = "hide"}
+```{r app, message = FALSE, results = "hide", eval = requireNamespace("sparkline", quietly = TRUE)}
 # load libraries
 library(teal.modules.general)
 library(teal.widgets)
+library(sparkline)
 
 # teal_data object
 data <- teal_data()
@@ -50,9 +51,7 @@ data <- within(data, {
   ADSL <- rADSL
   ADTTE <- rADTTE
 })
-datanames <- c("ADSL", "ADTTE")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 
 # tm_variable_browser module
 tm_variable_browser_module <- tm_variable_browser(
@@ -69,11 +68,27 @@ app <- init(
 )
 ```
 
-```{r, eval = FALSE}
+```{r shinyapp, eval = FALSE}
 shinyApp(app$ui, app$server)
 ```
 
 <img src="images/app-teal-modules-general.png" style = "display: block; margin: 0px; width: 100%"/>
+
+### Try it out in Shinylive
+
+```{r shinylive_url, echo = FALSE, results = 'asis', eval = requireNamespace("roxy.shinylive", quietly = TRUE)}
+code <- paste0(c(
+  knitr::knit_code$get("app"),
+  knitr::knit_code$get("shinyapp")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+cat(sprintf("[Open in Shinylive](%s)\n\n", url))
+```
+
+```{r shinylive_iframe, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+knitr::include_url(url, height = "800px")
+```
 
 Let's break the above app into pieces:
 
@@ -94,9 +109,7 @@ data <- within(data, {
   ADSL <- rADSL
   ADTTE <- rADTTE
 })
-datanames <- c("ADSL", "ADTTE")
-datanames(data) <- datanames
-join_keys(data) <- default_cdisc_join_keys[datanames]
+join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```
 
 3: Initialize a `teal` application with specified data and modules, in this case, the module: `tm_variable_browser`, datasets:`ADSL` and `ADTTE`.
@@ -129,7 +142,7 @@ In a `teal` app, data and modules are decoupled. In the app above:
 - The app developer specified the module and assigned it to the `modules` argument.
 - The `init` function took these arguments and returned a list containing `ui` and `server` object, which can be demonstrated by running:
 
-```{r, indent = "     "}
+```{r, indent = "     ", eval = requireNamespace("sparkline", quietly = TRUE)}
 class(app)
 names(app)
 ```

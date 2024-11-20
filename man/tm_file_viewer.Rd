@@ -31,7 +31,6 @@ data <- teal_data()
 data <- within(data, {
   data <- data.frame(1)
 })
-datanames(data) <- c("data")
 
 app <- init(
   data = data,
@@ -51,3 +50,13 @@ if (interactive()) {
 }
 
 }
+\section{Examples in Shinylive}{
+\describe{
+  \item{example-1}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQQWBYqRSKhRIgSSSTB5JEQtI7ZfxGIIJKT1vR9rE4PwSQAFIiMLz+uCGAAiRAIgngZEMADFwzBPIYAMqoOAEWhTAieKwQcSofgmb7GjKlFa13SlUoF3TsFTkZiWHQ2WxpfmieIQVgAQXQ7GqABJBLQUhPRDIdIxSmUlGAygBdIA}{Open in Shinylive}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQQWBYqRSKhRIgSSSTB5JEQtI7ZfxGIIJKT1vR9rE4PwSQAFIiMLz+uCGAAiRAIgngZEMADFwzBPIYAMqoOAEWhTAieKwQcSofgmb7GjKlFa13SlUoF3TsFTkZiWHQ2WxpfmieIQVgAQXQ7GqABJBLQUhPRDIdIxSmUlGAygBdIA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
+  }
+}
+}
+

@@ -3,10 +3,9 @@ app_driver_tm_g_association <- function() {
     require(nestcolor)
     require(ggplot2)
     CO2 <- CO2 # nolint: object_name.
-    factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
-    CO2[factors] <- lapply(CO2[factors], as.character) # nolint: object_name.
+    .factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
+    CO2[.factors] <- lapply(CO2[.factors], as.character) # nolint: object_name.
   })
-  teal.data::datanames(data) <- c("CO2")
 
   init_teal_app_driver(
     data = data,
@@ -52,11 +51,11 @@ testthat::test_that("e2e - tm_g_association: Data parameter and module label is 
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-main_ui-root-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
     "Association"
   )
 
-  encoding_dataset <- app_driver$get_text("#teal-main_ui-root-association .help-block")
+  encoding_dataset <- app_driver$get_text("#teal-teal_modules-association .help-block")
   testthat::expect_match(encoding_dataset, "Dataset:[\n ]*CO2", all = FALSE)
 
   app_driver$stop()

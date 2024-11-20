@@ -29,6 +29,10 @@
 #'
 #' @inherit shared_params return
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
 #' @examples
 #' # general data example
 #' data <- teal_data()
@@ -36,7 +40,6 @@
 #'   require(nestcolor)
 #'   iris <- iris
 #' })
-#' datanames(data) <- c("iris")
 #'
 #' app <- init(
 #'   data = data,
@@ -53,14 +56,18 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -187,7 +194,7 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- isolate(teal.data::datanames(data()))
+    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)

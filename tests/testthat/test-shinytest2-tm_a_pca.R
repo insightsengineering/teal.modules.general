@@ -5,8 +5,6 @@ app_driver_tm_a_pca <- function() {
 
     USArrests <- USArrests # nolint: object_name.
   })
-  teal.data::datanames(data) <- "USArrests"
-
 
   init_teal_app_driver(
     data = data,

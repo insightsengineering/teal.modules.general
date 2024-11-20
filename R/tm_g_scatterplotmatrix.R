@@ -18,7 +18,11 @@
 #'
 #' @inherit shared_params return
 #'
-#' @examples
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -52,7 +56,6 @@
 #'     profit = rnorm(50, 20, 10)
 #'   )
 #' })
-#' datanames(data) <- c("countries", "sales")
 #' join_keys(data) <- join_keys(
 #'   join_key("countries", "countries", "id"),
 #'   join_key("sales", "sales", "id"),
@@ -102,14 +105,18 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examplesIf require("lattice", quietly = TRUE)
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #'   ADRS <- rADRS
 #' })
-#' datanames(data) <- c("ADSL", "ADRS")
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
