@@ -480,9 +480,10 @@ srv_distribution <- function(id,
         )
       }
     }
+
     rule_dist <- function(value) {
-      if (isTRUE(input$tabs == "QQplot" ||
-        input$dist_tests %in% c(
+      if (isTRUE(input$tabs == "QQplot") ||
+        isTRUE(input$dist_tests %in% c(
           "Kolmogorov-Smirnov (one-sample)",
           "Anderson-Darling (one-sample)",
           "Cramer-von Mises (one-sample)"
@@ -492,6 +493,7 @@ srv_distribution <- function(id,
         }
       }
     }
+
     iv_dist <- shinyvalidate::InputValidator$new()
     iv_dist$add_rule("t_dist", rule_dist)
     iv_dist$add_rule("dist_param1", rule_dist_1)
@@ -928,6 +930,7 @@ srv_distribution <- function(id,
         input$scales_type
         input$qq_line
         is.null(input$ggtheme)
+        input$tabs
       },
       valueExpr = {
         dist_var <- merge_vars()$dist_var
@@ -943,6 +946,7 @@ srv_distribution <- function(id,
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
+        req(input$tabs == "QQplot")
         teal::validate_inputs(iv_r_dist(), iv_dist)
 
         qenv <- common_q()
@@ -1240,21 +1244,19 @@ srv_distribution <- function(id,
     output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
     output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
-    decorated_output_dist_q <- # output_dist_q
-      srv_teal_transform_data(
-        "d_dist",
-        data = output_dist_q,
-        transformators = decorators
-      )
+    decorated_output_dist_q <- srv_teal_transform_data(
+      "d_dist",
+      data = req(output_dist_q),
+      transformators = decorators
+    )
 
-    decorated_output_qq_q <- # output_qq_q
-      srv_teal_transform_data(
-        "d_qq",
-        data = output_qq_q,
-        transformators = decorators
-      )
+    decorated_output_qq_q <- srv_teal_transform_data(
+      "d_qq",
+      data = output_qq_q,
+      transformators = decorators
+    )
 
-    output_q <- reactive({
+    decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
       if (tab == "Histogram") {
         decorated_output_dist_q()
@@ -1268,7 +1270,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(decorated_output_qq_q()[["plot"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = if (iv_r()$is_valid()) output_q()[["summary_table"]] else NULL,
+      expr = if (iv_r()$is_valid()) decorated_output_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1279,7 +1281,7 @@ srv_distribution <- function(id,
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
-      output_q()[["test_table"]]
+      decorated_output_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
