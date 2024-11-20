@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0341646737273659" branch-rate="0" lines-covered="300" lines-valid="8781" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-11-19 11:28:01.882891">
+<coverage line-rate="0.0341646737273659" branch-rate="0" lines-covered="300" lines-valid="8781" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-11-20 10:48:45.910538">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
@@ -14208,9 +14208,8 @@
                 <line number="983" hits="0" branch="false"/>
                 <line number="985" hits="0" branch="false"/>
                 <line number="986" hits="0" branch="false"/>
-                <line number="987" hits="0" branch="false"/>
                 <line number="988" hits="0" branch="false"/>
-                <line number="990" hits="0" branch="false"/>
+                <line number="989" hits="0" branch="false"/>
                 <line number="991" hits="0" branch="false"/>
                 <line number="992" hits="0" branch="false"/>
                 <line number="993" hits="0" branch="false"/>
@@ -14220,7 +14219,7 @@
                 <line number="997" hits="0" branch="false"/>
                 <line number="998" hits="0" branch="false"/>
                 <line number="999" hits="0" branch="false"/>
-                <line number="1003" hits="0" branch="false"/>
+                <line number="1000" hits="0" branch="false"/>
                 <line number="1004" hits="0" branch="false"/>
                 <line number="1005" hits="0" branch="false"/>
                 <line number="1006" hits="0" branch="false"/>
@@ -14236,8 +14235,9 @@
                 <line number="1016" hits="0" branch="false"/>
                 <line number="1017" hits="0" branch="false"/>
                 <line number="1018" hits="0" branch="false"/>
-                <line number="1021" hits="0" branch="false"/>
+                <line number="1019" hits="0" branch="false"/>
                 <line number="1022" hits="0" branch="false"/>
+                <line number="1023" hits="0" branch="false"/>
                 <line number="1027" hits="0" branch="false"/>
                 <line number="1028" hits="0" branch="false"/>
                 <line number="1029" hits="0" branch="false"/>
@@ -15214,9 +15214,8 @@
             <line number="983" hits="0" branch="false"/>
             <line number="985" hits="0" branch="false"/>
             <line number="986" hits="0" branch="false"/>
-            <line number="987" hits="0" branch="false"/>
             <line number="988" hits="0" branch="false"/>
-            <line number="990" hits="0" branch="false"/>
+            <line number="989" hits="0" branch="false"/>
             <line number="991" hits="0" branch="false"/>
             <line number="992" hits="0" branch="false"/>
             <line number="993" hits="0" branch="false"/>
@@ -15226,7 +15225,7 @@
             <line number="997" hits="0" branch="false"/>
             <line number="998" hits="0" branch="false"/>
             <line number="999" hits="0" branch="false"/>
-            <line number="1003" hits="0" branch="false"/>
+            <line number="1000" hits="0" branch="false"/>
             <line number="1004" hits="0" branch="false"/>
             <line number="1005" hits="0" branch="false"/>
             <line number="1006" hits="0" branch="false"/>
@@ -15242,8 +15241,9 @@
             <line number="1016" hits="0" branch="false"/>
             <line number="1017" hits="0" branch="false"/>
             <line number="1018" hits="0" branch="false"/>
-            <line number="1021" hits="0" branch="false"/>
+            <line number="1019" hits="0" branch="false"/>
             <line number="1022" hits="0" branch="false"/>
+            <line number="1023" hits="0" branch="false"/>
             <line number="1027" hits="0" branch="false"/>
             <line number="1028" hits="0" branch="false"/>
             <line number="1029" hits="0" branch="false"/>
