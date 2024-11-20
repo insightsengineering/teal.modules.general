@@ -930,7 +930,6 @@ srv_distribution <- function(id,
         input$scales_type
         input$qq_line
         is.null(input$ggtheme)
-        input$tabs
       },
       valueExpr = {
         dist_var <- merge_vars()$dist_var
@@ -945,9 +944,6 @@ srv_distribution <- function(id,
 
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
-
-        req(input$tabs == "QQplot")
-        teal::validate_inputs(iv_r_dist(), iv_dist)
 
         qenv <- common_q()
 
@@ -994,7 +990,7 @@ srv_distribution <- function(id,
         plot_call <- substitute(
           expr = plot_call +
             stat_qq(distribution = mapped_dist, dparams = params),
-          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
+          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[req(t_dist)])))
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
@@ -1246,7 +1242,7 @@ srv_distribution <- function(id,
 
     decorated_output_dist_q <- srv_teal_transform_data(
       "d_dist",
-      data = req(output_dist_q),
+      data = output_dist_q,
       transformators = decorators
     )
 
@@ -1265,12 +1261,19 @@ srv_distribution <- function(id,
       }
     })
 
-    dist_r <- reactive(decorated_output_dist_q()[["plot"]])
+    dist_r <- reactive({
+      req(output_dist_q()) # Ensure original errors are displayed
+      decorated_output_dist_q()[["plot"]]
+    })
 
-    qq_r <- reactive(decorated_output_qq_q()[["plot"]])
+    qq_r <- reactive({
+      teal::validate_inputs(iv_r_dist(), iv_dist)
+      req(output_qq_q()) # Ensure original errors are displayed
+      decorated_output_qq_q()[["plot"]]
+    })
 
     output$summary_table <- DT::renderDataTable(
-      expr = if (iv_r()$is_valid()) decorated_output_q()[["summary_table"]] else NULL,
+      expr = if (iv_r()$is_valid()) decorated_output_dist_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1281,7 +1284,8 @@ srv_distribution <- function(id,
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
-      decorated_output_q()[["test_table"]]
+      req(test_q()) # Ensure original errors are displayed
+      decorated_output_dist_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
