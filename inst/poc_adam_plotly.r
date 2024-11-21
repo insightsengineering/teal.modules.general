@@ -1,5 +1,4 @@
-pkgload::load_all("teal")
-pkgload::load_all("teal.widgets")
+library(plotly)
 pkgload::load_all("teal.modules.general")
 
 # Example data
@@ -10,7 +9,8 @@ data <- within(teal_data(), {
     EOTSTT2 = case_when(
       !is.na(DCSREAS) ~ DCSREAS,
       TRUE ~ EOTSTT
-    )
+    ),
+    TRTLEN = as.integer(TRTEDTM - TRTSDTM)
   )
 
   ADAE <- teal.data::rADAE
@@ -21,21 +21,22 @@ join_keys(data) <- default_cdisc_join_keys
 
 
 plotly_specs <- list(
-  list("plotly::add_bars", x = ~EOSDY, y = ~USUBJID, data = quote(ADSL)),
-  list("plotly::add_markers", x = ~EOSDY, y = ~USUBJID, color = ~EOTSTT2, data = quote(ADSL)),
-  list("plotly::add_markers", x = ~ADY, y = ~USUBJID, data = quote(ADRS))
+  list("plotly::add_bars", x = ~TRTLEN, y = ~USUBJID, color = ~ARM, data = quote(ADSL)),
+  list("plotly::add_markers", x = ~ADY, y = ~USUBJID, color = ~AVALC, symbol = ~AVALC, data = quote(ADRS))
 )
-
 
 app <- init(
   data = data,
   modules = modules(
     tm_data_table(),
-    tm_p_swimlane2(
+    tm_p_plotly(
       label = "Swimlane",
       plotly_specs = plotly_specs,
       title = "Swimlane Efficacy Plot"
     )
+  ),
+  filter = teal_slices(
+    teal_slice("ADSL", "AGE", selected = c(20, 25))
   )
 )
 

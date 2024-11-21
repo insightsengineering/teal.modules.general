@@ -16,7 +16,10 @@ ui_p_swimlane2 <- function(id) {
   ns <- NS(id)
   shiny::tagList(
     plotly::plotlyOutput(ns("plot")),
-    ui_page_data_table(ns("brush_tables"))
+    shinyjs::hidden(div(
+      id = ns("brushing_wrapper"),
+      ui_page_data_table(ns("brush_tables"))
+    ))
   )
 }
 
@@ -58,9 +61,9 @@ srv_p_swimlane2 <- function(id,
 
     brush_filtered_data <- reactive({
       if (is.null(brush_filter_call())) {
-        shinyjs::hide("brush_tables")
+        shinyjs::hide("brushing_wrapper")
       } else {
-        shinyjs::hide("show_tables")
+        shinyjs::show("brushing_wrapper")
         eval_code(plotly_q(), as.expression(brush_filter_call()))
       }
     })
