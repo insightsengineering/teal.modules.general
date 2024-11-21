@@ -19,7 +19,7 @@ tm_a_regression(
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
   label_segment_threshold = c(0.5, 0, 10),
-  decorators = list(default = teal_transform_module())
+  decorators = NULL
 )
 }
 \arguments{
@@ -98,8 +98,8 @@ It takes the form of \code{c(value, min, max)} and it is passed to the \code{val
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module}) optional,
-decorator for tables or plots included in the module.}
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
+if not \code{NULL}, decorator for tables or plots included in the module.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
