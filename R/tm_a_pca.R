@@ -585,8 +585,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               scale_fill_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[1])) +
               ggthemes +
               themes
-
-            print(plot)
           },
           env = list(
             ggthemes = parsed_ggplot2_args$ggtheme,
@@ -656,7 +654,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               labs +
               ggthemes +
               themes
-            print(plot)
           },
           env = list(
             x_axis = x_axis,
@@ -878,7 +875,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = {
             plot <- plot_call
-            print(plot)
           },
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
@@ -954,10 +950,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           expr = {
             pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
               dplyr::as_tibble(rownames = "Variable")
-
             plot <- plot_call
-
-            print(plot)
           },
           env = list(
             pc = pc,
@@ -982,7 +975,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
-    decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q_no_print <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
+
+
 
     plot_r <- reactive({
       req(output_q())
