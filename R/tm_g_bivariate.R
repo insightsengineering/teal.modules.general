@@ -668,7 +668,6 @@ srv_g_bivariate <- function(id,
     decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
 
     decorated_output_q_facets <- reactive({
-
       ANL <- merged$anl_q_r()[["ANL"]]
       row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
       col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
