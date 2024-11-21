@@ -374,7 +374,6 @@ srv_data_table <- function(id,
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
       req(data_table_data())
-      # no table is displayed
       decorated_data_table_data()[["table"]]
     })
 
