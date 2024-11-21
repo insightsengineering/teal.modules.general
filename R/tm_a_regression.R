@@ -156,7 +156,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10),
-                            decorators = list(default = teal_transform_module())) {
+                            decorators = NULL) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
@@ -210,7 +210,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -1012,6 +1012,19 @@ srv_a_regression <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
       switch(input$plot_type,
+             "Response vs Regressor" = output_plot_0(),
+             "Residuals vs Fitted" = output_plot_1(),
+             "Normal Q-Q" = output_plot_2(),
+             "Scale-Location" = output_plot_3(),
+             "Cook's distance" = output_plot_4(),
+             "Residuals vs Leverage" = output_plot_5(),
+             "Cook's dist vs Leverage" = output_plot_6()
+      )
+    })
+
+    decorated_output_q <- reactive({
+      teal::validate_inputs(iv_r())
+      switch(input$plot_type,
         "Response vs Regressor" = decorated_output_0(),
         "Residuals vs Fitted" = decorated_output_1(),
         "Normal Q-Q" = decorated_output_2(),
@@ -1022,8 +1035,14 @@ srv_a_regression <- function(id,
       )
     })
 
-    fitted <- reactive(output_q()[["fit"]])
-    plot_r <- reactive(output_q()[["plot"]])
+    fitted <- reactive({
+      req(output_q())
+      decorated_output_q()[["fit"]]
+    })
+    plot_r <- reactive({
+      req(output_q())
+      decorated_output_q()[["plot"]]
+    })
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -1043,7 +1062,7 @@ srv_a_regression <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(output_q()))),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "R code for the regression plot",
     )
 
@@ -1062,7 +1081,7 @@ srv_a_regression <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(output_q())))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

@@ -25,8 +25,8 @@
 #'  with text placed before the output to put the output into context. For example a title.
 #' @param post_output (`shiny.tag`) optional, text or UI element to be displayed after the module's output,
 #' adding context or further instructions. Elements like `shiny::helpText()` are useful.
-#' @param decorators `r lifecycle::badge("experimental")` (`list` of `teal_transform_module`) optional,
-#' decorator for tables or plots included in the module.
+#' @param decorators `r lifecycle::badge("experimental")` (`list` of `teal_transform_module` or `NULL`) optional,
+#' if not `NULL`, decorator for tables or plots included in the module.
 #'
 #' @param alpha (`integer(1)` or `integer(3)`) optional, specifies point opacity.
 #' - When the length of `alpha` is one: the plot points will have a fixed opacity.
