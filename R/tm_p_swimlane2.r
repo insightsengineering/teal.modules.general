@@ -28,9 +28,10 @@ srv_p_swimlane2 <- function(id,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
+      plotly_call <- .make_plotly_call(specs = plotly_specs)
       code <- substitute(
-        p <- plotly_specs |> plotly::event_register("plotly_selecting"),
-        list(plotly_specs = plotly_specs)
+        p <- plotly_call %>% plotly::event_register("plotly_selecting"),
+        list(plotly_call = plotly_call)
       )
       eval_code(data(), code = code)
     })
@@ -42,4 +43,26 @@ srv_p_swimlane2 <- function(id,
       if (is.null(d)) "Brush points appear here (double-click to clear)" else d
     })
   })
+}
+
+
+
+.make_plotly_call <- function(init_call = quote(plotly::plot_ly()), specs) {
+  points_calls <- lapply(specs, function(x) {
+    which_fun <- c(which(names(x) == "fun"), 1)[1]
+    if (is.character(x[[which_fun]])) {
+      x[[which_fun]] <- str2lang(x[[which_fun]])
+    }
+    basic_call <- as.call(
+      c(
+        list(x[[which_fun]]),
+        x[-which_fun]
+      )
+    )
+  })
+
+  rhs <- Reduce(
+    x = c(init_call, points_calls),
+    f = function(x, y) call("%>%", x, y)
+  )
 }

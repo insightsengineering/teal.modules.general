@@ -19,12 +19,13 @@ data <- within(teal_data(), {
 
 join_keys(data) <- default_cdisc_join_keys
 
-plotly_specs <- quote(
-  plotly::plot_ly() |>
-    plotly::add_bars(x = ~EOSDY, y = ~USUBJID, data = ADSL) |>
-    plotly::add_markers(x = ~EOSDY, y = ~USUBJID, data = ADSL) |>
-    plotly::add_markers(x = ~ADY, y = ~USUBJID, data = ADRS)
+
+plotly_specs <- list(
+  list("plotly::add_bars", x = ~EOSDY, y = ~USUBJID, data = quote(ADSL)),
+  list("plotly::add_markers", x = ~EOSDY, y = ~USUBJID, color = ~EOTSTT2, data = quote(ADSL)),
+  list("plotly::add_markers", x = ~ADY, y = ~USUBJID, data = quote(ADRS))
 )
+
 
 app <- init(
   data = data,
