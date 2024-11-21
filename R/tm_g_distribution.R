@@ -930,6 +930,7 @@ srv_distribution <- function(id,
         input$scales_type
         input$qq_line
         is.null(input$ggtheme)
+        input$tabs
       },
       valueExpr = {
         dist_var <- merge_vars()$dist_var
@@ -938,13 +939,14 @@ srv_distribution <- function(id,
         dist_var_name <- merge_vars()$dist_var_name
         s_var_name <- merge_vars()$s_var_name
         g_var_name <- merge_vars()$g_var_name
-        t_dist <- input$t_dist
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
 
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
+        teal::validate_inputs(iv_r_dist(), iv_dist)
+        t_dist <- req(input$t_dist) # Not validated when tab is not selected
         qenv <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
@@ -990,7 +992,7 @@ srv_distribution <- function(id,
         plot_call <- substitute(
           expr = plot_call +
             stat_qq(distribution = mapped_dist, dparams = params),
-          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[req(t_dist)])))
+          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
@@ -1267,7 +1269,6 @@ srv_distribution <- function(id,
     })
 
     qq_r <- reactive({
-      teal::validate_inputs(iv_r_dist(), iv_dist)
       req(output_qq_q()) # Ensure original errors are displayed
       decorated_output_qq_q()[["plot"]]
     })
