@@ -16,8 +16,7 @@ ui_p_swimlane2 <- function(id) {
   ns <- NS(id)
   shiny::tagList(
     plotly::plotlyOutput(ns("plot")),
-    verbatimTextOutput(ns("selecting")),
-    shinyjs::hidden(tableOutput(ns("table")))
+    ui_page_data_table(ns("brush_tables"))
   )
 }
 
@@ -30,17 +29,44 @@ srv_p_swimlane2 <- function(id,
     plotly_q <- reactive({
       plotly_call <- .make_plotly_call(specs = plotly_specs)
       code <- substitute(
-        p <- plotly_call %>% plotly::event_register("plotly_selecting"),
+        p <- plotly_call,
         list(plotly_call = plotly_call)
       )
       eval_code(data(), code = code)
     })
 
-    output$plot <- plotly::renderPlotly(plotly_q()$p)
+    output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
 
-    output$selecting <- renderPrint({
-      d <- plotly::event_data("plotly_selecting")
-      if (is.null(d)) "Brush points appear here (double-click to clear)" else d
+
+    brush_filter_call <- reactive({
+      d <- plotly::event_data("plotly_selected")
+      req(d)
+      calls <- lapply(plotly_specs, function(spec) {
+        substitute(
+          dataname <- dplyr::filter(dataname, var_x %in% levels_x, var_y %in% levels_y),
+          list(
+            dataname = spec$data,
+            var_x = str2lang(all.vars(spec$x)),
+            var_y = str2lang(all.vars(spec$y)),
+            levels_x = d$x,
+            levels_y = d$y
+          )
+        )
+      })
+      unique(calls)
+    })
+
+    brush_filtered_data <- reactive({
+      if (is.null(brush_filter_call())) {
+        shinyjs::hide("brush_tables")
+      } else {
+        shinyjs::hide("show_tables")
+        eval_code(plotly_q(), as.expression(brush_filter_call()))
+      }
+    })
+
+    observeEvent(brush_filtered_data(), once = TRUE, {
+      srv_page_data_table("brush_tables", data = brush_filtered_data, filter_panel_api = filter_panel_api)
     })
   })
 }

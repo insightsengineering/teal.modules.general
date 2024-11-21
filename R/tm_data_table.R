@@ -181,11 +181,16 @@ ui_page_data_table <- function(id,
 # Server page module
 srv_page_data_table <- function(id,
                                 data,
-                                datasets_selected,
-                                variables_selected,
-                                dt_args,
-                                dt_options,
-                                server_rendering,
+                                variables_selected = list(),
+                                datasets_selected = character(0),
+                                dt_args = list(),
+                                dt_options = list(
+                                  searching = FALSE,
+                                  pageLength = 30,
+                                  lengthMenu = c(5, 15, 30, 100),
+                                  scrollX = TRUE
+                                ),
+                                server_rendering = FALSE,
                                 filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
