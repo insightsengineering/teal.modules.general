@@ -1,4 +1,4 @@
-tm_p_swimlane2 <- function(label = "Swimlane Plot Module", plotly_specs, title) {
+tm_p_swimlane2 <- function(label = "Swimlane Plot Module", plotly_specs, title, colors = c(), symbols = c()) {
   module(
     label = label,
     ui = ui_p_swimlane2,
@@ -6,7 +6,9 @@ tm_p_swimlane2 <- function(label = "Swimlane Plot Module", plotly_specs, title) 
     datanames = "all",
     server_args = list(
       plotly_specs = plotly_specs,
-      title = title
+      title = title,
+      colors = colors,
+      symbols = symbols
     )
   )
 }
@@ -27,10 +29,12 @@ srv_p_swimlane2 <- function(id,
                             data,
                             plotly_specs,
                             title = "Swimlane plot",
+                            colors,
+                            symbols,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
-      plotly_call <- .make_plotly_call(specs = plotly_specs)
+      plotly_call <- .make_plotly_call(specs = plotly_specs, colors = colors, symbols = symbols)
       code <- substitute(
         p <- plotly_call,
         list(plotly_call = plotly_call)
@@ -76,20 +80,20 @@ srv_p_swimlane2 <- function(id,
 
 
 
-.make_plotly_call <- function(init_call = quote(plotly::plot_ly()), specs) {
+.make_plotly_call <- function(specs, colors = c(), symbols = c()) {
+  init_call <- substitute(plotly::plot_ly(colors = colors, symbols = symbols), list(colors = colors, symbols = symbols))
   points_calls <- lapply(specs, function(x) {
     which_fun <- c(which(names(x) == "fun"), 1)[1]
     if (is.character(x[[which_fun]])) {
       x[[which_fun]] <- str2lang(x[[which_fun]])
     }
-    basic_call <- as.call(
+    as.call(
       c(
         list(x[[which_fun]]),
         x[-which_fun]
       )
     )
   })
-
   rhs <- Reduce(
     x = c(init_call, points_calls),
     f = function(x, y) call("%>%", x, y)

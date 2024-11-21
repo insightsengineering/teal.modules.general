@@ -2,7 +2,8 @@ pkgload::load_all("teal")
 pkgload::load_all("teal.widgets")
 pkgload::load_all("teal.modules.general")
 
-# Example data
+# Note: Please add the `PATH_TO_DATA` and change the X, Y, and Z Administrations to the actual values in the data
+
 data <- within(teal_data(), {
   library(dplyr)
   library(arrow)
@@ -32,79 +33,49 @@ data <- within(teal_data(), {
     summarise(max_study_day = max(event_study_day))
 })
 
-color_manual <- c(
-  "DEATH" = "black",
-  "WITHDRAWAL BY SUBJECT" = "grey",
-  "PD (Progressive Disease)" = "red",
-  "SD (Stable Disease)" = "darkorchid4",
-  "MR (Minimal/Minor Response)" = "sienna4",
-  "PR (Partial Response)" = "maroon",
-  "VGPR (Very Good Partial Response)" = "chartreuse4",
-  "CR (Complete Response)" = "#3a41fc",
-  "SCR (Stringent Complete Response)" = "midnightblue"
-)
-shape_manual <- c(
-  "DEATH" = 4,
-  "WITHDRAWAL BY SUBJECT" = 5,
-  "PD (Progressive Disease)" = 8,
-  "SD (Stable Disease)" = 5,
-  "MR (Minimal/Minor Response)" = 5,
-  "PR (Partial Response)" = 5,
-  "VGPR (Very Good Partial Response)" = 5,
-  "CR (Complete Response)" = 5,
-  "SCR (Stringent Complete Response)" = 5
+plotly_specs <- list(
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(study_drug_administration)),
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(response_assessment)),
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(disposition)),
+  list("plotly::add_bars", x = ~max_study_day, y = ~subject, data = quote(max_subject_day), width = 0.1, marker = list(color = "grey"), showlegend = FALSE)
 )
 
 app <- init(
   data = data,
   modules = modules(
     tm_data_table(),
-    tm_p_swimlane(
+    tm_p_swimlane2(
       label = "Swimlane",
-      geom_specs = list(
-        list(
-          geom = str2lang("ggplot2::geom_bar"),
-          data = quote(max_subject_day),
-          mapping = list(y = quote(subject), x = quote(max_study_day)),
-          stat = "identity",
-          width = 0.1
-        ),
-        list(
-          geom = quote(geom_point),
-          data = quote(study_drug_administration),
-          mapping = list(
-            y = quote(subject), x = quote(study_day), color = quote(catagory), shape = quote(catagory)
-          )
-        ),
-        list(
-          geom = quote(geom_point),
-          data = quote(disposition),
-          mapping = list(
-            y = quote(subject), x = quote(study_day), color = quote(catagory), shape = quote(catagory)
-          )
-        ),
-        list(
-          geom = quote(geom_point),
-          data = quote(response_assessment),
-          mapping = list(
-            y = quote(subject), x = quote(study_day), color = quote(catagory), shape = quote(catagory)
-          )
-        ),
-        list(
-          geom = quote(scale_color_manual),
-          values = color_manual,
-          breaks = names(color_manual)
-        ),
-        list(
-          geom = quote(scale_shape_manual),
-          values = shape_manual,
-          breaks = names(shape_manual)
-        ),
-        list(
-          geom = quote(theme_minimal)
-        )
+      plotly_specs = plotly_specs,
+      title = "Swimlane Efficacy Plot",
+      colors = c(
+        "DEATH" = "black",
+        "WITHDRAWAL BY SUBJECT" = "grey",
+        "PD (Progressive Disease)" = "red",
+        "SD (Stable Disease)" = "darkorchid4",
+        "MR (Minimal/Minor Response)" = "sienna4",
+        "PR (Partial Response)" = "maroon",
+        "VGPR (Very Good Partial Response)" = "chartreuse4",
+        "CR (Complete Response)" = "#3a41fc",
+        "SCR (Stringent Complete Response)" = "midnightblue",
+        "X Administration Injection" = "goldenrod",
+        "Y Administration Infusion" = "deepskyblue3",
+        "Z Administration Infusion" = "darkorchid"
       ),
-      title = "Swimlane Efficacy Plot"
+      symbols = c(
+        "DEATH" = "circle",
+        "WITHDRAWAL BY SUBJECT" = "square",
+        "PD (Progressive Disease)" = "circle",
+        "SD (Stable Disease)" = "square-open",
+        "MR (Minimal/Minor Response)" = "star-open",
+        "PR (Partial Response)" = "star-open",
+        "VGPR (Very Good Partial Response)" = "star-open",
+        "CR (Complete Response)" = "star-open",
+        "SCR (Stringent Complete Response)" = "star-open",
+        "X Administration Injection" = "line-ns-open",
+        "Y Administration Infusion" = "line-ns-open",
+        "Z Administration Infusion" = "line-ns-open"
+      )
     )
   )
 )
