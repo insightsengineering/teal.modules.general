@@ -143,7 +143,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args(),
-                            decorators = list(default = teal_transform_module())) {
+                            decorators = NULL) {
   message("Initializing tm_t_crosstable")
 
   # Requires Suggested packages
@@ -167,7 +167,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -413,6 +413,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     table_r <- reactive({
       req(iv_r()$is_valid())
+      req(output_q())
       decorated_output_q()[["table"]]
     })
 
