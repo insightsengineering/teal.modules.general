@@ -156,7 +156,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL,
-                          decorators = list()) {
+                          decorators = NULL) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -201,7 +201,7 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
