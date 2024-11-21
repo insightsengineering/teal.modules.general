@@ -156,7 +156,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL,
-                          decorators = list(default = teal_transform_module())) {
+                          decorators = list()) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -555,7 +555,10 @@ srv_g_response <- function(id,
     decorated_output_q <- srv_teal_transform_data(id = "decorator", data = output_q, transformators = decorators)
 
     decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
-    plot_r <- reactive(decorated_output_plot_q()[["plot"]])
+    plot_r <- reactive({
+      req(output_q()) # Ensure original errors are displaye
+      decorated_output_plot_q()[["plot"]]
+    })
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(

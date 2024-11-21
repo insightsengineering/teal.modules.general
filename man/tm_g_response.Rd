@@ -20,7 +20,7 @@ tm_g_response(
   ggplot2_args = teal.widgets::ggplot2_args(),
   pre_output = NULL,
   post_output = NULL,
-  decorators = list(default = teal_transform_module())
+  decorators = list()
 )
 }
 \arguments{
