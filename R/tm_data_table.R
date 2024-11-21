@@ -175,8 +175,7 @@ ui_page_data_table <- function(id,
               ns("if_distinct"),
               "Show only distinct rows:",
               value = FALSE
-            ),
-            ui_teal_transform_data(ns("decorator"), transformators = decorators)
+            )
           )
         ),
         fluidRow(
@@ -257,7 +256,8 @@ srv_page_data_table <- function(id,
                     ui_data_table(
                       id = session$ns(x),
                       choices = choices,
-                      selected = variables_selected
+                      selected = variables_selected,
+                      decorators = decorators
                     )
                   )
                 )
@@ -290,7 +290,8 @@ srv_page_data_table <- function(id,
 # UI function for the data_table module
 ui_data_table <- function(id,
                           choices,
-                          selected) {
+                          selected,
+                          decorators) {
   ns <- NS(id)
 
   if (!is.null(selected)) {
@@ -302,6 +303,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
+      ui_teal_transform_data(ns("decorate"), transformators = decorators),
       teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",
@@ -334,7 +336,7 @@ srv_data_table <- function(id,
       set = names(isolate(data())[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
-    #teal::validate_inputs(iv)
+    # teal::validate_inputs(iv)
 
     data_table_data <- reactive({
       df <- data()[[dataname]]
@@ -385,6 +387,5 @@ srv_data_table <- function(id,
       verbatim_content = reactive(teal.code::get_code(req(decorated_data_table_data()))),
       title = "R Code for PCA"
     )
-
   })
 }
