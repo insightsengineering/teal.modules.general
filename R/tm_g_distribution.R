@@ -132,7 +132,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_width = NULL,
                               pre_output = NULL,
                               post_output = NULL,
-                              decorators = list(default = teal_transform_module())) {
+                              decorators = list()) {
   message("Initializing tm_g_distribution")
 
   # Requires Suggested packages

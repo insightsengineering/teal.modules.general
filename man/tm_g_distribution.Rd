@@ -17,7 +17,7 @@ tm_g_distribution(
   plot_width = NULL,
   pre_output = NULL,
   post_output = NULL,
-  decorators = list(default = teal_transform_module())
+  decorators = list()
 )
 }
 \arguments{
