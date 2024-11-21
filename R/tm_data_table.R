@@ -380,7 +380,7 @@ srv_data_table <- function(id,
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
       verbatim_content = reactive(teal.code::get_code(req(decorated_data_table_data()))),
-      title = "R Code for PCA"
+      title = "R Code for Table Creation"
     )
   })
 }
