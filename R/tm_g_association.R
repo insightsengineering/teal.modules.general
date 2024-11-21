@@ -139,7 +139,7 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args(),
-                             decorators = list(default = teal_transform_module())) {
+                             decorators = NULL) {
   message("Initializing tm_g_association")
 
   # Normalize the parameters
@@ -175,7 +175,7 @@ tm_g_association <- function(label = "Association",
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -193,8 +193,7 @@ tm_g_association <- function(label = "Association",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
-      decorators = decorators
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -507,6 +506,7 @@ srv_tm_g_association <- function(id,
 
     plot_r <- reactive({
       req(iv_r()$is_valid())
+      req(output_q())
       decorated_output_q()[["plot"]]
     })
 
