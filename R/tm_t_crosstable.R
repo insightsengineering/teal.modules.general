@@ -407,7 +407,8 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         )
     })
 
-    decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q_no_print <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = table))
 
     output$title <- renderText(output_q()[["title"]])
 
