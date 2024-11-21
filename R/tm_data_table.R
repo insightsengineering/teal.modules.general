@@ -32,7 +32,7 @@
 #' @section Decorating `tm_data_table`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `table` (`DT::datatable`)
+#' - `table` ([DT::datatable()])
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
