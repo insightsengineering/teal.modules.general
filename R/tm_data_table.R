@@ -149,8 +149,7 @@ tm_data_table <- function(label = "Data Table",
     ),
     ui_args = list(
       pre_output = pre_output,
-      post_output = post_output,
-      decorators = decorators
+      post_output = post_output
     )
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -158,10 +157,7 @@ tm_data_table <- function(label = "Data Table",
 }
 
 # UI page module
-ui_page_data_table <- function(id,
-                               pre_output = NULL,
-                               post_output = NULL,
-                               decorators = decorators) {
+ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
 
   tagList(
