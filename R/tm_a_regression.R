@@ -1012,13 +1012,13 @@ srv_a_regression <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
       switch(input$plot_type,
-             "Response vs Regressor" = output_plot_0(),
-             "Residuals vs Fitted" = output_plot_1(),
-             "Normal Q-Q" = output_plot_2(),
-             "Scale-Location" = output_plot_3(),
-             "Cook's distance" = output_plot_4(),
-             "Residuals vs Leverage" = output_plot_5(),
-             "Cook's dist vs Leverage" = output_plot_6()
+        "Response vs Regressor" = output_plot_0(),
+        "Residuals vs Fitted" = output_plot_1(),
+        "Normal Q-Q" = output_plot_2(),
+        "Scale-Location" = output_plot_3(),
+        "Cook's distance" = output_plot_4(),
+        "Residuals vs Leverage" = output_plot_5(),
+        "Cook's dist vs Leverage" = output_plot_6()
       )
     })
 
