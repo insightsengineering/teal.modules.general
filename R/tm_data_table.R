@@ -182,9 +182,6 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
           )
         )
       ),
-      forms = tagList(
-        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-      ),
       pre_output = pre_output,
       post_output = post_output
     )
@@ -311,6 +308,9 @@ ui_data_table <- function(id,
     ),
     fluidRow(
       DT::dataTableOutput(ns("data_table"), width = "100%")
+    ),
+    fluidRow(
+      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     )
   )
 }
