@@ -114,7 +114,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL,
-                     decorators = list(default = teal_transform_module())) {
+                     decorators = NULL) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters
@@ -165,7 +165,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -985,6 +985,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
 
     plot_r <- reactive({
+      req(output_q())
       decorated_output_q()[["plot"]]
     })
 
