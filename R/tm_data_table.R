@@ -105,7 +105,7 @@ tm_data_table <- function(label = "Data Table",
                           server_rendering = FALSE,
                           pre_output = NULL,
                           post_output = NULL,
-                          decorators = list(default = teal_transform_module())) {
+                          decorators = NULL) {
   message("Initializing tm_data_table")
 
   # Start of assertions
@@ -131,7 +131,7 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   ans <- module(
@@ -345,6 +345,7 @@ srv_data_table <- function(id,
         data(),
         substitute(
           expr = {
+            variables <- vars
             dataframe_selected <- if (if_distinct) {
               dplyr::count(dataname, dplyr::across(dplyr::all_of(variables)))
             } else {
@@ -361,7 +362,7 @@ srv_data_table <- function(id,
           env = list(
             dataname = as.name(dataname),
             if_distinct = if_distinct(),
-            variables = input$variables,
+            vars = input$variables,
             args = dt_args,
             dt_options = dt_options,
             dt_rows = input$dt_rows
@@ -374,6 +375,7 @@ srv_data_table <- function(id,
       srv_teal_transform_data("decorate", data = data_table_data, transformators = decorators)
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
+      req(data_table_data())
       # no table is displayed
       decorated_data_table_data()[["table"]]
     })
