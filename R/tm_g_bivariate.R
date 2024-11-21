@@ -195,7 +195,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL,
-                           decorators = list(default = teal_transform_module())) {
+                           decorators = NULL) {
   message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
@@ -276,7 +276,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -300,8 +300,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args),
-      decorators = decorators
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -705,6 +704,7 @@ srv_g_bivariate <- function(id,
 
 
     plot_r <- reactive({
+      req(output_q())
       decorated_output_q_facets()[["plot"]]
     })
 
