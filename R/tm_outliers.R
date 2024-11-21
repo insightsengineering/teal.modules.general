@@ -11,15 +11,15 @@
 #' Specifies variable(s) to be analyzed for outliers.
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
-#' @param table_decorator (`list` of `teal_transform_module`) optional,
+#' @param table_decorator (`list` of `teal_transform_module` or `NULL`) optional,
 #' decorator for the table.
-#' @param boxplot_decorator (`list` of `teal_transform_module`) optional,
+#' @param boxplot_decorator (`list` of `teal_transform_module` or `NULL`) optional,
 #' decorator for the box plot.
-#' @param violin_decorator (`list` of `teal_transform_module`) optional,
+#' @param violin_decorator (`list` of `teal_transform_module` or `NULL`) optional,
 #' decorator for the violin plot.
-#' @param density_decorator (`list` of `teal_transform_module`) optional,
+#' @param density_decorator (`list` of `teal_transform_module` or `NULL`) optional,
 #' decorator for the density plot.
-#' @param cum_dist_decorator (`list` of `teal_transform_module`) optional,
+#' @param cum_dist_decorator (`list` of `teal_transform_module` or `NULL`) optional,
 #' decorator for the cumulative distribution plot.
 #'
 #' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
@@ -149,11 +149,11 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_width = NULL,
                         pre_output = NULL,
                         post_output = NULL,
-                        table_decorator = teal_transform_module(),
-                        boxplot_decorator = teal_transform_module(),
-                        violin_decorator = teal_transform_module(),
-                        density_decorator = teal_transform_module(),
-                        cum_dist_decorator = teal_transform_module()) {
+                        table_decorator = NULL,
+                        boxplot_decorator = NULL,
+                        violin_decorator = NULL,
+                        density_decorator = NULL,
+                        cum_dist_decorator = NULL) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters
@@ -190,6 +190,13 @@ tm_outliers <- function(label = "Outliers Module",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::check_class(table_decorator, "teal_transform_module", null.ok = TRUE)
+  checkmate::check_class(boxplot_decorator, "teal_transform_module", null.ok = TRUE)
+  checkmate::check_class(violin_decorator, "teal_transform_module", null.ok = TRUE)
+  checkmate::check_class(density_decorator, "teal_transform_module", null.ok = TRUE)
+  checkmate::check_class(cum_dist_decorator, "teal_transform_module", null.ok = TRUE)
+
   # End of assertions
 
   # Make UI args
@@ -1073,14 +1080,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     boxplot_r <- reactive({
       teal::validate_inputs(iv_r())
+      req(boxplot_q())
       decorated_boxplot_q()[["plot"]]
     })
     density_plot_r <- reactive({
       teal::validate_inputs(iv_r())
+      req(density_plot_q())
       decorated_density_plot_q()[["plot"]]
     })
     cumulative_plot_r <- reactive({
       teal::validate_inputs(iv_r())
+      req(cumulative_plot_q())
       decorated_cumulative_plot_q()[["plot"]]
     })
 
