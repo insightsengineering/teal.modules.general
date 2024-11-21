@@ -556,7 +556,7 @@ srv_g_response <- function(id,
 
     decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
     plot_r <- reactive({
-      req(output_q()) # Ensure original errors are displaye
+      req(output_q()) # Ensure original errors are displayed
       decorated_output_plot_q()[["plot"]]
     })
 
