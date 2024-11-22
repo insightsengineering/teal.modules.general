@@ -386,7 +386,7 @@ srv_g_scatterplotmatrix <- function(id,
           qenv,
           substitute(
             expr = {
-              g <- lattice::splom(
+              plot <- lattice::splom(
                 ANL,
                 varnames = varnames_value,
                 panel = function(x, y, ...) {
@@ -410,7 +410,6 @@ srv_g_scatterplotmatrix <- function(id,
                 alpha = alpha_value,
                 cex = cex_value
               )
-              print(g)
             },
             env = list(
               varnames_value = varnames,
@@ -429,7 +428,13 @@ srv_g_scatterplotmatrix <- function(id,
           qenv,
           substitute(
             expr = {
-              plot <- lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value)
+              plot <- lattice::splom(
+                ANL,
+                varnames = varnames_value,
+                pch = 16,
+                alpha = alpha_value,
+                cex = cex_value
+              )
             },
             env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
           )
@@ -438,11 +443,11 @@ srv_g_scatterplotmatrix <- function(id,
       qenv
     })
 
-    decorated_output_q <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
-    decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
+    decorated_output_q_no_print <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
+    decorated_output_q <- reactive(within(decorated_output_q_no_print(), print(plot)))
     plot_r <- reactive({
       req(output_q()) # Ensure original errors are displayed
-      decorated_output_plot_q()[["plot"]]
+      decorated_output_q()[["plot"]]
     })
 
     # Insert the plot into a plot_with_settings module
