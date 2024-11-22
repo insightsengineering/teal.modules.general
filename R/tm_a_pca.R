@@ -240,7 +240,7 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_teal_transform_data(ns("decorate"), transformators = args$decorators)
+            ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -975,10 +975,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
-    decorated_output_q_no_print <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
     decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
-
-
 
     plot_r <- reactive({
       req(output_q())

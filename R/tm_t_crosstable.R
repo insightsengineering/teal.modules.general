@@ -234,7 +234,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       ),
-      ui_teal_transform_data(ns("decorate"), transformators = args$decorators)
+      ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -407,7 +407,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         )
     })
 
-    decorated_output_q_no_print <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
     decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = table))
 
     output$title <- renderText(output_q()[["title"]])
