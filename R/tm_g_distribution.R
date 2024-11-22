@@ -280,7 +280,7 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_teal_transform_data(ns("d_dist"), transformators = args$decorators),
+            ui_transform_teal_data(ns("d_dist"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -289,7 +289,7 @@ ui_distribution <- function(id, ...) {
           teal.widgets::panel_item(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_teal_transform_data(ns("d_qq"), transformators = args$decorators),
+            ui_transform_teal_data(ns("d_qq"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -1242,13 +1242,13 @@ srv_distribution <- function(id,
     output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
     output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
-    decorated_output_dist_q <- srv_teal_transform_data(
+    decorated_output_dist_q <- srv_transform_teal_data(
       "d_dist",
       data = output_dist_q,
       transformators = decorators
     )
 
-    decorated_output_qq_q <- srv_teal_transform_data(
+    decorated_output_qq_q <- srv_transform_teal_data(
       "d_qq",
       data = output_qq_q,
       transformators = decorators
