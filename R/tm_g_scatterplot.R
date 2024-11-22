@@ -30,7 +30,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_response`:
+#' @section Decorating `tm_g_scatterplot`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
