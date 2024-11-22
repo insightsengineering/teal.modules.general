@@ -1055,21 +1055,19 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         function(x) round(sum(is.na(x)) / length(x), 4)
       }
 
-      qenv <- common_code_q()
-
-      if (!is.null(group_var)) {
-        qenv <- teal.code::eval_code(
-          qenv,
+      qenv <- if (!is.null(group_var)) {
+        teal.code::eval_code(
+          common_code_q(),
           substitute(
             expr = {
-              table <- ANL %>%
+              summary_data <- ANL %>%
                 dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
                 dplyr::group_by_at(group_var) %>%
                 dplyr::filter(group_var_name %in% group_vals)
 
-              count_data <- dplyr::summarise(table, n = dplyr::n())
+              count_data <- dplyr::summarise(summary_data, n = dplyr::n())
 
-              table <- dplyr::summarise_all(table, summ_fn) %>%
+              summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
                 dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
                 tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
                 tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
@@ -1081,8 +1079,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           )
         )
       } else {
-        qenv <- teal.code::eval_code(
-          qenv,
+        teal.code::eval_code(
+          common_code_q(),
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
@@ -1096,7 +1094,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
       }
 
-      within(qenv, quote(table <- DT::datatable(summary_data)))
+      within(qenv, table <- DT::datatable(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1257,10 +1255,13 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     # summary_table_q
-    decorated_summary_table_q <- srv_transform_teal_data(
+    decorated_summary_table_q_no_print <- srv_transform_teal_data(
       id = "decorator",
       data = summary_table_q,
       transformators = decorators
+    )
+    decorated_summary_table_q <- reactive(
+      within(decorated_summary_table_q_no_print(), expr = table)
     )
 
     # by_subject_plot_q
@@ -1269,7 +1270,9 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       data = by_subject_plot_q,
       transformators = decorators
     )
-    decorated_by_subject_plot_q <- reactive(within(decorated_by_subject_plot_q_no_print(), print(plot)))
+    decorated_by_subject_plot_q <- reactive(
+      within(decorated_by_subject_plot_q_no_print(), print(plot))
+    )
 
     # Output objects for use in widgets
     summary_plot_r <- reactive({
@@ -1297,12 +1300,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         if (length(input$variables_select) == 0) {
           # so that zeroRecords message gets printed
           # using tibble as it supports weird column names, such as " "
-          tibble::tibble(` ` = logical(0))
+          DT::datatable(
+            tibble::tibble(` ` = logical(0)),
+            options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
+          )
         } else {
           summary_table_r()
         }
-      },
-      options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
+      }
     )
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1326,23 +1331,23 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       width = plot_width
     )
 
-    final_q <- reactive({
+    decorated_final_q <- reactive({
       req(input$summary_type)
       sum_type <- input$summary_type
       if (sum_type == "Summary") {
-        summary_plot_q()
+        decorated_summary_plot_q()
       } else if (sum_type == "Combinations") {
-        combination_plot_q()
+        decorated_combination_plot_q()
       } else if (sum_type == "By Variable Levels") {
-        summary_table_q()
+        decorated_summary_table_q()
       } else if (sum_type == "Grouped by Subject") {
-        by_subject_plot_q()
+        decorated_by_subject_plot_q()
       }
     })
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(final_q()))),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
       title = "Show R Code for Missing Data"
     )
 
@@ -1378,7 +1383,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(final_q())))
+        card$append_src(teal.code::get_code(req(decorated_final_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
