@@ -125,8 +125,8 @@ tm_data_table <- function(label = "Data Table",
 
   ans <- module(
     label,
-    server = srv_page_data_table,
-    ui = ui_page_data_table,
+    server = srv_data_table,
+    ui = ui_data_table,
     datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
     server_args = list(
       variables_selected = variables_selected,
@@ -145,7 +145,7 @@ tm_data_table <- function(label = "Data Table",
 }
 
 # UI page module
-ui_page_data_table <- function(id,
+ui_data_table <- function(id,
                                pre_output = NULL,
                                post_output = NULL) {
   ns <- NS(id)
@@ -168,7 +168,7 @@ ui_page_data_table <- function(id,
           class = "mb-8",
           column(
             width = 12,
-            uiOutput(ns("dataset_table"))
+            uiOutput(ns("data_tables"))
           )
         )
       ),
@@ -179,13 +179,19 @@ ui_page_data_table <- function(id,
 }
 
 # Server page module
-srv_page_data_table <- function(id,
+srv_data_table <- function(id,
                                 data,
-                                datasets_selected,
-                                variables_selected,
-                                dt_args,
-                                dt_options,
-                                server_rendering) {
+                                variables_selected = list(),
+                                datasets_selected = character(0),
+                                dt_args = list(),
+                                dt_options = list(
+                                  searching = FALSE,
+                                  pageLength = 30,
+                                  lengthMenu = c(5, 15, 30, 100),
+                                  scrollX = TRUE
+                                ),
+                                server_rendering = FALSE,
+                                filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -193,24 +199,38 @@ srv_page_data_table <- function(id,
 
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
-
-    datanames <- isolate(names(data()))
-    datanames <- Filter(function(name) {
-      is.data.frame(isolate(data())[[name]])
-    }, datanames)
-
-    if (!identical(datasets_selected, character(0))) {
-      checkmate::assert_subset(datasets_selected, datanames)
-      datanames <- datasets_selected
-    }
-
-    output$dataset_table <- renderUI({
+    
+    datanames <- reactive({
+      df_datanames <- Filter(
+        function(name) is.data.frame(isolate(data())[[name]]), 
+        names(data())
+      )
+      if (!identical(datasets_selected, character(0))) {
+        missing_datanames <- setdiff(datasets_selected, df_datanames)
+        if (length(missing_datanames)) {
+          shiny::showNotification(
+            sprintf(
+              "Some datasets specified `datasets_selected` are missing or are not inheriting from data.frame, those are: %s",
+              toString(missing_datanames)
+            )
+          )
+        }
+        df_datanames <- intersect(datasets_selected, df_datanames)
+      }
+      
+      df_datanames
+    })
+    
+    
+    
+    output$data_tables <- renderUI({
+      req(datanames())
       do.call(
         tabsetPanel,
         c(
           list(id = session$ns("dataname_tab")),
           lapply(
-            datanames,
+            datanames(),
             function(x) {
               dataset <- isolate(data()[[x]])
               choices <- names(dataset)
@@ -235,7 +255,7 @@ srv_page_data_table <- function(id,
                   width = 12,
                   div(
                     class = "mt-4",
-                    ui_data_table(
+                    ui_dataset_table(
                       id = session$ns(x),
                       choices = choices,
                       selected = variables_selected
@@ -248,27 +268,34 @@ srv_page_data_table <- function(id,
         )
       )
     })
-
-    lapply(
-      datanames,
-      function(x) {
-        srv_data_table(
-          id = x,
-          data = data,
-          dataname = x,
-          if_filtered = if_filtered,
-          if_distinct = if_distinct,
-          dt_args = dt_args,
-          dt_options = dt_options,
-          server_rendering = server_rendering
-        )
-      }
-    )
+    
+    # server should be run only once
+    modules_run <- reactiveVal()
+    modules_to_run <- reactive(setdiff(datanames(), modules_run()))
+    observeEvent(modules_to_run(), {
+      lapply(
+        modules_to_run(),
+        function(dataname) {
+          srv_dataset_table(
+            id = dataname,
+            data = data,
+            dataname = dataname,
+            if_filtered = if_filtered,
+            if_distinct = if_distinct,
+            dt_args = dt_args,
+            dt_options = dt_options,
+            server_rendering = server_rendering,
+            filter_panel_api = filter_panel_api
+          )
+        }
+      )
+      modules_run(union(modules_run(), modules_to_run()))
+    })
   })
 }
 
 # UI function for the data_table module
-ui_data_table <- function(id,
+ui_dataset_table <- function(id,
                           choices,
                           selected) {
   ns <- NS(id)
@@ -281,6 +308,7 @@ ui_data_table <- function(id,
 
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
+    div(actionButton(ns("apply_brush_filter"), "Apply filter")),
     fluidRow(
       teal.widgets::optionalSelectInput(
         ns("variables"),
@@ -298,14 +326,15 @@ ui_data_table <- function(id,
 }
 
 # Server function for the data_table module
-srv_data_table <- function(id,
+srv_dataset_table <- function(id,
                            data,
                            dataname,
                            if_filtered,
                            if_distinct,
                            dt_args,
                            dt_options,
-                           server_rendering) {
+                           server_rendering,
+                           filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
@@ -335,6 +364,30 @@ srv_data_table <- function(id,
       dt_args$data <- dataframe_selected
 
       do.call(DT::datatable, dt_args)
+    })
+
+    observeEvent(input$data_table_rows_selected, ignoreNULL = FALSE, {
+      if (is.null(input$data_table_rows_selected)) {
+        shinyjs::hide("apply_brush_filter")
+      } else {
+        shinyjs::show("apply_brush_filter")
+      }
+    })
+
+    observeEvent(input$apply_brush_filter, {
+      if (is.null(input$data_table_rows_selected)) {
+        return(NULL)
+      }
+      dataset <- data()[[dataname]][input$data_table_rows_selected, ]
+      # todo: when added another time then it is duplicated
+      slice <- teal_slices(teal_slice(
+        dataname = "ADSL",
+        varname = "USUBJID",
+        selected = unique(dataset$USUBJID), # todo: this needs to be parametrised or based on join_keys
+        id = "brush_filter"
+      ))
+      shinyjs::hide("apply_brush_filter")
+      set_filter_state(filter_panel_api, slice)
     })
   })
 }
