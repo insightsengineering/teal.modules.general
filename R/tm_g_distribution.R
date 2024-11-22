@@ -1241,6 +1241,7 @@ srv_distribution <- function(id,
       data = output_dist_q,
       transformators = decorators
     )
+
     decorated_output_dist_q <- reactive(within(req(decorated_output_dist_q_no_print()), expr = print(plot)))
 
     decorated_output_qq_q_no_print <- srv_transform_teal_data(
@@ -1248,12 +1249,8 @@ srv_distribution <- function(id,
       data = output_qq_q,
       transformators = decorators
     )
+
     decorated_output_qq_q <- reactive(within(req(decorated_output_qq_q_no_print()), expr = print(plot)))
-
-
-    decorated_output_dist_q <- reactive(within(decorated_output_dist_q_no_print(), print(plot)))
-    decorated_output_qq_q <- reactive(within(decorated_output_qq_q_no_print(), print(plot)))
-
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
