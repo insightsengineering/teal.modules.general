@@ -308,9 +308,6 @@ ui_data_table <- function(id,
     ),
     fluidRow(
       DT::dataTableOutput(ns("data_table"), width = "100%")
-    ),
-    fluidRow(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     )
   )
 }
@@ -376,11 +373,5 @@ srv_data_table <- function(id,
       req(data_table_data())
       decorated_data_table_data()[["table"]]
     })
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_data_table_data()))),
-      title = "R Code for Table Creation"
-    )
   })
 }
