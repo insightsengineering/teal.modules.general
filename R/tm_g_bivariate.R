@@ -350,7 +350,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_teal_transform_data(ns("decorate"), transformators = args$decorators),
+      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -665,7 +665,7 @@ srv_g_bivariate <- function(id,
       teal.code::eval_code(merged$anl_q_r(), substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
 
     decorated_output_q_facets <- reactive({
       ANL <- merged$anl_q_r()[["ANL"]]
