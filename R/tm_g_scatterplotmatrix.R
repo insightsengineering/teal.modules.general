@@ -249,7 +249,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_teal_transform_data(ns("decorator"), transformators = args$decorators),
+      ui_transform_teal_data(ns("decorator"), transformators = args$decorators),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -433,7 +433,7 @@ srv_g_scatterplotmatrix <-
         qenv
       })
 
-      decorated_output_q <- srv_teal_transform_data(id = "decorator", data = output_q, transformators = decorators)
+      decorated_output_q <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
       decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
       plot_r <- reactive({
         req(output_q()) # Ensure original errors are displayed
