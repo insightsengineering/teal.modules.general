@@ -70,7 +70,7 @@ Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be le
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{table} (\code{DT::datatable})
+\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
 
 For additional details and examples of decorators, refer to the vignette

@@ -296,7 +296,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
-      ui_teal_transform_data(ns("decorate"), transformators = decorators),
+      ui_transform_teal_data(ns("decorate"), transformators = decorators),
       teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",
@@ -367,7 +367,7 @@ srv_data_table <- function(id,
     })
 
     decorated_data_table_data <-
-      srv_teal_transform_data("decorate", data = data_table_data, transformators = decorators)
+      srv_transform_teal_data("decorate", data = data_table_data, transformators = decorators)
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
       req(data_table_data())
