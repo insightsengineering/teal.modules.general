@@ -421,7 +421,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
         )
       )
     ),
-    ui_teal_transform_data(ns("decorator"), transformators = decorators),
+    ui_transform_teal_data(ns("decorator"), transformators = decorators),
     teal.widgets::panel_item(
       title = "Plot settings",
       selectInput(
@@ -860,7 +860,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
 
-    decorated_summary_plot_q <- srv_teal_transform_data(id = "decorator", data = summary_plot_q, transformators = decorators)
+    decorated_summary_plot_q <- srv_transform_teal_data(id = "decorator", data = summary_plot_q, transformators = decorators)
     decorated_summary_plot_grob_q <- reactive({
       q <- if (isTRUE(input$if_patients_plot)) {
         within(
@@ -1040,7 +1040,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
               labs2 +
               ggthemes2 +
               themes2
-
           },
           env = list(
             labs1 = parsed_ggplot2_args1$labs,
@@ -1054,20 +1053,20 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
-    decorated_combination_plot_q <- srv_teal_transform_data(id = "decorator", data = combination_plot_q, transformators = decorators)
+    decorated_combination_plot_q <- srv_transform_teal_data(id = "decorator", data = combination_plot_q, transformators = decorators)
     decorated_combination_plot_grob_q <- reactive({
-        within(
-          decorated_combination_plot_q(),
-          {
-              g1 <- ggplotGrob(combination_plot_top)
-              g2 <- ggplotGrob(combination_plot_bottom)
+      within(
+        decorated_combination_plot_q(),
+        {
+          g1 <- ggplotGrob(combination_plot_top)
+          g2 <- ggplotGrob(combination_plot_bottom)
 
-              g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-              g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
-              grid::grid.newpage()
-              grid::grid.draw(g)
-          }
-        )
+          g <- gridExtra::gtable_rbind(g1, g2, size = "last")
+          g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
+          grid::grid.newpage()
+          grid::grid.draw(g)
+        }
+      )
     })
 
     combination_plot_r <- reactive({
@@ -1156,7 +1155,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
     })
 
     decorated_summary_table_q <-
-      srv_teal_transform_data(id = "decorator", data = summary_table_q, transformators = decorators)
+      srv_transform_teal_data(id = "decorator", data = summary_table_q, transformators = decorators)
     summary_table_r <- reactive({
       req(summary_table_q())
       decorated_summary_table_q()[["table"]]
@@ -1268,7 +1267,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
     })
 
-    decorated_by_subject_plot_q <- srv_teal_transform_data(id = "decorator", data = by_subject_plot_q, transformators = decorators)
+    decorated_by_subject_plot_q <- srv_transform_teal_data(id = "decorator", data = by_subject_plot_q, transformators = decorators)
     decorated_by_subject_plot_print_q <- reactive(within(decorated_by_subject_plot_q(), print(plot)))
 
     by_subject_plot_r <- reactive({
