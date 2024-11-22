@@ -39,6 +39,14 @@
 #' @note For more examples, please see the vignette "Using response plot" via
 #' `vignette("using-response-plot", package = "teal.modules.general")`.
 #'
+#' @section Decorating `tm_g_response`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -147,7 +155,8 @@ tm_g_response <- function(label = "Response Plot",
                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
-                          post_output = NULL) {
+                          post_output = NULL,
+                          decorators = NULL) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -191,6 +200,8 @@ tm_g_response <- function(label = "Response Plot",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -210,7 +221,12 @@ tm_g_response <- function(label = "Response Plot",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -269,6 +285,7 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
+      ui_transform_teal_data(ns("decorator"), transformators = args$decorators),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -304,7 +321,8 @@ srv_g_response <- function(id,
                            col_facet,
                            plot_height,
                            plot_width,
-                           ggplot2_args) {
+                           ggplot2_args,
+                           decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -523,8 +541,7 @@ srv_g_response <- function(id,
       )
 
       plot_call <- substitute(expr = {
-        p <- plot_call + labs + ggthemes + themes
-        print(p)
+        plot <- plot_call + labs + ggthemes + themes
       }, env = list(
         plot_call = plot_call,
         labs = parsed_ggplot2_args$labs,
@@ -535,7 +552,13 @@ srv_g_response <- function(id,
       teal.code::eval_code(qenv, plot_call)
     })
 
-    plot_r <- reactive(output_q()[["p"]])
+    decorated_output_q <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
+
+    decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
+    plot_r <- reactive({
+      req(output_q()) # Ensure original errors are displayed
+      decorated_output_plot_q()[["plot"]]
+    })
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -547,7 +570,7 @@ srv_g_response <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_plot_q()))),
       title = "Show R Code for Response"
     )
 
@@ -566,7 +589,7 @@ srv_g_response <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_plot_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

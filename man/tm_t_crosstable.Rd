@@ -12,7 +12,8 @@ tm_t_crosstable(
   show_total = TRUE,
   pre_output = NULL,
   post_output = NULL,
-  basic_table_args = teal.widgets::basic_table_args()
+  basic_table_args = teal.widgets::basic_table_args(),
+  decorators = NULL
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ with settings for the module table.
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
+if not \code{NULL}, decorator for tables or plots included in the module.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -61,6 +65,18 @@ options for showing percentages and sub-totals.
 For more examples, please see the vignette "Using cross table" via
 \code{vignette("using-cross-table", package = "teal.modules.general")}.
 }
+\section{Decorating \code{tm_t_crosstable}}{
+
+
+This module generates the following objects, which can be modified in place using decorators:
+\itemize{
+\item \code{table} (\code{ElementaryTable} - output of \code{rtables::build_table})
+}
+
+For additional details and examples of decorators, refer to the vignette
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+}
+
 \examples{
 \dontshow{if (require("rtables", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # general data example

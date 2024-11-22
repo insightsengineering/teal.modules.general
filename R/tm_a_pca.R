@@ -18,11 +18,21 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_a_pca`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -58,6 +68,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -102,7 +113,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      alpha = c(1, 0, 1),
                      size = c(2, 1, 8),
                      pre_output = NULL,
-                     post_output = NULL) {
+                     post_output = NULL,
+                     decorators = NULL) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters
@@ -152,6 +164,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -169,7 +183,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
       list(
         plot_height = plot_height,
         plot_width = plot_width,
-        ggplot2_args = ggplot2_args
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
       )
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
@@ -224,7 +239,8 @@ ui_a_pca <- function(id, ...) {
               label = "Plot type",
               choices = args$plot_choices,
               selected = args$plot_choices[1]
-            )
+            ),
+            ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -289,7 +305,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args) {
+srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -549,7 +565,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
 
             cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
-            g <- ggplot(mapping = aes_string(x = "component", y = "value")) +
+            plot <- ggplot(mapping = aes_string(x = "component", y = "value")) +
               geom_bar(
                 aes(fill = "Single variance"),
                 data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
@@ -569,8 +585,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               scale_fill_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[1])) +
               ggthemes +
               themes
-
-            print(g)
           },
           env = list(
             ggthemes = parsed_ggplot2_args$ggtheme,
@@ -628,7 +642,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               y = sin(seq(0, 2 * pi, length.out = 100))
             )
 
-            g <- ggplot(pca_rot) +
+            plot <- ggplot(pca_rot) +
               geom_point(aes_string(x = x_axis, y = y_axis)) +
               geom_label(
                 aes_string(x = x_axis, y = y_axis, label = "label"),
@@ -640,7 +654,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               labs +
               ggthemes +
               themes
-            print(g)
           },
           env = list(
             x_axis = x_axis,
@@ -861,8 +874,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         qenv,
         substitute(
           expr = {
-            g <- plot_call
-            print(g)
+            plot <- plot_call
           },
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
@@ -938,10 +950,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           expr = {
             pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
               dplyr::as_tibble(rownames = "Variable")
-
-            g <- plot_call
-
-            print(g)
+            plot <- plot_call
           },
           env = list(
             pc = pc,
@@ -966,8 +975,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
+    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
+
     plot_r <- reactive({
-      output_q()[["g"]]
+      req(output_q())
+      decorated_output_q()[["plot"]]
     })
 
     pws <- teal.widgets::plot_with_settings_srv(
@@ -1034,7 +1047,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "R Code for PCA"
     )
 
@@ -1057,7 +1070,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

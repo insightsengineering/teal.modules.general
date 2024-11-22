@@ -16,7 +16,8 @@ tm_a_pca(
   alpha = c(1, 0, 1),
   size = c(2, 1, 8),
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  decorators = NULL
 )
 }
 \arguments{
@@ -72,6 +73,9 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
+if not \code{NULL}, decorator for tables or plots included in the module.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -82,7 +86,20 @@ ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and
 Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
 font size, through UI inputs.
 }
+\section{Decorating \code{tm_a_pca}}{
+
+
+This module generates the following objects, which can be modified in place using decorators:
+\itemize{
+\item \code{plot} (\code{ggplot2})
+}
+
+For additional details and examples of decorators, refer to the vignette
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+}
+
 \examples{
+
 # general data example
 data <- teal_data()
 data <- within(data, {
@@ -112,6 +129,7 @@ app <- init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
+
 
 # CDISC data example
 data <- teal_data()
