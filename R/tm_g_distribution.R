@@ -915,7 +915,6 @@ srv_distribution <- function(id,
           substitute(
             expr = {
               plot <- plot_call
-              print(plot)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
@@ -1047,7 +1046,6 @@ srv_distribution <- function(id,
           substitute(
             expr = {
               plot <- plot_call
-              print(plot)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
@@ -1242,17 +1240,21 @@ srv_distribution <- function(id,
     output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
     output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
-    decorated_output_dist_q <- srv_transform_teal_data(
+    decorated_output_dist_q_no_print <- srv_transform_teal_data(
       "d_dist",
       data = output_dist_q,
       transformators = decorators
     )
 
-    decorated_output_qq_q <- srv_transform_teal_data(
+    decorated_output_qq_q_no_print <- srv_transform_teal_data(
       "d_qq",
       data = output_qq_q,
       transformators = decorators
     )
+
+    decorated_output_dist_q <- reactive(within(decorated_output_dist_q_no_print(), print(plot)))
+    decorated_output_qq_q <- reactive(within(decorated_output_qq_q_no_print(), print(plot)))
+
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
