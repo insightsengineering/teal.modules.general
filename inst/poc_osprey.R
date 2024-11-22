@@ -1,0 +1,44 @@
+pkgload::load_all("teal")
+pkgload::load_all("teal.widgets")
+pkgload::load_all("teal.modules.general")
+
+data <- within(teal_data(), {
+  library(dplyr)
+  library(osprey)
+
+  ADSL <- osprey::rADSL[1:20, ]
+  ADRS <- filter(rADRS, PARAMCD == "OVRINV")
+})
+
+plotly_specs <- list(
+  list(
+    "plotly::add_bars",
+    data = quote(ADSL),
+    x = ~ as.integer(TRTEDTM - TRTSDTM), y = ~USUBJID, color = ~ARM,
+    colors = c("A: Drug X" = "#343CFF", "B: Placebo" = "#FF484B", "C: Combination" = "#222222")
+  ),
+  list(
+    "plotly::add_markers",
+    data = quote(left_join(ADSL, ADRS)),
+    x = ~ADY, y = ~USUBJID, symbol = ~AVALC,
+    marker = list(
+      size = 10,
+      color = "#329133"
+    )
+  )
+)
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_data_table(),
+    tm_p_swimlane2(
+      label = "Swimlane",
+      plotly_specs = plotly_specs,
+      title = "Swimlane Efficacy Plot",
+      symbols = c("CR" = "circle", "PR" = "triangle-up", "SD" = "diamond-wide", "PD" = "square", "NE" = "x-thin-open")
+    )
+  )
+)
+
+shinyApp(app$ui, app$server)
