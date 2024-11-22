@@ -329,7 +329,6 @@ srv_data_table <- function(id,
       set = names(isolate(data())[[dataname]]), message_fmt = "Not all selected variables exist in the data"
     ))
     iv$enable()
-    # teal::validate_inputs(iv)
 
     data_table_data <- reactive({
       df <- data()[[dataname]]
@@ -371,6 +370,7 @@ srv_data_table <- function(id,
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
       req(data_table_data())
+      teal::validate_inputs(iv)
       decorated_data_table_data()[["table"]]
     })
   })
