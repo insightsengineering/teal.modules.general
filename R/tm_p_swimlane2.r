@@ -68,7 +68,11 @@ srv_p_swimlane2 <- function(id,
         shinyjs::hide("brushing_wrapper")
       } else {
         shinyjs::show("brushing_wrapper")
-        eval_code(plotly_q(), as.expression(brush_filter_call()))
+        q <- eval_code(plotly_q(), as.expression(brush_filter_call()))
+        module_datanames <- unique(lapply(plotly_specs, function(x) deparse(x$data)))
+        is_brushed <- sapply(module_datanames, function(x) is.data.frame(q[[x]]) && nrow(q[[x]]))
+        brushed_datanames <- unique(unlist(module_datanames[is_brushed]))
+        q[brushed_datanames] # we want to show brushed datanames only
       }
     })
 
