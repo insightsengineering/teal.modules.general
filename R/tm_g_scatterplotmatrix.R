@@ -289,7 +289,8 @@ srv_g_scatterplotmatrix <- function(id,
                                     filter_panel_api,
                                     variables,
                                     plot_height,
-                                    plot_width, decorators) {
+                                    plot_width,
+                                    decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
