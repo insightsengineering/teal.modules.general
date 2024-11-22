@@ -913,9 +913,7 @@ srv_distribution <- function(id,
         teal.code::eval_code(
           qenv,
           substitute(
-            expr = {
-              plot <- plot_call
-            },
+            expr = plot <- plot_call,
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
         )
@@ -1044,9 +1042,7 @@ srv_distribution <- function(id,
         teal.code::eval_code(
           qenv,
           substitute(
-            expr = {
-              plot <- plot_call
-            },
+            expr = plot <- plot_call,
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
         )
@@ -1245,12 +1241,15 @@ srv_distribution <- function(id,
       data = output_dist_q,
       transformators = decorators
     )
+    decorated_output_dist_q <- reactive(within(req(decorated_output_dist_q_no_print()), expr = print(plot)))
 
     decorated_output_qq_q_no_print <- srv_transform_teal_data(
       "d_qq",
       data = output_qq_q,
       transformators = decorators
     )
+    decorated_output_qq_q <- reactive(within(req(decorated_output_qq_q_no_print()), expr = print(plot)))
+
 
     decorated_output_dist_q <- reactive(within(decorated_output_dist_q_no_print(), print(plot)))
     decorated_output_qq_q <- reactive(within(decorated_output_qq_q_no_print(), print(plot)))
