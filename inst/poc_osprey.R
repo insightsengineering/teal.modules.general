@@ -6,20 +6,23 @@ data <- within(teal_data(), {
   library(dplyr)
   library(osprey)
 
-  ADSL <- osprey::rADSL[1:20, ]
-  ADRS <- filter(rADRS, PARAMCD == "OVRINV")
+  ADSL <- osprey::rADSL |>
+    mutate(x_val = as.integer(TRTEDTM - TRTSDTM))
+  ADRS <- osprey::rADRS
 })
+
+join_keys(data) <- default_cdisc_join_keys[c("ADSL", "ADRS")]
 
 plotly_specs <- list(
   list(
     "plotly::add_bars",
     data = quote(ADSL),
-    x = ~ as.integer(TRTEDTM - TRTSDTM), y = ~USUBJID, color = ~ARM,
+    x = ~x_val, y = ~USUBJID, color = ~ARM,
     colors = c("A: Drug X" = "#343CFF", "B: Placebo" = "#FF484B", "C: Combination" = "#222222")
   ),
   list(
     "plotly::add_markers",
-    data = quote(left_join(ADSL, ADRS)),
+    data = quote(ADRS),
     x = ~ADY, y = ~USUBJID, symbol = ~AVALC,
     marker = list(
       size = 10,
@@ -30,6 +33,18 @@ plotly_specs <- list(
 
 app <- init(
   data = data,
+  filter = teal_slices(
+    teal_slice(
+      "ADSL",
+      "AGE",
+      selected = c(20, 23)
+    ),
+    teal_slice(
+      "ADRS",
+      "PARAMCD",
+      selected = "OVRINV"
+    )
+  ),
   modules = modules(
     tm_data_table(),
     tm_p_swimlane2(
