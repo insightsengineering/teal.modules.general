@@ -20,7 +20,7 @@ ui_p_swimlane2 <- function(id) {
     plotly::plotlyOutput(ns("plot")),
     shinyjs::hidden(div(
       id = ns("brushing_wrapper"),
-      ui_page_data_table(ns("brush_tables"))
+      ui_data_table(ns("brush_tables"))
     ))
   )
 }
@@ -73,7 +73,7 @@ srv_p_swimlane2 <- function(id,
     })
 
     observeEvent(brush_filtered_data(), once = TRUE, {
-      srv_page_data_table("brush_tables", data = brush_filtered_data, filter_panel_api = filter_panel_api)
+      srv_data_table("brush_tables", data = brush_filtered_data, filter_panel_api = filter_panel_api)
     })
   })
 }
