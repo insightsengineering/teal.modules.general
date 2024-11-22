@@ -28,7 +28,8 @@
 #' @section Decorating `tm_g_association`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' - `plot_top` (`ggplot2`)
+#' - `plot_bottom` (`ggplot2`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
@@ -485,10 +486,8 @@ srv_tm_g_association <- function(id,
         teal.code::eval_code(
           substitute(
             expr = {
-              plots <- plot_calls
-              plot <- tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
-              grid::grid.newpage()
-              grid::grid.draw(plot)
+              plot_top <- plot_calls[[1]]
+              plot_bottom <- plot_calls[[1]]
             },
             env = list(
               plot_calls = do.call(
@@ -500,14 +499,24 @@ srv_tm_g_association <- function(id,
           )
         )
     })
-    # TODO allow to decorate ref_call and var_calls before they are included in tern::stack_grobs(grobs = lapply(plots, ggplotGrob))
 
     decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_grob_q <- reactive({
+        within(
+          decorated_output_q(),
+          {
+            plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
+            grid::grid.newpage()
+            grid::grid.draw(plot)
+          }
+        )
+      })
+
 
     plot_r <- reactive({
       req(iv_r()$is_valid())
       req(output_q())
-      decorated_output_q()[["plot"]]
+      decorated_output_grob_q()[["plot"]]
     })
 
     pws <- teal.widgets::plot_with_settings_srv(
