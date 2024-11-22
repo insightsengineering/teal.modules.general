@@ -859,40 +859,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       qenv
     })
 
-
-    decorated_summary_plot_q <- srv_transform_teal_data(id = "decorator", data = summary_plot_q, transformators = decorators)
-    decorated_summary_plot_grob_q <- reactive({
-      q <- if (isTRUE(input$if_patients_plot)) {
-        within(
-          decorated_summary_plot_q(),
-          {
-            g1 <- ggplotGrob(summary_plot_top)
-            g2 <- ggplotGrob(summary_plot_bottom)
-            g <- gridExtra::gtable_cbind(g1, g2, size = "first")
-            g$heights <- grid::unit.pmax(g1$heights, g2$heights)
-            grid::grid.newpage()
-          }
-        )
-      } else {
-        within(
-          decorated_summary_plot_q(),
-          {
-            g <- ggplotGrob(summary_plot_top)
-            grid::grid.newpage()
-          }
-        )
-      }
-      teal.code::eval_code(
-        q,
-        quote(grid::grid.draw(g))
-      )
-    })
-
-    summary_plot_r <- reactive({
-      req(summary_plot_q())
-      decorated_summary_plot_grob_q()[["g"]]
-    })
-
     combination_cutoff_q <- reactive({
       req(common_code_q())
       teal.code::eval_code(
@@ -1053,27 +1019,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
-    decorated_combination_plot_q <- srv_transform_teal_data(id = "decorator", data = combination_plot_q, transformators = decorators)
-    decorated_combination_plot_grob_q <- reactive({
-      within(
-        decorated_combination_plot_q(),
-        {
-          g1 <- ggplotGrob(combination_plot_top)
-          g2 <- ggplotGrob(combination_plot_bottom)
-
-          g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-          g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
-          grid::grid.newpage()
-          grid::grid.draw(g)
-        }
-      )
-    })
-
-    combination_plot_r <- reactive({
-      req(combination_plot_q())
-      decorated_combination_plot_grob_q()[["g"]]
-    })
-
     summary_table_q <- reactive({
       req(
         input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
@@ -1117,14 +1062,14 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           qenv,
           substitute(
             expr = {
-              summary_data <- ANL %>%
+              table <- ANL %>%
                 dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
                 dplyr::group_by_at(group_var) %>%
                 dplyr::filter(group_var_name %in% group_vals)
 
-              count_data <- dplyr::summarise(summary_data, n = dplyr::n())
+              count_data <- dplyr::summarise(table, n = dplyr::n())
 
-              summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
+              table <- dplyr::summarise_all(table, summ_fn) %>%
                 dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
                 tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
                 tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
@@ -1151,14 +1096,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
       }
 
-      teal.code::eval_code(qenv, quote(table <- DT::datatable(summary_data)))
-    })
-
-    decorated_summary_table_q <-
-      srv_transform_teal_data(id = "decorator", data = summary_table_q, transformators = decorators)
-    summary_table_r <- reactive({
-      req(summary_table_q())
-      decorated_summary_table_q()[["table"]]
+      within(qenv, quote(table <- DT::datatable(summary_data)))
     })
 
     by_subject_plot_q <- reactive({
@@ -1267,12 +1205,92 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         )
     })
 
-    decorated_by_subject_plot_q <- srv_transform_teal_data(id = "decorator", data = by_subject_plot_q, transformators = decorators)
-    decorated_by_subject_plot_print_q <- reactive(within(decorated_by_subject_plot_q(), print(plot)))
+    # Start decoration of objects
+
+    # summary_plot_q
+    decorated_summary_plot_q_no_print <- srv_transform_teal_data(
+      id = "decorator",
+      data = summary_plot_q,
+      transformators = decorators
+    )
+    decorated_summary_plot_q <- reactive({
+      expr <- if (isTRUE(input$if_patients_plot)) {
+        quote({
+          g1 <- ggplotGrob(summary_plot_top)
+          g2 <- ggplotGrob(summary_plot_bottom)
+          plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
+          plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
+        })
+      } else {
+        quote({
+          g1 <- ggplotGrob(summary_plot_top)
+          plot <- g1
+        })
+      }
+      # browser()
+      decorated_summary_plot_q_no_print() %>%
+        eval_code(expr) %>%
+        within({
+          grid::grid.newpage()
+          grid::grid.draw(plot)
+        })
+    })
+
+    # combination_plot_q
+    decorated_combination_plot_q_no_print <- srv_transform_teal_data(
+      id = "decorator",
+      data = combination_plot_q,
+      transformators = decorators
+    )
+    decorated_combination_plot_q <- reactive({
+      within(
+        decorated_combination_plot_q_no_print(),
+        {
+          g1 <- ggplotGrob(combination_plot_top)
+          g2 <- ggplotGrob(combination_plot_bottom)
+
+          plot <- gridExtra::gtable_rbind(g1, g2, size = "last")
+          plot$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
+          grid::grid.newpage()
+          grid::grid.draw(plot)
+        }
+      )
+    })
+
+    # summary_table_q
+    decorated_summary_table_q <- srv_transform_teal_data(
+      id = "decorator",
+      data = summary_table_q,
+      transformators = decorators
+    )
+
+    # by_subject_plot_q
+    decorated_by_subject_plot_q_no_print <- srv_transform_teal_data(
+      id = "decorator",
+      data = by_subject_plot_q,
+      transformators = decorators
+    )
+    decorated_by_subject_plot_q <- reactive(within(decorated_by_subject_plot_q_no_print(), print(plot)))
+
+    # Output objects for use in widgets
+    summary_plot_r <- reactive({
+      req(summary_plot_q())
+      decorated_summary_plot_q()[["plot"]]
+    })
+
+    combination_plot_r <- reactive({
+      req(combination_plot_q())
+      decorated_combination_plot_q()[["plot"]]
+    })
+
+    summary_table_r <- reactive({
+      req(summary_table_q())
+      decorated_summary_table_q()[["table"]]
+    })
 
     by_subject_plot_r <- reactive({
       req(by_subject_plot_q()) # Ensure original errors are displayed
-      decorated_by_subject_plot_print_q()[["plot"]]
+      decorated_by_subject_plot_q()[["plot"]]
     })
 
     output$levels_table <- DT::renderDataTable(
