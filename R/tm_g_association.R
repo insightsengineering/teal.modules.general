@@ -247,7 +247,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_teal_transform_data(ns("decorate"), transformators = args$decorators),
+      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -500,17 +500,17 @@ srv_tm_g_association <- function(id,
         )
     })
 
-    decorated_output_q <- srv_teal_transform_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
     decorated_output_grob_q <- reactive({
-        within(
-          decorated_output_q(),
-          {
-            plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
-            grid::grid.newpage()
-            grid::grid.draw(plot)
-          }
-        )
-      })
+      within(
+        decorated_output_q(),
+        {
+          plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
+          grid::grid.newpage()
+          grid::grid.draw(plot)
+        }
+      )
+    })
 
 
     plot_r <- reactive({
