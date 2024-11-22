@@ -30,6 +30,15 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_g_response`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -229,7 +238,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              pre_output = NULL,
                              post_output = NULL,
                              table_dec = 4,
-                             ggplot2_args = teal.widgets::ggplot2_args()) {
+                             ggplot2_args = teal.widgets::ggplot2_args(),
+                             decorators = NULL) {
   message("Initializing tm_g_scatterplot")
 
   # Requires Suggested packages
@@ -297,6 +307,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -318,7 +329,13 @@ tm_g_scatterplot <- function(label = "Scatterplot",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, table_dec = table_dec, ggplot2_args = ggplot2_args)
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        table_dec = table_dec,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -413,6 +430,7 @@ ui_g_scatterplot <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           )
         },
+        ui_teal_transform_data(ns("decorator"), transformators = args$decorators),
         teal.widgets::panel_group(
           teal.widgets::panel_item(
             title = "Plot settings",
@@ -491,7 +509,8 @@ srv_g_scatterplot <- function(id,
                               plot_height,
                               plot_width,
                               table_dec,
-                              ggplot2_args) {
+                              ggplot2_args,
+                              decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -981,13 +1000,17 @@ srv_g_scatterplot <- function(id,
         )
       }
 
-      plot_call <- substitute(expr = p <- plot_call, env = list(plot_call = plot_call))
+      plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
-      teal.code::eval_code(plot_q, plot_call) %>%
-        teal.code::eval_code(quote(print(p)))
+      teal.code::eval_code(plot_q, plot_call)
     })
 
-    plot_r <- reactive(output_q()[["p"]])
+    decorated_output_q <- srv_teal_transform_data(id = "decorator", data = output_q, transformators = decorators)
+    decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
+    plot_r <- reactive({
+      req(output_q()) # Ensure original errors are displayed
+      decorated_output_plot_q()[["plot"]]
+    })
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -1028,7 +1051,7 @@ srv_g_scatterplot <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_plot_q()))),
       title = "R Code for scatterplot"
     )
 
@@ -1047,7 +1070,7 @@ srv_g_scatterplot <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_plot_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
