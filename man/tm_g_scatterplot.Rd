@@ -23,7 +23,8 @@ tm_g_scatterplot(
   pre_output = NULL,
   post_output = NULL,
   table_dec = 4,
-  ggplot2_args = teal.widgets::ggplot2_args()
+  ggplot2_args = teal.widgets::ggplot2_args(),
+  decorators = NULL
 )
 }
 \arguments{
@@ -93,6 +94,9 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
+if not \code{NULL}, decorator for tables or plots included in the module.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -107,6 +111,18 @@ trend line additions, and dynamic adjustments of point opacity and size through 
 For more examples, please see the vignette "Using scatterplot" via
 \code{vignette("using-scatterplot", package = "teal.modules.general")}.
 }
+\section{Decorating \code{tm_g_scatterplot}}{
+
+
+This module generates the following objects, which can be modified in place using decorators:
+\itemize{
+\item \code{plot} (\code{ggplot2})
+}
+
+For additional details and examples of decorators, refer to the vignette
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+}
+
 \examples{
 \dontshow{if (require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # general data example
