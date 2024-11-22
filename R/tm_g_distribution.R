@@ -27,6 +27,16 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_outliers`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#' - `test_table` (`data.frame`)
+#' - `summary_table` (`data.frame`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -121,7 +131,8 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_height = c(600, 200, 2000),
                               plot_width = NULL,
                               pre_output = NULL,
-                              post_output = NULL) {
+                              post_output = NULL,
+                              decorators = NULL) {
   message("Initializing tm_g_distribution")
 
   # Requires Suggested packages
@@ -172,6 +183,8 @@ tm_g_distribution <- function(label = "Distribution Module",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -188,7 +201,12 @@ tm_g_distribution <- function(label = "Distribution Module",
     server = srv_distribution,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
     ),
     ui = ui_distribution,
     ui_args = args,
@@ -262,6 +280,7 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
+            ui_transform_teal_data(ns("d_dist"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -270,6 +289,7 @@ ui_distribution <- function(id, ...) {
           teal.widgets::panel_item(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
+            ui_transform_teal_data(ns("d_qq"), transformators = args$decorators),
             collapsed = FALSE
           )
         ),
@@ -353,7 +373,8 @@ srv_distribution <- function(id,
                              group_var,
                              plot_height,
                              plot_width,
-                             ggplot2_args) {
+                             ggplot2_args,
+                             decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -459,9 +480,10 @@ srv_distribution <- function(id,
         )
       }
     }
+
     rule_dist <- function(value) {
-      if (isTRUE(input$tabs == "QQplot" ||
-        input$dist_tests %in% c(
+      if (isTRUE(input$tabs == "QQplot") ||
+        isTRUE(input$dist_tests %in% c(
           "Kolmogorov-Smirnov (one-sample)",
           "Anderson-Darling (one-sample)",
           "Cramer-von Mises (one-sample)"
@@ -471,6 +493,7 @@ srv_distribution <- function(id,
         }
       }
     }
+
     iv_dist <- shinyvalidate::InputValidator$new()
     iv_dist$add_rule("t_dist", rule_dist)
     iv_dist$add_rule("dist_param1", rule_dist_1)
@@ -891,8 +914,8 @@ srv_distribution <- function(id,
           qenv,
           substitute(
             expr = {
-              g <- plot_call
-              print(g)
+              plot <- plot_call
+              print(plot)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
@@ -907,6 +930,7 @@ srv_distribution <- function(id,
         input$scales_type
         input$qq_line
         is.null(input$ggtheme)
+        input$tabs
       },
       valueExpr = {
         dist_var <- merge_vars()$dist_var
@@ -915,7 +939,6 @@ srv_distribution <- function(id,
         dist_var_name <- merge_vars()$dist_var_name
         s_var_name <- merge_vars()$s_var_name
         g_var_name <- merge_vars()$g_var_name
-        t_dist <- input$t_dist
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
 
@@ -923,7 +946,7 @@ srv_distribution <- function(id,
         ggtheme <- input$ggtheme
 
         teal::validate_inputs(iv_r_dist(), iv_dist)
-
+        t_dist <- req(input$t_dist) # Not validated when tab is not selected
         qenv <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
@@ -1023,8 +1046,8 @@ srv_distribution <- function(id,
           qenv,
           substitute(
             expr = {
-              g <- plot_call
-              print(g)
+              plot <- plot_call
+              print(plot)
             },
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
@@ -1174,7 +1197,7 @@ srv_distribution <- function(id,
             qenv,
             substitute(
               expr = {
-                test_stats <- ANL %>%
+                test_table <- ANL %>%
                   dplyr::select(dist_var) %>%
                   with(., broom::glance(do.call(test, args))) %>%
                   dplyr::mutate_if(is.numeric, round, 3)
@@ -1187,7 +1210,7 @@ srv_distribution <- function(id,
             qenv,
             substitute(
               expr = {
-                test_stats <- ANL %>%
+                test_table <- ANL %>%
                   dplyr::select(dist_var, s_var, g_var) %>%
                   dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
                   dplyr::do(tests = broom::glance(do.call(test, args))) %>%
@@ -1200,39 +1223,58 @@ srv_distribution <- function(id,
         }
         qenv %>%
           # used to display table when running show-r-code code
-          teal.code::eval_code(quote(test_stats))
+          teal.code::eval_code(quote(test_table))
       }
     )
 
     # outputs ----
     ## building main qenv
-    output_q <- reactive({
-      tab <- input$tabs
-      req(tab) # tab is NULL upon app launch, hence will crash without this statement
-
-      qenv_final <- common_q()
+    output_common_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
-      test_r_qenv_out <- try(test_q(), silent = TRUE)
-      if (!inherits(test_r_qenv_out, c("try-error", "error"))) {
-        qenv_final <- c(qenv_final, test_q())
+      test_q_out <- try(test_q(), silent = TRUE)
+      if (!inherits(test_q_out, c("try-error", "error"))) {
+        c(common_q(), test_q_out)
+      } else {
+        common_q()
       }
-
-      qenv_final <- if (tab == "Histogram") {
-        req(dist_q())
-        c(qenv_final, dist_q())
-      } else if (tab == "QQplot") {
-        req(qq_q())
-        c(qenv_final, qq_q())
-      }
-      qenv_final
     })
 
-    dist_r <- reactive(dist_q()[["g"]])
+    output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
+    output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
-    qq_r <- reactive(qq_q()[["g"]])
+    decorated_output_dist_q <- srv_transform_teal_data(
+      "d_dist",
+      data = output_dist_q,
+      transformators = decorators
+    )
+
+    decorated_output_qq_q <- srv_transform_teal_data(
+      "d_qq",
+      data = output_qq_q,
+      transformators = decorators
+    )
+
+    decorated_output_q <- reactive({
+      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
+      if (tab == "Histogram") {
+        decorated_output_dist_q()
+      } else if (tab == "QQplot") {
+        decorated_output_qq_q()
+      }
+    })
+
+    dist_r <- reactive({
+      req(output_dist_q()) # Ensure original errors are displayed
+      decorated_output_dist_q()[["plot"]]
+    })
+
+    qq_r <- reactive({
+      req(output_qq_q()) # Ensure original errors are displayed
+      decorated_output_qq_q()[["plot"]]
+    })
 
     output$summary_table <- DT::renderDataTable(
-      expr = if (iv_r()$is_valid()) common_q()[["summary_table"]] else NULL,
+      expr = if (iv_r()$is_valid()) decorated_output_dist_q()[["summary_table"]] else NULL,
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1243,7 +1285,8 @@ srv_distribution <- function(id,
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
-      test_q()[["test_stats"]]
+      req(test_q()) # Ensure original errors are displayed
+      decorated_output_dist_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1270,7 +1313,7 @@ srv_distribution <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "R Code for distribution"
     )
 
@@ -1302,7 +1345,7 @@ srv_distribution <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
