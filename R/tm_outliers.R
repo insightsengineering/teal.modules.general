@@ -786,7 +786,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = plot <- plot_call +
+          expr = box_plot <- plot_call +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(
@@ -847,7 +847,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = plot <- plot_call + labs + ggthemes + themes,
+          expr = density_plot <- plot_call + labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,
             labs = parsed_ggplot2_args$labs,
@@ -948,7 +948,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         qenv,
         substitute(
-          expr = plot <- plot_call +
+          expr = cum_dist_plot <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
