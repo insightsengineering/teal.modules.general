@@ -1227,7 +1227,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           plot <- g1
         })
       }
-      # browser()
       decorated_summary_plot_q_no_print() %>%
         eval_code(expr) %>%
         within({
