@@ -288,43 +288,6 @@ ui_a_regression <- function(id, ...) {
         choices = args$plot_choices,
         selected = args$plot_choices[args$default_plot_type]
       ),
-      div(
-        conditionalPanel(
-          condition = "input.plot_type == 'Response vs Regressor'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_0"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Residuals vs Fitted'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_1"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Normal Q-Q'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_2"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Scale-Location'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_3"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Cook\\'s distance'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_4"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Residuals vs Leverage'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_5"), transformators = args$decorators)
-        ),
-        conditionalPanel(
-          condition = "input.plot_type == 'Cook\\'s dist vs Leverage'",
-          ns = ns,
-          ui_transform_teal_data(ns("d_6"), transformators = args$decorators)
-        ),
-      ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
         condition = "input['show_outlier']",
@@ -354,6 +317,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
+      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -1000,15 +964,6 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_0 <- srv_transform_teal_data(id = "d_0", data = output_plot_0, transformators = decorators)
-    decorated_output_1 <- srv_transform_teal_data(id = "d_1", data = output_plot_1, transformators = decorators)
-    decorated_output_2 <- srv_transform_teal_data(id = "d_2", data = output_plot_2, transformators = decorators)
-    decorated_output_3 <- srv_transform_teal_data(id = "d_3", data = output_plot_3, transformators = decorators)
-    decorated_output_4 <- srv_transform_teal_data(id = "d_4", data = output_plot_4, transformators = decorators)
-    decorated_output_5 <- srv_transform_teal_data(id = "d_5", data = output_plot_5, transformators = decorators)
-    decorated_output_6 <- srv_transform_teal_data(id = "d_6", data = output_plot_6, transformators = decorators)
-
-
     output_q <- reactive({
       teal::validate_inputs(iv_r())
       switch(input$plot_type,
@@ -1022,22 +977,12 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_q <- reactive({
-      teal::validate_inputs(iv_r())
-      switch(input$plot_type,
-        "Response vs Regressor" = decorated_output_0(),
-        "Residuals vs Fitted" = decorated_output_1(),
-        "Normal Q-Q" = decorated_output_2(),
-        "Scale-Location" = decorated_output_3(),
-        "Cook's distance" = decorated_output_4(),
-        "Residuals vs Leverage" = decorated_output_5(),
-        "Cook's dist vs Leverage" = decorated_output_6()
-      )
-    })
+    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
 
     fitted <- reactive({
       req(output_q())
-      decorated_output_q()[["fit"]]
+      decorated_output_q_no_print()[["fit"]]
     })
     plot_r <- reactive({
       req(output_q())

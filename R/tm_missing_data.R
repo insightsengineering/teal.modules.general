@@ -17,6 +17,17 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_missing_data`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `summary_plot` (`ggplot2 plot grob`)
+#' - `combination_plot` (`ggplot2 plot grob`)
+#' - `by_subject_plot` (`ggplot2`)
+#' - `table` ([DT::datatable()])
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -87,7 +98,8 @@ tm_missing_data <- function(label = "Missing data",
                               "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
                             ),
                             pre_output = NULL,
-                            post_output = NULL) {
+                            post_output = NULL,
+                            decorators = NULL) {
   message("Initializing tm_missing_data")
 
   # Requires Suggested packages
@@ -121,14 +133,28 @@ tm_missing_data <- function(label = "Missing data",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  available_decorators <- c("summary_plot", "summary_plot", "combination_plot", "by_subject_plot", "summary_table")
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", available_decorators))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default", available_decorators))
   # End of assertions
 
   ans <- module(
     label,
     server = srv_page_missing_data,
     server_args = list(
-      parent_dataname = parent_dataname, plot_height = plot_height,
-      plot_width = plot_width, ggplot2_args = ggplot2_args, ggtheme = ggtheme
+      parent_dataname = parent_dataname,
+      plot_height = plot_height,
+      plot_width = plot_width,
+      ggplot2_args = ggplot2_args,
+      ggtheme = ggtheme,
+      decorators = decorators
     ),
     ui = ui_page_missing_data,
     datanames = "all",
@@ -165,7 +191,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 
 # Server function for the missing data module (all datasets)
 srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
-                                  plot_height, plot_width, ggplot2_args, ggtheme) {
+                                  plot_height, plot_width, ggplot2_args, ggtheme, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
@@ -215,7 +241,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
                 id = ns(x),
                 summary_per_patient = if_subject_plot,
                 ggtheme = ggtheme,
-                datanames = datanames
+                datanames = datanames,
+                decorators = decorators
               )
             )
           }
@@ -248,7 +275,8 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_d
           parent_dataname = parent_dataname,
           plot_height = plot_height,
           plot_width = plot_width,
-          ggplot2_args = ggplot2_args
+          ggplot2_args = ggplot2_args,
+          decorators = decorators
         )
       }
     )
@@ -326,7 +354,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
 }
 
 # UI encoding for the missing data module (all datasets)
-encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames) {
+encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, datanames, decorators) {
   ns <- NS(id)
 
   tagList(
@@ -381,25 +409,30 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
           ),
           value = FALSE
         )
-      }
+      },
+      ui_decorate_teal_data(ns("dec_summary_plot"), decorators = subset_decorators("summary_plot", decorators))
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Combinations"),
-      uiOutput(ns("cutoff"))
+      uiOutput(ns("cutoff")),
+      ui_decorate_teal_data(ns("dec_combination_plot"), decorators = subset_decorators("combination_plot", decorators))
+    ),
+    conditionalPanel(
+      is_tab_active_js(ns("summary_type"), "Grouped by Subject"),
+      ui_decorate_teal_data(ns("dec_by_subject_plot"), decorators = subset_decorators("by_subject_plot", decorators))
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "By Variable Levels"),
-      tagList(
-        uiOutput(ns("group_by_var_ui")),
-        uiOutput(ns("group_by_vals_ui")),
-        radioButtons(
-          ns("count_type"),
-          label = "Display missing as",
-          choices = c("counts", "proportions"),
-          selected = "counts",
-          inline = TRUE
-        )
-      )
+      uiOutput(ns("group_by_var_ui")),
+      uiOutput(ns("group_by_vals_ui")),
+      radioButtons(
+        ns("count_type"),
+        label = "Display missing as",
+        choices = c("counts", "proportions"),
+        selected = "counts",
+        inline = TRUE
+      ),
+      ui_decorate_teal_data(ns("dec_summary_table"), decorators = subset_decorators("summary_table", decorators))
     ),
     teal.widgets::panel_item(
       title = "Plot settings",
@@ -414,9 +447,602 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   )
 }
 
+srv_summary_plot <- function(id,
+                             data_r,
+                             data_keys,
+                             common_code_q,
+                             data_parent_keys,
+                             ggplot2_args,
+                             # inputs
+                             summary_type_r,
+                             any_na_r,
+                             ggtheme_r,
+                             if_patients_plot_r) {
+  moduleServer(id, function(input, output, session) {
+    summary_plot_q <- reactive({
+      req(summary_type_r() == "Summary") # needed to trigger show r code update on tab change
+      teal::validate_has_data(data_r(), 1)
+
+      qenv <- common_code_q()
+      if (any_na_r()) {
+        new_col_name <- "**anyna**"
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE),
+            env = list(new_col_name = new_col_name)
+          )
+        )
+      }
+
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
+          env = list(data_keys = data_keys())
+        )
+      ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
+              dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
+              dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
+              tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
+              dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
+            env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
+              quote(tibble::as_tibble(ANL))
+            } else {
+              quote(ANL)
+            })
+          )
+        ) %>%
+        # x axis ordering according to number of missing values and alphabet
+        teal.code::eval_code(
+          quote(
+            expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
+              dplyr::arrange(n_pct, dplyr::desc(col)) %>%
+              dplyr::pull(col) %>%
+              create_cols_labels()
+          )
+        )
+
+      # always set "**anyna**" level as the last one
+      if (isolate(any_na_r())) {
+        qenv <- teal.code::eval_code(
+          qenv,
+          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
+        )
+      }
+
+      dev_ggplot2_args <- teal.widgets::ggplot2_args(
+        labs = list(x = "Variable", y = "Missing observations"),
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+      )
+
+      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Summary Obs"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme_r()
+      )
+
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          summary_plot_top <- summary_plot_obs %>%
+            ggplot() +
+            aes(
+              x = factor(create_cols_labels(col), levels = x_levels),
+              y = n_pct,
+              fill = isna
+            ) +
+            geom_bar(position = "fill", stat = "identity") +
+            scale_fill_manual(
+              name = "",
+              values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+              labels = c("Present", "Missing")
+            ) +
+            scale_y_continuous(
+              labels = scales::percent_format(),
+              breaks = seq(0, 1, by = 0.1),
+              expand = c(0, 0)
+            ) +
+            geom_text(
+              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+              hjust = 1,
+              color = "black"
+            ) +
+            labs +
+            ggthemes +
+            themes +
+            coord_flip(),
+          env = list(
+            labs = parsed_ggplot2_args$labs,
+            themes = parsed_ggplot2_args$theme,
+            ggthemes = parsed_ggplot2_args$ggtheme
+          )
+        )
+      )
+
+      if (isTRUE(if_patients_plot_r())) {
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = parent_keys <- keys,
+            env = list(keys = data_parent_keys())
+          )
+        ) %>%
+          teal.code::eval_code(quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys]))) %>%
+          teal.code::eval_code(
+            quote(
+              summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+                dplyr::group_by_at(parent_keys) %>%
+                dplyr::summarise_all(anyNA) %>%
+                tidyr::pivot_longer(cols = !dplyr::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
+                dplyr::group_by_at(c("col")) %>%
+                dplyr::summarise(count_na = sum(anyna)) %>%
+                dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
+                tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
+                dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
+                dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
+            )
+          )
+
+        dev_ggplot2_args <- teal.widgets::ggplot2_args(
+          labs = list(x = "", y = "Missing patients"),
+          theme = list(
+            legend.position = "bottom",
+            axis.text.x = quote(element_text(angle = 45, hjust = 1)),
+            axis.text.y = quote(element_blank())
+          )
+        )
+
+        all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Summary Patients"]],
+          user_default = ggplot2_args$default,
+          module_plot = dev_ggplot2_args
+        )
+
+        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+          all_ggplot2_args,
+          ggtheme = ggtheme_r()
+        )
+
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            summary_plot_bottom <- summary_plot_patients %>%
+              ggplot() +
+              aes_(
+                x = ~ factor(create_cols_labels(col), levels = x_levels),
+                y = ~n_pct,
+                fill = ~isna
+              ) +
+              geom_bar(alpha = 1, stat = "identity", position = "fill") +
+              scale_y_continuous(
+                labels = scales::percent_format(),
+                breaks = seq(0, 1, by = 0.1),
+                expand = c(0, 0)
+              ) +
+              scale_fill_manual(
+                name = "",
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+                labels = c("Present", "Missing")
+              ) +
+              geom_text(
+                aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+                hjust = 1,
+                color = "black"
+              ) +
+              labs +
+              ggthemes +
+              themes +
+              coord_flip(),
+            env = list(
+              labs = parsed_ggplot2_args$labs,
+              themes = parsed_ggplot2_args$theme,
+              ggthemes = parsed_ggplot2_args$ggtheme
+            )
+          )
+        )
+      }
+
+      arrange_expr <- if (isTRUE(if_patients_plot_r())) {
+        quote({
+          g1 <- ggplotGrob(summary_plot_top)
+          g2 <- ggplotGrob(summary_plot_bottom)
+          summary_plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
+          summary_plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
+        })
+      } else {
+        quote({
+          g1 <- ggplotGrob(summary_plot_top)
+          summary_plot <- g1
+        })
+      }
+      teal.code::eval_code(qenv, arrange_expr)
+    })
+  })
+}
+
+srv_combination_plot <- function(id,
+                                 data_r,
+                                 common_code_q,
+                                 data_keys,
+                                 data_parent_keys,
+                                 combination_cutoff_q,
+                                 ggplot2_args,
+                                 # inputs
+                                 summary_type_r,
+                                 combination_cutoff_r,
+                                 ggtheme_r,
+                                 variables_select_r) {
+  moduleServer(id, function(input, output, session) {
+    combination_plot_q <- reactive({
+      req(summary_type_r() == "Combinations", combination_cutoff_r(), combination_cutoff_q())
+      teal::validate_has_data(data_r(), 1)
+
+      qenv <- teal.code::eval_code(
+        combination_cutoff_q(),
+        substitute(
+          expr = data_combination_plot_cutoff <- combination_cutoff %>%
+            dplyr::filter(n >= combination_cutoff_value) %>%
+            dplyr::mutate(id = rank(-n, ties.method = "first")) %>%
+            tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
+            dplyr::arrange(n),
+          env = list(combination_cutoff_value = combination_cutoff_r())
+        )
+      )
+
+      # find keys in dataset not selected in the UI and remove them from dataset
+      keys_not_selected <- setdiff(data_keys(), variables_select_r())
+      if (length(keys_not_selected) > 0) {
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
+              dplyr::filter(!key %in% keys_not_selected),
+            env = list(keys_not_selected = keys_not_selected)
+          )
+        )
+      }
+
+      qenv <- teal.code::eval_code(
+        qenv,
+        quote(
+          labels <- data_combination_plot_cutoff %>%
+            dplyr::filter(key == key[[1]]) %>%
+            getElement(name = 1)
+        )
+      )
+
+      dev_ggplot2_args1 <- teal.widgets::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_blank())
+        )
+      )
+
+      all_ggplot2_args1 <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Combinations Hist"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args1
+      )
+
+      parsed_ggplot2_args1 <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args1,
+        ggtheme = "void"
+      )
+
+      dev_ggplot2_args2 <- teal.widgets::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(
+          legend.position = "bottom",
+          axis.text.x = quote(element_blank()),
+          axis.ticks = quote(element_blank()),
+          panel.grid.major = quote(element_blank())
+        )
+      )
+
+      all_ggplot2_args2 <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Combinations Main"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args2
+      )
+
+      parsed_ggplot2_args2 <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args2,
+        ggtheme = ggtheme_r()
+      )
+
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = {
+            combination_plot_top <- data_combination_plot_cutoff %>%
+              dplyr::select(id, n) %>%
+              dplyr::distinct() %>%
+              ggplot(aes(x = id, y = n)) +
+              geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
+              geom_text(
+                aes(label = n),
+                position = position_dodge(width = 0.9),
+                vjust = -0.25
+              ) +
+              ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+              labs1 +
+              ggthemes1 +
+              themes1
+
+            graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
+            graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
+
+            combination_plot_bottom <- data_combination_plot_cutoff %>% ggplot() +
+              aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+              geom_tile(alpha = 0.85, height = 0.95) +
+              scale_fill_manual(
+                name = "",
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+                labels = c("Present", "Missing")
+              ) +
+              geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+              geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+              coord_flip() +
+              labs2 +
+              ggthemes2 +
+              themes2
+          },
+          env = list(
+            labs1 = parsed_ggplot2_args1$labs,
+            themes1 = parsed_ggplot2_args1$theme,
+            ggthemes1 = parsed_ggplot2_args1$ggtheme,
+            labs2 = parsed_ggplot2_args2$labs,
+            themes2 = parsed_ggplot2_args2$theme,
+            ggthemes2 = parsed_ggplot2_args2$ggtheme
+          )
+        )
+      )
+
+      within(qenv, {
+        g1 <- ggplotGrob(combination_plot_top)
+        g2 <- ggplotGrob(combination_plot_bottom)
+
+        combination_plot <- gridExtra::gtable_rbind(g1, g2, size = "last")
+        combination_plot$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
+      })
+    })
+  })
+}
+
+srv_summary_table <- function(id,
+                              data_r,
+                              common_code_q,
+                              data_keys,
+                              data_parent_keys,
+                              selected_vars,
+                              # inputs
+                              summary_type_r,
+                              group_by_var_r,
+                              group_by_vals_r,
+                              variables_select_r,
+                              count_type_r) {
+  moduleServer(id, function(input, output, session) {
+    summary_table_q_r <- reactive({
+      req(
+        summary_type_r() == "By Variable Levels", # needed to trigger show r code update on tab change
+        common_code_q()
+      )
+      teal::validate_has_data(data_r(), 1)
+
+      # extract the ANL dataset for use in further validation
+      anl <- common_code_q()[["ANL"]]
+
+      group_var <- group_by_var_r()
+      validate(
+        need(
+          is.null(group_var) ||
+            length(unique(anl[[group_var]])) < 100,
+          "Please select group-by variable with fewer than 100 unique values"
+        )
+      )
+
+      group_vals <- group_by_vals_r()
+      variables_select <- variables_select_r()
+      vars <- unique(variables_select, group_var)
+      count_type <- count_type_r()
+
+      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
+        variables <- selected_vars()
+      } else {
+        variables <- colnames(anl)
+      }
+
+      summ_fn <- if (count_type == "counts") {
+        function(x) sum(is.na(x))
+      } else {
+        function(x) round(sum(is.na(x)) / length(x), 4)
+      }
+
+      qenv <- if (!is.null(group_var)) {
+        teal.code::eval_code(
+          common_code_q(),
+          substitute(
+            expr = {
+              summary_data <- ANL %>%
+                dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
+                dplyr::group_by_at(group_var) %>%
+                dplyr::filter(group_var_name %in% group_vals)
+
+              count_data <- dplyr::summarise(summary_data, n = dplyr::n())
+
+              summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
+                dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
+                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+                tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
+                dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
+            },
+            env = list(
+              group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
+            )
+          )
+        )
+      } else {
+        teal.code::eval_code(
+          common_code_q(),
+          substitute(
+            expr = summary_data <- ANL %>%
+              dplyr::summarise_all(summ_fn) %>%
+              tidyr::pivot_longer(
+                dplyr::everything(),
+                names_to = "Variable",
+                values_to = paste0("Missing (N=", nrow(ANL), ")")
+              ) %>%
+              dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
+            env = list(summ_fn = summ_fn)
+          )
+        )
+      }
+
+      within(qenv, table <- DT::datatable(summary_data))
+    })
+  })
+}
+
+srv_by_subject_plot <- function(id,
+                                data_r,
+                                common_code_q,
+                                data_keys,
+                                data_parent_keys,
+                                ggplot2_args,
+                                # inputs
+                                summary_type_r,
+                                ggtheme_r) {
+  moduleServer(id, function(input, output, session) {
+    by_subject_plot_q <- reactive({
+      # needed to trigger show r code update on tab change
+      req(summary_type_r() == "Grouped by Subject", common_code_q())
+
+      teal::validate_has_data(data_r(), 1)
+
+      dev_ggplot2_args <- teal.widgets::ggplot2_args(
+        labs = list(x = "", y = ""),
+        theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
+      )
+
+      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["By Subject"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = ggtheme_r()
+      )
+
+      teal.code::eval_code(
+        common_code_q(),
+        substitute(
+          expr = parent_keys <- keys,
+          env = list(keys = data_parent_keys())
+        )
+      ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
+            env = list(data_keys = data_keys())
+          )
+        ) %>%
+        teal.code::eval_code(
+          quote({
+            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+              dplyr::group_by_at(parent_keys) %>%
+              dplyr::mutate(id = dplyr::cur_group_id()) %>%
+              dplyr::ungroup() %>%
+              dplyr::group_by_at(c(parent_keys, "id")) %>%
+              dplyr::summarise_all(anyNA) %>%
+              dplyr::ungroup()
+
+            # order subjects by decreasing number of missing and then by
+            # missingness pattern (defined using sha1)
+            order_subjects <- summary_plot_patients %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+              dplyr::transmute(
+                id = dplyr::row_number(),
+                number_NA = apply(., 1, sum),
+                sha = apply(., 1, rlang::hash)
+              ) %>%
+              dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+              getElement(name = "id")
+
+            # order columns by decreasing percent of missing values
+            ordered_columns <- summary_plot_patients %>%
+              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+              dplyr::summarise(
+                column = create_cols_labels(colnames(.)),
+                na_count = apply(., MARGIN = 2, FUN = sum),
+                na_percent = na_count / nrow(.) * 100
+              ) %>%
+              dplyr::arrange(na_percent, dplyr::desc(column))
+
+            summary_plot_patients <- summary_plot_patients %>%
+              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
+              dplyr::mutate(col = create_cols_labels(col))
+          })
+        ) %>%
+        teal.code::eval_code(
+          substitute(
+            expr = {
+              by_subject_plot <- ggplot(summary_plot_patients, aes(
+                x = factor(id, levels = order_subjects),
+                y = factor(col, levels = ordered_columns[["column"]]),
+                fill = isna
+              )) +
+                geom_raster() +
+                annotate(
+                  "text",
+                  x = length(order_subjects),
+                  y = seq_len(nrow(ordered_columns)),
+                  hjust = 1,
+                  label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+                ) +
+                scale_fill_manual(
+                  name = "",
+                  values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+                  labels = c("Present", "Missing (at least one)")
+                ) +
+                labs +
+                ggthemes +
+                themes
+            },
+            env = list(
+              labs = parsed_ggplot2_args$labs,
+              themes = parsed_ggplot2_args$theme,
+              ggthemes = parsed_ggplot2_args$ggtheme
+            )
+          )
+        )
+    })
+  })
+}
+
 # Server function for the missing data (single dataset)
-srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, parent_dataname,
-                             plot_height, plot_width, ggplot2_args) {
+srv_missing_data <- function(id,
+                             data,
+                             reporter,
+                             filter_panel_api,
+                             dataname,
+                             parent_dataname,
+                             plot_height,
+                             plot_width,
+                             ggplot2_args,
+                             decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -461,7 +1087,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       iv$enable()
       iv
     })
-
 
     data_parent_keys <- reactive({
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data())) {
@@ -553,6 +1178,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
+    # Keep encoding panel up-to-date
     output$variables <- renderUI({
       choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
       selected <- choices <- unname(unlist(choices))
@@ -631,7 +1257,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
 
       prev_group_by_var(input$group_by_var) # set current group_by_var
       validate(need(length(choices) < 100, "Please select group-by variable with fewer than 100 unique values"))
-
       teal.widgets::optionalSelectInput(
         ns("group_by_vals"),
         label = "Filter levels",
@@ -641,225 +1266,6 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
         label_help = paste0("Dataset: ", dataname)
       )
     })
-
-    summary_plot_q <- reactive({
-      req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
-      teal::validate_has_data(data_r(), 1)
-
-      qenv <- common_code_q()
-
-      if (input$any_na) {
-        new_col_name <- "**anyna**"
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = ANL[[new_col_name]] <- ifelse(rowSums(is.na(ANL)) > 0, NA, FALSE),
-            env = list(new_col_name = new_col_name)
-          )
-        )
-      }
-
-      qenv <- teal.code::eval_code(
-        qenv,
-        substitute(
-          expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
-          env = list(data_keys = data_keys())
-        )
-      ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
-              dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
-              dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
-              tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-              dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
-            env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
-              quote(tibble::as_tibble(ANL))
-            } else {
-              quote(ANL)
-            })
-          )
-        ) %>%
-        # x axis ordering according to number of missing values and alphabet
-        teal.code::eval_code(
-          quote(
-            expr = x_levels <- dplyr::filter(summary_plot_obs, isna) %>%
-              dplyr::arrange(n_pct, dplyr::desc(col)) %>%
-              dplyr::pull(col) %>%
-              create_cols_labels()
-          )
-        )
-
-      # always set "**anyna**" level as the last one
-      if (isolate(input$any_na)) {
-        qenv <- teal.code::eval_code(
-          qenv,
-          quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
-        )
-      }
-
-      dev_ggplot2_args <- teal.widgets::ggplot2_args(
-        labs = list(x = "Variable", y = "Missing observations"),
-        theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
-      )
-
-      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Summary Obs"]],
-        user_default = ggplot2_args$default,
-        module_plot = dev_ggplot2_args
-      )
-
-      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-        all_ggplot2_args,
-        ggtheme = input$ggtheme
-      )
-
-      qenv <- teal.code::eval_code(
-        qenv,
-        substitute(
-          p1 <- summary_plot_obs %>%
-            ggplot() +
-            aes(
-              x = factor(create_cols_labels(col), levels = x_levels),
-              y = n_pct,
-              fill = isna
-            ) +
-            geom_bar(position = "fill", stat = "identity") +
-            scale_fill_manual(
-              name = "",
-              values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-              labels = c("Present", "Missing")
-            ) +
-            scale_y_continuous(
-              labels = scales::percent_format(),
-              breaks = seq(0, 1, by = 0.1),
-              expand = c(0, 0)
-            ) +
-            geom_text(
-              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-              hjust = 1,
-              color = "black"
-            ) +
-            labs +
-            ggthemes +
-            themes +
-            coord_flip(),
-          env = list(
-            labs = parsed_ggplot2_args$labs,
-            themes = parsed_ggplot2_args$theme,
-            ggthemes = parsed_ggplot2_args$ggtheme
-          )
-        )
-      )
-
-      if (isTRUE(input$if_patients_plot)) {
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = parent_keys <- keys,
-            env = list(keys = data_parent_keys())
-          )
-        ) %>%
-          teal.code::eval_code(quote(ndistinct_subjects <- dplyr::n_distinct(ANL[, parent_keys]))) %>%
-          teal.code::eval_code(
-            quote(
-              summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-                dplyr::group_by_at(parent_keys) %>%
-                dplyr::summarise_all(anyNA) %>%
-                tidyr::pivot_longer(cols = !dplyr::all_of(parent_keys), names_to = "col", values_to = "anyna") %>%
-                dplyr::group_by_at(c("col")) %>%
-                dplyr::summarise(count_na = sum(anyna)) %>%
-                dplyr::mutate(count_not_na = ndistinct_subjects - count_na) %>%
-                tidyr::pivot_longer(-c(col), names_to = "isna", values_to = "n") %>%
-                dplyr::mutate(isna = isna == "count_na", n_pct = n / ndistinct_subjects * 100) %>%
-                dplyr::arrange_at(c("isna", "n"), .funs = dplyr::desc)
-            )
-          )
-
-        dev_ggplot2_args <- teal.widgets::ggplot2_args(
-          labs = list(x = "", y = "Missing patients"),
-          theme = list(
-            legend.position = "bottom",
-            axis.text.x = quote(element_text(angle = 45, hjust = 1)),
-            axis.text.y = quote(element_blank())
-          )
-        )
-
-        all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-          user_plot = ggplot2_args[["Summary Patients"]],
-          user_default = ggplot2_args$default,
-          module_plot = dev_ggplot2_args
-        )
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          all_ggplot2_args,
-          ggtheme = input$ggtheme
-        )
-
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            p2 <- summary_plot_patients %>%
-              ggplot() +
-              aes_(
-                x = ~ factor(create_cols_labels(col), levels = x_levels),
-                y = ~n_pct,
-                fill = ~isna
-              ) +
-              geom_bar(alpha = 1, stat = "identity", position = "fill") +
-              scale_y_continuous(
-                labels = scales::percent_format(),
-                breaks = seq(0, 1, by = 0.1),
-                expand = c(0, 0)
-              ) +
-              scale_fill_manual(
-                name = "",
-                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-                labels = c("Present", "Missing")
-              ) +
-              geom_text(
-                aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
-                hjust = 1,
-                color = "black"
-              ) +
-              labs +
-              ggthemes +
-              themes +
-              coord_flip(),
-            env = list(
-              labs = parsed_ggplot2_args$labs,
-              themes = parsed_ggplot2_args$theme,
-              ggthemes = parsed_ggplot2_args$ggtheme
-            )
-          )
-        ) %>%
-          teal.code::eval_code(
-            quote({
-              g1 <- ggplotGrob(p1)
-              g2 <- ggplotGrob(p2)
-              g <- gridExtra::gtable_cbind(g1, g2, size = "first")
-              g$heights <- grid::unit.pmax(g1$heights, g2$heights)
-              grid::grid.newpage()
-            })
-          )
-      } else {
-        qenv <- teal.code::eval_code(
-          qenv,
-          quote({
-            g <- ggplotGrob(p1)
-            grid::grid.newpage()
-          })
-        )
-      }
-
-      teal.code::eval_code(
-        qenv,
-        quote(grid::grid.draw(g))
-      )
-    })
-
-    summary_plot_r <- reactive(summary_plot_q()[["g"]])
 
     combination_cutoff_q <- reactive({
       req(common_code_q())
@@ -894,347 +1300,130 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       )
     })
 
-    combination_plot_q <- reactive({
-      req(input$summary_type == "Combinations", input$combination_cutoff, combination_cutoff_q())
-      teal::validate_has_data(data_r(), 1)
+    # Common inputs in build functions
+    summary_type_r <- reactive(input$summary_type)
+    ggtheme_r <- reactive(input$ggtheme)
 
-      qenv <- teal.code::eval_code(
-        combination_cutoff_q(),
-        substitute(
-          expr = data_combination_plot_cutoff <- combination_cutoff %>%
-            dplyr::filter(n >= combination_cutoff_value) %>%
-            dplyr::mutate(id = rank(-n, ties.method = "first")) %>%
-            tidyr::pivot_longer(-c(n, id), names_to = "key", values_to = "value") %>%
-            dplyr::arrange(n),
-          env = list(combination_cutoff_value = input$combination_cutoff)
-        )
-      )
-
-      # find keys in dataset not selected in the UI and remove them from dataset
-      keys_not_selected <- setdiff(data_keys(), input$variables_select)
-      if (length(keys_not_selected) > 0) {
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = data_combination_plot_cutoff <- data_combination_plot_cutoff %>%
-              dplyr::filter(!key %in% keys_not_selected),
-            env = list(keys_not_selected = keys_not_selected)
-          )
-        )
-      }
-
-      qenv <- teal.code::eval_code(
-        qenv,
-        quote(
-          labels <- data_combination_plot_cutoff %>%
-            dplyr::filter(key == key[[1]]) %>%
-            getElement(name = 1)
-        )
-      )
-
-      dev_ggplot2_args1 <- teal.widgets::ggplot2_args(
-        labs = list(x = "", y = ""),
-        theme = list(
-          legend.position = "bottom",
-          axis.text.x = quote(element_blank())
-        )
-      )
-
-      all_ggplot2_args1 <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Combinations Hist"]],
-        user_default = ggplot2_args$default,
-        module_plot = dev_ggplot2_args1
-      )
-
-      parsed_ggplot2_args1 <- teal.widgets::parse_ggplot2_args(
-        all_ggplot2_args1,
-        ggtheme = "void"
-      )
-
-      dev_ggplot2_args2 <- teal.widgets::ggplot2_args(
-        labs = list(x = "", y = ""),
-        theme = list(
-          legend.position = "bottom",
-          axis.text.x = quote(element_blank()),
-          axis.ticks = quote(element_blank()),
-          panel.grid.major = quote(element_blank())
-        )
-      )
-
-      all_ggplot2_args2 <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["Combinations Main"]],
-        user_default = ggplot2_args$default,
-        module_plot = dev_ggplot2_args2
-      )
-
-      parsed_ggplot2_args2 <- teal.widgets::parse_ggplot2_args(
-        all_ggplot2_args2,
-        ggtheme = input$ggtheme
-      )
-
-      teal.code::eval_code(
-        qenv,
-        substitute(
-          expr = {
-            p1 <- data_combination_plot_cutoff %>%
-              dplyr::select(id, n) %>%
-              dplyr::distinct() %>%
-              ggplot(aes(x = id, y = n)) +
-              geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
-              geom_text(
-                aes(label = n),
-                position = position_dodge(width = 0.9),
-                vjust = -0.25
-              ) +
-              ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
-              labs1 +
-              ggthemes1 +
-              themes1
-
-            graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
-            graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
-
-            p2 <- data_combination_plot_cutoff %>% ggplot() +
-              aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-              geom_tile(alpha = 0.85, height = 0.95) +
-              scale_fill_manual(
-                name = "",
-                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-                labels = c("Present", "Missing")
-              ) +
-              geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-              geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-              coord_flip() +
-              labs2 +
-              ggthemes2 +
-              themes2
-
-            g1 <- ggplotGrob(p1)
-            g2 <- ggplotGrob(p2)
-
-            g <- gridExtra::gtable_rbind(g1, g2, size = "last")
-            g$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
-            grid::grid.newpage()
-            grid::grid.draw(g)
-          },
-          env = list(
-            labs1 = parsed_ggplot2_args1$labs,
-            themes1 = parsed_ggplot2_args1$theme,
-            ggthemes1 = parsed_ggplot2_args1$ggtheme,
-            labs2 = parsed_ggplot2_args2$labs,
-            themes2 = parsed_ggplot2_args2$theme,
-            ggthemes2 = parsed_ggplot2_args2$ggtheme
-          )
-        )
-      )
-    })
-
-    combination_plot_r <- reactive(combination_plot_q()[["g"]])
-
-    summary_table_q <- reactive({
-      req(
-        input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
-        common_code_q()
-      )
-      teal::validate_has_data(data_r(), 1)
-
-      # extract the ANL dataset for use in further validation
-      anl <- common_code_q()[["ANL"]]
-
-      group_var <- input$group_by_var
-      validate(
-        need(
-          is.null(group_var) ||
-            length(unique(anl[[group_var]])) < 100,
-          "Please select group-by variable with fewer than 100 unique values"
-        )
-      )
-
-      group_vals <- input$group_by_vals
-      variables_select <- input$variables_select
-      vars <- unique(variables_select, group_var)
-      count_type <- input$count_type
-
-      if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
-        variables <- selected_vars()
-      } else {
-        variables <- colnames(anl)
-      }
-
-      summ_fn <- if (input$count_type == "counts") {
-        function(x) sum(is.na(x))
-      } else {
-        function(x) round(sum(is.na(x)) / length(x), 4)
-      }
-
-      qenv <- common_code_q()
-
-      if (!is.null(group_var)) {
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              summary_data <- ANL %>%
-                dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
-                dplyr::group_by_at(group_var) %>%
-                dplyr::filter(group_var_name %in% group_vals)
-
-              count_data <- dplyr::summarise(summary_data, n = dplyr::n())
-
-              summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
-                dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
-                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
-                tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
-                dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
-            },
-            env = list(
-              group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
-            )
-          )
-        )
-      } else {
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = summary_data <- ANL %>%
-              dplyr::summarise_all(summ_fn) %>%
-              tidyr::pivot_longer(dplyr::everything(),
-                names_to = "Variable",
-                values_to = paste0("Missing (N=", nrow(ANL), ")")
-              ) %>%
-              dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
-            env = list(summ_fn = summ_fn)
-          )
-        )
-      }
-
-      teal.code::eval_code(qenv, quote(summary_data))
-    })
-
-    summary_table_r <- reactive(summary_table_q()[["summary_data"]])
-
-    by_subject_plot_q <- reactive({
-      # needed to trigger show r code update on tab change
-      req(input$summary_type == "Grouped by Subject", common_code_q())
-
-      teal::validate_has_data(data_r(), 1)
-
-      dev_ggplot2_args <- teal.widgets::ggplot2_args(
-        labs = list(x = "", y = ""),
-        theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
-      )
-
-      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-        user_plot = ggplot2_args[["By Subject"]],
-        user_default = ggplot2_args$default,
-        module_plot = dev_ggplot2_args
-      )
-
-      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-        all_ggplot2_args,
-        ggtheme = input$ggtheme
-      )
-
-      teal.code::eval_code(
-        common_code_q(),
-        substitute(
-          expr = parent_keys <- keys,
-          env = list(keys = data_parent_keys())
-        )
-      ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
-            env = list(data_keys = data_keys())
-          )
-        ) %>%
-        teal.code::eval_code(
-          quote({
-            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-              dplyr::group_by_at(parent_keys) %>%
-              dplyr::mutate(id = dplyr::cur_group_id()) %>%
-              dplyr::ungroup() %>%
-              dplyr::group_by_at(c(parent_keys, "id")) %>%
-              dplyr::summarise_all(anyNA) %>%
-              dplyr::ungroup()
-
-            # order subjects by decreasing number of missing and then by
-            # missingness pattern (defined using sha1)
-            order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::transmute(
-                id = dplyr::row_number(),
-                number_NA = apply(., 1, sum),
-                sha = apply(., 1, rlang::hash)
-              ) %>%
-              dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-              getElement(name = "id")
-
-            # order columns by decreasing percent of missing values
-            ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::summarise(
-                column = create_cols_labels(colnames(.)),
-                na_count = apply(., MARGIN = 2, FUN = sum),
-                na_percent = na_count / nrow(.) * 100
-              ) %>%
-              dplyr::arrange(na_percent, dplyr::desc(column))
-
-            summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::mutate(col = create_cols_labels(col))
-          })
-        ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = {
-              g <- ggplot(summary_plot_patients, aes(
-                x = factor(id, levels = order_subjects),
-                y = factor(col, levels = ordered_columns[["column"]]),
-                fill = isna
-              )) +
-                geom_raster() +
-                annotate(
-                  "text",
-                  x = length(order_subjects),
-                  y = seq_len(nrow(ordered_columns)),
-                  hjust = 1,
-                  label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
-                ) +
-                scale_fill_manual(
-                  name = "",
-                  values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-                  labels = c("Present", "Missing (at least one)")
-                ) +
-                labs +
-                ggthemes +
-                themes
-              print(g)
-            },
-            env = list(
-              labs = parsed_ggplot2_args$labs,
-              themes = parsed_ggplot2_args$theme,
-              ggthemes = parsed_ggplot2_args$ggtheme
-            )
-          )
-        )
-    })
-
-    by_subject_plot_r <- reactive(by_subject_plot_q()[["g"]])
-
-    output$levels_table <- DT::renderDataTable(
-      expr = {
-        if (length(input$variables_select) == 0) {
-          # so that zeroRecords message gets printed
-          # using tibble as it supports weird column names, such as " "
-          tibble::tibble(` ` = logical(0))
-        } else {
-          summary_table_r()
-        }
-      },
-      options = list(language = list(zeroRecords = "No variable selected"), pageLength = input$levels_table_rows)
+    # Building qenvs
+    summary_plot_q <- srv_summary_plot(
+      "summary_plot",
+      data_r,
+      data_keys,
+      common_code_q,
+      data_parent_keys,
+      ggplot2_args,
+      summary_type_r,
+      reactive(input$any_na),
+      ggtheme_r,
+      reactive(input$if_patients_plot)
     )
 
+    combination_plot_q <- srv_combination_plot(
+      "combination_plot",
+      data_r,
+      common_code_q,
+      data_keys,
+      data_parent_keys,
+      combination_cutoff_q,
+      ggplot2_args,
+      summary_type_r,
+      reactive(input$combination_cutoff),
+      ggtheme_r,
+      reactive(input$variables_select)
+    )
+
+    summary_table_q <- srv_summary_table(
+      "summary_table",
+      data_r,
+      common_code_q,
+      data_keys,
+      data_parent_keys,
+      selected_vars,
+      summary_type_r,
+      reactive(input$group_by_var),
+      reactive(input$group_by_vals),
+      reactive(input$variables_select),
+      reactive(input$count_type)
+    )
+
+    by_subject_plot_q <- srv_by_subject_plot(
+      "by_subject_plot",
+      data_r,
+      common_code_q,
+      data_keys,
+      data_parent_keys,
+      ggplot2_args,
+      summary_type_r,
+      ggtheme_r
+    )
+
+    # Decorated outputs
+
+    # Summary_plot_q
+    decorated_summary_plot_q <- srv_decorate_teal_data(
+      id = "dec_summary_plot",
+      data = summary_plot_q,
+      decorators = subset_decorators("summary_plot", decorators),
+      expr = {
+        grid::grid.newpage()
+        grid::grid.draw(summary_plot)
+      }
+    )
+
+    decorated_combination_plot_q <- srv_decorate_teal_data(
+      id = "dec_combination_plot",
+      data = combination_plot_q,
+      decorators = subset_decorators("combination_plot", decorators),
+      expr = {
+        grid::grid.newpage()
+        grid::grid.draw(combination_plot)
+      }
+    )
+
+    decorated_summary_table_q <- srv_decorate_teal_data(
+      id = "dec_summary_table",
+      data = summary_table_q,
+      decorators = subset_decorators("summary_table", decorators),
+      expr = table
+    )
+
+    decorated_by_subject_plot_q <- srv_decorate_teal_data(
+      id = "dec_by_subject_plot",
+      data = by_subject_plot_q,
+      decorators = subset_decorators("by_subject_plot", decorators),
+      expr = print(by_subject_plot)
+    )
+
+    # Plots & tables reactives
+
+    summary_plot_r <- reactive({
+      req(decorated_summary_plot_q())[["summary_plot"]]
+    })
+
+    combination_plot_r <- reactive({
+      req(decorated_combination_plot_q())[["combination_plot"]]
+    })
+
+    summary_table_r <- reactive({
+      req(decorated_summary_table_q())
+
+      if (length(input$variables_select) == 0) {
+        # so that zeroRecords message gets printed
+        # using tibble as it supports weird column names, such as " "
+        DT::datatable(
+          tibble::tibble(` ` = logical(0)),
+          options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
+        )
+      } else {
+        decorated_summary_table_q()[["table"]]
+      }
+    })
+
+    by_subject_plot_r <- reactive({
+      req(decorated_by_subject_plot_q()[["by_subject_plot"]])
+    })
+
+    # Generate output
     pws1 <- teal.widgets::plot_with_settings_srv(
       id = "summary_plot",
       plot_r = summary_plot_r,
@@ -1249,6 +1438,8 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       width = plot_width
     )
 
+    output$levels_table <- DT::renderDataTable(summary_table_r())
+
     pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
       plot_r = by_subject_plot_r,
@@ -1256,23 +1447,22 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
       width = plot_width
     )
 
-    final_q <- reactive({
-      req(input$summary_type)
-      sum_type <- input$summary_type
+    decorated_final_q <- reactive({
+      sum_type <- req(input$summary_type)
       if (sum_type == "Summary") {
-        summary_plot_q()
+        decorated_summary_plot_q()
       } else if (sum_type == "Combinations") {
-        combination_plot_q()
+        decorated_combination_plot_q()
       } else if (sum_type == "By Variable Levels") {
-        summary_table_q()
+        decorated_summary_table_q()
       } else if (sum_type == "Grouped by Subject") {
-        by_subject_plot_q()
+        decorated_by_subject_plot_q()
       }
     })
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(final_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
       title = "Show R Code for Missing Data"
     )
 
@@ -1308,7 +1498,7 @@ srv_missing_data <- function(id, data, reporter, filter_panel_api, dataname, par
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(final_q()))
+        card$append_src(teal.code::get_code(req(decorated_final_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
