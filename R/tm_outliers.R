@@ -17,11 +17,22 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating `tm_outliers`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `box_plot` (`ggplot2`)
+#' - `density_plot` (`ggplot2`)
+#' - `cum_dist_plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -71,6 +82,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -80,6 +92,8 @@
 #'
 #' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
+#'
+#'
 #'
 #' app <- init(
 #'   data = data,
@@ -125,7 +139,8 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_height = c(600, 200, 2000),
                         plot_width = NULL,
                         pre_output = NULL,
-                        post_output = NULL) {
+                        post_output = NULL,
+                        decorators = NULL) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters
@@ -162,6 +177,9 @@ tm_outliers <- function(label = "Outliers Module",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+
   # End of assertions
 
   # Make UI args
@@ -172,12 +190,16 @@ tm_outliers <- function(label = "Outliers Module",
     categorical_var = categorical_var
   )
 
+
   ans <- module(
     label = label,
     server = srv_outliers,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(
+        plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
     ),
     ui = ui_outliers,
     ui_args = args,
@@ -197,6 +219,7 @@ ui_outliers <- function(id, ...) {
     output = teal.widgets::white_small_well(
       uiOutput(ns("total_outliers")),
       DT::dataTableOutput(ns("summary_table")),
+
       uiOutput(ns("total_missing")),
       tags$br(), tags$hr(),
       tabsetPanel(
@@ -300,6 +323,7 @@ ui_outliers <- function(id, ...) {
           uiOutput(ns("ui_outlier_help"))
         )
       ),
+      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
       teal.widgets::panel_item(
         title = "Plot settings",
         selectInput(
@@ -320,8 +344,9 @@ ui_outliers <- function(id, ...) {
 }
 
 # Server function for the outliers module
+# Server function for the outliers module
 srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
-                         categorical_var, plot_height, plot_width, ggplot2_args) {
+                         categorical_var, plot_height, plot_width, ggplot2_args, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -761,7 +786,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = g <- plot_call +
+          expr = box_plot <- plot_call +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(
@@ -771,8 +796,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             themes = parsed_ggplot2_args$theme
           )
         )
-      ) %>%
-        teal.code::eval_code(quote(print(g)))
+      )
     })
 
     # density plot
@@ -823,7 +847,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         common_code_q(),
         substitute(
-          expr = g <- plot_call + labs + ggthemes + themes,
+          expr = density_plot <- plot_call + labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,
             labs = parsed_ggplot2_args$labs,
@@ -831,8 +855,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
-      ) %>%
-        teal.code::eval_code(quote(print(g)))
+      )
     })
 
     # Cumulative distribution plot
@@ -925,7 +948,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         qenv,
         substitute(
-          expr = g <- plot_call +
+          expr = cum_dist_plot <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
@@ -937,8 +960,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
-      ) %>%
-        teal.code::eval_code(quote(print(g)))
+      )
     })
 
     final_q <- reactive({
@@ -970,6 +992,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
       )
     })
+
+    decorated_final_q <- srv_transform_teal_data("decorate", data = final_q, transformators = decorators)
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1021,15 +1045,18 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     boxplot_r <- reactive({
       teal::validate_inputs(iv_r())
-      boxplot_q()[["g"]]
+      req(boxplot_q())
+      decorated_final_q()[["box_plot"]]
     })
     density_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      density_plot_q()[["g"]]
+      req(density_plot_q())
+      decorated_final_q()[["density_plot"]]
     })
     cumulative_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      cumulative_plot_q()[["g"]]
+      req(cumulative_plot_q())
+      decorated_final_q()[["cum_dist_plot"]]
     })
 
     box_pws <- teal.widgets::plot_with_settings_srv(
@@ -1217,7 +1244,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(final_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
       title = "Show R Code for Outlier"
     )
 
@@ -1249,7 +1276,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(final_q()))
+        card$append_src(teal.code::get_code(req(decorated_final_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
