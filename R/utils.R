@@ -297,7 +297,7 @@ assert_single_selection <- function(x,
 srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive = FALSE) {
   assert_reactive(data)
   checkmate::assert_list(decorators, "teal_transform_module")
-  checkmate::assert_factor(expr_is_reactive)
+  checkmate::assert_flag(expr_is_reactive)
 
   missing_expr <- missing(expr)
   if (!missing_expr && !expr_is_reactive) {
