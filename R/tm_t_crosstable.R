@@ -167,7 +167,15 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "table"))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default", "table"))
   # End of assertions
 
   # Make UI args
@@ -234,7 +242,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       ),
-      ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("table", args$decorators))
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -407,15 +415,18 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         )
     })
 
-    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
-    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = table))
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = subset_decorators("table", decorators),
+      expr = table
+    )
 
-    output$title <- renderText(output_q()[["title"]])
+    output$title <- renderText(req(decorated_output_q())[["title"]])
 
     table_r <- reactive({
       req(iv_r()$is_valid())
-      req(output_q())
-      decorated_output_q()[["table"]]
+      req(decorated_output_q())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
