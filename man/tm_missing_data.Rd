@@ -66,10 +66,9 @@ adaptable for general data analysis purposes.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{summary_plot_top} (\code{ggplot2})
-\item \code{summary_plot_bottom} (\code{ggplot2})
-\item \code{combination_plot_top} (\code{ggplot2})
-\item \code{combination_plot_bottom} (\code{ggplot2})
+\item \code{summary_plot} (\verb{ggplot2 plot grob})
+\item \code{combination_plot} (\verb{ggplot2 plot grob})
+\item \code{by_subject_plot} (\code{ggplot2})
 \item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
 
