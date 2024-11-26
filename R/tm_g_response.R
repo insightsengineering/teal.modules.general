@@ -201,7 +201,14 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "plot"))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default", "plot"))
   # End of assertions
 
   # Make UI args
@@ -285,7 +292,7 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = args$decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -552,13 +559,14 @@ srv_g_response <- function(id,
       teal.code::eval_code(qenv, plot_call)
     })
 
-    decorated_output_q <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
+    decorated_output_plot_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = subset_decorators("plot", decorators),
+      expr = print(plot)
+    )
 
-    decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
-    plot_r <- reactive({
-      req(output_q()) # Ensure original errors are displayed
-      decorated_output_plot_q()[["plot"]]
-    })
+    plot_r <- reactive(req(decorated_output_plot_q())[["plot"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
