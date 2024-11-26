@@ -276,7 +276,14 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "plot"))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default", "plot"))
   # End of assertions
 
   # Make UI args
@@ -350,7 +357,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -665,47 +672,46 @@ srv_g_bivariate <- function(id,
       teal.code::eval_code(merged$anl_q_r(), substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    decorated_output_q <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
+    decorated_output_q_facets <- srv_decorate_teal_data(
+      "decorator",
+      data = output_q,
+      decorators = subset_decorators("plot", decorators),
+      expr = reactive({
+        ANL <- merged$anl_q_r()[["ANL"]]
+        row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
+        col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
 
-    decorated_output_q_facets <- reactive({
-      ANL <- merged$anl_q_r()[["ANL"]]
-      row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
-      col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
+        # Add labels to facets
+        nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
+        nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
+        facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+        without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
-      # Add labels to facets
-      nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
-      nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
-      facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
-      without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
+        print_call <- if (without_facet) {
+          quote(print(plot))
+        } else {
+          substitute(
+            expr = {
+              # Add facetting labels
+              # optional: grid.newpage() # nolint: commented_code.
+              # Prefixed with teal.modules.general as its usage will appear in "Show R code"
+              plot <- teal.modules.general::add_facet_labels(
+                plot,
+                xfacet_label = nulled_col_facet_name,
+                yfacet_label = nulled_row_facet_name
+              )
+              grid::grid.newpage()
+              grid::grid.draw(plot)
+            },
+            env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
+          )
+        }
+        print_call
+      }),
+      expr_is_reactive = TRUE
+    )
 
-      print_call <- if (without_facet) {
-        quote(print(plot))
-      } else {
-        substitute(
-          expr = {
-            # Add facetting labels
-            # optional: grid.newpage() # nolint: commented_code.
-            # Prefixed with teal.modules.general as its usage will appear in "Show R code"
-            plot <- teal.modules.general::add_facet_labels(
-              plot,
-              xfacet_label = nulled_col_facet_name,
-              yfacet_label = nulled_row_facet_name
-            )
-            grid::grid.newpage()
-            grid::grid.draw(plot)
-          },
-          env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
-        )
-      }
-      decorated_output_q() %>%
-        teal.code::eval_code(print_call)
-    })
-
-
-    plot_r <- reactive({
-      req(output_q())
-      decorated_output_q_facets()[["plot"]]
-    })
+    plot_r <- reactive(req(decorated_output_q_facets())[["plot"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
