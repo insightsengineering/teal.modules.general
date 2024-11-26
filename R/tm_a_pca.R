@@ -165,7 +165,14 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "plot"))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default", "plot"))
   # End of assertions
 
   # Make UI args
@@ -240,7 +247,7 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
+            ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators))
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -975,13 +982,14 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
-    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
-    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = subset_decorators("plot", decorators),
+      expr = print(plot)
+    )
 
-    plot_r <- reactive({
-      req(output_q())
-      decorated_output_q()[["plot"]]
-    })
+    plot_r <- reactive(req(decorated_output_q())[["plot"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "pca_plot",
