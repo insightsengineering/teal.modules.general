@@ -184,7 +184,16 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  available_decorators <- c("default", "plot", "test_table", "summary_table")
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = available_decorators)) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+
   # End of assertions
 
   # Make UI args

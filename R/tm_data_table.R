@@ -132,13 +132,13 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "table"))) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
       lapply(decorators, list)
     } else {
       list(default = decorators)
     }
   }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default", "table"))
+  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
   # End of assertions
 
   ans <- module(
@@ -303,7 +303,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("table", decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", decorators)),
       teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",

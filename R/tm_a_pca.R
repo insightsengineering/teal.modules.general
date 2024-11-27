@@ -166,13 +166,13 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "plot"))) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
       lapply(decorators, list)
     } else {
       list(default = decorators)
     }
   }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default", "plot"))
+  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
   # End of assertions
 
   # Make UI args
@@ -247,7 +247,7 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators))
+            ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators))
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -985,7 +985,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = subset_decorators("plot", decorators),
+      decorators = subset_decorators("default", decorators),
       expr = print(plot)
     )
 

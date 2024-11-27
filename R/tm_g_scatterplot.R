@@ -309,13 +309,13 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", "plot"))) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
       lapply(decorators, list)
     } else {
       list(default = decorators)
     }
   }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default", "plot"))
+  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
 
   # End of assertions
 
@@ -439,7 +439,7 @@ ui_g_scatterplot <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           )
         },
-        ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
+        ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
         teal.widgets::panel_group(
           teal.widgets::panel_item(
             title = "Plot settings",
