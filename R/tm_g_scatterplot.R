@@ -308,7 +308,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
-  decorators <- normalize_decorators(decorators, "plot")
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, "plot")
 
   # End of assertions

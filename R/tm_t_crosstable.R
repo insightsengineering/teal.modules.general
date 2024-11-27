@@ -168,7 +168,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  decorators <- normalize_decorators(decorators, "plot")
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 

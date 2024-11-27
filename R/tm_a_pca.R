@@ -186,7 +186,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
-  decorators <- normalize_decorators(decorators, available_decorators)
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, available_decorators)
   # End of assertions
 

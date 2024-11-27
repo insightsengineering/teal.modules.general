@@ -131,7 +131,7 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators, "table")
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, "table")
   # End of assertions
 

@@ -197,7 +197,7 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("box_plot", "density_plot", "cumulative_plot", "table")
-  decorators <- normalize_decorators(decorators, available_decorators)
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 

@@ -176,7 +176,7 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  decorators <- normalize_decorators(decorators, "plot")
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, "plot")
 
   # End of assertions

@@ -204,7 +204,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
-  decorators <- normalize_decorators(decorators, available_decorators)
+  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
 
   # End of assertions
