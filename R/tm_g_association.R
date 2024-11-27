@@ -28,8 +28,7 @@
 #' @section Decorating `tm_g_association`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot_top` (`ggplot2`)
-#' - `plot_bottom` (`ggplot2`)
+#' - `plot` (`grob` created with [ggplot2::ggplotGrob()])
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
@@ -176,7 +175,16 @@ tm_g_association <- function(label = "Association",
   plot_choices <- c("Bivariate1", "Bivariate2")
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  }
+  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
+
   # End of assertions
 
   # Make UI args
@@ -247,7 +255,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -405,8 +413,6 @@ srv_tm_g_association <- function(id,
       # association
       ref_class_cov <- ifelse(association, ref_class, "NULL")
 
-      print_call <- quote(print(p))
-
       var_calls <- lapply(vars_names, function(var_i) {
         var_class <- class(ANL[[var_i]])[1]
         if (is.numeric(ANL[[var_i]]) && log_transformation) {
@@ -488,6 +494,7 @@ srv_tm_g_association <- function(id,
             expr = {
               plot_top <- plot_calls[[1]]
               plot_bottom <- plot_calls[[1]]
+              plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
             },
             env = list(
               plot_calls = do.call(
@@ -500,23 +507,19 @@ srv_tm_g_association <- function(id,
         )
     })
 
-    decorated_output_q <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
-    decorated_output_grob_q <- reactive({
-      within(
-        decorated_output_q(),
-        {
-          plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
-          grid::grid.newpage()
-          grid::grid.draw(plot)
-        }
-      )
-    })
-
+    decorated_output_grob_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = subset_decorators("plot", decorators),
+      expr = {
+        grid::grid.newpage()
+        grid::grid.draw(plot)
+      }
+    )
 
     plot_r <- reactive({
       req(iv_r()$is_valid())
-      req(output_q())
-      decorated_output_grob_q()[["plot"]]
+      req(decorated_output_grob_q())[["plot"]]
     })
 
     pws <- teal.widgets::plot_with_settings_srv(

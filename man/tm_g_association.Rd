@@ -79,8 +79,7 @@ For more examples, please see the vignette "Using association plot" via
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{plot_top} (\code{ggplot2})
-\item \code{plot_bottom} (\code{ggplot2})
+\item \code{plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 }
 
 For additional details and examples of decorators, refer to the vignette
