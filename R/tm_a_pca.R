@@ -264,19 +264,31 @@ ui_a_pca <- function(id, ...) {
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
-              ui_decorate_teal_data(ns("d_elbow_plot"), decorators = subset_decorators("elbow_plot", args$decorators))
+              ui_decorate_teal_data(
+                ns("d_elbow_plot"),
+                decorators = subset_decorators("elbow_plot", args$decorators)
+              )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
-              ui_decorate_teal_data(ns("d_circle_plot"), decorators = subset_decorators("circle_plot", args$decorators))
+              ui_decorate_teal_data(
+                ns("d_circle_plot"),
+                decorators = subset_decorators("circle_plot", args$decorators)
+              )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
-              ui_decorate_teal_data(ns("d_biplot"), decorators = subset_decorators("biplot", args$decorators))
+              ui_decorate_teal_data(
+                ns("d_biplot"),
+                decorators = subset_decorators("biplot", args$decorators)
+              )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
-              ui_decorate_teal_data(ns("d_eigenvector_plot"), decorators = subset_decorators("eigenvector_plot", args$decorators))
+              ui_decorate_teal_data(
+                ns("d_eigenvector_plot"),
+                decorators = subset_decorators("eigenvector_plot", args$decorators)
+              )
             )
           ),
           teal.widgets::panel_item(

@@ -343,15 +343,24 @@ ui_outliers <- function(id, ...) {
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
-        ui_decorate_teal_data(ns("d_box_plot"), decorators = subset_decorators("box_plot", args$decorators))
+        ui_decorate_teal_data(
+          ns("d_box_plot"),
+          decorators = subset_decorators("box_plot", args$decorators)
+        )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Density Plot'"),
-        ui_decorate_teal_data(ns("d_density_plot"), decorators = subset_decorators("density_plot", args$decorators))
+        ui_decorate_teal_data(
+          ns("d_density_plot"),
+          decorators = subset_decorators("density_plot", args$decorators)
+        )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Cumulative Distribution Plot'"),
-        ui_decorate_teal_data(ns("d_cumulative_plot"), decorators = subset_decorators("cumulative_plot", args$decorators))
+        ui_decorate_teal_data(
+          ns("d_cumulative_plot"),
+          decorators = subset_decorators("cumulative_plot", args$decorators)
+        )
       ),
       ui_decorate_teal_data(ns("d_table"), decorators = subset_decorators("table", args$decorators)),
       teal.widgets::panel_item(

@@ -328,7 +328,7 @@ ui_decorate_teal_data <- function(id, decorators, ...) {
 
 #' Internal function to check if decorators is a valid object
 #' @noRd
-check_decorators <- function(x, names = NULL, null.ok = FALSE) {
+check_decorators <- function(x, names = NULL, null.ok = FALSE) { # nolint: object_name.
   checkmate::qassert(null.ok, "B1")
 
   check_message <- checkmate::check_list(
