@@ -79,7 +79,8 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
-\item \code{cum_dist_plot} (\code{ggplot2})
+\item \code{cumulative_plot} (\code{ggplot2})
+\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
 
 For additional details and examples of decorators, refer to the vignette
