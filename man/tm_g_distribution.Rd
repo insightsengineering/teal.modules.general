@@ -93,7 +93,7 @@ visually and statistically analyze the variable's distribution.
 
 This module generates the following objects, which can be modified in place using decorators::
 \itemize{
-\item \code{plot} (\code{ggplot2})`
+\item \code{plot} (\code{ggplot2})
 \item \code{test_table} (\code{data.frame})
 \item \code{summary_table} (\code{data.frame})
 }

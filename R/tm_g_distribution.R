@@ -30,7 +30,7 @@
 #' @section Decorating `tm_outliers`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators::
-#' - `plot` (`ggplot2`)`
+#' - `plot` (`ggplot2`)
 #' - `test_table` (`data.frame`)
 #' - `summary_table` (`data.frame`)
 #'
