@@ -25,8 +25,19 @@
 #'  with text placed before the output to put the output into context. For example a title.
 #' @param post_output (`shiny.tag`) optional, text or UI element to be displayed after the module's output,
 #' adding context or further instructions. Elements like `shiny::helpText()` are useful.
-#' @param decorators `r lifecycle::badge("experimental")` (`list` of `teal_transform_module` or `NULL`) optional,
+#' @param decorators `r lifecycle::badge("experimental")`
+#' (`list` of `teal_transform_module`,
+#' named `list` of `teal_transform_module` or
+#' `NULL`) optional,
 #' if not `NULL`, decorator for tables or plots included in the module.
+#' When a named list of `teal_transform_module`, the decorators are applied to the
+#' outputs of the corresponding view of the module.
+#' Otherwise, the decorators are applied to all outputs in all views equally, which is the same
+#' as using the name `default`.
+#'
+#' A module can have different views with different outputs, such as a tab with
+#' a table and another with a plot.
+#' See section "Decorating `tm_<module_name>`" below for more details.
 #'
 #' @param alpha (`integer(1)` or `integer(3)`) optional, specifies point opacity.
 #' - When the length of `alpha` is one: the plot points will have a fixed opacity.
