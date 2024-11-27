@@ -176,8 +176,8 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
 
   # End of assertions
 
@@ -249,7 +249,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",

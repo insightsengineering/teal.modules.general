@@ -308,8 +308,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
 
   # End of assertions
 
@@ -433,7 +433,7 @@ ui_g_scatterplot <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           )
         },
-        ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
+        ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
         teal.widgets::panel_group(
           teal.widgets::panel_item(
             title = "Plot settings",

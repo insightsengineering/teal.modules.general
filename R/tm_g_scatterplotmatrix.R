@@ -203,8 +203,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -251,7 +251,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",

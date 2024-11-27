@@ -165,8 +165,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -241,7 +241,7 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators))
+            ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators))
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -979,7 +979,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = subset_decorators("default", decorators),
+      decorators = subset_decorators("plot", decorators),
       expr = print(plot)
     )
 

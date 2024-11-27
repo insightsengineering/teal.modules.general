@@ -276,8 +276,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -351,7 +351,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",

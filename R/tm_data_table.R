@@ -131,8 +131,8 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "table")
+  assert_decorators(decorators, null.ok = TRUE, "table")
   # End of assertions
 
   ans <- module(
@@ -297,7 +297,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("table", decorators)),
       teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",

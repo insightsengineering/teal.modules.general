@@ -168,8 +168,8 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE)
+  decorators <- normalize_decorators(decorators, "plot")
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -236,7 +236,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("default", args$decorators))
+      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators))
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -412,7 +412,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = subset_decorators("default", decorators),
+      decorators = subset_decorators("plot", decorators),
       expr = table
     )
 
