@@ -308,14 +308,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE)
 
   # End of assertions
 

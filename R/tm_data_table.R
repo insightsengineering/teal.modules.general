@@ -131,14 +131,8 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE)
   # End of assertions
 
   ans <- module(

@@ -176,14 +176,8 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE)
 
   # End of assertions
 

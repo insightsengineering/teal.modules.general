@@ -168,14 +168,8 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default"))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default"))
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE)
   # End of assertions
 
   # Make UI args

@@ -135,14 +135,8 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("summary_plot", "summary_plot", "combination_plot", "by_subject_plot", "summary_table")
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", available_decorators))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default", available_decorators))
+  decorators <- normalize_decorators(decorators, available_decorators)
+  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 
   ans <- module(
