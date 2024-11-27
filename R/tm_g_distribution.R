@@ -29,10 +29,25 @@
 #'
 #' @section Decorating `tm_outliers`:
 #'
-#' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' This module generates the following objects, which can be modified in place using decorators::
+#' - `plot` (`ggplot2`)`
 #' - `test_table` (`data.frame`)
 #' - `summary_table` (`data.frame`)
+#'
+#' The `decorators` can be specific for the `histogram` and `decorators` outputs
+#' within the module, which can be specified by using a named list.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_distribution(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to outputs of both `histogram` and `qq`
+#'      histogram = list(teal_transform_module(...)), # applied to outputs of `histogram`
+#'      qq = list(teal_transform_module(...)) # applied to outputs of `qq`
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.

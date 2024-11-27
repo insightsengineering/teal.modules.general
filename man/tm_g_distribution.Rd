@@ -80,12 +80,26 @@ visually and statistically analyze the variable's distribution.
 \section{Decorating \code{tm_outliers}}{
 
 
-This module generates the following objects, which can be modified in place using decorators:
+This module generates the following objects, which can be modified in place using decorators::
 \itemize{
-\item \code{plot} (\code{ggplot2})
+\item \code{plot} (\code{ggplot2})`
 \item \code{test_table} (\code{data.frame})
 \item \code{summary_table} (\code{data.frame})
 }
+
+The \code{decorators} can be specific for the \code{histogram} and \code{decorators} outputs
+within the module, which can be specified by using a named list.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_distribution(
+   ..., # arguments for module
+   decorators = list(
+     default = list(teal_transform_module(...)), # applied to outputs of both `histogram` and `qq`
+     histogram = list(teal_transform_module(...)), # applied to outputs of `histogram`
+     qq = list(teal_transform_module(...)) # applied to outputs of `qq`
+   )
+)
+}\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
 \code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
