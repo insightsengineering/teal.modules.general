@@ -37,8 +37,8 @@
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
-#' @templateVar ggnames `r regression_names`
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param(regression_names)`
+#' @param decorators `r roxygen_decorators_param("tm_a_regression")`
 #'
 #' @inherit shared_params return
 #'
@@ -1035,7 +1035,10 @@ srv_a_regression <- function(id,
   })
 }
 
-regression_names <- paste0(
-  '"Response vs Regressor", "Residuals vs Fitted", ',
-  '"Scale-Location", "Cook\'s distance", "Residuals vs Leverage"", "Cook\'s dist vs Leverage"'
+regression_names <- c(
+  "Response vs Regressor",
+  "Residuals vs Fitted",
+  "Scale-Location", "Cook's distance",
+  "Residuals vs Leverage",
+  "Cook's dist vs Leverage"
 )

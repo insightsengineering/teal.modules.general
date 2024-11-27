@@ -38,9 +38,7 @@ Defaults to density (\code{FALSE}).}
 
 \item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings. The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Histogram", "QQplot")}.
 
@@ -66,19 +64,11 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-(\code{list} of \code{teal_transform_module},
-named \code{list} of \code{teal_transform_module} or
-\code{NULL}) optional,
-if not \code{NULL}, decorator for tables or plots included in the module.
-When a named list of \code{teal_transform_module}, the decorators are applied to the
-outputs of the corresponding view of the module.
-Otherwise, the decorators are applied to all outputs in all views equally, which is the same
-as using the name \code{default}.
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
-A module can have different views with different outputs, such as a tab with
-a table and another with a plot.
-See section "Decorating \verb{tm_<module_name>}" below for more details.}
+Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
+
+See section "Decorating \code{tm_g_distribution}" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -98,16 +88,18 @@ This module generates the following objects, which can be modified in place usin
 \item \code{summary_table} (\code{data.frame})
 }
 
-The \code{decorators} can be specific for the \code{histogram} and \code{decorators} outputs
-within the module, which can be specified by using a named list.
+Decorators can be applied to all outputs or only to specific objects using a
+named list of \code{teal_transform_module} objects.
+The \code{"default"} name is reserved for decorators that are applied to all outputs.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_distribution(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to outputs of both `histogram` and `qq`
-     histogram = list(teal_transform_module(...)), # applied to outputs of `histogram`
-     qq = list(teal_transform_module(...)) # applied to outputs of `qq`
+     default = list(teal_transform_module(...)), # applied to all outputs
+     plot = list(teal_transform_module(...)), # applied only to plot output (histogram plot)
+     test_table = list(teal_transform_module(...)) # applied only to test_table
+     summary_table = list(teal_transform_module(...)) # applied only to summary_table
    )
 )
 }\if{html}{\out{</div>}}

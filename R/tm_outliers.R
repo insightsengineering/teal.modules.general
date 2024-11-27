@@ -11,9 +11,8 @@
 #' Specifies variable(s) to be analyzed for outliers.
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
-#'
-#' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
-#' @template ggplot2_args_multi
+#' @param decorators `r roxygen_decorators_param("tm_outliers")`
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Boxplot", "Density Plot", "Cumulative Distribution Plot")`
 #'
 #' @inherit shared_params return
 #'

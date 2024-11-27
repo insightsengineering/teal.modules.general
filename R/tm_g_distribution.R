@@ -22,8 +22,8 @@
 #' and `max`.
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
-#' @templateVar ggnames "Histogram", "QQplot"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Histogram", "QQplot")`
+#' @param decorators `r roxygen_decorators_param("tm_g_distribution")`
 #'
 #' @inherit shared_params return
 #'
@@ -34,17 +34,19 @@
 #' - `test_table` (`data.frame`)
 #' - `summary_table` (`data.frame`)
 #'
-#' The `decorators` can be specific for the `histogram` and `decorators` outputs
-#' within the module, which can be specified by using a named list.
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
 #' See code snippet below:
 #'
 #' ```
 #' tm_g_distribution(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      default = list(teal_transform_module(...)), # applied to outputs of both `histogram` and `qq`
-#'      histogram = list(teal_transform_module(...)), # applied to outputs of `histogram`
-#'      qq = list(teal_transform_module(...)) # applied to outputs of `qq`
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      plot = list(teal_transform_module(...)), # applied only to plot output (histogram plot)
+#'      test_table = list(teal_transform_module(...)) # applied only to test_table
+#'      summary_table = list(teal_transform_module(...)) # applied only to summary_table
 #'    )
 #' )
 #' ```

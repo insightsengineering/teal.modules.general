@@ -20,8 +20,8 @@
 #' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
 #' Default to `"gray"`.
 #'
-#' @templateVar ggnames "Bivariate1", "Bivariate2"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Bivariate1", "Bivariate2")`
+#' @param decorators `r roxygen_decorators_param("tm_")`
 #'
 #' @inherit shared_params return
 #'

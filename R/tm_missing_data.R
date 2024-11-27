@@ -12,8 +12,8 @@
 #' ignored.
 #' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #'
-#' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param(missing_data_names)`
+#' @param decorators `r roxygen_decorators_param("tm_missing_data")`
 #'
 #' @inherit shared_params return
 #'
@@ -1393,3 +1393,7 @@ srv_missing_data <- function(id,
     ###
   })
 }
+
+missing_data_names <- c(
+  "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
+)

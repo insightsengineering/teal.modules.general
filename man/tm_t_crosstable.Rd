@@ -50,20 +50,6 @@ with settings for the module table.
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
-
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-(\code{list} of \code{teal_transform_module},
-named \code{list} of \code{teal_transform_module} or
-\code{NULL}) optional,
-if not \code{NULL}, decorator for tables or plots included in the module.
-When a named list of \code{teal_transform_module}, the decorators are applied to the
-outputs of the corresponding view of the module.
-Otherwise, the decorators are applied to all outputs in all views equally, which is the same
-as using the name \code{default}.
-
-A module can have different views with different outputs, such as a tab with
-a table and another with a plot.
-See section "Decorating \verb{tm_<module_name>}" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
