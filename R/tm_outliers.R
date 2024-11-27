@@ -996,27 +996,25 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
     })
 
-    post_expr <- reactive({
-      substitute(
-        expr = {
-          columns_index <- union(
-            setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
-            table_columns
-          )
-          ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
-          print(.plot)
-        },
-        env = list(table_columns = input$table_ui_columns, .plot = as.name(current_tab_r()))
-      )
-    })
-
     decorated_q <- mapply(
       function(obj_name, q) {
         srv_decorate_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
           decorators = subset_decorators(obj_name, decorators),
-          expr = post_expr,
+          expr = reactive({
+            substitute(
+              expr = {
+                columns_index <- union(
+                  setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
+                  table_columns
+                )
+                ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
+                print(.plot)
+              },
+              env = list(table_columns = input$table_ui_columns, .plot = as.name(obj_name))
+            )
+          }),
           expr_is_reactive = TRUE
         )
       },
