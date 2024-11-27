@@ -73,6 +73,23 @@ This module generates the following objects, which can be modified in place usin
 \item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
 
+Decorators can be applied to all outputs or only to specific objects using a
+named list of \code{teal_transform_module} objects.
+The \code{"default"} name is reserved for decorators that are applied to all outputs.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(
+   ..., # arguments for module
+   decorators = list(
+     default = list(teal_transform_module(...)), # applied to all outputs
+     summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
+     combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
+     by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
+     table = list(teal_transform_module(...)) # applied only to `table` output
+   )
+)
+}\if{html}{\out{</div>}}
+
 For additional details and examples of decorators, refer to the vignette
 \code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
 }

@@ -44,9 +44,9 @@
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      default = list(teal_transform_module(...)), # applied to all outputs
-#'      plot = list(teal_transform_module(...)), # applied only to plot output (histogram plot)
-#'      test_table = list(teal_transform_module(...)) # applied only to test_table
-#'      summary_table = list(teal_transform_module(...)) # applied only to summary_table
+#'      plot = list(teal_transform_module(...)), # applied only to `plot` output (histogram plot)
+#'      test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+#'      summary_table = list(teal_transform_module(...)) # applied only to `summary_table` output
 #'    )
 #' )
 #' ```

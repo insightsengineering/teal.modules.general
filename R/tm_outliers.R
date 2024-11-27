@@ -24,6 +24,24 @@
 #' - `cumulative_plot` (`ggplot2`)
 #' - `table` ([DT::datatable()])
 #'
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' See code snippet below:
+#'
+#' ```
+#' tm_outliers(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
+#'      density_plot = list(teal_transform_module(...)) # applied only to `density_plot` output
+#'      cumulative_plot = list(teal_transform_module(...)) # applied only to `cumulative_plot` output
+#'      table = list(teal_transform_module(...)) # applied only to `table` output
+#'    )
+#' )
+#' ```
+#'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
 #'
