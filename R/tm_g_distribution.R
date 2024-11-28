@@ -27,7 +27,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_outliers`:
+#' @section Decorating `tm_g_distribution`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot2`)
