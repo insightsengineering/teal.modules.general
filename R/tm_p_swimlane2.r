@@ -1,3 +1,4 @@
+#' @export
 tm_p_swimlane2 <- function(
     label = "Swimlane Plot Module", plotly_specs, title,
     colors = c(), symbols = c(), transformers = list(),
