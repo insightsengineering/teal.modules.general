@@ -59,7 +59,11 @@ srv_p_swimlane2 <- function(id,
     plotly_selected <- reactive(plotly::event_data("plotly_selected"))
 
     observeEvent(plotly_selected(), once = TRUE, {
-      srv_mod("brush_tables", data = data, filter_panel_api = filter_panel_api, plotly_selected = plotly_selected)
+      if ("plotly_selected" %in% names(formals(srv_mod))) {
+        srv_mod("brush_tables", data = data, filter_panel_api = filter_panel_api, plotly_selected = plotly_selected)
+      } else {
+        srv_mod("brush_tables", data = data, filter_panel_api = filter_panel_api)
+      }
     })
   })
 }
