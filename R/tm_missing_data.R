@@ -152,7 +152,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("summary_plot", "summary_plot", "combination_plot", "by_subject_plot", "summary_table")
+  available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
   decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
