@@ -1321,14 +1321,12 @@ srv_distribution <- function(id,
       expr = summary_table
     )
 
-    decorated_output_q_test <- srv_decorate_teal_data(
+    decorated_output_q <- srv_decorate_teal_data(
       "d_test",
       data = decorated_output_q_summary,
       decorators = subset_decorators("test_table", decorators),
       expr = test_table
     )
-
-    decorated_output_q <- decorated_output_q_test
 
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
 
