@@ -345,24 +345,24 @@ ui_outliers <- function(id, ...) {
         condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
         ui_decorate_teal_data(
           ns("d_box_plot"),
-          decorators = subset_decorators("box_plot", args$decorators)
+          decorators = select_decorators(args$decorators, "box_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Density Plot'"),
         ui_decorate_teal_data(
           ns("d_density_plot"),
-          decorators = subset_decorators("density_plot", args$decorators)
+          decorators = select_decorators(args$decorators, "density_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Cumulative Distribution Plot'"),
         ui_decorate_teal_data(
           ns("d_cumulative_plot"),
-          decorators = subset_decorators("cumulative_plot", args$decorators)
+          decorators = select_decorators(args$decorators, "cumulative_plot")
         )
       ),
-      ui_decorate_teal_data(ns("d_table"), decorators = subset_decorators("table", args$decorators)),
+      ui_decorate_teal_data(ns("d_table"), decorators = select_decorators(args$decorators, "table")),
       teal.widgets::panel_item(
         title = "Plot settings",
         selectInput(
@@ -1010,7 +1010,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         srv_decorate_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = subset_decorators(obj_name, decorators),
+          decorators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(
               expr = {
@@ -1036,7 +1036,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     decorated_final_q <- srv_decorate_teal_data(
       "d_table",
       data = decorated_final_q_no_table,
-      decorators = subset_decorators("table", decorators),
+      decorators = select_decorators(decorators, "table"),
       expr = table
     )
 

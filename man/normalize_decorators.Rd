@@ -4,14 +4,10 @@
 \alias{normalize_decorators}
 \title{Convert flat list of \code{teal_transform_module} to named lists}
 \usage{
-normalize_decorators(decorators, available_decorators = NULL)
+normalize_decorators(decorators)
 }
 \arguments{
 \item{decorators}{(list of \code{teal_transformodules}) to normalize.}
-
-\item{available_decorators}{(\code{character}) a character vector of available decorator names.
-When \code{NULL} it assumes that all decorators should be applied, which can be used
-when module only has 1 object.}
 }
 \value{
 A named list of lists with \code{teal_transform_module} objects.

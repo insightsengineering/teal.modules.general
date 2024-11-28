@@ -385,8 +385,8 @@ assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
 #' @return A flat list with all decorators to include.
 #' It can be an empty list if none of the scope exists in `decorators` argument.
 #' @keywords internal
-subset_decorators <- function(scope, decorators) {
-  checkmate::assert_character(scope)
+select_decorators <- function(decorators, scope) {
+  checkmate::assert_character(scope, null.ok = TRUE)
   scope <- intersect(union("default", scope), names(decorators))
   c(list(), unlist(decorators[scope], recursive = FALSE))
 }

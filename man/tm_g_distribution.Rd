@@ -83,9 +83,10 @@ visually and statistically analyze the variable's distribution.
 
 This module generates the following objects, which can be modified in place using decorators::
 \itemize{
-\item \code{plot} (\code{ggplot2})
-\item \code{test_table} (\code{data.frame})
+\item \code{histogram_plot} (\code{ggplot2})
+\item \code{qq_plot} (\code{data.frame})
 \item \code{summary_table} (\code{data.frame})
+\item \code{test_table} (\code{data.frame})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a
@@ -97,9 +98,10 @@ See code snippet below:
    ..., # arguments for module
    decorators = list(
      default = list(teal_transform_module(...)), # applied to all outputs
-     plot = list(teal_transform_module(...)), # applied only to `plot` output (histogram plot)
-     test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+     histogram_plot = list(teal_transform_module(...)), # applied only to `histogram_plot` output (histogram plot)
+     qq_plot = list(teal_transform_module(...)) # applied only to `qq_plot` output
      summary_table = list(teal_transform_module(...)) # applied only to `summary_table` output
+     test_table = list(teal_transform_module(...)) # applied only to `test_table` output
    )
 )
 }\if{html}{\out{</div>}}

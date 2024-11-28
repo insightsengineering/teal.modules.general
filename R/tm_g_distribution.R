@@ -304,7 +304,7 @@ ui_distribution <- function(id, ...) {
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
             ui_decorate_teal_data(
               ns("d_density"),
-              decorators = subset_decorators("histogram_plot", args$decorators)
+              decorators = select_decorators(args$decorators, "histogram_plot")
             ),
             collapsed = FALSE
           )
@@ -316,18 +316,18 @@ ui_distribution <- function(id, ...) {
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             ui_decorate_teal_data(
               ns("d_qq"),
-              decorators = subset_decorators("qq_plot", args$decorators)
+              decorators = select_decorators(args$decorators, "qq_plot")
             ),
             collapsed = FALSE
           )
         ),
         ui_decorate_teal_data(
           ns("d_summary"),
-          decorators = subset_decorators("summary_table", args$decorators)
+          decorators = select_decorators(args$decorators, "summary_table")
         ),
         ui_decorate_teal_data(
           ns("d_test"),
-          decorators = subset_decorators("test_table", args$decorators)
+          decorators = select_decorators(args$decorators, "test_table")
         ),
         conditionalPanel(
           condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
@@ -1294,14 +1294,14 @@ srv_distribution <- function(id,
     decorated_output_dist_q <- srv_decorate_teal_data(
       "d_density",
       data = output_dist_q,
-      decorators = subset_decorators("histogram_plot", decorators),
+      decorators = select_decorators(decorators, "histogram_plot"),
       expr = print(histogram_plot)
     )
 
     decorated_output_qq_q <- srv_decorate_teal_data(
       "d_qq",
       data = output_qq_q,
-      decorators = subset_decorators("qq_plot", decorators),
+      decorators = select_decorators(decorators, "qq_plot"),
       expr = print(qq_plot)
     )
 
@@ -1317,14 +1317,14 @@ srv_distribution <- function(id,
     decorated_output_q_summary <- srv_decorate_teal_data(
       "d_summary",
       data = decorated_output_q_base,
-      decorators = subset_decorators("summary_table", decorators),
+      decorators = select_decorators(decorators, "summary_table"),
       expr = summary_table
     )
 
     decorated_output_q <- srv_decorate_teal_data(
       "d_test",
       data = decorated_output_q_summary,
-      decorators = subset_decorators("test_table", decorators),
+      decorators = select_decorators(decorators, "test_table"),
       expr = test_table
     )
 

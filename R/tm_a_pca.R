@@ -266,28 +266,28 @@ ui_a_pca <- function(id, ...) {
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_elbow_plot"),
-                decorators = subset_decorators("elbow_plot", args$decorators)
+                decorators = select_decorators(args$decorators, "elbow_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_circle_plot"),
-                decorators = subset_decorators("circle_plot", args$decorators)
+                decorators = select_decorators(args$decorators, "circle_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_biplot"),
-                decorators = subset_decorators("biplot", args$decorators)
+                decorators = select_decorators(args$decorators, "biplot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_eigenvector_plot"),
-                decorators = subset_decorators("eigenvector_plot", args$decorators)
+                decorators = select_decorators(args$decorators, "eigenvector_plot")
               )
             )
           ),
@@ -1032,7 +1032,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         srv_decorate_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = subset_decorators(obj_name, decorators),
+          decorators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(print(.plot), env = list(.plot = as.name(obj_name)))
           }),

@@ -351,7 +351,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -669,7 +669,7 @@ srv_g_bivariate <- function(id,
     decorated_output_q_facets <- srv_decorate_teal_data(
       "decorator",
       data = output_q,
-      decorators = subset_decorators("plot", decorators),
+      decorators = select_decorators(decorators, "plot"),
       expr = reactive({
         ANL <- merged$anl_q_r()[["ANL"]]
         row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)

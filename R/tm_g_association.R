@@ -249,7 +249,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -504,7 +504,7 @@ srv_tm_g_association <- function(id,
     decorated_output_grob_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = subset_decorators("plot", decorators),
+      decorators = select_decorators(decorators, "plot"),
       expr = {
         grid::grid.newpage()
         grid::grid.draw(plot)

@@ -251,7 +251,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_decorate_teal_data(ns("decorator"), decorators = subset_decorators("plot", args$decorators)),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -449,7 +449,7 @@ srv_g_scatterplotmatrix <- function(id,
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = subset_decorators("plot", decorators),
+      decorators = select_decorators(decorators, "plot"),
       expr = print(plot)
     )
 
