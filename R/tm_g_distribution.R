@@ -22,17 +22,36 @@
 #' and `max`.
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
-#' @templateVar ggnames "Histogram", "QQplot"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Histogram", "QQplot")`
+#' @param decorators `r roxygen_decorators_param("tm_g_distribution")`
 #'
 #' @inherit shared_params return
 #'
 #' @section Decorating `tm_outliers`:
 #'
-#' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
-#' - `test_table` (`data.frame`)
+#' This module generates the following objects, which can be modified in place using decorators::
+#' - `histogram_plot` (`ggplot2`)
+#' - `qq_plot` (`data.frame`)
 #' - `summary_table` (`data.frame`)
+#' - `test_table` (`data.frame`)
+#'
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_distribution(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      histogram_plot = list(teal_transform_module(...)), # applied only to `histogram_plot` output
+#'      qq_plot = list(teal_transform_module(...)) # applied only to `qq_plot` output
+#'      summary_table = list(teal_transform_module(...)) # applied only to `summary_table` output
+#'      test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
@@ -184,7 +203,10 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+
   # End of assertions
 
   # Make UI args
@@ -280,7 +302,10 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_transform_teal_data(ns("d_dist"), transformators = args$decorators),
+            ui_decorate_teal_data(
+              ns("d_density"),
+              decorators = select_decorators(args$decorators, "histogram_plot")
+            ),
             collapsed = FALSE
           )
         ),
@@ -289,9 +314,20 @@ ui_distribution <- function(id, ...) {
           teal.widgets::panel_item(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_transform_teal_data(ns("d_qq"), transformators = args$decorators),
+            ui_decorate_teal_data(
+              ns("d_qq"),
+              decorators = select_decorators(args$decorators, "qq_plot")
+            ),
             collapsed = FALSE
           )
+        ),
+        ui_decorate_teal_data(
+          ns("d_summary"),
+          decorators = select_decorators(args$decorators, "summary_table")
+        ),
+        ui_decorate_teal_data(
+          ns("d_test"),
+          decorators = select_decorators(args$decorators, "test_table")
         ),
         conditionalPanel(
           condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
@@ -677,12 +713,12 @@ srv_distribution <- function(id,
         )
       }
 
-      if (length(s_var) == 0 && length(g_var) == 0) {
-        qenv <- teal.code::eval_code(
+      qenv <- if (length(s_var) == 0 && length(g_var) == 0) {
+        teal.code::eval_code(
           qenv,
           substitute(
             expr = {
-              summary_table <- ANL %>%
+              summary_table_data <- ANL %>%
                 dplyr::summarise(
                   min = round(min(dist_var_name, na.rm = TRUE), roundn),
                   median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
@@ -699,12 +735,12 @@ srv_distribution <- function(id,
           )
         )
       } else {
-        qenv <- teal.code::eval_code(
+        teal.code::eval_code(
           qenv,
           substitute(
             expr = {
               strata_vars <- strata_vars_raw
-              summary_table <- ANL %>%
+              summary_table_data <- ANL %>%
                 dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
                 dplyr::summarise(
                   min = round(min(dist_var_name, na.rm = TRUE), roundn),
@@ -714,7 +750,6 @@ srv_distribution <- function(id,
                   sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
                   count = dplyr::n()
                 )
-              summary_table # used to display table when running show-r-code code
             },
             env = list(
               dist_var_name = dist_var_name,
@@ -723,6 +758,20 @@ srv_distribution <- function(id,
             )
           )
         )
+      }
+      if (iv_r()$is_valid()) {
+        within(qenv, {
+          summary_table <- DT::datatable(
+            summary_table_data,
+            options = list(
+              autoWidth = TRUE,
+              columnDefs = list(list(width = "200px", targets = "_all"))
+            ),
+            rownames = FALSE
+          )
+        })
+      } else {
+        within(qenv, summary_table <- NULL)
       }
     })
 
@@ -913,7 +962,7 @@ srv_distribution <- function(id,
         teal.code::eval_code(
           qenv,
           substitute(
-            expr = plot <- plot_call,
+            expr = histogram_plot <- plot_call,
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
         )
@@ -1042,7 +1091,7 @@ srv_distribution <- function(id,
         teal.code::eval_code(
           qenv,
           substitute(
-            expr = plot <- plot_call,
+            expr = qq_plot <- plot_call,
             env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
           )
         )
@@ -1191,7 +1240,7 @@ srv_distribution <- function(id,
             qenv,
             substitute(
               expr = {
-                test_table <- ANL %>%
+                test_table_data <- ANL %>%
                   dplyr::select(dist_var) %>%
                   with(., broom::glance(do.call(test, args))) %>%
                   dplyr::mutate_if(is.numeric, round, 3)
@@ -1204,7 +1253,7 @@ srv_distribution <- function(id,
             qenv,
             substitute(
               expr = {
-                test_table <- ANL %>%
+                test_table_data <- ANL %>%
                   dplyr::select(dist_var, s_var, g_var) %>%
                   dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
                   dplyr::do(tests = broom::glance(do.call(test, args))) %>%
@@ -1215,9 +1264,6 @@ srv_distribution <- function(id,
             )
           )
         }
-        qenv %>%
-          # used to display table when running show-r-code code
-          teal.code::eval_code(quote(test_table))
       }
     )
 
@@ -1227,32 +1273,39 @@ srv_distribution <- function(id,
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
       if (!inherits(test_q_out, c("try-error", "error"))) {
-        c(common_q(), test_q_out)
+        c(
+          common_q(),
+          within(test_q_out, {
+            test_table <- DT::datatable(
+              test_table_data,
+              options = list(scrollX = TRUE),
+              rownames = FALSE
+            )
+          })
+        )
       } else {
-        common_q()
+        within(common_q(), test_table <- NULL)
       }
     })
 
     output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
     output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
-    decorated_output_dist_q_no_print <- srv_transform_teal_data(
-      "d_dist",
+    decorated_output_dist_q <- srv_decorate_teal_data(
+      "d_density",
       data = output_dist_q,
-      transformators = decorators
+      decorators = select_decorators(decorators, "histogram_plot"),
+      expr = print(histogram_plot)
     )
 
-    decorated_output_dist_q <- reactive(within(req(decorated_output_dist_q_no_print()), expr = print(plot)))
-
-    decorated_output_qq_q_no_print <- srv_transform_teal_data(
+    decorated_output_qq_q <- srv_decorate_teal_data(
       "d_qq",
       data = output_qq_q,
-      transformators = decorators
+      decorators = select_decorators(decorators, "qq_plot"),
+      expr = print(qq_plot)
     )
 
-    decorated_output_qq_q <- reactive(within(req(decorated_output_qq_q_no_print()), expr = print(plot)))
-
-    decorated_output_q <- reactive({
+    decorated_output_q_base <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
       if (tab == "Histogram") {
         decorated_output_dist_q()
@@ -1261,30 +1314,31 @@ srv_distribution <- function(id,
       }
     })
 
-    dist_r <- reactive({
-      req(output_dist_q()) # Ensure original errors are displayed
-      decorated_output_dist_q()[["plot"]]
-    })
-
-    qq_r <- reactive({
-      req(output_qq_q()) # Ensure original errors are displayed
-      decorated_output_qq_q()[["plot"]]
-    })
-
-    output$summary_table <- DT::renderDataTable(
-      expr = if (iv_r()$is_valid()) decorated_output_dist_q()[["summary_table"]] else NULL,
-      options = list(
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
-      ),
-      rownames = FALSE
+    decorated_output_q_summary <- srv_decorate_teal_data(
+      "d_summary",
+      data = decorated_output_q_base,
+      decorators = select_decorators(decorators, "summary_table"),
+      expr = summary_table
     )
+
+    decorated_output_q <- srv_decorate_teal_data(
+      "d_test",
+      data = decorated_output_q_summary,
+      decorators = select_decorators(decorators, "test_table"),
+      expr = test_table
+    )
+
+    dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
+
+    qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
+
+    output$summary_table <- DT::renderDataTable(expr = decorated_output_q()[["summary_table"]])
 
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      decorated_output_dist_q()[["test_table"]]
+      decorated_output_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1304,9 +1358,7 @@ srv_distribution <- function(id,
     )
 
     output$t_stats <- DT::renderDataTable(
-      expr = tests_r(),
-      options = list(scrollX = TRUE),
-      rownames = FALSE
+      expr = tests_r()
     )
 
     teal.widgets::verbatim_popup_srv(

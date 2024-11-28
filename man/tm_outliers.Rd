@@ -29,11 +29,9 @@ specifies the categorical variable(s) to split the selected outlier variables on
 
 \item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings. The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-List names should match the following: \code{c("default", "Boxplot","Density Plot","Cumulative Distribution Plot")}.
+List names should match the following: \code{c("default", "Boxplot", "Density Plot", "Cumulative Distribution Plot")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
@@ -50,8 +48,11 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
-if not \code{NULL}, decorator for tables or plots included in the module.}
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+
+Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
+
+See section "Decorating \code{tm_outliers}" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -68,8 +69,26 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
-\item \code{cum_dist_plot} (\code{ggplot2})
+\item \code{cumulative_plot} (\code{ggplot2})
+\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
+
+Decorators can be applied to all outputs or only to specific objects using a
+named list of \code{teal_transform_module} objects.
+The \code{"default"} name is reserved for decorators that are applied to all outputs.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_outliers(
+   ..., # arguments for module
+   decorators = list(
+     default = list(teal_transform_module(...)), # applied to all outputs
+     box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
+     density_plot = list(teal_transform_module(...)) # applied only to `density_plot` output
+     cumulative_plot = list(teal_transform_module(...)) # applied only to `cumulative_plot` output
+     table = list(teal_transform_module(...)) # applied only to `table` output
+   )
+)
+}\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
 \code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
@@ -173,13 +192,13 @@ if (interactive()) {
 \describe{
   \item{example-1}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
   \item{example-2}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpuoxNrUoAvooQAFZEKukA1nCsopV5tgX8cCZQwqTpBPy0ogTpQyPjk8DQ8FNZcgC67osa6VosoulQ-KLU7Ydi7ABitNTkjOwbDi5qqI0PEOFlgMAFGAui0oadTtUNhhLqQiIw5BilDdGKJ2gRSsMCGJ0qI4CINHB+OxsbQoPQRKsCbQicc8hCoTC4QjTOoVti7g8npiIO4lCD2ioSuw6qE8roALyyiK4GV8IQiXGKtXCN4y+qkGDpIiCUh0GRTPX1XTG020GTXFgK3R0USkaUQK2epVQdIxUjMK6iVBwAjur1erKvJ0c5qwvCW8Ok8mkJ1JkMrIMhsPhr3UOlk6NgQJk9O6Gl0kSIKEqj05z34wliJ3l+lwRmN1kRdnQ2Nc6qhjkAcVceF0UIAQgBZLAAaSwAEYoRia3XPWmKfxCw1h9WEzmYMtaPE9Ir3g0WoFnCvV-UTLRopSnWeL65a3X+u+93Jr-XwnAJGizLcA6jBOi6bp7vUWS+tE-q8iSwYDm+OaRrAJ5jj23Txsh4Z3t8MhOnhPwIVmkFevyza3D+q4NsyTaKjc1CCG2tEstMXaQphcbwtU-IACTruQ-DfmRa4lhulFMSxTJseCnGcmAPFlrcAniUJIk4fuh7Hk6AKvjeH45oZnrGbohn9P0tAmLofyqAGmg6DYti1LWojlBArANOg7Agnxgi0NUvmkowOjor0ShgD0pxAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpuoxNrUoAvooQAFZEKukA1nCsopV5tgX8cCZQwqTpBPy0ogTpQyPjk8DQ8FNZcgC67osa6VosoulQ-KLU7Ydi7ABitNTkjOwbDi5qqI0PEOFlgMAFGAui0oadTtUNhhLqQiIw5BilDdGKJ2gRSsMCGJ0qI4CINHB+OxsbQoPQRKsCbQicc8hCoTC4QjTOoVti7g8npiIO4lCD2ioSuw6qE8roALyyiK4GV8IQiXGKtXCN4y+qkGDpIiCUh0GRTPX1XTG020GTXFgK3R0USkaUQK2epVQdIxUjMK6iVBwAjur1erKvJ0c5qwvCW8Ok8mkJ1JkMrIMhsPhr3UOlk6NgQJk9O6Gl0kSIKEqj05z34wliJ3l+lwRmN1kRdnQ2Nc6qhjkAcVceF0UIAQgBZLAAaSwAEYoRia3XPWmKfxCw1h9WEzmYMtaPE9Ir3g0WoFnCvV-UTLRopSnWeL65a3X+u+93Jr-XwnAJGizLcA6jBOi6bp7vUWS+tE-q8iSwYDm+OaRrAJ5jj23Txsh4Z3t8MhOnhPwIVmkFevyza3D+q4NsyTaKjc1CCG2tEstMXaQphcbwtU-IACTruQ-DfmRa4lhulFMSxTJseCnGcmAPFlrcAniUJIk4fuh7Hk6AKvjeH45oZnrGbohn9P0tAmLofyqAGmg6DYti1LWojlBArANOg7Agnxgi0NUvmkowOjor0ShgD0pxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpuoxNrUoAvooQAFZEKukA1nCsopV5tgX8cCZQwqTpBPy0ogTpQyPjk8DQ8FNZcgC67osa6VosoulQ-KLU7Ydi7ABitNTkjOwbDi5qqI0PEOFlgMAFGAui0oadTtUNhhLqQiIw5BilDdGKJ2gRSsMCGJ0qI4CINHB+OxsbQoPQRKsCbQicc8hCoTC4QjTOoVti7g8npiIO4lCD2ioSuw6qE8roALyyiK4GV8IQiXGKtXCN4y+qkGDpIiCUh0GRTPX1XTG020GTXFgK3R0USkaUQK2epVQdIxUjMK6iVBwAjur1erKvJ0c5qwvCW8Ok8mkJ1JkMrIMhsPhr3UOlk6NgQJk9O6Gl0kSIKEqj05z34wliJ3l+lwRmN1kRdnQ2Nc6qhjkAcVceF0UIAQgBZLAAaSwAEYoRia3XPWmKfxCw1h9WEzmYMtaPE9Ir3g0WoFnCvV-UTLRopSnWeL65a3X+u+93Jr-XwnAJGizLcA6jBOi6bp7vUWS+tE-q8iSwYDm+OaRrAJ5jj23Txsh4Z3t8MhOnhPwIVmkFevyza3D+q4NsyTaKjc1CCG2tEstMXaQphcbwtU-IACTruQ-DfmRa4lhulFMSxTJseCnGcmAPFlrcAniUJIk4fuh7Hk6AKvjeH45oZnrGbohn9P0tAmLofyqAGmg6DYti1LWojlBArANOg7Agnxgi0NUvmkowOjor0ShgD0pxAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
 }
 }

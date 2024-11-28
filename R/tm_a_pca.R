@@ -13,19 +13,39 @@
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @templateVar ggnames "Elbow plot", "Circle plot", "Biplot", "Eigenvector plot"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`
+#' @param decorators `r roxygen_decorators_param("tm_a_pca")`
 #'
 #' @inherit shared_params return
 #'
 #' @section Decorating `tm_a_pca`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' - `elbow_plot` (`ggplot2`)
+#' - `circle_plot` (`ggplot2`)
+#' - `biplot` (`ggplot2`)
+#' - `eigenvector_plot` (`ggplot2`)
+#'
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' See code snippet below:
+#'
+#' ```
+#' tm_a_pca(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      elbow_plot = list(teal_transform_module(...)), # applied only to `elbow_plot` output
+#'      circle_plot = list(teal_transform_module(...)) # applied only to `circle_plot` output
+#'      biplot = list(teal_transform_module(...)) # applied only to `biplot` output
+#'      eigenvector_plot = list(teal_transform_module(...)) # applied only to `eigenvector_plot` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
-#'
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -165,7 +185,9 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, available_decorators)
   # End of assertions
 
   # Make UI args
@@ -240,7 +262,34 @@ ui_a_pca <- function(id, ...) {
               choices = args$plot_choices,
               selected = args$plot_choices[1]
             ),
-            ui_transform_teal_data(ns("decorate"), transformators = args$decorators)
+            conditionalPanel(
+              condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
+              ui_decorate_teal_data(
+                ns("d_elbow_plot"),
+                decorators = select_decorators(args$decorators, "elbow_plot")
+              )
+            ),
+            conditionalPanel(
+              condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
+              ui_decorate_teal_data(
+                ns("d_circle_plot"),
+                decorators = select_decorators(args$decorators, "circle_plot")
+              )
+            ),
+            conditionalPanel(
+              condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
+              ui_decorate_teal_data(
+                ns("d_biplot"),
+                decorators = select_decorators(args$decorators, "biplot")
+              )
+            ),
+            conditionalPanel(
+              condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
+              ui_decorate_teal_data(
+                ns("d_eigenvector_plot"),
+                decorators = select_decorators(args$decorators, "eigenvector_plot")
+              )
+            )
           ),
           teal.widgets::panel_item(
             title = "Pre-processing",
@@ -565,7 +614,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
 
             cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
-            plot <- ggplot(mapping = aes_string(x = "component", y = "value")) +
+            elbow_plot <- ggplot(mapping = aes_string(x = "component", y = "value")) +
               geom_bar(
                 aes(fill = "Single variance"),
                 data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
@@ -642,7 +691,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               y = sin(seq(0, 2 * pi, length.out = 100))
             )
 
-            plot <- ggplot(pca_rot) +
+            circle_plot <- ggplot(pca_rot) +
               geom_point(aes_string(x = x_axis, y = y_axis)) +
               geom_label(
                 aes_string(x = x_axis, y = y_axis, label = "label"),
@@ -874,7 +923,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         qenv,
         substitute(
           expr = {
-            plot <- plot_call
+            biplot <- plot_call
           },
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
@@ -883,8 +932,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-    # plot pc_var ----
-    plot_pc_var <- function(base_q) {
+    # plot eigenvector_plot ----
+    plot_eigenvector <- function(base_q) {
       pc <- input$pc
       ggtheme <- input$ggtheme
 
@@ -950,7 +999,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           expr = {
             pca_rot <- pca$rotation[, pc, drop = FALSE] %>%
               dplyr::as_tibble(rownames = "Variable")
-            plot <- plot_call
+            eigenvector_plot <- plot_call
           },
           env = list(
             pc = pc,
@@ -960,27 +1009,54 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     }
 
-    # plot final ----
-    output_q <- reactive({
-      req(computation())
-      teal::validate_inputs(iv_r())
-      teal::validate_inputs(iv_extra, header = "Plot settings are required")
+    # qenvs ---
+    output_q <- lapply(
+      list(
+        elbow_plot = plot_elbow,
+        circle_plot = plot_circle,
+        biplot = plot_biplot,
+        eigenvector_plot = plot_eigenvector
+      ),
+      function(fun) {
+        reactive({
+          req(computation())
+          teal::validate_inputs(iv_r())
+          teal::validate_inputs(iv_extra, header = "Plot settings are required")
+          fun(computation())
+        })
+      }
+    )
 
-      switch(input$plot_type,
-        "Elbow plot" = plot_elbow(computation()),
-        "Circle plot" = plot_circle(computation()),
-        "Biplot" = plot_biplot(computation()),
-        "Eigenvector plot" = plot_pc_var(computation()),
+    decorated_q <- mapply(
+      function(obj_name, q) {
+        srv_decorate_teal_data(
+          id = sprintf("d_%s", obj_name),
+          data = q,
+          decorators = select_decorators(decorators, obj_name),
+          expr = reactive({
+            substitute(print(.plot), env = list(.plot = as.name(obj_name)))
+          }),
+          expr_is_reactive = TRUE
+        )
+      },
+      names(output_q),
+      output_q
+    )
+
+    # plot final ----
+    decorated_output_q <- reactive({
+      switch(req(input$plot_type),
+        "Elbow plot" = decorated_q$elbow_plot(),
+        "Circle plot" = decorated_q$circle_plot(),
+        "Biplot" = decorated_q$biplot(),
+        "Eigenvector plot" = decorated_q$eigenvector_plot(),
         stop("Unknown plot")
       )
     })
 
-    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
-    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
-
     plot_r <- reactive({
-      req(output_q())
-      decorated_output_q()[["plot"]]
+      plot_name <- gsub(" ", "_", tolower(req(input$plot_type)))
+      req(decorated_output_q())[[plot_name]]
     })
 
     pws <- teal.widgets::plot_with_settings_srv(

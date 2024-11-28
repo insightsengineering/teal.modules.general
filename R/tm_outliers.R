@@ -11,9 +11,8 @@
 #' Specifies variable(s) to be analyzed for outliers.
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
-#'
-#' @templateVar ggnames "Boxplot","Density Plot","Cumulative Distribution Plot"
-#' @template ggplot2_args_multi
+#' @param decorators `r roxygen_decorators_param("tm_outliers")`
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Boxplot", "Density Plot", "Cumulative Distribution Plot")`
 #'
 #' @inherit shared_params return
 #'
@@ -22,7 +21,26 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `box_plot` (`ggplot2`)
 #' - `density_plot` (`ggplot2`)
-#' - `cum_dist_plot` (`ggplot2`)
+#' - `cumulative_plot` (`ggplot2`)
+#' - `table` ([DT::datatable()])
+#'
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' See code snippet below:
+#'
+#' ```
+#' tm_outliers(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
+#'      density_plot = list(teal_transform_module(...)) # applied only to `density_plot` output
+#'      cumulative_plot = list(teal_transform_module(...)) # applied only to `cumulative_plot` output
+#'      table = list(teal_transform_module(...)) # applied only to `table` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
@@ -178,8 +196,9 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
-
+  available_decorators <- c("box_plot", "density_plot", "cumulative_plot", "table")
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 
   # Make UI args
@@ -322,7 +341,28 @@ ui_outliers <- function(id, ...) {
           uiOutput(ns("ui_outlier_help"))
         )
       ),
-      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
+      conditionalPanel(
+        condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
+        ui_decorate_teal_data(
+          ns("d_box_plot"),
+          decorators = select_decorators(args$decorators, "box_plot")
+        )
+      ),
+      conditionalPanel(
+        condition = paste0("input['", ns("tabs"), "'] == 'Density Plot'"),
+        ui_decorate_teal_data(
+          ns("d_density_plot"),
+          decorators = select_decorators(args$decorators, "density_plot")
+        )
+      ),
+      conditionalPanel(
+        condition = paste0("input['", ns("tabs"), "'] == 'Cumulative Distribution Plot'"),
+        ui_decorate_teal_data(
+          ns("d_cumulative_plot"),
+          decorators = select_decorators(args$decorators, "cumulative_plot")
+        )
+      ),
+      ui_decorate_teal_data(ns("d_table"), decorators = select_decorators(args$decorators, "table")),
       teal.widgets::panel_item(
         title = "Plot settings",
         selectInput(
@@ -585,7 +625,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
       )
 
-      if (length(categorical_var) > 0) {
+      qenv <- if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -641,7 +681,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         }
 
-        qenv <- teal.code::eval_code(
+        teal.code::eval_code(
           qenv,
           substitute(
             expr = {
@@ -669,7 +709,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 tidyr::pivot_longer(-categorical_var_name) %>%
                 tidyr::pivot_wider(names_from = categorical_var, values_from = value) %>%
                 tibble::column_to_rownames("name")
-              summary_table
             },
             env = list(
               categorical_var = categorical_var,
@@ -677,7 +716,21 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             )
           )
         )
+      } else {
+        within(qenv, summary_table <- data.frame())
       }
+
+      # Datatable is generated in qenv to allow for output decoration
+      qenv <- within(qenv, {
+        table <- DT::datatable(
+          summary_table,
+          options = list(
+            dom = "t",
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          )
+        )
+      })
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
@@ -688,26 +741,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       qenv
     })
 
-    output$summary_table <- DT::renderDataTable(
-      expr = {
-        if (iv_r()$is_valid()) {
-          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-          if (!is.null(categorical_var)) {
-            DT::datatable(
-              common_code_q()[["summary_table"]],
-              options = list(
-                dom = "t",
-                autoWidth = TRUE,
-                columnDefs = list(list(width = "200px", targets = "_all"))
-              )
-            )
-          }
-        }
-      }
-    )
-
     # boxplot/violinplot # nolint commented_code
-    boxplot_q <- reactive({
+    box_plot_q <- reactive({
       req(common_code_q())
       ANL <- common_code_q()[["ANL"]]
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
@@ -947,7 +982,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       teal.code::eval_code(
         qenv,
         substitute(
-          expr = cum_dist_plot <- plot_call +
+          expr = cumulative_plot <- plot_call +
             geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
             scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
@@ -962,37 +997,59 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
     })
 
-    final_q <- reactive({
-      req(input$tabs)
-      tab_type <- input$tabs
-      result_q <- if (tab_type == "Boxplot") {
-        boxplot_q()
-      } else if (tab_type == "Density Plot") {
-        density_plot_q()
-      } else if (tab_type == "Cumulative Distribution Plot") {
-        cumulative_plot_q()
-      }
-      # used to display table when running show-r-code code
-      #  added after the plots so that a change in selected columns doesn't affect
-      #  brush selection.
-      teal.code::eval_code(
-        result_q,
-        substitute(
-          expr = {
-            columns_index <- union(
-              setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
-              table_columns
-            )
-            ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
-          },
-          env = list(
-            table_columns = input$table_ui_columns
-          )
-        )
+    current_tab_r <- reactive({
+      switch(req(input$tabs),
+        "Boxplot" = "box_plot",
+        "Density Plot" = "density_plot",
+        "Cumulative Distribution Plot" = "cumulative_plot"
       )
     })
 
-    decorated_final_q <- srv_transform_teal_data("decorate", data = final_q, transformators = decorators)
+    decorated_q <- mapply(
+      function(obj_name, q) {
+        srv_decorate_teal_data(
+          id = sprintf("d_%s", obj_name),
+          data = q,
+          decorators = select_decorators(decorators, obj_name),
+          expr = reactive({
+            substitute(
+              expr = {
+                columns_index <- union(
+                  setdiff(names(ANL_OUTLIER), c("is_outlier_selected", "order")),
+                  table_columns
+                )
+                ANL_OUTLIER_EXTENDED[ANL_OUTLIER_EXTENDED$is_outlier_selected, columns_index]
+                print(.plot)
+              },
+              env = list(table_columns = input$table_ui_columns, .plot = as.name(obj_name))
+            )
+          }),
+          expr_is_reactive = TRUE
+        )
+      },
+      rlang::set_names(c("box_plot", "density_plot", "cumulative_plot")),
+      c(box_plot_q, density_plot_q, cumulative_plot_q)
+    )
+
+    decorated_final_q_no_table <- reactive(decorated_q[[req(current_tab_r())]]())
+
+    decorated_final_q <- srv_decorate_teal_data(
+      "d_table",
+      data = decorated_final_q_no_table,
+      decorators = select_decorators(decorators, "table"),
+      expr = table
+    )
+
+    output$summary_table <- DT::renderDataTable(
+      expr = {
+        if (iv_r()$is_valid()) {
+          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+          if (!is.null(categorical_var)) {
+            decorated_final_q()[["table"]]
+          }
+        }
+      }
+    )
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1042,25 +1099,22 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
-    boxplot_r <- reactive({
+    box_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      req(boxplot_q())
-      decorated_final_q()[["box_plot"]]
+      req(decorated_q$box_plot())[["box_plot"]]
     })
     density_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      req(density_plot_q())
-      decorated_final_q()[["density_plot"]]
+      req(decorated_q$density_plot())[["density_plot"]]
     })
     cumulative_plot_r <- reactive({
       teal::validate_inputs(iv_r())
-      req(cumulative_plot_q())
-      decorated_final_q()[["cum_dist_plot"]]
+      req(decorated_q$cumulative_plot())[["cumulative_plot"]]
     })
 
     box_pws <- teal.widgets::plot_with_settings_srv(
       id = "box_plot",
-      plot_r = boxplot_r,
+      plot_r = box_plot_r,
       height = plot_height,
       width = plot_width,
       brushing = TRUE
@@ -1106,16 +1160,20 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         ANL_OUTLIER_EXTENDED <- common_code_q()[["ANL_OUTLIER_EXTENDED"]]
         ANL <- common_code_q()[["ANL"]]
 
-        plot_brush <- if (tab == "Boxplot") {
-          boxplot_r()
-          box_pws$brush()
-        } else if (tab == "Density Plot") {
-          density_plot_r()
-          density_pws$brush()
-        } else if (tab == "Cumulative Distribution Plot") {
-          cumulative_plot_r()
-          cum_density_pws$brush()
-        }
+        plot_brush <- switch(current_tab_r(),
+          box_plot = {
+            box_plot_r()
+            box_pws$brush()
+          },
+          density_plot = {
+            density_plot_r()
+            density_pws$brush()
+          },
+          cumulative_plot = {
+            cumulative_plot_r()
+            cum_density_pws$brush()
+          }
+        )
 
         # removing unused column ASAP
         ANL_OUTLIER$order <- ANL$order <- NULL

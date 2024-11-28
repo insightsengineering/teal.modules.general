@@ -34,9 +34,7 @@ ignored.}
 
 \item{ggtheme}{(\code{character}) optional, specifies the default \code{ggplot2} theme for plots. Defaults to \code{classic}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings. The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 List names should match the following: \code{c("default", "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")}.
 
@@ -49,8 +47,11 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (\code{list} of \code{teal_transform_module} or \code{NULL}) optional,
-if not \code{NULL}, decorator for tables or plots included in the module.}
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+
+Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
+
+See section "Decorating \code{tm_missing_data}" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -66,11 +67,28 @@ adaptable for general data analysis purposes.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{summary_plot} (\verb{ggplot2 plot grob})
-\item \code{combination_plot} (\verb{ggplot2 plot grob})
+\item \code{summary_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
+\item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{by_subject_plot} (\code{ggplot2})
 \item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
 }
+
+Decorators can be applied to all outputs or only to specific objects using a
+named list of \code{teal_transform_module} objects.
+The \code{"default"} name is reserved for decorators that are applied to all outputs.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(
+   ..., # arguments for module
+   decorators = list(
+     default = list(teal_transform_module(...)), # applied to all outputs
+     summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
+     combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
+     by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
+     table = list(teal_transform_module(...)) # applied only to `table` output
+   )
+)
+}\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
 \code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
@@ -132,13 +150,13 @@ if (interactive()) {
 \describe{
   \item{example-1}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEulIQatS6cKGwqCK6-FCkUEr9gwbGXNQA+iNQNsMDUGO6AO60pAAWKuwz0SBKurme3r6toqTE1ESM9fu6UPz8k9CiS2YWmtahtnsQBwehwFE3RE7FEnkm3BIEnYX2iJkuV3YIlKGxhtgAVLlzLQTOwAIzRDAABgArIS8QB2OTUgC6SwAcgBBW7-W4AXyUtx8tBeRl03NEtxg5xYvOMwoIos5v35QVEwDpfOK6ES7AF0Xuj2e9QOEtFCqWyp6HD1jFEGoeTygoh1ulN8uA-gIrGo-hpiuM1owJnUpER9uAjsILrdNNtAaDUhYoaWXp9Gn9IrNgf8UcYofqbJu0HQSxUaz8MpmNR2QoEwjENT4QhEokLf10pBgkxgPNEKgk0wWcxl9XqON0atUzEsOhs31uok2EFYjPQ7DQqAAJN4Negl2DGDprkoORAwGyaUA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEulIQatS6cKGwqCK6-FCkUEr9gwbGXNQA+iNQNsMDUGO6AO60pAAWKuwz0SBKurme3r6toqTE1ESM9fu6UPz8k9CiS2YWmtahtnsQBwehwFE3RE7FEnkm3BIEnYX2iJkuV3YIlKGxhtgAVLlzLQTOwAIzRDAABgArIS8QB2OTUgC6SwAcgBBW7-W4AXyUtx8tBeRl03NEtxg5xYvOMwoIos5v35QVEwDpfOK6ES7AF0Xuj2e9QOEtFCqWyp6HD1jFEGoeTygoh1ulN8uA-gIrGo-hpiuM1owJnUpER9uAjsILrdNNtAaDUhYoaWXp9Gn9IrNgf8UcYofqbJu0HQSxUaz8MpmNR2QoEwjENT4QhEokLf10pBgkxgPNEKgk0wWcxl9XqON0atUzEsOhs31uok2EFYjPQ7DQqAAJN4Negl2DGDprkoORAwGyaUA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEulIQatS6cKGwqCK6-FCkUEr9gwbGXNQA+iNQNsMDUGO6AO60pAAWKuwz0SBKurme3r6toqTE1ESM9fu6UPz8k9CiS2YWmtahtnsQBwehwFE3RE7FEnkm3BIEnYX2iJkuV3YIlKGxhtgAVLlzLQTOwAIzRDAABgArIS8QB2OTUgC6SwAcgBBW7-W4AXyUtx8tBeRl03NEtxg5xYvOMwoIos5v35QVEwDpfOK6ES7AF0Xuj2e9QOEtFCqWyp6HD1jFEGoeTygoh1ulN8uA-gIrGo-hpiuM1owJnUpER9uAjsILrdNNtAaDUhYoaWXp9Gn9IrNgf8UcYofqbJu0HQSxUaz8MpmNR2QoEwjENT4QhEokLf10pBgkxgPNEKgk0wWcxl9XqON0atUzEsOhs31uok2EFYjPQ7DQqAAJN4Negl2DGDprkoORAwGyaUA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
   \item{example-2}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEugDCACIAkgDKzbpwobCoIrr8UKRQSiNjBsZc1AD6k1A2E6NQ07oA7rSkABYq7IvRIEq6uZ7evhBipMTURIz1pwCCrZ0AMuuML+8nui9YnU+-06SgAvvUAFZEFRzADWcFYogOq1sRmGcBMUGEpDmBH4tFEBDmUJh8MRwGg8CRizkAF0lEo0Kh1iptn4IKdFjVDr8+EIRKIanzhGJ2adTqQYHMYATRCoJAtVssObp6vVaCZdOwVORmJYdDZbMcVaI9hBWE90OwmQASbzRW2iGQ6B5gpRgUG0oA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEugDCACIAkgDKzbpwobCoIrr8UKRQSiNjBsZc1AD6k1A2E6NQ07oA7rSkABYq7IvRIEq6uZ7evhBipMTURIz1pwCCrZ0AMuuML+8nui9YnU+-06SgAvvUAFZEFRzADWcFYogOq1sRmGcBMUGEpDmBH4tFEBDmUJh8MRwGg8CRizkAF0lEo0Kh1iptn4IKdFjVDr8+EIRKIanzhGJ2adTqQYHMYATRCoJAtVssObp6vVaCZdOwVORmJYdDZbMcVaI9hBWE90OwmQASbzRW2iGQ6B5gpRgUG0oA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEugDCACIAkgDKzbpwobCoIrr8UKRQSiNjBsZc1AD6k1A2E6NQ07oA7rSkABYq7IvRIEq6uZ7evhBipMTURIz1pwCCrZ0AMuuML+8nui9YnU+-06SgAvvUAFZEFRzADWcFYogOq1sRmGcBMUGEpDmBH4tFEBDmUJh8MRwGg8CRizkAF0lEo0Kh1iptn4IKdFjVDr8+EIRKIanzhGJ2adTqQYHMYATRCoJAtVssObp6vVaCZdOwVORmJYdDZbMcVaI9hBWE90OwmQASbzRW2iGQ6B5gpRgUG0oA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
 }
 }

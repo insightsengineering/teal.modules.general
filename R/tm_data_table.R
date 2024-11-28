@@ -131,7 +131,8 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, "table")
   # End of assertions
 
   ans <- module(
@@ -296,7 +297,7 @@ ui_data_table <- function(id,
   tagList(
     teal.widgets::get_dt_rows(ns("data_table"), ns("dt_rows")),
     fluidRow(
-      ui_transform_teal_data(ns("decorate"), transformators = decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "table")),
       teal.widgets::optionalSelectInput(
         ns("variables"),
         "Select variables:",
@@ -365,13 +366,15 @@ srv_data_table <- function(id,
       )
     })
 
-    decorated_data_table_data <-
-      srv_transform_teal_data("decorate", data = data_table_data, transformators = decorators)
+    decorated_data_table_data <- srv_decorate_teal_data(
+      id = "decorator",
+      data = data_table_data,
+      decorators = select_decorators(decorators, "table")
+    )
 
     output$data_table <- DT::renderDataTable(server = server_rendering, {
-      req(data_table_data())
       teal::validate_inputs(iv)
-      decorated_data_table_data()[["table"]]
+      req(decorated_data_table_data())[["table"]]
     })
   })
 }

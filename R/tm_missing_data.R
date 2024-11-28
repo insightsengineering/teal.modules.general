@@ -10,20 +10,40 @@
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
 #' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
 #' ignored.
+# nolint start: line_length.
 #' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
+# nolint end: line_length.
 #'
-#' @templateVar ggnames "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
-#' @template ggplot2_args_multi
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`
+#' @param decorators `r roxygen_decorators_param("tm_missing_data")`
 #'
 #' @inherit shared_params return
 #'
 #' @section Decorating `tm_missing_data`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `summary_plot` (`ggplot2 plot grob`)
-#' - `combination_plot` (`ggplot2 plot grob`)
+#' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
+#' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
 #' - `table` ([DT::datatable()])
+#'
+#' Decorators can be applied to all outputs or only to specific objects using a
+#' named list of `teal_transform_module` objects.
+#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' See code snippet below:
+#'
+#' ```
+#' tm_missing_data(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      default = list(teal_transform_module(...)), # applied to all outputs
+#'      summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
+#'      combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
+#'      by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
+#'      table = list(teal_transform_module(...)) # applied only to `table` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
@@ -134,15 +154,9 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("summary_plot", "summary_plot", "combination_plot", "by_subject_plot", "summary_table")
-  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
-    decorators <- if (checkmate::test_names(names(decorators), subset.of = c("default", available_decorators))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
-  }
-  assert_decorators(decorators, null.ok = TRUE, names = c("default", available_decorators))
+  available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 
   ans <- module(
@@ -410,16 +424,16 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
           value = FALSE
         )
       },
-      ui_decorate_teal_data(ns("dec_summary_plot"), decorators = subset_decorators("summary_plot", decorators))
+      ui_decorate_teal_data(ns("dec_summary_plot"), decorators = select_decorators(decorators, "summary_plot"))
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff")),
-      ui_decorate_teal_data(ns("dec_combination_plot"), decorators = subset_decorators("combination_plot", decorators))
+      ui_decorate_teal_data(ns("dec_combination_plot"), decorators = select_decorators(decorators, "combination_plot"))
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Grouped by Subject"),
-      ui_decorate_teal_data(ns("dec_by_subject_plot"), decorators = subset_decorators("by_subject_plot", decorators))
+      ui_decorate_teal_data(ns("dec_by_subject_plot"), decorators = select_decorators(decorators, "by_subject_plot"))
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "By Variable Levels"),
@@ -432,7 +446,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
         selected = "counts",
         inline = TRUE
       ),
-      ui_decorate_teal_data(ns("dec_summary_table"), decorators = subset_decorators("summary_table", decorators))
+      ui_decorate_teal_data(ns("dec_summary_table"), decorators = select_decorators(decorators, "summary_table"))
     ),
     teal.widgets::panel_item(
       title = "Plot settings",
@@ -1250,7 +1264,7 @@ srv_missing_data <- function(id,
     decorated_summary_plot_q <- srv_decorate_teal_data(
       id = "dec_summary_plot",
       data = summary_plot_q,
-      decorators = subset_decorators("summary_plot", decorators),
+      decorators = select_decorators(decorators, "summary_plot"),
       expr = {
         grid::grid.newpage()
         grid::grid.draw(summary_plot)
@@ -1260,7 +1274,7 @@ srv_missing_data <- function(id,
     decorated_combination_plot_q <- srv_decorate_teal_data(
       id = "dec_combination_plot",
       data = combination_plot_q,
-      decorators = subset_decorators("combination_plot", decorators),
+      decorators = select_decorators(decorators, "combination_plot"),
       expr = {
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
@@ -1270,14 +1284,14 @@ srv_missing_data <- function(id,
     decorated_summary_table_q <- srv_decorate_teal_data(
       id = "dec_summary_table",
       data = summary_table_q,
-      decorators = subset_decorators("summary_table", decorators),
+      decorators = select_decorators(decorators, "summary_table"),
       expr = table
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
       id = "dec_by_subject_plot",
       data = by_subject_plot_q,
-      decorators = subset_decorators("by_subject_plot", decorators),
+      decorators = select_decorators(decorators, "by_subject_plot"),
       expr = print(by_subject_plot)
     )
 

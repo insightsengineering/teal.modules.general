@@ -25,9 +25,6 @@
 #'  with text placed before the output to put the output into context. For example a title.
 #' @param post_output (`shiny.tag`) optional, text or UI element to be displayed after the module's output,
 #' adding context or further instructions. Elements like `shiny::helpText()` are useful.
-#' @param decorators `r lifecycle::badge("experimental")` (`list` of `teal_transform_module` or `NULL`) optional,
-#' if not `NULL`, decorator for tables or plots included in the module.
-#'
 #' @param alpha (`integer(1)` or `integer(3)`) optional, specifies point opacity.
 #' - When the length of `alpha` is one: the plot points will have a fixed opacity.
 #' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
@@ -286,6 +283,8 @@ assert_single_selection <- function(x,
 #' @param expr (`expression` or `reactive`) to evaluate on the output of the decoration.
 #' When an expression it must be inline code. See [within()]
 #' Default is `NULL` which won't evaluate any appending code.
+#' @param expr_is_reactive (`logical(1)`) whether `expr` is a reactive expression
+#' that skips defusing the argument.
 #' @details
 #' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
 #' allows to decorate the data with additional expressions.
@@ -293,12 +292,13 @@ assert_single_selection <- function(x,
 #' first.
 #'
 #' @keywords internal
-srv_decorate_teal_data <- function(id, data, decorators, expr) {
+srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive = FALSE) {
   assert_reactive(data)
   checkmate::assert_list(decorators, "teal_transform_module")
+  checkmate::assert_flag(expr_is_reactive)
 
   missing_expr <- missing(expr)
-  if (!missing_expr) {
+  if (!missing_expr && !expr_is_reactive) {
     expr <- rlang::enexpr(expr)
   }
 
@@ -310,6 +310,8 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
       req(data(), decorated_output())
       if (missing_expr) {
         decorated_output()
+      } else if (expr_is_reactive) {
+        eval_code(decorated_output(), expr())
       } else {
         eval_code(decorated_output(), expr)
       }
@@ -327,7 +329,7 @@ ui_decorate_teal_data <- function(id, decorators, ...) {
 
 #' Internal function to check if decorators is a valid object
 #' @noRd
-check_decorators <- function(x, names = NULL, null.ok = FALSE) {
+check_decorators <- function(x, names = NULL, null.ok = FALSE) { # nolint: object_name.
   checkmate::qassert(null.ok, "B1")
 
   check_message <- checkmate::check_list(
@@ -384,8 +386,25 @@ assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
 #' @return A flat list with all decorators to include.
 #' It can be an empty list if none of the scope exists in `decorators` argument.
 #' @keywords internal
-subset_decorators <- function(scope, decorators) {
-  checkmate::assert_character(scope)
+select_decorators <- function(decorators, scope) {
+  checkmate::assert_character(scope, null.ok = TRUE)
   scope <- intersect(union("default", scope), names(decorators))
   c(list(), unlist(decorators[scope], recursive = FALSE))
+}
+
+#' Convert flat list of `teal_transform_module` to named lists
+#'
+#' @param decorators (list of `teal_transformodules`) to normalize.
+#' @return A named list of lists with `teal_transform_module` objects.
+#' @keywords internal
+normalize_decorators <- function(decorators) {
+  if (checkmate::test_list(decorators, "teal_transform_module", null.ok = TRUE)) {
+    if (checkmate::test_names(names(decorators))) {
+      lapply(decorators, list)
+    } else {
+      list(default = decorators)
+    }
+  } else {
+    decorators
+  }
 }

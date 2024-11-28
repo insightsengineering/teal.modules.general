@@ -307,7 +307,10 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, "plot")
+
   # End of assertions
 
   # Make UI args
@@ -430,7 +433,7 @@ ui_g_scatterplot <- function(id, ...) {
             is_single_dataset = is_single_dataset_value
           )
         },
-        ui_transform_teal_data(ns("decorator"), transformators = args$decorators),
+        ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
         teal.widgets::panel_group(
           teal.widgets::panel_item(
             title = "Plot settings",
@@ -1005,12 +1008,14 @@ srv_g_scatterplot <- function(id,
       teal.code::eval_code(plot_q, plot_call)
     })
 
-    decorated_output_q <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
-    decorated_output_plot_q <- reactive(within(decorated_output_q(), print(plot)))
-    plot_r <- reactive({
-      req(output_q()) # Ensure original errors are displayed
-      decorated_output_plot_q()[["plot"]]
-    })
+    decorated_output_plot_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = print(plot)
+    )
+
+    plot_r <- reactive(req(decorated_output_plot_q())[["plot"]])
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(

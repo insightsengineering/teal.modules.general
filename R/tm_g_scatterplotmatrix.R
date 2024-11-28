@@ -202,7 +202,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -249,7 +251,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_transform_teal_data(ns("decorator"), transformators = args$decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -444,12 +446,14 @@ srv_g_scatterplotmatrix <- function(id,
       qenv
     })
 
-    decorated_output_q_no_print <- srv_transform_teal_data(id = "decorator", data = output_q, transformators = decorators)
-    decorated_output_q <- reactive(within(decorated_output_q_no_print(), print(plot)))
-    plot_r <- reactive({
-      req(output_q()) # Ensure original errors are displayed
-      decorated_output_q()[["plot"]]
-    })
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = print(plot)
+    )
+
+    plot_r <- reactive(req(decorated_output_q())[["plot"]])
 
     # Insert the plot into a plot_with_settings module
     pws <- teal.widgets::plot_with_settings_srv(
