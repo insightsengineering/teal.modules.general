@@ -20,8 +20,8 @@
 #' @section Decorating `tm_missing_data`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `summary_plot` (`ggplot2 plot grob`)
-#' - `combination_plot` (`ggplot2 plot grob`)
+#' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
+#' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
 #' - `table` ([DT::datatable()])
 #'
