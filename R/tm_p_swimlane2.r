@@ -1,27 +1,32 @@
-tm_p_swimlane2 <- function(label = "Swimlane Plot Module", plotly_specs, title, colors = c(), symbols = c()) {
+tm_p_swimlane2 <- function(
+    label = "Swimlane Plot Module", plotly_specs, title,
+    colors = c(), symbols = c(), transformers = list(),
+    ui_mod = ui_data_table,
+    srv_mod = srv_data_table) {
   module(
     label = label,
     ui = ui_p_swimlane2,
     server = srv_p_swimlane2,
     datanames = "all",
+    ui_args = list(ui_mod = ui_mod),
     server_args = list(
       plotly_specs = plotly_specs,
       title = title,
       colors = colors,
-      symbols = symbols
-    )
+      symbols = symbols,
+      srv_mod = srv_mod
+    ),
+    transformers = transformers
   )
 }
 
 
-ui_p_swimlane2 <- function(id) {
+ui_p_swimlane2 <- function(id, ui_mod) {
   ns <- NS(id)
   shiny::tagList(
-    plotly::plotlyOutput(ns("plot")),
-    shinyjs::hidden(div(
-      id = ns("brushing_wrapper"),
-      ui_data_table(ns("brush_tables"))
-    ))
+    sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, 800),
+    plotly::plotlyOutput(ns("plot"), height = "100%"),
+    ui_mod(ns("brush_tables"))
   )
 }
 
@@ -31,6 +36,7 @@ srv_p_swimlane2 <- function(id,
                             title = "Swimlane plot",
                             colors,
                             symbols,
+                            srv_mod,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
@@ -42,42 +48,17 @@ srv_p_swimlane2 <- function(id,
       eval_code(data(), code = code)
     })
 
-    output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
-
-
-    brush_filter_call <- reactive({
-      d <- plotly::event_data("plotly_selected")
-      req(d)
-      calls <- lapply(plotly_specs, function(spec) {
-        substitute(
-          dataname <- dplyr::filter(dataname, var_x %in% levels_x, var_y %in% levels_y),
-          list(
-            dataname = spec$data,
-            var_x = str2lang(all.vars(spec$x)),
-            var_y = str2lang(all.vars(spec$y)),
-            levels_x = d$x,
-            levels_y = d$y
-          )
-        )
-      })
-      unique(calls)
+    output$plot <- plotly::renderPlotly({
+      plotly::event_register(
+        plotly_q()$p |> layout(height = input$plot_height),
+        "plotly_selected"
+      )
     })
 
-    brush_filtered_data <- reactive({
-      if (is.null(brush_filter_call())) {
-        shinyjs::hide("brushing_wrapper")
-      } else {
-        shinyjs::show("brushing_wrapper")
-        q <- eval_code(plotly_q(), as.expression(brush_filter_call()))
-        module_datanames <- unique(lapply(plotly_specs, function(x) deparse(x$data)))
-        is_brushed <- sapply(module_datanames, function(x) is.data.frame(q[[x]]) && nrow(q[[x]]))
-        brushed_datanames <- unique(unlist(module_datanames[is_brushed]))
-        q[brushed_datanames] # we want to show brushed datanames only
-      }
-    })
+    plotly_selected <- reactive(plotly::event_data("plotly_selected"))
 
-    observeEvent(brush_filtered_data(), once = TRUE, {
-      srv_data_table("brush_tables", data = brush_filtered_data, filter_panel_api = filter_panel_api)
+    observeEvent(plotly_selected(), once = TRUE, {
+      srv_mod("brush_tables", data = data, filter_panel_api = filter_panel_api, plotly_selected = plotly_selected)
     })
   })
 }
