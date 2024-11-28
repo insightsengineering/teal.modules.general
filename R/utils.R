@@ -283,7 +283,8 @@ assert_single_selection <- function(x,
 #' @param expr (`expression` or `reactive`) to evaluate on the output of the decoration.
 #' When an expression it must be inline code. See [within()]
 #' Default is `NULL` which won't evaluate any appending code.
-#' @param expr_is_reactive ()
+#' @param expr_is_reactive (`logical(1)`) whether `expr` is a reactive expression
+#' that skips defusing the argument.
 #' @details
 #' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
 #' allows to decorate the data with additional expressions.
