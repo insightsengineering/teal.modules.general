@@ -293,7 +293,7 @@ assert_single_selection <- function(x,
 #'
 #' @keywords internal
 srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive = FALSE) {
-  assert_reactive(data)
+  checkmate::assert_class(data, classes = "reactive")
   checkmate::assert_list(decorators, "teal_transform_module")
   checkmate::assert_flag(expr_is_reactive)
 
