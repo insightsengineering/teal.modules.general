@@ -10,9 +10,11 @@
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
 #' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
 #' ignored.
+# nolint start: line_length.
 #' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
+# nolint end: line_length.
 #'
-#' @param ggplot2_args `r roxygen_ggplot2_args_param(missing_data_names)`
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`
 #' @param decorators `r roxygen_decorators_param("tm_missing_data")`
 #'
 #' @inherit shared_params return
@@ -1405,7 +1407,3 @@ srv_missing_data <- function(id,
     ###
   })
 }
-
-missing_data_names <- c(
-  "Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject"
-)
