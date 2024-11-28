@@ -716,10 +716,11 @@ srv_missing_data <- function(id,
       n <- length(x)
       idx <- max(1, n - 10)
       prev_value <- isolate(input$combination_cutoff)
-      value <- `if`(
-        is.null(prev_value) || prev_value > max(x) || prev_value < min(x),
-        sort(x, partial = idx)[idx], prev_value
-      )
+      value <- if (is.null(prev_value) || prev_value > max(x) || prev_value < min(x)) {
+        sort(x, partial = idx)[idx]
+      } else {
+        prev_value
+      }
 
       teal.widgets::optionalSliderInputValMinMax(
         ns("combination_cutoff"),
