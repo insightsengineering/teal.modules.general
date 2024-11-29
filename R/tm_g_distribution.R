@@ -1321,11 +1321,18 @@ srv_distribution <- function(id,
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
-      if (tab == "Histogram") {
-        c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
-      } else if (tab == "QQplot") {
-        c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
+      test_q_out <- try(test_q(), silent = TRUE)
+      decorated_test_q_out <- if (inherits(test_q_out, c("try-error", "error"))) {
+        teal.code::qenv()
+      } else {
+        decorated_output_test_q()
       }
+
+      out_q <- switch(tab,
+        Histogram = decorated_output_dist_q(),
+        QQplot = decorated_output_qq_q()
+      )
+      c(out_q, decorated_output_summary_q(), decorated_test_q_out)
     })
 
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
