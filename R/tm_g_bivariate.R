@@ -43,8 +43,18 @@
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes (`logical`) optional, whether to swap X and Y axes. Defaults to `FALSE`.
+#' @param decorators `r roxygen_decorators_param("tm_g_bivariate")`
 #'
 #' @inherit shared_params return
+#'
+#' @section Decorating `tm_g_bivariate`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#'
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -185,7 +195,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
-                           post_output = NULL) {
+                           post_output = NULL,
+                           decorators = NULL) {
   message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
@@ -265,6 +276,9 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -288,7 +302,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
     ui_args = args,
     server_args = c(
       data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args)
+      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
     ),
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
@@ -338,6 +352,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -451,7 +466,8 @@ srv_g_bivariate <- function(id,
                             size,
                             plot_height,
                             plot_width,
-                            ggplot2_args) {
+                            ggplot2_args,
+                            decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -648,38 +664,49 @@ srv_g_bivariate <- function(id,
         }
       }
 
-      # Add labels to facets
-      nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
-      nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
-      without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
-
-      print_call <- if (without_facet) {
-        quote(print(p))
-      } else {
-        substitute(
-          expr = {
-            # Add facetting labels
-            # optional: grid.newpage() # nolint: commented_code.
-            # Prefixed with teal.modules.general as its usage will appear in "Show R code"
-            p <- teal.modules.general::add_facet_labels(
-              p,
-              xfacet_label = nulled_col_facet_name,
-              yfacet_label = nulled_row_facet_name
-            )
-            grid::grid.newpage()
-            grid::grid.draw(p)
-          },
-          env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
-        )
-      }
-
-      teal.code::eval_code(merged$anl_q_r(), substitute(expr = p <- cl, env = list(cl = cl))) %>%
-        teal.code::eval_code(print_call)
+      teal.code::eval_code(merged$anl_q_r(), substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    plot_r <- reactive({
-      output_q()[["p"]]
-    })
+    decorated_output_q_facets <- srv_decorate_teal_data(
+      "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = reactive({
+        ANL <- merged$anl_q_r()[["ANL"]]
+        row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
+        col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
+
+        # Add labels to facets
+        nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
+        nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
+        facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
+        without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
+
+        print_call <- if (without_facet) {
+          quote(print(plot))
+        } else {
+          substitute(
+            expr = {
+              # Add facetting labels
+              # optional: grid.newpage() # nolint: commented_code.
+              # Prefixed with teal.modules.general as its usage will appear in "Show R code"
+              plot <- teal.modules.general::add_facet_labels(
+                plot,
+                xfacet_label = nulled_col_facet_name,
+                yfacet_label = nulled_row_facet_name
+              )
+              grid::grid.newpage()
+              grid::grid.draw(plot)
+            },
+            env = list(nulled_col_facet_name = nulled_col_facet_name, nulled_row_facet_name = nulled_row_facet_name)
+          )
+        }
+        print_call
+      }),
+      expr_is_reactive = TRUE
+    )
+
+    plot_r <- reactive(req(decorated_output_q_facets())[["plot"]])
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -690,7 +717,7 @@ srv_g_bivariate <- function(id,
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q_facets()))),
       title = "Bivariate Plot"
     )
 
@@ -709,7 +736,7 @@ srv_g_bivariate <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q_facets)))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
