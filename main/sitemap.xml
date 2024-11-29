@@ -26,6 +26,7 @@
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/include_css_files.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/index.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/is_tab_active_js.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/normalize_decorators.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/plot_var_summary.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/rADAE.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/rADLB.html</loc></url>
@@ -37,7 +38,9 @@
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_tab_header.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_tab_table.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_tabset_panel_content.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/select_decorators.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/shared_params.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/srv_decorate_teal_data.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/teal.modules.general.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_a_pca.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.html</loc></url>
