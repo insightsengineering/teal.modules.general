@@ -19,6 +19,7 @@
 #' @param show_total (`logical(1)`)
 #' Indicates whether to show total column.
 #' Defaults to `TRUE`.
+#' @param decorators `r roxygen_decorators_param("tm_t_crosstable")`
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
 #' `vignette("using-cross-table", package = "teal.modules.general")`.

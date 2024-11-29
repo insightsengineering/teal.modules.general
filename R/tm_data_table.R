@@ -26,6 +26,7 @@
 #' `list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)`
 #' @param server_rendering (`logical`) should the data table be rendered server side
 #' (see `server` argument of [DT::renderDataTable()])
+#' @param decorators `r roxygen_decorators_param("tm_data_table")`
 #'
 #' @inherit shared_params return
 #'

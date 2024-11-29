@@ -43,10 +43,11 @@
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes (`logical`) optional, whether to swap X and Y axes. Defaults to `FALSE`.
+#' @param decorators `r roxygen_decorators_param("tm_g_bivariate")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_outliers`:
+#' @section Decorating `tm_g_bivariate`:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)

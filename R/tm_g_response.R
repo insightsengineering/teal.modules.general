@@ -33,6 +33,7 @@
 #' @param freq (`logical(1)`)
 #' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
+#' @param decorators `r roxygen_decorators_param("tm_g_response")`
 #'
 #' @inherit shared_params return
 #'
