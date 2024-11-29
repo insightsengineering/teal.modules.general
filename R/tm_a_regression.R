@@ -225,6 +225,8 @@ tm_a_regression <- function(label = "Regression Analysis",
       .var.name = "label_segment_threshold"
     )
   }
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, "plot", null.ok = TRUE)
   # End of assertions
 
   # Make UI args
@@ -319,7 +321,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
-      ui_transform_teal_data(ns("decorate"), transformators = args$decorators),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -582,22 +584,15 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
+            geom_point(size = size, alpha = alpha) +
+            stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
             regressor = regression_var()$regressor,
             response = regression_var()$response,
             size = input$size,
             alpha = input$alpha
-          ),
-          expr = ggplot(
-            fit$model[, 2:1],
-            aes_string(regressor, response)
-          ) +
-            geom_point(size = size, alpha = alpha) +
-            stat_smooth(
-              method = "lm",
-              formula = y ~ x,
-              se = FALSE
-            )
+          )
         )
         if (input$show_outlier) {
           plot <- substitute(
@@ -979,12 +974,16 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_q_no_print <- srv_transform_teal_data("decorate", data = output_q, transformators = decorators)
-    decorated_output_q <- reactive(within(decorated_output_q_no_print(), expr = print(plot)))
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = print(plot)
+    )
 
     fitted <- reactive({
       req(output_q())
-      decorated_output_q_no_print()[["fit"]]
+      decorated_output_q()[["fit"]]
     })
     plot_r <- reactive({
       req(output_q())

@@ -923,20 +923,19 @@ srv_missing_data <- function(id,
           )
         )
       }
-      expr <- if (isTRUE(input$if_patients_plot)) {
-        quote({
+      if (isTRUE(input$if_patients_plot)) {
+        teal.code::eval_code(qenv, {
           g1 <- ggplotGrob(summary_plot_top)
           g2 <- ggplotGrob(summary_plot_bottom)
           summary_plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
           summary_plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
         })
       } else {
-        quote({
+        teal.code::eval_code(qenv, {
           g1 <- ggplotGrob(summary_plot_top)
           summary_plot <- g1
         })
       }
-      teal.code::eval_code(qenv, expr)
     })
 
     combination_plot_q <- reactive({

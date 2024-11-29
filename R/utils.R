@@ -311,9 +311,9 @@ srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive 
       if (missing_expr) {
         decorated_output()
       } else if (expr_is_reactive) {
-        eval_code(decorated_output(), expr())
+        teal.code::eval_code(decorated_output(), expr())
       } else {
-        eval_code(decorated_output(), expr)
+        teal.code::eval_code(decorated_output(), expr)
       }
     })
   })

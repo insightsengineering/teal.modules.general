@@ -1323,7 +1323,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         }
         card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {
-          card$append_plot(boxplot_r(), dim = box_pws$dim())
+          card$append_plot(box_plot_r(), dim = box_pws$dim())
         } else if (tab_type == "Density Plot") {
           card$append_plot(density_plot_r(), dim = density_pws$dim())
         } else if (tab_type == "Cumulative Distribution Plot") {
