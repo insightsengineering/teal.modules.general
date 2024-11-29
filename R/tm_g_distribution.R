@@ -1305,40 +1305,40 @@ srv_distribution <- function(id,
       expr = print(qq_plot)
     )
 
-    decorated_output_q_base <- reactive({
-      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
-      if (tab == "Histogram") {
-        decorated_output_dist_q()
-      } else if (tab == "QQplot") {
-        decorated_output_qq_q()
-      }
-    })
-
-    decorated_output_q_summary <- srv_decorate_teal_data(
+    decorated_output_summary_q <- srv_decorate_teal_data(
       "d_summary",
-      data = decorated_output_q_base,
+      data = output_common_q,
       decorators = select_decorators(decorators, "summary_table"),
       expr = summary_table
     )
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_test_q <- srv_decorate_teal_data(
       "d_test",
-      data = decorated_output_q_summary,
+      data = output_common_q,
       decorators = select_decorators(decorators, "test_table"),
       expr = test_table
     )
+
+    decorated_output_q <- reactive({
+      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
+      if (tab == "Histogram") {
+        c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
+      } else if (tab == "QQplot") {
+        c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
+      }
+    })
 
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
 
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
-    output$summary_table <- DT::renderDataTable(expr = decorated_output_q()[["summary_table"]])
+    output$summary_table <- DT::renderDataTable(expr = decorated_output_summary_q()[["summary_table"]])
 
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      decorated_output_q()[["test_table"]]
+      decorated_output_test_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
