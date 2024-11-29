@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9054
-Date: 2024-11-08
+Version: 0.3.0.9055
+Date: 2024-11-29
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -85,17 +85,18 @@ VignetteBuilder:
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
-    rstudio/DT, tidyverse/forcats, r-lib/lifecycle, r-lib/scales, daattali/shinyjs,
-    shinyTree/shinyTree, rstudio/shinyvalidate, dreamRs/shinyWidgets,
-    tidyverse/stringr, insightsengineering/teal.code,
-    insightsengineering/teal.data, insightsengineering/teal.logger,
-    insightsengineering/teal.reporter, insightsengineering/teal.widgets,
-    insightsengineering/tern, tidyverse/tibble, tidyverse/tidyr,
-    tidymodels/broom, daattali/colourpicker, daattali/ggExtra,
-    aphalo/ggpmisc, aphalo/ggpp, slowkow/ggrepel, baddstats/goftest,
-    ramnathv/htmlwidgets, jeroen/jsonlite, yihui/knitr, daroczig/logger,
-    deepayan/lattice, insightsengineering/nestcolor, r-lib/pkgload,
-    r-lib/rlang, rstudio/rmarkdown, insightsengineering/roxy.shinylive,
+    rstudio/DT, tidyverse/forcats, r-lib/lifecycle, r-lib/scales,
+    daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
+    dreamRs/shinyWidgets, tidyverse/stringr,
+    insightsengineering/teal.code, insightsengineering/teal.data,
+    insightsengineering/teal.logger, insightsengineering/teal.reporter,
+    insightsengineering/teal.widgets, insightsengineering/tern,
+    tidyverse/tibble, tidyverse/tidyr, tidymodels/broom,
+    daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
+    slowkow/ggrepel, baddstats/goftest, ramnathv/htmlwidgets,
+    jeroen/jsonlite, yihui/knitr, daroczig/logger, deepayan/lattice,
+    insightsengineering/nestcolor, r-lib/pkgload, r-lib/rlang,
+    rstudio/rmarkdown, insightsengineering/roxy.shinylive,
     insightsengineering/rtables, tidyverse/rvest, htmlwidgets/sparkline,
     rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
