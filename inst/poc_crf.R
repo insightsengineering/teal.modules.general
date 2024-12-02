@@ -76,8 +76,8 @@ tm <- teal_transform_module(
 ui_mod <- function(id) {
   ns <- NS(id)
   fluidRow(
-    column(6, "MM Response", reactableOutput(ns("mm_response"))),
-    column(6, "", reactableOutput(ns("tx_listing")))
+    column(6, reactableOutput(ns("mm_response"))),
+    column(6, reactableOutput(ns("tx_listing")))
   )
 }
 
@@ -119,7 +119,7 @@ srv_mod <- function(id,
       reactable(
         mm_response,
         columns = col_defs,
-        defaultPageSize = 10,
+        defaultPageSize = 5,
         searchable = TRUE,
         sortable = TRUE
       )
