@@ -51,7 +51,7 @@ srv_p_swimlane2 <- function(id,
 
     output$plot <- plotly::renderPlotly({
       plotly::event_register(
-        plotly_q()$p |> layout(height = input$plot_height),
+        plotly_q()$p |> plotly::layout(height = input$plot_height),
         "plotly_selected"
       )
     })
