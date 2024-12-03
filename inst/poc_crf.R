@@ -1,9 +1,8 @@
-pkgload::load_all("teal")
-pkgload::load_all("teal.widgets")
-pkgload::load_all("teal.modules.general")
+library(teal)
 library(DT)
 library(labelled)
 library(reactable)
+pkgload::load_all("teal.modules.general")
 
 # Note: Please add the `PATH_TO_DATA` and change the X, Y, and Z Administrations to the actual values in the data
 
@@ -15,36 +14,21 @@ data <- within(teal_data(), {
 
   swimlane_ds <- read_parquet(file.path(data_path, "swimlane_ds.parquet")) |>
     filter(!is.na(event_result), !is.na(event_study_day)) |>
-    mutate(subject = as.character(subject)) |>
-    mutate(
-      plot_subject = case_when(
-        event_type == "disposition" ~ paste0(subject, " - Disposition"),
-        event_type == "response_assessment" ~ paste0(subject, " - Response Assessment"),
-        event_type == "study_drug_administration" ~ paste0(subject, " - Drug Administration"),
-        TRUE ~ as.character(subject)
-      )
-    ) |>
-    group_by(subject_group = sub(" - .*", "", plot_subject)) |>
-    mutate(max_event_day = max(event_study_day)) |>
-    ungroup() |>
-    mutate(
-      plot_subject = forcats::fct_reorder(plot_subject, max_event_day, .fun = max)
-    ) |>
-    select(-subject_group, -max_event_day)
+    mutate(subject = forcats::fct_reorder(as.factor(subject), event_study_day, .fun = max))
 
   spiderplot_ds <- read_parquet(file.path(data_path, "spiderplot_ds.parquet")) |>
     mutate(subject = as.character(subject))
 })
 
 swim_plotly_specs <- list(
-  list("plotly::add_markers", x = ~study_day, y = ~plot_subject, color = ~catagory, symbol = ~catagory, data = quote(study_drug_administration)),
-  list("plotly::add_markers", x = ~study_day, y = ~plot_subject, color = ~catagory, symbol = ~catagory, data = quote(response_assessment)),
-  list("plotly::add_markers", x = ~study_day, y = ~plot_subject, color = ~catagory, symbol = ~catagory, data = quote(disposition)),
-  list("plotly::add_lines", x = ~study_day, y = ~plot_subject, data = quote(max_subject_day), color = ~plot_subject, line = list(width = 1, color = "grey"), showlegend = FALSE),
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(study_drug_administration)),
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(response_assessment)),
+  list("plotly::add_markers", x = ~study_day, y = ~subject, color = ~catagory, symbol = ~catagory, data = quote(disposition)),
+  list("plotly::add_segments", x = ~0, xend = ~study_day, y = ~subject, yend = ~subject, data = quote(max_subject_day), line = list(width = 1, color = "grey"), showlegend = FALSE),
   list("plotly::layout", xaxis = list(title = "Study Day"), yaxis = list(title = "Subject"))
 )
 
-tm <- teal_transform_module(
+swimlane_tm <- teal_transform_module(
   server = function(id, data) {
     reactive({
       data() |>
@@ -52,28 +36,28 @@ tm <- teal_transform_module(
           disposition <- swimlane_ds |>
             filter(!is.na(event_study_day)) |>
             filter(event_type == "disposition") |>
-            transmute(subject, plot_subject, event_type, catagory = event_result, study_day = event_study_day)
+            transmute(subject, event_type, catagory = event_result, study_day = event_study_day)
 
           response_assessment <- swimlane_ds |>
             filter(!is.na(event_study_day)) |>
             filter(event_type == "response_assessment") |>
-            transmute(subject, plot_subject, event_type, catagory = event_result, study_day = event_study_day)
+            transmute(subject, event_type, catagory = event_result, study_day = event_study_day)
 
           study_drug_administration <- swimlane_ds |>
             filter(!is.na(event_study_day)) |>
             filter(event_type == "study_drug_administration") |>
-            transmute(subject, plot_subject, event_type, catagory = event_result, study_day = event_study_day)
+            transmute(subject, event_type, catagory = event_result, study_day = event_study_day)
 
           max_subject_day <- swimlane_ds |>
-            group_by(plot_subject) |>
+            group_by(subject) |>
             summarise(study_day = max(event_study_day)) |>
-            bind_rows(tibble(plot_subject = unique(swimlane_ds$plot_subject), study_day = 0))
+            bind_rows(tibble(subject = unique(swimlane_ds$subject), study_day = 0))
         })
     })
   }
 )
 
-ui_mod <- function(id) {
+swimlane_ui_mod <- function(id) {
   ns <- NS(id)
   fluidRow(
     column(6, reactableOutput(ns("mm_response"))),
@@ -81,10 +65,10 @@ ui_mod <- function(id) {
   )
 }
 
-srv_mod <- function(id,
-                    data,
-                    plotly_selected,
-                    filter_panel_api) {
+swimlane_srv_mod <- function(id,
+                             data,
+                             plotly_selected,
+                             filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -114,7 +98,7 @@ srv_mod <- function(id,
         comnts = colDef(name = "Comments")
       )
       mm_response <- swimlane_ds |>
-        filter(event_study_day %in% plotly_selected()$x, plot_subject %in% plotly_selected()$y) |>
+        filter(event_study_day %in% plotly_selected()$x, subject %in% plotly_selected()$y) |>
         select(all_of(names(col_defs)))
       reactable(
         mm_response,
@@ -181,7 +165,7 @@ srv_mod <- function(id,
         tximae = colDef(name = "AE related to Infusion Modification")
       )
       tx_listing <- swimlane_ds |>
-        filter(event_study_day %in% plotly_selected()$x, plot_subject %in% plotly_selected()$y) |>
+        filter(event_study_day %in% plotly_selected()$x, subject %in% plotly_selected()$y) |>
         select(all_of(names(col_defs)))
       reactable(
         tx_listing,
@@ -195,13 +179,161 @@ srv_mod <- function(id,
 }
 
 spider_plotly_specs <- list(
-  list("plotly::add_markers", x = ~event_study_day, y = ~event_result, color = ~subject, symbol = ~event_type, data = quote(spiderplot_ds)),
-  list("plotly::add_lines", x = ~event_study_day, y = ~event_result, data = quote(spiderplot_ds), color = ~subject, showlegend = FALSE)
+  list("plotly::add_markers", x = ~event_study_day, y = ~event_result, color = ~subject, data = quote(spiderplot_ds_filtered)),
+  list("plotly::add_lines", x = ~event_study_day, y = ~event_result, data = quote(spiderplot_ds_filtered), color = ~subject, showlegend = FALSE)
 )
+
+spiderplot_tm <- teal_transform_module(
+  ui = function(id) {
+    selectInput(NS(id, "event_type"), "Select Event type", NULL)
+  },
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      spiderplot_ds <- reactive(data()[["spiderplot_ds"]])
+      observeEvent(spiderplot_ds(), {
+        event_types <- unique(spiderplot_ds()$event_type)
+        updateSelectInput(
+          inputId = "event_type",
+          choices = event_types[event_types != "response_assessment"]
+        )
+      })
+      reactive({
+        data() |>
+          within(
+            {
+              spiderplot_ds_filtered <- spiderplot_ds |>
+                filter(event_type == selected_event)
+            },
+            selected_event = input$event_type
+          )
+      })
+    })
+  }
+)
+
+spider_ui_mod <- function(id) {
+  ns <- NS(id)
+  fluidRow(
+    column(6, reactableOutput(ns("recent_resp"))),
+    column(6, reactableOutput(ns("all_resp")))
+  )
+}
+
+spider_srv_mod <- function(id,
+                           data,
+                           plotly_selected,
+                           filter_panel_api) {
+  checkmate::assert_class(data, "reactive")
+  checkmate::assert_class(isolate(data()), "teal_data")
+  moduleServer(id, function(input, output, session) {
+    all_resp_cols <- list(
+      txarm = colDef(name = "Study Arm"),
+      cohrt = colDef(name = "Study Cohort"),
+      subject = colDef(name = "Subject"),
+      event_result = colDef(name = "Response"),
+      event_study_day = colDef(name = "Study Day"),
+      visit_name = colDef(name = "Visit Name")
+    )
+
+    selected_recent_subject <- reactiveVal(NULL)
+
+    all_resp <- reactive({
+      if (!is.null(selected_recent_subject())) {
+        data()[["spiderplot_ds"]] |>
+          filter(event_type == "response_assessment") |>
+          select(all_of(names(all_resp_cols))) |>
+          filter(subject == selected_recent_subject())
+      } else {
+        selected_subjects <- data()[["spiderplot_ds"]] |>
+          filter(event_study_day %in% plotly_selected()$x, event_result %in% plotly_selected()$y) |>
+          pull(subject)
+        data()[["spiderplot_ds"]] |>
+          filter(event_type == "response_assessment") |>
+          select(all_of(names(all_resp_cols))) |>
+          filter(subject %in% selected_subjects)
+      }
+    })
+
+    rank_response <- function(responses) {
+      responses <- responses[!is.na(responses)]
+      if (length(responses) == 0) {
+        return(NA_character_)
+      }
+      response_hierarchy <- c(
+        "SCR (Stringent Complete Response)",
+        "CR (Complete Response)",
+        "VGPR (Very Good Partial Response)",
+        "PR (Partial Response)",
+        "MR (Minimal/Minor Response)",
+        "SD (Stable Disease)",
+        "PD (Progressive Disease)"
+      )
+      responses[which.max(match(responses, response_hierarchy))]
+    }
+
+    recent_resp_cols <- list(
+      txarm = colDef(name = "Study Arm"),
+      cohrt = colDef(name = "Study Cohort"),
+      subject = colDef(name = "Subject"),
+      event_result = colDef(name = "Response"),
+      event_study_day = colDef(name = "Study Day"),
+      most_recent_response = colDef(name = "Most Recent Response"),
+      best_response = colDef(name = "Best Response")
+    )
+
+    output$recent_resp <- renderReactable({
+      best_resp <- all_resp() %>%
+        group_by(subject) %>%
+        filter(!is.na(subject)) %>%
+        arrange(desc(event_study_day)) %>%
+        slice(1) %>%
+        mutate(
+          most_recent_response = event_result,
+          best_response = rank_response(all_resp()$event_result[all_resp()$subject == cur_group()])
+        ) %>%
+        ungroup()
+
+      reactable(
+        best_resp,
+        columns = recent_resp_cols,
+        selection = "single",
+        onClick = "select"
+      )
+    })
+
+    observeEvent(input$recent_resp_selected, {
+      req(input$recent_resp_selected)
+      selected_subjects <- reactableProxy("recent_resp") %>%
+        getReactableState("selected")
+
+      if (length(selected_subjects) > 0) {
+        selected_subject <- output$recent_resp()$subject[selected_subjects]
+        selected_recent_subject(selected_subject)
+      }
+    })
+
+    output$all_resp <- renderReactable({
+      reactable(
+        all_resp(),
+        columns = all_resp_cols
+      )
+    })
+  })
+}
+
 
 app <- init(
   data = data,
   modules = modules(
+    tm_p_swimlane2(
+      label = "Spiderplot",
+      plotly_specs = spider_plotly_specs,
+      title = "Swimlane Efficacy Plot",
+      transformators = list(spiderplot_tm),
+      ui_mod = spider_ui_mod,
+      srv_mod = spider_srv_mod,
+      plot_height = 600
+    ),
     tm_p_swimlane2(
       label = "Swimlane",
       plotly_specs = swim_plotly_specs,
@@ -234,16 +366,9 @@ app <- init(
         "Y Administration Infusion" = "line-ns-open",
         "Z Administration Infusion" = "line-ns-open"
       ),
-      transformers = list(tm),
-      ui_mod = ui_mod,
-      srv_mod = srv_mod
-    ),
-    tm_p_swimlane2(
-      label = "Spiderplot",
-      plotly_specs = spider_plotly_specs,
-      title = "Swimlane Efficacy Plot",
-      ui_mod = ui_mod,
-      srv_mod = srv_mod
+      transformators = list(swimlane_tm),
+      ui_mod = swimlane_ui_mod,
+      srv_mod = swimlane_srv_mod
     ),
     tm_data_table()
   ),
@@ -259,7 +384,20 @@ app <- init(
     teal_slice(
       dataname = "swimlane_ds",
       varname = "txarm"
-    )
+    ),
+    teal_slice(
+      dataname = "spiderplot_ds",
+      varname = "subject"
+    ),
+    teal_slice(
+      dataname = "spiderplot_ds",
+      varname = "cohrt"
+    ),
+    teal_slice(
+      dataname = "spiderplot_ds",
+      varname = "txarm"
+    ),
+    count_type = "all"
   )
 )
 
