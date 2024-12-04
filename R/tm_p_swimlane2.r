@@ -16,8 +16,7 @@ tm_p_swimlane2 <- function(
       title = title,
       colors = colors,
       symbols = symbols,
-      srv_mod = srv_mod,
-      height = plot_height
+      srv_mod = srv_mod
     ),
     transformators = transformators
   )
@@ -39,7 +38,6 @@ srv_p_swimlane2 <- function(id,
                             title = "Swimlane plot",
                             colors,
                             symbols,
-                            height,
                             srv_mod,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
