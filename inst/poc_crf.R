@@ -368,7 +368,16 @@ spider_srv_mod <- function(id,
       visit_name = colDef(name = "Visit Name"),
       visit_date = colDef(name = "Visit Date"),
       form_name = colDef(name = "Form Name"),
-      source_system_url_link = colDef(name = "Source System URL Link"),
+      source_system_url_link = colDef(
+        name = "Source System URL Link",
+        cell = function(value) {
+          if (!is.na(value) && !is.null(value) && value != "") {
+            htmltools::tags$a(href = value, target = "_blank", "Link")
+          } else {
+            "N/A"
+          }
+        }
+      ),
       rspdn = colDef(name = "Assessment Performed"),
       rspd = colDef(name = "Response Date"),
       rspd_study_day = colDef(name = "Response Date Study Day"),
@@ -407,7 +416,16 @@ spider_srv_mod <- function(id,
       visit_name = colDef(name = "Visit Name"),
       visit_date = colDef(name = "Visit Date"),
       form_name = colDef(name = "Form Name"),
-      source_system_url_link = colDef(name = "Source System URL Link"),
+      source_system_url_link = colDef(
+        name = "Source System URL Link",
+        cell = function(value) {
+          if (!is.na(value) && !is.null(value) && value != "") {
+            htmltools::tags$a(href = value, target = "_blank", "Link")
+          } else {
+            "N/A"
+          }
+        }
+      ),
       rspdn = colDef(name = "Assessment Performed"),
       rspd = colDef(name = "Response Date"),
       rspd_study_day = colDef(name = "Response Date Study Day"),
