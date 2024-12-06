@@ -38,6 +38,7 @@ srv_p_swimlane2 <- function(id,
                             title = "Swimlane plot",
                             colors,
                             symbols,
+                            plot_source = "A",
                             srv_mod,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
@@ -46,7 +47,8 @@ srv_p_swimlane2 <- function(id,
         specs = plotly_specs,
         colors = colors,
         symbols = symbols,
-        height = input$plot_height
+        height = input$plot_height,
+        source = plot_source
       )
       code <- substitute(
         p <- plotly_call,
@@ -62,7 +64,7 @@ srv_p_swimlane2 <- function(id,
       )
     })
 
-    plotly_selected <- reactive(plotly::event_data("plotly_selected"))
+    plotly_selected <- reactive(plotly::event_data("plotly_selected"), source = plot_source)
 
     observeEvent(plotly_selected(), once = TRUE, {
       if ("plotly_selected" %in% names(formals(srv_mod))) {
@@ -76,9 +78,9 @@ srv_p_swimlane2 <- function(id,
 
 
 
-.make_plotly_call <- function(specs, colors = c(), symbols = c(), height = 800) {
+.make_plotly_call <- function(specs, colors = c(), symbols = c(), height = 800, source = "A") {
   init_call <- substitute(
-    plotly::plot_ly(colors = colors, symbols = symbols, height = height),
+    plotly::plot_ly(source = source, colors = colors, symbols = symbols, height = height),
     list(colors = colors, symbols = symbols, height = height)
   )
   points_calls <- lapply(specs, function(x) {

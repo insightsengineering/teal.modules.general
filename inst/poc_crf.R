@@ -22,7 +22,8 @@ data <- within(teal_data(), {
   parent_ds <- bind_rows(
     swimlane_ds |> select(subject, cohrt, txarm),
     spiderplot_ds |> select(subject, cohrt, txarm)
-  ) |> distinct()
+  ) |>
+    distinct()
 })
 
 join_keys(data) <- join_keys(
@@ -212,8 +213,8 @@ swimlane_srv_mod <- function(id,
 }
 
 spider_plotly_specs <- list(
-  list("plotly::add_markers", x = ~event_study_day, y = ~event_result, color = ~subject, data = quote(spiderplot_ds_filtered)),
-  list("plotly::add_lines", x = ~event_study_day, y = ~event_result, data = quote(spiderplot_ds_filtered), color = ~subject, showlegend = FALSE),
+  list("plotly::add_markers", x = ~event_study_day, y = ~event_result_num, color = ~subject, data = quote(spiderplot_ds_filtered)),
+  list("plotly::add_lines", x = ~event_study_day, y = ~event_result_num, data = quote(spiderplot_ds_filtered), color = ~subject, showlegend = FALSE),
   list(
     "plotly::layout",
     xaxis = list(title = "Collection Date Study Day", zeroline = FALSE),
@@ -222,34 +223,6 @@ spider_plotly_specs <- list(
   )
 )
 
-spiderplot_tm <- teal_transform_module(
-  ui = function(id) {
-    selectInput(NS(id, "event_type"), "Select Y Axis", NULL)
-  },
-  server = function(id, data) {
-    moduleServer(id, function(input, output, session) {
-      spiderplot_ds <- reactive(data()[["spiderplot_ds"]])
-      observeEvent(spiderplot_ds(), {
-        event_types <- unique(spiderplot_ds()$event_type)
-        updateSelectInput(
-          inputId = "event_type",
-          choices = event_types[!event_types %in% c("response_assessment", "latest_response_assessment")]
-        )
-      })
-      reactive({
-        data() |>
-          within(
-            {
-              y_title <- selected_event
-              spiderplot_ds_filtered <- spiderplot_ds |>
-                filter(event_type == selected_event)
-            },
-            selected_event = input$event_type
-          )
-      })
-    })
-  }
-)
 
 spider_ui_mod <- function(id) {
   ns <- NS(id)
@@ -477,30 +450,6 @@ spider_srv_mod <- function(id,
     })
   })
 }
-
-
-# Custom placement of the transformer
-# custom_tm_p_swimlane2 <- function(plotly_specs, ui_mod, srv_mod, transformators = list()) {
-#   mod <- tm_p_swimlane2(
-#     label = "Spiderplot",
-#     plotly_specs = plotly_specs,
-#     title = "Swimlane Plot",
-#     transformators = transformators,
-#     ui_mod = ui_mod,
-#     srv_mod = srv_mod,
-#     plot_height = 600
-#   )
-#   mod$ui <- function(id, ui_mod, height) {
-#     ns <- NS(id)
-#     shiny::tagList(
-#       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height),
-#       teal::ui_transform_teal_data(NS(gsub("-module$", "", id), "data_transform"), transformators),
-#       plotly::plotlyOutput(ns("plot"), height = "100%"),
-#       ui_mod(ns("brush_tables"))
-#     )
-#   }
-#   mod
-# }
 
 app <- init(
   data = data,
