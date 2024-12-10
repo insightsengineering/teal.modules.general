@@ -66,7 +66,9 @@ jobs:
         insightsengineering/teal.logger
         insightsengineering/teal.reporter
         insightsengineering/teal.widgets
+        insightsengineering/teal.slice
         insightsengineering/tern
+        insightsengineering/formatters
         insightsengineering/rtables
         insightsengineering/rtables.officer
         insightsengineering/nestcolor
@@ -88,7 +90,9 @@ jobs:
         insightsengineering/teal.logger
         insightsengineering/teal.reporter
         insightsengineering/teal.widgets
+        insightsengineering/teal.slice
         insightsengineering/tern
+        insightsengineering/formatters
         insightsengineering/rtables
         insightsengineering/rtables.officer
         insightsengineering/nestcolor
