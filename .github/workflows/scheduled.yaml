@@ -3,7 +3,7 @@ name: Scheduled 🕰️
 
 on:
   schedule:
-    - cron: '45 3 * * 0'
+    - cron: "45 3 * * 0"
   workflow_dispatch:
     inputs:
       chosen-workflow:
@@ -63,12 +63,13 @@ jobs:
         insightsengineering/teal.transform
         insightsengineering/teal.code
         insightsengineering/teal.data
-        insightsengineering/teal.slice
         insightsengineering/teal.logger
         insightsengineering/teal.reporter
         insightsengineering/teal.widgets
         insightsengineering/tern
         insightsengineering/rtables
+        insightsengineering/rtables.officer
+        insightsengineering/nestcolor
   rhub:
     if: >
       github.event_name == 'schedule' || (
@@ -84,9 +85,10 @@ jobs:
         insightsengineering/teal.transform
         insightsengineering/teal.code
         insightsengineering/teal.data
-        insightsengineering/teal.slice
         insightsengineering/teal.logger
         insightsengineering/teal.reporter
         insightsengineering/teal.widgets
         insightsengineering/tern
         insightsengineering/rtables
+        insightsengineering/rtables.officer
+        insightsengineering/nestcolor
